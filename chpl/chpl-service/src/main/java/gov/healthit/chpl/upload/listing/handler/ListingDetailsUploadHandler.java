@@ -12,6 +12,7 @@ import java.util.Set;
 
 import javax.validation.ValidationException;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -249,8 +250,8 @@ public class ListingDetailsUploadHandler {
     }
 
     private boolean sedExists(CertifiedProductSed sed, CertificationCriterion criterion) {
-        if (sed == null || (sed.getUcdProcesses() == null && sed.getTestTasks() == null)
-                || (sed.getUcdProcesses().size() == 0 && sed.getTestTasks().size() == 0)) {
+        if (sed == null || (CollectionUtils.isEmpty(sed.getUcdProcesses())
+                && CollectionUtils.isEmpty(sed.getTestTasks()))) {
             return false;
         }
 

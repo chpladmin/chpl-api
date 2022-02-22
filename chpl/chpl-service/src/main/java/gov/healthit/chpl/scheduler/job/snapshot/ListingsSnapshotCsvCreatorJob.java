@@ -17,7 +17,6 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ff4j.FF4j;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -31,8 +30,8 @@ import gov.healthit.chpl.activity.history.query.ListingOnDateActivityQuery;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
-import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.DownloadableResourceCreatorJob;
@@ -52,9 +51,6 @@ public class ListingsSnapshotCsvCreatorJob extends DownloadableResourceCreatorJo
     private CertificationCriterionService criterionService;
 
     @Autowired
-    private FF4j ff4j;
-
-    @Autowired
     private ListingActivityUtil listingActivityUtil;
 
     @Autowired
@@ -65,6 +61,9 @@ public class ListingsSnapshotCsvCreatorJob extends DownloadableResourceCreatorJo
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     public ListingsSnapshotCsvCreatorJob() throws Exception {
         super(LOGGER);
@@ -157,7 +156,6 @@ public class ListingsSnapshotCsvCreatorJob extends DownloadableResourceCreatorJo
     private void initializeWritingToFiles(CertifiedProductCsvPresenter csvPresenter, File csvFile)
             throws IOException {
         csvPresenter.setLogger(LOGGER);
-        csvPresenter.setFf4j(ff4j);
         List<CertificationCriterionDTO> criteria = getCriteriaDao().findByCertificationEditionYear(edition)
                 .stream()
                 .sorted((crA, crB) -> criterionService.sortCriteria(crA, crB))
@@ -193,8 +191,8 @@ public class ListingsSnapshotCsvCreatorJob extends DownloadableResourceCreatorJo
     private void sendEmail(JobExecutionContext context, List<File> attachments) throws EmailNotSentException {
         String emailAddress = context.getMergedJobDataMap().getString(JOB_DATA_KEY_EMAIL);
         LOGGER.info("Sending email to: " + emailAddress);
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipient(emailAddress)
+        chplEmailFactory.emailBuilder()
+                .recipient(emailAddress)
                 .subject(env.getProperty("listingsSnapshot.subject"))
                 .htmlMessage(createHtmlMessage())
                 .fileAttachments(attachments)

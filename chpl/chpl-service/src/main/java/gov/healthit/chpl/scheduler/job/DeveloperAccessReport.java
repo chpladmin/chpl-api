@@ -12,8 +12,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.Query;
@@ -35,7 +35,7 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.auth.UserContactEntity;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -56,6 +56,9 @@ public class DeveloperAccessReport extends QuartzJob {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     private static final int DEVELOPER_NAME = 0;
     private static final int DEVELOPER_ID = 1;
@@ -227,8 +230,7 @@ public class DeveloperAccessReport extends QuartzJob {
         LOGGER.info("Sending email to {} with contents {} and a total of {} developer access rows",
                 getEmailRecipients(jobContext).get(0), getHtmlMessage((csvRows.size()), getAcbNamesAsCommaSeparatedList(jobContext)));
 
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(getEmailRecipients(jobContext))
+        chplEmailFactory.emailBuilder().recipients(getEmailRecipients(jobContext))
                 .subject(getSubject(jobContext))
                 .htmlMessage(getHtmlMessage(csvRows.size(), getAcbNamesAsCommaSeparatedList(jobContext)))
                 .fileAttachments(getAttachments(csvRows, acbs))

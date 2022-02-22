@@ -9,8 +9,6 @@ import java.util.Set;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
-import org.apache.commons.lang3.NotImplementedException;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -28,7 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
@@ -69,7 +66,6 @@ public class UserManagementController {
     private UserManager userManager;
     private InvitationManager invitationManager;
     private AuthenticationManager authenticationManager;
-    private FF4j ff4j;
     private ErrorMessageUtil msgUtil;
 
     private long invitationLengthInDays;
@@ -78,7 +74,7 @@ public class UserManagementController {
 
     @Autowired
     public UserManagementController(UserManager userManager, InvitationManager invitationManager,
-            AuthenticationManager authenticationManager, FF4j ff4j,
+            AuthenticationManager authenticationManager,
             ErrorMessageUtil errorMessageUtil,
             @Value("${invitationLengthInDays}") Long invitationLengthDays,
             @Value("${confirmationLengthInDays}") Long confirmationLengthDays,
@@ -86,7 +82,6 @@ public class UserManagementController {
         this.userManager = userManager;
         this.invitationManager = invitationManager;
         this.authenticationManager = authenticationManager;
-        this.ff4j = ff4j;
         this.msgUtil = errorMessageUtil;
 
         this.invitationLengthInDays = invitationLengthDays;
@@ -254,11 +249,6 @@ public class UserManagementController {
     public UserInvitation inviteUser(@RequestBody UserInvitation invitation)
             throws InvalidArgumentsException, UserCreationException, UserRetrievalException,
             UserPermissionRetrievalException, AddressException, EmailNotSentException {
-
-        if (!ff4j.check(FeatureList.ROLE_DEVELOPER) && invitation.getRole().equals(Authority.ROLE_DEVELOPER)) {
-            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
-        }
-
         UserInvitation createdInvitiation = null;
         if (invitation.getRole().equals(Authority.ROLE_ADMIN)) {
             createdInvitiation = invitationManager.inviteAdmin(invitation.getEmailAddress());

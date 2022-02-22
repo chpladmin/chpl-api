@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -383,7 +384,7 @@ public class UcdProcessReviewerTest {
     }
 
     @Test
-    public void review_ucdProcessIncludesUnattestedCriteria_hasErrors() {
+    public void review_ucdProcessIncludesUnattestedCriteria_noErrors() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .success(true)
@@ -406,8 +407,7 @@ public class UcdProcessReviewerTest {
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(UCD_NOT_APPLICABLE , "170.315 (a)(1)")));
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test

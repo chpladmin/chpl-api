@@ -9,6 +9,7 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -18,6 +19,20 @@ import gov.healthit.chpl.util.AuthUtil;
 @Repository("addressDao")
 public class AddressDAO extends BaseDAOImpl {
 
+    public Long create(Address address) {
+        AddressEntity toInsert = new AddressEntity();
+        toInsert.setStreetLineOne(address.getLine1());
+        toInsert.setStreetLineTwo(address.getLine2());
+        toInsert.setCity(address.getCity());
+        toInsert.setState(address.getState());
+        toInsert.setZipcode(address.getZipcode());
+        toInsert.setCountry(address.getCountry());
+        toInsert.setLastModifiedUser(AuthUtil.getAuditId());
+        create(toInsert);
+        return toInsert.getId();
+    }
+
+    @Deprecated
     public AddressEntity create(AddressDTO dto) throws EntityCreationException, EntityRetrievalException {
         AddressEntity toInsert = new AddressEntity();
         toInsert.setStreetLineOne(dto.getStreetLineOne());

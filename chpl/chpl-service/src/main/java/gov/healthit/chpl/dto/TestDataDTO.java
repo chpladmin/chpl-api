@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class TestDataDTO implements Serializable {
     private static final long serialVersionUID = 1794585582532931394L;
-    public static final String DEFALUT_TEST_DATA = "ONC Test Method";
+    public static final String DEFAULT_TEST_DATA = "ONC Test Method";
     private Long id;
     private String name;
 

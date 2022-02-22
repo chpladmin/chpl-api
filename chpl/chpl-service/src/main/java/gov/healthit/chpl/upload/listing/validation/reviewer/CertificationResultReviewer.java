@@ -91,6 +91,9 @@ public class CertificationResultReviewer {
                         && validationUtils.isEligibleForErrors(certResult))
             .forEach(certResult -> reviewCertResultFields(listing, certResult));
 
+        listing.getCertificationResults().stream()
+            .forEach(certResult -> removeCertResultFieldsNotApplicable(certResult));
+
         criteriaReviewer.review(listing);
         privacyAndSecurityFrameworkReviewer.review(listing);
         additionalSoftwareReviewer.review(listing);
@@ -120,7 +123,28 @@ public class CertificationResultReviewer {
         }
     }
 
-    public void reviewCertResultFields(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void removeCertResultFieldsNotApplicable(CertificationResult certResult) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.GAP)) {
+            certResult.setGap(null);
+        }
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.ATTESTATION_ANSWER)) {
+            certResult.setAttestationAnswer(null);
+        }
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
+            certResult.setApiDocumentation(null);
+        }
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)) {
+            certResult.setExportDocumentation(null);
+        }
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.USE_CASES)) {
+            certResult.setUseCases(null);
+        }
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)) {
+            certResult.setServiceBaseUrlList(null);
+        }
+    }
+
+    private void reviewCertResultFields(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewGap(listing, certResult);
         reviewAdditionalSoftwareString(listing, certResult);
         reviewAttestationAnswer(listing, certResult);
@@ -156,7 +180,6 @@ public class CertificationResultReviewer {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidHasAdditionalSoftware",
                     Util.formatCriteriaNumber(certResult.getCriterion()),
                     certResult.getHasAdditionalSoftwareStr()));
-
         }
     }
 

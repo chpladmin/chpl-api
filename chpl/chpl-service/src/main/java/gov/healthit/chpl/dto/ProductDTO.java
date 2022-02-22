@@ -73,7 +73,7 @@ public class ProductDTO implements Serializable {
 
         this.id = entity.getId();
         this.creationDate = entity.getCreationDate();
-        this.deleted = entity.isDeleted();
+        this.deleted = entity.getDeleted();
         this.lastModifiedDate = entity.getLastModifiedDate();
         this.lastModifiedUser = entity.getLastModifiedUser();
         this.name = entity.getName();
@@ -103,7 +103,7 @@ public class ProductDTO implements Serializable {
             }
         }
 
-        ProductCertificationStatusesEntity statusesEntity = entity.getProductCertificationStatusesEntity();
+        ProductCertificationStatusesEntity statusesEntity = entity.getProductCertificationStatuses();
         if (statusesEntity != null) {
             this.statuses = new Statuses(statusesEntity.getActive(),
                     statusesEntity.getRetired(),

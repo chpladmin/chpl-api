@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.InvalidCriteriaCombinationReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
 
 @Component("listingUploadCriteriaReviewer")
 public class CriteriaReviewer {
@@ -15,7 +14,6 @@ public class CriteriaReviewer {
     private PrivacyAndSecurityCriteriaReviewer privacyAndSecurityCriteriaReviewer;
     private InvalidCriteriaCombinationReviewer invalidCriteriaCombinationReviewer;
     private RequiredAndRelatedCriteriaReviewer requiredAndRelatedCriteriaReviewer;
-    private SedG32015Reviewer sedG3Reviewer;
     private SedRelatedCriteriaReviewer sedRelatedCriteriaReviewer;
 
     @Autowired

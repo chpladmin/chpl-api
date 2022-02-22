@@ -162,6 +162,10 @@ public class DeveloperReviewer implements Reviewer {
             if (StringUtils.isEmpty(address.getZipcode())) {
                 addMessageToListing(listing, msgUtil.getMessage("developer.address.zipRequired"), msgLevel);
             }
+            if (StringUtils.isEmpty(address.getCountry())) {
+                addMessageToListing(listing, msgUtil.getMessage("developer.address.countryRequired", Address.DEFAULT_COUNTRY), WARNING);
+                address.setCountry(Address.DEFAULT_COUNTRY);
+            }
         }
     }
 

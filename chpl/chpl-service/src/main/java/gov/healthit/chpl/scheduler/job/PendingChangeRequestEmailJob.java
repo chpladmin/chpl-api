@@ -30,7 +30,7 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
@@ -50,6 +50,9 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     private static final int DEVELOPER_NAME = 0;
     private static final int DEVELOPER_CODE = 1;
@@ -241,12 +244,12 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         LOGGER.info("Sending email to {} with contents {} and a total of {} pending change requests",
                 getEmailRecipients(jobContext).get(0), getHtmlMessage(csvRows.size(), getAcbNamesAsCommaSeparatedList(jobContext)));
 
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(getEmailRecipients(jobContext))
-        .subject(getSubject(jobContext))
-        .htmlMessage(getHtmlMessage(csvRows.size(), getAcbNamesAsCommaSeparatedList(jobContext)))
-        .fileAttachments(getAttachments(csvRows, acbs))
-        .sendEmail();
+        chplEmailFactory.emailBuilder()
+                .recipients(getEmailRecipients(jobContext))
+                .subject(getSubject(jobContext))
+                .htmlMessage(getHtmlMessage(csvRows.size(), getAcbNamesAsCommaSeparatedList(jobContext)))
+                .fileAttachments(getAttachments(csvRows, acbs))
+                .sendEmail();
     }
 
     private String getSubject(JobExecutionContext jobContext) {

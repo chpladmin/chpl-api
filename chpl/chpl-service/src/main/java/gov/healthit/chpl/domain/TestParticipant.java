@@ -1,6 +1,7 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -8,7 +9,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -166,8 +166,8 @@ public class TestParticipant implements Serializable {
         if (other == null || !(other instanceof TestParticipant)) {
             return false;
         }
-        TestParticipant anotherTask = (TestParticipant) other;
-        return matches(anotherTask);
+        TestParticipant anotherParticipant = (TestParticipant) other;
+        return matches(anotherParticipant);
     }
 
     @Override
@@ -215,18 +215,18 @@ public class TestParticipant implements Serializable {
             result = true;
         } else if (StringUtils.equals(this.getUniqueId(), anotherParticipant.getUniqueId())
                 && StringUtils.equals(this.getAgeRange(), anotherParticipant.getAgeRange())
-                && ObjectUtils.equals(this.getAgeRangeId(), anotherParticipant.getAgeRangeId())
+                && Objects.equals(this.getAgeRangeId(), anotherParticipant.getAgeRangeId())
                 && StringUtils.equals(this.getAssistiveTechnologyNeeds(),
                         anotherParticipant.getAssistiveTechnologyNeeds())
-                && ObjectUtils.equals(this.getComputerExperienceMonths(),
+                && Objects.equals(this.getComputerExperienceMonths(),
                         anotherParticipant.getComputerExperienceMonths())
                 && StringUtils.equals(this.getEducationTypeName(), anotherParticipant.getEducationTypeName())
-                && ObjectUtils.equals(this.getEducationTypeId(), anotherParticipant.getEducationTypeId())
+                && Objects.equals(this.getEducationTypeId(), anotherParticipant.getEducationTypeId())
                 && StringUtils.equals(this.getGender(), anotherParticipant.getGender())
                 && StringUtils.equals(this.getOccupation(), anotherParticipant.getOccupation())
-                && ObjectUtils.equals(this.getProductExperienceMonths(),
+                && Objects.equals(this.getProductExperienceMonths(),
                         anotherParticipant.getProductExperienceMonths())
-                && ObjectUtils.equals(this.getProfessionalExperienceMonths(),
+                && Objects.equals(this.getProfessionalExperienceMonths(),
                         anotherParticipant.getProfessionalExperienceMonths())) {
             result = true;
         }

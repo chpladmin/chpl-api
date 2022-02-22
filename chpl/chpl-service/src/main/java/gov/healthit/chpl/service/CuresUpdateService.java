@@ -9,11 +9,9 @@ import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
@@ -22,7 +20,6 @@ import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 public class CuresUpdateService {
     private static final Logger LOGGER = LogManager.getLogger(CuresUpdateService.class);
     private CertificationCriterionService criteriaService;
-    private FF4j ff4j;
 
     private Long b6Id;
     private List<Long> needsToBeUpdatedCriteriaIds = new ArrayList<Long>();
@@ -31,9 +28,8 @@ public class CuresUpdateService {
     private List<Long> dependentCriteriaIds = new ArrayList<Long>();
 
     @Autowired
-    public CuresUpdateService(CertificationCriterionService criteriaService, FF4j ff4j) {
+    public CuresUpdateService(CertificationCriterionService criteriaService) {
         this.criteriaService = criteriaService;
-        this.ff4j = ff4j;
     }
 
     @PostConstruct
@@ -61,84 +57,42 @@ public class CuresUpdateService {
                 criteriaService.get(Criteria2015.D_12).getId(),
                 criteriaService.get(Criteria2015.D_13).getId()));
 
-        if (ff4j.check(FeatureList.EFFECTIVE_RULE_DATE_PLUS_18_MONTHS)) {
-            requiresPnSCriteriaIds = new ArrayList<Long>(Arrays.asList(
-                    criteriaService.get(Criteria2015.A_1).getId(),
-                    criteriaService.get(Criteria2015.A_2).getId(),
-                    criteriaService.get(Criteria2015.A_3).getId(),
-                    criteriaService.get(Criteria2015.A_4).getId(),
-                    criteriaService.get(Criteria2015.A_5).getId(),
-                    criteriaService.get(Criteria2015.A_9).getId(),
-                    criteriaService.get(Criteria2015.A_12).getId(),
-                    criteriaService.get(Criteria2015.A_14).getId(),
-                    criteriaService.get(Criteria2015.A_15).getId(),
-                    criteriaService.get(Criteria2015.B_1_CURES).getId(),
-                    criteriaService.get(Criteria2015.B_2_CURES).getId(),
-                    criteriaService.get(Criteria2015.B_3_CURES).getId(),
-                    criteriaService.get(Criteria2015.B_7_CURES).getId(),
-                    criteriaService.get(Criteria2015.B_8_CURES).getId(),
-                    criteriaService.get(Criteria2015.B_9_CURES).getId(),
-                    criteriaService.get(Criteria2015.B_6).getId(),
-                    criteriaService.get(Criteria2015.C_1).getId(),
-                    criteriaService.get(Criteria2015.C_2).getId(),
-                    criteriaService.get(Criteria2015.C_3_CURES).getId(),
-                    criteriaService.get(Criteria2015.C_4).getId(),
-                    criteriaService.get(Criteria2015.E_1_CURES).getId(),
-                    criteriaService.get(Criteria2015.E_3).getId(),
-                    criteriaService.get(Criteria2015.F_1).getId(),
-                    criteriaService.get(Criteria2015.F_2).getId(),
-                    criteriaService.get(Criteria2015.F_3).getId(),
-                    criteriaService.get(Criteria2015.F_4).getId(),
-                    criteriaService.get(Criteria2015.F_5_CURES).getId(),
-                    criteriaService.get(Criteria2015.F_6).getId(),
-                    criteriaService.get(Criteria2015.F_7).getId(),
-                    criteriaService.get(Criteria2015.G_7).getId(),
-                    criteriaService.get(Criteria2015.G_8).getId(),
-                    criteriaService.get(Criteria2015.G_9_CURES).getId(),
-                    criteriaService.get(Criteria2015.G_10).getId(),
-                    criteriaService.get(Criteria2015.H_1).getId(),
-                    criteriaService.get(Criteria2015.H_2).getId()));
-        } else {
-            requiresPnSCriteriaIds = new ArrayList<Long>(Arrays.asList(
-                    criteriaService.get(Criteria2015.A_1).getId(),
-                    criteriaService.get(Criteria2015.A_2).getId(),
-                    criteriaService.get(Criteria2015.A_3).getId(),
-                    criteriaService.get(Criteria2015.A_4).getId(),
-                    criteriaService.get(Criteria2015.A_5).getId(),
-                    criteriaService.get(Criteria2015.A_9).getId(),
-                    criteriaService.get(Criteria2015.A_10).getId(),
-                    criteriaService.get(Criteria2015.A_12).getId(),
-                    criteriaService.get(Criteria2015.A_13).getId(),
-                    criteriaService.get(Criteria2015.A_14).getId(),
-                    criteriaService.get(Criteria2015.A_15).getId(),
-                    criteriaService.get(Criteria2015.B_1_CURES).getId(),
-                    criteriaService.get(Criteria2015.B_2_CURES).getId(),
-                    criteriaService.get(Criteria2015.B_3_CURES).getId(),
-                    criteriaService.get(Criteria2015.B_7_CURES).getId(),
-                    criteriaService.get(Criteria2015.B_8_CURES).getId(),
-                    criteriaService.get(Criteria2015.B_9_CURES).getId(),
-                    criteriaService.get(Criteria2015.B_6).getId(),
-                    criteriaService.get(Criteria2015.C_1).getId(),
-                    criteriaService.get(Criteria2015.C_2).getId(),
-                    criteriaService.get(Criteria2015.C_3_CURES).getId(),
-                    criteriaService.get(Criteria2015.C_4).getId(),
-                    criteriaService.get(Criteria2015.E_1_CURES).getId(),
-                    criteriaService.get(Criteria2015.E_2).getId(),
-                    criteriaService.get(Criteria2015.E_3).getId(),
-                    criteriaService.get(Criteria2015.F_1).getId(),
-                    criteriaService.get(Criteria2015.F_2).getId(),
-                    criteriaService.get(Criteria2015.F_3).getId(),
-                    criteriaService.get(Criteria2015.F_4).getId(),
-                    criteriaService.get(Criteria2015.F_5_CURES).getId(),
-                    criteriaService.get(Criteria2015.F_6).getId(),
-                    criteriaService.get(Criteria2015.F_7).getId(),
-                    criteriaService.get(Criteria2015.G_7).getId(),
-                    criteriaService.get(Criteria2015.G_8).getId(),
-                    criteriaService.get(Criteria2015.G_9_CURES).getId(),
-                    criteriaService.get(Criteria2015.G_10).getId(),
-                    criteriaService.get(Criteria2015.H_1).getId(),
-                    criteriaService.get(Criteria2015.H_2).getId()));
-        }
+        requiresPnSCriteriaIds = new ArrayList<Long>(Arrays.asList(
+                criteriaService.get(Criteria2015.A_1).getId(),
+                criteriaService.get(Criteria2015.A_2).getId(),
+                criteriaService.get(Criteria2015.A_3).getId(),
+                criteriaService.get(Criteria2015.A_4).getId(),
+                criteriaService.get(Criteria2015.A_5).getId(),
+                criteriaService.get(Criteria2015.A_9).getId(),
+                criteriaService.get(Criteria2015.A_12).getId(),
+                criteriaService.get(Criteria2015.A_14).getId(),
+                criteriaService.get(Criteria2015.A_15).getId(),
+                criteriaService.get(Criteria2015.B_1_CURES).getId(),
+                criteriaService.get(Criteria2015.B_2_CURES).getId(),
+                criteriaService.get(Criteria2015.B_3_CURES).getId(),
+                criteriaService.get(Criteria2015.B_7_CURES).getId(),
+                criteriaService.get(Criteria2015.B_8_CURES).getId(),
+                criteriaService.get(Criteria2015.B_9_CURES).getId(),
+                criteriaService.get(Criteria2015.B_6).getId(),
+                criteriaService.get(Criteria2015.C_1).getId(),
+                criteriaService.get(Criteria2015.C_2).getId(),
+                criteriaService.get(Criteria2015.C_3_CURES).getId(),
+                criteriaService.get(Criteria2015.C_4).getId(),
+                criteriaService.get(Criteria2015.E_1_CURES).getId(),
+                criteriaService.get(Criteria2015.E_3).getId(),
+                criteriaService.get(Criteria2015.F_1).getId(),
+                criteriaService.get(Criteria2015.F_2).getId(),
+                criteriaService.get(Criteria2015.F_3).getId(),
+                criteriaService.get(Criteria2015.F_4).getId(),
+                criteriaService.get(Criteria2015.F_5_CURES).getId(),
+                criteriaService.get(Criteria2015.F_6).getId(),
+                criteriaService.get(Criteria2015.F_7).getId(),
+                criteriaService.get(Criteria2015.G_7).getId(),
+                criteriaService.get(Criteria2015.G_8).getId(),
+                criteriaService.get(Criteria2015.G_9_CURES).getId(),
+                criteriaService.get(Criteria2015.G_10).getId(),
+                criteriaService.get(Criteria2015.H_1).getId(),
+                criteriaService.get(Criteria2015.H_2).getId()));
 
         dependentCriteriaIds = new ArrayList<Long>(Arrays.asList(
                 criteriaService.get(Criteria2015.B_10).getId(),

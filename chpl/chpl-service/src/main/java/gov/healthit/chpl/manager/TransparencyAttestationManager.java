@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.TransparencyAttestationMap;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -24,6 +26,43 @@ public class TransparencyAttestationManager {
     public TransparencyAttestationManager(DeveloperDAO developerDAO, CertificationBodyDAO certificationBodyDAO) {
         this.developerDAO = developerDAO;
         this.certificationBodyDAO = certificationBodyDAO;
+    }
+
+    public void save(Developer developer) {
+        developer.getTransparencyAttestations().stream()
+                .forEach(devAcbMap -> save(devAcbMap, developer.getDeveloperId()));
+    }
+
+    public void save(TransparencyAttestationMap attestationMap, Long developerId) {
+        Optional<CertificationBodyDTO> acb = getAcbByName(attestationMap.getAcbName());
+        if (acb.isPresent()) {
+            Optional<DeveloperACBMapDTO> existingDeveloperAcbMap = getDeveloperAcbMap(developerId, acb.get().getId());
+            if (existingDeveloperAcbMap.isPresent()) {
+                existingDeveloperAcbMap.get().setTransparencyAttestation(TransparencyAttestationDTO.builder()
+                        .removed(true)
+                        .transparencyAttestation(
+                                attestationMap.getAttestation().getTransparencyAttestation())
+                        .build());
+                developerDAO.updateTransparencyMapping(existingDeveloperAcbMap.get());
+            } else if (doesTransparenctAttestationExist(attestationMap)) {
+                DeveloperACBMapDTO developerMapACBMap = DeveloperACBMapDTO.builder()
+                        .acbId(acb.get().getId())
+                        .acbName(acb.get().getName())
+                        .developerId(developerId)
+                        .transparencyAttestation(TransparencyAttestationDTO.builder()
+                                .removed(true)
+                                .transparencyAttestation(
+                                        attestationMap.getAttestation().getTransparencyAttestation())
+                                .build())
+                        .build();
+                developerDAO.createTransparencyMapping(developerMapACBMap);
+            }
+        }
+    }
+
+    private boolean doesTransparenctAttestationExist(TransparencyAttestationMap transparencyAttestation) {
+        return Objects.nonNull(transparencyAttestation.getAttestation())
+                && !StringUtils.isEmpty(transparencyAttestation.getAttestation().getTransparencyAttestation());
     }
 
     public void save(DeveloperDTO developer) {

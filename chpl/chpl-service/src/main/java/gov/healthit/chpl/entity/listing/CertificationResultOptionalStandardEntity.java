@@ -39,19 +39,15 @@ public class CertificationResultOptionalStandardEntity {
     @JoinColumn(name = "optional_standard_id", unique = true, nullable = true, insertable = false, updatable = false)
     private OptionalStandardEntity optionalStandard;
 
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
-    private Date creationDate;
-
-    @Basic(optional = false)
-    @Column(nullable = false)
+    @Column(name = "deleted", insertable = false)
     private Boolean deleted;
 
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
+    @Column(name = "last_modified_user")
     private Long lastModifiedUser;
+
+    @Column(name = "creation_date", insertable = false, updatable = false)
+    private Date creationDate;
+
+    @Column(name = "last_modified_date", insertable = false, updatable = false)
+    private Date lastModifiedDate;
 }

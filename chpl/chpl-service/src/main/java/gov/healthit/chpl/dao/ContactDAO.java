@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.entity.ContactEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -18,8 +19,21 @@ import gov.healthit.chpl.util.AuthUtil;
 @Repository("contactDao")
 public class ContactDAO extends BaseDAOImpl {
 
-    public ContactEntity create(final ContactDTO dto) throws EntityCreationException, EntityRetrievalException {
+    public Long create(PointOfContact contact) {
+        ContactEntity toInsert = new ContactEntity();
+        toInsert.setEmail(contact.getEmail());
+        toInsert.setFullName(contact.getFullName());
+        toInsert.setPhoneNumber(contact.getPhoneNumber());
+        toInsert.setTitle(contact.getTitle());
+        toInsert.setSignatureDate(null);
+        toInsert.setDeleted(false);
+        toInsert.setLastModifiedUser(AuthUtil.getAuditId());
+        create(toInsert);
+        return toInsert.getId();
+    }
 
+    @Deprecated
+    public ContactEntity create(ContactDTO dto) throws EntityCreationException, EntityRetrievalException {
         ContactEntity toInsert = new ContactEntity();
         toInsert.setEmail(dto.getEmail());
         toInsert.setFullName(dto.getFullName());

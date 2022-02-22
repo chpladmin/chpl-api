@@ -31,7 +31,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -49,12 +49,18 @@ public class PromotingInteroperabilityUploadJob implements Job {
 
     @Autowired
     private Environment env;
+
     @Autowired
     private CertifiedProductDetailsManager cpdManager;
+
     @Autowired
     private CertifiedProductManager cpManager;
+
     @Autowired
     private FF4j ff4j;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
@@ -261,8 +267,8 @@ public class PromotingInteroperabilityUploadJob implements Job {
         LOGGER.info("Sending email to: " + recipientEmail);
         LOGGER.info("Message to be sent: " + htmlMessage);
 
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipient(recipientEmail)
+        chplEmailFactory.emailBuilder()
+                .recipient(recipientEmail)
                 .subject(subject)
                 .htmlMessage(htmlMessage)
                 .sendEmail();

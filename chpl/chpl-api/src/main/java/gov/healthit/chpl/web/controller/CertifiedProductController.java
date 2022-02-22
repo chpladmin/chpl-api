@@ -17,7 +17,6 @@ import javax.persistence.EntityNotFoundException;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +50,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMetadataDTO;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.exception.DeprecatedUploadTemplateException;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -71,7 +70,6 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.PendingValidator;
@@ -112,11 +110,12 @@ public class CertifiedProductController {
     private PendingCertifiedProductManager pcpManager;
     private ActivityManager activityManager;
     private ListingValidatorFactory validatorFactory;
-    private Environment env;
     private ErrorMessageUtil msgUtil;
-    private FileUtils fileUtils;
     private ChplProductNumberUtil chplProductNumberUtil;
     private DeveloperManager developerManager;
+    private ChplEmailFactory chplEmailFactory;
+
+
 
     @SuppressWarnings({
             "checkstyle:parameternumber"
@@ -126,8 +125,8 @@ public class CertifiedProductController {
             CertifiedProductDetailsManager cpdManager, CertifiedProductManager cpManager,
             ResourcePermissions resourcePermissions, PendingCertifiedProductManager pcpManager,
             ActivityManager activityManager, ListingValidatorFactory validatorFactory,
-            Environment env, ErrorMessageUtil msgUtil, FileUtils fileUtils,
-            ChplProductNumberUtil chplProductNumberUtil, DeveloperManager developerManager) {
+            ErrorMessageUtil msgUtil, ChplProductNumberUtil chplProductNumberUtil, DeveloperManager developerManager,
+            ChplEmailFactory chplEmailFactory) {
         this.uploadManager = uploadManager;
         this.cpdManager = cpdManager;
         this.cpManager = cpManager;
@@ -135,11 +134,10 @@ public class CertifiedProductController {
         this.pcpManager = pcpManager;
         this.activityManager = activityManager;
         this.validatorFactory = validatorFactory;
-        this.env = env;
         this.msgUtil = msgUtil;
-        this.fileUtils = fileUtils;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.developerManager = developerManager;
+        this.chplEmailFactory = chplEmailFactory;
     }
 
     @Operation(summary = "List all certified products",
@@ -809,10 +807,10 @@ public class CertifiedProductController {
             description = "Pending listings are created via CSV file upload and are left in the 'pending' state "
                     + " until validated and confirmed.  Security Restrictions: ROLE_ADMIN, ROLE_ACB and have "
                     + "administrative authority on the ACB that uploaded the product.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @Deprecated
     @RequestMapping(value = "/pending/metadata", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @DeprecatedResponseFields(responseClass = PendingCertifiedProductMetadata.class)
     public @ResponseBody List<PendingCertifiedProductMetadata> getPendingCertifiedProductMetadata()
@@ -869,11 +867,10 @@ public class CertifiedProductController {
     @Operation(summary = "List a specific pending certified product.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ACB and administrative authority "
                     + "on the ACB for each pending certified product is required.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @DeprecatedResponseFields(responseClass = PendingCertifiedProductDetails.class)
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @Deprecated
     @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(
@@ -894,10 +891,10 @@ public class CertifiedProductController {
     @Operation(summary = "Reject a pending certified product.",
             description = "Essentially deletes a pending certified product. Security Restrictions: ROLE_ADMIN or have ROLE_ACB "
                     + "and administrative authority on the ACB for each pending certified product is required.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @Deprecated
     @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingCertifiedProduct(@PathVariable("pcpId") Long pcpId)
@@ -910,10 +907,10 @@ public class CertifiedProductController {
     @Operation(summary = "Reject several pending certified products.",
             description = "Marks a list of pending certified products as deleted. ROLE_ADMIN or ROLE_ACB "
                     + " and administrative authority on the ACB for each pending certified product is required.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @Deprecated
     @RequestMapping(value = "/pending", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingCertifiedProducts(@RequestBody IdListContainer idList)
@@ -976,13 +973,12 @@ public class CertifiedProductController {
                     + "to check for errors, then a new certified product is created, and the old pending certified"
                     + "product will be removed. Security Restrictions:  ROLE_ADMIN or have ROLE_ACB and "
                     + "administrative authority on the ACB for each pending certified product is required.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}/beta/confirm", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = CertifiedProductSearchDetails.class)
+    @Deprecated
     public ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProductRequest(
             @RequestBody(required = true) ConfirmCertifiedProductRequest request)
             throws InvalidArgumentsException, ValidationException,
@@ -1056,11 +1052,10 @@ public class CertifiedProductController {
             description = "Accepts a CSV file with very specific fields to create pending certified products. "
                     + "Security Restrictions: ROLE_ADMIN or user uploading the file must have ROLE_ACB "
                     + "and administrative authority on the ACB(s) specified in the file.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @DeprecatedResponseFields(responseClass = PendingCertifiedProductResults.class)
+            deprecated = true,
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @Deprecated
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<PendingCertifiedProductResults> upload(@RequestParam("file") MultipartFile file)
             throws ValidationException, JsonProcessingException, InvalidArgumentsException, MaxUploadSizeExceededException {
@@ -1141,8 +1136,7 @@ public class CertifiedProductController {
 
         // build and send the email
         try {
-            EmailBuilder emailBuilder = new EmailBuilder(env);
-            emailBuilder.recipients(recipients)
+            chplEmailFactory.emailBuilder().recipients(recipients)
                     .subject(uploadErrorEmailSubject)
                     .fileAttachments(attachments)
                     .htmlMessage(htmlBody)

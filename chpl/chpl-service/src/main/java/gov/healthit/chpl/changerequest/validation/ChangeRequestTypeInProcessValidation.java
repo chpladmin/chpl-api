@@ -5,41 +5,21 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
-@Component
 public class ChangeRequestTypeInProcessValidation extends ValidationRule<ChangeRequestValidationContext> {
-
-    @Value("${changerequest.status.pendingacbaction}")
-    private Long pendingAcbAction;
-
-    @Value("${changerequest.status.pendingdeveloperaction}")
-    private Long pendingDeveloperAction;
-
-    private ChangeRequestDAO crDAO;
-
-    @Autowired
-    public ChangeRequestTypeInProcessValidation(final ChangeRequestDAO crDAO) {
-        this.crDAO = crDAO;
-    }
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
         try {
-            List<ChangeRequest> crs = crDAO.getByDeveloper(context.getNewChangeRequest().getDeveloper().getDeveloperId())
-                    .stream()
+            List<ChangeRequest> crs = context.getValidationDAOs().getChangeRequestDAO().getByDeveloper(context.getNewChangeRequest().getDeveloper().getDeveloperId()).stream()
                     .filter(cr -> cr.getChangeRequestType().getId().equals(context.getNewChangeRequest().getChangeRequestType().getId()))
-                    .filter(cr -> getInProcessStatuses().stream()
+                    .filter(cr -> getInProcessStatuses(context).stream()
                             .anyMatch(status -> cr.getCurrentStatus().getChangeRequestStatusType().getId()
                                     .equals(status)))
-                    .collect(Collectors.<ChangeRequest> toList());
+                    .collect(Collectors.toList());
             if (crs.size() > 0) {
                 getMessages().add(getErrorMessage("changeRequest.inProcess"));
                 return false;
@@ -52,7 +32,9 @@ public class ChangeRequestTypeInProcessValidation extends ValidationRule<ChangeR
         return true;
     }
 
-    private List<Long> getInProcessStatuses() {
-        return new ArrayList<Long>(Arrays.asList(pendingAcbAction, pendingDeveloperAction));
+    private List<Long> getInProcessStatuses(ChangeRequestValidationContext context) {
+        return new ArrayList<Long>(Arrays.asList(
+                context.getChangeRequestStatusIds().getPendingAcbActionStatus(),
+                context.getChangeRequestStatusIds().getPendingDeveloperActionStatus()));
     }
 }

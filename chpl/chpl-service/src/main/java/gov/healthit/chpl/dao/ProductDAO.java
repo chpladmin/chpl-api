@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.entity.ContactEntity;
@@ -31,6 +32,27 @@ public class ProductDAO extends BaseDAOImpl {
 
     @Autowired
     private ContactDAO contactDao;
+
+    public Long create(Long developerId, Product product) throws EntityCreationException {
+        try {
+            ProductEntity entity = new ProductEntity();
+            entity.setName(product.getName());
+            entity.setReportFileLocation(product.getReportFileLocation());
+            entity.setDeveloperId(developerId);
+            entity.setLastModifiedUser(AuthUtil.getAuditId());
+
+            if (product.getContact() != null) {
+                Long contactId = contactDao.create(product.getContact());
+                if (contactId != null) {
+                    entity.setContactId(contactId);
+                }
+            }
+            create(entity);
+            return entity.getId();
+        } catch (Exception ex) {
+            throw new EntityCreationException(ex);
+        }
+    }
 
     public ProductDTO create(ProductDTO dto) throws EntityCreationException, EntityRetrievalException {
         ProductEntity entity = null;

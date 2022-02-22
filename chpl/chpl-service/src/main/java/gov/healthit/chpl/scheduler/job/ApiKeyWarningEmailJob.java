@@ -20,7 +20,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.api.dao.ApiKeyDAO;
 import gov.healthit.chpl.api.domain.ApiKey;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
@@ -35,6 +35,9 @@ public class ApiKeyWarningEmailJob implements Job {
 
     @Autowired
     private ApiKeyManager apiKeyManager;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
@@ -69,8 +72,7 @@ public class ApiKeyWarningEmailJob implements Job {
         List<String> recipients = new ArrayList<String>();
         recipients.add(apiKey.getEmail());
 
-        EmailBuilder emailBuilder = new EmailBuilder(env);
-        emailBuilder.recipients(recipients)
+        chplEmailFactory.emailBuilder().recipients(recipients)
                         .subject(getSubject())
                         .htmlMessage(getHtmlMessage(apiKey))
                         .sendEmail();

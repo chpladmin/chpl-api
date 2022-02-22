@@ -19,6 +19,7 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -113,6 +114,42 @@ public class ProductVersionManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
+    public Long create(Long productId, ProductVersion version)
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+        // check that the developer of this version is Active
+        if (productId == null) {
+            throw new EntityCreationException("Cannot create a version without a product ID.");
+        }
+        ProductDTO prod = prodDao.getById(productId);
+        if (prod == null) {
+            throw new EntityRetrievalException("Cannot find product with id " + productId);
+        }
+        DeveloperDTO dev = devDao.getById(prod.getOwner().getId());
+        if (dev == null) {
+            throw new EntityRetrievalException("Cannot find developer with id " + prod.getOwner().getId());
+        }
+        DeveloperStatusEventDTO currDevStatus = dev.getStatus();
+        if (currDevStatus == null || currDevStatus.getStatus() == null) {
+            String msg = "The version " + version.getVersion() + " cannot be created since the status of developer "
+                    + dev.getName() + " cannot be determined.";
+            LOGGER.error(msg);
+            throw new EntityCreationException(msg);
+        }
+
+        Long versionId = versionDao.create(productId, version);
+        version.setVersionId(versionId);
+        ProductVersionDTO createdVersionDto = versionDao.getById(versionId);
+        activityManager.addActivity(ActivityConcept.VERSION, versionId,
+                "Product Version " + version.getVersion() + " added for product " + productId, null, createdVersionDto);
+        return versionId;
+    }
+
+    @Transactional(readOnly = false)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
+            + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).CREATE)")
+    @CacheEvict(value = {
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
+    }, allEntries = true)
     public ProductVersionDTO create(ProductVersionDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // check that the developer of this version is Active
@@ -140,7 +177,6 @@ public class ProductVersionManager extends SecuredManager {
                 "Product Version " + dto.getVersion() + " added for product " + dto.getProductId(), null, created);
         return created;
     }
-
 
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
