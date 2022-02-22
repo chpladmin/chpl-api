@@ -56,11 +56,12 @@ public class ListingSearchService {
         dateFormatter = DateTimeFormatter.ofPattern(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
     }
 
+    @Deprecated
     public SearchResponse search(SearchRequest searchRequest) throws ValidationException {
         searchRequestNormalizer.normalize(searchRequest);
         searchRequestValidator.validate(searchRequest);
 
-        List<CertifiedProductBasicSearchResult> listings = cpSearchManager.getSearchListingCollection();
+        List<CertifiedProductBasicSearchResult> listings = cpSearchManager.getBasicListingCollection();
         LOGGER.debug("Total listings: " + listings.size());
         List<CertifiedProductBasicSearchResult> filteredListings = listings.stream()
             .filter(listing -> matchesSearchTerm(listing, searchRequest.getSearchTerm()))

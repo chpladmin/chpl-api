@@ -46,7 +46,7 @@ public class ListingSearchServiceTest {
 
     @Test
     public void search_validEmptySearchRequest_findsAllListings() throws ValidationException {
-        Mockito.when(cpSearchManager.getSearchListingCollection())
+        Mockito.when(cpSearchManager.getBasicListingCollection())
             .thenReturn(createBasicSearchResultCollection(100));
         SearchRequest searchRequest = SearchRequest.builder()
             .pageNumber(0)
@@ -61,7 +61,7 @@ public class ListingSearchServiceTest {
 
     @Test
     public void search_pageOutOfRangeSearchRequest_returnsEmptyResponse() throws ValidationException {
-        Mockito.when(cpSearchManager.getSearchListingCollection())
+        Mockito.when(cpSearchManager.getBasicListingCollection())
             .thenReturn(createBasicSearchResultCollection(100));
         SearchRequest searchRequest = SearchRequest.builder()
             .pageNumber(2)
@@ -82,7 +82,7 @@ public class ListingSearchServiceTest {
         allListings.get(3).setVersion("test");
         allListings.get(4).setChplProductNumber("15.02.02.3007.A056.01.00.0.180214");
         allListings.get(5).setAcbCertificationId("12345");
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .searchTerm("search term")
             .pageNumber(0)
@@ -103,7 +103,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setEdition("2014");
         allListings.get(3).setEdition("2015");
         allListings.get(4).setEdition("2011");
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .sortDescending(false)
             .orderBy(OrderByOption.EDITION)
@@ -130,7 +130,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setEdition("2014");
         allListings.get(3).setEdition("2015");
         allListings.get(4).setEdition("2011");
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .sortDescending(true)
             .orderBy(OrderByOption.EDITION)
@@ -159,7 +159,7 @@ public class ListingSearchServiceTest {
         allListings.get(3).setEdition("2015");
         allListings.get(3).setCuresUpdate(true);
         allListings.get(4).setEdition("2011");
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .sortDescending(false)
             .orderBy(OrderByOption.DERIVED_EDITION)
@@ -190,7 +190,7 @@ public class ListingSearchServiceTest {
         allListings.get(3).setEdition("2015");
         allListings.get(3).setCuresUpdate(true);
         allListings.get(4).setEdition("2011");
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .sortDescending(true)
             .orderBy(OrderByOption.DERIVED_EDITION)
@@ -219,7 +219,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setDeveloper("d");
         allListings.get(3).setDeveloper("f");
         allListings.get(4).setDeveloper("y");
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .sortDescending(false)
             .orderBy(OrderByOption.DEVELOPER)
@@ -246,7 +246,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setDeveloper("d");
         allListings.get(3).setDeveloper("f");
         allListings.get(4).setDeveloper("y");
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .sortDescending(true)
             .orderBy(OrderByOption.DEVELOPER)
@@ -273,7 +273,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setProduct("d");
         allListings.get(3).setProduct("f");
         allListings.get(4).setProduct("y");
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .sortDescending(false)
             .orderBy(OrderByOption.PRODUCT)
@@ -300,7 +300,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setProduct("d");
         allListings.get(3).setProduct("f");
         allListings.get(4).setProduct("y");
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .sortDescending(true)
             .orderBy(OrderByOption.PRODUCT)
@@ -327,7 +327,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setVersion("d");
         allListings.get(3).setVersion("f");
         allListings.get(4).setVersion("y");
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .sortDescending(false)
             .orderBy(OrderByOption.VERSION)
@@ -354,7 +354,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setVersion("d");
         allListings.get(3).setVersion("f");
         allListings.get(4).setVersion("y");
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .sortDescending(true)
             .orderBy(OrderByOption.VERSION)
@@ -381,7 +381,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setCertificationDate(50L);
         allListings.get(3).setCertificationDate(5000L);
         allListings.get(4).setCertificationDate(3L);
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .sortDescending(true)
             .orderBy(OrderByOption.CERTIFICATION_DATE)
@@ -408,7 +408,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setCertificationDate(50L);
         allListings.get(3).setCertificationDate(5000L);
         allListings.get(4).setCertificationDate(3L);
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .sortDescending(false)
             .orderBy(OrderByOption.CERTIFICATION_DATE)
@@ -435,7 +435,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setChplProductNumber("CHP-23456");
         allListings.get(3).setChplProductNumber("14.04.04.1234.PROD.11.1.01.123456");
         allListings.get(4).setChplProductNumber("15.99.04.3078.Ninj.01.00.0.200629");
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .sortDescending(false)
             .orderBy(OrderByOption.CHPL_ID)
@@ -462,7 +462,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setChplProductNumber("CHP-23456");
         allListings.get(3).setChplProductNumber("14.04.04.1234.PROD.11.1.01.123456");
         allListings.get(4).setChplProductNumber("15.99.04.3078.Ninj.01.00.0.200629");
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .sortDescending(true)
             .orderBy(OrderByOption.CHPL_ID)
@@ -489,7 +489,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setCertificationStatus("Withdrawn by Developer");
         allListings.get(3).setCertificationStatus("Active");
         allListings.get(4).setCertificationStatus("Suspended by ONC-ACB");
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .sortDescending(false)
             .orderBy(OrderByOption.STATUS)
@@ -516,7 +516,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setCertificationStatus("Withdrawn by Developer");
         allListings.get(3).setCertificationStatus("Active");
         allListings.get(4).setCertificationStatus("Suspended by ONC-ACB");
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .sortDescending(true)
             .orderBy(OrderByOption.STATUS)
@@ -540,7 +540,7 @@ public class ListingSearchServiceTest {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setDeveloper("dev name");
         allListings.get(1).setDeveloper("long DEV name here");
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .searchTerm("dev name")
             .pageNumber(0)
@@ -558,7 +558,7 @@ public class ListingSearchServiceTest {
         List<CertifiedProductBasicSearchResult> allListings = createBasicSearchResultCollection(50);
         allListings.get(0).setProduct("product name");
         allListings.get(1).setProduct("long PRODUCT name here");
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .searchTerm("product name")
             .pageNumber(0)
@@ -577,7 +577,7 @@ public class ListingSearchServiceTest {
         allListings.get(0).setChplProductNumber("15.02.02.3007.A056.01.00.0.180214");
         allListings.get(1).setChplProductNumber("CHP-123456");
         allListings.get(2).setChplProductNumber("15.02.02.3007.A056.01.00.0.180215");
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .searchTerm("15.02.02.3007.A056.01.00.0.18021")
             .pageNumber(0)
@@ -596,7 +596,7 @@ public class ListingSearchServiceTest {
         allListings.get(0).setAcbCertificationId("15.02.02.3007.A056.01.00.0.180214");
         allListings.get(1).setAcbCertificationId("CHP-123456");
         allListings.get(2).setAcbCertificationId("15.02.02.3007.A056.01.00.0.180215");
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .searchTerm("15.02.02.3007.A056.01.00.0.18021")
             .pageNumber(0)
@@ -615,7 +615,7 @@ public class ListingSearchServiceTest {
         allListings.get(0).setAcb("ACB 1");
         allListings.get(1).setAcb("ACB 2");
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         Set<String> acbNames = new LinkedHashSet<String>();
         acbNames.add("ACB 1");
         SearchRequest searchRequest = SearchRequest.builder()
@@ -638,7 +638,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setAcb("ACB 1");
         allListings.get(3).setAcb("ACB 5");
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         Set<String> acbNames = new LinkedHashSet<String>();
         acbNames.add("ACB 1");
         acbNames.add("ACB 2");
@@ -661,7 +661,7 @@ public class ListingSearchServiceTest {
         allListings.get(0).setCertificationStatus(CertificationStatusType.Active.getName());
         allListings.get(1).setCertificationStatus(CertificationStatusType.SuspendedByAcb.getName());
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         Set<String> certificationStatusNames = new LinkedHashSet<String>();
         certificationStatusNames.add(CertificationStatusType.SuspendedByAcb.getName());
         SearchRequest searchRequest = SearchRequest.builder()
@@ -684,7 +684,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setCertificationStatus(CertificationStatusType.Active.getName());
         allListings.get(3).setCertificationStatus(CertificationStatusType.SuspendedByOnc.getName());
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         Set<String> certificationStatusNames = new LinkedHashSet<String>();
         certificationStatusNames.add(CertificationStatusType.SuspendedByAcb.getName());
         certificationStatusNames.add(CertificationStatusType.Active.getName());
@@ -708,7 +708,7 @@ public class ListingSearchServiceTest {
         allListings.get(1).setEdition("2014");
         allListings.get(2).setEdition("2011");
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         Set<String> editionNames = new LinkedHashSet<String>();
         editionNames.add("2011");
         SearchRequest searchRequest = SearchRequest.builder()
@@ -733,7 +733,7 @@ public class ListingSearchServiceTest {
         allListings.get(4).setEdition("2015");
         allListings.get(5).setEdition("2015");
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         Set<String> editionNames = new LinkedHashSet<String>();
         editionNames.add("2011");
         editionNames.add("2015");
@@ -757,7 +757,7 @@ public class ListingSearchServiceTest {
         allListings.get(1).setEdition("2014");
         allListings.get(2).setEdition("2011");
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         Set<String> editionNames = new LinkedHashSet<String>();
         editionNames.add("2011");
         SearchRequest searchRequest = SearchRequest.builder()
@@ -784,7 +784,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setEdition("2014");
         allListings.get(3).setEdition("2011");
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         Set<String> editionNames = new LinkedHashSet<String>();
         editionNames.add("2015");
         SearchRequest searchRequest = SearchRequest.builder()
@@ -815,7 +815,7 @@ public class ListingSearchServiceTest {
         allListings.get(3).setEdition("2014");
         allListings.get(4).setEdition("2011");
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         Set<String> editionNames = new LinkedHashSet<String>();
         editionNames.add("2015 Cures Update");
         SearchRequest searchRequest = SearchRequest.builder()
@@ -846,7 +846,7 @@ public class ListingSearchServiceTest {
         allListings.get(5).setEdition("2015");
         allListings.get(5).setCuresUpdate(false);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         Set<String> editionNames = new LinkedHashSet<String>();
         editionNames.add("2011");
         editionNames.add("2015");
@@ -875,7 +875,7 @@ public class ListingSearchServiceTest {
         allListings.get(5).setEdition("2015");
         allListings.get(5).setCuresUpdate(true);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         Set<String> editionNames = new LinkedHashSet<String>();
         editionNames.add("2011");
         editionNames.add("2015 Cures Update");
@@ -904,7 +904,7 @@ public class ListingSearchServiceTest {
         allListings.get(5).setEdition("2015");
         allListings.get(5).setCuresUpdate(true);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         Set<String> editionNames = new LinkedHashSet<String>();
         editionNames.add("2015");
         editionNames.add("2015 Cures Update");
@@ -928,7 +928,7 @@ public class ListingSearchServiceTest {
         allListings.get(1).setDeveloper("long DEV name here");
         allListings.get(2).setDeveloper("doesn't match");
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .developer("dev name")
             .pageNumber(0)
@@ -948,7 +948,7 @@ public class ListingSearchServiceTest {
         allListings.get(1).setProduct("long PRODUCT name here");
         allListings.get(2).setProduct("doesn't match");
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .product("product name")
             .pageNumber(0)
@@ -968,7 +968,7 @@ public class ListingSearchServiceTest {
         allListings.get(1).setVersion("long VERSION name here");
         allListings.get(2).setVersion("doesn't match");
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .version("version name")
             .pageNumber(0)
@@ -988,7 +988,7 @@ public class ListingSearchServiceTest {
         allListings.get(1).setPracticeType("AMbulatory");
         allListings.get(2).setPracticeType("inpatient");
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .practiceType("Ambulatory")
             .pageNumber(0)
@@ -1008,7 +1008,7 @@ public class ListingSearchServiceTest {
         allListings.get(1).setCriteriaMet(Stream.of(1L, 2L, 4L).collect(Collectors.toSet()));
         allListings.get(2).setCriteriaMet(Stream.of(5L, 2L, 3L).collect(Collectors.toSet()));
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         Set<Long> criteriaIds = new LinkedHashSet<Long>();
         criteriaIds.add(1L);
         SearchRequest searchRequest = SearchRequest.builder()
@@ -1031,7 +1031,7 @@ public class ListingSearchServiceTest {
         allListings.get(1).setCriteriaMet(Stream.of(1L, 2L, 4L).collect(Collectors.toSet()));
         allListings.get(2).setCriteriaMet(Stream.of(5L, 2L, 3L).collect(Collectors.toSet()));
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         Set<Long> criteriaIds = new LinkedHashSet<Long>();
         criteriaIds.add(1L);
         SearchRequest searchRequest = SearchRequest.builder()
@@ -1054,7 +1054,7 @@ public class ListingSearchServiceTest {
         allListings.get(1).setCriteriaMet(Stream.of(1L, 2L, 4L).collect(Collectors.toSet()));
         allListings.get(2).setCriteriaMet(Stream.of(5L, 2L, 3L).collect(Collectors.toSet()));
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         Set<Long> criteriaIds = new LinkedHashSet<Long>();
         criteriaIds.add(1L);
         criteriaIds.add(2L);
@@ -1079,7 +1079,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setCriteriaMet(Stream.of(5L, 2L, 3L).collect(Collectors.toSet()));
         allListings.get(3).setCriteriaMet(Stream.of(5L).collect(Collectors.toSet()));
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         Set<Long> criteriaIds = new LinkedHashSet<Long>();
         criteriaIds.add(1L);
         criteriaIds.add(2L);
@@ -1103,7 +1103,7 @@ public class ListingSearchServiceTest {
         allListings.get(1).setCqmsMet(Stream.of("CMS1", "CMS2", "CMS4").collect(Collectors.toSet()));
         allListings.get(2).setCqmsMet(Stream.of("CMS5", "CMS2", "CMS3").collect(Collectors.toSet()));
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         Set<String> cqms = new LinkedHashSet<String>();
         cqms.add("CMS1");
         SearchRequest searchRequest = SearchRequest.builder()
@@ -1126,7 +1126,7 @@ public class ListingSearchServiceTest {
         allListings.get(1).setCqmsMet(Stream.of("CMS1", "CMS2", "CMS4").collect(Collectors.toSet()));
         allListings.get(2).setCqmsMet(Stream.of("CMS5", "CMS2", "CMS3").collect(Collectors.toSet()));
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         Set<String> cqms = new LinkedHashSet<String>();
         cqms.add("CMS1");
         SearchRequest searchRequest = SearchRequest.builder()
@@ -1149,7 +1149,7 @@ public class ListingSearchServiceTest {
         allListings.get(1).setCqmsMet(Stream.of("CMS1", "CMS2", "CMS4").collect(Collectors.toSet()));
         allListings.get(2).setCqmsMet(Stream.of("CMS5", "CMS2", "CMS3").collect(Collectors.toSet()));
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         Set<String> cqms = new LinkedHashSet<String>();
         cqms.add("CMS1");
         cqms.add("CMS2");
@@ -1174,7 +1174,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setCqmsMet(Stream.of("CMS5", "CMS2", "CMS3").collect(Collectors.toSet()));
         allListings.get(3).setCqmsMet(Stream.of("CMS5").collect(Collectors.toSet()));
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         Set<String> cqms = new LinkedHashSet<String>();
         cqms.add("CMS1");
         cqms.add("CMS2");
@@ -1199,7 +1199,7 @@ public class ListingSearchServiceTest {
         //Jun 1 2020
         allListings.get(1).setCertificationDate(1590969600000L);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .certificationDateStart("2020-06-25")
             .pageNumber(0)
@@ -1220,7 +1220,7 @@ public class ListingSearchServiceTest {
         //Jun 1 2020
         allListings.get(1).setCertificationDate(1590969600000L);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .certificationDateStart("2020-06-24")
             .pageNumber(0)
@@ -1241,7 +1241,7 @@ public class ListingSearchServiceTest {
         //Jun 27, 2020
         allListings.get(1).setCertificationDate(1593216000000L);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .certificationDateEnd("2020-06-25")
             .pageNumber(0)
@@ -1262,7 +1262,7 @@ public class ListingSearchServiceTest {
         //Jun 27, 2020 05:00
         allListings.get(1).setCertificationDate(1593248400000L);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .certificationDateEnd("2020-06-26")
             .pageNumber(0)
@@ -1283,7 +1283,7 @@ public class ListingSearchServiceTest {
         //Jun 27, 2020 05:00
         allListings.get(1).setCertificationDate(1593248400000L);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .certificationDateStart("2020-06-24")
             .certificationDateEnd("2020-06-26")
@@ -1305,7 +1305,7 @@ public class ListingSearchServiceTest {
         //Jun 27, 2020 05:00
         allListings.get(1).setCertificationDate(1593248400000L);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .certificationDateStart("2020-06-25")
             .certificationDateEnd("2020-06-26")
@@ -1327,7 +1327,7 @@ public class ListingSearchServiceTest {
         //Jun 27, 2020 05:00
         allListings.get(1).setCertificationDate(1593248400000L);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .certificationDateStart("2020-06-24")
             .certificationDateEnd("2020-06-25")
@@ -1349,7 +1349,7 @@ public class ListingSearchServiceTest {
         //Jun 27, 2020 05:00
         allListings.get(1).setCertificationDate(1593248400000L);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .certificationDateStart("2020-06-25")
             .certificationDateEnd("2020-06-25")
@@ -1373,7 +1373,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setSurveillanceCount(0L);
         allListings.get(2).setDirectReviewCount(1);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
                     .hasHadComplianceActivity(true)
@@ -1399,7 +1399,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setSurveillanceCount(0L);
         allListings.get(2).setDirectReviewCount(1);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
                     .hasHadComplianceActivity(false)
@@ -1426,7 +1426,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setSurveillanceCount(0L);
         allListings.get(2).setDirectReviewCount(1);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
                     .hasHadComplianceActivity(true)
@@ -1455,7 +1455,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setDirectReviewCount(1);
         allListings.get(2).setClosedDirectReviewNonConformityCount(1);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
                     .hasHadComplianceActivity(true)
@@ -1484,7 +1484,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setDirectReviewCount(1);
         allListings.get(2).setClosedDirectReviewNonConformityCount(1);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
                     .hasHadComplianceActivity(false)
@@ -1512,7 +1512,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setDirectReviewCount(1);
         allListings.get(2).setClosedDirectReviewNonConformityCount(1);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
                     .hasHadComplianceActivity(true)
@@ -1549,7 +1549,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setDirectReviewCount(1);
         allListings.get(2).setClosedDirectReviewNonConformityCount(1);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
                     .hasHadComplianceActivity(true)
@@ -1585,7 +1585,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setDirectReviewCount(1);
         allListings.get(2).setClosedDirectReviewNonConformityCount(1);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
                     .hasHadComplianceActivity(false)
@@ -1621,7 +1621,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setDirectReviewCount(1);
         allListings.get(2).setClosedDirectReviewNonConformityCount(1);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
                     .hasHadComplianceActivity(true)
@@ -1658,7 +1658,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setDirectReviewCount(1);
         allListings.get(2).setClosedDirectReviewNonConformityCount(1);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
                     .hasHadComplianceActivity(true)
@@ -1692,7 +1692,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setDirectReviewCount(1);
         allListings.get(2).setClosedDirectReviewNonConformityCount(1);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
                     .hasHadComplianceActivity(true)
@@ -1724,7 +1724,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setDirectReviewCount(1);
         allListings.get(2).setClosedDirectReviewNonConformityCount(1);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
                     .hasHadComplianceActivity(true)
@@ -1756,7 +1756,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setDirectReviewCount(1);
         allListings.get(2).setClosedDirectReviewNonConformityCount(1);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
                     .hasHadComplianceActivity(true)
@@ -1793,7 +1793,7 @@ public class ListingSearchServiceTest {
         allListings.get(2).setOpenSurveillanceNonConformityCount(1L);
         allListings.get(2).setClosedDirectReviewNonConformityCount(1);
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
                     .hasHadComplianceActivity(true)
@@ -1821,7 +1821,7 @@ public class ListingSearchServiceTest {
         allListings.get(1).setRwtResultsUrl("someurl");
         allListings.get(2).setRwtPlansUrl("someurl");
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .rwtOptions(Stream.of(RwtSearchOptions.HAS_RESULTS_URL, RwtSearchOptions.HAS_PLANS_URL).collect(Collectors.toSet()))
             .rwtOperator(SearchSetOperator.AND)
@@ -1842,7 +1842,7 @@ public class ListingSearchServiceTest {
         allListings.get(0).setRwtResultsUrl("test");
         allListings.get(2).setRwtResultsUrl("someurl");
 
-        Mockito.when(cpSearchManager.getSearchListingCollection()).thenReturn(allListings);
+        Mockito.when(cpSearchManager.getBasicListingCollection()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .rwtOptions(Stream.of(RwtSearchOptions.HAS_RESULTS_URL, RwtSearchOptions.NO_RESULTS_URL).collect(Collectors.toSet()))
             .rwtOperator(SearchSetOperator.AND)

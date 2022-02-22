@@ -48,7 +48,7 @@ public class AsynchronousCacheInitialization {
         drService.populateDirectReviewsCache();
         LOGGER.info("Finished cache initialization for Direct Reviews");
         LOGGER.info("Starting cache initialization for searchable listing collection");
-        certifiedProductSearchManager.getSearchListingCollection();
+        certifiedProductSearchManager.getBasicListingCollection();
         LOGGER.info("Finishing cache initialization for searchable listing collection");
         LOGGER.info("Starting cache initialization for listing collection");
         certifiedProductSearchManager.getFlatListingCollection();

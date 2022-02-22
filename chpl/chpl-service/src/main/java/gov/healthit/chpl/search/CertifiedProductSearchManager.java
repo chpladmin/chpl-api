@@ -3,6 +3,7 @@ package gov.healthit.chpl.search;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -28,21 +29,27 @@ import gov.healthit.chpl.domain.search.SearchResponseLegacy;
 import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.service.DirectReviewSearchService;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Service
 @Log4j2
+@Deprecated
 public class CertifiedProductSearchManager {
     private static final String CERT_STATUS_EVENT_DATE_FORMAT = "yyyy-MM-dd";
     private CertifiedProductSearchDAO searchDao;
+    private ListingSearchManager searchManager;
     private DirectReviewSearchService drService;
     private DateTimeFormatter dateFormatter;
 
     @Autowired
     public CertifiedProductSearchManager(CertifiedProductSearchDAO searchDao,
+            ListingSearchManager searchManager,
             DirectReviewSearchService drService) {
         this.searchDao = searchDao;
+        this.searchManager = searchManager;
         this.drService = drService;
         this.dateFormatter = DateTimeFormatter.ofPattern(CERT_STATUS_EVENT_DATE_FORMAT);
     }
@@ -60,32 +67,61 @@ public class CertifiedProductSearchManager {
         return results;
     }
 
-    @Cacheable(value = CacheNames.COLLECTIONS_SEARCH)
-    public List<CertifiedProductBasicSearchResult> getSearchListingCollection() {
-        List<CertifiedProductBasicSearchResult> results = searchDao.getCertifiedProducts();
-        LOGGER.info("Populating Direct Review fields for search");
-        Date start = new Date();
-        results.parallelStream()
-            .forEach(searchResult -> populateDirectReviews(searchResult));
-        Date end = new Date();
-        LOGGER.info("Completed Populating Direct Review fields  for search [ " + (end.getTime() - start.getTime()) + " ms ]");
+    @Deprecated
+    public List<CertifiedProductBasicSearchResult> getBasicListingCollection() {
+        //below call should be cached
+        List<ListingSearchResult> searchResults = searchManager.getListingSearchResults();
+
+        List<CertifiedProductBasicSearchResult> results = new ArrayList<CertifiedProductBasicSearchResult>(searchResults.size());
+        searchResults.stream()
+            .map(listingSearchResult -> convertToBasicSearchResult(listingSearchResult))
+            .toList();
         return results;
     }
 
-    private void populateDirectReviews(CertifiedProductBasicSearchResult searchResult) {
-        List<CertificationStatusEvent> statusEvents = createStatusEventsFromBasicSearchResult(searchResult);
-        populateDirectReviewFields(searchResult, statusEvents);
+    private CertifiedProductBasicSearchResult convertToBasicSearchResult(ListingSearchResult searchResult) {
+        return CertifiedProductBasicSearchResult.builder()
+                .id(searchResult.getId())
+                .chplProductNumber(searchResult.getChplProductNumber())
+                .edition(searchResult.getEdition().getYear())
+                .curesUpdate(searchResult.getCuresUpdate())
+                .acb(searchResult.getCertificationBody().getName())
+                .acbCertificationId(searchResult.getAcbCertificationId())
+                .practiceType(searchResult.getPracticeType().getName())
+                .developerId(searchResult.getDeveloper().getId())
+                .developer(searchResult.getDeveloper().getName())
+                .developerStatus(searchResult.getDeveloper().getStatus().getName())
+                .product(searchResult.getProduct().getName())
+                .version(searchResult.getVersion().getName())
+                .promotingInteroperabilityUserCount(searchResult.getPromotingInteroperability().getUserCount())
+                .promotingInteroperabilityUserDate(searchResult.getPromotingInteroperability().getUserDate())
+                .numMeaningfulUse(searchResult.getPromotingInteroperability().getUserCount())
+                .numMeaningfulUseDate(DateUtil.toEpochMillis(searchResult.getPromotingInteroperability().getUserDate()))
+                .decertificationDate(searchResult.getDecertificationDate())
+                .certificationDate(searchResult.getCertificationDate())
+                .certificationStatus(searchResult.getCertificationStatus())
+                .transparencyAttestationUrl(searchResult.getMandatoryDisclosures())
+                .mandatoryDisclosures(searchResult.getMandatoryDisclosures())
+                .apiDocumentation(convertToSetOfStringsWithDelimiter(searchResult.getApiDocumentation(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
+                .serviceBaseUrlList(convertToSetOfStringsWithDelimiter(searchResult.getServiceBaseUrlList(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
+                .surveillanceCount(searchResult.getSurveillanceCount())
+                .openSurveillanceCount(searchResult.getOpenSurveillanceCount())
+                .closedSurveillanceCount(searchResult.getClosedSurveillanceCount())
+                .openSurveillanceNonConformityCount(searchResult.getOpenSurveillanceNonConformityCount())
+                .closedSurveillanceNonConformityCount(searchResult.getClosedSurveillanceNonConformityCount())
+                .rwtPlansUrl(searchResult.getRwtPlansUrl())
+                .rwtResultsUrl(searchResult.getRwtResultsUrl())
+                .surveillanceDates(convertToSetOfStringsWithDelimiter(searchResult.getSurveillanceDates(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
+                .statusEvents(convertToSetOfStringsWithDelimiter(searchResult.getStatusEvents(), "&"))
+                .criteriaMet(convertToSetOfLongsWithDelimiter(searchResult.getCerts(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
+                .cqmsMet(convertToSetOfStringsWithDelimiter(searchResult.getCqms(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
+                .previousDevelopers(convertToSetOfStringsWithDelimiter(searchResult.getPreviousDevelopers(), "|"))
+                .build();
     }
 
     private void populateDirectReviews(CertifiedProductFlatSearchResult searchResult) {
         List<CertificationStatusEvent> statusEvents = createStatusEventsFromFlatSearchResult(searchResult);
         populateDirectReviewFields(searchResult, statusEvents);
-    }
-
-    private List<CertificationStatusEvent> createStatusEventsFromBasicSearchResult(CertifiedProductBasicSearchResult listing) {
-        return listing.getStatusEvents().stream()
-            .map(dateAndStatusStr -> convertToCertificationStatusEvent(dateAndStatusStr))
-            .collect(Collectors.toList());
     }
 
     private List<CertificationStatusEvent> createStatusEventsFromFlatSearchResult(CertifiedProductFlatSearchResult listing) {
@@ -162,6 +198,7 @@ public class CertifiedProductSearchManager {
     }
 
     @Transactional
+    @Deprecated
     public SearchResponseLegacy search(SearchRequestLegacy searchRequest) {
 
         Collection<CertifiedProductBasicSearchResultLegacy> searchResults = searchDao.search(searchRequest);
