@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version 33.2.0
+_22 February 2022_
+
+### Features
+* Add email try/resend feature
+* Add new Attestation change request submission process
+* Mark all /certified_products/pending* endpoints as deprecated
+
+### Flagged Features
+* Allow confirmation of listing uploaded via flexible upload
+
+---
+
 ## Version 33.1.0
 _7 February 2022_
 
