@@ -94,6 +94,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     }
 
     @Override
+    @Transactional
     public ChangeRequestAttestationSubmission getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
         return crAttesttionDAO.getByChangeRequestId(changeRequestId);
     }
