@@ -16,7 +16,6 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedApiUsage;
@@ -25,6 +24,7 @@ import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseFieldApiUsage;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseFieldApiUsageDao;
 import gov.healthit.chpl.api.domain.ApiKey;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.util.DateUtil;
@@ -42,7 +42,7 @@ public class DeprecatedApiUsageEmailJob implements Job {
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
     @Autowired
-    private Environment env;
+    private ChplEmailFactory chplEmailFactory;
 
     @Value("${deprecatedApiUsage.email.subject}")
     private String deprecatedApiUsageEmailSubject;
@@ -121,7 +121,7 @@ public class DeprecatedApiUsageEmailJob implements Job {
         LOGGER.info("API Key " + apiKey.getId() + " for " + apiKey.getEmail() + " has used " + deprecatedApiUsage.size() + " deprecated APIs.");
         LOGGER.info("API Key " + apiKey.getId() + " for " + apiKey.getEmail() + " has used " + deprecatedResponseFieldUsage.size() + " APIs with deprecated response fields.");
 
-        EmailBuilder emailBuilder = new EmailBuilder(env);
+        EmailBuilder emailBuilder = chplEmailFactory.emailBuilder();
         try {
             emailBuilder.recipient(apiKey.getEmail())
                 .subject(deprecatedApiUsageEmailSubject)

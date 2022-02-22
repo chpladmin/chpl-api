@@ -24,7 +24,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.scheduler.InheritanceErrorsReportDAO;
 import gov.healthit.chpl.dto.scheduler.InheritanceErrorsReportDTO;
-import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
@@ -40,6 +40,9 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     public InheritanceErrorsReportEmailJob() throws Exception {
         super();
@@ -76,12 +79,11 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
             List<String> addresses = new ArrayList<String>();
             addresses.add(to);
 
-            EmailBuilder emailBuilder = new EmailBuilder(env);
-            emailBuilder.recipients(addresses)
-            .subject(subject)
-            .htmlMessage(htmlMessage)
-            .fileAttachments(files)
-            .sendEmail();
+            chplEmailFactory.emailBuilder().recipients(addresses)
+                    .subject(subject)
+                    .htmlMessage(htmlMessage)
+                    .fileAttachments(files)
+                    .sendEmail();
         } catch (IOException | EmailNotSentException e) {
             LOGGER.error(e);
         }

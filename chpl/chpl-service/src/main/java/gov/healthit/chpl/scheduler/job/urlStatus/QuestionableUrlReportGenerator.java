@@ -32,8 +32,8 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
-import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -68,6 +68,9 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
 
     @Autowired
     private QuestionableUrlLookupDao urlLookupDao;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     @Value("${job.questionableUrlReport.emailSubject}")
     private String emailSubject;
@@ -257,8 +260,8 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             List<String> addresses = new ArrayList<String>();
             addresses.add(to);
 
-            EmailBuilder emailBuilder = new EmailBuilder(env);
-            emailBuilder.recipients(addresses)
+            chplEmailFactory.emailBuilder()
+                .recipients(addresses)
                 .subject(emailSubject)
                 .htmlMessage(htmlMessage)
                 .fileAttachments(files)
