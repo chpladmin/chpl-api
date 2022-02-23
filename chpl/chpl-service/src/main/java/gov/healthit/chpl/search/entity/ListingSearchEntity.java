@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity.search;
+package gov.healthit.chpl.search.entity;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -8,15 +8,20 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Immutable;
 
-@Data
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "certified_product_search")
-public class CertifiedProductBasicSearchResultEntity {
-    private static final long serialVersionUID = -2928065796550377869L;
+@Immutable
+@Table(name = "listing_search")
+public class ListingSearchEntity {
+    private static final long serialVersionUID = -2928065796556253369L;
 
     @Id
     @Column(name = "certified_product_id", nullable = false)
@@ -25,41 +30,62 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "chpl_product_number")
     private String chplProductNumber;
 
+    @Column(name = "certification_edition_id")
+    private Long certificationEditionId;
+
     @Column(name = "year")
-    private String edition;
+    private String certificationEditionYear;
 
     @Column(name = "cures_update")
     private Boolean curesUpdate;
 
+    @Column(name = "certification_body_id")
+    private Long certificationBodyId;
+
     @Column(name = "certification_body_name")
-    private String acbName;
+    private String certificationBodyName;
 
     @Column(name = "acb_certification_id")
     private String acbCertificationId;
 
+    @Column(name = "practice_type_id")
+    private Long practiceTypeId;
+
     @Column(name = "practice_type_name")
     private String practiceTypeName;
 
-    @Column(name = "product_version")
+    @Column(name = "version_id")
+    private Long versionId;
+
+    @Column(name = "version_name")
     private String version;
+
+    @Column(name = "product_id")
+    private Long productId;
 
     @Column(name = "product_name")
     private String product;
 
-    @Column(name = "vendor_id")
+    @Column(name = "developer_id")
     private Long developerId;
 
-    @Column(name = "vendor_name")
+    @Column(name = "developer_name")
     private String developer;
 
-    @Column(name = "vendor_status_name")
+    @Column(name = "developer_status_name")
     private String developerStatus;
 
-    @Column(name = "owner_history")
+    @Column(name = "developer_status_id")
+    private Long developerStatusId;
+
+    @Column(name = "product_owner_history")
     private String previousDevelopers;
 
     @Column(name = "certification_date")
     private Date certificationDate;
+
+    @Column(name = "certification_status_id")
+    private Long certificationStatusId;
 
     @Column(name = "certification_status_name")
     private String certificationStatus;
@@ -69,12 +95,6 @@ public class CertifiedProductBasicSearchResultEntity {
 
     @Column(name = "mandatory_disclosures")
     private String mandatoryDisclosures;
-
-    @Column(name = "api_documentation")
-    private String apiDocumentation;
-
-    @Column(name = "service_base_url_list")
-    private String serviceBaseUrlList;
 
     @Column(name = "surveillance_count")
     private Long surveillanceCount;
@@ -103,15 +123,27 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "promoting_interoperability_user_count_date")
     private LocalDate promotingInteroperabilityUserCountDate;
 
-    @Column(name = "certs")
-    private String certs; // comma-separated list of all certification criteria met by the certified product
+    @Column(name = "rwt_plans_url")
+    private String rwtPlansUrl;
 
-    @Column(name = "cqms")
-    private String cqms; // comma-separated list of all cqms met by the certified product
+    @Column(name = "rwt_results_url")
+    private String rwtResultsUrl;
 
-    @Column(name = "parent")
-    private String parent; // comma-separated list of all parents
+    @Column(name = "certification_criteria_met")
+    private String certificationCriteriaMet;
 
-    @Column(name = "child")
-    private String child; // comma-separated list of all children
+    @Column(name = "criteria_with_api_documentation")
+    private String criteriaWithApiDocumentation;
+
+    @Column(name = "criteria_with_service_base_url")
+    private String criteriaWithServiceBaseUrl;
+
+    @Column(name = "cqms_met")
+    private String cqmsMet;
+
+    @Column(name = "parents")
+    private String parents;
+
+    @Column(name = "children")
+    private String children;
 }

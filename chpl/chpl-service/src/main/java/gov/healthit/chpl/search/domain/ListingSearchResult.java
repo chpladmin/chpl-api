@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
@@ -132,7 +131,7 @@ public class ListingSearchResult implements Serializable {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CertificatonBody {
+    public static class CertificationBody {
         private Long id;
         private String name;
     }

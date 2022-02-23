@@ -10,11 +10,11 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
+import gov.healthit.chpl.search.dao.ListingSearchDao;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.service.DirectReviewSearchService;
 import gov.healthit.chpl.util.DateUtil;
@@ -24,12 +24,12 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ListingSearchManager {
     private static final String CERT_STATUS_EVENT_DATE_FORMAT = "yyyy-MM-dd";
-    private CertifiedProductSearchDAO searchDao;
+    private ListingSearchDao searchDao;
     private DirectReviewSearchService drService;
     private DateTimeFormatter dateFormatter;
 
     @Autowired
-    public ListingSearchManager(CertifiedProductSearchDAO searchDao,
+    public ListingSearchManager(ListingSearchDao searchDao,
             DirectReviewSearchService drService) {
         this.searchDao = searchDao;
         this.drService = drService;
