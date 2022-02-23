@@ -48,6 +48,9 @@ public class ChangeRequestValidationService {
             rules.addAll(getDeveloperDetailsValidations());
         } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(attestationChangeRequestTypeId)) {
             rules.addAll(getAttestationValidations());
+            if (!isNewChangeRequest(context)) {
+                rules.addAll(getAttestationUpdateValidations());
+            }
         }
 
         return rules;
@@ -70,6 +73,12 @@ public class ChangeRequestValidationService {
                 new AttestationValidation()));
     }
 
+    private List<ValidationRule<ChangeRequestValidationContext>> getAttestationUpdateValidations() {
+        return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
+                new AttestationModificationValidation(),
+                new AttestationStatusUpdateValidation()));
+    }
+
     private Boolean isNewChangeRequest(ChangeRequestValidationContext context) {
         return context.getOrigChangeRequest() == null;
     }
@@ -90,8 +99,7 @@ public class ChangeRequestValidationService {
                 new DeveloperActiveValidation(),
                 new CurrentStatusValidation(),
                 new ChangeRequestNotUpdatableDueToStatusValidation(),
-                new CommentRequiredValidation(),
-                new ChangeRequestModificationValidation()));
+                new CommentRequiredValidation()));
     }
 
     private List<String> runValidations(List<ValidationRule<ChangeRequestValidationContext>> rules, ChangeRequestValidationContext context) {
