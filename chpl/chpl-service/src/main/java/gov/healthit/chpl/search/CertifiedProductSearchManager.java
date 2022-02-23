@@ -54,6 +54,26 @@ public class CertifiedProductSearchManager {
         this.dateFormatter = DateTimeFormatter.ofPattern(CERT_STATUS_EVENT_DATE_FORMAT);
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable(value = CacheNames.COLLECTIONS_LISTINGS, key = "'legacyListings'")
+    @Deprecated
+    public List<CertifiedProductFlatSearchResultLegacy> searchLegacy() {
+        List<CertifiedProductFlatSearchResultLegacy> results = searchDao.getFlatCertifiedProductsLegacy();
+        return results;
+    }
+
+    @Transactional
+    @Deprecated
+    public SearchResponseLegacy search(SearchRequestLegacy searchRequest) {
+
+        Collection<CertifiedProductBasicSearchResultLegacy> searchResults = searchDao.search(searchRequest);
+        int totalCountSearchResults = searchDao.getTotalResultCount(searchRequest);
+
+        SearchResponseLegacy response = new SearchResponseLegacy(Integer.valueOf(totalCountSearchResults),
+                searchResults, searchRequest.getPageSize(), searchRequest.getPageNumber());
+        return response;
+    }
+
     @Deprecated
     @Cacheable(value = CacheNames.COLLECTIONS_LISTINGS, key = "'listings'")
     public List<CertifiedProductFlatSearchResult> getFlatListingCollection() {
@@ -72,12 +92,14 @@ public class CertifiedProductSearchManager {
         //below call should be cached
         List<ListingSearchResult> searchResults = searchManager.getListingSearchResults();
 
+        //convert from the cached objects to the Basic search result
         List<CertifiedProductBasicSearchResult> results = new ArrayList<CertifiedProductBasicSearchResult>(searchResults.size());
         searchResults.stream()
             .map(listingSearchResult -> convertToBasicSearchResult(listingSearchResult))
             .toList();
         return results;
     }
+
 
     private CertifiedProductBasicSearchResult convertToBasicSearchResult(ListingSearchResult searchResult) {
         return CertifiedProductBasicSearchResult.builder()
@@ -97,13 +119,20 @@ public class CertifiedProductSearchManager {
                 .promotingInteroperabilityUserDate(searchResult.getPromotingInteroperability().getUserDate())
                 .numMeaningfulUse(searchResult.getPromotingInteroperability().getUserCount())
                 .numMeaningfulUseDate(DateUtil.toEpochMillis(searchResult.getPromotingInteroperability().getUserDate()))
-                .decertificationDate(searchResult.getDecertificationDate())
-                .certificationDate(searchResult.getCertificationDate())
-                .certificationStatus(searchResult.getCertificationStatus())
+                .decertificationDate(searchResult.getDecertificationDate() == null ? null : DateUtil.toEpochMillis(searchResult.getDecertificationDate()))
+                .certificationDate(DateUtil.toEpochMillis(searchResult.getCertificationDate()))
+                .certificationStatus(searchResult.getCertificationStatus().getName())
                 .transparencyAttestationUrl(searchResult.getMandatoryDisclosures())
                 .mandatoryDisclosures(searchResult.getMandatoryDisclosures())
-                .apiDocumentation(convertToSetOfStringsWithDelimiter(searchResult.getApiDocumentation(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
-                .serviceBaseUrlList(convertToSetOfStringsWithDelimiter(searchResult.getServiceBaseUrlList(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
+                .apiDocumentation(
+                        searchResult.getApiDocumentation().stream()
+                        .map(obj -> obj.getCriterion().getId() + CertifiedProductSearchResult.FROWNEY_SPLIT_CHAR + obj.getValue())
+                        .collect(Collectors.toSet()))
+                .serviceBaseUrlList(
+                        Stream.of(
+                                searchResult.getServiceBaseUrl().getCriterion().getId() + CertifiedProductSearchResult.FROWNEY_SPLIT_CHAR
+                                + searchResult.getServiceBaseUrl().getValue())
+                        .collect(Collectors.toSet()))
                 .surveillanceCount(searchResult.getSurveillanceCount())
                 .openSurveillanceCount(searchResult.getOpenSurveillanceCount())
                 .closedSurveillanceCount(searchResult.getClosedSurveillanceCount())
@@ -111,11 +140,23 @@ public class CertifiedProductSearchManager {
                 .closedSurveillanceNonConformityCount(searchResult.getClosedSurveillanceNonConformityCount())
                 .rwtPlansUrl(searchResult.getRwtPlansUrl())
                 .rwtResultsUrl(searchResult.getRwtResultsUrl())
-                .surveillanceDates(convertToSetOfStringsWithDelimiter(searchResult.getSurveillanceDates(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
-                .statusEvents(convertToSetOfStringsWithDelimiter(searchResult.getStatusEvents(), "&"))
-                .criteriaMet(convertToSetOfLongsWithDelimiter(searchResult.getCerts(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
-                .cqmsMet(convertToSetOfStringsWithDelimiter(searchResult.getCqms(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
-                .previousDevelopers(convertToSetOfStringsWithDelimiter(searchResult.getPreviousDevelopers(), "|"))
+                .surveillanceDates(searchResult.getSurveillanceDateRanges().stream()
+                        .map(dateRange -> DateUtil.toEpochMillis(dateRange.getStart())
+                                + "&"
+                                + (dateRange.getEnd() == null ? "" : DateUtil.toEpochMillis(dateRange.getEnd())))
+                        .collect(Collectors.toSet()))
+                .statusEvents(searchResult.getStatusEvents().stream()
+                        .map(statusEvent -> DateUtil.format(statusEvent.getStatusBegin()) + ":" + statusEvent.getStatus().getName())
+                        .collect(Collectors.toSet()))
+                .criteriaMet(searchResult.getCriteriaMet().stream()
+                        .map(criterion -> criterion.getId())
+                        .collect(Collectors.toSet()))
+                .cqmsMet(searchResult.getCqmsMet().stream()
+                        .map(cqm -> cqm.getNumber())
+                        .collect(Collectors.toSet()))
+                .previousDevelopers(searchResult.getPreviousDevelopers().stream()
+                        .map(prevDev -> prevDev.getName())
+                        .collect(Collectors.toSet()))
                 .build();
     }
 
@@ -187,25 +228,5 @@ public class CertifiedProductSearchManager {
         return nonConformity.getDeveloperAssociatedListings().stream()
                 .filter(dal -> dal.getId().equals(listingId))
                 .findAny().isPresent();
-    }
-
-    @Transactional(readOnly = true)
-    @Cacheable(value = CacheNames.COLLECTIONS_LISTINGS, key = "'legacyListings'")
-    @Deprecated
-    public List<CertifiedProductFlatSearchResultLegacy> searchLegacy() {
-        List<CertifiedProductFlatSearchResultLegacy> results = searchDao.getFlatCertifiedProductsLegacy();
-        return results;
-    }
-
-    @Transactional
-    @Deprecated
-    public SearchResponseLegacy search(SearchRequestLegacy searchRequest) {
-
-        Collection<CertifiedProductBasicSearchResultLegacy> searchResults = searchDao.search(searchRequest);
-        int totalCountSearchResults = searchDao.getTotalResultCount(searchRequest);
-
-        SearchResponseLegacy response = new SearchResponseLegacy(Integer.valueOf(totalCountSearchResults),
-                searchResults, searchRequest.getPageSize(), searchRequest.getPageNumber());
-        return response;
     }
 }

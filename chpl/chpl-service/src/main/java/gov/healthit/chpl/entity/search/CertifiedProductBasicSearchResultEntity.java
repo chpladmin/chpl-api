@@ -8,10 +8,12 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "certified_product_search")
@@ -25,23 +27,38 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "chpl_product_number")
     private String chplProductNumber;
 
+    @Column(name = "certification_edition_id")
+    private Long certificationEditionId;
+
     @Column(name = "year")
-    private String edition;
+    private String certificationEditionYear;
 
     @Column(name = "cures_update")
     private Boolean curesUpdate;
 
+    @Column(name = "certification_body_id")
+    private Long certificationBodyId;
+
     @Column(name = "certification_body_name")
-    private String acbName;
+    private String certificationBodyName;
 
     @Column(name = "acb_certification_id")
     private String acbCertificationId;
 
+    @Column(name = "practice_type_id")
+    private Long practiceTypeId;
+
     @Column(name = "practice_type_name")
     private String practiceTypeName;
 
+    @Column(name = "product_version_id")
+    private Long versionId;
+
     @Column(name = "product_version")
     private String version;
+
+    @Column(name = "product_id")
+    private Long productId;
 
     @Column(name = "product_name")
     private String product;

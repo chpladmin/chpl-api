@@ -35,7 +35,6 @@ import gov.healthit.chpl.domain.search.LegacyNonConformitySearchOptions;
 import gov.healthit.chpl.domain.search.SearchRequestLegacy;
 import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 import gov.healthit.chpl.entity.search.CertifiedProductListingSearchResultEntity;
-import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
@@ -141,27 +140,6 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
             domainResults = convertToFlatListings(results);
         } catch (Exception ex) {
             LOGGER.error("Could not convert to flat listings " + ex.getMessage(), ex);
-        }
-        return domainResults;
-    }
-
-    @Deprecated
-    public List<CertifiedProductBasicSearchResult> getCertifiedProducts() {
-        LOGGER.info("Starting basic search query.");
-        Query query = entityManager.createQuery("SELECT cps "
-                + "FROM CertifiedProductBasicSearchResultEntity cps ",
-                CertifiedProductBasicSearchResultEntity.class);
-
-        Date startDate = new Date();
-        List<CertifiedProductBasicSearchResultEntity> results = query.getResultList();
-        Date endDate = new Date();
-        LOGGER.info("Got query results in " + (endDate.getTime() - startDate.getTime()) + " millis");
-        List<CertifiedProductBasicSearchResult> domainResults = null;
-
-        try {
-            domainResults = convertToListings(results);
-        } catch (Exception ex) {
-            LOGGER.error("Could not convert to basic listings " + ex.getMessage(), ex);
         }
         return domainResults;
     }
@@ -693,54 +671,6 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
                 .id(entity.getId())
                 .chplProductNumber(entity.getChplProductNumber())
                 .edition()
-                .curesUpdate(entity.getCuresUpdate())
-                .acb(entity.getAcbName())
-                .acbCertificationId(entity.getAcbCertificationId())
-                .practiceType(entity.getPracticeTypeName())
-                .developerId(entity.getDeveloperId())
-                .developer(entity.getDeveloper())
-                .developerStatus(entity.getDeveloperStatus())
-                .product(entity.getProduct())
-                .version(entity.getVersion())
-                .promotingInteroperabilityUserCount(entity.getPromotingInteroperabilityUserCount())
-                .promotingInteroperabilityUserDate(entity.getPromotingInteroperabilityUserCountDate())
-                .numMeaningfulUse(entity.getPromotingInteroperabilityUserCount())
-                .numMeaningfulUseDate(DateUtil.toEpochMillis(entity.getPromotingInteroperabilityUserCountDate()))
-                .decertificationDate(entity.getDecertificationDate() == null ? null : entity.getDecertificationDate().getTime())
-                .certificationDate(entity.getCertificationDate().getTime())
-                .certificationStatus(entity.getCertificationStatus())
-                .transparencyAttestationUrl(entity.getMandatoryDisclosures())
-                .mandatoryDisclosures(entity.getMandatoryDisclosures())
-                .apiDocumentation(convertToSetOfStringsWithDelimiter(entity.getApiDocumentation(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
-                .serviceBaseUrlList(convertToSetOfStringsWithDelimiter(entity.getServiceBaseUrlList(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
-                .surveillanceCount(entity.getSurveillanceCount())
-                .openSurveillanceCount(entity.getOpenSurveillanceCount())
-                .closedSurveillanceCount(entity.getClosedSurveillanceCount())
-                .openSurveillanceNonConformityCount(entity.getOpenSurveillanceNonConformityCount())
-                .closedSurveillanceNonConformityCount(entity.getClosedSurveillanceNonConformityCount())
-                .rwtPlansUrl(entity.getRwtPlansUrl())
-                .rwtResultsUrl(entity.getRwtResultsUrl())
-                .surveillanceDates(convertToSetOfStringsWithDelimiter(entity.getSurveillanceDates(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
-                .statusEvents(convertToSetOfStringsWithDelimiter(entity.getStatusEvents(), "&"))
-                .criteriaMet(convertToSetOfLongsWithDelimiter(entity.getCerts(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
-                .cqmsMet(convertToSetOfStringsWithDelimiter(entity.getCqms(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
-                .previousDevelopers(convertToSetOfStringsWithDelimiter(entity.getPreviousDevelopers(), "|"))
-                .build();
-    }
-
-    private List<CertifiedProductBasicSearchResult> convertToListings(List<CertifiedProductBasicSearchResultEntity> dbResults) {
-        List<CertifiedProductBasicSearchResult> results = new ArrayList<CertifiedProductBasicSearchResult>(
-                dbResults.size());
-        return dbResults.stream()
-            .map(dbResult -> buildBasicSearchResult(dbResult))
-            .collect(Collectors.toList());
-    }
-
-    private CertifiedProductBasicSearchResult buildBasicSearchResult(CertifiedProductBasicSearchResultEntity entity) {
-        return CertifiedProductBasicSearchResult.builder()
-                .id(entity.getId())
-                .chplProductNumber(entity.getChplProductNumber())
-                .edition(entity.getEdition())
                 .curesUpdate(entity.getCuresUpdate())
                 .acb(entity.getAcbName())
                 .acbCertificationId(entity.getAcbCertificationId())
