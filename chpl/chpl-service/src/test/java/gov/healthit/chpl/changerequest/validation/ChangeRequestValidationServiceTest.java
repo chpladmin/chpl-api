@@ -16,7 +16,6 @@ public class ChangeRequestValidationServiceTest {
     private DeveloperActiveValidation developerActiveValidation;
     private ChangeRequestNotUpdatableDueToStatusValidation changeRequestNotUpdatableDueToStatusValidation;
     private ChangeRequestTypeInProcessValidation changeRequestTypeInProcessValidation;
-    private ChangeRequestModificationValidation changeRequestModificationValidation;
     private CommentRequiredValidation commentRequiredValidation;
     private RoleAcbHasMultipleCertificationBodiesValidation roleAcbHasMultipleCertificationBodiesValidation;
     private WebsiteValidation websiteValidation;
@@ -63,10 +62,6 @@ public class ChangeRequestValidationServiceTest {
         changeRequestTypeInProcessValidation = Mockito.mock(ChangeRequestTypeInProcessValidation.class);
         Mockito.when(changeRequestTypeInProcessValidation.isValid(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(false);
         Mockito.when(changeRequestTypeInProcessValidation.getMessages()).thenReturn(Arrays.asList("Error message"));
-
-        changeRequestModificationValidation = Mockito.mock(ChangeRequestModificationValidation.class);
-        Mockito.when(changeRequestModificationValidation.isValid(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(false);
-        Mockito.when(changeRequestModificationValidation.getMessages()).thenReturn(Arrays.asList("Error message"));
 
         commentRequiredValidation = Mockito.mock(CommentRequiredValidation.class);
         Mockito.when(commentRequiredValidation.isValid(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(false);
