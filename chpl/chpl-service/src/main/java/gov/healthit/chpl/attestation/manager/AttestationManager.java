@@ -85,7 +85,8 @@ public class AttestationManager {
                 return isDateInFuture(attestationPeriodService.getMostRecentPeriodExceptionDateForDeveloper(developerId));
             }
         } else {
-            return attestationPeriodService.isDateWithinSubmissionPeriodForDeveloper(developerId, LocalDate.now());
+            return attestationPeriodService.isDateWithinSubmissionPeriodForDeveloper(developerId, LocalDate.now())
+                    && !doesPendingAttestationChangeRequestForDeveloperExist(developerId);
         }
     }
 
