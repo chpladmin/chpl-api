@@ -15,6 +15,17 @@ public class DeveloperAttestationReport {
     private String pointOfContactName;
     private String pointOfContactEmail;
     private String attestationPeriod;
+    private String informationBlocking;
+    private String assurances;
+    private String communications;
+    private String applicationProgrammingInterfaces;
+    private String realWorldTesting;
+    private String submitterName;
+    private String submitterEmail;
+    private Long totalSurveillanceNonconformities;
+    private Long openSurveillanceNonconformities;
+    private Long totalDirectReviewNonconformities;
+    private Long openDirectReviewNonconformities;
 
     public List<String> toListOfStrings() {
         return Arrays.asList(
@@ -23,7 +34,19 @@ public class DeveloperAttestationReport {
                 developerId.toString(),
                 pointOfContactName,
                 pointOfContactEmail,
-                attestationPeriod);
+                attestationPeriod,
+                informationBlocking,
+                assurances,
+                communications,
+                applicationProgrammingInterfaces,
+                realWorldTesting,
+                submitterName,
+                submitterEmail,
+                totalSurveillanceNonconformities != null ? totalSurveillanceNonconformities.toString() : "",
+                openSurveillanceNonconformities != null ? openSurveillanceNonconformities.toString() : "",
+                totalDirectReviewNonconformities != null ? totalDirectReviewNonconformities.toString() : "",
+                openDirectReviewNonconformities != null ? openDirectReviewNonconformities.toString() : ""
+                );
     }
 
     public static List<String> getHeaders() {
