@@ -62,7 +62,7 @@ public class ListingSearchResult implements Serializable {
     private Long closedSurveillanceCount;
     private PromotingInteroperability promotingInteroperability;
     private String mandatoryDisclosures;
-    private Set<Developer> previousDevelopers;
+    private Set<ProductOwner> previousDevelopers;
     private Set<CertificationCriterion> criteriaMet;
     private Set<CQM> cqmsMet;
     private Set<DateRange> surveillanceDateRanges;
@@ -81,7 +81,7 @@ public class ListingSearchResult implements Serializable {
         this.setClosedSurveillanceCount(0L);
         this.setOpenSurveillanceNonConformityCount(0L);
         this.setClosedSurveillanceNonConformityCount(0L);
-        previousDevelopers = new HashSet<Developer>();
+        previousDevelopers = new HashSet<ProductOwner>();
         criteriaMet = new HashSet<CertificationCriterion>();
         cqmsMet = new HashSet<CQM>();
         surveillanceDateRanges = new HashSet<DateRange>();
@@ -160,6 +160,15 @@ public class ListingSearchResult implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Product {
+        private Long id;
+        private String name;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ProductOwner {
         private Long id;
         private String name;
     }

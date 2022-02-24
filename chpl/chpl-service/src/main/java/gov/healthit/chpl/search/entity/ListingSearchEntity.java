@@ -21,7 +21,8 @@ import lombok.Setter;
 @Immutable
 @Table(name = "listing_search")
 public class ListingSearchEntity {
-    private static final long serialVersionUID = -2928065796556253369L;
+    public static final String SMILEY_SPLIT_CHAR = "\u263A";
+    public static final String FROWNEY_SPLIT_CHAR = "\u2639";
 
     @Id
     @Column(name = "certified_product_id", nullable = false)

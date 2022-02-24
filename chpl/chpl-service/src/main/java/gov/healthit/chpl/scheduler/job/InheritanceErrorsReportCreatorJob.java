@@ -28,7 +28,6 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.SpecialProperties;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.scheduler.InheritanceErrorsReportDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -36,17 +35,11 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.scheduler.InheritanceErrorsReportDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
+import gov.healthit.chpl.search.dao.ListingSearchDao;
+import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-/**
- * Initiates and runs the the Quartz job that generates the data that is used to to create the Inheritance Errors Report
- * notification.
- *
- * @author alarned
- *
- */
 @DisallowConcurrentExecution
 public class InheritanceErrorsReportCreatorJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("inheritanceErrorsReportCreatorJobLogger");
@@ -54,7 +47,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
     private static final int MIN_NUMBER_TO_NOT_NEED_PREFIX = 10;
 
     @Autowired
-    private CertifiedProductSearchDAO certifiedProductSearchDAO;
+    private ListingSearchDao listingSearchDao;
 
     @Autowired
     private InheritanceErrorsReportDAO inheritanceErrorsReportDAO;
@@ -98,8 +91,8 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
             return;
         }
 
-        List<CertifiedProductBasicSearchResult> listings = certifiedProductSearchDAO.getCertifiedProducts();
-        List<CertifiedProductBasicSearchResult> certifiedProducts = filterData(listings);
+        List<ListingSearchResult> listings = listingSearchDao.getListingSearchResults();
+        List<ListingSearchResult> certifiedProducts = filterData(listings);
 
         ExecutorService executorService = null;
         try {
@@ -108,7 +101,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
             List<InheritanceErrorsReportDTO> allInheritanceErrors = new ArrayList<InheritanceErrorsReportDTO>();
 
             List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
-            for (CertifiedProductBasicSearchResult result : certifiedProducts) {
+            for (ListingSearchResult result : certifiedProducts) {
                 futures.add(CompletableFuture.supplyAsync(() -> getCertifiedProductSearchDetails(result.getId()), executorService)
                         .thenApply(cp -> check(cp))
                         .thenAccept(error -> {
@@ -201,9 +194,9 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
         });
     }
 
-    private List<CertifiedProductBasicSearchResult> filterData(List<CertifiedProductBasicSearchResult> certifiedProducts) {
+    private List<ListingSearchResult> filterData(List<ListingSearchResult> certifiedProducts) {
         return certifiedProducts.stream()
-                .filter(cp -> cp.getEdition().equalsIgnoreCase(EDITION_2015))
+                .filter(cp -> cp.getEdition() != null && cp.getEdition().getYear().equalsIgnoreCase(EDITION_2015))
                 .collect(Collectors.toList());
     }
 

@@ -90,7 +90,7 @@ public class CertifiedProductSearchManager {
     @Deprecated
     public List<CertifiedProductBasicSearchResult> getBasicListingCollection() {
         //below call should be cached
-        List<ListingSearchResult> searchResults = searchManager.getListingSearchResults();
+        List<ListingSearchResult> searchResults = searchManager.getAllListings();
 
         //convert from the cached objects to the Basic search result
         List<CertifiedProductBasicSearchResult> results = new ArrayList<CertifiedProductBasicSearchResult>(searchResults.size());

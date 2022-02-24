@@ -1,6 +1,5 @@
 package gov.healthit.chpl.search;
 
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,21 +22,18 @@ import lombok.extern.log4j.Log4j2;
 @Service
 @Log4j2
 public class ListingSearchManager {
-    private static final String CERT_STATUS_EVENT_DATE_FORMAT = "yyyy-MM-dd";
     private ListingSearchDao searchDao;
     private DirectReviewSearchService drService;
-    private DateTimeFormatter dateFormatter;
 
     @Autowired
     public ListingSearchManager(ListingSearchDao searchDao,
             DirectReviewSearchService drService) {
         this.searchDao = searchDao;
         this.drService = drService;
-        this.dateFormatter = DateTimeFormatter.ofPattern(CERT_STATUS_EVENT_DATE_FORMAT);
     }
 
     @Cacheable(value = CacheNames.COLLECTIONS_SEARCH)
-    public List<ListingSearchResult> getListingSearchResults() {
+    public List<ListingSearchResult> getAllListings() {
         List<ListingSearchResult> results = searchDao.getListingSearchResults();
         LOGGER.info("Populating Direct Review fields for search");
         Date start = new Date();
