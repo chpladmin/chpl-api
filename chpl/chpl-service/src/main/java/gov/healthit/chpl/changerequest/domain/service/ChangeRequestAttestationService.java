@@ -151,6 +151,10 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                 .build();
 
         attestationManager.saveDeveloperAttestation(developerAttestation);
+
+        attestationManager.deleteAttestationPeriodDeveloperExceptions(
+                developerAttestation.getDeveloper().getDeveloperId(),
+                developerAttestation.getPeriod().getId());
         return cr;
     }
 

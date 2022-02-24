@@ -98,6 +98,15 @@ public class AttestationDAO extends BaseDAOImpl{
                 .collect(Collectors.toList());
     }
 
+    public void deleteAttestationPeriodDeveloperExceptions(Long developerId, Long attestationPeriodId) {
+        getAttestationPeriodDeveloperExceptionEntities(developerId, attestationPeriodId).stream()
+                .forEach(entity -> {
+                    entity.setDeleted(true);
+                    entity.setLastModifiedUser(AuthUtil.getAuditId());
+                    update(entity);
+                });
+    }
+
     public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(AttestationPeriodDeveloperException adpe) throws EntityRetrievalException {
         AttestationPeriodDeveloperExceptionEntity entity = AttestationPeriodDeveloperExceptionEntity.builder()
                 .developer(DeveloperEntity.builder()
