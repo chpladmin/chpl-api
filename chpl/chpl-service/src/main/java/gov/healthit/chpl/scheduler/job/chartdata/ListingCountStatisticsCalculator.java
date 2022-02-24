@@ -17,7 +17,7 @@ import gov.healthit.chpl.dao.ListingCountStatisticsDAO;
 import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResult;
 
 /**
  * Populates the listing_count_statistics table with summarized count
@@ -53,20 +53,20 @@ public class ListingCountStatisticsCalculator {
      *            incoming listings
      * @return list of listingCountStatisticsDTOs
      */
-    public List<ListingCountStatisticsDTO> getCounts(List<CertifiedProductBasicSearchResult> listings) {
+    public List<ListingCountStatisticsDTO> getCounts(List<ListingSearchResult> listings) {
         HashMap<String, HashSet<String>> developers = new HashMap<String, HashSet<String>>();
         HashMap<String, HashSet<String>> products = new HashMap<String, HashSet<String>>();
-        for (CertifiedProductBasicSearchResult listing : listings) {
-            String devKey = listing.getEdition() + "\u263A" + listing.getDeveloper();
-            String prodKey = listing.getEdition() + "\u263A" + listing.getDeveloper() + "\u263A" + listing.getProduct();
+        for (ListingSearchResult listing : listings) {
+            String devKey = listing.getEdition().getYear() + "\u263A" + listing.getDeveloper().getName();
+            String prodKey = listing.getEdition().getYear() + "\u263A" + listing.getDeveloper().getName() + "\u263A" + listing.getProduct().getName();
             if (!developers.containsKey(devKey)) {
                 developers.put(devKey, new HashSet<String>());
             }
             if (!products.containsKey(prodKey)) {
                 products.put(prodKey, new HashSet<String>());
             }
-            developers.get(devKey).add(listing.getCertificationStatus());
-            products.get(prodKey).add(listing.getCertificationStatus());
+            developers.get(devKey).add(listing.getCertificationStatus().getName());
+            products.get(prodKey).add(listing.getCertificationStatus().getName());
         }
 
         HashMap<String, ListingCountStatisticsDTO> results = new HashMap<String, ListingCountStatisticsDTO>();

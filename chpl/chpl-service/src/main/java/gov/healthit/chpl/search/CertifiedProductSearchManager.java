@@ -3,7 +3,6 @@ package gov.healthit.chpl.search;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -26,12 +25,9 @@ import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResultLegacy;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
 import gov.healthit.chpl.domain.search.SearchRequestLegacy;
 import gov.healthit.chpl.domain.search.SearchResponseLegacy;
-import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
-import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.service.DirectReviewSearchService;
-import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Service
@@ -85,79 +81,6 @@ public class CertifiedProductSearchManager {
         Date end = new Date();
         LOGGER.info("Completed Populating Direct Review fields  for collections [ " + (end.getTime() - start.getTime()) + " ms ]");
         return results;
-    }
-
-    @Deprecated
-    public List<CertifiedProductBasicSearchResult> getBasicListingCollection() {
-        //below call should be cached
-        List<ListingSearchResult> searchResults = searchManager.getAllListings();
-
-        //convert from the cached objects to the Basic search result
-        List<CertifiedProductBasicSearchResult> results = new ArrayList<CertifiedProductBasicSearchResult>(searchResults.size());
-        searchResults.stream()
-            .map(listingSearchResult -> convertToBasicSearchResult(listingSearchResult))
-            .toList();
-        return results;
-    }
-
-
-    private CertifiedProductBasicSearchResult convertToBasicSearchResult(ListingSearchResult searchResult) {
-        return CertifiedProductBasicSearchResult.builder()
-                .id(searchResult.getId())
-                .chplProductNumber(searchResult.getChplProductNumber())
-                .edition(searchResult.getEdition().getYear())
-                .curesUpdate(searchResult.getCuresUpdate())
-                .acb(searchResult.getCertificationBody().getName())
-                .acbCertificationId(searchResult.getAcbCertificationId())
-                .practiceType(searchResult.getPracticeType().getName())
-                .developerId(searchResult.getDeveloper().getId())
-                .developer(searchResult.getDeveloper().getName())
-                .developerStatus(searchResult.getDeveloper().getStatus().getName())
-                .product(searchResult.getProduct().getName())
-                .version(searchResult.getVersion().getName())
-                .promotingInteroperabilityUserCount(searchResult.getPromotingInteroperability().getUserCount())
-                .promotingInteroperabilityUserDate(searchResult.getPromotingInteroperability().getUserDate())
-                .numMeaningfulUse(searchResult.getPromotingInteroperability().getUserCount())
-                .numMeaningfulUseDate(DateUtil.toEpochMillis(searchResult.getPromotingInteroperability().getUserDate()))
-                .decertificationDate(searchResult.getDecertificationDate() == null ? null : DateUtil.toEpochMillis(searchResult.getDecertificationDate()))
-                .certificationDate(DateUtil.toEpochMillis(searchResult.getCertificationDate()))
-                .certificationStatus(searchResult.getCertificationStatus().getName())
-                .transparencyAttestationUrl(searchResult.getMandatoryDisclosures())
-                .mandatoryDisclosures(searchResult.getMandatoryDisclosures())
-                .apiDocumentation(
-                        searchResult.getApiDocumentation().stream()
-                        .map(obj -> obj.getCriterion().getId() + CertifiedProductSearchResult.FROWNEY_SPLIT_CHAR + obj.getValue())
-                        .collect(Collectors.toSet()))
-                .serviceBaseUrlList(
-                        Stream.of(
-                                searchResult.getServiceBaseUrl().getCriterion().getId() + CertifiedProductSearchResult.FROWNEY_SPLIT_CHAR
-                                + searchResult.getServiceBaseUrl().getValue())
-                        .collect(Collectors.toSet()))
-                .surveillanceCount(searchResult.getSurveillanceCount())
-                .openSurveillanceCount(searchResult.getOpenSurveillanceCount())
-                .closedSurveillanceCount(searchResult.getClosedSurveillanceCount())
-                .openSurveillanceNonConformityCount(searchResult.getOpenSurveillanceNonConformityCount())
-                .closedSurveillanceNonConformityCount(searchResult.getClosedSurveillanceNonConformityCount())
-                .rwtPlansUrl(searchResult.getRwtPlansUrl())
-                .rwtResultsUrl(searchResult.getRwtResultsUrl())
-                .surveillanceDates(searchResult.getSurveillanceDateRanges().stream()
-                        .map(dateRange -> DateUtil.toEpochMillis(dateRange.getStart())
-                                + "&"
-                                + (dateRange.getEnd() == null ? "" : DateUtil.toEpochMillis(dateRange.getEnd())))
-                        .collect(Collectors.toSet()))
-                .statusEvents(searchResult.getStatusEvents().stream()
-                        .map(statusEvent -> DateUtil.format(statusEvent.getStatusBegin()) + ":" + statusEvent.getStatus().getName())
-                        .collect(Collectors.toSet()))
-                .criteriaMet(searchResult.getCriteriaMet().stream()
-                        .map(criterion -> criterion.getId())
-                        .collect(Collectors.toSet()))
-                .cqmsMet(searchResult.getCqmsMet().stream()
-                        .map(cqm -> cqm.getNumber())
-                        .collect(Collectors.toSet()))
-                .previousDevelopers(searchResult.getPreviousDevelopers().stream()
-                        .map(prevDev -> prevDev.getName())
-                        .collect(Collectors.toSet()))
-                .build();
     }
 
     private void populateDirectReviews(CertifiedProductFlatSearchResult searchResult) {

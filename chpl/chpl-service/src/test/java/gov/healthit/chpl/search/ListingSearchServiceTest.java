@@ -47,6 +47,16 @@ public class ListingSearchServiceTest {
     }
 
     @Test
+    public void splitting() {
+        String str = "1:Active:2010-12-28|2:Retired:2016-04-01";
+        String[] splitStr = str.split("\\|");
+        assertNotNull(splitStr);
+        assertEquals(2, splitStr.length);
+        assertEquals("1:Active:2010-12-28", splitStr[0]);
+        assertEquals("2:Retired:2016-04-01", splitStr[1]);
+    }
+
+    @Test
     public void search_validEmptySearchRequest_findsAllListings() throws ValidationException {
         Mockito.when(listingSearchManager.getAllListings())
             .thenReturn(createListingSearchResultCollection(100));

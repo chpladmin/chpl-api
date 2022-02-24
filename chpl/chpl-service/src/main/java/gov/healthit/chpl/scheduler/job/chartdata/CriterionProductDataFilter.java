@@ -7,7 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResult;
 
 public class CriterionProductDataFilter {
     private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
@@ -17,10 +17,10 @@ public class CriterionProductDataFilter {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
     }
 
-    public List<CertifiedProductBasicSearchResult> filterData(List<CertifiedProductBasicSearchResult> certifiedProducts) {
-        List<CertifiedProductBasicSearchResult> results = new ArrayList<CertifiedProductBasicSearchResult>();
-        for (CertifiedProductBasicSearchResult result : certifiedProducts) {
-            if (result.getEdition().equalsIgnoreCase(EDITION_2015)) {
+    public List<ListingSearchResult> filterData(List<ListingSearchResult> certifiedProducts) {
+        List<ListingSearchResult> results = new ArrayList<ListingSearchResult>();
+        for (ListingSearchResult result : certifiedProducts) {
+            if (result.getEdition().getYear().equalsIgnoreCase(EDITION_2015)) {
                 results.add(result);
             }
         }

@@ -112,7 +112,7 @@ public class ListingSearchEntity {
     @Column(name = "closed_nonconformity_count")
     private Long closedSurveillanceNonConformityCount;
 
-    @Column(name = "surv_dates")
+    @Column(name = "surv_date_ranges")
     private String surveillanceDates;
 
     @Column(name = "status_events")

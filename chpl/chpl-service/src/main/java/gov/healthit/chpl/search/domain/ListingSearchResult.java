@@ -201,7 +201,6 @@ public class ListingSearchResult implements Serializable {
         private Long id;
         private String number;
         private String title;
-        private boolean isCures;
     }
 
     @Getter

@@ -27,7 +27,7 @@ import lombok.extern.log4j.Log4j2;
 @Repository("listingSearchDAO")
 @Log4j2
 public class ListingSearchDao extends BaseDAOImpl {
-    private static final String STANDARD_VALUE_SPLIT_CHAR = "|";
+    private static final String STANDARD_VALUE_SPLIT_CHAR = "\\|";
     private static final String STANDARD_FIELD_SPLIT_CHAR = ":";
     private static final int CRITERIA_FIELD_COUNT = 3;
     private static final int CQM_FIELD_COUNT = 2;
@@ -101,10 +101,8 @@ public class ListingSearchDao extends BaseDAOImpl {
                         .id(entity.getVersionId())
                         .name(entity.getVersion())
                         .build())
-                .promotingInteroperability(ListingSearchResult.PromotingInteroperability.builder()
-                        .userCount(entity.getPromotingInteroperabilityUserCount())
-                        .userDate(entity.getPromotingInteroperabilityUserCountDate())
-                        .build())
+                .promotingInteroperability(convertToPromotingInteroperability(entity.getPromotingInteroperabilityUserCount(),
+                        entity.getPromotingInteroperabilityUserCountDate()))
                 .decertificationDate(entity.getDecertificationDate() == null ? null :
                     DateUtil.toLocalDate(entity.getDecertificationDate().getTime()))
                 .certificationDate(DateUtil.toLocalDate(entity.getCertificationDate().getTime()))
@@ -128,6 +126,17 @@ public class ListingSearchDao extends BaseDAOImpl {
                 .apiDocumentation(convertToSetOfCriteriaWithStringFields(entity.getCriteriaWithApiDocumentation(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
                 .serviceBaseUrl(convertToCriterionWithStringField(entity.getCriteriaWithServiceBaseUrl()))
                 .build();
+    }
+
+    private ListingSearchResult.PromotingInteroperability convertToPromotingInteroperability(Long userCount, LocalDate userDate) {
+        if (userCount == null && userDate == null) {
+            return null;
+        }
+
+        return ListingSearchResult.PromotingInteroperability.builder()
+            .userCount(userCount)
+            .userDate(userDate)
+            .build();
     }
 
     private Set<ListingSearchResult.DateRange> convertToSetOfDateRangesWithDelimiter(String delimitedDateRangeString, String delimeter)
@@ -245,6 +254,10 @@ public class ListingSearchDao extends BaseDAOImpl {
 
     private ListingSearchResult.CertificationCriterionWithStringField convertToCriterionWithStringField(String value)
         throws EntityRetrievalException, NumberFormatException {
+        if (StringUtils.isEmpty(value)) {
+            return null;
+        }
+
         String[] criteriaSplitFromStringData = value.split(CertifiedProductSearchResult.FROWNEY_SPLIT_CHAR);
         if (criteriaSplitFromStringData == null || criteriaSplitFromStringData.length != 2) {
             throw new EntityRetrievalException("Unable to parse criteria with string value from '" + value + "'.");
