@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
+
 import gov.healthit.chpl.activity.history.ListingActivityUtil;
 import gov.healthit.chpl.activity.history.explorer.RealWorldTestingEligibilityActivityExplorer;
 import gov.healthit.chpl.activity.history.query.RealWorldTestingEligibilityQuery;
@@ -182,7 +183,6 @@ public class RealWorldTestingEligiblityService {
                 .findAny()
                 .isPresent();
     }
-
 
     private List<CertificationCriterion> getRwtEligibleCriteria() {
         return Arrays.asList(eligibleCriteriaKeys).stream()
