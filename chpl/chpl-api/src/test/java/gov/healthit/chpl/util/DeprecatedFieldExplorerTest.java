@@ -59,6 +59,7 @@ import gov.healthit.chpl.dto.CHPLFileDTO;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUploadResponse;
 import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResponse;
 import gov.healthit.chpl.search.domain.SearchResponse;
 import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
 import gov.healthit.chpl.surveillance.report.domain.PrivilegedSurveillance;
@@ -282,6 +283,13 @@ public class DeprecatedFieldExplorerTest {
         assertTrue(deprecatedFieldNames.contains("results" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "numMeaningfulUse"));
         assertTrue(deprecatedFieldNames.contains("results" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "numMeaningfulUseDate"));
         assertTrue(deprecatedFieldNames.contains("results" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "transparencyAttestationUrl"));
+    }
+
+    @Test
+    public void findDeprecatedFields_ListingSearchResponse() {
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ListingSearchResponse.class);
+        assertNotNull(deprecatedFieldNames);
+        assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
