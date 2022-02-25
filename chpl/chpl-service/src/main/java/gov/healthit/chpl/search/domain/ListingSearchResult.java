@@ -68,7 +68,7 @@ public class ListingSearchResult implements Serializable {
     private Set<DateRange> surveillanceDateRanges;
     private Set<StatusEvent> statusEvents;
     private Set<CertificationCriterionWithStringField> apiDocumentation;
-    private CertificationCriterionWithStringField serviceBaseUrl;
+    private CertificationCriterionWithStringField serviceBaseUrlList;
     private String rwtPlansUrl;
     private String rwtResultsUrl;
 
@@ -228,7 +228,7 @@ public class ListingSearchResult implements Serializable {
     public static class StatusEvent {
         @JsonDeserialize(using = LocalDateDeserializer.class)
         @JsonSerialize(using = LocalDateSerializer.class)
-        private LocalDate statusBegin;
+        private LocalDate statusStart;
         private Status status;
     }
 

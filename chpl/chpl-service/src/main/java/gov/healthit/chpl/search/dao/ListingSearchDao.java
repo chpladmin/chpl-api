@@ -123,7 +123,7 @@ public class ListingSearchDao extends BaseDAOImpl {
                 .cqmsMet(convertToSetOfCqms(entity.getCqmsMet(), STANDARD_VALUE_SPLIT_CHAR))
                 .previousDevelopers(convertToSetOfProductOwners(entity.getPreviousDevelopers(), ListingSearchEntity.SMILEY_SPLIT_CHAR))
                 .apiDocumentation(convertToSetOfCriteriaWithStringFields(entity.getCriteriaWithApiDocumentation(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
-                .serviceBaseUrl(convertToCriterionWithStringField(entity.getCriteriaWithServiceBaseUrl()))
+                .serviceBaseUrlList(convertToCriterionWithStringField(entity.getCriteriaWithServiceBaseUrlList()))
                 .build();
     }
 
@@ -186,7 +186,7 @@ public class ListingSearchDao extends BaseDAOImpl {
                                 .id(Long.parseLong(statusEventFields[0]))
                                 .name(statusEventFields[1])
                                 .build())
-                        .statusBegin(LocalDate.parse(statusEventFields[2]))
+                        .statusStart(LocalDate.parse(statusEventFields[2]))
                         .build();
     }
 

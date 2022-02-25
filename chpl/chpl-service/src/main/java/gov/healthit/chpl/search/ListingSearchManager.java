@@ -60,7 +60,7 @@ public class ListingSearchManager {
             .status(CertificationStatus.builder()
                     .name(statusEvent.getStatus().getName())
                     .build())
-            .eventDate(DateUtil.toEpochMillis(statusEvent.getStatusBegin()))
+            .eventDate(DateUtil.toEpochMillis(statusEvent.getStatusStart()))
             .build();
     }
 

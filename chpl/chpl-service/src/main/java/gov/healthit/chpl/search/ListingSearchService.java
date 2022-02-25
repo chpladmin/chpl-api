@@ -650,10 +650,10 @@ public class ListingSearchService {
                         .map(obj -> obj.getCriterion().getId() + CertifiedProductSearchResult.FROWNEY_SPLIT_CHAR + obj.getValue())
                         .collect(Collectors.toSet()))
                 .serviceBaseUrlList(
-                        searchResult.getServiceBaseUrl() == null ? new HashSet<String>() :
+                        searchResult.getServiceBaseUrlList() == null ? new HashSet<String>() :
                         Stream.of(
-                                searchResult.getServiceBaseUrl().getCriterion().getId() + CertifiedProductSearchResult.FROWNEY_SPLIT_CHAR
-                                + searchResult.getServiceBaseUrl().getValue())
+                                searchResult.getServiceBaseUrlList().getCriterion().getId() + CertifiedProductSearchResult.FROWNEY_SPLIT_CHAR
+                                + searchResult.getServiceBaseUrlList().getValue())
                         .collect(Collectors.toSet()))
                 .surveillanceCount(searchResult.getSurveillanceCount())
                 .openSurveillanceCount(searchResult.getOpenSurveillanceCount())
@@ -668,7 +668,7 @@ public class ListingSearchService {
                                 + (dateRange.getEnd() == null ? "" : DateUtil.toEpochMillis(dateRange.getEnd())))
                         .collect(Collectors.toSet()))
                 .statusEvents(searchResult.getStatusEvents().stream()
-                        .map(statusEvent -> DateUtil.format(statusEvent.getStatusBegin()) + ":" + statusEvent.getStatus().getName())
+                        .map(statusEvent -> DateUtil.format(statusEvent.getStatusStart()) + ":" + statusEvent.getStatus().getName())
                         .collect(Collectors.toSet()))
                 .criteriaMet(searchResult.getCriteriaMet().stream()
                         .map(criterion -> criterion.getId())

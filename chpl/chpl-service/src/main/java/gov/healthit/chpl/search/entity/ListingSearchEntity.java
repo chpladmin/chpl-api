@@ -136,8 +136,8 @@ public class ListingSearchEntity {
     @Column(name = "criteria_with_api_documentation")
     private String criteriaWithApiDocumentation;
 
-    @Column(name = "criteria_with_service_base_url")
-    private String criteriaWithServiceBaseUrl;
+    @Column(name = "criteria_with_service_base_url_list")
+    private String criteriaWithServiceBaseUrlList;
 
     @Column(name = "cqms_met")
     private String cqmsMet;
