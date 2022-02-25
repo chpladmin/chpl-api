@@ -29,6 +29,7 @@ import gov.healthit.chpl.attestation.dao.AttestationDAO;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
 import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
+import gov.healthit.chpl.attestation.report.validation.AttestationValidationService;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -66,6 +67,9 @@ public class DeveloperAttestationReportJob implements Job {
 
     @Autowired
     private DirectReviewSearchService directReviewService;
+
+    @Autowired
+    private AttestationValidationService attestationValidationService;
 
     private Map<Long, List<CertifiedProductBasicSearchResult>> developerListings = new HashMap<Long, List<CertifiedProductBasicSearchResult>>();
 
@@ -120,6 +124,7 @@ public class DeveloperAttestationReportJob implements Job {
                                     .openSurveillanceNonconformities(getOpenSurveillanceNonconformities(dev))
                                     .totalDirectReviewNonconformities(getTotalDirectReviewNonconformities(dev))
                                     .openDirectReviewNonconformities(getOpenDirectReviewNonconformities(dev))
+                                    .realWorldTestingValidation(getRealWorldTestingValidation(dev))
                                     .build();
                             })
                             .sorted(Comparator.comparing(DeveloperAttestationReport::getDeveloperName))
@@ -301,10 +306,12 @@ public class DeveloperAttestationReportJob implements Job {
                 .filter(nc -> nc.getNonConformityStatus().equals(DirectReviewNonConformity.STATUS_OPEN))
                 .count();
     }
-//    @Data
-//    @AllArgsConstructor
-//    private class ListingStatusEvent {
-//        private String status;
-//        private LocalDate statusDate;
-//    }
+
+    private String getRealWorldTestingValidation(Developer developer) {
+        if (attestationValidationService.validateRealWorldTesting(developer, getListingDataForDeveloper(developer))) {
+            return "Has listing(s) with RWT";
+        } else {
+            return "No listings with RWT";
+        }
+    }
 }

@@ -26,6 +26,7 @@ public class DeveloperAttestationReport {
     private Long openSurveillanceNonconformities;
     private Long totalDirectReviewNonconformities;
     private Long openDirectReviewNonconformities;
+    private String realWorldTestingValidation;
 
     public List<String> toListOfStrings() {
         return Arrays.asList(
@@ -45,7 +46,8 @@ public class DeveloperAttestationReport {
                 totalSurveillanceNonconformities != null ? totalSurveillanceNonconformities.toString() : "",
                 openSurveillanceNonconformities != null ? openSurveillanceNonconformities.toString() : "",
                 totalDirectReviewNonconformities != null ? totalDirectReviewNonconformities.toString() : "",
-                openDirectReviewNonconformities != null ? openDirectReviewNonconformities.toString() : ""
+                openDirectReviewNonconformities != null ? openDirectReviewNonconformities.toString() : "",
+                realWorldTestingValidation
                 );
     }
 
