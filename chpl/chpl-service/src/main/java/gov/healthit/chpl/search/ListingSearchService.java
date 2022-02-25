@@ -112,7 +112,7 @@ public class ListingSearchService {
                 || (!StringUtils.isEmpty(listing.getAcbCertificationId()) && listing.getAcbCertificationId().toUpperCase().contains(searchTermUpperCase));
     }
 
-    private boolean doProductOwnersMatchSearchTerm(Set<ListingSearchResult.ProductOwner> productOwners, String searchTerm) {
+    private boolean doProductOwnersMatchSearchTerm(Set<ListingSearchResult.IdNamePair> productOwners, String searchTerm) {
         Set<String> uppercaseNames = productOwners.stream()
             .filter(productOwner -> !StringUtils.isEmpty(productOwner.getName()))
             .map(productOwner -> productOwner.getName().toUpperCase())
@@ -150,8 +150,8 @@ public class ListingSearchService {
         }
 
         return listing.getEdition() != null
-                && !StringUtils.isEmpty(listing.getEdition().getYear())
-                && certificationEditions.contains(listing.getEdition().getYear());
+                && !StringUtils.isEmpty(listing.getEdition().getName())
+                && certificationEditions.contains(listing.getEdition().getName());
     }
 
     private boolean matchesDerivedCertificationEditions(ListingSearchResult listing, Set<String> derivedCertificationEditions) {
@@ -167,18 +167,18 @@ public class ListingSearchService {
         boolean editionMatch = false;
         if (derivedCertificationEdition.equalsIgnoreCase(CURES_UPDATE_EDITION)) {
             editionMatch = listing.getEdition() != null
-                    && !StringUtils.isEmpty(listing.getEdition().getYear())
-                    && listing.getEdition().getYear().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())
+                    && !StringUtils.isEmpty(listing.getEdition().getName())
+                    && listing.getEdition().getName().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())
                     && BooleanUtils.isTrue(listing.getCuresUpdate());
         } else if (derivedCertificationEdition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())) {
             editionMatch = listing.getEdition() != null
-                    && !StringUtils.isEmpty(listing.getEdition().getYear())
-                    && listing.getEdition().getYear().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())
+                    && !StringUtils.isEmpty(listing.getEdition().getName())
+                    && listing.getEdition().getName().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())
                     && BooleanUtils.isFalse(listing.getCuresUpdate());
         } else {
             editionMatch = listing.getEdition() != null
-                    && !StringUtils.isEmpty(listing.getEdition().getYear())
-                    && derivedCertificationEdition.equals(listing.getEdition().getYear());
+                    && !StringUtils.isEmpty(listing.getEdition().getName())
+                    && derivedCertificationEdition.equals(listing.getEdition().getName());
         }
         return editionMatch;
     }
@@ -473,7 +473,7 @@ public class ListingSearchService {
         @Override
         public int compare(ListingSearchResult listing1, ListingSearchResult listing2) {
             if (ObjectUtils.anyNull(listing1.getEdition(), listing2.getEdition())
-                    || StringUtils.isAnyEmpty(listing1.getEdition().getYear(), listing2.getEdition().getYear())) {
+                    || StringUtils.isAnyEmpty(listing1.getEdition().getName(), listing2.getEdition().getName())) {
                 return 0;
             }
             int sortFactor = descending ? -1 : 1;
@@ -491,11 +491,11 @@ public class ListingSearchService {
         @Override
         public int compare(ListingSearchResult listing1, ListingSearchResult listing2) {
             if (ObjectUtils.anyNull(listing1.getEdition(), listing2.getEdition())
-                    || StringUtils.isAnyEmpty(listing1.getEdition().getYear(), listing2.getEdition().getYear())) {
+                    || StringUtils.isAnyEmpty(listing1.getEdition().getName(), listing2.getEdition().getName())) {
                 return 0;
             }
             int sortFactor = descending ? -1 : 1;
-            return (listing1.getEdition().getYear().compareTo(listing2.getEdition().getYear())) * sortFactor;
+            return (listing1.getEdition().getName().compareTo(listing2.getEdition().getName())) * sortFactor;
         }
     }
 
@@ -626,7 +626,7 @@ public class ListingSearchService {
         return CertifiedProductBasicSearchResult.builder()
                 .id(searchResult.getId())
                 .chplProductNumber(searchResult.getChplProductNumber())
-                .edition(searchResult.getEdition().getYear())
+                .edition(searchResult.getEdition().getName())
                 .curesUpdate(searchResult.getCuresUpdate())
                 .acb(searchResult.getCertificationBody().getName())
                 .acbCertificationId(searchResult.getAcbCertificationId())

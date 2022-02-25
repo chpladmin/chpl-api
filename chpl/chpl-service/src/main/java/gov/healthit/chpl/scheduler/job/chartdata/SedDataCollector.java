@@ -66,7 +66,7 @@ public class SedDataCollector {
         List<CertificationCriterionDTO> g3Criteria = criteriaDao.getAllByNumber(CRITERION_G_3);
         List<ListingSearchResult> results = new ArrayList<ListingSearchResult>();
         for (ListingSearchResult result : certifiedProducts) {
-            if (result.getEdition().getYear().equalsIgnoreCase(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())
+            if (result.getEdition().getName().equalsIgnoreCase(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())
                     && containsAnyCriterion(result, g3Criteria)) {
                 results.add(result);
             }

@@ -57,8 +57,8 @@ public class ListingCountStatisticsCalculator {
         HashMap<String, HashSet<String>> developers = new HashMap<String, HashSet<String>>();
         HashMap<String, HashSet<String>> products = new HashMap<String, HashSet<String>>();
         for (ListingSearchResult listing : listings) {
-            String devKey = listing.getEdition().getYear() + "\u263A" + listing.getDeveloper().getName();
-            String prodKey = listing.getEdition().getYear() + "\u263A" + listing.getDeveloper().getName() + "\u263A" + listing.getProduct().getName();
+            String devKey = listing.getEdition().getName() + "\u263A" + listing.getDeveloper().getName();
+            String prodKey = listing.getEdition().getName() + "\u263A" + listing.getDeveloper().getName() + "\u263A" + listing.getProduct().getName();
             if (!developers.containsKey(devKey)) {
                 developers.put(devKey, new HashSet<String>());
             }

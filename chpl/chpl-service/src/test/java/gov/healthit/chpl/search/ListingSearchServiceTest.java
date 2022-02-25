@@ -127,11 +127,11 @@ public class ListingSearchServiceTest {
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
         assertEquals(5, searchResponse.getResults().size());
-        assertEquals("2011", searchResponse.getResults().get(0).getEdition().getYear());
-        assertEquals("2011", searchResponse.getResults().get(1).getEdition().getYear());
-        assertEquals("2014", searchResponse.getResults().get(2).getEdition().getYear());
-        assertEquals("2015", searchResponse.getResults().get(3).getEdition().getYear());
-        assertEquals("2015", searchResponse.getResults().get(4).getEdition().getYear());
+        assertEquals("2011", searchResponse.getResults().get(0).getEdition().getName());
+        assertEquals("2011", searchResponse.getResults().get(1).getEdition().getName());
+        assertEquals("2014", searchResponse.getResults().get(2).getEdition().getName());
+        assertEquals("2015", searchResponse.getResults().get(3).getEdition().getName());
+        assertEquals("2015", searchResponse.getResults().get(4).getEdition().getName());
     }
 
     @Test
@@ -154,11 +154,11 @@ public class ListingSearchServiceTest {
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
         assertEquals(5, searchResponse.getResults().size());
-        assertEquals("2015", searchResponse.getResults().get(0).getEdition().getYear());
-        assertEquals("2015", searchResponse.getResults().get(1).getEdition().getYear());
-        assertEquals("2014", searchResponse.getResults().get(2).getEdition().getYear());
-        assertEquals("2011", searchResponse.getResults().get(3).getEdition().getYear());
-        assertEquals("2011", searchResponse.getResults().get(4).getEdition().getYear());
+        assertEquals("2015", searchResponse.getResults().get(0).getEdition().getName());
+        assertEquals("2015", searchResponse.getResults().get(1).getEdition().getName());
+        assertEquals("2014", searchResponse.getResults().get(2).getEdition().getName());
+        assertEquals("2011", searchResponse.getResults().get(3).getEdition().getName());
+        assertEquals("2011", searchResponse.getResults().get(4).getEdition().getName());
     }
 
     @Test
@@ -183,12 +183,12 @@ public class ListingSearchServiceTest {
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
         assertEquals(5, searchResponse.getResults().size());
-        assertEquals("2011", searchResponse.getResults().get(0).getEdition().getYear());
-        assertEquals("2011", searchResponse.getResults().get(1).getEdition().getYear());
-        assertEquals("2014", searchResponse.getResults().get(2).getEdition().getYear());
-        assertEquals("2015", searchResponse.getResults().get(3).getEdition().getYear());
+        assertEquals("2011", searchResponse.getResults().get(0).getEdition().getName());
+        assertEquals("2011", searchResponse.getResults().get(1).getEdition().getName());
+        assertEquals("2014", searchResponse.getResults().get(2).getEdition().getName());
+        assertEquals("2015", searchResponse.getResults().get(3).getEdition().getName());
         assertFalse(searchResponse.getResults().get(3).getCuresUpdate());
-        assertEquals("2015", searchResponse.getResults().get(4).getEdition().getYear());
+        assertEquals("2015", searchResponse.getResults().get(4).getEdition().getName());
         assertTrue(searchResponse.getResults().get(4).getCuresUpdate());
     }
 
@@ -214,13 +214,13 @@ public class ListingSearchServiceTest {
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
         assertEquals(5, searchResponse.getResults().size());
-        assertEquals("2015", searchResponse.getResults().get(0).getEdition().getYear());
+        assertEquals("2015", searchResponse.getResults().get(0).getEdition().getName());
         assertTrue(searchResponse.getResults().get(0).getCuresUpdate());
-        assertEquals("2015", searchResponse.getResults().get(1).getEdition().getYear());
+        assertEquals("2015", searchResponse.getResults().get(1).getEdition().getName());
         assertFalse(searchResponse.getResults().get(1).getCuresUpdate());
-        assertEquals("2014", searchResponse.getResults().get(2).getEdition().getYear());
-        assertEquals("2011", searchResponse.getResults().get(3).getEdition().getYear());
-        assertEquals("2011", searchResponse.getResults().get(4).getEdition().getYear());
+        assertEquals("2014", searchResponse.getResults().get(2).getEdition().getName());
+        assertEquals("2011", searchResponse.getResults().get(3).getEdition().getName());
+        assertEquals("2011", searchResponse.getResults().get(4).getEdition().getName());
     }
 
     @Test
@@ -1885,8 +1885,8 @@ public class ListingSearchServiceTest {
         return listings;
     }
 
-    private ListingSearchResult.CertificationBody acb(String name) {
-        return ListingSearchResult.CertificationBody.builder()
+    private ListingSearchResult.IdNamePair acb(String name) {
+        return ListingSearchResult.IdNamePair.builder()
                 .name(name)
                 .build();
     }
@@ -1897,38 +1897,38 @@ public class ListingSearchServiceTest {
                 .build();
     }
 
-    private ListingSearchResult.ProductOwner productOwner(String name) {
-        return ListingSearchResult.ProductOwner.builder()
+    private ListingSearchResult.IdNamePair productOwner(String name) {
+        return ListingSearchResult.IdNamePair.builder()
                 .name(name)
                 .build();
     }
 
-    private ListingSearchResult.Product product(String name) {
-        return ListingSearchResult.Product.builder()
+    private ListingSearchResult.IdNamePair product(String name) {
+        return ListingSearchResult.IdNamePair.builder()
                 .name(name)
                 .build();
     }
 
-    private ListingSearchResult.Version version(String name) {
-        return ListingSearchResult.Version.builder()
+    private ListingSearchResult.IdNamePair version(String name) {
+        return ListingSearchResult.IdNamePair.builder()
                 .name(name)
                 .build();
     }
 
-    private ListingSearchResult.Edition edition(String year) {
-        return ListingSearchResult.Edition.builder()
-                .year(year)
+    private ListingSearchResult.IdNamePair edition(String year) {
+        return ListingSearchResult.IdNamePair.builder()
+                .name(year)
                 .build();
     }
 
-    private ListingSearchResult.Status status(String name) {
-        return ListingSearchResult.Status.builder()
+    private ListingSearchResult.IdNamePair status(String name) {
+        return ListingSearchResult.IdNamePair.builder()
                 .name(name)
                 .build();
     }
 
-    private ListingSearchResult.PracticeType practiceType(String name) {
-        return ListingSearchResult.PracticeType.builder()
+    private ListingSearchResult.IdNamePair practiceType(String name) {
+        return ListingSearchResult.IdNamePair.builder()
                 .name(name)
                 .build();
     }

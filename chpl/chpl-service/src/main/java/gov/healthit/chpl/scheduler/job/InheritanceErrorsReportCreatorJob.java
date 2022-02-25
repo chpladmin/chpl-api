@@ -196,7 +196,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
 
     private List<ListingSearchResult> filterData(List<ListingSearchResult> certifiedProducts) {
         return certifiedProducts.stream()
-                .filter(cp -> cp.getEdition() != null && cp.getEdition().getYear().equalsIgnoreCase(EDITION_2015))
+                .filter(cp -> cp.getEdition() != null && cp.getEdition().getName().equalsIgnoreCase(EDITION_2015))
                 .collect(Collectors.toList());
     }
 

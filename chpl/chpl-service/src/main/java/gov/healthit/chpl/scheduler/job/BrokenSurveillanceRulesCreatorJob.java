@@ -124,7 +124,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     }
 
     private boolean isEdition2015(ListingSearchResult listing) {
-        return listing.getEdition() != null && listing.getEdition().getYear().equals(EDITION_2015);
+        return listing.getEdition() != null && listing.getEdition().getName().equals(EDITION_2015);
     }
 
     private boolean isCertificationStatusSuspendedByAcb(ListingSearchResult listing) {

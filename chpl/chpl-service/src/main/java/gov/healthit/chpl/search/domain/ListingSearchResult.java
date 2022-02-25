@@ -21,6 +21,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
@@ -34,20 +35,20 @@ public class ListingSearchResult implements Serializable {
 
     private Long id;
     private String chplProductNumber;
-    private Edition edition;
-    private CertificationBody certificationBody;
+    private IdNamePair edition;
+    private IdNamePair certificationBody;
     private String acbCertificationId;
-    private PracticeType practiceType;
+    private IdNamePair practiceType;
     private Developer developer;
-    private Product product;
-    private Version version;
+    private IdNamePair product;
+    private IdNamePair version;
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate certificationDate;
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate decertificationDate;
-    private Status certificationStatus;
+    private IdNamePair certificationStatus;
     private Boolean curesUpdate;
     private Long surveillanceCount;
     private Long openSurveillanceNonConformityCount;
@@ -62,7 +63,7 @@ public class ListingSearchResult implements Serializable {
     private Long closedSurveillanceCount;
     private PromotingInteroperability promotingInteroperability;
     private String mandatoryDisclosures;
-    private Set<ProductOwner> previousDevelopers;
+    private Set<IdNamePair> previousDevelopers;
     private Set<CertificationCriterion> criteriaMet;
     private Set<CQM> cqmsMet;
     private Set<DateRange> surveillanceDateRanges;
@@ -81,7 +82,7 @@ public class ListingSearchResult implements Serializable {
         this.setClosedSurveillanceCount(0L);
         this.setOpenSurveillanceNonConformityCount(0L);
         this.setClosedSurveillanceNonConformityCount(0L);
-        previousDevelopers = new HashSet<ProductOwner>();
+        previousDevelopers = new HashSet<IdNamePair>();
         criteriaMet = new HashSet<CertificationCriterion>();
         cqmsMet = new HashSet<CQM>();
         surveillanceDateRanges = new HashSet<DateRange>();
@@ -114,72 +115,25 @@ public class ListingSearchResult implements Serializable {
 
     @JsonIgnore
     public String getDerivedEdition() {
-        return getEdition().getYear() + (BooleanUtils.isTrue(getCuresUpdate()) ? CertificationEdition.CURES_SUFFIX : "");
+        return getEdition().getName() + (BooleanUtils.isTrue(getCuresUpdate()) ? CertificationEdition.CURES_SUFFIX : "");
     }
 
 
     @Getter
-    @Builder
+    @SuperBuilder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Edition {
-        private Long id;
-        private String year;
-    }
-
-    @Getter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class CertificationBody {
+    public static class IdNamePair {
         private Long id;
         private String name;
     }
 
     @Getter
-    @Builder
+    @SuperBuilder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class PracticeType {
-        private Long id;
-        private String name;
-    }
-
-    @Getter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Developer {
-        private Long id;
-        private String name;
-        private Status status;
-    }
-
-    @Getter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Product {
-        private Long id;
-        private String name;
-    }
-
-    @Getter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ProductOwner {
-        private Long id;
-        private String name;
-    }
-
-    @Getter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Version {
-        private Long id;
-        private String name;
+    public static class Developer extends IdNamePair {
+        private IdNamePair status;
     }
 
     @Getter
@@ -229,16 +183,7 @@ public class ListingSearchResult implements Serializable {
         @JsonDeserialize(using = LocalDateDeserializer.class)
         @JsonSerialize(using = LocalDateSerializer.class)
         private LocalDate statusStart;
-        private Status status;
-    }
-
-    @Getter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Status {
-        private Long id;
-        private String name;
+        private IdNamePair status;
     }
 
     @Getter

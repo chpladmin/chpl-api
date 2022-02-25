@@ -67,7 +67,7 @@ public class ListingSearchManager {
     private void populateDirectReviewFields(ListingSearchResult searchResult, List<CertificationStatusEvent> statusEvents) {
         List<DirectReview> listingDrs = drService.getDirectReviewsRelatedToListing(searchResult.getId(),
                 searchResult.getDeveloper().getId(),
-                searchResult.getEdition().getYear(),
+                searchResult.getEdition().getName(),
                 statusEvents);
         searchResult.setDirectReviewCount(listingDrs.size());
         searchResult.setOpenDirectReviewNonConformityCount(
