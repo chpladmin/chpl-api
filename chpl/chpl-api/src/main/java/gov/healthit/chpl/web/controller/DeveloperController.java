@@ -344,7 +344,7 @@ public class DeveloperController {
     }
 
     @Operation(summary = "Create a new attestation submission end date exception for a developer.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB_ADMIN",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ONC_ACB",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
