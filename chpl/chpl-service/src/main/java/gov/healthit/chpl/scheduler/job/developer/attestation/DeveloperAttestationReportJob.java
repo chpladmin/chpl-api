@@ -124,6 +124,7 @@ public class DeveloperAttestationReportJob implements Job {
                                     .openSurveillanceNonconformities(getOpenSurveillanceNonconformities(dev))
                                     .totalDirectReviewNonconformities(getTotalDirectReviewNonconformities(dev))
                                     .openDirectReviewNonconformities(getOpenDirectReviewNonconformities(dev))
+                                    .assurancesValidation(getAssurancesValidation(dev))
                                     .realWorldTestingValidation(getRealWorldTestingValidation(dev))
                                     .build();
                             })
@@ -312,6 +313,14 @@ public class DeveloperAttestationReportJob implements Job {
             return "Has listing(s) with RWT";
         } else {
             return "No listings with RWT";
+        }
+    }
+
+    private String getAssurancesValidation(Developer developer) {
+        if (attestationValidationService.validateAssurances(developer, getListingDataForDeveloper(developer))) {
+            return "Has listing(s) with Assurances criteria ** (b)(6) or (b)(10)";
+        } else {
+            return "No listings with Assurances criteria ** (b)(6) or (b)(10)";
         }
     }
 }

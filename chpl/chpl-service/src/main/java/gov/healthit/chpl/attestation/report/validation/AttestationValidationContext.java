@@ -22,6 +22,8 @@ public class AttestationValidationContext {
 
     private List<CertificationCriterion> realWorldTestingCriteria;
 
+    private List<CertificationCriterion> assuranceCriteria;
+
     private final List<String> activeStatuses = Stream.of(CertificationStatusType.Active.getName(),
             CertificationStatusType.SuspendedByAcb.getName(),
             CertificationStatusType.SuspendedByOnc.getName())

@@ -17,13 +17,19 @@ import gov.healthit.chpl.service.CertificationCriterionService;
 public class AttestationValidationService {
 
     private List<CertificationCriterion> realWorldTestingCriteria;
+    private List<CertificationCriterion> assurancesCriteria;
 
 
     @Autowired
     public AttestationValidationService(CertificationCriterionService certificationCriterionService,
-            @Value("${realWorldTestingCriteriaKeys}") String[] eligibleCriteriaKeys) {
+            @Value("${realWorldTestingCriteriaKeys}") String[] realWorldTestingCriteriaKeys,
+            @Value("${assurancesCriteriaKeys}") String[] assurancesCriteriaKeys) {
 
-        realWorldTestingCriteria = Arrays.asList(eligibleCriteriaKeys).stream()
+        realWorldTestingCriteria = Arrays.asList(realWorldTestingCriteriaKeys).stream()
+                .map(key -> certificationCriterionService.get(key))
+                .collect(Collectors.toList());
+
+        assurancesCriteria = Arrays.asList(assurancesCriteriaKeys).stream()
                 .map(key -> certificationCriterionService.get(key))
                 .collect(Collectors.toList());
     }
@@ -33,9 +39,23 @@ public class AttestationValidationService {
                 .developer(developer)
                 .listings(listings)
                 .realWorldTestingCriteria(realWorldTestingCriteria)
+                .assuranceCriteria(assurancesCriteria)
                 .build();
 
         RealWorldTestingValidation rwtValidation = new RealWorldTestingValidation();
         return rwtValidation.isValid(context);
     }
+
+    public Boolean validateAssurances(Developer developer, List<CertifiedProductBasicSearchResult> listings) {
+        AttestationValidationContext context = AttestationValidationContext.builder()
+                .developer(developer)
+                .listings(listings)
+                .realWorldTestingCriteria(realWorldTestingCriteria)
+                .assuranceCriteria(assurancesCriteria)
+                .build();
+
+        AssurancesValidation assurancesValidation = new AssurancesValidation();
+        return assurancesValidation.isValid(context);
+    }
+
 }
