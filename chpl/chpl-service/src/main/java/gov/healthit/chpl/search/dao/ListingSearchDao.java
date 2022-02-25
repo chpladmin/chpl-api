@@ -56,7 +56,6 @@ public class ListingSearchDao extends BaseDAOImpl {
         return domainResults;
     }
 
-
     private List<ListingSearchResult> convertToListingSearchResults(List<ListingSearchEntity> entities)
         throws EntityRetrievalException, DateTimeParseException, NumberFormatException  {
         return entities.stream()
