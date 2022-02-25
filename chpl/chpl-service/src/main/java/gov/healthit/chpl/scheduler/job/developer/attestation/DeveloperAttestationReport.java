@@ -28,6 +28,7 @@ public class DeveloperAttestationReport {
     private Long openDirectReviewNonconformities;
     private String assurancesValidation;
     private String realWorldTestingValidation;
+    private String apiValidation;
 
     public List<String> toListOfStrings() {
         return Arrays.asList(
@@ -49,7 +50,8 @@ public class DeveloperAttestationReport {
                 totalDirectReviewNonconformities != null ? totalDirectReviewNonconformities.toString() : "",
                 openDirectReviewNonconformities != null ? openDirectReviewNonconformities.toString() : "",
                 assurancesValidation,
-                realWorldTestingValidation
+                realWorldTestingValidation,
+                apiValidation
                 );
     }
 

@@ -30,7 +30,9 @@ import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
 import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
 import gov.healthit.chpl.attestation.report.validation.AttestationValidationService;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.Developer;
@@ -53,6 +55,13 @@ public class DeveloperAttestationReportJob implements Job {
     private static final Long API_ATTESTATION_ID = 4L;
     private static final Long RWT_ATTESTATION_ID = 5L;
 
+    private static final String RWT_VALIDATION_TRUE = "Has listing(s) with RWT";
+    private static final String RWT_VALIDATION_FALSE = "No listings with RWT";
+    private static final String ASSURANCES_VALIDATION_TRUE = "Has listing(s) with Assurances criteria ** (b)(6) or (b)(10)";
+    private static final String ASSURANCES_VALIDATION_FALSE = "No listings with Assurances criteria ** (b)(6) or (b)(10)";
+    private static final String API_VALIDATION_TRUE = "Has listing(s) with API criteria g7, g8, g9, or g10";
+    private static final String API_VALIDATION_FALSE = "No listings with API criteria g7, g8, g9, or g10";
+
     @Autowired
     private DeveloperDAO developerDAO;
 
@@ -70,6 +79,9 @@ public class DeveloperAttestationReportJob implements Job {
 
     @Autowired
     private AttestationValidationService attestationValidationService;
+
+    @Autowired
+    private CertificationBodyDAO certificationBodyDAO;
 
     private Map<Long, List<CertifiedProductBasicSearchResult>> developerListings = new HashMap<Long, List<CertifiedProductBasicSearchResult>>();
 
@@ -126,10 +138,11 @@ public class DeveloperAttestationReportJob implements Job {
                                     .openDirectReviewNonconformities(getOpenDirectReviewNonconformities(dev))
                                     .assurancesValidation(getAssurancesValidation(dev))
                                     .realWorldTestingValidation(getRealWorldTestingValidation(dev))
+                                    .apiValidation(getApiValidation(dev))
                                     .build();
                             })
                             .sorted(Comparator.comparing(DeveloperAttestationReport::getDeveloperName))
-                            .peek(row -> LOGGER.info(row.toListOfStrings().stream().collect(Collectors.joining(", "))))
+                            .peek(row -> LOGGER.info(row.toListOfStrings().stream().collect(Collectors.joining("|"))))
                             .toList();
 
                     LOGGER.info("Total Report Rows found: {}", reportRows.size());
@@ -240,6 +253,12 @@ public class DeveloperAttestationReportJob implements Job {
             .collect(Collectors.toList());
     }
 
+    private List<CertificationBody> getActiveAcbs() {
+        return certificationBodyDAO.findAllActive().stream()
+                .map(dto -> new CertificationBody(dto))
+                .toList();
+    }
+
     private Date toDate(LocalDate localDate) {
         ZoneId defaultZoneId = ZoneId.systemDefault();
         return  Date.from(localDate.atStartOfDay(defaultZoneId).toInstant());
@@ -310,17 +329,25 @@ public class DeveloperAttestationReportJob implements Job {
 
     private String getRealWorldTestingValidation(Developer developer) {
         if (attestationValidationService.validateRealWorldTesting(developer, getListingDataForDeveloper(developer))) {
-            return "Has listing(s) with RWT";
+            return RWT_VALIDATION_TRUE;
         } else {
-            return "No listings with RWT";
+            return RWT_VALIDATION_FALSE;
         }
     }
 
     private String getAssurancesValidation(Developer developer) {
         if (attestationValidationService.validateAssurances(developer, getListingDataForDeveloper(developer))) {
-            return "Has listing(s) with Assurances criteria ** (b)(6) or (b)(10)";
+            return ASSURANCES_VALIDATION_TRUE;
         } else {
-            return "No listings with Assurances criteria ** (b)(6) or (b)(10)";
+            return ASSURANCES_VALIDATION_FALSE;
+        }
+    }
+
+    private String getApiValidation(Developer developer) {
+        if (attestationValidationService.validateAssurances(developer, getListingDataForDeveloper(developer))) {
+            return API_VALIDATION_TRUE;
+        } else {
+            return API_VALIDATION_FALSE;
         }
     }
 }

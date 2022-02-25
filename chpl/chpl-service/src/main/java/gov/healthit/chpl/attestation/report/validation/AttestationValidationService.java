@@ -18,18 +18,23 @@ public class AttestationValidationService {
 
     private List<CertificationCriterion> realWorldTestingCriteria;
     private List<CertificationCriterion> assurancesCriteria;
-
+    private List<CertificationCriterion> apiCriteria;
 
     @Autowired
     public AttestationValidationService(CertificationCriterionService certificationCriterionService,
             @Value("${realWorldTestingCriteriaKeys}") String[] realWorldTestingCriteriaKeys,
-            @Value("${assurancesCriteriaKeys}") String[] assurancesCriteriaKeys) {
+            @Value("${assurancesCriteriaKeys}") String[] assurancesCriteriaKeys,
+            @Value("${apiCriteriaKeys}") String[] apiCriteriaKeys) {
 
         realWorldTestingCriteria = Arrays.asList(realWorldTestingCriteriaKeys).stream()
                 .map(key -> certificationCriterionService.get(key))
                 .collect(Collectors.toList());
 
         assurancesCriteria = Arrays.asList(assurancesCriteriaKeys).stream()
+                .map(key -> certificationCriterionService.get(key))
+                .collect(Collectors.toList());
+
+        apiCriteria = Arrays.asList(apiCriteriaKeys).stream()
                 .map(key -> certificationCriterionService.get(key))
                 .collect(Collectors.toList());
     }
@@ -40,6 +45,7 @@ public class AttestationValidationService {
                 .listings(listings)
                 .realWorldTestingCriteria(realWorldTestingCriteria)
                 .assuranceCriteria(assurancesCriteria)
+                .apiCriteria(apiCriteria)
                 .build();
 
         RealWorldTestingValidation rwtValidation = new RealWorldTestingValidation();
