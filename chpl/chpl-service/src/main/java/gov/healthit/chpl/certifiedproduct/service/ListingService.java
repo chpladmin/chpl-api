@@ -33,7 +33,6 @@ import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
-import gov.healthit.chpl.domain.TransparencyAttestation;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -146,7 +145,6 @@ public class ListingService {
                 .productAdditionalSoftware(dto.getProductAdditionalSoftware())
                 .transparencyAttestationUrl(dto.getMandatoryDisclosures())
                 .mandatoryDisclosures(dto.getMandatoryDisclosures())
-                .transparencyAttestation(dto.getTransparencyAttestation() != null ? new TransparencyAttestation(dto.getTransparencyAttestation()) : null)
                 .lastModifiedDate(dto.getLastModifiedDate().getTime())
                 .countCerts(dto.getCountCertifications())
                 .countCqms(dto.getCountCqms())

@@ -18,7 +18,6 @@ import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
-import gov.healthit.chpl.dto.TransparencyAttestationDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTestingLabDTO;
@@ -262,15 +261,5 @@ public class ChplNumberReviewer implements Reviewer {
             listing.getErrorMessages()
                     .add("Could not parse the certification date part of the product id: " + certifiedDateCode);
         }
-    }
-
-    private Boolean areTransparencyAttestationsEqual(TransparencyAttestationDTO ta1, TransparencyAttestationDTO ta2) {
-        Boolean equal = false;
-        if (ta1 != null && ta2 != null) {
-            if (ta1.getTransparencyAttestation() != null && ta2.getTransparencyAttestation() != null) {
-                equal = ta1.getTransparencyAttestation().equals(ta2.getTransparencyAttestation());
-            }
-        }
-        return equal;
     }
 }
