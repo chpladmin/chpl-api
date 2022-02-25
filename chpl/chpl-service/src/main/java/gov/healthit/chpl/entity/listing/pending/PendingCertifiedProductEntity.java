@@ -19,10 +19,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Type;
-
 import gov.healthit.chpl.entity.AddressEntity;
-import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.listing.measure.PendingListingMeasureEntity;
 import lombok.Data;
 
@@ -119,13 +116,6 @@ public class PendingCertifiedProductEntity {
 
     @Column(name = "vendor_street_address")
     private String developerStreetAddress;
-
-    @Column(name = "vendor_transparency_attestation")
-    @Type(type = "gov.healthit.chpl.entity.PostgresAttestationType", parameters = {
-            @org.hibernate.annotations.Parameter(name = "enumClassName",
-                    value = "gov.healthit.chpl.entity.AttestationType")
-    })
-    private AttestationType transparencyAttestation;
 
     @Column(name = "vendor_mandatory_disclosures")
     private String mandatoryDisclosures;

@@ -3,7 +3,7 @@
 <Configuration xmlns:xi="http://www.w3.org/2001/XInclude" 
     status="warn" monitorInterval="300" name="CHPL-Service-DEV" packages="">
     <Properties>
-        <Property name="logDir">/opt/tomcat8/logs</Property>
+        <Property name="logDir">${sys:chpl.logging.root}</Property>
     </Properties>
     <xi:include href="log4j2-xinclude-file-appenders.xml" />
     <xi:include href="log4j2-xinclude-file-appenders-json.xml" />
