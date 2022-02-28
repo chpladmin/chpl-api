@@ -22,7 +22,6 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
-import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
@@ -195,12 +194,6 @@ public class CacheableDimensionalDataManager {
     @Transactional
     @Cacheable(CacheNames.DEVELOPER_NAMES)
     public Set<KeyValueModelStatuses> getDevelopers() {
-        List<Developer> developers = this.developerDao.findAll();
-        Set<KeyValueModelStatuses> developerNames = new HashSet<KeyValueModelStatuses>();
-        for (Developer developer : developers) {
-            developerNames.add(new KeyValueModelStatuses(developer.getDeveloperId(), developer.getName(),
-                    developer.getStatuses()));
-        }
-        return developerNames;
+        return developerDao.findAllWithStatuses();
     }
 }

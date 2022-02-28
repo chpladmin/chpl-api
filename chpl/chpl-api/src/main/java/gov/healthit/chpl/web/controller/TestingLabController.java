@@ -23,7 +23,6 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UsersResponse;
-import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -131,15 +130,7 @@ public class TestingLabController {
         if (atlInfo.getAddress() == null) {
             throw new InvalidArgumentsException("An address is required for a new testing lab");
         }
-        AddressDTO address = new AddressDTO();
-        address.setId(atlInfo.getAddress().getAddressId());
-        address.setStreetLineOne(atlInfo.getAddress().getLine1());
-        address.setStreetLineTwo(atlInfo.getAddress().getLine2());
-        address.setCity(atlInfo.getAddress().getCity());
-        address.setState(atlInfo.getAddress().getState());
-        address.setZipcode(atlInfo.getAddress().getZipcode());
-        address.setCountry(atlInfo.getAddress().getCountry());
-        toCreate.setAddress(address);
+        toCreate.setAddress(atlInfo.getAddress());
         toCreate = atlManager.create(toCreate);
         return new TestingLab(toCreate);
     }
@@ -195,15 +186,7 @@ public class TestingLabController {
             if (updatedAtl.getAddress() == null) {
                 throw new InvalidArgumentsException("An address is required to update the testing lab");
             }
-            AddressDTO address = new AddressDTO();
-            address.setId(updatedAtl.getAddress().getAddressId());
-            address.setStreetLineOne(updatedAtl.getAddress().getLine1());
-            address.setStreetLineTwo(updatedAtl.getAddress().getLine2());
-            address.setCity(updatedAtl.getAddress().getCity());
-            address.setState(updatedAtl.getAddress().getState());
-            address.setZipcode(updatedAtl.getAddress().getZipcode());
-            address.setCountry(updatedAtl.getAddress().getCountry());
-            toUpdate.setAddress(address);
+            toUpdate.setAddress(updatedAtl.getAddress());
             atlManager.update(toUpdate);
         }
 

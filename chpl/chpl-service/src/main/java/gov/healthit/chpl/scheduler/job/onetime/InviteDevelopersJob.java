@@ -42,11 +42,11 @@ import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.auth.InvitationDAO;
 import gov.healthit.chpl.dao.auth.UserPermissionDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.auth.UserInvitation;
 import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.UserDeveloperMapDTO;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.EmailOverrider;
@@ -81,18 +81,18 @@ public class InviteDevelopersJob implements Job {
             List<CertificationStatusType> certificationStatuses = Stream.of(CertificationStatusType.Active,
                     CertificationStatusType.SuspendedByAcb,
                     CertificationStatusType.SuspendedByOnc).collect(Collectors.toList());
-            List<DeveloperDTO> allDevelopers = developerListingMapDao.getDevelopersWithListingsInEditionAndStatus(
+            List<Developer> allDevelopers = developerListingMapDao.getDevelopersWithListingsInEditionAndStatus(
                     CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId(), certificationStatuses);
             LOGGER.info("There are " + allDevelopers.size() + " in the system with Active or Suspended 2015 listings.");
-            allDevelopers.sort(new Comparator<DeveloperDTO>() {
+            allDevelopers.sort(new Comparator<Developer>() {
                 @Override
-                public int compare(DeveloperDTO dev1, DeveloperDTO dev2) {
+                public int compare(Developer dev1, Developer dev2) {
                     return dev1.getName().compareToIgnoreCase(dev2.getName());
                 }
             });
 
             bulkEmailer.open();
-            List<DeveloperDTO> developersNeedingInvitations = allDevelopers.stream()
+            List<Developer> developersNeedingInvitations = allDevelopers.stream()
                 .filter(developer -> !doesDeveloperHaveUserAccounts(developer))
                 .collect(Collectors.toList());
             bulkEmailer.inviteAllDeveloperPocs(developersNeedingInvitations);
@@ -105,7 +105,7 @@ public class InviteDevelopersJob implements Job {
 
     }
 
-    private boolean doesDeveloperHaveUserAccounts(DeveloperDTO developer) {
+    private boolean doesDeveloperHaveUserAccounts(Developer developer) {
         List<UserDeveloperMapDTO> userDeveloperMaps = userDeveloperMapDao.getByDeveloperId(developer.getId());
         LOGGER.info(String.format("Developer '" + developer.getName() + "' (id: "
                 + developer.getId() + ") has " + userDeveloperMaps.size() + " user%s",
@@ -206,9 +206,9 @@ public class InviteDevelopersJob implements Job {
         }
 
         @Transactional
-        public void inviteAllDeveloperPocs(List<DeveloperDTO> developers) throws UserCreationException, UserRetrievalException,
+        public void inviteAllDeveloperPocs(List<Developer> developers) throws UserCreationException, UserRetrievalException,
             AddressException, MessagingException {
-            for (DeveloperDTO developer : developers) {
+            for (Developer developer : developers) {
                 if (developerPocIsValid(developer)) {
                     UserInvitation invitation = createInvitation(developer);
                     String htmlMessage = createHtmlInvitation(invitation);
@@ -233,7 +233,7 @@ public class InviteDevelopersJob implements Job {
             return htmlMessage;
         }
 
-        private boolean developerPocIsValid(DeveloperDTO developer) {
+        private boolean developerPocIsValid(Developer developer) {
             if (developer.getContact() == null || StringUtils.isEmpty(developer.getContact().getEmail())) {
                 LOGGER.warn("Developer '" + developer.getName() + "' (id: " + developer.getId() + ") has no POC. No invitation can be sent.");
                 return false;
@@ -246,7 +246,7 @@ public class InviteDevelopersJob implements Job {
             return true;
         }
 
-        private UserInvitation createInvitation(DeveloperDTO developer) throws UserCreationException, UserRetrievalException {
+        private UserInvitation createInvitation(Developer developer) throws UserCreationException, UserRetrievalException {
             String emailAddress = developer.getContact().getEmail();
             UserInvitation invitation = UserInvitation.builder()
                     .emailAddress(emailAddress)
@@ -306,7 +306,7 @@ public class InviteDevelopersJob implements Job {
     private static class DeveloperListingMapDao extends BaseDAOImpl {
 
         @Transactional
-        public List<DeveloperDTO> getDevelopersWithListingsInEditionAndStatus(Long certificationEditionId,
+        public List<Developer> getDevelopersWithListingsInEditionAndStatus(Long certificationEditionId,
                 List<CertificationStatusType> certificationStatuses) {
                 String hql = "SELECT DISTINCT dev "
                         + "FROM DeveloperEntity dev, CertifiedProductDetailsEntity cpd "
@@ -328,11 +328,11 @@ public class InviteDevelopersJob implements Job {
 
                 List<DeveloperEntity> queryResults = query.getResultList();
                 if (queryResults == null || queryResults.size() == 0) {
-                    return new ArrayList<DeveloperDTO>();
+                    return new ArrayList<Developer>();
                 }
                 return queryResults.stream()
-                        .map(entity -> new DeveloperDTO(entity))
-                        .collect(Collectors.toList());
+                        .map(entity -> entity.toDomain())
+                        .toList();
         }
     }
 }

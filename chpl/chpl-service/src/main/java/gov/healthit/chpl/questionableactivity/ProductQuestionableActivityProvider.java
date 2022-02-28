@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
@@ -47,8 +47,8 @@ public class ProductQuestionableActivityProvider {
             ProductDTO origProduct, ProductDTO newProduct) {
 
         QuestionableActivityProductDTO activity = null;
-        DeveloperDTO origOwner = origProduct.getOwner();
-        DeveloperDTO newOwner = newProduct.getOwner();
+        Developer origOwner = origProduct.getOwner();
+        Developer newOwner = newProduct.getOwner();
         if (origOwner != null && origOwner.getId() != null
                 && (newOwner == null || newOwner.getId() == null)) {
             activity = new QuestionableActivityProductDTO();

@@ -13,8 +13,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.compliance.DirectReview;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import lombok.extern.log4j.Log4j2;
@@ -55,11 +55,11 @@ public class DirectReviewUpdateEmailService {
      * @param originalListings
      * @param changedListings
      */
-    public void sendEmail(List<DeveloperDTO> originalDevelopers, List<DeveloperDTO> changedDevelopers,
+    public void sendEmail(List<Developer> originalDevelopers, List<Developer> changedDevelopers,
             Map<Long, CertifiedProductSearchDetails> originalListings,
             Map<Long, CertifiedProductSearchDetails> changedListings) {
         List<DirectReview> originalDeveloperDrs = new ArrayList<DirectReview>();
-        for (DeveloperDTO originalDeveloper : originalDevelopers) {
+        for (Developer originalDeveloper : originalDevelopers) {
             try {
                 originalDeveloperDrs.addAll(directReviewService.getDirectReviews(originalDeveloper.getId()));
             } catch (Exception ex) {
@@ -88,7 +88,7 @@ public class DirectReviewUpdateEmailService {
     }
 
     private void sendDirectReviewEmails(List<DirectReview> drs,
-            List<DeveloperDTO> originalDevelopers, List<DeveloperDTO> changedDevelopers,
+            List<Developer> originalDevelopers, List<Developer> changedDevelopers,
             Map<Long, CertifiedProductSearchDetails> originalListings,
             Map<Long, CertifiedProductSearchDetails> changedListings)
         throws EmailNotSentException {
@@ -122,8 +122,8 @@ public class DirectReviewUpdateEmailService {
                 .sendEmail();
     }
 
-    private void sendUnknownDirectReviewEmails(List<DeveloperDTO> originalDevelopers,
-            List<DeveloperDTO> changedDevelopers,
+    private void sendUnknownDirectReviewEmails(List<Developer> originalDevelopers,
+            List<Developer> changedDevelopers,
             Map<Long, CertifiedProductSearchDetails> originalListings,
             Map<Long, CertifiedProductSearchDetails> changedListings) throws EmailNotSentException {
         LOGGER.info("Sending email about unknown direct reviews.");
@@ -151,14 +151,14 @@ public class DirectReviewUpdateEmailService {
                 .sendEmail();
     }
 
-    private String formatDeveloperActionHtml(List<DeveloperDTO> originalDevelopers,
-            List<DeveloperDTO> changedDevelopers) {
+    private String formatDeveloperActionHtml(List<Developer> originalDevelopers,
+            List<Developer> changedDevelopers) {
         String html = "";
         if (!ObjectUtils.allNotNull(originalDevelopers, changedDevelopers)) {
             return html;
         } else if (originalDevelopers.size() == 1 && changedDevelopers.size() > 1) {
-            DeveloperDTO newDeveloper = null;
-            for (DeveloperDTO changedDeveloper : changedDevelopers) {
+            Developer newDeveloper = null;
+            for (Developer changedDeveloper : changedDevelopers) {
                 if (!(changedDeveloper.getId().equals(originalDevelopers.get(0).getId()))) {
                     newDeveloper = changedDeveloper;
                 }

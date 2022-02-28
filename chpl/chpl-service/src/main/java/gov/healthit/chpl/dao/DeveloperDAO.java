@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
@@ -21,6 +23,8 @@ import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.KeyValueModelStatuses;
+import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.entity.UserDeveloperMapEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
@@ -240,6 +244,23 @@ public class DeveloperDAO extends BaseDAOImpl {
         return entities.stream()
                 .map(entity -> entity.toDomain())
                 .toList();
+    }
+
+    public Set<KeyValueModelStatuses> findAllWithStatuses() {
+        List<DeveloperEntity> entities = getAllEntities();
+        return entities.stream()
+                .map(entity -> new KeyValueModelStatuses(entity.getId(), entity.getName(), createStatuses(entity)))
+                .collect(Collectors.toSet());
+    }
+
+    private Statuses createStatuses(DeveloperEntity entity) {
+        return new Statuses(entity.getDeveloperCertificationStatuses().getActive(),
+                entity.getDeveloperCertificationStatuses().getRetired(),
+                entity.getDeveloperCertificationStatuses().getWithdrawnByDeveloper(),
+                entity.getDeveloperCertificationStatuses().getWithdrawnByAcb(),
+                entity.getDeveloperCertificationStatuses().getSuspendedByAcb(),
+                entity.getDeveloperCertificationStatuses().getSuspendedByOnc(),
+                entity.getDeveloperCertificationStatuses().getTerminatedByOnc());
     }
 
     public List<Developer> findAllIncludingDeleted() {

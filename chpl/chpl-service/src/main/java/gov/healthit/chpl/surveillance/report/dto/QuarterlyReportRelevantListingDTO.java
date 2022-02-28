@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
@@ -38,7 +38,7 @@ public class QuarterlyReportRelevantListingDTO extends CertifiedProductDetailsDT
     public QuarterlyReportRelevantListingDTO(ListingWithPrivilegedSurveillanceEntity entity) {
         this.setId(entity.getId());
         this.setChplProductNumber(entity.getChplProductNumber());
-        DeveloperDTO developer = new DeveloperDTO();
+        Developer developer = new Developer();
         developer.setId(entity.getDeveloperId());
         developer.setName(entity.getDeveloperName());
         this.setDeveloper(developer);

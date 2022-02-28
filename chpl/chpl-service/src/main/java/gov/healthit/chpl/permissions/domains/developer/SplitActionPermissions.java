@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -38,12 +38,12 @@ public class SplitActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess(Object obj) {
-        if (!(obj instanceof DeveloperDTO)) {
+        if (!(obj instanceof Developer)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-            DeveloperDTO developer = (DeveloperDTO) obj;
+            Developer developer = (Developer) obj;
             if (!getResourcePermissions().isDeveloperActive(developer.getId())) {
                 //ACB can never split developer if original developer is not active
                 return false;

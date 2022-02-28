@@ -1,7 +1,7 @@
 package gov.healthit.chpl.manager.rules.developer;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.validator.routines.UrlValidator;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
@@ -14,8 +14,8 @@ public class DeveloperWebsiteWellFormedValidation extends ValidationRule<Develop
 
     @Override
     public boolean isValid(DeveloperValidationContext context) {
-        if (!StringUtils.isEmpty(context.getDeveloperDTO().getWebsite())
-                && !urlValidator.isValid(context.getDeveloperDTO().getWebsite())) {
+        if (!ObjectUtils.isEmpty(context.getDeveloper().getWebsite())
+                && !urlValidator.isValid(context.getDeveloper().getWebsite())) {
             getMessages().add(context.getErrorMessageUtil().getMessage("developer.websiteIsInvalid"));
             return false;
         }

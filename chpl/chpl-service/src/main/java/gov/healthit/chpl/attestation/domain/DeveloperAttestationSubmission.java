@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import gov.healthit.chpl.attestation.entity.DeveloperAttestationSubmissionEntity;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,7 +24,7 @@ public class DeveloperAttestationSubmission {
 
     public DeveloperAttestationSubmission(DeveloperAttestationSubmissionEntity entity) {
         this.id = entity.getId();
-        this.developer = new Developer(new DeveloperDTO(entity.getDeveloper()));
+        this.developer = entity.getDeveloper().toDomain();
         this.period = new AttestationPeriod(entity.getPeriod());
         this.signature = entity.getSignature();
         this.signatureEmail = entity.getSignatureEmail();

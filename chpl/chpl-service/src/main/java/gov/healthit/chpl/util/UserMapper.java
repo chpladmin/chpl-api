@@ -9,9 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.OrganizationDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
@@ -84,8 +84,8 @@ public class UserMapper {
             }
         }
         if (user.getPermission().getAuthority().equals(Authority.ROLE_DEVELOPER)) {
-            List<DeveloperDTO> devs = getAllDevelopersForUser(user.getId());
-            for (DeveloperDTO dev : devs) {
+            List<Developer> devs = getAllDevelopersForUser(user.getId());
+            for (Developer dev : devs) {
                 user.getOrganizations().add(new OrganizationDTO(dev.getId(), dev.getName()));
             }
         }
@@ -99,7 +99,7 @@ public class UserMapper {
         return atlDao.getTestingLabsByUserId(userId);
     }
 
-    private List<DeveloperDTO> getAllDevelopersForUser(Long userId) {
+    private List<Developer> getAllDevelopersForUser(Long userId) {
         return developerDao.getDevelopersByUserId(userId);
     }
 

@@ -76,17 +76,17 @@ public class ProductDAO extends BaseDAOImpl {
             entity.setLastModifiedUser(AuthUtil.getAuditId());
 
             if (dto.getContact() != null) {
-                if (dto.getContact().getId() != null) {
-                    ContactEntity contact = contactDao.getEntityById(dto.getContact().getId());
+                if (dto.getContact().getContactId() != null) {
+                    ContactEntity contact = contactDao.getEntityById(dto.getContact().getContactId());
                     if (contact != null && contact.getId() != null) {
                         entity.setContactId(contact.getId());
                         entity.setContact(contact);
                     }
                 } else {
-                    ContactEntity contact = contactDao.create(dto.getContact());
-                    if (contact != null) {
-                        entity.setContactId(contact.getId());
-                        entity.setContact(contact);
+                    Long contactId = contactDao.create(dto.getContact());
+                    if (contactId != null) {
+                        entity.setContactId(contactId);
+                        entity.setContact(contactDao.getEntityById(contactId));
                     }
                 }
             }
@@ -115,20 +115,18 @@ public class ProductDAO extends BaseDAOImpl {
         entity.setDeleted(dto.getDeleted() == null ?  Boolean.FALSE : dto.getDeleted());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         if (dto.getContact() != null) {
-            if (dto.getContact().getId() == null) {
+            if (dto.getContact().getContactId() == null) {
                 // if there is not contact id then it must not exist - create it
-                ContactEntity contact = contactDao.create(dto.getContact());
-                if (contact != null && contact.getId() != null) {
-                    entity.setContactId(contact.getId());
-                    entity.setContact(contact);
+                Long contactId = contactDao.create(dto.getContact());
+                if (contactId != null) {
+                    entity.setContactId(contactId);
+                    entity.setContact(contactDao.getEntityById(contactId));
                 }
             } else {
                 // if there is a contact id then set that on the object
-                ContactEntity contact = contactDao.update(dto.getContact());
-                if (contact != null) {
-                    entity.setContactId(dto.getContact().getId());
-                    entity.setContact(contact);
-                }
+                contactDao.update(dto.getContact());
+                entity.setContactId(dto.getContact().getContactId());
+                entity.setContact(contactDao.getEntityById(dto.getContact().getContactId()));
             }
         } else {
             // if there's no contact at all, set the id to null

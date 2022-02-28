@@ -37,6 +37,8 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.DimensionalData;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
@@ -60,8 +62,6 @@ import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
@@ -248,11 +248,11 @@ public class DimensionalDataManager {
     @Transactional
     public Set<KeyValueModel> getDeveloperStatuses() {
         LOGGER.debug("Getting all developer statuses from the database (not cached).");
-        List<DeveloperStatusDTO> dtos = this.devStatusDao.findAll();
+        List<DeveloperStatus> devStatuses = this.devStatusDao.findAll();
         Set<KeyValueModel> statuses = new HashSet<KeyValueModel>();
 
-        for (DeveloperStatusDTO dto : dtos) {
-            statuses.add(new KeyValueModel(dto.getId(), dto.getStatusName()));
+        for (DeveloperStatus devStatus : devStatuses) {
+            statuses.add(new KeyValueModel(devStatus.getId(), devStatus.getStatus()));
         }
 
         return statuses;
@@ -591,10 +591,10 @@ public class DimensionalDataManager {
         }
         result.setProducts(productNames);
 
-        List<DeveloperDTO> developerDtos = devDao.findAllIdsAndNames();
+        List<Developer> developers = devDao.findAllIdsAndNames();
         Set<KeyValueModel> developerNames = new HashSet<KeyValueModel>();
-        for (DeveloperDTO devDto : developerDtos) {
-            developerNames.add(new KeyValueModel(devDto.getId(), devDto.getName()));
+        for (Developer dev : developers) {
+            developerNames.add(new KeyValueModel(dev.getDeveloperId(), dev.getName()));
         }
         result.setDevelopers(developerNames);
 

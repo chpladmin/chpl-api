@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -31,9 +30,9 @@ public class DeveloperNormalizer {
 
     public void normalize(CertifiedProductSearchDetails listing) {
         if (hasUserEnteredDeveloperName(listing)) {
-            DeveloperDTO systemDev = devDao.getByName(listing.getDeveloper().getUserEnteredName());
+            Developer systemDev = devDao.getByName(listing.getDeveloper().getUserEnteredName());
             if (systemDev != null) {
-                copySystemDeveloperValues(listing.getDeveloper(), new Developer(systemDev));
+                copySystemDeveloperValues(listing.getDeveloper(), systemDev);
             } else {
                 copyUserEnteredDeveloperValues(listing.getDeveloper());
             }
@@ -44,12 +43,12 @@ public class DeveloperNormalizer {
             } catch (Exception ex) {
             }
             if (!StringUtils.isEmpty(devCode) && !devCode.equals(DeveloperManager.NEW_DEVELOPER_CODE)) {
-                DeveloperDTO systemDev = devDao.getByCode(devCode);
+                Developer systemDev = devDao.getByCode(devCode);
                 if (systemDev != null) {
                     if (listing.getDeveloper() == null) {
                         listing.setDeveloper(new Developer());
                     }
-                    copySystemDeveloperValues(listing.getDeveloper(), new Developer(systemDev));
+                    copySystemDeveloperValues(listing.getDeveloper(), systemDev);
                 } else {
                     copyUserEnteredDeveloperValues(listing.getDeveloper());
                 }

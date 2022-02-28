@@ -15,9 +15,9 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.core.env.Environment;
 
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.service.DirectReviewSearchService;
@@ -49,7 +49,7 @@ public class DirectReviewCsvPresenter {
             for (DirectReview directReview : allDirectReviews) {
                 if (directReview.getDeveloperId() != null) {
                     try {
-                        DeveloperDTO developer = developerManager.getById(directReview.getDeveloperId());
+                        Developer developer = developerManager.getById(directReview.getDeveloperId());
                         List<List<String>> rowValues = generateMultiRowValue(developer, directReview);
                         for (List<String> rowValue : rowValues) {
                             csvPrinter.printRecord(rowValue);
@@ -93,7 +93,7 @@ public class DirectReviewCsvPresenter {
         return result;
     }
 
-    protected List<List<String>> generateMultiRowValue(DeveloperDTO developer, DirectReview directReview) {
+    protected List<List<String>> generateMultiRowValue(Developer developer, DirectReview directReview) {
         List<List<String>> csvRows = new ArrayList<List<String>>();
         if (directReview.getNonConformities() != null && directReview.getNonConformities().size() > 0) {
             for (DirectReviewNonConformity nc : directReview.getNonConformities()) {
@@ -115,12 +115,12 @@ public class DirectReviewCsvPresenter {
         return csvRows;
     }
 
-    private void addDeveloperFields(List<String> csvRow, DeveloperDTO developer) {
+    private void addDeveloperFields(List<String> csvRow, Developer developer) {
         csvRow.add(developer.getId().toString());
         csvRow.add(developer.getName());
         csvRow.add(env.getProperty("chplUrlBegin") + "/#/organizations/developers/" + developer.getId());
         csvRow.add(developer.getStatus() == null || developer.getStatus().getStatus() == null
-                ? "Unknown" : developer.getStatus().getStatus().getStatusName());
+                ? "Unknown" : developer.getStatus().getStatus());
     }
 
     private void addBasicDirectReviewFields(List<String> csvRow, DirectReview dr) {

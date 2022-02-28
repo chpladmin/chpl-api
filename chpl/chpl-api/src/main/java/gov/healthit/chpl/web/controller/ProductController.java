@@ -26,14 +26,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductOwner;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.SplitProductsRequest;
 import gov.healthit.chpl.domain.UpdateProductsRequest;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.ContactDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
@@ -192,13 +191,7 @@ public class ProductController {
             toUpdate.setName(productInfo.getProduct().getName());
             toUpdate.setReportFileLocation(productInfo.getProduct().getReportFileLocation());
             if (productInfo.getProduct().getContact() != null) {
-                ContactDTO contact = new ContactDTO();
-                contact.setId(productInfo.getProduct().getContact().getContactId());
-                contact.setFullName(productInfo.getProduct().getContact().getFullName());
-                contact.setTitle(productInfo.getProduct().getContact().getTitle());
-                contact.setEmail(productInfo.getProduct().getContact().getEmail());
-                contact.setPhoneNumber(productInfo.getProduct().getContact().getPhoneNumber());
-                toUpdate.setContact(contact);
+                toUpdate.setContact(productInfo.getProduct().getContact());
             }
             // update the developer if an id is supplied
             if (productInfo.getNewDeveloperId() != null) {
@@ -212,7 +205,7 @@ public class ProductController {
                     ProductOwnerDTO prevOwnerDTO = new ProductOwnerDTO();
                     prevOwnerDTO.setId(prevOwner.getId());
                     prevOwnerDTO.setProductId(toUpdate.getId());
-                    DeveloperDTO dev = new DeveloperDTO();
+                    Developer dev = new Developer();
                     dev.setId(prevOwner.getDeveloper().getDeveloperId());
                     prevOwnerDTO.setDeveloper(dev);
                     prevOwnerDTO.setTransferDate(prevOwner.getTransferDate());
@@ -294,7 +287,7 @@ public class ProductController {
             final Long productId, final Long newDeveloperId) throws EntityRetrievalException {
 
         List<DuplicateChplProdNumber> duplicateChplProductNumbers = new ArrayList<DuplicateChplProdNumber>();
-        DeveloperDTO newDeveloper = developerManager.getById(newDeveloperId);
+        Developer newDeveloper = developerManager.getById(newDeveloperId);
 
         // cpManager.getByProduct(productId)
         List<CertifiedProductDetailsDTO> newDeveloperCertifiedProducts = cpManager.getByDeveloperId(newDeveloperId);
@@ -448,7 +441,7 @@ public class ProductController {
             for (ProductOwner prevOwner : productInfo.getProduct().getOwnerHistory()) {
                 ProductOwnerDTO prevOwnerDTO = new ProductOwnerDTO();
                 prevOwnerDTO.setId(prevOwner.getId());
-                DeveloperDTO dev = new DeveloperDTO();
+                Developer dev = new Developer();
                 dev.setId(prevOwner.getDeveloper().getDeveloperId());
                 prevOwnerDTO.setDeveloper(dev);
                 prevOwnerDTO.setTransferDate(prevOwner.getTransferDate());

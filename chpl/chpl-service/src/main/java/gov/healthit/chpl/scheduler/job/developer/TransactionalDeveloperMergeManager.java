@@ -17,9 +17,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -63,13 +63,13 @@ public class TransactionalDeveloperMergeManager {
     private DirectReviewUpdateEmailService directReviewEmailService;
 
     @Transactional
-    public DeveloperDTO merge(List<DeveloperDTO> beforeDevelopers, DeveloperDTO developerToCreate)
+    public Developer merge(List<Developer> beforeDevelopers, Developer developerToCreate)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, Exception {
         List<Long> developerIdsToMerge = beforeDevelopers.stream()
-                .map(DeveloperDTO::getId)
+                .map(Developer::getId)
                 .collect(Collectors.toList());
         LOGGER.info("Creating new developer " + developerToCreate.getName());
-        DeveloperDTO createdDeveloper = devManager.createDeprecated(developerToCreate);
+        Long createdDeveloperId = devManager.create(developerToCreate);
 
         Map<Long, CertifiedProductSearchDetails> preMergeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
         Map<Long, CertifiedProductSearchDetails> postMergeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
@@ -91,13 +91,13 @@ public class TransactionalDeveloperMergeManager {
             // add an item to the ownership history of each product
             ProductOwnerDTO historyToAdd = new ProductOwnerDTO();
             historyToAdd.setProductId(product.getId());
-            DeveloperDTO prevOwner = new DeveloperDTO();
+            Developer prevOwner = new Developer();
             prevOwner.setId(product.getOwner().getId());
             historyToAdd.setDeveloper(prevOwner);
             historyToAdd.setTransferDate(System.currentTimeMillis());
             product.getOwnerHistory().add(historyToAdd);
             // reassign those products to the new developer
-            product.getOwner().setId(createdDeveloper.getId());
+            product.getOwner().setId(createdDeveloperId);
             productManager.update(product);
 
             // get the listing details again - this time they will have the new developer code
@@ -124,13 +124,14 @@ public class TransactionalDeveloperMergeManager {
                     postMergeListing);
         }
 
+        Developer createdDeveloper = devManager.getById(createdDeveloperId);
         directReviewEmailService.sendEmail(beforeDevelopers, Arrays.asList(createdDeveloper),
                 preMergeListingDetails, postMergeListingDetails);
 
         LOGGER.info("Logging developer merge activity.");
-        DeveloperDTO afterDeveloper = devManager.getById(createdDeveloper.getId());
+        Developer afterDeveloper = devManager.getById(createdDeveloperId);
         String beforeDevNames = String.join(",",
-                beforeDevelopers.stream().map(DeveloperDTO::getName).collect(Collectors.toList()));
+                beforeDevelopers.stream().map(Developer::getName).collect(Collectors.toList()));
         activityManager.addActivity(ActivityConcept.DEVELOPER, afterDeveloper.getId(),
                 "Merged developers " + beforeDevNames + " into " + afterDeveloper.getName(),
                 beforeDevelopers, afterDeveloper);

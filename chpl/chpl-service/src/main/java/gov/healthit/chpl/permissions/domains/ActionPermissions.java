@@ -9,9 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -55,8 +55,8 @@ public abstract class ActionPermissions {
     }
 
     public boolean isDeveloperValidForCurrentUser(final Long developerId) {
-        List<DeveloperDTO> developers = resourcePermissions.getAllDevelopersForCurrentUser();
-        for (DeveloperDTO dto : developers) {
+        List<Developer> developers = resourcePermissions.getAllDevelopersForCurrentUser();
+        for (Developer dto : developers) {
             if (dto.getId().equals(developerId)) {
                 return true;
             }

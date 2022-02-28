@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
@@ -74,8 +74,8 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         product.setId(1L);
         product.getOwner().setId(2L);
 
-        DeveloperDTO dto = new DeveloperDTO();
-        dto.setId(1L);
+        Developer dev = new Developer();
+        dev.setId(1L);
 
         // If the current status is Active
         Mockito.when(resourcePermissions.isDeveloperActive(ArgumentMatchers.anyLong())).thenReturn(true);

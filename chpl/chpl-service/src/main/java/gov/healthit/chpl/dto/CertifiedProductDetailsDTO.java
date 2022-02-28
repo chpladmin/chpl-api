@@ -114,6 +114,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
 
         this.developer = new Developer();
         this.developer.setDeveloperId(entity.getDeveloperId());
+        this.developer.setId(entity.getDeveloperId());
         this.developer.setName(entity.getDeveloperName());
         this.developer.setDeveloperCode(entity.getDeveloperCode());
         this.developer.setWebsite(entity.getDeveloperWebsite());

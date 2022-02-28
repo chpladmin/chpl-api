@@ -39,7 +39,6 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.contact.PointOfContact;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -155,8 +154,7 @@ public class ChangeRequestManager extends SecurityManager {
         if (parentChangeRequest.getDeveloper() == null || parentChangeRequest.getDeveloper().getDeveloperId() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.developer.required"));
         }
-        DeveloperDTO existingDeveloperDto = devManager.getById(parentChangeRequest.getDeveloper().getDeveloperId());
-        Developer existingDeveloper = new Developer(existingDeveloperDto);
+        Developer existingDeveloper = devManager.getById(parentChangeRequest.getDeveloper().getDeveloperId());
         parentChangeRequest.setDeveloper(existingDeveloper);
 
         //make change requests for each type detected - throw error if no changes were made

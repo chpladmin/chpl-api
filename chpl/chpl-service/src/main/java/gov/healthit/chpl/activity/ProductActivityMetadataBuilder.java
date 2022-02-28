@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.ProductActivityMetadata;
@@ -120,7 +121,7 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
             productMetadata.setDeveloperName(product.getDeveloperName());
         } else if (product.getDeveloperId() != null) {
             try {
-                DeveloperDTO developer = developerDao.getSimpleDeveloperById(product.getDeveloperId(), true);
+                Developer developer = developerDao.getSimpleDeveloperById(product.getDeveloperId(), true);
                 productMetadata.setDeveloperName(developer.getName());
             } catch (Exception ex) {
                 LOGGER.error("Unable to find developer with ID " + product.getDeveloperId() + " referenced "

@@ -116,6 +116,7 @@ public class DeveloperEntity implements Serializable {
     public Developer toDomain() {
         return Developer.builder()
                 .developerId(this.getId())
+                .id(this.getId())
                 .address(this.getAddress() != null ? this.getAddress().toDomain() : null)
                 .contact(this.getContact() != null ? this.getContact().toDomain() : null)
                 .deleted(this.getDeleted())

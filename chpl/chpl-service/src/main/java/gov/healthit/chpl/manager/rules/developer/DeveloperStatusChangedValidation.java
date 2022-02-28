@@ -1,8 +1,8 @@
 package gov.healthit.chpl.manager.rules.developer;
 
 import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.rules.ValidationRule;
@@ -24,15 +24,14 @@ public class DeveloperStatusChangedValidation extends ValidationRule<DeveloperVa
     @Override
     public boolean isValid(DeveloperValidationContext context) {
         ErrorMessageUtil msgUtil = context.getErrorMessageUtil();
-        DeveloperDTO updatedDev = context.getDeveloperDTO();
-        DeveloperDTO beforeDev = context.getBeforeDev();
-        DeveloperStatusEventDTO newDevStatus = updatedDev.getStatus();
-        DeveloperStatusEventDTO currDevStatus = beforeDev.getStatus();
+        Developer updatedDev = context.getDeveloper();
+        Developer beforeDev = context.getBeforeDev();
+        DeveloperStatus newDevStatus = updatedDev.getStatus();
+        DeveloperStatus currDevStatus = beforeDev.getStatus();
 
-        boolean currentStatusChanged = !currDevStatus.getStatus().getStatusName()
-                .equals(newDevStatus.getStatus().getStatusName());
+        boolean currentStatusChanged = !currDevStatus.getStatus().equals(newDevStatus.getStatus());
         if (currentStatusChanged
-                && !newDevStatus.getStatus().getStatusName()
+                && !newDevStatus.getStatus()
                         .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
                 && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
             String msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdmin");

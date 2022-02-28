@@ -24,9 +24,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.MergeDevelopersRequest;
 import gov.healthit.chpl.domain.PermissionDeletedResponse;
 import gov.healthit.chpl.domain.Product;
@@ -34,14 +32,8 @@ import gov.healthit.chpl.domain.SplitDeveloperRequest;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.domain.compliance.DirectReview;
-import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.dto.AddressDTO;
-import gov.healthit.chpl.dto.ContactDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusDTO;
-import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -102,23 +94,15 @@ public class DeveloperController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody DeveloperResults getDevelopers(
             @RequestParam(value = "showDeleted", required = false, defaultValue = "false") boolean showDeleted) {
-        List<DeveloperDTO> developerList = null;
+        List<Developer> developerList = null;
         if (showDeleted) {
             developerList = developerManager.getAllIncludingDeleted();
         } else {
             developerList = developerManager.getAll();
         }
 
-        List<Developer> developers = new ArrayList<Developer>();
-        if (developerList != null && developerList.size() > 0) {
-            for (DeveloperDTO dto : developerList) {
-                Developer result = new Developer(dto);
-                developers.add(result);
-            }
-        }
-
         DeveloperResults results = new DeveloperResults();
-        results.setDevelopers(developers);
+        results.setDevelopers(developerList);
         return results;
     }
 
@@ -131,13 +115,7 @@ public class DeveloperController {
     @DeprecatedResponseFields(responseClass = Developer.class)
     public @ResponseBody Developer getDeveloperById(@PathVariable("developerId") Long developerId)
             throws EntityRetrievalException {
-        DeveloperDTO developer = developerManager.getById(developerId);
-
-        Developer result = null;
-        if (developer != null) {
-            result = new Developer(developer);
-        }
-        return result;
+        return developerManager.getById(developerId);
     }
 
     @Operation(summary = "Get all hierarchical information about a specific developer. "
@@ -178,17 +156,15 @@ public class DeveloperController {
             @RequestBody(required = true) Developer developerToUpdate)
             throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException,
             JsonProcessingException, ValidationException, MissingReasonException {
-        DeveloperDTO toUpdate = toDto(developerToUpdate);
-        toUpdate.setId(developerId);
+        developerToUpdate.setId(developerId);
 
-        DeveloperDTO result = developerManager.update(toUpdate, true);
+        Developer result = developerManager.update(developerToUpdate, true);
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         if (result == null) {
             throw new EntityCreationException("There was an error inserting or updating the developer information.");
         }
-        Developer restResult = new Developer(result);
-        return new ResponseEntity<Developer>(restResult, responseHeaders, HttpStatus.OK);
+        return new ResponseEntity<Developer>(result, responseHeaders, HttpStatus.OK);
     }
 
     @Operation(summary = "Merge developers.",
@@ -211,8 +187,7 @@ public class DeveloperController {
             throw new InvalidArgumentsException(
                     "More than 1 developer ID must be present in the request body to perform a merge.");
         }
-        DeveloperDTO toCreate = toDto(mergeRequest.getDeveloper());
-        return developerManager.merge(mergeRequest.getDeveloperIds(), toCreate);
+        return developerManager.merge(mergeRequest.getDeveloperIds(), mergeRequest.getDeveloper());
     }
 
     @Operation(
@@ -253,14 +228,13 @@ public class DeveloperController {
             throw new InvalidArgumentsException(msgUtil.getMessage("developer.split.requestMismatch"));
         }
 
-        DeveloperDTO oldDeveloper = developerManager.getById(splitRequest.getOldDeveloper().getDeveloperId());
-        DeveloperDTO newDeveloper = toDto(splitRequest.getNewDeveloper());
+        Developer oldDeveloper = developerManager.getById(splitRequest.getOldDeveloper().getDeveloperId());
         List<Long> newDeveloperProductIds = new ArrayList<Long>(splitRequest.getNewProducts().size());
         for (Product newDeveloperProduct : splitRequest.getNewProducts()) {
             newDeveloperProductIds.add(newDeveloperProduct.getProductId());
         }
 
-        ChplOneTimeTrigger splitTrigger = developerManager.split(oldDeveloper, newDeveloper, newDeveloperProductIds);
+        ChplOneTimeTrigger splitTrigger = developerManager.split(oldDeveloper, splitRequest.getNewDeveloper(), newDeveloperProductIds);
         return splitTrigger;
     }
 
@@ -332,49 +306,5 @@ public class DeveloperController {
             throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
         return new PublicDeveloperAttestestationResults(developerManager.getDeveloperPublicAttestations(developerId));
-    }
-
-    private DeveloperDTO toDto(Developer developer) {
-        DeveloperDTO dto = new DeveloperDTO();
-        dto.setDeveloperCode(developer.getDeveloperCode());
-        dto.setName(developer.getName());
-        dto.setWebsite(developer.getWebsite());
-        dto.setSelfDeveloper(developer.getSelfDeveloper());
-
-        if (developer.getStatusEvents() != null && developer.getStatusEvents().size() > 0) {
-            for (DeveloperStatusEvent newDeveloperStatusEvent : developer.getStatusEvents()) {
-                DeveloperStatusEventDTO statusEvent = new DeveloperStatusEventDTO();
-                DeveloperStatusDTO statusDto = new DeveloperStatusDTO();
-                statusDto.setId(newDeveloperStatusEvent.getStatus().getId());
-                statusDto.setStatusName(newDeveloperStatusEvent.getStatus().getStatus());
-                statusEvent.setStatus(statusDto);
-                statusEvent.setId(newDeveloperStatusEvent.getId());
-                statusEvent.setDeveloperId(newDeveloperStatusEvent.getDeveloperId());
-                statusEvent.setReason(newDeveloperStatusEvent.getReason());
-                statusEvent.setStatusDate(newDeveloperStatusEvent.getStatusDate());
-                dto.getStatusEvents().add(statusEvent);
-            }
-        }
-        Address developerAddress = developer.getAddress();
-        if (developerAddress != null) {
-            AddressDTO toCreateAddress = new AddressDTO();
-            toCreateAddress.setStreetLineOne(developerAddress.getLine1());
-            toCreateAddress.setStreetLineTwo(developerAddress.getLine2());
-            toCreateAddress.setCity(developerAddress.getCity());
-            toCreateAddress.setState(developerAddress.getState());
-            toCreateAddress.setZipcode(developerAddress.getZipcode());
-            toCreateAddress.setCountry(developerAddress.getCountry());
-            dto.setAddress(toCreateAddress);
-        }
-        PointOfContact developerContact = developer.getContact();
-        if (developerContact != null) {
-            ContactDTO toCreateContact = new ContactDTO();
-            toCreateContact.setEmail(developerContact.getEmail());
-            toCreateContact.setFullName(developerContact.getFullName());
-            toCreateContact.setPhoneNumber(developerContact.getPhoneNumber());
-            toCreateContact.setTitle(developerContact.getTitle());
-            dto.setContact(toCreateContact);
-        }
-        return dto;
     }
 }

@@ -7,9 +7,9 @@ import org.mockito.Mockito;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import gov.healthit.chpl.TestingUsers;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
@@ -48,15 +48,15 @@ public abstract class ActionPermissionsBaseTest extends TestingUsers {
         return dtos;
     }
 
-    public List<DeveloperDTO> getAllDeveloperForUser(Long... developerIds) {
-        List<DeveloperDTO> dtos = new ArrayList<DeveloperDTO>();
+    public List<Developer> getAllDeveloperForUser(Long... developerIds) {
+        List<Developer> devs = new ArrayList<Developer>();
 
-        for (Long acbId : developerIds) {
-            DeveloperDTO dto = new DeveloperDTO();
-            dto.setId(acbId);
-            dtos.add(dto);
+        for (Long devId : developerIds) {
+            Developer dev = new Developer();
+            dev.setId(devId);
+            devs.add(dev);
         }
-        return dtos;
+        return devs;
     }
 
     public List<TestingLabDTO> getAllAtlForUser(Long... atlIds) {

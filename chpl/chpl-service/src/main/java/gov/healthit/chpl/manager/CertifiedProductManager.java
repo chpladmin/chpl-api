@@ -74,6 +74,7 @@ import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
+import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingMeasure;
@@ -1228,7 +1229,7 @@ public class CertifiedProductManager extends SecuredManager {
             // look at the updated status and see if a developer ban is
             // appropriate
             CertificationStatus updatedStatusObj = certStatusDao.getById(updatedStatus.getId());
-            DeveloperDTO cpDeveloper = developerDao.getByVersion(productVersionId);
+            Developer cpDeveloper = developerDao.getByVersion(productVersionId);
             if (cpDeveloper == null) {
                 LOGGER.error("Could not find developer for product version with id " + productVersionId);
                 throw new EntityNotFoundException(
@@ -1268,10 +1269,10 @@ public class CertifiedProductManager extends SecuredManager {
                         + " which does not trigger a developer ban.");
                 break;
             }
-            if (newDevStatusDto != null) {
-                DeveloperStatusEventDTO statusHistoryToAdd = new DeveloperStatusEventDTO();
+            if (newDevStatus != null) {
+                DeveloperStatusEvent statusHistoryToAdd = new DeveloperStatusEvent();
                 statusHistoryToAdd.setDeveloperId(cpDeveloper.getId());
-                statusHistoryToAdd.setStatus(newDevStatusDto);
+                statusHistoryToAdd.setStatus(newDevStatus);
                 statusHistoryToAdd.setStatusDate(new Date());
                 statusHistoryToAdd.setReason(msgUtil.getMessage("developer.statusAutomaticallyChanged"));
                 cpDeveloper.getStatusEvents().add(statusHistoryToAdd);
