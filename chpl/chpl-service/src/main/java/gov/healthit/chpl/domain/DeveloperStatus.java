@@ -7,7 +7,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -31,11 +30,6 @@ public class DeveloperStatus implements Serializable {
     private String status;
 
     public DeveloperStatus() {
-    }
-
-    public DeveloperStatus(DeveloperStatusDTO dto) {
-        this.id = dto.getId();
-        this.status = dto.getStatusName();
     }
 
     public Long getId() {

@@ -5,16 +5,13 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.dto.DeveloperStatusEventPair;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDeveloperDTO;
 import gov.healthit.chpl.manager.impl.DeveloperStatusEventsHelper;
 import gov.healthit.chpl.util.Util;
 
-/**
- * Check for questionable activity related to a Developer.
- */
 @Component
 public class DeveloperQuestionableActivityProvider {
 
@@ -24,8 +21,7 @@ public class DeveloperQuestionableActivityProvider {
      * @param newDeveloper new developer
      * @return DTO if developer name changed
      */
-     public QuestionableActivityDeveloperDTO checkNameUpdated(
-            final DeveloperDTO origDeveloper, final DeveloperDTO newDeveloper) {
+     public QuestionableActivityDeveloperDTO checkNameUpdated(Developer origDeveloper, Developer newDeveloper) {
 
         QuestionableActivityDeveloperDTO activity = null;
         if ((origDeveloper.getName() != null && newDeveloper.getName() == null)
@@ -45,23 +41,22 @@ public class DeveloperQuestionableActivityProvider {
      * @param newDeveloper new developer
      * @return DTO if current status changed
      */
-    public QuestionableActivityDeveloperDTO checkCurrentStatusChanged(
-            final DeveloperDTO origDeveloper, final DeveloperDTO newDeveloper) {
+    public QuestionableActivityDeveloperDTO checkCurrentStatusChanged(Developer origDeveloper, Developer newDeveloper) {
 
         QuestionableActivityDeveloperDTO activity = null;
         if (origDeveloper.getStatus() != null && newDeveloper.getStatus() == null) {
             activity = new QuestionableActivityDeveloperDTO();
-            activity.setBefore(origDeveloper.getStatus().getStatus().getStatusName());
+            activity.setBefore(origDeveloper.getStatus().getStatus());
             activity.setAfter(null);
         } else if (origDeveloper.getStatus() == null && newDeveloper.getStatus() != null) {
             activity = new QuestionableActivityDeveloperDTO();
             activity.setBefore(null);
-            activity.setAfter(newDeveloper.getStatus().getStatus().getStatusName());
-        } else if (origDeveloper.getStatus().getStatus().getId().longValue()
-                != newDeveloper.getStatus().getStatus().getId().longValue()) {
+            activity.setAfter(newDeveloper.getStatus().getStatus());
+        } else if (origDeveloper.getStatus().getId().longValue()
+                != newDeveloper.getStatus().getId().longValue()) {
             activity = new QuestionableActivityDeveloperDTO();
-            activity.setBefore(origDeveloper.getStatus().getStatus().getStatusName());
-            activity.setAfter(newDeveloper.getStatus().getStatus().getStatusName());
+            activity.setBefore(origDeveloper.getStatus().getStatus());
+            activity.setAfter(newDeveloper.getStatus().getStatus());
         }
 
         return activity;
@@ -74,14 +69,14 @@ public class DeveloperQuestionableActivityProvider {
      * @return list of added statuses
      */
      public List<QuestionableActivityDeveloperDTO> checkStatusHistoryAdded(
-            final List<DeveloperStatusEventDTO> origStatuses, final List<DeveloperStatusEventDTO> newStatuses) {
+            List<DeveloperStatusEvent> origStatuses, List<DeveloperStatusEvent> newStatuses) {
 
          List<QuestionableActivityDeveloperDTO> statusAddedActivities
              = new ArrayList<QuestionableActivityDeveloperDTO>();
 
-         List<DeveloperStatusEventDTO> addedStatuses =
+         List<DeveloperStatusEvent> addedStatuses =
                  DeveloperStatusEventsHelper.getAddedEvents(origStatuses, newStatuses);
-         for (DeveloperStatusEventDTO newStatusEvent : addedStatuses) {
+         for (DeveloperStatusEvent newStatusEvent : addedStatuses) {
              QuestionableActivityDeveloperDTO activity =
                      getQuestionableActivityDeveloper(null, getFormattedStatus(newStatusEvent));
              activity.setReason(newStatusEvent.getReason());
@@ -97,14 +92,14 @@ public class DeveloperQuestionableActivityProvider {
      * @return list of added statuses
      */
      public List<QuestionableActivityDeveloperDTO> checkStatusHistoryRemoved(
-            final List<DeveloperStatusEventDTO> origStatuses, final List<DeveloperStatusEventDTO> newStatuses) {
+            List<DeveloperStatusEvent> origStatuses, List<DeveloperStatusEvent> newStatuses) {
 
         List<QuestionableActivityDeveloperDTO> statusRemovedActivities
             = new ArrayList<QuestionableActivityDeveloperDTO>();
 
-        List<DeveloperStatusEventDTO> removedStatuses =
+        List<DeveloperStatusEvent> removedStatuses =
                 DeveloperStatusEventsHelper.getRemovedEvents(origStatuses, newStatuses);
-        for (DeveloperStatusEventDTO newStatusEvent : removedStatuses) {
+        for (DeveloperStatusEvent newStatusEvent : removedStatuses) {
             QuestionableActivityDeveloperDTO activity =
                     getQuestionableActivityDeveloper(getFormattedStatus(newStatusEvent), null);
             statusRemovedActivities.add(activity);
@@ -119,7 +114,7 @@ public class DeveloperQuestionableActivityProvider {
      * @return list of edited statuses
      */
     public List<QuestionableActivityDeveloperDTO> checkStatusHistoryItemEdited(
-            final List<DeveloperStatusEventDTO> origStatuses, final List<DeveloperStatusEventDTO> newStatuses) {
+            List<DeveloperStatusEvent> origStatuses, List<DeveloperStatusEvent> newStatuses) {
 
         List<QuestionableActivityDeveloperDTO> statusEditedActivities
             = new ArrayList<QuestionableActivityDeveloperDTO>();
@@ -136,16 +131,15 @@ public class DeveloperQuestionableActivityProvider {
         return statusEditedActivities;
     }
 
-    private QuestionableActivityDeveloperDTO getQuestionableActivityDeveloper(final String before,
-            final String after) {
+    private QuestionableActivityDeveloperDTO getQuestionableActivityDeveloper(String before, String after) {
         QuestionableActivityDeveloperDTO activity = new QuestionableActivityDeveloperDTO();
         activity.setBefore(before);
         activity.setAfter(after);
         return activity;
     }
 
-    private String getFormattedStatus(final DeveloperStatusEventDTO statusEvent) {
-        return statusEvent.getStatus().getStatusName() + " ("
+    private String getFormattedStatus(DeveloperStatusEvent statusEvent) {
+        return statusEvent.getStatus().getStatus() + " ("
                 + Util.getDateFormatter().format(statusEvent.getStatusDate()) + ")";
     }
 }

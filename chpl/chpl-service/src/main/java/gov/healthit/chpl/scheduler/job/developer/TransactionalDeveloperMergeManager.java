@@ -69,7 +69,7 @@ public class TransactionalDeveloperMergeManager {
                 .map(DeveloperDTO::getId)
                 .collect(Collectors.toList());
         LOGGER.info("Creating new developer " + developerToCreate.getName());
-        DeveloperDTO createdDeveloper = devManager.create(developerToCreate);
+        DeveloperDTO createdDeveloper = devManager.createDeprecated(developerToCreate);
 
         Map<Long, CertifiedProductSearchDetails> preMergeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
         Map<Long, CertifiedProductSearchDetails> postMergeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();

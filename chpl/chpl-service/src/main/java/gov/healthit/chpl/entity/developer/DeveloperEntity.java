@@ -123,7 +123,7 @@ public class DeveloperEntity implements Serializable {
                 .name(this.getName())
                 .selfDeveloper(this.getSelfDeveloper())
                 .statusEvents(toStatusEventDomains())
-                .lastModifiedDate(this.getLastModifiedDate() + "")
+                .lastModifiedDate(this.getLastModifiedDate().getTime() + "")
                 .website(this.getWebsite())
                 .build();
     }

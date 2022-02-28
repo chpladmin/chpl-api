@@ -16,8 +16,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import gov.healthit.chpl.dto.AddressDTO;
-import gov.healthit.chpl.entity.AddressEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -87,26 +85,6 @@ public class Address implements Serializable {
     private String country;
 
     public Address() {
-    }
-
-    public Address(AddressDTO dto) {
-        this.addressId = dto.getId();
-        this.line1 = dto.getStreetLineOne();
-        this.line2 = dto.getStreetLineTwo();
-        this.city = dto.getCity();
-        this.state = dto.getState();
-        this.zipcode = dto.getZipcode();
-        this.country = dto.getCountry();
-    }
-
-    public Address(AddressEntity entity) {
-        this.addressId = entity.getId();
-        this.line1 = entity.getStreetLineOne();
-        this.line2 = entity.getStreetLineTwo();
-        this.city = entity.getCity();
-        this.state = entity.getState();
-        this.zipcode = entity.getZipcode();
-        this.country = entity.getCountry();
     }
 
     public Address(HashMap<String, Object> map) {

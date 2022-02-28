@@ -59,6 +59,7 @@ import gov.healthit.chpl.dao.TestTaskDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
+import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -71,16 +72,18 @@ import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
-import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
@@ -102,11 +105,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
-import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.CuresUpdateEventDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusDTO;
-import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
 import gov.healthit.chpl.dto.ProductDTO;
@@ -460,25 +459,25 @@ public class CertifiedProductManager extends SecuredManager {
         toCreate.setMandatoryDisclosures(pendingCp.getMandatoryDisclosures());
         toCreate.setSvapNoticeUrl(pendingCp.getSvapNoticeUrl());
 
-        DeveloperDTO developer = null;
+        Long developerId = null;
         if (pendingCp.getDeveloperId() == null) {
-            DeveloperDTO newDeveloper = new DeveloperDTO();
+            Developer newDeveloper = new Developer();
             if (StringUtils.isEmpty(pendingCp.getDeveloperName())) {
                 throw new EntityCreationException("You must provide a developer name to create a new developer.");
             }
             newDeveloper.setName(pendingCp.getDeveloperName());
             newDeveloper.setWebsite(pendingCp.getDeveloperWebsite());
             newDeveloper.setSelfDeveloper(pendingCp.getSelfDeveloper() == null ? Boolean.FALSE : pendingCp.getSelfDeveloper());
-            AddressDTO developerAddress = pendingCp.getDeveloperAddress();
+            Address developerAddress = pendingCp.getDeveloperAddress();
             newDeveloper.setAddress(developerAddress);
-            ContactDTO developerContact = new ContactDTO();
+            PointOfContact developerContact = new PointOfContact();
             developerContact.setFullName(pendingCp.getDeveloperContactName());
             developerContact.setPhoneNumber(pendingCp.getDeveloperPhoneNumber());
             developerContact.setEmail(pendingCp.getDeveloperEmail());
             newDeveloper.setContact(developerContact);
             // create the dev, address, and contact
-            developer = developerManager.create(newDeveloper);
-            pendingCp.setDeveloperId(developer.getId());
+            developerId = developerManager.create(newDeveloper);
+            pendingCp.setDeveloperId(developerId);
         }
 
         if (pendingCp.getProductId() == null) {
@@ -1235,7 +1234,7 @@ public class CertifiedProductManager extends SecuredManager {
                 throw new EntityNotFoundException(
                         "No developer could be located for the certified product in the update. Update cannot continue.");
             }
-            DeveloperStatusDTO newDevStatusDto = null;
+            DeveloperStatus newDevStatus = null;
             switch (CertificationStatusType.getValue(updatedStatusObj.getName())) {
             case SuspendedByOnc:
             case TerminatedByOnc:
@@ -1244,10 +1243,10 @@ public class CertifiedProductManager extends SecuredManager {
                 if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
                     // find the new developer status
                     if (updatedStatusObj.getName().equals(CertificationStatusType.SuspendedByOnc.toString())) {
-                        newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.SuspendedByOnc.toString());
+                        newDevStatus = devStatusDao.getByName(DeveloperStatusType.SuspendedByOnc.toString());
                     } else if (updatedStatusObj.getName()
                             .equals(CertificationStatusType.TerminatedByOnc.toString())) {
-                        newDevStatusDto = devStatusDao
+                        newDevStatus = devStatusDao
                                 .getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
                     }
                 } else if (!resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {

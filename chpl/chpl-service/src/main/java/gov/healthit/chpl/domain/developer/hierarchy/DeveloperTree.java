@@ -1,15 +1,15 @@
 package gov.healthit.chpl.domain.developer.hierarchy;
 
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.lang3.ObjectUtils;
-
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class DeveloperTree extends Developer {
     private static final long serialVersionUID = -6578977483166240315L;
 
@@ -17,10 +17,6 @@ public class DeveloperTree extends Developer {
 
     public DeveloperTree() {
         super();
-    }
-
-    public DeveloperTree(DeveloperDTO dto) {
-        super(dto);
     }
 
     public boolean equals(Object obj) {
@@ -31,7 +27,7 @@ public class DeveloperTree extends Developer {
             return false;
         }
         DeveloperTree otherDev = (DeveloperTree) obj;
-        return ObjectUtils.equals(this.getDeveloperId(), otherDev.getDeveloperId());
+        return Objects.equals(this.getDeveloperId(), otherDev.getDeveloperId());
     }
 
     public int hashCode() {

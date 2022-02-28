@@ -6,6 +6,11 @@ import java.util.Date;
 
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.domain.Address;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.DeveloperStatus;
+import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntitySimple;
 import lombok.AllArgsConstructor;
@@ -48,8 +53,8 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private String certificationBodyName;
     private String certificationBodyCode;
     private String productClassificationName;
-    private DeveloperDTO developer;
-    private DeveloperStatusEventDTO developerCurrentStatus;
+    private Developer developer;
+    private DeveloperStatusEvent developerCurrentStatus;
     private ProductDTO product;
     private ProductVersionDTO version;
     private Date creationDate;
@@ -107,29 +112,29 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.sedIntendedUserDescription = entity.getSedIntendedUserDescription();
         this.sedTestingEnd = entity.getSedTestingEnd();
 
-        this.developer = new DeveloperDTO();
-        this.developer.setId(entity.getDeveloperId());
+        this.developer = new Developer();
+        this.developer.setDeveloperId(entity.getDeveloperId());
         this.developer.setName(entity.getDeveloperName());
         this.developer.setDeveloperCode(entity.getDeveloperCode());
         this.developer.setWebsite(entity.getDeveloperWebsite());
         this.developer.setSelfDeveloper(entity.getSelfDeveloper());
 
         if (entity.getDeveloperStatusId() != null) {
-            developerCurrentStatus = new DeveloperStatusEventDTO();
+            developerCurrentStatus = new DeveloperStatusEvent();
             developerCurrentStatus.setDeveloperId(entity.getDeveloperId());
-            DeveloperStatusDTO statusObj = new DeveloperStatusDTO();
+            DeveloperStatus statusObj = new DeveloperStatus();
             statusObj.setId(entity.getDeveloperStatusId());
-            statusObj.setStatusName(entity.getDeveloperStatusName());
+            statusObj.setStatus(entity.getDeveloperStatusName());
             developerCurrentStatus.setStatus(statusObj);
             developerCurrentStatus.setStatusDate(entity.getDeveloperStatusDate());
             this.developer.getStatusEvents().add(developerCurrentStatus);
         }
 
         if (entity.getAddressId() != null) {
-            AddressDTO developerAddress = new AddressDTO();
-            developerAddress.setId(entity.getAddressId());
-            developerAddress.setStreetLineOne(entity.getStreetLine1());
-            developerAddress.setStreetLineTwo(entity.getStreetLine2());
+            Address developerAddress = new Address();
+            developerAddress.setAddressId(entity.getAddressId());
+            developerAddress.setLine1(entity.getStreetLine1());
+            developerAddress.setLine2(entity.getStreetLine2());
             developerAddress.setCity(entity.getCity());
             developerAddress.setState(entity.getState());
             developerAddress.setZipcode(entity.getZipcode());
@@ -137,8 +142,8 @@ public class CertifiedProductDetailsDTO implements Serializable {
             this.developer.setAddress(developerAddress);
         }
         if (entity.getContactId() != null) {
-            ContactDTO developerContact = new ContactDTO();
-            developerContact.setId(entity.getContactId());
+            PointOfContact developerContact = new PointOfContact();
+            developerContact.setContactId(entity.getContactId());
             developerContact.setFullName(entity.getFullName());
             developerContact.setEmail(entity.getEmail());
             developerContact.setPhoneNumber(entity.getPhoneNumber());
@@ -209,7 +214,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.sedIntendedUserDescription = entity.getSedIntendedUserDescription();
         this.sedTestingEnd = entity.getSedTestingEnd();
 
-        this.developer = new DeveloperDTO();
+        this.developer = new Developer();
         this.developer.setId(entity.getDeveloperId());
         this.developer.setName(entity.getDeveloperName());
         this.developer.setDeveloperCode(entity.getDeveloperCode());
@@ -217,21 +222,21 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.developer.setSelfDeveloper(entity.getSelfDeveloper());
 
         if (entity.getDeveloperStatusId() != null) {
-            developerCurrentStatus = new DeveloperStatusEventDTO();
+            developerCurrentStatus = new DeveloperStatusEvent();
             developerCurrentStatus.setDeveloperId(entity.getDeveloperId());
-            DeveloperStatusDTO statusObj = new DeveloperStatusDTO();
+            DeveloperStatus statusObj = new DeveloperStatus();
             statusObj.setId(entity.getDeveloperStatusId());
-            statusObj.setStatusName(entity.getDeveloperStatusName());
+            statusObj.setStatus(entity.getDeveloperStatusName());
             developerCurrentStatus.setStatus(statusObj);
             developerCurrentStatus.setStatusDate(entity.getDeveloperStatusDate());
             this.developer.getStatusEvents().add(developerCurrentStatus);
         }
 
         if (entity.getAddressId() != null) {
-            AddressDTO developerAddress = new AddressDTO();
-            developerAddress.setId(entity.getAddressId());
-            developerAddress.setStreetLineOne(entity.getStreetLine1());
-            developerAddress.setStreetLineTwo(entity.getStreetLine2());
+            Address developerAddress = new Address();
+            developerAddress.setAddressId(entity.getAddressId());
+            developerAddress.setLine1(entity.getStreetLine1());
+            developerAddress.setLine2(entity.getStreetLine2());
             developerAddress.setCity(entity.getCity());
             developerAddress.setState(entity.getState());
             developerAddress.setZipcode(entity.getZipcode());
@@ -239,8 +244,8 @@ public class CertifiedProductDetailsDTO implements Serializable {
             this.developer.setAddress(developerAddress);
         }
         if (entity.getContactId() != null) {
-            ContactDTO developerContact = new ContactDTO();
-            developerContact.setId(entity.getContactId());
+            PointOfContact developerContact = new PointOfContact();
+            developerContact.setContactId(entity.getContactId());
             developerContact.setFullName(entity.getFullName());
             developerContact.setEmail(entity.getEmail());
             developerContact.setPhoneNumber(entity.getPhoneNumber());

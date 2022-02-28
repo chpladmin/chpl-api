@@ -84,7 +84,7 @@ public class Product implements Serializable {
             this.lastModifiedDate = dto.getLastModifiedDate().getTime() + "";
         }
         if (dto.getContact() != null) {
-            this.contact = new PointOfContact(dto.getContact());
+            this.contact = dto.getContact();
         }
         if (dto.getOwner() != null) {
             this.owner = new Developer();

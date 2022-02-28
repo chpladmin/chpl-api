@@ -22,12 +22,12 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
@@ -195,10 +195,11 @@ public class CacheableDimensionalDataManager {
     @Transactional
     @Cacheable(CacheNames.DEVELOPER_NAMES)
     public Set<KeyValueModelStatuses> getDevelopers() {
-        List<DeveloperDTO> developerDTOs = this.developerDao.findAll();
+        List<Developer> developers = this.developerDao.findAll();
         Set<KeyValueModelStatuses> developerNames = new HashSet<KeyValueModelStatuses>();
-        for (DeveloperDTO dto : developerDTOs) {
-            developerNames.add(new KeyValueModelStatuses(dto.getId(), dto.getName(), dto.getStatuses()));
+        for (Developer developer : developers) {
+            developerNames.add(new KeyValueModelStatuses(developer.getDeveloperId(), developer.getName(),
+                    developer.getStatuses()));
         }
         return developerNames;
     }

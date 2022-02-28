@@ -158,7 +158,7 @@ public class SplitDeveloperJob implements Job {
     private DeveloperDTO splitDeveloper(DeveloperDTO developerToCreate, List<Long> productIdsToMove)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, Exception {
         LOGGER.info("Creating new developer " + developerToCreate.getName());
-        DeveloperDTO createdDeveloper = devManager.create(developerToCreate);
+        DeveloperDTO createdDeveloper = devManager.createDeprecated(developerToCreate);
 
         // re-assign products to the new developer
         // log activity for all listings whose ID will have changed

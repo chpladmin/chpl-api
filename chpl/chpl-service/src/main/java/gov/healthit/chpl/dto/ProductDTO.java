@@ -11,7 +11,9 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Statuses;
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.entity.ProductActiveOwnerEntity;
 import gov.healthit.chpl.entity.ProductCertificationStatusesEntity;
 import gov.healthit.chpl.entity.ProductEntity;
@@ -33,7 +35,7 @@ public class ProductDTO implements Serializable {
     private Date lastModifiedDate;
     private Long lastModifiedUser;
     private String name;
-    private ContactDTO contact;
+    private PointOfContact contact;
     @Builder.Default
     private Set<ProductVersionDTO> productVersions = new HashSet<ProductVersionDTO>();
     private String reportFileLocation;
@@ -43,12 +45,12 @@ public class ProductDTO implements Serializable {
     private String developerName;
     @Deprecated
     private String developerCode;
-    private DeveloperDTO owner;
+    private Developer owner;
     private Statuses statuses;
     private List<ProductOwnerDTO> ownerHistory;
 
     public ProductDTO() {
-        this.owner = new DeveloperDTO();
+        this.owner = new Developer();
         this.ownerHistory = new ArrayList<ProductOwnerDTO>();
         this.productVersions = new HashSet<ProductVersionDTO>();
     }
@@ -64,8 +66,8 @@ public class ProductDTO implements Serializable {
         this.name = entity.getName();
         this.reportFileLocation = entity.getReportFileLocation();
         this.owner.setId(entity.getDeveloperId());
-        this.contact = new ContactDTO();
-        this.contact.setId(entity.getContactId());
+        this.contact = new PointOfContact();
+        this.contact.setContactId(entity.getContactId());
     }
 
     public ProductDTO(ProductEntity entity) {
@@ -79,7 +81,7 @@ public class ProductDTO implements Serializable {
         this.name = entity.getName();
         this.reportFileLocation = entity.getReportFileLocation();
         if (entity.getContact() != null) {
-            this.contact = new ContactDTO(entity.getContact());
+            this.contact = entity.getContact().toDomain();
         }
         this.developerId = entity.getDeveloperId();
         this.owner.setId(entity.getDeveloperId());

@@ -20,10 +20,10 @@ import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.UserTestingLabMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserDeveloperMapDTO;
@@ -66,9 +66,9 @@ public class ResourcePermissions {
     @Transactional(readOnly = true)
     public boolean isDeveloperActive(Long developerId) {
         try {
-            DeveloperDTO developerDto = developerDAO.getById(developerId);
-            return developerDto != null && developerDto.getStatus() != null
-                    && developerDto.getStatus().getStatus().getStatusName().equals(DeveloperStatusType.Active.toString());
+            Developer developer = developerDAO.getById(developerId);
+            return developer != null && developer.getStatus() != null
+                    && developer.getStatus().getStatus().equals(DeveloperStatusType.Active.toString());
         } catch (EntityRetrievalException e) {
             return false;
         }
@@ -116,7 +116,7 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public List<UserDTO> getAllUsersOnDeveloper(DeveloperDTO dev) {
+    public List<UserDTO> getAllUsersOnDeveloper(Developer dev) {
         List<UserDTO> userDtos = new ArrayList<UserDTO>();
         List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByDeveloperId(dev.getId());
 
@@ -184,9 +184,9 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public List<DeveloperDTO> getAllDevelopersForCurrentUser() {
+    public List<Developer> getAllDevelopersForCurrentUser() {
         User user = AuthUtil.getCurrentUser();
-        List<DeveloperDTO> developers = new ArrayList<DeveloperDTO>();
+        List<Developer> developers = new ArrayList<Developer>();
 
         if (user != null) {
             if (isUserRoleAdmin() || isUserRoleOnc() || isUserRoleAcbAdmin()) {
@@ -202,8 +202,8 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public List<DeveloperDTO> getAllDevelopersForUser(Long userId) {
-        List<DeveloperDTO> devs = new ArrayList<DeveloperDTO>();
+    public List<Developer> getAllDevelopersForUser(Long userId) {
+        List<Developer> devs = new ArrayList<Developer>();
         List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByUserId(userId);
         for (UserDeveloperMapDTO dto : dtos) {
             devs.add(dto.getDeveloper());
@@ -230,8 +230,8 @@ public class ResourcePermissions {
                     users.addAll(getAllUsersOnAtl(atl));
                 }
             }  else if (isUserRoleDeveloperAdmin()) {
-                List<DeveloperDTO> devs = getAllDevelopersForCurrentUser();
-                for (DeveloperDTO dev : devs) {
+                List<Developer> devs = getAllDevelopersForCurrentUser();
+                for (Developer dev : devs) {
                     users.addAll(getAllUsersOnDeveloper(dev));
                 }
             } else {
@@ -293,17 +293,17 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public DeveloperDTO getDeveloperIfPermissionById(Long id) throws EntityRetrievalException {
+    public Developer getDeveloperIfPermissionById(Long id) throws EntityRetrievalException {
         try {
             developerDAO.getById(id);
         } catch (final EntityRetrievalException ex) {
             throw new EntityRetrievalException(errorMessageUtil.getMessage("developer.notFound"));
         }
 
-        List<DeveloperDTO> dtos = getAllDevelopersForCurrentUser();
-        CollectionUtils.filter(dtos, new Predicate<DeveloperDTO>() {
+        List<Developer> dtos = getAllDevelopersForCurrentUser();
+        CollectionUtils.filter(dtos, new Predicate<Developer>() {
             @Override
-            public boolean evaluate(final DeveloperDTO object) {
+            public boolean evaluate(final Developer object) {
                 return object.getId().equals(id);
             }
 
@@ -372,10 +372,10 @@ public class ResourcePermissions {
             }
         } else if (isUserRoleDeveloperAdmin()) {
             // is the user being checked on any of the same Developer(s) that the current user is on?
-            List<DeveloperDTO> currUserDevs = getAllDevelopersForCurrentUser();
-            List<DeveloperDTO> otherUserDevs = getAllDevelopersForUser(user.getId());
-            for (DeveloperDTO currUserDev : currUserDevs) {
-                for (DeveloperDTO otherUserDev : otherUserDevs) {
+            List<Developer> currUserDevs = getAllDevelopersForCurrentUser();
+            List<Developer> otherUserDevs = getAllDevelopersForUser(user.getId());
+            for (Developer currUserDev : currUserDevs) {
+                for (Developer otherUserDev : otherUserDevs) {
                     if (currUserDev.getId().equals(otherUserDev.getId())) {
                         return true;
                     }

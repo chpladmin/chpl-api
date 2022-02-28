@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Date;
 
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductSummaryEntity;
 import lombok.AllArgsConstructor;
@@ -31,7 +33,7 @@ public class CertifiedProductSummaryDTO implements Serializable {
     private Date certificationDate;
     private Boolean curesUpdate;
     private CertificationBodyDTO acb;
-    private DeveloperDTO developer;
+    private Developer developer;
     private ProductDTO product;
     private ProductVersionDTO version;
     private String reportFileLocation;
@@ -63,9 +65,9 @@ public class CertifiedProductSummaryDTO implements Serializable {
         this.acb.setName(entity.getCertificationBodyName());
         this.acb.setAcbCode(entity.getAcbCode());
         this.acb.setWebsite(entity.getCertificationBodyWebsite());
-        this.developer = new DeveloperDTO();
+        this.developer = new Developer();
         this.developer.setName(entity.getDeveloperName());
-        ContactDTO contact = new ContactDTO();
+        PointOfContact contact = new PointOfContact();
         contact.setEmail(entity.getDeveloperContactEmail());
         contact.setPhoneNumber(entity.getDeveloperContactPhone());
         contact.setFullName(entity.getDeveloperContactName());
@@ -98,10 +100,10 @@ public class CertifiedProductSummaryDTO implements Serializable {
         this.acb.setName(entity.getCertificationBodyName());
         this.acb.setAcbCode(entity.getCertificationBodyCode());
         this.acb.setRetired(entity.getAcbIsRetired());
-        this.developer = new DeveloperDTO();
+        this.developer = new Developer();
         this.developer.setId(entity.getDeveloperId());
         this.developer.setName(entity.getDeveloperName());
-        ContactDTO contact = new ContactDTO();
+        PointOfContact contact = new PointOfContact();
         contact.setEmail(entity.getEmail());
         contact.setPhoneNumber(entity.getPhoneNumber());
         contact.setFullName(entity.getFullName());

@@ -40,7 +40,7 @@ public class ProductOwner implements Serializable {
     public ProductOwner(ProductOwnerDTO dto) {
         this.id = dto.getId();
         if (dto.getDeveloper() != null) {
-            this.developer = new Developer(dto.getDeveloper());
+            this.developer = dto.getDeveloper();
         }
         this.transferDate = dto.getTransferDate();
     }

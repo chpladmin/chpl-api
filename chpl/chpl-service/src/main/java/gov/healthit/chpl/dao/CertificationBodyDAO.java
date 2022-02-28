@@ -46,7 +46,7 @@ public class CertificationBodyDAO extends BaseDAOImpl {
             throw new EntityCreationException("An entity with this ID already exists.");
         } else {
             entity = new CertificationBodyEntity();
-            entity.setAddress(addressDao.create(dto.getAddress()));
+            entity.setAddress(addressDao.createDeprecated(dto.getAddress()));
             entity.setName(dto.getName());
             entity.setWebsite(dto.getWebsite());
             entity.setAcbCode(dto.getAcbCode());

@@ -15,10 +15,10 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import gov.healthit.chpl.domain.contact.PointOfContact;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Singular;
@@ -26,8 +26,8 @@ import lombok.Singular;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Builder
 @AllArgsConstructor
+@Builder
 public class Developer implements Serializable {
     private static final long serialVersionUID = 7341544844577617247L;
 
@@ -36,6 +36,16 @@ public class Developer implements Serializable {
      */
     @XmlElement(required = true)
     private Long developerId;
+
+    /**
+     * This property exists solely to be able to deserialize developer activity events. When deserializing
+     * the activity we sometimes care about the developer ID. This property
+     * should not be visible in the generated XSD or any response from an API call. The eventual plan is to deprecate
+     * the above "developerId" field in favor of this "id" anyway.
+     */
+    @JsonProperty(access = Access.WRITE_ONLY)
+    @XmlTransient
+    private Long id;
 
     /**
      * A four-digit code assigned to each developer when it was created.
@@ -115,39 +125,20 @@ public class Developer implements Serializable {
         this.statusEvents = new ArrayList<DeveloperStatusEvent>();
     }
 
-    public Developer(DeveloperDTO dto) {
-        this();
-        this.developerId = dto.getId();
-        this.developerCode = dto.getDeveloperCode();
-        this.name = dto.getName();
-        this.website = dto.getWebsite();
-        this.deleted = dto.getDeleted();
-        this.selfDeveloper = dto.getSelfDeveloper();
-        if (dto.getAddress() != null) {
-            this.address = new Address(dto.getAddress());
-        }
-        if (dto.getContact() != null) {
-            this.contact = new PointOfContact(dto.getContact());
-        }
-
-        if (dto.getLastModifiedDate() != null) {
-            this.lastModifiedDate = dto.getLastModifiedDate().getTime() + "";
-        }
-
-        if (dto.getStatusEvents() != null && dto.getStatusEvents().size() > 0) {
-            for (DeveloperStatusEventDTO historyItem : dto.getStatusEvents()) {
-                DeveloperStatusEvent toAdd = new DeveloperStatusEvent(historyItem);
-                this.statusEvents.add(toAdd);
-            }
-        }
-    }
-
     public Long getDeveloperId() {
         return developerId;
     }
 
     public void setDeveloperId(Long developerId) {
         this.developerId = developerId;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
