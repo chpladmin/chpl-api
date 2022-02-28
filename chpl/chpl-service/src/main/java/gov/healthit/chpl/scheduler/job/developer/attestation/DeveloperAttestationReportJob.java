@@ -28,7 +28,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "deverloperAttestationReportJobLogger")
 public class DeveloperAttestationReportJob implements Job {
 
     @Autowired
@@ -96,6 +96,7 @@ public class DeveloperAttestationReportJob implements Job {
                                         .footer(true)
                                         .build())
                                 .sendEmail();
+                        LOGGER.info("Report sent to: {}", context.getMergedJobDataMap().getString("email"));
                     }
                 } catch (Exception e) {
                     LOGGER.catching(e);
@@ -115,8 +116,6 @@ public class DeveloperAttestationReportJob implements Job {
                         .footer(true)
                         .build())
                 .sendEmail();
-
-
     }
 
     private List<Long> getAcbIds(JobExecutionContext context) {

@@ -40,7 +40,7 @@ import gov.healthit.chpl.search.domain.SearchResponse;
 import gov.healthit.chpl.service.DirectReviewSearchService;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "deverloperAttestationReportJobLogger")
 @Component
 public class DeveloperAttestationReportDataCollection {
     private static final Long INFORMATION_BLOCKING_ATTESTATION_ID = 1L;

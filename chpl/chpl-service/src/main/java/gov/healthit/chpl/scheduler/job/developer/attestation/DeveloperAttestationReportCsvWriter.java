@@ -14,10 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "deverloperAttestationReportJobLogger")
 @Component
 public class DeveloperAttestationReportCsvWriter {
     private Environment env;
