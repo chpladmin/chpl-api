@@ -19,6 +19,20 @@ public class DeveloperTree extends Developer {
         super();
     }
 
+    public DeveloperTree(Developer developer) {
+        this.setId(developer.getId());
+        this.setAddress(developer.getAddress());
+        this.setContact(developer.getContact());
+        this.setDeleted(developer.getDeleted());
+        this.setDeveloperCode(developer.getDeveloperCode());
+        this.setDeveloperId(developer.getDeveloperId());
+        this.setLastModifiedDate(developer.getLastModifiedDate());
+        this.setName(developer.getName());
+        this.setSelfDeveloper(developer.getSelfDeveloper());
+        this.setStatusEvents(developer.getStatusEvents());
+        this.setWebsite(developer.getWebsite());
+    }
+
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;

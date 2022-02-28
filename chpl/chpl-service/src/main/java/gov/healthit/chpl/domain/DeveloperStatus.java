@@ -7,11 +7,14 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
 public class DeveloperStatus implements Serializable {
@@ -30,6 +33,12 @@ public class DeveloperStatus implements Serializable {
     private String status;
 
     public DeveloperStatus() {
+    }
+
+    public DeveloperStatus(DeveloperStatus other) {
+        this();
+        this.setId(other.getId());
+        this.setStatus(other.getStatus());
     }
 
     public Long getId() {

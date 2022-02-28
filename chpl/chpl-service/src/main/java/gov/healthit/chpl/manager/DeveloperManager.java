@@ -142,7 +142,7 @@ public class DeveloperManager extends SecuredManager {
         List<ProductVersionDTO> versions = versionManager.getByDeveloper(developer.getId());
         List<CertifiedProductDetailsDTO> listings = certifiedProductDao.findListingsByDeveloperId(developer.getId());
 
-        DeveloperTree developerTree = (DeveloperTree) developer;
+        DeveloperTree developerTree = new DeveloperTree(developer);
         products.stream().forEach(product -> {
             developerTree.getProducts().add(new ProductTree(product));
         });

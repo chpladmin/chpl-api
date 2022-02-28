@@ -28,7 +28,7 @@ import lombok.Singular;
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 public class Developer implements Serializable {
     private static final long serialVersionUID = 7341544844577617247L;
 
@@ -272,7 +272,6 @@ public class Developer implements Serializable {
     public void setUserEnteredSelfDeveloper(String userEnteredSelfDeveloper) {
         this.userEnteredSelfDeveloper = userEnteredSelfDeveloper;
     }
-    
 
     // Not all attributes have been included. The attributes being used were selected so the DeveloperManager could
     // determine equality when updating a Developer
