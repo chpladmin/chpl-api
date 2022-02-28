@@ -28,12 +28,15 @@ public class DeveloperAttestationReportCsvWriter {
 
     public File generateFile(List<DeveloperAttestationReport> rows) {
         File outputFile = getOutputFile(env.getProperty("developer.attestation.report.filename") + LocalDate.now().toString());
+        if (rows == null || rows.size() == 0) {
+            return outputFile;
+        }
 
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(outputFile),
                 Charset.forName("UTF-8").newEncoder());
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
             writer.write('\ufeff');
-            csvPrinter.printRecord(RealWorldTestingReport.getHeaders());
+            csvPrinter.printRecord(rows.get(0).getHeaders());
             rows.stream()
                     .forEach(row -> {
                         try {
