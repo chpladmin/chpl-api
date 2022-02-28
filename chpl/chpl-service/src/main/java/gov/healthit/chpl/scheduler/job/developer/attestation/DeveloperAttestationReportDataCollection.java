@@ -240,6 +240,10 @@ public class DeveloperAttestationReportDataCollection {
                 .toList();
     }
 
+    private CertificationBody getAcbByName(String acbName) {
+        return new CertificationBody(certificationBodyDAO.getByName(acbName));
+    }
+
     private Date toDate(LocalDate localDate) {
         ZoneId defaultZoneId = ZoneId.systemDefault();
         return  Date.from(localDate.atStartOfDay(defaultZoneId).toInstant());
@@ -335,8 +339,10 @@ public class DeveloperAttestationReportDataCollection {
     private Map<Pair<Long, Long>, Boolean> getDeveloperAcbMapping(Developer developer) {
         Map<Pair<Long, Long>, Boolean> developerAcbMap = new HashMap<Pair<Long, Long>, Boolean>();
 
-        developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(developer.getDeveloperId()).stream()
-                .forEach(acb -> developerAcbMap.put(Pair.of(developer.getDeveloperId(), acb.getId()), true));
+
+        getListingDataForDeveloper(developer).stream()
+                .filter(listing -> isListingActiveDuringPeriod(listing, getMostRecentPastAttestationPeriod()))
+                .forEach(listing -> developerAcbMap.put(Pair.of(developer.getDeveloperId(), getAcbByName(listing.getAcb()).getId()), true));
 
         return developerAcbMap;
     }
