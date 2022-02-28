@@ -1,8 +1,14 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.tuple.Pair;
+
+import gov.healthit.chpl.domain.CertificationBody;
 import lombok.Builder;
 import lombok.Data;
 
@@ -14,6 +20,8 @@ public class DeveloperAttestationReport {
     private Long developerId;
     private String pointOfContactName;
     private String pointOfContactEmail;
+    private String attestationStatus;
+    private LocalDate attestationPublishDate;
     private String attestationPeriod;
     private String informationBlocking;
     private String assurances;
@@ -29,15 +37,19 @@ public class DeveloperAttestationReport {
     private String assurancesValidation;
     private String realWorldTestingValidation;
     private String apiValidation;
+    private Map<Pair<Long, Long>, Boolean> developerAcbMap; // Key: developerId, acbId
+    private List<CertificationBody> activeAcbs;
 
     public List<String> toListOfStrings() {
-        return Arrays.asList(
+        List<String> part1 =  Arrays.asList(
                 developerName,
                 developerCode,
                 developerId.toString(),
                 pointOfContactName,
                 pointOfContactEmail,
                 attestationPeriod,
+                attestationStatus,
+                attestationPublishDate != null ? attestationPublishDate.toString() : "",
                 informationBlocking,
                 assurances,
                 communications,
@@ -48,20 +60,63 @@ public class DeveloperAttestationReport {
                 totalSurveillanceNonconformities != null ? totalSurveillanceNonconformities.toString() : "",
                 openSurveillanceNonconformities != null ? openSurveillanceNonconformities.toString() : "",
                 totalDirectReviewNonconformities != null ? totalDirectReviewNonconformities.toString() : "",
-                openDirectReviewNonconformities != null ? openDirectReviewNonconformities.toString() : "",
+                openDirectReviewNonconformities != null ? openDirectReviewNonconformities.toString() : "");
+
+        List<String> part2 = activeAcbs.stream()
+                .map(acb -> developerAcbMap.containsKey(Pair.of(developerId, acb.getId()))
+                        ? developerAcbMap.get(Pair.of(developerId, acb.getId())) ? "Applicable" : "Not Applicable"
+                        : "Not Applicable")
+                .toList();
+
+        List<String> part3 =  Arrays.asList(
                 assurancesValidation,
                 realWorldTestingValidation,
-                apiValidation
-                );
+                apiValidation);
+
+        List<String> data = new ArrayList<String>();
+        data.addAll(part1);
+        data.addAll(part2);
+        data.addAll(part3);
+
+        return data;
     }
 
-    public static List<String> getHeaders() {
-        return Arrays.asList(
+    public List<String> getHeaders() {
+        List<String> part1 =  Arrays.asList(
                 "Developer Name",
                 "Developer Code",
                 "Developer DBID",
                 "Developer Point Of Contact Name",
                 "Developer Point of Contact Email",
-                "Attestation Period");
+                "Attestation Period",
+                "Attestation Status",
+                "Last Activity",
+                "Information Blocking",
+                "Assurances",
+                "Communications",
+                "Application Programming Interfaces (APIs)",
+                "Real World Testing",
+                "Submitter Name",
+                "Submitter Email",
+                "Total Surveillance Non-conformities",
+                "Open Surveillance Non-conformities",
+                "Total Direct Review Non-conformities",
+                "Open Direct Review Non-conformities");
+
+        List<String> part2 = activeAcbs.stream()
+                .map(acb -> acb.getName())
+                .toList();
+
+        List<String> part3 =  Arrays.asList(
+                "Assurances",
+                "Real World Testing",
+                "API");
+
+        List<String> headers = new ArrayList<String>();
+        headers.addAll(part1);
+        headers.addAll(part2);
+        headers.addAll(part3);
+
+        return headers;
     }
 }

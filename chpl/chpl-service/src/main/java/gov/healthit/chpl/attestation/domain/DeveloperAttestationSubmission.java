@@ -1,5 +1,7 @@
 package gov.healthit.chpl.attestation.domain;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +24,7 @@ public class DeveloperAttestationSubmission {
     private List<AttestationSubmittedResponse> responses;
     private String signature;
     private String signatureEmail;
+    private LocalDate datePublished;
 
     public DeveloperAttestationSubmission(DeveloperAttestationSubmissionEntity entity) {
         this.id = entity.getId();
@@ -29,6 +32,7 @@ public class DeveloperAttestationSubmission {
         this.period = new AttestationPeriod(entity.getPeriod());
         this.signature = entity.getSignature();
         this.signatureEmail = entity.getSignatureEmail();
+        this.datePublished = entity.getLastModifiedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         this.responses = entity.getResponses().stream()
                 .map(ent -> AttestationSubmittedResponse.builder()
                         .id(ent.getId())

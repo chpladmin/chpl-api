@@ -28,7 +28,7 @@ public class DeveloperAttestationReportCsvWriter {
     }
 
     public File generateFile(List<DeveloperAttestationReport> rows) {
-        File outputFile = getOutputFile(env.getProperty("rwt.report.filename") + LocalDate.now().toString());
+        File outputFile = getOutputFile(env.getProperty("developer.attestation.report.filename") + LocalDate.now().toString());
 
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(outputFile),
                 Charset.forName("UTF-8").newEncoder());

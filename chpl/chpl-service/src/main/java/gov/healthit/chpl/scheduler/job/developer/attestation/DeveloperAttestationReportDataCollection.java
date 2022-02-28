@@ -13,6 +13,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jfree.data.time.DateRange;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +22,7 @@ import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
 import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
 import gov.healthit.chpl.attestation.report.validation.AttestationValidationService;
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
@@ -60,17 +62,20 @@ public class DeveloperAttestationReportDataCollection {
     private DirectReviewSearchService directReviewService;
     private AttestationValidationService attestationValidationService;
     private CertificationBodyDAO certificationBodyDAO;
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
 
     private Map<Long, List<CertifiedProductBasicSearchResult>> developerListings = new HashMap<Long, List<CertifiedProductBasicSearchResult>>();
 
     public DeveloperAttestationReportDataCollection(DeveloperDAO developerDAO, ListingSearchService listingSearchService, AttestationDAO attestationDAO,
-            DirectReviewSearchService directReviewService, AttestationValidationService attestationValidationService, CertificationBodyDAO certificationBodyDAO) {
+            DirectReviewSearchService directReviewService, AttestationValidationService attestationValidationService, CertificationBodyDAO certificationBodyDAO,
+            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO) {
         this.developerDAO = developerDAO;
         this.listingSearchService = listingSearchService;
         this.attestationDAO = attestationDAO;
         this.directReviewService = directReviewService;
         this.attestationValidationService = attestationValidationService;
         this.certificationBodyDAO = certificationBodyDAO;
+        this.developerCertificationBodyMapDAO = developerCertificationBodyMapDAO;
 }
 
     private List<String> activeStatuses = Stream.of(CertificationStatusType.Active.getName(),
@@ -95,6 +100,8 @@ public class DeveloperAttestationReportDataCollection {
                         .developerId(dev.getDeveloperId())
                         .pointOfContactName(getPointOfContactFullName(dev))
                         .pointOfContactEmail(getPointOfContactEmail(dev))
+                        .attestationStatus(attestation != null ? "Published" : "")
+                        .attestationPublishDate(attestation != null ? attestation.getDatePublished() : null)
                         .attestationPeriod(String.format("%s - %s", mostRecentPastPeriod.getPeriodStart().toString(),
                                 mostRecentPastPeriod.getPeriodEnd().toString()))
                         .informationBlocking(getAttestationResponse(attestation, INFORMATION_BLOCKING_ATTESTATION_ID))
@@ -111,6 +118,8 @@ public class DeveloperAttestationReportDataCollection {
                         .assurancesValidation(getAssurancesValidation(dev))
                         .realWorldTestingValidation(getRealWorldTestingValidation(dev))
                         .apiValidation(getApiValidation(dev))
+                        .activeAcbs(getActiveAcbs())
+                        .developerAcbMap(getDeveloperAcbMapping(dev))
                         .build();
                 })
                 .sorted(Comparator.comparing(DeveloperAttestationReport::getDeveloperName))
@@ -319,4 +328,12 @@ public class DeveloperAttestationReportDataCollection {
         }
     }
 
+    private Map<Pair<Long, Long>, Boolean> getDeveloperAcbMapping(Developer developer) {
+        Map<Pair<Long, Long>, Boolean> developerAcbMap = new HashMap<Pair<Long, Long>, Boolean>();
+
+        developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(developer.getDeveloperId()).stream()
+                .forEach(acb -> developerAcbMap.put(Pair.of(developer.getDeveloperId(), acb.getId()), true));
+
+        return developerAcbMap;
+    }
 }

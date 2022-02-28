@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation;
 
+import java.io.File;
 import java.util.List;
 
 import org.quartz.Job;
@@ -24,6 +25,9 @@ public class DeveloperAttestationReportJob implements Job {
     @Autowired
     private DeveloperAttestationReportDataCollection developerAttestationReportDataCollection;
 
+    @Autowired
+    private DeveloperAttestationReportCsvWriter developerAttestationReportCsvWriter;
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
@@ -42,6 +46,10 @@ public class DeveloperAttestationReportJob implements Job {
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
                     List<DeveloperAttestationReport> reportRows = developerAttestationReportDataCollection.collect();
+
+                    File csv = developerAttestationReportCsvWriter.generateFile(reportRows);
+
+                    LOGGER.info("Filename: {} | Size: {}", csv.getName(), csv.length());
                 } catch (Exception e) {
                     LOGGER.catching(e);
                 }
