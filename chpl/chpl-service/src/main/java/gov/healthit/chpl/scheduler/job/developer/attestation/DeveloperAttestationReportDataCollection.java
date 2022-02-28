@@ -83,14 +83,19 @@ public class DeveloperAttestationReportDataCollection {
             CertificationStatusType.SuspendedByOnc.getName())
             .collect(Collectors.toList());
 
-    public List<DeveloperAttestationReport> collect() {
+    public List<DeveloperAttestationReport> collect(List<Long> selectedAcbIds) {
         AttestationPeriod mostRecentPastPeriod = getMostRecentPastAttestationPeriod();
         LOGGER.info("Most recent past attestation period: {} - {} ", mostRecentPastPeriod.getPeriodStart().toString(), mostRecentPastPeriod.getPeriodEnd().toString());
+        LOGGER.info("Selected AcbsId: {}", selectedAcbIds.stream()
+                .map(id -> id.toString())
+                .collect(Collectors.joining(", ")));
+
         List<Developer> developers = getAllDevelopers().stream()
                 .filter(dev -> doesActiveListingExistDuringAttestationPeriod(getListingDataForDeveloper(dev), mostRecentPastPeriod))
                 .toList();
 
         List<DeveloperAttestationReport> reportRows = developers.stream()
+                .filter(dev -> isDeveloperManagedBySelectedAcbs(dev, selectedAcbIds))
                 .map(dev -> {
                     DeveloperAttestationSubmission attestation = getDeveloperAttestation(dev.getDeveloperId(), mostRecentPastPeriod.getId());
 
@@ -123,7 +128,7 @@ public class DeveloperAttestationReportDataCollection {
                         .build();
                 })
                 .sorted(Comparator.comparing(DeveloperAttestationReport::getDeveloperName))
-                .peek(row -> LOGGER.info(row.toListOfStrings().stream().collect(Collectors.joining("|"))))
+                //.peek(row -> LOGGER.info(row.toListOfStrings().stream().collect(Collectors.joining("|"))))
                 .toList();
 
         LOGGER.info("Total Report Rows found: {}", reportRows.size());
@@ -132,11 +137,10 @@ public class DeveloperAttestationReportDataCollection {
     }
 
     private Boolean doesActiveListingExistDuringAttestationPeriod(List<CertifiedProductBasicSearchResult> listingsForDeveloper, AttestationPeriod period) {
-        Boolean x = listingsForDeveloper.stream()
+        return listingsForDeveloper.stream()
                 .filter(listing -> isListingActiveDuringPeriod(listing, period))
                 .findAny()
                 .isPresent();
-        return x;
     }
 
     private Boolean isListingActiveDuringPeriod(CertifiedProductBasicSearchResult listing, AttestationPeriod period) {
@@ -335,5 +339,12 @@ public class DeveloperAttestationReportDataCollection {
                 .forEach(acb -> developerAcbMap.put(Pair.of(developer.getDeveloperId(), acb.getId()), true));
 
         return developerAcbMap;
+    }
+
+    private Boolean isDeveloperManagedBySelectedAcbs(Developer developer, List<Long> acbIds) {
+        return developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(developer.getDeveloperId()).stream()
+                .filter(acb -> acbIds.contains(acb.getId()))
+                .findAny()
+                .isPresent();
     }
 }
