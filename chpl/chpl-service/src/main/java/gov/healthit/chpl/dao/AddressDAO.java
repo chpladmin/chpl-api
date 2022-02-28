@@ -38,7 +38,7 @@ public class AddressDAO extends BaseDAOImpl {
         addressEntity.setZipcode(address.getZipcode());
         addressEntity.setCountry(address.getCountry());
         addressEntity.setLastModifiedUser(AuthUtil.getAuditId());
-        update(address);
+        update(addressEntity);
     }
 
     public List<Address> findAll() {

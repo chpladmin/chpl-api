@@ -40,7 +40,6 @@ public class DeveloperActivityMetadataBuilder extends ActivityMetadataBuilder {
                 origDeveloper =
                     jsonMapper.readValue(activity.getOriginalData(), Developer.class);
             } catch (final Exception ignore) {
-                LOGGER.error(ignore);
             }
 
             //if we couldn't parse it as a Developer
@@ -50,7 +49,6 @@ public class DeveloperActivityMetadataBuilder extends ActivityMetadataBuilder {
                     origDevelopers = jsonMapper.readValue(activity.getOriginalData(),
                             jsonMapper.getTypeFactory().constructCollectionType(List.class, Developer.class));
                 } catch (final Exception ignore) {
-                    LOGGER.error(ignore);
                 }
             }
 
@@ -68,7 +66,6 @@ public class DeveloperActivityMetadataBuilder extends ActivityMetadataBuilder {
                 newDeveloper =
                     jsonMapper.readValue(activity.getNewData(), Developer.class);
             } catch (final Exception ignore) {
-                LOGGER.error(ignore);
             }
 
             //if we couldn't parse it as a Developer
@@ -78,7 +75,6 @@ public class DeveloperActivityMetadataBuilder extends ActivityMetadataBuilder {
                     newDevelopers = jsonMapper.readValue(activity.getNewData(),
                             jsonMapper.getTypeFactory().constructCollectionType(List.class, Developer.class));
                 } catch (final Exception ignore) {
-                    LOGGER.error(ignore);
                 }
             }
 
