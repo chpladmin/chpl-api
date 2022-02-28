@@ -155,7 +155,6 @@ public class SearchController {
     @Operation(summary = "Search the CHPL with an HTTP POST Request.",
             description = "Search the CHPL by specifycing multiple fields of the data to search. "
                     + "If paging fields are not specified, the first 20 records are returned by default.",
-            deprecated = true,
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
