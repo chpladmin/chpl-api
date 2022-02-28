@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "deverloperAttestationReportJobLogger")
+@Log4j2(topic = "developerAttestationReportJobLogger")
 @Component
 public class DeveloperAttestationReportCsvWriter {
     private Environment env;

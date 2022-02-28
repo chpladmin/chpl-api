@@ -40,9 +40,11 @@ import gov.healthit.chpl.search.domain.SearchResponse;
 import gov.healthit.chpl.service.DirectReviewSearchService;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "deverloperAttestationReportJobLogger")
+@Log4j2(topic = "developerAttestationReportJobLogger")
 @Component
 public class DeveloperAttestationReportDataCollection {
+    private static final Integer MAX_PAGE_SIZE = 100;
+
     private static final Long INFORMATION_BLOCKING_ATTESTATION_ID = 1L;
     private static final Long ASSURANCES_ATTESTATION_ID = 2L;
     private static final Long COMMUNICATIONS_ATTESTATION_ID = 3L;
@@ -162,7 +164,7 @@ public class DeveloperAttestationReportDataCollection {
             SearchRequest request = SearchRequest.builder()
                     .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
                     .developer(developer.getName())
-                    .pageSize(100)
+                    .pageSize(MAX_PAGE_SIZE)
                     .build();
 
             try {

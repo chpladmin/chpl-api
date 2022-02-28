@@ -28,7 +28,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "deverloperAttestationReportJobLogger")
+@Log4j2(topic = "developerAttestationReportJobLogger")
 public class DeveloperAttestationReportJob implements Job {
 
     @Autowired

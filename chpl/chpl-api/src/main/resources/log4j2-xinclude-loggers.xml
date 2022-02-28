@@ -212,8 +212,8 @@
         <AppenderRef ref="sendEmailJob" />
         <AppenderRef ref="sendEmailJobJson" />
     </Logger>
-    <Logger name="deverloperAttestationReportJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="deverloperAttestationReportJob" />
-        <AppenderRef ref="deverloperAttestationReportJobJson" />
+    <Logger name="developerAttestationReportJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="developerAttestationReportJob" />
+        <AppenderRef ref="developerAttestationReportJobJson" />
     </Logger>
 </Loggers>
