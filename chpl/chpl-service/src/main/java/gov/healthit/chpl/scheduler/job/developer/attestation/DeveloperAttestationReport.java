@@ -41,7 +41,7 @@ public class DeveloperAttestationReport {
     private List<CertificationBody> activeAcbs;
 
     public List<String> toListOfStrings() {
-        List<String> part1 =  Arrays.asList(
+        List<String> developerAttestationData =  Arrays.asList(
                 developerName,
                 developerCode,
                 developerId.toString(),
@@ -62,27 +62,27 @@ public class DeveloperAttestationReport {
                 totalDirectReviewNonconformities != null ? totalDirectReviewNonconformities.toString() : "",
                 openDirectReviewNonconformities != null ? openDirectReviewNonconformities.toString() : "");
 
-        List<String> part2 = activeAcbs.stream()
+        List<String> acbData = activeAcbs.stream()
                 .map(acb -> developerAcbMap.containsKey(Pair.of(developerId, acb.getId()))
                         ? developerAcbMap.get(Pair.of(developerId, acb.getId())) ? "Applicable" : "Not Applicable"
                         : "Not Applicable")
                 .toList();
 
-        List<String> part3 =  Arrays.asList(
+        List<String> attestationValidationData =  Arrays.asList(
                 assurancesValidation,
                 realWorldTestingValidation,
                 apiValidation);
 
         List<String> data = new ArrayList<String>();
-        data.addAll(part1);
-        data.addAll(part2);
-        data.addAll(part3);
+        data.addAll(developerAttestationData);
+        data.addAll(acbData);
+        data.addAll(attestationValidationData);
 
         return data;
     }
 
     public List<String> getHeaders() {
-        List<String> part1 =  Arrays.asList(
+        List<String> developerAttestationHeaders =  Arrays.asList(
                 "Developer Name",
                 "Developer Code",
                 "Developer DBID",
@@ -103,19 +103,19 @@ public class DeveloperAttestationReport {
                 "Total Direct Review Non-conformities",
                 "Open Direct Review Non-conformities");
 
-        List<String> part2 = activeAcbs.stream()
+        List<String> acbHeaders = activeAcbs.stream()
                 .map(acb -> acb.getName())
                 .toList();
 
-        List<String> part3 =  Arrays.asList(
+        List<String> attestationValidationData =  Arrays.asList(
                 "Assurances",
                 "Real World Testing",
                 "API");
 
         List<String> headers = new ArrayList<String>();
-        headers.addAll(part1);
-        headers.addAll(part2);
-        headers.addAll(part3);
+        headers.addAll(developerAttestationHeaders);
+        headers.addAll(acbHeaders);
+        headers.addAll(attestationValidationData);
 
         return headers;
     }
