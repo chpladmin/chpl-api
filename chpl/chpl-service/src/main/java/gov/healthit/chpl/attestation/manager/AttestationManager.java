@@ -96,10 +96,14 @@ public class AttestationManager {
             return false;
         } else {
             AttestationPeriod mostRecentPastAttestationPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
-            if (doesAttestationForDeveloperExist(developerId, mostRecentPastAttestationPeriod.getId())) {
-                return !doesPendingAttestationChangeRequestForDeveloperExist(developerId);
+            if (withinStandardSubmissionPeriod(mostRecentPastAttestationPeriod)) {
+                if (doesAttestationForDeveloperExist(developerId, mostRecentPastAttestationPeriod.getId())) {
+                    return !doesPendingAttestationChangeRequestForDeveloperExist(developerId);
+                } else {
+                    return false;
+                }
             } else {
-                return false;
+                return !doesPendingAttestationChangeRequestForDeveloperExist(developerId);
             }
         }
     }
