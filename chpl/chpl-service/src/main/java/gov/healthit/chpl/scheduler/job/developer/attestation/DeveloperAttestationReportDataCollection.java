@@ -130,7 +130,6 @@ public class DeveloperAttestationReportDataCollection {
                         .build();
                 })
                 .sorted(Comparator.comparing(DeveloperAttestationReport::getDeveloperName))
-                //.peek(row -> LOGGER.info(row.toListOfStrings().stream().collect(Collectors.joining("|"))))
                 .toList();
 
         LOGGER.info("Total Report Rows found: {}", reportRows.size());
