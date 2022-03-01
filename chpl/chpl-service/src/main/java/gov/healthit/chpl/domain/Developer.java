@@ -28,7 +28,7 @@ import lombok.Singular;
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
-@Builder(toBuilder = true)
+@Builder
 public class Developer implements Serializable {
     private static final long serialVersionUID = 7341544844577617247L;
 
@@ -101,6 +101,13 @@ public class Developer implements Serializable {
     @XmlElement(name = "statusEvent", required = false, nillable = true)
     @Singular
     private List<DeveloperStatusEvent> statusEvents;
+
+    /**
+     * Public attestations submitted by the developer.
+     */
+    @XmlElementWrapper(name = "attestations", nillable = true, required = false)
+    @XmlElement(name = "attestation")
+    private List<PublicAttestation> attestations;
 
     @XmlTransient
     @JsonIgnore
@@ -231,6 +238,14 @@ public class Developer implements Serializable {
 
     public void setStatusEvents(List<DeveloperStatusEvent> statusEvents) {
         this.statusEvents = statusEvents;
+    }
+
+    public List<PublicAttestation> getAttestations() {
+        return attestations;
+    }
+
+    public void setAttestations(List<PublicAttestation> attestations) {
+        this.attestations = attestations;
     }
 
     public String getUserEnteredName() {

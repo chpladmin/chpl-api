@@ -127,7 +127,9 @@ public class DeveloperManager extends SecuredManager {
 
     @Transactional(readOnly = true)
     public Developer getById(Long id, boolean allowDeleted) throws EntityRetrievalException {
-        return developerDao.getById(id, allowDeleted);
+        Developer developer = developerDao.getById(id, allowDeleted);
+        developer.setAttestations(getDeveloperPublicAttestations(id));
+        return developer;
     }
 
     @Transactional(readOnly = true)

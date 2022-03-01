@@ -299,7 +299,9 @@ public class DeveloperController {
 
     @Operation(summary = "List public attestation information for a developer.",
             description = "Security Restrictions: None ",
+            deprecated = true,
             security = {@SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+    @Deprecated
     @RequestMapping(value = "/{developerId}/public-attestations", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody PublicDeveloperAttestestationResults getPublicAttestations(@PathVariable("developerId") Long developerId) throws InvalidArgumentsException, EntityRetrievalException {
         if (!ff4j.check(FeatureList.ATTESTATIONS)) {

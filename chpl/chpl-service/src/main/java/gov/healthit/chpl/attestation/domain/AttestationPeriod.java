@@ -2,6 +2,12 @@ package gov.healthit.chpl.attestation.domain;
 
 import java.time.LocalDate;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -13,29 +19,57 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class AttestationPeriod {
+
+    /**
+     * The internal ID of the attestation period.
+     */
+    @XmlElement(required = true)
     private Long id;
 
+    /**
+     * The date the attestation period starts.
+     */
+    @XmlElement(required = true)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate periodStart;
 
+    /**
+     * The date the attestation period ends.
+     */
+    @XmlElement(required = true)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate periodEnd;
 
+    /**
+     * The date the submission window of the attestation period starts.
+     */
+    @XmlElement(required = true)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate submissionStart;
 
+    /**
+     * The date the submission window of the attestation period ends.
+     */
+    @XmlElement(required = true)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate submissionEnd;
 
+    /**
+     * A description of the attestation period.
+     */
+    @XmlElement(required = true)
     private String description;
 
     public AttestationPeriod(AttestationPeriodEntity entity) {
