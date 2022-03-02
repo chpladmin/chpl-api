@@ -29,7 +29,6 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
-import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import lombok.extern.log4j.Log4j2;
 
@@ -183,12 +182,7 @@ public class CacheableDimensionalDataManager {
 
     @Transactional
     public Set<KeyValueModelStatuses> getProducts() {
-        List<ProductDTO> productDTOs = this.productDao.findAll();
-        Set<KeyValueModelStatuses> productNames = new HashSet<KeyValueModelStatuses>();
-        for (ProductDTO dto : productDTOs) {
-            productNames.add(new KeyValueModelStatuses(dto.getId(), dto.getName(), dto.getStatuses()));
-        }
-        return productNames;
+        return productDao.findAllWithStatuses();
     }
 
     @Transactional

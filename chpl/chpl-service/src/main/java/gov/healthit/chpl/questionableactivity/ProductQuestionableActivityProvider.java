@@ -7,8 +7,8 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.dto.ProductDTO;
-import gov.healthit.chpl.dto.ProductOwnerDTO;
+import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.domain.ProductOwner;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
 import gov.healthit.chpl.util.Util;
 
@@ -24,7 +24,7 @@ public class ProductQuestionableActivityProvider {
      * @param newProduct new product
      * @return DTO of questionable activity
      */
-    public QuestionableActivityProductDTO checkNameUpdated(final ProductDTO origProduct, final ProductDTO newProduct) {
+    public QuestionableActivityProductDTO checkNameUpdated(Product origProduct, Product newProduct) {
         QuestionableActivityProductDTO activity = null;
         if ((origProduct.getName() != null && newProduct.getName() == null)
                 || (origProduct.getName() == null && newProduct.getName() != null)
@@ -43,9 +43,7 @@ public class ProductQuestionableActivityProvider {
      * @param newProduct new product
      * @return DTO of questionable activity
      */
-    public QuestionableActivityProductDTO checkCurrentOwnerChanged(
-            ProductDTO origProduct, ProductDTO newProduct) {
-
+    public QuestionableActivityProductDTO checkCurrentOwnerChanged(Product origProduct, Product newProduct) {
         QuestionableActivityProductDTO activity = null;
         Developer origOwner = origProduct.getOwner();
         Developer newOwner = newProduct.getOwner();
@@ -75,13 +73,13 @@ public class ProductQuestionableActivityProvider {
      * @return list of added owners
      */
     public List<QuestionableActivityProductDTO> checkOwnerHistoryAdded(
-            final List<ProductOwnerDTO> origOwners, final List<ProductOwnerDTO> newOwners) {
+            List<ProductOwner> origOwners, List<ProductOwner> newOwners) {
 
         List<QuestionableActivityProductDTO> ownerAddedActivities = new ArrayList<QuestionableActivityProductDTO>();
         if ((origOwners == null || origOwners.size() == 0)
                 && newOwners != null && newOwners.size() > 0) {
             //all the newOwners are "added"
-            for (ProductOwnerDTO newOwner : newOwners) {
+            for (ProductOwner newOwner : newOwners) {
                 QuestionableActivityProductDTO activity = new QuestionableActivityProductDTO();
                 activity.setBefore(null);
                 activity.setAfter(newOwner.getDeveloper().getName()
@@ -90,9 +88,9 @@ public class ProductQuestionableActivityProvider {
             }
         } else if (origOwners != null && origOwners.size() > 0
                 && newOwners != null && newOwners.size() > 0) {
-            for (ProductOwnerDTO newOwner : newOwners) {
+            for (ProductOwner newOwner : newOwners) {
                 boolean foundOwner = false;
-                for (ProductOwnerDTO origOwner : origOwners) {
+                for (ProductOwner origOwner : origOwners) {
                     if (origOwner.getId().equals(newOwner.getId())
                             || (origOwner.getDeveloper().getId().longValue()
                                     == newOwner.getDeveloper().getId().longValue()
@@ -120,13 +118,13 @@ public class ProductQuestionableActivityProvider {
      * @return list of removed owners
      */
     public List<QuestionableActivityProductDTO> checkOwnerHistoryRemoved(
-            final List<ProductOwnerDTO> origOwners, final List<ProductOwnerDTO> newOwners) {
+            List<ProductOwner> origOwners, List<ProductOwner> newOwners) {
 
         List<QuestionableActivityProductDTO> ownerRemovedActivities = new ArrayList<QuestionableActivityProductDTO>();
         if (origOwners != null && origOwners.size() > 0
                 && (newOwners == null || newOwners.size() == 0)) {
             //all the origOwners are "removed"
-            for (ProductOwnerDTO origOwner : origOwners) {
+            for (ProductOwner origOwner : origOwners) {
                 QuestionableActivityProductDTO activity = new QuestionableActivityProductDTO();
                 activity.setBefore(origOwner.getDeveloper().getName()
                         + " (" + Util.getDateFormatter().format(new Date(origOwner.getTransferDate())) + ")");
@@ -135,9 +133,9 @@ public class ProductQuestionableActivityProvider {
             }
         } else if (origOwners != null && origOwners.size() > 0
                 && newOwners != null && newOwners.size() > 0) {
-            for (ProductOwnerDTO origOwner : origOwners) {
+            for (ProductOwner origOwner : origOwners) {
                 boolean foundOwner = false;
-                for (ProductOwnerDTO newOwner : newOwners) {
+                for (ProductOwner newOwner : newOwners) {
                     if (origOwner.getId().equals(newOwner.getId())
                             || (origOwner.getDeveloper().getId().longValue()
                                     == newOwner.getDeveloper().getId().longValue()
@@ -165,15 +163,15 @@ public class ProductQuestionableActivityProvider {
      * @return list of edited owners
      */
     public List<QuestionableActivityProductDTO> checkOwnerHistoryItemEdited(
-            final List<ProductOwnerDTO> origOwners, final List<ProductOwnerDTO> newOwners) {
+            List<ProductOwner> origOwners, List<ProductOwner> newOwners) {
 
         List<QuestionableActivityProductDTO> ownerEditedActivities = new ArrayList<QuestionableActivityProductDTO>();
         if (origOwners != null && origOwners.size() > 0
                 && newOwners != null && newOwners.size() > 0) {
-            for (ProductOwnerDTO origOwner : origOwners) {
+            for (ProductOwner origOwner : origOwners) {
                 boolean ownerEdited = false;
-                ProductOwnerDTO matchingNewOwner = null;
-                for (ProductOwnerDTO newOwner : newOwners) {
+                ProductOwner matchingNewOwner = null;
+                for (ProductOwner newOwner : newOwners) {
                     if (origOwner.getId().equals(newOwner.getId())) {
                         matchingNewOwner = newOwner;
                         //same id, check if the owner name and date are still the same

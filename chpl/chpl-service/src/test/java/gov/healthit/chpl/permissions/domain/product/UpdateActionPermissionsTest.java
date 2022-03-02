@@ -13,7 +13,7 @@ import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.product.UpdateActionPermissions;
@@ -42,7 +42,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForAdminUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-        assertTrue(permissions.hasAccess(new ProductDTO()));
+        assertTrue(permissions.hasAccess(new Product()));
     }
 
     @Override
@@ -51,7 +51,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForOncUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-        assertTrue(permissions.hasAccess(new ProductDTO()));
+        assertTrue(permissions.hasAccess(new Product()));
     }
 
     @Override
@@ -60,7 +60,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForOncStaffUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(new ProductDTO()));
+        assertFalse(permissions.hasAccess(new Product()));
     }
 
     @Override
@@ -70,9 +70,12 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
         assertFalse(permissions.hasAccess());
 
-        ProductDTO product = new ProductDTO();
+        Product product = new Product();
         product.setId(1L);
-        product.getOwner().setId(2L);
+        product.setOwner(Developer.builder()
+                .id(2L)
+                .developerId(2L)
+                .build());
 
         Developer dev = new Developer();
         dev.setId(1L);

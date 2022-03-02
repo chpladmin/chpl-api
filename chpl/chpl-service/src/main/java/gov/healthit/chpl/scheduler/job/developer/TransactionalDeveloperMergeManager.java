@@ -18,10 +18,10 @@ import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.domain.ProductOwner;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.ProductDTO;
-import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -74,8 +74,8 @@ public class TransactionalDeveloperMergeManager {
         Map<Long, CertifiedProductSearchDetails> preMergeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
         Map<Long, CertifiedProductSearchDetails> postMergeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
         // search for any products assigned to the list of developers passed in
-        List<ProductDTO> developerProducts = productManager.getByDevelopers(developerIdsToMerge);
-        for (ProductDTO product : developerProducts) {
+        List<Product> developerProducts = productManager.getByDevelopers(developerIdsToMerge);
+        for (Product product : developerProducts) {
             List<CertifiedProductDetailsDTO> affectedListings = cpManager.getByProduct(product.getId());
             LOGGER.info("Found " + affectedListings.size() + " affected listings under product " + product.getName());
             // need to get details for affected listings now before the product is re-assigned
@@ -89,8 +89,7 @@ public class TransactionalDeveloperMergeManager {
             }
 
             // add an item to the ownership history of each product
-            ProductOwnerDTO historyToAdd = new ProductOwnerDTO();
-            historyToAdd.setProductId(product.getId());
+            ProductOwner historyToAdd = new ProductOwner();
             Developer prevOwner = new Developer();
             prevOwner.setId(product.getOwner().getId());
             historyToAdd.setDeveloper(prevOwner);

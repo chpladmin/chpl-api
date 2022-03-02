@@ -21,11 +21,11 @@ import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
+import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.ProductVersionEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -120,7 +120,7 @@ public class ProductVersionManager extends SecuredManager {
         if (productId == null) {
             throw new EntityCreationException("Cannot create a version without a product ID.");
         }
-        ProductDTO prod = prodDao.getById(productId);
+        Product prod = prodDao.getById(productId);
         if (prod == null) {
             throw new EntityRetrievalException("Cannot find product with id " + productId);
         }
@@ -156,7 +156,7 @@ public class ProductVersionManager extends SecuredManager {
         if (dto.getProductId() == null) {
             throw new EntityCreationException("Cannot create a version without a product ID.");
         }
-        ProductDTO prod = prodDao.getById(dto.getProductId());
+        Product prod = prodDao.getById(dto.getProductId());
         if (prod == null) {
             throw new EntityRetrievalException("Cannot find product with id " + dto.getProductId());
         }

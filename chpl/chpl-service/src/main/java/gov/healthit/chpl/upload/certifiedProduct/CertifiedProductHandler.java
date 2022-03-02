@@ -15,12 +15,12 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
-import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
@@ -96,7 +96,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
             pendingCertifiedProduct.setDeveloperId(foundDeveloper.getId());
 
             // product
-            ProductDTO foundProduct = productDao.getByDeveloperAndName(foundDeveloper.getId(), product);
+            Product foundProduct = productDao.getByDeveloperAndName(foundDeveloper.getId(), product);
             if (foundProduct != null) {
                 pendingCertifiedProduct.setProductId(foundProduct.getId());
 

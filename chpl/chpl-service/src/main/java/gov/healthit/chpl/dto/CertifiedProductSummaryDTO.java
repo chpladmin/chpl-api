@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.Date;
 
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductSummaryEntity;
@@ -34,7 +35,7 @@ public class CertifiedProductSummaryDTO implements Serializable {
     private Boolean curesUpdate;
     private CertificationBodyDTO acb;
     private Developer developer;
-    private ProductDTO product;
+    private Product product;
     private ProductVersionDTO version;
     private String reportFileLocation;
     private String sedReportFileLocation;
@@ -72,7 +73,7 @@ public class CertifiedProductSummaryDTO implements Serializable {
         contact.setPhoneNumber(entity.getDeveloperContactPhone());
         contact.setFullName(entity.getDeveloperContactName());
         this.developer.setContact(contact);
-        this.product = new ProductDTO();
+        this.product = new Product();
         this.product.setName(entity.getProductName());
         this.version = new ProductVersionDTO();
         this.version.setVersion(entity.getVersion());
@@ -108,7 +109,7 @@ public class CertifiedProductSummaryDTO implements Serializable {
         contact.setPhoneNumber(entity.getPhoneNumber());
         contact.setFullName(entity.getFullName());
         this.developer.setContact(contact);
-        this.product = new ProductDTO();
+        this.product = new Product();
         this.product.setId(entity.getProductId());
         this.product.setName(entity.getProductName());
         this.version = new ProductVersionDTO();

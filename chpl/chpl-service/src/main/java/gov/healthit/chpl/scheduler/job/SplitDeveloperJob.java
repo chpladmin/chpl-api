@@ -33,10 +33,10 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.domain.ProductOwner;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.ProductDTO;
-import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -178,14 +178,13 @@ public class SplitDeveloperJob implements Job {
             }
 
             // move the product to be owned by the new developer
-            ProductDTO productToMove = productManager.getById(productIdToMove);
+            Product productToMove = productManager.getById(productIdToMove);
             if (productToMove.getOwner().getId().longValue() != preSplitDeveloper.getId().longValue()) {
                 throw new AccessDeniedException("The product " + productToMove.getName()
                     + " is not owned by " + preSplitDeveloper.getName());
             }
             productToMove.getOwner().setId(createdDeveloperId);
-            ProductOwnerDTO newOwner = new ProductOwnerDTO();
-            newOwner.setProductId(productToMove.getId());
+            ProductOwner newOwner = new ProductOwner();
             newOwner.setDeveloper(preSplitDeveloper);
             newOwner.setTransferDate(splitDate.getTime());
             productToMove.getOwnerHistory().add(newOwner);
@@ -296,10 +295,10 @@ public class SplitDeveloperJob implements Job {
 
     private String createHtmlEmailBodySuccess(Developer createdDeveloper,
             List<Long> productIds) {
-        List<ProductDTO> products = new ArrayList<ProductDTO>(productIds.size());
+        List<Product> products = new ArrayList<Product>(productIds.size());
         for (Long productId : productIds) {
             try {
-                ProductDTO product = productManager.getById(productId);
+                Product product = productManager.getById(productId);
                 products.add(product);
             } catch (EntityRetrievalException ex) {
                 LOGGER.warn("No product found with ID " + productId, ex);
@@ -316,7 +315,7 @@ public class SplitDeveloperJob implements Job {
                 env.getProperty("chplUrlBegin"),
                 preSplitDeveloper.getId(),
                 preSplitDeveloper.getName());
-        for (ProductDTO product : products) {
+        for (Product product : products) {
             htmlMessage += String.format("<li>%s</li>", product.getName());
         }
         htmlMessage += "</ul>";

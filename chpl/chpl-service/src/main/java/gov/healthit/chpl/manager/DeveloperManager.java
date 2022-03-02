@@ -31,6 +31,7 @@ import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.PublicAttestation;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.concept.PublicAttestationStatus;
@@ -43,7 +44,6 @@ import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventPair;
-import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
@@ -140,7 +140,7 @@ public class DeveloperManager extends SecuredManager {
     public DeveloperTree getHierarchyById(Long id) throws EntityRetrievalException {
         List<CertificationBodyDTO> acbs = acbManager.getAll();
         Developer developer = getById(id);
-        List<ProductDTO> products = productManager.getByDeveloper(developer.getId());
+        List<Product> products = productManager.getByDeveloper(developer.getId());
         List<ProductVersionDTO> versions = versionManager.getByDeveloper(developer.getId());
         List<CertifiedProductDetailsDTO> listings = certifiedProductDao.findListingsByDeveloperId(developer.getId());
 

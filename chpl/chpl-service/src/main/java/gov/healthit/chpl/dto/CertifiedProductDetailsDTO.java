@@ -10,6 +10,7 @@ import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntitySimple;
@@ -55,7 +56,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private String productClassificationName;
     private Developer developer;
     private DeveloperStatusEvent developerCurrentStatus;
-    private ProductDTO product;
+    private Product product;
     private ProductVersionDTO version;
     private Date creationDate;
     private Date certificationDate;
@@ -153,7 +154,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         }
 
         if (entity.getProduct() != null) {
-            this.product = new ProductDTO(entity.getProduct());
+            this.product = entity.getProduct().toDomain();
         }
 
         if (entity.getProductVersionId() != null) {
@@ -217,6 +218,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
 
         this.developer = new Developer();
         this.developer.setId(entity.getDeveloperId());
+        this.developer.setDeveloperId(entity.getDeveloperId());
         this.developer.setName(entity.getDeveloperName());
         this.developer.setDeveloperCode(entity.getDeveloperCode());
         this.developer.setWebsite(entity.getDeveloperWebsite());
@@ -255,7 +257,8 @@ public class CertifiedProductDetailsDTO implements Serializable {
         }
 
         if (entity.getProductId() != null) {
-            this.product = new ProductDTO();
+            this.product = new Product();
+            this.product.setProductId(entity.getProductId());
             this.product.setId(entity.getProductId());
             this.product.setName(entity.getProductName());
         }

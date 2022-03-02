@@ -45,6 +45,7 @@ import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.domain.NonconformityType;
+import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.SearchableDimensionalData;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
@@ -63,7 +64,6 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
-import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.TestDataCriteriaMapDTO;
@@ -584,10 +584,10 @@ public class DimensionalDataManager {
     public DimensionalData getDimensionalData(final Boolean simple) throws EntityRetrievalException {
         DimensionalData result = new DimensionalData();
 
-        List<ProductDTO> productDtos = productDao.findAllIdsAndNames();
+        List<Product> products = productDao.findAllIdsAndNames();
         Set<KeyValueModel> productNames = new HashSet<KeyValueModel>();
-        for (ProductDTO productDto : productDtos) {
-            productNames.add(new KeyValueModel(productDto.getId(), productDto.getName()));
+        for (Product product : products) {
+            productNames.add(new KeyValueModel(product.getId(), product.getName()));
         }
         result.setProducts(productNames);
 

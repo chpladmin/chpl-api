@@ -79,6 +79,7 @@ import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
+import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.contact.PointOfContact;
@@ -109,7 +110,6 @@ import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.CuresUpdateEventDTO;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
-import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
@@ -482,7 +482,7 @@ public class CertifiedProductManager extends SecuredManager {
         }
 
         if (pendingCp.getProductId() == null) {
-            ProductDTO newProduct = new ProductDTO();
+            Product newProduct = new Product();
             if (pendingCp.getProductName() == null) {
                 throw new EntityCreationException("Either product name or ID must be provided.");
             }

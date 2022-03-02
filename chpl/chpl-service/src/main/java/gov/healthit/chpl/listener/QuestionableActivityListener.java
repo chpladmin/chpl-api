@@ -12,8 +12,8 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.manager.QuestionableActivityManager;
 import gov.healthit.chpl.util.AuthUtil;
@@ -61,10 +61,10 @@ public class QuestionableActivityListener implements EnvironmentAware {
                 && newData instanceof Developer) {
             checkQuestionableActivityForDeveloper(concept, objectId, activityDescription, (Developer) originalData,
                     (Developer) newData);
-        } else if (areAllValuesNonNull(originalData, newData) && originalData instanceof ProductDTO
-                && newData instanceof ProductDTO) {
-            checkQuestionableActivityForProduct(concept, objectId, activityDescription, (ProductDTO) originalData,
-                    (ProductDTO) newData);
+        } else if (areAllValuesNonNull(originalData, newData) && originalData instanceof Product
+                && newData instanceof Product) {
+            checkQuestionableActivityForProduct(concept, objectId, activityDescription, (Product) originalData,
+                    (Product) newData);
         } else if (areAllValuesNonNull(originalData, newData) && originalData instanceof ProductVersionDTO
                 && newData instanceof ProductVersionDTO) {
             checkQuestionableActivityForVersion(concept, objectId, activityDescription, (ProductVersionDTO) originalData,
@@ -131,7 +131,7 @@ public class QuestionableActivityListener implements EnvironmentAware {
     }
 
     private void checkQuestionableActivityForProduct(ActivityConcept concept, Long objectId, String activityDescription,
-            ProductDTO originalProduct, ProductDTO newProduct) {
+            Product originalProduct, Product newProduct) {
 
         if (originalProduct == null || newProduct == null || AuthUtil.getCurrentUser() == null) {
             return;

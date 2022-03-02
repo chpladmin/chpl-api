@@ -13,8 +13,8 @@ import gov.healthit.chpl.dao.QuestionableActivityDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityCertificationResultDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDeveloperDTO;
@@ -121,7 +121,7 @@ public class QuestionableActivityManager implements EnvironmentAware {
         }
     }
 
-    public void checkProductQuestionableActivity(ProductDTO origProduct, ProductDTO newProduct,
+    public void checkProductQuestionableActivity(Product origProduct, Product newProduct,
             Date activityDate, Long activityUser) {
         QuestionableActivityProductDTO productActivity = null;
         List<QuestionableActivityProductDTO> productActivities = null;
