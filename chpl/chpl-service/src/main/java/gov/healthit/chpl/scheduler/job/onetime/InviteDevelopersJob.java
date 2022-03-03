@@ -106,9 +106,9 @@ public class InviteDevelopersJob implements Job {
     }
 
     private boolean doesDeveloperHaveUserAccounts(Developer developer) {
-        List<UserDeveloperMapDTO> userDeveloperMaps = userDeveloperMapDao.getByDeveloperId(developer.getId());
+        List<UserDeveloperMapDTO> userDeveloperMaps = userDeveloperMapDao.getByDeveloperId(developer.getDeveloperId());
         LOGGER.info(String.format("Developer '" + developer.getName() + "' (id: "
-                + developer.getId() + ") has " + userDeveloperMaps.size() + " user%s",
+                + developer.getDeveloperId() + ") has " + userDeveloperMaps.size() + " user%s",
                 userDeveloperMaps.size() == 1 ? "" : "s"));
         return !CollectionUtils.isEmpty(userDeveloperMaps);
     }
@@ -216,7 +216,7 @@ public class InviteDevelopersJob implements Job {
                     email.saveChanges();
                     transport.sendMessage(email, email.getAllRecipients());
                     LOGGER.info("Emailed user " + developer.getContact().getEmail() + " for developer '"
-                            + developer.getName() + "' (id: " + developer.getId() + ").");
+                            + developer.getName() + "' (id: " + developer.getDeveloperId() + ").");
                 }
             }
         }
@@ -235,10 +235,10 @@ public class InviteDevelopersJob implements Job {
 
         private boolean developerPocIsValid(Developer developer) {
             if (developer.getContact() == null || StringUtils.isEmpty(developer.getContact().getEmail())) {
-                LOGGER.warn("Developer '" + developer.getName() + "' (id: " + developer.getId() + ") has no POC. No invitation can be sent.");
+                LOGGER.warn("Developer '" + developer.getName() + "' (id: " + developer.getDeveloperId() + ") has no POC. No invitation can be sent.");
                 return false;
             } else if (!EmailValidator.getInstance().isValid(developer.getContact().getEmail())) {
-                LOGGER.warn("Developer '" + developer.getName() + "' (id: " + developer.getId() + ") "
+                LOGGER.warn("Developer '" + developer.getName() + "' (id: " + developer.getDeveloperId() + ") "
                         + "has a POC with an invalid email address: '" + developer.getContact().getEmail() + "'."
                         + "No invitation can be sent.");
                 return false;
@@ -250,7 +250,7 @@ public class InviteDevelopersJob implements Job {
             String emailAddress = developer.getContact().getEmail();
             UserInvitation invitation = UserInvitation.builder()
                     .emailAddress(emailAddress)
-                    .permissionObjectId(developer.getId())
+                    .permissionObjectId(developer.getDeveloperId())
                     .hash(Util.md5(emailAddress + System.currentTimeMillis()))
                     .permission(permission)
                     .build();

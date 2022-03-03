@@ -115,9 +115,9 @@ public class DeveloperDAO extends BaseDAOImpl {
     }
 
     public void update(Developer developer) throws EntityRetrievalException, EntityCreationException {
-        DeveloperEntity entity = this.getEntityById(developer.getId());
+        DeveloperEntity entity = this.getEntityById(developer.getDeveloperId());
         if (entity == null) {
-            throw new EntityRetrievalException("Entity with id " + developer.getId() + " does not exist");
+            throw new EntityRetrievalException("Entity with id " + developer.getDeveloperId() + " does not exist");
         }
 
         if (developer.getAddress() != null) {

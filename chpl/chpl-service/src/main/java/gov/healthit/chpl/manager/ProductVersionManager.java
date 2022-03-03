@@ -124,9 +124,9 @@ public class ProductVersionManager extends SecuredManager {
         if (prod == null) {
             throw new EntityRetrievalException("Cannot find product with id " + productId);
         }
-        Developer dev = devDao.getById(prod.getOwner().getId());
+        Developer dev = devDao.getById(prod.getOwner().getDeveloperId());
         if (dev == null) {
-            throw new EntityRetrievalException("Cannot find developer with id " + prod.getOwner().getId());
+            throw new EntityRetrievalException("Cannot find developer with id " + prod.getOwner().getDeveloperId());
         }
         DeveloperStatus currDevStatus = dev.getStatus();
         if (currDevStatus == null || currDevStatus.getStatus() == null) {
@@ -160,9 +160,9 @@ public class ProductVersionManager extends SecuredManager {
         if (prod == null) {
             throw new EntityRetrievalException("Cannot find product with id " + dto.getProductId());
         }
-        Developer dev = devDao.getById(prod.getOwner().getId());
+        Developer dev = devDao.getById(prod.getOwner().getDeveloperId());
         if (dev == null) {
-            throw new EntityRetrievalException("Cannot find developer with id " + prod.getOwner().getId());
+            throw new EntityRetrievalException("Cannot find developer with id " + prod.getOwner().getDeveloperId());
         }
         DeveloperStatus currDevStatus = dev.getStatus();
         if (currDevStatus == null || currDevStatus.getStatus() == null) {

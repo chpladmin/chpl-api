@@ -487,10 +487,12 @@ public class CertifiedProductManager extends SecuredManager {
                 throw new EntityCreationException("Either product name or ID must be provided.");
             }
             newProduct.setName(pendingCp.getProductName());
-            newProduct.getOwner().setId(pendingCp.getDeveloperId());
+            newProduct.setOwner(Developer.builder()
+                    .id(pendingCp.getDeveloperId())
+                    .build());
             newProduct.setReportFileLocation(pendingCp.getReportFileLocation());
             newProduct = productManager.create(newProduct);
-            pendingCp.setProductId(newProduct.getId());
+            pendingCp.setProductId(newProduct.getProductId());
         }
 
         if (pendingCp.getProductVersionId() == null) {
@@ -1271,7 +1273,7 @@ public class CertifiedProductManager extends SecuredManager {
             }
             if (newDevStatus != null) {
                 DeveloperStatusEvent statusHistoryToAdd = new DeveloperStatusEvent();
-                statusHistoryToAdd.setDeveloperId(cpDeveloper.getId());
+                statusHistoryToAdd.setDeveloperId(cpDeveloper.getDeveloperId());
                 statusHistoryToAdd.setStatus(newDevStatus);
                 statusHistoryToAdd.setStatusDate(new Date());
                 statusHistoryToAdd.setReason(msgUtil.getMessage("developer.statusAutomaticallyChanged"));

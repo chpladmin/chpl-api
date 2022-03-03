@@ -20,7 +20,7 @@ public class GetAllUsersActionPermissions extends ActionPermissions {
         if (obj instanceof Long) {
             devId = (Long) obj;
         } else if (obj instanceof Developer) {
-            devId = ((Developer) obj).getId();
+            devId = ((Developer) obj).getDeveloperId();
         }
         if (devId == null) {
             return false;
@@ -32,7 +32,7 @@ public class GetAllUsersActionPermissions extends ActionPermissions {
         } else if (getResourcePermissions().isUserRoleDeveloperAdmin()) {
             boolean hasPermissionOnDev = false;
             for (Developer dev : getResourcePermissions().getAllDevelopersForCurrentUser()) {
-                if (dev.getId().equals(devId)) {
+                if (dev.getDeveloperId().equals(devId)) {
                     hasPermissionOnDev = true;
                 }
             }

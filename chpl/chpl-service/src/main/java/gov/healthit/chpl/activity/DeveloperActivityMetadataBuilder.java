@@ -132,10 +132,19 @@ public class DeveloperActivityMetadataBuilder extends ActivityMetadataBuilder {
             List<Developer> developers) {
         Long idToFind = activity.getActivityObjectId();
         for (Developer currDev : developers) {
-            if (currDev != null && currDev.getDeveloperId().longValue() == idToFind.longValue()) {
+            if (currDev != null && idsMatch(currDev, idToFind)) {
                 parseDeveloperMetadata(developerMetadata, currDev);
                 break;
             }
         }
+    }
+
+    private boolean idsMatch(Developer developer, Long id) {
+        if (developer.getId() != null) {
+            return developer.getId().equals(id);
+        } else if (developer.getDeveloperId() != null) {
+            return developer.getDeveloperId().equals(id);
+        }
+        return false;
     }
 }

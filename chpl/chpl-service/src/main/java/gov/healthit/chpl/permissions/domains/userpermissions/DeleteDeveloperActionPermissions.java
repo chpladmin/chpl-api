@@ -17,7 +17,7 @@ public class DeleteDeveloperActionPermissions extends ActionPermissions {
     public boolean hasAccess(final Object obj) {
         Long developerId = null;
         if (obj instanceof Developer) {
-            developerId = ((Developer) obj).getId();
+            developerId = ((Developer) obj).getDeveloperId();
         } else if (obj instanceof Long) {
             developerId = (Long) obj;
         }

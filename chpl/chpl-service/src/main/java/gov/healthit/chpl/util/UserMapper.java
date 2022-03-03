@@ -86,7 +86,7 @@ public class UserMapper {
         if (user.getPermission().getAuthority().equals(Authority.ROLE_DEVELOPER)) {
             List<Developer> devs = getAllDevelopersForUser(user.getId());
             for (Developer dev : devs) {
-                user.getOrganizations().add(new OrganizationDTO(dev.getId(), dev.getName()));
+                user.getOrganizations().add(new OrganizationDTO(dev.getDeveloperId(), dev.getName()));
             }
         }
     }

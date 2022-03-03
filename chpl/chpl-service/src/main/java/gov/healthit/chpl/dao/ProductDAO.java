@@ -51,7 +51,7 @@ public class ProductDAO extends BaseDAOImpl {
             create(entity);
             if (!CollectionUtils.isEmpty(product.getOwnerHistory())) {
                 for (ProductOwner prevOwner : product.getOwnerHistory()) {
-                    createOwnerHistory(product.getId(), prevOwner);
+                    createOwnerHistory(product.getProductId(), prevOwner);
                 }
             }
             return entity.getId();
@@ -66,18 +66,18 @@ public class ProductDAO extends BaseDAOImpl {
         entityToAdd.setDeleted(false);
         entityToAdd.setLastModifiedUser(AuthUtil.getAuditId());
         if (owner.getDeveloper() != null) {
-            entityToAdd.setDeveloperId(owner.getDeveloper().getId());
+            entityToAdd.setDeveloperId(owner.getDeveloper().getDeveloperId());
         }
         entityToAdd.setTransferDate(new Date(owner.getTransferDate()));
         create(entityToAdd);
     }
 
     public void update(Product product) throws EntityRetrievalException, EntityCreationException {
-        ProductEntity entity = this.getEntityById(product.getId());
+        ProductEntity entity = this.getEntityById(product.getProductId());
         // update product data
         entity.setReportFileLocation(product.getReportFileLocation());
         entity.setName(product.getName());
-        entity.setDeveloperId(product.getOwner().getId());
+        entity.setDeveloperId(product.getOwner().getDeveloperId());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         if (product.getContact() != null) {
             if (product.getContact().getContactId() == null) {
@@ -124,13 +124,13 @@ public class ProductDAO extends BaseDAOImpl {
                     if (existingProductPreviousOwner.getDeveloper() != null
                             && updatedProductPrevOwner.getDeveloper() != null
                             && existingProductPreviousOwner.getDeveloper().getId()
-                            .longValue() == updatedProductPrevOwner.getDeveloper().getId().longValue()) {
+                            .longValue() == updatedProductPrevOwner.getDeveloper().getDeveloperId().longValue()) {
                         alreadyExists = true;
                     }
                 }
 
                 if (!alreadyExists) {
-                    createOwnerHistory(product.getId(), updatedProductPrevOwner);
+                    createOwnerHistory(product.getProductId(), updatedProductPrevOwner);
                 }
             }
 
@@ -142,7 +142,7 @@ public class ProductDAO extends BaseDAOImpl {
                     ProductOwner updatedProductPreviousOwner = product.getOwnerHistory().get(i);
                     if (existingPrevOwner.getDeveloper() != null && updatedProductPreviousOwner.getDeveloper() != null
                             && existingPrevOwner.getDeveloper().getId().longValue() == updatedProductPreviousOwner
-                            .getDeveloper().getId().longValue()) {
+                            .getDeveloper().getDeveloperId().longValue()) {
                         isInUpdate = true;
                     }
                 }
@@ -162,7 +162,7 @@ public class ProductDAO extends BaseDAOImpl {
                     ProductOwner updatedProductPreviousOwner = product.getOwnerHistory().get(i);
                     if (existingPrevOwner.getDeveloper() != null && updatedProductPreviousOwner.getDeveloper() != null
                             && existingPrevOwner.getDeveloper().getId().longValue() == updatedProductPreviousOwner
-                            .getDeveloper().getId().longValue()) {
+                            .getDeveloper().getDeveloperId().longValue()) {
 
                         if (existingPrevOwner.getTransferDate().getTime()
                                 != updatedProductPreviousOwner.getTransferDate().longValue()) {

@@ -184,7 +184,7 @@ public class ProductController {
 
         // get the updated product since all transactions should be complete by
         // this point
-        Product updatedProduct = productManager.getById(result.getId());
+        Product updatedProduct = productManager.getById(result.getProductId());
         return new ResponseEntity<Product>(updatedProduct, responseHeaders, HttpStatus.OK);
     }
 
@@ -341,7 +341,10 @@ public class ProductController {
         Product oldProduct = productManager.getById(splitRequest.getOldProduct().getProductId());
         Product newProduct = new Product();
         newProduct.setName(splitRequest.getNewProductName());
-        newProduct.getOwner().setId(oldProduct.getOwner().getId());
+        newProduct.setOwner(Developer.builder()
+                .id(oldProduct.getOwner().getDeveloperId())
+                .developerId(oldProduct.getOwner().getDeveloperId())
+                .build());
         List<ProductVersionDTO> newProductVersions = new ArrayList<ProductVersionDTO>();
         for (ProductVersion requestVersion : splitRequest.getNewVersions()) {
             ProductVersionDTO newVersion = new ProductVersionDTO();
@@ -352,7 +355,7 @@ public class ProductController {
         Product splitProductNew = productManager.split(oldProduct, newProduct, splitRequest.getNewProductCode(),
                 newProductVersions);
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-        Product splitProductOld = productManager.getById(oldProduct.getId());
+        Product splitProductOld = productManager.getById(oldProduct.getProductId());
         SplitProductResponse response = new SplitProductResponse();
         response.setNewProduct(splitProductNew);
         response.setOldProduct(splitProductOld);
@@ -360,7 +363,7 @@ public class ProductController {
         // find out which CHPL product numbers would have changed (only
         // new-style ones)
         // and add them to the response header
-        List<CertifiedProductDetailsDTO> possibleChangedChplIds = cpManager.getByProduct(splitProductNew.getId());
+        List<CertifiedProductDetailsDTO> possibleChangedChplIds = cpManager.getByProduct(splitProductNew.getProductId());
         if (possibleChangedChplIds != null && possibleChangedChplIds.size() > 0) {
             StringBuffer buf = new StringBuffer();
             for (CertifiedProductDetailsDTO possibleChanged : possibleChangedChplIds) {

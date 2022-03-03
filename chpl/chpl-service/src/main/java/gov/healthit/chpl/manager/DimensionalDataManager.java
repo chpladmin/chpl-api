@@ -587,7 +587,7 @@ public class DimensionalDataManager {
         List<Product> products = productDao.findAllIdsAndNames();
         Set<KeyValueModel> productNames = new HashSet<KeyValueModel>();
         for (Product product : products) {
-            productNames.add(new KeyValueModel(product.getId(), product.getName()));
+            productNames.add(new KeyValueModel(product.getProductId(), product.getName()));
         }
         result.setProducts(productNames);
 

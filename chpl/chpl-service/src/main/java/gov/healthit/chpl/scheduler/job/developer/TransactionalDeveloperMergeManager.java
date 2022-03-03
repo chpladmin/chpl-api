@@ -66,7 +66,7 @@ public class TransactionalDeveloperMergeManager {
     public Developer merge(List<Developer> beforeDevelopers, Developer developerToCreate)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, Exception {
         List<Long> developerIdsToMerge = beforeDevelopers.stream()
-                .map(Developer::getId)
+                .map(Developer::getDeveloperId)
                 .collect(Collectors.toList());
         LOGGER.info("Creating new developer " + developerToCreate.getName());
         Long createdDeveloperId = devManager.create(developerToCreate);
@@ -76,7 +76,7 @@ public class TransactionalDeveloperMergeManager {
         // search for any products assigned to the list of developers passed in
         List<Product> developerProducts = productManager.getByDevelopers(developerIdsToMerge);
         for (Product product : developerProducts) {
-            List<CertifiedProductDetailsDTO> affectedListings = cpManager.getByProduct(product.getId());
+            List<CertifiedProductDetailsDTO> affectedListings = cpManager.getByProduct(product.getProductId());
             LOGGER.info("Found " + affectedListings.size() + " affected listings under product " + product.getName());
             // need to get details for affected listings now before the product is re-assigned
             // so that any listings with a generated new-style CHPL ID have the old developer code
@@ -91,12 +91,14 @@ public class TransactionalDeveloperMergeManager {
             // add an item to the ownership history of each product
             ProductOwner historyToAdd = new ProductOwner();
             Developer prevOwner = new Developer();
-            prevOwner.setId(product.getOwner().getId());
+            prevOwner.setId(product.getOwner().getDeveloperId());
             historyToAdd.setDeveloper(prevOwner);
             historyToAdd.setTransferDate(System.currentTimeMillis());
             product.getOwnerHistory().add(historyToAdd);
             // reassign those products to the new developer
-            product.getOwner().setId(createdDeveloperId);
+            product.setOwner(Developer.builder()
+                    .id(createdDeveloperId)
+                    .build());
             productManager.update(product);
 
             // get the listing details again - this time they will have the new developer code
@@ -131,7 +133,7 @@ public class TransactionalDeveloperMergeManager {
         Developer afterDeveloper = devManager.getById(createdDeveloperId);
         String beforeDevNames = String.join(",",
                 beforeDevelopers.stream().map(Developer::getName).collect(Collectors.toList()));
-        activityManager.addActivity(ActivityConcept.DEVELOPER, afterDeveloper.getId(),
+        activityManager.addActivity(ActivityConcept.DEVELOPER, afterDeveloper.getDeveloperId(),
                 "Merged developers " + beforeDevNames + " into " + afterDeveloper.getName(),
                 beforeDevelopers, afterDeveloper);
 

@@ -47,18 +47,18 @@ public class ProductQuestionableActivityProvider {
         QuestionableActivityProductDTO activity = null;
         Developer origOwner = origProduct.getOwner();
         Developer newOwner = newProduct.getOwner();
-        if (origOwner != null && origOwner.getId() != null
-                && (newOwner == null || newOwner.getId() == null)) {
+        if (origOwner != null && origOwner.getDeveloperId() != null
+                && (newOwner == null || newOwner.getDeveloperId() == null)) {
             activity = new QuestionableActivityProductDTO();
             activity.setBefore(origOwner.getName());
             activity.setAfter(null);
-        } else if ((origOwner == null || origOwner.getId() == null)
-                && newOwner != null && newOwner.getId() != null) {
+        } else if ((origOwner == null || origOwner.getDeveloperId() == null)
+                && newOwner != null && newOwner.getDeveloperId() != null) {
             activity = new QuestionableActivityProductDTO();
             activity.setBefore(null);
             activity.setAfter(newOwner.getName());
         } else if (origOwner != null && newOwner != null
-                && origOwner.getId().longValue() != newOwner.getId().longValue()) {
+                && origOwner.getDeveloperId().longValue() != newOwner.getDeveloperId().longValue()) {
             activity = new QuestionableActivityProductDTO();
             activity.setBefore(origOwner.getName());
             activity.setAfter(newOwner.getName());
@@ -92,8 +92,8 @@ public class ProductQuestionableActivityProvider {
                 boolean foundOwner = false;
                 for (ProductOwner origOwner : origOwners) {
                     if (origOwner.getId().equals(newOwner.getId())
-                            || (origOwner.getDeveloper().getId().longValue()
-                                    == newOwner.getDeveloper().getId().longValue()
+                            || (origOwner.getDeveloper().getDeveloperId().longValue()
+                                    == newOwner.getDeveloper().getDeveloperId().longValue()
                                     && origOwner.getTransferDate().longValue() == newOwner.getTransferDate().longValue())) {
                         foundOwner = true;
                     }
@@ -137,8 +137,8 @@ public class ProductQuestionableActivityProvider {
                 boolean foundOwner = false;
                 for (ProductOwner newOwner : newOwners) {
                     if (origOwner.getId().equals(newOwner.getId())
-                            || (origOwner.getDeveloper().getId().longValue()
-                                    == newOwner.getDeveloper().getId().longValue()
+                            || (origOwner.getDeveloper().getDeveloperId().longValue()
+                                    == newOwner.getDeveloper().getDeveloperId().longValue()
                                     && origOwner.getTransferDate().longValue() == newOwner.getTransferDate().longValue())) {
                         foundOwner = true;
                     }
@@ -177,8 +177,8 @@ public class ProductQuestionableActivityProvider {
                         //same id, check if the owner name and date are still the same
                         if (origOwner.getTransferDate().longValue() != newOwner.getTransferDate().longValue()) {
                             ownerEdited = true;
-                        } else if (origOwner.getDeveloper().getId().longValue()
-                                != newOwner.getDeveloper().getId().longValue()) {
+                        } else if (origOwner.getDeveloper().getDeveloperId().longValue()
+                                != newOwner.getDeveloper().getDeveloperId().longValue()) {
                             ownerEdited = true;
                         }
                     }

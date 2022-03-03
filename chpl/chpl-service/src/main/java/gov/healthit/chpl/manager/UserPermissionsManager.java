@@ -178,8 +178,8 @@ public class UserPermissionsManager extends SecuredManager {
     public void addDeveloperPermission(Developer developer, Long userId)
             throws EntityRetrievalException, UserRetrievalException {
 
-        if (doesUserDeveloperMapExist(developer.getId(), userId)) {
-            LOGGER.info("User (" + userId + ") already has permission to Developer (" + developer.getId() + ").");
+        if (doesUserDeveloperMapExist(developer.getDeveloperId(), userId)) {
+            LOGGER.info("User (" + userId + ") already has permission to Developer (" + developer.getDeveloperId() + ").");
         } else {
             UserDeveloperMapDTO dto = new UserDeveloperMapDTO();
             dto.setDeveloper(developer);
@@ -206,7 +206,7 @@ public class UserPermissionsManager extends SecuredManager {
         CollectionUtils.filter(userPermissions, new Predicate() {
             @Override
             public boolean evaluate(final Object object) {
-                return ((UserDeveloperMapDTO) object).getDeveloper().getId().equals(developerId);
+                return ((UserDeveloperMapDTO) object).getDeveloper().getDeveloperId().equals(developerId);
             }
         });
 
@@ -279,7 +279,7 @@ public class UserPermissionsManager extends SecuredManager {
         CollectionUtils.filter(dtos, new Predicate() {
             @Override
             public boolean evaluate(final Object object) {
-                return ((UserDeveloperMapDTO) object).getDeveloper().getId().equals(developerId)
+                return ((UserDeveloperMapDTO) object).getDeveloper().getDeveloperId().equals(developerId)
                         && ((UserDeveloperMapDTO) object).getUser().getId().equals(userId);
             }
         });

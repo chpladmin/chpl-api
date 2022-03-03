@@ -140,9 +140,9 @@ public class DeveloperManager extends SecuredManager {
     public DeveloperTree getHierarchyById(Long id) throws EntityRetrievalException {
         List<CertificationBodyDTO> acbs = acbManager.getAll();
         Developer developer = getById(id);
-        List<Product> products = productManager.getByDeveloper(developer.getId());
-        List<ProductVersionDTO> versions = versionManager.getByDeveloper(developer.getId());
-        List<CertifiedProductDetailsDTO> listings = certifiedProductDao.findListingsByDeveloperId(developer.getId());
+        List<Product> products = productManager.getByDeveloper(developer.getDeveloperId());
+        List<ProductVersionDTO> versions = versionManager.getByDeveloper(developer.getDeveloperId());
+        List<CertifiedProductDetailsDTO> listings = certifiedProductDao.findListingsByDeveloperId(developer.getDeveloperId());
 
         DeveloperTree developerTree = new DeveloperTree(developer);
         products.stream().forEach(product -> {
@@ -210,7 +210,7 @@ public class DeveloperManager extends SecuredManager {
     }, allEntries = true)
     public Developer update(Developer updatedDev, boolean doUpdateValidations)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
-        Developer beforeDev = getById(updatedDev.getId());
+        Developer beforeDev = getById(updatedDev.getDeveloperId());
 
         if (updatedDev.equals(beforeDev)) {
             LOGGER.info("Developer did not change - not saving");
@@ -237,8 +237,8 @@ public class DeveloperManager extends SecuredManager {
         }
         developerDao.update(updatedDev);
         updateStatusHistory(beforeDev, updatedDev);
-        Developer after = getById(updatedDev.getId());
-        activityManager.addActivity(ActivityConcept.DEVELOPER, after.getId(),
+        Developer after = getById(updatedDev.getDeveloperId());
+        activityManager.addActivity(ActivityConcept.DEVELOPER, after.getDeveloperId(),
                 "Developer " + updatedDev.getName() + " was updated.", beforeDev, after);
         return after;
     }
@@ -270,13 +270,13 @@ public class DeveloperManager extends SecuredManager {
 
             if (hasChanged) {
                 DeveloperStatusEvent dseToUpdate = toUpdate.getUpdated();
-                dseToUpdate.setDeveloperId(beforeDev.getId());
+                dseToUpdate.setDeveloperId(beforeDev.getDeveloperId());
                 developerDao.updateDeveloperStatusEvent(dseToUpdate);
             }
         }
 
         for (DeveloperStatusEvent toAdd : statusEventsToAdd) {
-            toAdd.setDeveloperId(beforeDev.getId());
+            toAdd.setDeveloperId(beforeDev.getDeveloperId());
             developerDao.createDeveloperStatusEvent(toAdd);
         }
 

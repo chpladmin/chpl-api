@@ -44,10 +44,10 @@ public class SplitActionPermissions extends ActionPermissions {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             Product product = (Product) obj;
-            if (!getResourcePermissions().isDeveloperActive(product.getOwner().getId())) {
+            if (!getResourcePermissions().isDeveloperActive(product.getOwner().getDeveloperId())) {
                 //ACB can never split product if developer is not active
                 return false;
-            } else if (!doesCurrentUserHaveAccessToAllOfDevelopersListings(product.getOwner().getId(), allowedCertStatuses)) {
+            } else if (!doesCurrentUserHaveAccessToAllOfDevelopersListings(product.getOwner().getDeveloperId(), allowedCertStatuses)) {
                 //ACB can only split product if developer is active and all non-retired
                 //listings owned by the developer belong to the user's ACB
                 throw new AccessDeniedException(msgUtil.getMessage("product.split.notAllowedMultipleAcbs"));

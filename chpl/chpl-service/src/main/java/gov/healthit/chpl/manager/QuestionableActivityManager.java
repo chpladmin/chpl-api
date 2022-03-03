@@ -86,20 +86,20 @@ public class QuestionableActivityManager implements EnvironmentAware {
 
         devActivity = developerQuestionableActivityProvider.checkNameUpdated(origDeveloper, newDeveloper);
         if (devActivity != null) {
-            createDeveloperActivity(devActivity, newDeveloper.getId(), activityDate,
+            createDeveloperActivity(devActivity, newDeveloper.getDeveloperId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.DEVELOPER_NAME_EDITED);
         }
 
         devActivity = developerQuestionableActivityProvider.checkCurrentStatusChanged(origDeveloper, newDeveloper);
         if (devActivity != null) {
-            createDeveloperActivity(devActivity, newDeveloper.getId(), activityDate,
+            createDeveloperActivity(devActivity, newDeveloper.getDeveloperId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_EDITED);
         }
 
         devActivities = developerQuestionableActivityProvider.checkStatusHistoryAdded(
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
         for (QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
-            createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate,
+            createDeveloperActivity(currDevActivity, newDeveloper.getDeveloperId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_ADDED,
                     currDevActivity.getReason());
         }
@@ -107,7 +107,7 @@ public class QuestionableActivityManager implements EnvironmentAware {
         devActivities = developerQuestionableActivityProvider.checkStatusHistoryRemoved(
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
         for (QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
-            createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate,
+            createDeveloperActivity(currDevActivity, newDeveloper.getDeveloperId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_REMOVED,
                     currDevActivity.getReason());
         }
@@ -115,7 +115,7 @@ public class QuestionableActivityManager implements EnvironmentAware {
         devActivities = developerQuestionableActivityProvider.checkStatusHistoryItemEdited(
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
         for (QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
-            createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate,
+            createDeveloperActivity(currDevActivity, newDeveloper.getDeveloperId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_EDITED,
                     currDevActivity.getReason());
         }
@@ -128,34 +128,34 @@ public class QuestionableActivityManager implements EnvironmentAware {
 
         productActivity = productQuestionableActivityProvider.checkNameUpdated(origProduct, newProduct);
         if (productActivity != null) {
-            createProductActivity(productActivity, newProduct.getId(), activityDate,
+            createProductActivity(productActivity, newProduct.getProductId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.PRODUCT_NAME_EDITED);
         }
 
         productActivity = productQuestionableActivityProvider.checkCurrentOwnerChanged(origProduct, newProduct);
         if (productActivity != null) {
-            createProductActivity(productActivity, newProduct.getId(), activityDate,
+            createProductActivity(productActivity, newProduct.getProductId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.PRODUCT_OWNER_EDITED);
         }
 
         productActivities = productQuestionableActivityProvider.checkOwnerHistoryAdded(origProduct.getOwnerHistory(),
                 newProduct.getOwnerHistory());
         for (QuestionableActivityProductDTO currProductActivity : productActivities) {
-            createProductActivity(currProductActivity, newProduct.getId(), activityDate,
+            createProductActivity(currProductActivity, newProduct.getProductId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_ADDED);
         }
 
         productActivities = productQuestionableActivityProvider.checkOwnerHistoryRemoved(origProduct.getOwnerHistory(),
                 newProduct.getOwnerHistory());
         for (QuestionableActivityProductDTO currProductActivity : productActivities) {
-            createProductActivity(currProductActivity, newProduct.getId(), activityDate,
+            createProductActivity(currProductActivity, newProduct.getProductId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_REMOVED);
         }
 
         productActivities = productQuestionableActivityProvider.checkOwnerHistoryItemEdited(
                 origProduct.getOwnerHistory(), newProduct.getOwnerHistory());
         for (QuestionableActivityProductDTO currProductActivity : productActivities) {
-            createProductActivity(currProductActivity, newProduct.getId(), activityDate,
+            createProductActivity(currProductActivity, newProduct.getProductId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_EDITED);
         }
     }
