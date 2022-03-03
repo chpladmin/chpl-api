@@ -79,18 +79,15 @@ public class ProductController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @DeprecatedResponseFields(responseClass = ProductResults.class)
     public @ResponseBody ProductResults getAllProducts(@RequestParam(required = false) final Long developerId) {
-
         List<Product> productList = null;
-
         if (developerId != null && developerId > 0) {
             productList = productManager.getByDeveloper(developerId);
         } else {
             productList = productManager.getAll();
         }
 
-        List<Product> products = new ArrayList<Product>();
         ProductResults results = new ProductResults();
-        results.setProducts(products);
+        results.setProducts(productList);
         return results;
     }
 
