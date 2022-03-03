@@ -148,9 +148,9 @@ public class AttestationManager {
 
     private LocalDate getNewExceptionDate() {
         LocalDate exceptionDate = LocalDate.now().plusDays(attestationExceptionWindowInDays);
-        AttestationPeriod currentAttestationPeriod = attestationPeriodService.getCurrentAttestationPeriod();
-        if (currentAttestationPeriod.getPeriodEnd().isBefore(exceptionDate)) {
-            exceptionDate = currentAttestationPeriod.getPeriodEnd();
+        LocalDate lastDayBeforeNextSubmissionStart = attestationPeriodService.getCurrentAttestationPeriod().getSubmissionStart().minusDays(1);
+        if (lastDayBeforeNextSubmissionStart.isBefore(exceptionDate)) {
+            exceptionDate = lastDayBeforeNextSubmissionStart;
         }
         return exceptionDate;
     }
