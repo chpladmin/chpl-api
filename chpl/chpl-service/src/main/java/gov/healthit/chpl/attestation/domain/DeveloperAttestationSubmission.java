@@ -5,9 +5,14 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import gov.healthit.chpl.attestation.entity.DeveloperAttestationSubmissionEntity;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.util.LocalDateDeserializer;
+import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,6 +29,9 @@ public class DeveloperAttestationSubmission {
     private List<AttestationSubmittedResponse> responses;
     private String signature;
     private String signatureEmail;
+
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate datePublished;
 
     public DeveloperAttestationSubmission(DeveloperAttestationSubmissionEntity entity) {
