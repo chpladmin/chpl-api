@@ -13,12 +13,14 @@ import gov.healthit.chpl.domain.concept.PublicAttestationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class PublicAttestation {
 

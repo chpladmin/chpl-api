@@ -11,8 +11,6 @@ import javax.persistence.Query;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,11 +36,21 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Repository("developerDAO")
 public class DeveloperDAO extends BaseDAOImpl {
+    private static final String DEVELOPER_HQL = "SELECT DISTINCT v FROM "
+            + "DeveloperEntity v "
+            + "LEFT OUTER JOIN FETCH v.address "
+            + "LEFT OUTER JOIN FETCH v.contact "
+            + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
+            + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
+            + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
+            + "LEFT OUTER JOIN FETCH v.publicAttestations devAtt "
+            + "LEFT OUTER JOIN FETCH devAtt.period per ";
 
-    private static final Logger LOGGER = LogManager.getLogger(DeveloperDAO.class);
     private static final DeveloperStatusType DEFAULT_STATUS = DeveloperStatusType.Active;
     private AddressDAO addressDao;
     private ContactDAO contactDao;
@@ -482,27 +490,15 @@ public class DeveloperDAO extends BaseDAOImpl {
 
     private List<DeveloperEntity> getAllEntities() {
         List<DeveloperEntity> result = entityManager.createQuery(
-                "SELECT DISTINCT v from "
-                        + "DeveloperEntity v "
-                        + "LEFT OUTER JOIN FETCH v.address "
-                        + "LEFT OUTER JOIN FETCH v.contact "
-                        + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
-                        + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
-                        + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
-                        + "where (NOT v.deleted = true)",
+                DEVELOPER_HQL
+                + "WHERE (NOT v.deleted = true)",
                 DeveloperEntity.class).getResultList();
         return result;
     }
 
     private List<DeveloperEntity> getAllEntitiesIncludingDeleted() {
         List<DeveloperEntity> result = entityManager
-                .createQuery("SELECT DISTINCT v from "
-                        + "DeveloperEntity v "
-                        + "LEFT OUTER JOIN FETCH v.address "
-                        + "LEFT OUTER JOIN FETCH v.contact "
-                        + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
-                        + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
-                        + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses ", DeveloperEntity.class)
+                .createQuery(DEVELOPER_HQL, DeveloperEntity.class)
                 .getResultList();
         return result;
     }
@@ -513,14 +509,8 @@ public class DeveloperDAO extends BaseDAOImpl {
 
     private DeveloperEntity getEntityById(Long id, boolean includeDeleted) throws EntityRetrievalException {
         DeveloperEntity entity = null;
-        String queryStr = "SELECT DISTINCT v FROM "
-                + "DeveloperEntity v "
-                + "LEFT OUTER JOIN FETCH v.address "
-                + "LEFT OUTER JOIN FETCH v.contact "
-                + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
-                + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
-                + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
-                + "WHERE v.id = :entityid ";
+        String queryStr = DEVELOPER_HQL
+                + " WHERE v.id = :entityid ";
         if (!includeDeleted) {
             queryStr += " AND v.deleted = false";
         }
@@ -538,39 +528,27 @@ public class DeveloperDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private DeveloperEntity getEntityByName(final String name) {
+    private DeveloperEntity getEntityByName(String name) {
         DeveloperEntity entity = null;
         Query query = entityManager
-                .createQuery("SELECT DISTINCT v from "
-                        + "DeveloperEntity v "
-                        + "LEFT OUTER JOIN FETCH v.address "
-                        + "LEFT OUTER JOIN FETCH v.contact "
-                        + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
-                        + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
-                        + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
-                        + "where (NOT v.deleted = true) AND (v.name = :name) ", DeveloperEntity.class);
+                .createQuery(DEVELOPER_HQL
+                        + " WHERE (NOT v.deleted = true) "
+                        + "AND (v.name = :name) ", DeveloperEntity.class);
         query.setParameter("name", name);
         @SuppressWarnings("unchecked") List<DeveloperEntity> result = query.getResultList();
 
         if (result.size() > 0) {
             entity = result.get(0);
         }
-
         return entity;
     }
 
-    private DeveloperEntity getEntityByCode(final String code) {
-
+    private DeveloperEntity getEntityByCode(String code) {
         DeveloperEntity entity = null;
         Query query = entityManager
-                .createQuery("SELECT DISTINCT v from "
-                        + "DeveloperEntity v "
-                        + "LEFT OUTER JOIN FETCH v.address "
-                        + "LEFT OUTER JOIN FETCH v.contact "
-                        + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
-                        + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
-                        + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
-                        + "where (NOT v.deleted = true) AND (v.developerCode = :code) ", DeveloperEntity.class);
+                .createQuery(DEVELOPER_HQL
+                        + " WHERE (NOT v.deleted = true) "
+                        + "AND (v.developerCode = :code) ", DeveloperEntity.class);
         query.setParameter("code", code);
         @SuppressWarnings("unchecked") List<DeveloperEntity> result = query.getResultList();
 

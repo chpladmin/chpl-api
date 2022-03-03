@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -23,7 +24,7 @@ public class AddressDAO extends BaseDAOImpl {
         toInsert.setCity(address.getCity());
         toInsert.setState(address.getState());
         toInsert.setZipcode(address.getZipcode());
-        toInsert.setCountry(address.getCountry());
+        toInsert.setCountry(StringUtils.isEmpty(address.getCountry()) ? Address.DEFAULT_COUNTRY : address.getCountry());
         toInsert.setLastModifiedUser(AuthUtil.getAuditId());
         create(toInsert);
         return toInsert.getId();
@@ -36,7 +37,7 @@ public class AddressDAO extends BaseDAOImpl {
         addressEntity.setCity(address.getCity());
         addressEntity.setState(address.getState());
         addressEntity.setZipcode(address.getZipcode());
-        addressEntity.setCountry(address.getCountry());
+        addressEntity.setCountry(StringUtils.isEmpty(address.getCountry()) ? Address.DEFAULT_COUNTRY : address.getCountry());
         addressEntity.setLastModifiedUser(AuthUtil.getAuditId());
         update(addressEntity);
     }
@@ -67,7 +68,7 @@ public class AddressDAO extends BaseDAOImpl {
                 toUpdate.setCity(address.getCity());
                 toUpdate.setState(address.getState());
                 toUpdate.setZipcode(address.getZipcode());
-                toUpdate.setCountry(address.getCountry());
+                toUpdate.setCountry(StringUtils.isEmpty(address.getCountry()) ? Address.DEFAULT_COUNTRY : address.getCountry());
                 update(toUpdate);
             }
         } else {

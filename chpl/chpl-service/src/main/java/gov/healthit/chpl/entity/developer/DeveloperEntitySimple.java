@@ -74,6 +74,7 @@ public class DeveloperEntitySimple implements Serializable {
     public Developer toDomain() {
         return Developer.builder()
                 .id(getId())
+                .developerId(getId())
                 .name(getName())
                 .developerCode(getDeveloperCode())
                 .website(getWebsite())
