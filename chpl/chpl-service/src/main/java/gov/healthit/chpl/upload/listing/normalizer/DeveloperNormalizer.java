@@ -67,6 +67,7 @@ public class DeveloperNormalizer {
     private void copySystemDeveloperValues(Developer userEnteredDev, Developer systemDev) {
         userEnteredDev.setDeveloperId(systemDev.getDeveloperId());
         userEnteredDev.setDeveloperCode(systemDev.getDeveloperCode());
+        userEnteredDev.setAttestations(systemDev.getAttestations());
         userEnteredDev.setName(systemDev.getName());
         userEnteredDev.setWebsite(systemDev.getWebsite());
         userEnteredDev.setSelfDeveloper(systemDev.getSelfDeveloper());
