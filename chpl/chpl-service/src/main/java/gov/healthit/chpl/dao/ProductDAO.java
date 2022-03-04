@@ -181,14 +181,6 @@ public class ProductDAO extends BaseDAOImpl {
         if (toDelete == null) {
             throw new EntityRetrievalException("Could not find product with id " + id + " for deletion.");
         }
-        // delete owner history
-        if (toDelete.getOwnerHistory() != null) {
-            for (ProductActiveOwnerEntity prevOwner : toDelete.getOwnerHistory()) {
-                prevOwner.setDeleted(true);
-                prevOwner.setLastModifiedUser(AuthUtil.getAuditId());
-                update(prevOwner);
-            }
-        }
         toDelete.setDeleted(true);
         toDelete.setLastModifiedUser(AuthUtil.getAuditId());
         update(toDelete);
@@ -206,7 +198,6 @@ public class ProductDAO extends BaseDAOImpl {
 
     @Transactional(readOnly = true)
     public List<Product> findAllIdsAndNames() {
-
         List<ProductEntitySimple> entities = entityManager.createQuery(
                 "SELECT prod "
                 + "FROM ProductEntitySimple prod "
