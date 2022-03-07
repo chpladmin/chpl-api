@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -22,7 +23,6 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.domain.DecertifiedDeveloper;
-import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.domain.search.BasicSearchResponseLegacy;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
 import gov.healthit.chpl.domain.search.CertifiedProductSearchResultLegacy;
@@ -169,7 +169,7 @@ public class CollectionsController {
     /**
      * DEPRECATED. Use /collections/certified-products. Get basic data about all
      * listings in the system.
-     * 
+     *
      * @param delimitedFieldNames
      *            the names of the fields needed for each listing
      * @return an array of the listings
@@ -282,16 +282,16 @@ public class CollectionsController {
     }
 
     @Deprecated
-    @Operation(summary = "DEPRECATED. Get a list of all developers with transparency attestation URLs and ACB attestations.",
+    @Operation(summary = "DEPRECATED. Get a list of all developers with transparency attestation URLs and ACB attestations. "
+            + "With the removal of all transparency attestations, this is always going to return an empty list.",
             deprecated = true,
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody List<DeveloperTransparency> getDeveloperCollection() {
-        List<DeveloperTransparency> developerResults = developerManager.getDeveloperCollection();
-        return developerResults;
+    public @ResponseBody List<Object> getDeveloperCollection() {
+        return Collections.emptyList();
     }
 
     @Operation(summary = "Get a list of all banned developers.",

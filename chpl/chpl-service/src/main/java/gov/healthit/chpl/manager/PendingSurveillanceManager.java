@@ -33,7 +33,6 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
-import gov.healthit.chpl.dao.auth.UserPermissionDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -95,7 +94,6 @@ public class PendingSurveillanceManager extends SecuredManager {
     private CertifiedProductDetailsManager cpDetailsManager;
     private SurveillanceCreationValidator survCreationValidator;
     private SurveillanceUpdateValidator survUpdateValidator;
-    private UserPermissionDAO userPermissionDAO;
     private CertifiedProductDAO cpDAO;
     private Integer surveillanceThresholdToProcessAsJob;
 
@@ -107,7 +105,7 @@ public class PendingSurveillanceManager extends SecuredManager {
             ActivityManager activityManager, CertifiedProductDetailsManager cpDetailsManager,
             SurveillanceCreationValidator survCreationValidator,
             @Qualifier("surveillanceUpdateValidator") SurveillanceUpdateValidator survUpdateValidator,
-            UserPermissionDAO userPermissionDAO, CertifiedProductDAO cpDAO,
+            CertifiedProductDAO cpDAO,
             @Value("${surveillanceThresholdToProcessAsJob}") Integer surveillanceThresholdToProcessAsJob) {
         this.fileUtils = fileUtils;
         this.survUploadHelper = survUploadManager;
@@ -120,7 +118,6 @@ public class PendingSurveillanceManager extends SecuredManager {
         this.cpDetailsManager = cpDetailsManager;
         this.survCreationValidator = survCreationValidator;
         this.survUpdateValidator = survUpdateValidator;
-        this.userPermissionDAO = userPermissionDAO;
         this.cpDAO = cpDAO;
         this.surveillanceThresholdToProcessAsJob = surveillanceThresholdToProcessAsJob;
     }

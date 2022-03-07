@@ -57,7 +57,6 @@ public class CertifiedProductDTO implements Serializable {
     private Boolean accessibilityCertified;
     private String productAdditionalSoftware;
     private Long pendingCertifiedProductId;
-    private Boolean transparencyAttestation = null;
     private String rwtPlansUrl;
     private LocalDate rwtPlansCheckDate;
     private String rwtResultsUrl;

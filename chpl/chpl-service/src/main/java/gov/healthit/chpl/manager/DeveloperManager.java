@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -25,14 +24,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.attestation.dao.AttestationDAO;
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.domain.PublicAttestation;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.concept.PublicAttestationStatus;
@@ -45,16 +42,13 @@ import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventPair;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
-import gov.healthit.chpl.dto.TransparencyAttestationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
-import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
@@ -85,7 +79,6 @@ public class DeveloperManager extends SecuredManager {
     private ProductVersionManager versionManager;
     private UserManager userManager;
     private CertificationBodyManager acbManager;
-    private CertificationBodyDAO certificationBodyDao;
     private CertifiedProductDAO certifiedProductDao;
     private ChplProductNumberUtil chplProductNumberUtil;
     private ActivityManager activityManager;
@@ -93,25 +86,22 @@ public class DeveloperManager extends SecuredManager {
     private ResourcePermissions resourcePermissions;
     private DeveloperValidationFactory developerValidationFactory;
     private ValidationUtils validationUtils;
-    private TransparencyAttestationManager transparencyAttestationManager;
     private SchedulerManager schedulerManager;
     private AttestationDAO attestationDAO;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
     public DeveloperManager(DeveloperDAO developerDao, ProductManager productManager, ProductVersionManager versionManager,
-            UserManager userManager, CertificationBodyManager acbManager, CertificationBodyDAO certificationBodyDao,
+            UserManager userManager, CertificationBodyManager acbManager,
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
             DeveloperValidationFactory developerValidationFactory, ValidationUtils validationUtils,
-            TransparencyAttestationManager transparencyAttestationManager, SchedulerManager schedulerManager,
-            AttestationDAO attestationDAO) {
+            SchedulerManager schedulerManager, AttestationDAO attestationDAO) {
         this.developerDao = developerDao;
         this.productManager = productManager;
         this.versionManager = versionManager;
         this.userManager = userManager;
         this.acbManager = acbManager;
-        this.certificationBodyDao = certificationBodyDao;
         this.certifiedProductDao = certifiedProductDAO;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.activityManager = activityManager;
@@ -119,7 +109,6 @@ public class DeveloperManager extends SecuredManager {
         this.resourcePermissions = resourcePermissions;
         this.developerValidationFactory = developerValidationFactory;
         this.validationUtils = validationUtils;
-        this.transparencyAttestationManager = transparencyAttestationManager;
         this.schedulerManager = schedulerManager;
         this.attestationDAO = attestationDAO;
     }
@@ -127,9 +116,7 @@ public class DeveloperManager extends SecuredManager {
     @Transactional(readOnly = true)
     @Cacheable(CacheNames.ALL_DEVELOPERS)
     public List<DeveloperDTO> getAll() {
-        List<DeveloperDTO> allDevelopers = developerDao.findAll();
-        List<DeveloperDTO> allDevelopersWithTransparencies = addTransparencyMappings(allDevelopers);
-        return allDevelopersWithTransparencies;
+        return developerDao.findAll();
     }
 
     @Transactional(readOnly = true)
@@ -137,31 +124,12 @@ public class DeveloperManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).GET_ALL_WITH_DELETED)")
     @Cacheable(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED)
     public List<DeveloperDTO> getAllIncludingDeleted() {
-        List<DeveloperDTO> allDevelopers = developerDao.findAllIncludingDeleted();
-        List<DeveloperDTO> allDevelopersWithTransparencies = addTransparencyMappings(allDevelopers);
-        return allDevelopersWithTransparencies;
+        return developerDao.findAllIncludingDeleted();
     }
 
     @Transactional(readOnly = true)
-    public DeveloperDTO getById(Long id, boolean allowDeleted)
-            throws EntityRetrievalException {
-        DeveloperDTO developer = developerDao.getById(id, allowDeleted);
-        List<CertificationBodyDTO> availableAcbs = acbManager.getAll();
-        for (CertificationBodyDTO acb : availableAcbs) {
-            DeveloperACBMapDTO map = developerDao.getTransparencyMapping(developer.getId(), acb.getId());
-            if (map == null) {
-                DeveloperACBMapDTO mapToAdd = new DeveloperACBMapDTO();
-                mapToAdd.setAcbId(acb.getId());
-                mapToAdd.setAcbName(acb.getName());
-                mapToAdd.setDeveloperId(developer.getId());
-                mapToAdd.setTransparencyAttestation(null);
-                developer.getTransparencyAttestationMappings().add(mapToAdd);
-            } else {
-                map.setAcbName(acb.getName());
-                developer.getTransparencyAttestationMappings().add(map);
-            }
-        }
-        return developer;
+    public DeveloperDTO getById(Long id, boolean allowDeleted) throws EntityRetrievalException {
+        return developerDao.getById(id, allowDeleted);
     }
 
     @Transactional(readOnly = true)
@@ -233,17 +201,11 @@ public class DeveloperManager extends SecuredManager {
         return resourcePermissions.getAllUsersOnDeveloper(dev);
     }
 
-    @Transactional(readOnly = true)
-    @Cacheable(CacheNames.COLLECTIONS_DEVELOPERS)
-    public List<DeveloperTransparency> getDeveloperCollection() {
-        return developerDao.getAllDevelopersWithTransparencies();
-    }
-
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).UPDATE, #updatedDev)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
     public DeveloperDTO update(DeveloperDTO updatedDev, boolean doUpdateValidations)
@@ -275,19 +237,10 @@ public class DeveloperManager extends SecuredManager {
         }
         developerDao.update(updatedDev);
         updateStatusHistory(beforeDev, updatedDev);
-
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
-            createOrUpdateTransparencyMappings(updatedDev);
-        }
-
         DeveloperDTO after = getById(updatedDev.getId());
         activityManager.addActivity(ActivityConcept.DEVELOPER, after.getId(),
                 "Developer " + updatedDev.getName() + " was updated.", beforeDev, after);
         return after;
-    }
-
-    private void createOrUpdateTransparencyMappings(DeveloperDTO developer) {
-        transparencyAttestationManager.save(developer);
     }
 
     private void updateStatusHistory(DeveloperDTO beforeDev, DeveloperDTO updatedDev)
@@ -336,7 +289,7 @@ public class DeveloperManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).CREATE)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED
     }, allEntries = true)
     public Long create(Developer developer)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
@@ -353,7 +306,7 @@ public class DeveloperManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).CREATE)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED
     }, allEntries = true)
     public DeveloperDTO create(DeveloperDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -370,11 +323,6 @@ public class DeveloperManager extends SecuredManager {
 
         DeveloperDTO created = developerDao.create(dto);
         dto.setId(created.getId());
-
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
-            createOrUpdateTransparencyMappings(dto);
-        }
-
         activityManager.addActivity(ActivityConcept.DEVELOPER, created.getId(),
                 "Developer " + created.getName() + " has been created.", null, created);
         return created;
@@ -384,7 +332,7 @@ public class DeveloperManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).MERGE, #developerIdsToMerge)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
     public ChplOneTimeTrigger merge(List<Long> developerIdsToMerge, DeveloperDTO developerToCreate)
@@ -406,35 +354,6 @@ public class DeveloperManager extends SecuredManager {
                 developerIdsToMerge, developerToCreate.getDeveloperCode());
         if (duplicateChplProdNumbers.size() != 0) {
             throw new ValidationException(getDuplicateChplProductNumberErrorMessages(duplicateChplProdNumbers), null);
-        }
-
-        // check if the transparency attestation for each developer is conflicting
-        List<CertificationBodyDTO> allAcbs = acbManager.getAll();
-        for (CertificationBodyDTO acb : allAcbs) {
-            AttestationType transparencyAttestation = null;
-            for (DeveloperDTO dev : beforeDevelopers) {
-                DeveloperACBMapDTO taMap = developerDao.getTransparencyMapping(dev.getId(), acb.getId());
-                if (taMap != null
-                        && taMap.getTransparencyAttestation() != null
-                        && !StringUtils.isEmpty(taMap.getTransparencyAttestation().getTransparencyAttestation())) {
-                    AttestationType currAtt = AttestationType.getValue(
-                            taMap.getTransparencyAttestation().getTransparencyAttestation());
-                    if (transparencyAttestation == null) {
-                        transparencyAttestation = currAtt;
-                    } else if (currAtt != transparencyAttestation) {
-                        throw new EntityCreationException("Cannot complete merge because " + acb.getName()
-                                + " has a conflicting transparency attestation for these developers.");
-                    }
-                }
-            }
-
-            if (transparencyAttestation != null) {
-                DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
-                devMap.setAcbId(acb.getId());
-                devMap.setAcbName(acb.getName());
-                devMap.setTransparencyAttestation(new TransparencyAttestationDTO(transparencyAttestation.name()));
-                developerToCreate.getTransparencyAttestationMappings().add(devMap);
-            }
         }
 
         UserDTO jobUser = null;
@@ -607,44 +526,6 @@ public class DeveloperManager extends SecuredManager {
             decertifiedDeveloperResults.add(decertDev);
         }
         return decertifiedDeveloperResults;
-    }
-
-    private List<DeveloperDTO> addTransparencyMappings(List<DeveloperDTO> developers) {
-        List<CertificationBodyDTO> availableAcbs = acbManager.getAll();
-        List<DeveloperACBMapDTO> transparencyMaps = developerDao.getAllTransparencyMappings();
-        Map<Long, DeveloperDTO> mappedDevelopers = new HashMap<Long, DeveloperDTO>();
-        for (DeveloperDTO dev : developers) {
-            // initialize each developer object with null transparency attestation mappings
-            // for every ACB
-            for (CertificationBodyDTO acb : availableAcbs) {
-                DeveloperACBMapDTO mapToAdd = new DeveloperACBMapDTO();
-                mapToAdd.setAcbId(acb.getId());
-                mapToAdd.setAcbName(acb.getName());
-                mapToAdd.setDeveloperId(dev.getId());
-                mapToAdd.setTransparencyAttestation(null);
-                dev.getTransparencyAttestationMappings().add(mapToAdd);
-            }
-            mappedDevelopers.put(dev.getId(), dev);
-        }
-
-        // fill in existing values for transparency Maps for acb+developer
-        for (DeveloperACBMapDTO transparencyMap : transparencyMaps) {
-            if (transparencyMap.getAcbId() != null) {
-                DeveloperDTO dev = mappedDevelopers.get(transparencyMap.getDeveloperId());
-                List<DeveloperACBMapDTO> devTransparencyMap = dev.getTransparencyAttestationMappings();
-                for (DeveloperACBMapDTO acbMapping : devTransparencyMap) {
-                    if (acbMapping.getAcbId().equals(transparencyMap.getAcbId())) {
-                        acbMapping.setTransparencyAttestation(transparencyMap.getTransparencyAttestation());
-                    }
-                }
-            }
-        }
-
-        List<DeveloperDTO> developersWithTransparency = new ArrayList<DeveloperDTO>();
-        for (DeveloperDTO dev : mappedDevelopers.values()) {
-            developersWithTransparency.add(dev);
-        }
-        return developersWithTransparency;
     }
 
     private boolean isNewDeveloperCode(String chplProductNumber) {
