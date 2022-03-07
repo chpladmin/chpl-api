@@ -126,7 +126,6 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             createSimpleElement(cp.getSvapNoticeUrl(), "svapNoticeUrl", sw);
             CertifiedProductTargetedUserXmlGenerator.add(cp.getTargetedUsers(), "targetedUsers", sw);
             CertifiedProductTestingLabXmlGenerator.addTestingLabs(cp.getTestingLabs(), "testingLabs", sw);
-            TransparencyAttestationXmlGenerator.add(cp.getTransparencyAttestation(), "transparencyAttestation", sw);
             ProductVersionXmlGenerator.addProductVersion(cp.getVersion(), "version", sw);
 
             sw.writeEndElement();

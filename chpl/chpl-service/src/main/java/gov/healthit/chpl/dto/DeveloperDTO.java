@@ -38,12 +38,9 @@ public class DeveloperDTO implements Serializable {
     private Boolean selfDeveloper;
     @Singular
     private List<DeveloperStatusEventDTO> statusEvents = new ArrayList<DeveloperStatusEventDTO>();
-    @Singular
-    private List<DeveloperACBMapDTO> transparencyAttestationMappings = new ArrayList<DeveloperACBMapDTO>();
     private Statuses statuses;
 
     public DeveloperDTO() {
-        this.transparencyAttestationMappings = new ArrayList<DeveloperACBMapDTO>();
         this.statusEvents = new ArrayList<DeveloperStatusEventDTO>();
     }
 
@@ -124,7 +121,6 @@ public class DeveloperDTO implements Serializable {
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((selfDeveloper == null) ? 0 : selfDeveloper.hashCode());
         result = prime * result + ((statusEvents == null) ? 0 : statusEvents.hashCode());
-        result = prime * result + ((transparencyAttestationMappings == null) ? 0 : transparencyAttestationMappings.hashCode());
         result = prime * result + ((website == null) ? 0 : website.hashCode());
         return result;
     }
@@ -192,13 +188,6 @@ public class DeveloperDTO implements Serializable {
         } else if (!isStatusEventListEqual(other.statusEvents)) {
             return false;
         }
-        if (transparencyAttestationMappings == null) {
-            if (other.transparencyAttestationMappings != null) {
-                return false;
-            }
-        } else if (!isTransparencyAttestationMappingsEqual(other.transparencyAttestationMappings)) {
-            return false;
-        }
         if (website == null) {
             if (other.website != null) {
                 return false;
@@ -219,21 +208,6 @@ public class DeveloperDTO implements Serializable {
                     .collect(Collectors.toList());
             List<DeveloperStatusEventDTO> clonedOther = other.stream()
                     .sorted(Comparator.comparing(DeveloperStatusEventDTO::getStatusDate))
-                    .collect(Collectors.toList());
-            return clonedThis.equals(clonedOther);
-        }
-    }
-
-    private boolean isTransparencyAttestationMappingsEqual(List<DeveloperACBMapDTO> other) {
-        if (transparencyAttestationMappings.size() != other.size()) {
-            return false;
-        } else {
-            // Make copies of both lists and order them
-            List<DeveloperACBMapDTO> clonedThis = transparencyAttestationMappings.stream()
-                    .sorted(Comparator.comparing(DeveloperACBMapDTO::getAcbName))
-                    .collect(Collectors.toList());
-            List<DeveloperACBMapDTO> clonedOther = other.stream()
-                    .sorted(Comparator.comparing(DeveloperACBMapDTO::getAcbName))
                     .collect(Collectors.toList());
             return clonedThis.equals(clonedOther);
         }

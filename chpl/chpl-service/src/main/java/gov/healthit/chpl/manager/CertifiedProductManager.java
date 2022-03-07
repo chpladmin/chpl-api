@@ -104,7 +104,6 @@ import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.CuresUpdateEventDTO;
-import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
@@ -426,7 +425,7 @@ public class CertifiedProductManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CREATE_FROM_PENDING, #pendingCp)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES, CacheNames.DEVELOPER_NAMES
     }, allEntries = true)
     public CertifiedProductDTO createFromPending(PendingCertifiedProductDTO pendingCp, boolean acknowledgeWarnings)
@@ -470,11 +469,6 @@ public class CertifiedProductManager extends SecuredManager {
             newDeveloper.setName(pendingCp.getDeveloperName());
             newDeveloper.setWebsite(pendingCp.getDeveloperWebsite());
             newDeveloper.setSelfDeveloper(pendingCp.getSelfDeveloper() == null ? Boolean.FALSE : pendingCp.getSelfDeveloper());
-            DeveloperACBMapDTO transparencyMap = new DeveloperACBMapDTO();
-            transparencyMap.setAcbId(pendingCp.getCertificationBodyId());
-            transparencyMap.setAcbName(pendingCp.getCertificationBodyName());
-            transparencyMap.setTransparencyAttestation(pendingCp.getTransparencyAttestation());
-            newDeveloper.getTransparencyAttestationMappings().add(transparencyMap);
             AddressDTO developerAddress = pendingCp.getDeveloperAddress();
             newDeveloper.setAddress(developerAddress);
             ContactDTO developerContact = new ContactDTO();
@@ -1069,7 +1063,7 @@ public class CertifiedProductManager extends SecuredManager {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
+            CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
     // listings collection is not evicted here because it's pre-fetched and
     // handled in a listener
@@ -1142,7 +1136,7 @@ public class CertifiedProductManager extends SecuredManager {
             AccessDeniedException.class, InvalidArgumentsException.class
     })
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
     public CertifiedProductDTO update(ListingUpdateRequest updateRequest)

@@ -251,14 +251,6 @@ public class CertifiedProductSearchDetails implements Serializable {
     private String productAdditionalSoftware;
 
     /**
-     * The transparency attestation required by 170.523(k)(2). It is applicable for 2014 and 2015 Edition and takes
-     * value of Affirmative, Negative, or N/A.
-     */
-    @XmlElement(name = "transparencyAttestation", required = false, nillable = true)
-    @Deprecated
-    private TransparencyAttestation transparencyAttestation;
-
-    /**
      * A hyperlink to the mandatory disclosures required by 170.523(k)(1) for the Health IT Module
      */
     @XmlElement(required = false, nillable = true)
@@ -600,14 +592,6 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setErrorMessages(Set<String> errorMessages) {
         this.errorMessages = errorMessages;
-    }
-
-    public TransparencyAttestation getTransparencyAttestation() {
-        return transparencyAttestation;
-    }
-
-    public void setTransparencyAttestation(TransparencyAttestation transparencyAttestation) {
-        this.transparencyAttestation = transparencyAttestation;
     }
 
     public InheritedCertificationStatus getIcs() {
