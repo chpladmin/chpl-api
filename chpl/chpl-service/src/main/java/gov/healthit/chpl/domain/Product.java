@@ -113,10 +113,10 @@ public class Product implements Serializable {
         if (this.getOwnerHistory() != null && this.getOwnerHistory().size() > 0) {
             localOwnerHistory.addAll(this.getOwnerHistory().stream().collect(Collectors.toList()));
         }
-        localOwnerHistory.add(ProductOwner.builder()
-                .developer(this.getOwner())
-                .transferDate(System.currentTimeMillis())
-                .build());
+        ProductOwner currentOwner = new ProductOwner();
+        currentOwner.setDeveloper(this.getOwner());
+        currentOwner.setTransferDate(System.currentTimeMillis());
+        localOwnerHistory.add(currentOwner);
         // first we need to make sure the status events are in ascending order
         localOwnerHistory.sort(new Comparator<ProductOwner>() {
             @Override

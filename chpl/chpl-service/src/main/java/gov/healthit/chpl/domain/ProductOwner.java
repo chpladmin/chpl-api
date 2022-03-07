@@ -47,7 +47,7 @@ public class ProductOwner implements Serializable {
         return developer;
     }
 
-    public void setDeveloper(final Developer developer) {
+    public void setDeveloper(Developer developer) {
         this.developer = developer;
     }
 
@@ -55,7 +55,7 @@ public class ProductOwner implements Serializable {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -63,7 +63,7 @@ public class ProductOwner implements Serializable {
         return transferDate;
     }
 
-    public void setTransferDate(final Long transferDate) {
+    public void setTransferDate(Long transferDate) {
         this.transferDate = transferDate;
     }
 

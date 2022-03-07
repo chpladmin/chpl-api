@@ -14,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -138,7 +139,10 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
     private List<CertifiedProductDetailsDTO> getRelevantListings() throws EntityRetrievalException {
         LOGGER.info("Finding all listings for edition " + edition + ".");
         Date start = new Date();
-        List<CertifiedProductDetailsDTO> listingsForEdition = getCertifiedProductDao().findByEdition(edition);
+        List<CertifiedProductDetailsDTO> listingsForEdition = getCertifiedProductDao()
+                .findByEditionAndDeveloperIds(edition, Stream.of(222L, 448L).toList()).subList(0, 10);
+// TODO undo this
+                //.findByEdition(edition);
         Date end = new Date();
         LOGGER.info("Found the " + listingsForEdition.size() + " listings from " + edition + " in "
                 + ((end.getTime() - start.getTime()) / MILLIS_PER_SECOND) + " seconds");
