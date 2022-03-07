@@ -2,7 +2,9 @@ package gov.healthit.chpl.attestation.domain;
 
 import java.time.LocalDate;
 
+import javax.xml.bind.annotation.XmlAccessOrder;
 import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorOrder;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
@@ -23,6 +25,7 @@ import lombok.NoArgsConstructor;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorOrder(value = XmlAccessOrder.ALPHABETICAL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @Builder

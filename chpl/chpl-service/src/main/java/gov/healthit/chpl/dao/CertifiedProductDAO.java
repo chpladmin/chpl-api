@@ -373,26 +373,6 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         return products;
     }
 
-    //TODO: remove this
-    @Transactional(readOnly = true)
-    public List<CertifiedProductDetailsDTO> findByEditionAndDeveloperIds(String edition, List<Long> developerIds) {
-        Query query = entityManager.createQuery("SELECT cpd "
-                + "FROM CertifiedProductDetailsEntity cpd "
-                + "WHERE (NOT deleted = true) "
-                + "AND cpd.year = :edition "
-                + "AND cpd.developerId IN (:developerIds) ", CertifiedProductDetailsEntity.class);
-        query.setParameter("edition", edition.trim());
-        query.setParameter("developerIds", developerIds);
-        List<CertifiedProductDetailsEntity> entities = query.getResultList();
-        List<CertifiedProductDetailsDTO> products = new ArrayList<>(entities.size());
-
-        for (CertifiedProductDetailsEntity entity : entities) {
-            CertifiedProductDetailsDTO product = new CertifiedProductDetailsDTO(entity);
-            products.add(product);
-        }
-        return products;
-    }
-
     public List<Long> findIdsByEditionAndCreatedBeforeDate(String edition, LocalDate creationDate) {
         Query query = entityManager.createQuery("SELECT cpd.id "
                 + "FROM CertifiedProductDetailsEntity cpd "
