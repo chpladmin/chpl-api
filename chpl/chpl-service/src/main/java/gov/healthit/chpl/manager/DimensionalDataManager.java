@@ -448,6 +448,12 @@ public class DimensionalDataManager {
         otherType.setNumber(NonconformityType.OTHER.getName());
         otherType.setRemoved(NonconformityType.OTHER.getRemoved());
         result.add(otherType);
+
+        CertificationCriterion attestationsSubmissionType = new CertificationCriterion();
+        attestationsSubmissionType.setNumber(NonconformityType.SEMIANNUAL_ATTESTATIONS_SUBMISSION.getName());
+        attestationsSubmissionType.setRemoved(NonconformityType.SEMIANNUAL_ATTESTATIONS_SUBMISSION.getRemoved());
+        result.add(attestationsSubmissionType);
+
         return result;
     }
 
