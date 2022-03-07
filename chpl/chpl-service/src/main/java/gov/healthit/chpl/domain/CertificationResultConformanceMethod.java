@@ -46,7 +46,7 @@ public class CertificationResultConformanceMethod implements Serializable {
      * variable is a string variable that does not take any restrictions on
      * formatting or values and is applicable for 2014 and 2015 Edition.
      */
-    @XmlElement(required = true)
+    @XmlElement(required = false)
     private String conformanceMethodVersion;
 
     public CertificationResultConformanceMethod() {
