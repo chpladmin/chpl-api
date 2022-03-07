@@ -1,0 +1,39 @@
+fix: Do not delete product owner history via code; new soft delete
+script will take care of it
+
+[#OCD-3880]
+
+########### this line is 72 characters long, the max allowed ###########
+#
+# Conventional Commits are in the following form:
+# <type>[optional scope]: <description>
+#
+# [optional body]
+#
+# [optional footer]
+#
+# Valid types:
+#     build: Changes that affect the build system or external dependencies (example scopes: gulp, yarn)
+#     ci: Changes to our CI configuration files and scripts (example scopes: Jenkins, Bamboo)
+#     docs: Documentation only change
+#     feat: A new feature
+#     feat-flag: A new feature behind a flag
+#     fix: A bug fix
+#     fix-flag: A bug fix behind a flag
+#     perf: A code change that improves performance
+#     refactor: A code change that neither fixes a bug nor adds a feature
+#     release: Entire set of changes that encompass a release of a new version of the software
+#     style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+#     test: Adding missing tests or correcting existing tests
+# Reference https://www.conventionalcommits.org though we're not following the standard exactly
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch OCD-3880
+# Your branch is ahead of 'origin/OCD-3880' by 1 commit.
+#   (use "git push" to publish your local commits)
+#
+# Changes to be committed:
+#	modified:   chpl/chpl-service/src/main/java/gov/healthit/chpl/dao/ProductDAO.java
+#

@@ -29,7 +29,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "product_active_owner_history_map")
-public class ProductActiveOwnerEntity implements ProductOwnerEntity, Serializable {
+public class ProductActiveOwnerEntity implements Serializable {
     private static final long serialVersionUID = -8325348768063869639L;
 
     @Id

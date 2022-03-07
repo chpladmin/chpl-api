@@ -51,7 +51,7 @@ public class ProductDAO extends BaseDAOImpl {
             create(entity);
             if (!CollectionUtils.isEmpty(product.getOwnerHistory())) {
                 for (ProductOwner prevOwner : product.getOwnerHistory()) {
-                    createOwnerHistory(product.getProductId(), prevOwner);
+                    createOwnerHistory(entity.getId(), prevOwner);
                 }
             }
             return entity.getId();
