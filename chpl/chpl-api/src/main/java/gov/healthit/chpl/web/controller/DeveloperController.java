@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,6 @@ import gov.healthit.chpl.domain.MergeDevelopersRequest;
 import gov.healthit.chpl.domain.PermissionDeletedResponse;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.SplitDeveloperRequest;
-import gov.healthit.chpl.domain.TransparencyAttestationMap;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.domain.compliance.DirectReview;
@@ -41,11 +39,9 @@ import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.ContactDTO;
-import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
-import gov.healthit.chpl.dto.TransparencyAttestationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -359,18 +355,6 @@ public class DeveloperController {
                 dto.getStatusEvents().add(statusEvent);
             }
         }
-
-        for (TransparencyAttestationMap attMap : developer.getTransparencyAttestations()) {
-            DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
-            devMap.setAcbId(attMap.getAcbId());
-            devMap.setAcbName(attMap.getAcbName());
-            if (attMap.getAttestation() != null && !StringUtils.isEmpty(attMap.getAttestation().getTransparencyAttestation())) {
-                devMap.setTransparencyAttestation(
-                        new TransparencyAttestationDTO(attMap.getAttestation().getTransparencyAttestation()));
-            }
-            dto.getTransparencyAttestationMappings().add(devMap);
-        }
-
         Address developerAddress = developer.getAddress();
         if (developerAddress != null) {
             AddressDTO toCreateAddress = new AddressDTO();

@@ -35,16 +35,13 @@ public class CertificationBodyManager extends SecuredManager {
     private CertificationBodyDAO certificationBodyDao;
     private ActivityManager activityManager;
     private SchedulerManager schedulerManager;
-    private UserPermissionsManager userPermissionsManager;
 
     @Autowired
     public CertificationBodyManager(CertificationBodyDAO certificationBodyDao,
-            ActivityManager activityManager, @Lazy SchedulerManager schedulerManager,
-            UserPermissionsManager userPermissionsManager) {
+            ActivityManager activityManager, @Lazy SchedulerManager schedulerManager) {
         this.certificationBodyDao = certificationBodyDao;
         this.activityManager = activityManager;
         this.schedulerManager = schedulerManager;
-        this.userPermissionsManager = userPermissionsManager;
     }
 
     @Transactional
@@ -87,7 +84,7 @@ public class CertificationBodyManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).UPDATE, #acb)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS,
+            CacheNames.GET_DECERTIFIED_DEVELOPERS,
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
     // no other caches have ACB data so we do not need to clear all

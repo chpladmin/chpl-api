@@ -23,7 +23,6 @@ import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
-import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
@@ -236,26 +235,10 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         pendingCertifiedProduct.setIcs(asBoolean(hasIcsStr));
     }
 
-    protected void parseTransparencyAttestation(final PendingCertifiedProductEntity pendingCertifiedProduct,
+    protected void parseMandatoryDisclosures(final PendingCertifiedProductEntity pendingCertifiedProduct,
             final CSVRecord record) {
         // (k)(1) attestation url
         pendingCertifiedProduct.setMandatoryDisclosures(record.get(getColumnIndexMap().getK1Index()).trim());
-
-        // (k)(2) attestation status
-        if (getColumnIndexMap().getK2Index() >= 0) {
-            String k2AttestationStr = record.get(getColumnIndexMap().getK2Index()).trim();
-            if (!StringUtils.isEmpty(k2AttestationStr)) {
-                if ("0".equals(k2AttestationStr)) {
-                    pendingCertifiedProduct.setTransparencyAttestation(AttestationType.Negative);
-                } else if ("1".equals(k2AttestationStr)) {
-                    pendingCertifiedProduct.setTransparencyAttestation(AttestationType.Affirmative);
-                } else if ("2".equals(k2AttestationStr)) {
-                    pendingCertifiedProduct.setTransparencyAttestation(AttestationType.NA);
-                }
-            } else {
-                pendingCertifiedProduct.setTransparencyAttestation(null);
-            }
-        }
     }
 
     @Override

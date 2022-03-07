@@ -16,7 +16,6 @@ public class DeveloperXmlGenerator extends XmlGenerator {
         createSimpleElement(dev.getSelfDeveloper(), "selfDeveloper", sw);
         DeveloperStatusXmlGenerator.add(dev.getStatus(), "status", sw);
         DeveloperStatusEventXmlGenerator.add(dev.getStatusEvents(), "statusEvents", sw);
-        TransparencyAttestationMapXmlGenerator.add(dev.getTransparencyAttestations(), "transparencyAttestations", sw);
         createSimpleElement(dev.getWebsite(), "website", sw);
         sw.writeEndElement();
     }
