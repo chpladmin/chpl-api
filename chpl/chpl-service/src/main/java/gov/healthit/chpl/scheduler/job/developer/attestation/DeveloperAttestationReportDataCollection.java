@@ -309,7 +309,7 @@ public class DeveloperAttestationReportDataCollection {
     private Long getOpenDirectReviewNonconformities(Developer developer) {
         return directReviewService.getDeveloperDirectReviews(developer.getDeveloperId()).stream()
                 .flatMap(dr -> dr.getNonConformities().stream())
-                .filter(nc -> nc.getNonConformityStatus().equals(DirectReviewNonConformity.STATUS_OPEN))
+                .filter(nc -> nc.getNonConformityStatus().equalsIgnoreCase(DirectReviewNonConformity.STATUS_OPEN))
                 .count();
     }
 
