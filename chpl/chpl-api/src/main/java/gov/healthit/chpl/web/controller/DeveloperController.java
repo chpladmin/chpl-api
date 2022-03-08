@@ -112,7 +112,6 @@ public class DeveloperController {
             })
     @RequestMapping(value = "/{developerId}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = Developer.class)
     public @ResponseBody Developer getDeveloperById(@PathVariable("developerId") Long developerId)
             throws EntityRetrievalException {
         return developerManager.getById(developerId);
@@ -125,7 +124,6 @@ public class DeveloperController {
             })
     @RequestMapping(value = "/{developerId}/hierarchy", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = DeveloperTree.class)
     public @ResponseBody DeveloperTree getDeveloperHierarchyById(@PathVariable("developerId") Long developerId)
             throws EntityRetrievalException {
         return developerManager.getHierarchyById(developerId);
@@ -151,7 +149,6 @@ public class DeveloperController {
             })
     @RequestMapping(value = "/{developerId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = Developer.class)
     public ResponseEntity<Developer> update(@PathVariable("developerId") Long developerId,
             @RequestBody(required = true) Developer developerToUpdate)
             throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException,
