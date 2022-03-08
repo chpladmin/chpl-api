@@ -51,12 +51,12 @@ public class DeveloperAttestationReportDataCollection {
     private static final Long API_ATTESTATION_ID = 4L;
     private static final Long RWT_ATTESTATION_ID = 5L;
 
-    private static final String RWT_VALIDATION_TRUE = "Has listing(s) with RWT";
-    private static final String RWT_VALIDATION_FALSE = "No listings with RWT";
-    private static final String ASSURANCES_VALIDATION_TRUE = "Has listing(s) with Assurances criteria ** (b)(6) or (b)(10)";
-    private static final String ASSURANCES_VALIDATION_FALSE = "No listings with Assurances criteria ** (b)(6) or (b)(10)";
-    private static final String API_VALIDATION_TRUE = "Has listing(s) with API criteria g7, g8, g9, or g10";
-    private static final String API_VALIDATION_FALSE = "No listings with API criteria g7, g8, g9, or g10";
+    private static final String RWT_VALIDATION_TRUE = "Has listing(s) with RWT criteria";
+    private static final String RWT_VALIDATION_FALSE = "No listings with RWT criteria";
+    private static final String ASSURANCES_VALIDATION_TRUE = "Has listing(s) with Assurances criteria (b)(6) or (b)(10)";
+    private static final String ASSURANCES_VALIDATION_FALSE = "No listings with Assurances criteria (b)(6) or (b)(10)";
+    private static final String API_VALIDATION_TRUE = "Has listing(s) with API criteria (g)(7)-(g)(10)";
+    private static final String API_VALIDATION_FALSE = "No listings with API criteria (g)(7)-(g)(10)";
 
     private DeveloperDAO developerDAO;
     private ListingSearchService listingSearchService;
