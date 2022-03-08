@@ -29,7 +29,7 @@ public class GetByDeveloperIdActionPermissionsTest extends ActionPermissionsBase
         MockitoAnnotations.initMocks(this);
 
         Mockito.when(resourcePermissions.getAllDevelopersForCurrentUser()).thenReturn(
-                Arrays.asList(Developer.builder().id(1L).build()));
+                Arrays.asList(Developer.builder().id(1L).developerId(1L).build()));
     }
 
     @Override
