@@ -32,9 +32,7 @@ import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.Product;
-import gov.healthit.chpl.domain.PublicAttestation;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.domain.concept.PublicAttestationStatus;
 import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
 import gov.healthit.chpl.domain.developer.hierarchy.ProductTree;
 import gov.healthit.chpl.domain.developer.hierarchy.SimpleListing;
@@ -545,17 +543,6 @@ public class DeveloperManager extends SecuredManager {
             }
         }
         return errorMessages;
-    }
-
-    @Transactional
-    public List<PublicAttestation> getDeveloperPublicAttestations(Long developerId) {
-        return attestationDAO.getDeveloperAttestationSubmissionsByDeveloper(developerId).stream()
-                .map(att -> PublicAttestation.builder()
-                        .id(att.getId())
-                        .attestationPeriod(att.getPeriod())
-                        .status(PublicAttestationStatus.ATTESTATIONS_SUBMITTED)
-                        .build())
-                .collect(Collectors.toList());
     }
 
     public static String getNewDeveloperCode() {
