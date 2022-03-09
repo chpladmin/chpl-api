@@ -160,6 +160,7 @@ public class Product implements Serializable {
     }
 
     @Deprecated
+    @JsonProperty(access = Access.WRITE_ONLY)
     public Long getDeveloperId() {
         return developerId;
     }
@@ -170,6 +171,7 @@ public class Product implements Serializable {
     }
 
     @Deprecated
+    @JsonProperty(access = Access.WRITE_ONLY)
     public String getDeveloperName() {
         return developerName;
     }
