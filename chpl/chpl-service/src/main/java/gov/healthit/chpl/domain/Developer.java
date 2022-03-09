@@ -36,6 +36,7 @@ public class Developer implements Serializable {
      * The internal ID of the developer.
      */
     @XmlElement(required = true)
+    @Deprecated
     private Long developerId;
 
     /**
@@ -133,10 +134,12 @@ public class Developer implements Serializable {
         this.statusEvents = new ArrayList<DeveloperStatusEvent>();
     }
 
+    @Deprecated
     public Long getDeveloperId() {
         return developerId;
     }
 
+    @Deprecated
     public void setDeveloperId(Long developerId) {
         this.developerId = developerId;
     }

@@ -34,6 +34,7 @@ public class Product implements Serializable {
      * Product internal ID
      */
     @XmlElement(required = true)
+    @Deprecated
     private Long productId;
 
     /**
@@ -54,6 +55,7 @@ public class Product implements Serializable {
      */
     @JsonProperty(access = Access.WRITE_ONLY)
     @XmlTransient
+    @Deprecated
     private Long developerId;
 
     /**
@@ -64,6 +66,7 @@ public class Product implements Serializable {
      */
     @JsonProperty(access = Access.WRITE_ONLY)
     @XmlTransient
+    @Deprecated
     private String developerName;
 
     /**
@@ -138,10 +141,12 @@ public class Product implements Serializable {
         return result;
     }
 
+    @Deprecated
     public Long getProductId() {
         return productId;
     }
 
+    @Deprecated
     public void setProductId(Long productId) {
         this.productId = productId;
     }
@@ -154,18 +159,22 @@ public class Product implements Serializable {
         this.id = id;
     }
 
+    @Deprecated
     public Long getDeveloperId() {
         return developerId;
     }
 
+    @Deprecated
     public void setDeveloperId(Long developerId) {
         this.developerId = developerId;
     }
 
+    @Deprecated
     public String getDeveloperName() {
         return developerName;
     }
 
+    @Deprecated
     public void setDeveloperName(String developerName) {
         this.developerName = developerName;
     }
