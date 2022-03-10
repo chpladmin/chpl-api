@@ -20,6 +20,7 @@ import gov.healthit.chpl.entity.statistics.CriterionProductStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResult;
 
 /**
  * Populates the criterion_product_statistics table with summarized count
@@ -57,7 +58,7 @@ public class CriterionProductStatisticsCalculator {
         HashSet<String> uniqueProductSet = new HashSet<String>();
         for (ListingSearchResult listing : listings) {
             if (listing.getCriteriaMet() != null && !listing.getCriteriaMet().isEmpty()) {
-                for (ListingSearchResult.CertificationCriterion cert : listing.getCriteriaMet()) {
+                for (CertificationCriterionSearchResult cert : listing.getCriteriaMet()) {
                     String key = cert.getId() + "-" + listing.getDeveloper().getName() + '-' + listing.getProduct().getName();
                     if (!uniqueProductSet.contains(key)) {
                         if (!criterionMap.containsKey(cert.getId())) {

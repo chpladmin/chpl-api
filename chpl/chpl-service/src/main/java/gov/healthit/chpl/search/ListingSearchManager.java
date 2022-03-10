@@ -15,6 +15,7 @@ import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.search.dao.ListingSearchDao;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResult.StatusEventSearchResult;
 import gov.healthit.chpl.service.DirectReviewSearchService;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
@@ -55,7 +56,7 @@ public class ListingSearchManager {
             .collect(Collectors.toList());
     }
 
-    private CertificationStatusEvent convertToCertificationStatusEvent(ListingSearchResult.StatusEvent statusEvent) {
+    private CertificationStatusEvent convertToCertificationStatusEvent(StatusEventSearchResult statusEvent) {
         return CertificationStatusEvent.builder()
             .status(CertificationStatus.builder()
                     .name(statusEvent.getStatus().getName())

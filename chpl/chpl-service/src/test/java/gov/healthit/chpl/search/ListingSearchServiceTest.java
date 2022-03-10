@@ -23,6 +23,10 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.ListingSearchResponse;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResult.CQMSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResult.DeveloperSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResult.IdNamePairSearchResult;
 import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.RwtSearchOptions;
@@ -1885,62 +1889,62 @@ public class ListingSearchServiceTest {
         return listings;
     }
 
-    private ListingSearchResult.IdNamePair acb(String name) {
-        return ListingSearchResult.IdNamePair.builder()
+    private IdNamePairSearchResult acb(String name) {
+        return IdNamePairSearchResult.builder()
                 .name(name)
                 .build();
     }
 
-    private ListingSearchResult.Developer developer(String name) {
-        return ListingSearchResult.Developer.builder()
+    private DeveloperSearchResult developer(String name) {
+        return DeveloperSearchResult.builder()
                 .name(name)
                 .build();
     }
 
-    private ListingSearchResult.IdNamePair productOwner(String name) {
-        return ListingSearchResult.IdNamePair.builder()
+    private IdNamePairSearchResult productOwner(String name) {
+        return IdNamePairSearchResult.builder()
                 .name(name)
                 .build();
     }
 
-    private ListingSearchResult.IdNamePair product(String name) {
-        return ListingSearchResult.IdNamePair.builder()
+    private IdNamePairSearchResult product(String name) {
+        return IdNamePairSearchResult.builder()
                 .name(name)
                 .build();
     }
 
-    private ListingSearchResult.IdNamePair version(String name) {
-        return ListingSearchResult.IdNamePair.builder()
+    private IdNamePairSearchResult version(String name) {
+        return IdNamePairSearchResult.builder()
                 .name(name)
                 .build();
     }
 
-    private ListingSearchResult.IdNamePair edition(String year) {
-        return ListingSearchResult.IdNamePair.builder()
+    private IdNamePairSearchResult edition(String year) {
+        return IdNamePairSearchResult.builder()
                 .name(year)
                 .build();
     }
 
-    private ListingSearchResult.IdNamePair status(String name) {
-        return ListingSearchResult.IdNamePair.builder()
+    private IdNamePairSearchResult status(String name) {
+        return IdNamePairSearchResult.builder()
                 .name(name)
                 .build();
     }
 
-    private ListingSearchResult.IdNamePair practiceType(String name) {
-        return ListingSearchResult.IdNamePair.builder()
+    private IdNamePairSearchResult practiceType(String name) {
+        return IdNamePairSearchResult.builder()
                 .name(name)
                 .build();
     }
 
-    private ListingSearchResult.CertificationCriterion criterion(Long id) {
-        return ListingSearchResult.CertificationCriterion.builder()
+    private CertificationCriterionSearchResult criterion(Long id) {
+        return CertificationCriterionSearchResult.builder()
                 .id(id)
                 .build();
     }
 
-    private ListingSearchResult.CQM cqm(String cqmNumber) {
-        return ListingSearchResult.CQM.builder()
+    private CQMSearchResult cqm(String cqmNumber) {
+        return CQMSearchResult.builder()
                 .number(cqmNumber)
                 .build();
     }

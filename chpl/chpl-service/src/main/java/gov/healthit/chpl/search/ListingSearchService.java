@@ -26,6 +26,9 @@ import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.ListingSearchResponse;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResult.CQMSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResult.IdNamePairSearchResult;
 import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.RwtSearchOptions;
@@ -112,7 +115,7 @@ public class ListingSearchService {
                 || (!StringUtils.isEmpty(listing.getAcbCertificationId()) && listing.getAcbCertificationId().toUpperCase().contains(searchTermUpperCase));
     }
 
-    private boolean doProductOwnersMatchSearchTerm(Set<ListingSearchResult.IdNamePair> productOwners, String searchTerm) {
+    private boolean doProductOwnersMatchSearchTerm(Set<IdNamePairSearchResult> productOwners, String searchTerm) {
         Set<String> uppercaseNames = productOwners.stream()
             .filter(productOwner -> !StringUtils.isEmpty(productOwner.getName()))
             .map(productOwner -> productOwner.getName().toUpperCase())
@@ -237,7 +240,7 @@ public class ListingSearchService {
         return false;
     }
 
-    private Set<Long> getCriteriaIds(Set<ListingSearchResult.CertificationCriterion> criteria) {
+    private Set<Long> getCriteriaIds(Set<CertificationCriterionSearchResult> criteria) {
         return criteria.stream()
                 .map(criterion -> criterion.getId())
                 .collect(Collectors.toSet());
@@ -257,7 +260,7 @@ public class ListingSearchService {
         return false;
     }
 
-    private Set<String> getCqmNumbers(Set<ListingSearchResult.CQM> cqms) {
+    private Set<String> getCqmNumbers(Set<CQMSearchResult> cqms) {
         return cqms.stream()
                 .map(cqm -> cqm.getNumber())
                 .collect(Collectors.toSet());

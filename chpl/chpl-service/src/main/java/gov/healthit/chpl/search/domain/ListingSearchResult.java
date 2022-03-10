@@ -35,20 +35,20 @@ public class ListingSearchResult implements Serializable {
 
     private Long id;
     private String chplProductNumber;
-    private IdNamePair edition;
-    private IdNamePair certificationBody;
+    private IdNamePairSearchResult edition;
+    private IdNamePairSearchResult certificationBody;
     private String acbCertificationId;
-    private IdNamePair practiceType;
-    private Developer developer;
-    private IdNamePair product;
-    private IdNamePair version;
+    private IdNamePairSearchResult practiceType;
+    private DeveloperSearchResult developer;
+    private IdNamePairSearchResult product;
+    private IdNamePairSearchResult version;
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate certificationDate;
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate decertificationDate;
-    private IdNamePair certificationStatus;
+    private IdNamePairSearchResult certificationStatus;
     private Boolean curesUpdate;
     private Long surveillanceCount;
     private Long openSurveillanceNonConformityCount;
@@ -61,15 +61,15 @@ public class ListingSearchResult implements Serializable {
     private Integer closedDirectReviewNonConformityCount = 0;
     private Long openSurveillanceCount;
     private Long closedSurveillanceCount;
-    private PromotingInteroperability promotingInteroperability;
+    private PromotingInteroperabilitySearchResult promotingInteroperability;
     private String mandatoryDisclosures;
-    private Set<IdNamePair> previousDevelopers;
-    private Set<CertificationCriterion> criteriaMet;
-    private Set<CQM> cqmsMet;
-    private Set<DateRange> surveillanceDateRanges;
-    private Set<StatusEvent> statusEvents;
-    private Set<CertificationCriterionWithStringField> apiDocumentation;
-    private CertificationCriterionWithStringField serviceBaseUrlList;
+    private Set<IdNamePairSearchResult> previousDevelopers;
+    private Set<CertificationCriterionSearchResult> criteriaMet;
+    private Set<CQMSearchResult> cqmsMet;
+    private Set<DateRangeSearchResult> surveillanceDateRanges;
+    private Set<StatusEventSearchResult> statusEvents;
+    private Set<CertificationCriterionSearchResultWithStringField> apiDocumentation;
+    private CertificationCriterionSearchResultWithStringField serviceBaseUrlList;
     private String rwtPlansUrl;
     private String rwtResultsUrl;
 
@@ -82,12 +82,12 @@ public class ListingSearchResult implements Serializable {
         this.setClosedSurveillanceCount(0L);
         this.setOpenSurveillanceNonConformityCount(0L);
         this.setClosedSurveillanceNonConformityCount(0L);
-        previousDevelopers = new HashSet<IdNamePair>();
-        criteriaMet = new HashSet<CertificationCriterion>();
-        cqmsMet = new HashSet<CQM>();
-        surveillanceDateRanges = new HashSet<DateRange>();
-        statusEvents = new HashSet<StatusEvent>();
-        apiDocumentation = new HashSet<CertificationCriterionWithStringField>();
+        previousDevelopers = new HashSet<IdNamePairSearchResult>();
+        criteriaMet = new HashSet<CertificationCriterionSearchResult>();
+        cqmsMet = new HashSet<CQMSearchResult>();
+        surveillanceDateRanges = new HashSet<DateRangeSearchResult>();
+        statusEvents = new HashSet<StatusEventSearchResult>();
+        apiDocumentation = new HashSet<CertificationCriterionSearchResultWithStringField>();
     }
 
     @Override
@@ -123,7 +123,7 @@ public class ListingSearchResult implements Serializable {
     @SuperBuilder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class IdNamePair {
+    public static class IdNamePairSearchResult {
         private Long id;
         private String name;
     }
@@ -132,15 +132,15 @@ public class ListingSearchResult implements Serializable {
     @SuperBuilder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Developer extends IdNamePair {
-        private IdNamePair status;
+    public static class DeveloperSearchResult extends IdNamePairSearchResult {
+        private IdNamePairSearchResult status;
     }
 
     @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class PromotingInteroperability {
+    public static class PromotingInteroperabilitySearchResult {
         private Long userCount;
         @JsonDeserialize(using = LocalDateDeserializer.class)
         @JsonSerialize(using = LocalDateSerializer.class)
@@ -151,7 +151,7 @@ public class ListingSearchResult implements Serializable {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CertificationCriterion {
+    public static class CertificationCriterionSearchResult {
         private Long id;
         private String number;
         private String title;
@@ -161,8 +161,8 @@ public class ListingSearchResult implements Serializable {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CertificationCriterionWithStringField {
-        private CertificationCriterion criterion;
+    public static class CertificationCriterionSearchResultWithStringField {
+        private CertificationCriterionSearchResult criterion;
         private String value;
     }
 
@@ -170,7 +170,7 @@ public class ListingSearchResult implements Serializable {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CQM {
+    public static class CQMSearchResult {
         private Long id;
         private String number;
     }
@@ -179,18 +179,18 @@ public class ListingSearchResult implements Serializable {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class StatusEvent {
+    public static class StatusEventSearchResult {
         @JsonDeserialize(using = LocalDateDeserializer.class)
         @JsonSerialize(using = LocalDateSerializer.class)
         private LocalDate statusStart;
-        private IdNamePair status;
+        private IdNamePairSearchResult status;
     }
 
     @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class DateRange {
+    public static class DateRangeSearchResult {
         @JsonDeserialize(using = LocalDateDeserializer.class)
         @JsonSerialize(using = LocalDateSerializer.class)
         private LocalDate start;

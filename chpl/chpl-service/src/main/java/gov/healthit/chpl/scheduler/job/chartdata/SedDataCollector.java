@@ -19,6 +19,7 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResult;
 
 /**
  * Retrieves all of the 2015 SED Products and their details. Details are
@@ -76,7 +77,7 @@ public class SedDataCollector {
 
     private boolean containsAnyCriterion(ListingSearchResult listing, List<CertificationCriterionDTO> criteria) {
         boolean result = false;
-        ListingSearchResult.CertificationCriterion[] certs = listing.getCriteriaMet().toArray(new ListingSearchResult.CertificationCriterion[0]);
+        CertificationCriterionSearchResult[] certs = listing.getCriteriaMet().toArray(new CertificationCriterionSearchResult[0]);
         for (CertificationCriterionDTO criterion : criteria) {
             for (int i = 0; i < certs.length && !result; i++) {
                 Long certId = certs[i].getId();
