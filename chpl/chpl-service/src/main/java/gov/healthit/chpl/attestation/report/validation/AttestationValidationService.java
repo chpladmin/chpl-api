@@ -64,4 +64,16 @@ public class AttestationValidationService {
         return assurancesValidation.isValid(context);
     }
 
+    public Boolean validateApi(Developer developer, List<CertifiedProductBasicSearchResult> listings) {
+        AttestationValidationContext context = AttestationValidationContext.builder()
+                .developer(developer)
+                .listings(listings)
+                .apiCriteria(apiCriteria)
+                .assuranceCriteria(assurancesCriteria)
+                .build();
+
+        ApiValidation apiValidation = new ApiValidation();
+        return apiValidation.isValid(context);
+    }
+
 }

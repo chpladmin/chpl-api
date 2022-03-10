@@ -330,7 +330,7 @@ public class DeveloperAttestationReportDataCollection {
     }
 
     private String getApiValidation(Developer developer) {
-        if (attestationValidationService.validateAssurances(developer, getListingDataForDeveloper(developer))) {
+        if (attestationValidationService.validateApi(developer, getListingDataForDeveloper(developer))) {
             return API_VALIDATION_TRUE;
         } else {
             return API_VALIDATION_FALSE;
