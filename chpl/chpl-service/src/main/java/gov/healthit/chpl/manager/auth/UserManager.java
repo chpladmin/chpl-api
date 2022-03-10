@@ -29,6 +29,8 @@ import com.nulabinc.zxcvbn.Zxcvbn;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.dao.auth.UserResetTokenDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.auth.ResetPasswordRequest;
+import gov.healthit.chpl.domain.auth.UpdatePasswordResponse;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserResetTokenDTO;
@@ -46,6 +48,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.UserMapper;
 import lombok.extern.log4j.Log4j2;
 
 @Service
@@ -60,12 +63,13 @@ public class UserManager extends SecuredManager {
     private ErrorMessageUtil errorMessageUtil;
     private ActivityManager activityManager;
     private ChplEmailFactory chplEmailFactory;
-
+    private UserMapper userMapper;
 
     @Autowired
     public UserManager(Environment env, UserDAO userDAO,
             UserResetTokenDAO userResetTokenDAO, BCryptPasswordEncoder bCryptPasswordEncoder,
-            ErrorMessageUtil errorMessageUtil, ActivityManager activityManager, ChplEmailFactory chplEmailFactory) {
+            ErrorMessageUtil errorMessageUtil, ActivityManager activityManager, ChplEmailFactory chplEmailFactory,
+            UserMapper userMapper) {
         this.env = env;
         this.userDAO = userDAO;
         this.userResetTokenDAO = userResetTokenDAO;
@@ -73,6 +77,7 @@ public class UserManager extends SecuredManager {
         this.errorMessageUtil = errorMessageUtil;
         this.activityManager = activityManager;
         this.chplEmailFactory = chplEmailFactory;
+        this.userMapper = userMapper;
     }
 
     @Transactional
@@ -230,24 +235,42 @@ public class UserManager extends SecuredManager {
             throw new UserRetrievalException("Cannot find user with email address " + email);
         }
 
-        String password = UUID.randomUUID().toString();
+        String token = UUID.randomUUID().toString();
 
         // delete all previous tokens from that user that are in the table
         userResetTokenDAO.deletePreviousUserTokens(foundUser.getId());
 
         // create new row in reset token table
-        UserResetTokenDTO userResetToken = userResetTokenDAO.create(password, foundUser.getId());
+        UserResetTokenDTO userResetToken = userResetTokenDAO.create(token, foundUser.getId());
 
         return userResetToken;
     }
 
     @Transactional
-    public boolean authorizePasswordReset(String token) {
-        UserResetTokenDTO userResetToken = userResetTokenDAO.findByAuthToken(token);
-        if (userResetToken != null && isTokenValid(userResetToken)) {
-            return true;
+    public UpdatePasswordResponse authorizePasswordReset(ResetPasswordRequest resetRequest) throws UserRetrievalException,
+        MultipleUserAccountsException {
+        UpdatePasswordResponse response = new UpdatePasswordResponse();
+        response.setPasswordUpdated(false);
+
+        UserResetTokenDTO userResetToken = userResetTokenDAO.findByAuthToken(resetRequest.getToken());
+        if (userResetToken == null || userResetToken.getUserId() == null || userResetToken.getUser() == null
+                || !isTokenValid(userResetToken)) {
+            return response;
         }
-        return false;
+
+        UserDTO userDto = userMapper.from(userResetToken.getUser());
+        // check the strength of the new password
+        Strength strength = getPasswordStrength(userDto, resetRequest.getNewPassword());
+        if (strength.getScore() < UserManager.MIN_PASSWORD_STRENGTH) {
+            LOGGER.info("Strength results: [warning: {}] [suggestions: {}] [score: {}] [worst case crack time: {}]",
+                    strength.getFeedback().getWarning(), strength.getFeedback().getSuggestions().toString(),
+                    strength.getScore(), strength.getCrackTimesDisplay().getOfflineFastHashing1e10PerSecond());
+            response.setStrength(strength);
+        }
+        updateUserPasswordUnsecured(userDto.getEmail(), resetRequest.getNewPassword());
+        deletePreviousTokens(resetRequest.getToken());
+        response.setPasswordUpdated(true);
+        return response;
     }
 
     @Transactional
