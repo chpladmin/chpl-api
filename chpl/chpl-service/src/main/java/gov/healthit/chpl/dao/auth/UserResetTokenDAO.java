@@ -40,8 +40,13 @@ public class UserResetTokenDAO extends BaseDAOImpl {
 
     public UserResetTokenDTO findByAuthToken(String authToken) {
         UserResetTokenDTO userResetToken = null;
-        String userQuery = "from UserResetTokenEntity urt" + " where (NOT urt.deleted = true) "
-                + " AND (urt.userResetToken = :userResetToken) ";
+        String userQuery = "SELECT urt "
+                + "FROM UserResetTokenEntity urt "
+                + "JOIN FETCH urt.user u "
+                + "JOIN FETCH u.contact c "
+                + "JOIN FETCH u.permission "
+                + "WHERE (NOT urt.deleted = true) "
+                + "AND (urt.userResetToken = :userResetToken) ";
 
         Query query = entityManager.createQuery(userQuery, UserResetTokenEntity.class);
         query.setParameter("userResetToken", authToken);

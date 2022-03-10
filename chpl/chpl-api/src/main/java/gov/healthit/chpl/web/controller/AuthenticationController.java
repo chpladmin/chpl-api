@@ -203,30 +203,7 @@ public class AuthenticationController {
     @RequestMapping(value = "/reset_password_request", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public UpdatePasswordResponse resetPassword(@RequestBody ResetPasswordRequest request)
             throws UserRetrievalException, MultipleUserAccountsException {
-        UpdatePasswordResponse response = new UpdatePasswordResponse();
-        // get the current user
-        UserDTO currUser = userManager.getByNameOrEmailUnsecured(request.getUserName());
-        if (currUser == null) {
-            throw new UserRetrievalException("The user with username " + request.getUserName() + " cannot be found.");
-        }
-        // check the strength of the new password
-        Strength strength = userManager.getPasswordStrength(currUser, request.getNewPassword());
-        if (strength.getScore() < UserManager.MIN_PASSWORD_STRENGTH) {
-            LOGGER.info("Strength results: [warning: {}] [suggestions: {}] [score: {}] [worst case crack time: {}]",
-                    strength.getFeedback().getWarning(), strength.getFeedback().getSuggestions().toString(),
-                    strength.getScore(), strength.getCrackTimesDisplay().getOfflineFastHashing1e10PerSecond());
-            response.setStrength(strength);
-            response.setPasswordUpdated(false);
-            return response;
-        }
-        if (userManager.authorizePasswordReset(request.getToken())) {
-            userManager.updateUserPasswordUnsecured(currUser.getEmail(), request.getNewPassword());
-            userManager.deletePreviousTokens(request.getToken());
-            response.setPasswordUpdated(true);
-        } else {
-            response.setPasswordUpdated(false);
-        }
-        return response;
+        return userManager.authorizePasswordReset(request);
     }
 
     @Operation(summary = "Reset a user's password.", description = "",
