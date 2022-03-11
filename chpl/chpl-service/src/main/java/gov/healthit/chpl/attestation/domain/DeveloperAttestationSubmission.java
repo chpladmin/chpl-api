@@ -1,7 +1,6 @@
 package gov.healthit.chpl.attestation.domain;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,6 +10,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import gov.healthit.chpl.attestation.entity.DeveloperAttestationSubmissionEntity;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.AllArgsConstructor;
@@ -40,7 +40,7 @@ public class DeveloperAttestationSubmission {
         this.period = new AttestationPeriod(entity.getPeriod());
         this.signature = entity.getSignature();
         this.signatureEmail = entity.getSignatureEmail();
-        this.datePublished = entity.getLastModifiedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        this.datePublished = DateUtil.toLocalDate(entity.getLastModifiedDate().getTime());
         this.responses = entity.getResponses().stream()
                 .map(ent -> AttestationSubmittedResponse.builder()
                         .id(ent.getId())
