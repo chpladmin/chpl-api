@@ -13,6 +13,7 @@ import gov.healthit.chpl.attestation.domain.Attestation;
 import gov.healthit.chpl.attestation.domain.AttestationForm;
 import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
 public class AttestationValidation extends ValidationRule<ChangeRequestValidationContext> {
@@ -30,6 +31,7 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
 
         if (isChangeRequestNew(context)) {
             getMessages().addAll(validateSignature(context, attestationSubmission));
+            getMessages().addAll(canDeveloperSubmitChangeRequest(context));
         }
 
         getMessages().addAll(getMissingAttestations(attestationSubmission, attestationForm).stream()
@@ -43,6 +45,18 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
                 .collect(Collectors.toList()));
 
         return getMessages().size() == 0;
+    }
+
+    private List<String> canDeveloperSubmitChangeRequest(ChangeRequestValidationContext context) {
+        List<String> errors = new ArrayList<String>();
+        try {
+            if (!context.getDomainManagers().getAttestationManager().canDeveloperSubmitChangeRequest(context.getNewChangeRequest().getDeveloper().getDeveloperId())) {
+                errors.add(getErrorMessage("changeRequest.attestation.submissionWindow"));
+            }
+        } catch (EntityRetrievalException e) {
+            errors.add(getErrorMessage("changeRequest.attestation.submissionWindow"));
+        }
+        return errors;
     }
 
     private List<String> validateSignature(ChangeRequestValidationContext context, ChangeRequestAttestationSubmission attestation) {

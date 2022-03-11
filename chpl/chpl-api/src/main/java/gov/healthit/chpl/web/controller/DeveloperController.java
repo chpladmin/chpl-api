@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.Address;
@@ -320,7 +321,11 @@ public class DeveloperController {
         if (!ff4j.check(FeatureList.ATTESTATIONS)) {
             throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
-        return new DeveloperAttestationSubmissionResults(attestationManager.getDeveloperAttestations(developerId));
+        return DeveloperAttestationSubmissionResults.builder()
+                .developerAttestations(attestationManager.getDeveloperAttestations(developerId))
+                .canSubmitAttestationChangeRequest(attestationManager.canDeveloperSubmitChangeRequest(developerId))
+                .canCreateException(attestationManager.canCreateException(developerId))
+                .build();
     }
 
     @Operation(summary = "List public attestation information for a developer.",
@@ -332,6 +337,21 @@ public class DeveloperController {
             throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
         return new PublicDeveloperAttestestationResults(developerManager.getDeveloperPublicAttestations(developerId));
+    }
+
+    @Operation(summary = "Create a new attestation submission end date exception for a developer.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ONC_ACB",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/{developerId}/attestations/exception", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(@PathVariable("developerId") Long developerId)
+            throws EntityRetrievalException, ValidationException {
+        if (!ff4j.check(FeatureList.ATTESTATIONS)) {
+            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
+        }
+        return attestationManager.createAttestationPeriodDeveloperException(developerId);
     }
 
     private DeveloperDTO toDto(Developer developer) {
