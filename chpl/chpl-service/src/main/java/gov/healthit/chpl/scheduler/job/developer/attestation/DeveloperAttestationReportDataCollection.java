@@ -21,6 +21,7 @@ import gov.healthit.chpl.attestation.dao.AttestationDAO;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
 import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
+import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.attestation.report.validation.AttestationValidationService;
 import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -65,12 +66,13 @@ public class DeveloperAttestationReportDataCollection {
     private AttestationValidationService attestationValidationService;
     private CertificationBodyDAO certificationBodyDAO;
     private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
+    private AttestationPeriodService attestationPeriodService;
 
     private Map<Long, List<CertifiedProductBasicSearchResult>> developerListings = new HashMap<Long, List<CertifiedProductBasicSearchResult>>();
 
     public DeveloperAttestationReportDataCollection(DeveloperDAO developerDAO, ListingSearchService listingSearchService, AttestationDAO attestationDAO,
             DirectReviewSearchService directReviewService, AttestationValidationService attestationValidationService, CertificationBodyDAO certificationBodyDAO,
-            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO) {
+            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO, AttestationPeriodService attestationPeriodService) {
         this.developerDAO = developerDAO;
         this.listingSearchService = listingSearchService;
         this.attestationDAO = attestationDAO;
@@ -78,6 +80,7 @@ public class DeveloperAttestationReportDataCollection {
         this.attestationValidationService = attestationValidationService;
         this.certificationBodyDAO = certificationBodyDAO;
         this.developerCertificationBodyMapDAO = developerCertificationBodyMapDAO;
+        this.attestationPeriodService = attestationPeriodService;
 }
 
     private List<String> activeStatuses = Stream.of(CertificationStatusType.Active.getName(),
@@ -86,7 +89,7 @@ public class DeveloperAttestationReportDataCollection {
             .collect(Collectors.toList());
 
     public List<DeveloperAttestationReport> collect(List<Long> selectedAcbIds) {
-        AttestationPeriod mostRecentPastPeriod = getMostRecentPastAttestationPeriod();
+        AttestationPeriod mostRecentPastPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
         LOGGER.info("Most recent past attestation period: {} - {} ", mostRecentPastPeriod.getPeriodStart().toString(), mostRecentPastPeriod.getPeriodEnd().toString());
         LOGGER.info("Selected AcbsId: {}", selectedAcbIds.stream()
                 .map(id -> id.toString())
@@ -193,25 +196,6 @@ public class DeveloperAttestationReportDataCollection {
         } else {
             return null;
         }
-    }
-
-    //TODO - This s/b refactored to use AttestationPeriodService
-    private AttestationPeriod getMostRecentPastAttestationPeriod() {
-        List<AttestationPeriod> periods = attestationDAO.getAllPeriods();
-        if (periods == null || periods.size() == 0) {
-            return null;
-        }
-
-        periods = periods.stream()
-                .sorted(Comparator.comparing(AttestationPeriod::getPeriodEnd).reversed())
-                .filter(per -> per.getPeriodEnd().isBefore(LocalDate.now()))
-                .toList();
-
-        if (periods == null || periods.size() == 0) {
-            return null;
-        }
-
-        return periods.get(0);
     }
 
     private boolean isListingActiveDuringAttestationPeriod(List<CertificationStatusEvent> statusEvents, AttestationPeriod period) {
@@ -342,7 +326,7 @@ public class DeveloperAttestationReportDataCollection {
 
 
         getListingDataForDeveloper(developer).stream()
-                .filter(listing -> isListingActiveDuringPeriod(listing, getMostRecentPastAttestationPeriod()))
+                .filter(listing -> isListingActiveDuringPeriod(listing, attestationPeriodService.getMostRecentPastAttestationPeriod()))
                 .forEach(listing -> developerAcbMap.put(Pair.of(developer.getDeveloperId(), getAcbByName(listing.getAcb()).getId()), true));
 
         return developerAcbMap;
