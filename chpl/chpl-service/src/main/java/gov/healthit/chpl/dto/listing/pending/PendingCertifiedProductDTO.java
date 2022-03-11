@@ -39,7 +39,6 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
-import gov.healthit.chpl.dto.TransparencyAttestationDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductAccessibilityStandardEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
@@ -109,7 +108,6 @@ public class PendingCertifiedProductDTO implements Serializable {
     private Boolean ics;
     private Boolean hasQms;
     private Boolean accessibilityCertified;
-    private TransparencyAttestationDTO transparencyAttestation;
     private String mandatoryDisclosures;
     private String svapNoticeUrl;
 
@@ -221,9 +219,6 @@ public class PendingCertifiedProductDTO implements Serializable {
         this.ics = (details.getIcs() == null || details.getIcs().getInherits() == null) ? Boolean.FALSE
                 : details.getIcs().getInherits();
         this.accessibilityCertified = details.getAccessibilityCertified();
-        if (details.getTransparencyAttestation() != null) {
-            this.transparencyAttestation = new TransparencyAttestationDTO(details.getTransparencyAttestation());
-        }
         this.mandatoryDisclosures = details.getMandatoryDisclosures();
         this.accessibilityCertified = details.getAccessibilityCertified();
         this.svapNoticeUrl = details.getSvapNoticeUrl();
@@ -610,9 +605,6 @@ public class PendingCertifiedProductDTO implements Serializable {
         this.sedTestingEnd = entity.getSedTestingEnd();
         this.ics = entity.getIcs();
         this.accessibilityCertified = entity.getAccessibilityCertified();
-        if (entity.getTransparencyAttestation() != null) {
-            this.transparencyAttestation = new TransparencyAttestationDTO(entity.getTransparencyAttestation().toString());
-        }
         this.mandatoryDisclosures = entity.getMandatoryDisclosures();
 
         this.uploadDate = entity.getCreationDate();

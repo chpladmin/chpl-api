@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.Address;
@@ -32,7 +32,6 @@ import gov.healthit.chpl.domain.MergeDevelopersRequest;
 import gov.healthit.chpl.domain.PermissionDeletedResponse;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.SplitDeveloperRequest;
-import gov.healthit.chpl.domain.TransparencyAttestationMap;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.domain.compliance.DirectReview;
@@ -41,11 +40,9 @@ import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.ContactDTO;
-import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
-import gov.healthit.chpl.dto.TransparencyAttestationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -324,7 +321,11 @@ public class DeveloperController {
         if (!ff4j.check(FeatureList.ATTESTATIONS)) {
             throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
-        return new DeveloperAttestationSubmissionResults(attestationManager.getDeveloperAttestations(developerId));
+        return DeveloperAttestationSubmissionResults.builder()
+                .developerAttestations(attestationManager.getDeveloperAttestations(developerId))
+                .canSubmitAttestationChangeRequest(attestationManager.canDeveloperSubmitChangeRequest(developerId))
+                .canCreateException(attestationManager.canCreateException(developerId))
+                .build();
     }
 
     @Operation(summary = "List public attestation information for a developer.",
@@ -336,6 +337,21 @@ public class DeveloperController {
             throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
         return new PublicDeveloperAttestestationResults(developerManager.getDeveloperPublicAttestations(developerId));
+    }
+
+    @Operation(summary = "Create a new attestation submission end date exception for a developer.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ONC_ACB",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/{developerId}/attestations/exception", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(@PathVariable("developerId") Long developerId)
+            throws EntityRetrievalException, ValidationException {
+        if (!ff4j.check(FeatureList.ATTESTATIONS)) {
+            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
+        }
+        return attestationManager.createAttestationPeriodDeveloperException(developerId);
     }
 
     private DeveloperDTO toDto(Developer developer) {
@@ -359,18 +375,6 @@ public class DeveloperController {
                 dto.getStatusEvents().add(statusEvent);
             }
         }
-
-        for (TransparencyAttestationMap attMap : developer.getTransparencyAttestations()) {
-            DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
-            devMap.setAcbId(attMap.getAcbId());
-            devMap.setAcbName(attMap.getAcbName());
-            if (attMap.getAttestation() != null && !StringUtils.isEmpty(attMap.getAttestation().getTransparencyAttestation())) {
-                devMap.setTransparencyAttestation(
-                        new TransparencyAttestationDTO(attMap.getAttestation().getTransparencyAttestation()));
-            }
-            dto.getTransparencyAttestationMappings().add(devMap);
-        }
-
         Address developerAddress = developer.getAddress();
         if (developerAddress != null) {
             AddressDTO toCreateAddress = new AddressDTO();

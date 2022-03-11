@@ -12,9 +12,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Type;
-
-import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.ProductEntity;
 import lombok.Data;
 
@@ -244,13 +241,6 @@ public class CertifiedProductDetailsEntity {
 
     @Column(name = "product_additional_software")
     private String productAdditionalSoftware;
-
-    @Column(name = "transparency_attestation")
-    @Type(type = "gov.healthit.chpl.entity.PostgresAttestationType", parameters = {
-            @org.hibernate.annotations.Parameter(name = "enumClassName",
-                    value = "gov.healthit.chpl.entity.AttestationType")
-    })
-    private AttestationType transparencyAttestation;
 
     @Column(name = "mandatory_disclosures")
     private String mandatoryDisclosures;

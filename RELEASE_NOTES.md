@@ -1,5 +1,24 @@
 # Release Notes
 
+## Version 34.0.1
+_10 March 2022_
+
+### Bug Fixes
+* Upon password reset only change the password of the account associated with the token
+
+---
+
+## Version 34.0.0
+_7 March 2022_
+
+### Breaking Change
+* Remove transparency attestation from all response data
+
+### Flagged Features
+* Do not allow editing of attestation change requests
+
+---
+
 ## Version 33.2.0
 _22 February 2022_
 
