@@ -14,12 +14,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Deprecated
-public class SearchResponse implements Serializable {
-    private static final long serialVersionUID = 5130424471766571329L;
+public class ListingSearchResponse implements Serializable {
+    private static final long serialVersionUID = 5130424471765198329L;
     private Integer recordCount;
     private Integer pageSize;
     private Integer pageNumber;
     private Boolean directReviewsAvailable;
-    private List<CertifiedProductBasicSearchResult> results = new ArrayList<CertifiedProductBasicSearchResult>();
+    private List<ListingSearchResult> results = new ArrayList<ListingSearchResult>();
 }

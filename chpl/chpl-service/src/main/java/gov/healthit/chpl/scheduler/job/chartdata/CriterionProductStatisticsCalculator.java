@@ -19,7 +19,8 @@ import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
 import gov.healthit.chpl.entity.statistics.CriterionProductStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResult;
 
 /**
  * Populates the criterion_product_statistics table with summarized count
@@ -52,18 +53,18 @@ public class CriterionProductStatisticsCalculator {
      *            listings to parse
      * @return map of criteria to counts
      */
-    public Map<Long, Long> getCounts(List<CertifiedProductBasicSearchResult> listings) {
+    public Map<Long, Long> getCounts(List<ListingSearchResult> listings) {
         Map<Long, Long> criterionMap = new HashMap<Long, Long>();
         HashSet<String> uniqueProductSet = new HashSet<String>();
-        for (CertifiedProductBasicSearchResult listing : listings) {
+        for (ListingSearchResult listing : listings) {
             if (listing.getCriteriaMet() != null && !listing.getCriteriaMet().isEmpty()) {
-                for (Long certId : listing.getCriteriaMet()) {
-                    String key = certId + "-" + listing.getDeveloper() + '-' + listing.getProduct();
+                for (CertificationCriterionSearchResult cert : listing.getCriteriaMet()) {
+                    String key = cert.getId() + "-" + listing.getDeveloper().getName() + '-' + listing.getProduct().getName();
                     if (!uniqueProductSet.contains(key)) {
-                        if (!criterionMap.containsKey(certId)) {
-                            criterionMap.put(certId, 0L);
+                        if (!criterionMap.containsKey(cert.getId())) {
+                            criterionMap.put(cert.getId(), 0L);
                         }
-                        criterionMap.put(certId, criterionMap.get(certId) + 1);
+                        criterionMap.put(cert.getId(), criterionMap.get(cert.getId()) + 1);
                         uniqueProductSet.add(key);
                     }
                 }
