@@ -10,6 +10,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.search.CertifiedProductSearchManager;
+import gov.healthit.chpl.search.ListingSearchManager;
 import gov.healthit.chpl.service.DirectReviewCachingService;
 import lombok.extern.log4j.Log4j2;
 
@@ -19,16 +20,19 @@ public class AsynchronousCacheInitialization {
     private CertificationIdManager certificationIdManager;
     private DimensionalDataManager dimensionalDataManager;
     private CertifiedProductSearchManager certifiedProductSearchManager;
+    private ListingSearchManager listingSearchManager;
     private DirectReviewCachingService drService;
 
     @Autowired
     public AsynchronousCacheInitialization(CertificationIdManager certificationIdManager,
             DimensionalDataManager dimensionalDataManager,
             CertifiedProductSearchManager certifiedProductSearchManager,
+            ListingSearchManager listingSearchManager,
             DirectReviewCachingService drService) {
         this.certificationIdManager = certificationIdManager;
         this.dimensionalDataManager = dimensionalDataManager;
         this.certifiedProductSearchManager = certifiedProductSearchManager;
+        this.listingSearchManager = listingSearchManager;
         this.drService = drService;
     }
 
@@ -48,7 +52,7 @@ public class AsynchronousCacheInitialization {
         drService.populateDirectReviewsCache();
         LOGGER.info("Finished cache initialization for Direct Reviews");
         LOGGER.info("Starting cache initialization for searchable listing collection");
-        certifiedProductSearchManager.getSearchListingCollection();
+        listingSearchManager.getAllListings();
         LOGGER.info("Finishing cache initialization for searchable listing collection");
         LOGGER.info("Starting cache initialization for listing collection");
         certifiedProductSearchManager.getFlatListingCollection();

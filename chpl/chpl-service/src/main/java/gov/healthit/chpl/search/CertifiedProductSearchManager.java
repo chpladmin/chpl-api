@@ -25,7 +25,6 @@ import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResultLegacy;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
 import gov.healthit.chpl.domain.search.SearchRequestLegacy;
 import gov.healthit.chpl.domain.search.SearchResponseLegacy;
-import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.service.DirectReviewSearchService;
@@ -33,18 +32,42 @@ import lombok.extern.log4j.Log4j2;
 
 @Service
 @Log4j2
+@Deprecated
 public class CertifiedProductSearchManager {
     private static final String CERT_STATUS_EVENT_DATE_FORMAT = "yyyy-MM-dd";
     private CertifiedProductSearchDAO searchDao;
+    private ListingSearchManager searchManager;
     private DirectReviewSearchService drService;
     private DateTimeFormatter dateFormatter;
 
     @Autowired
     public CertifiedProductSearchManager(CertifiedProductSearchDAO searchDao,
+            ListingSearchManager searchManager,
             DirectReviewSearchService drService) {
         this.searchDao = searchDao;
+        this.searchManager = searchManager;
         this.drService = drService;
         this.dateFormatter = DateTimeFormatter.ofPattern(CERT_STATUS_EVENT_DATE_FORMAT);
+    }
+
+    @Transactional(readOnly = true)
+    @Cacheable(value = CacheNames.COLLECTIONS_LISTINGS, key = "'legacyListings'")
+    @Deprecated
+    public List<CertifiedProductFlatSearchResultLegacy> searchLegacy() {
+        List<CertifiedProductFlatSearchResultLegacy> results = searchDao.getFlatCertifiedProductsLegacy();
+        return results;
+    }
+
+    @Transactional
+    @Deprecated
+    public SearchResponseLegacy search(SearchRequestLegacy searchRequest) {
+
+        Collection<CertifiedProductBasicSearchResultLegacy> searchResults = searchDao.search(searchRequest);
+        int totalCountSearchResults = searchDao.getTotalResultCount(searchRequest);
+
+        SearchResponseLegacy response = new SearchResponseLegacy(Integer.valueOf(totalCountSearchResults),
+                searchResults, searchRequest.getPageSize(), searchRequest.getPageNumber());
+        return response;
     }
 
     @Deprecated
@@ -60,32 +83,9 @@ public class CertifiedProductSearchManager {
         return results;
     }
 
-    @Cacheable(value = CacheNames.COLLECTIONS_SEARCH)
-    public List<CertifiedProductBasicSearchResult> getSearchListingCollection() {
-        List<CertifiedProductBasicSearchResult> results = searchDao.getCertifiedProducts();
-        LOGGER.info("Populating Direct Review fields for search");
-        Date start = new Date();
-        results.parallelStream()
-            .forEach(searchResult -> populateDirectReviews(searchResult));
-        Date end = new Date();
-        LOGGER.info("Completed Populating Direct Review fields  for search [ " + (end.getTime() - start.getTime()) + " ms ]");
-        return results;
-    }
-
-    private void populateDirectReviews(CertifiedProductBasicSearchResult searchResult) {
-        List<CertificationStatusEvent> statusEvents = createStatusEventsFromBasicSearchResult(searchResult);
-        populateDirectReviewFields(searchResult, statusEvents);
-    }
-
     private void populateDirectReviews(CertifiedProductFlatSearchResult searchResult) {
         List<CertificationStatusEvent> statusEvents = createStatusEventsFromFlatSearchResult(searchResult);
         populateDirectReviewFields(searchResult, statusEvents);
-    }
-
-    private List<CertificationStatusEvent> createStatusEventsFromBasicSearchResult(CertifiedProductBasicSearchResult listing) {
-        return listing.getStatusEvents().stream()
-            .map(dateAndStatusStr -> convertToCertificationStatusEvent(dateAndStatusStr))
-            .collect(Collectors.toList());
     }
 
     private List<CertificationStatusEvent> createStatusEventsFromFlatSearchResult(CertifiedProductFlatSearchResult listing) {
@@ -151,24 +151,5 @@ public class CertifiedProductSearchManager {
         return nonConformity.getDeveloperAssociatedListings().stream()
                 .filter(dal -> dal.getId().equals(listingId))
                 .findAny().isPresent();
-    }
-
-    @Transactional(readOnly = true)
-    @Cacheable(value = CacheNames.COLLECTIONS_LISTINGS, key = "'legacyListings'")
-    @Deprecated
-    public List<CertifiedProductFlatSearchResultLegacy> searchLegacy() {
-        List<CertifiedProductFlatSearchResultLegacy> results = searchDao.getFlatCertifiedProductsLegacy();
-        return results;
-    }
-
-    @Transactional
-    public SearchResponseLegacy search(SearchRequestLegacy searchRequest) {
-
-        Collection<CertifiedProductBasicSearchResultLegacy> searchResults = searchDao.search(searchRequest);
-        int totalCountSearchResults = searchDao.getTotalResultCount(searchRequest);
-
-        SearchResponseLegacy response = new SearchResponseLegacy(Integer.valueOf(totalCountSearchResults),
-                searchResults, searchRequest.getPageSize(), searchRequest.getPageNumber());
-        return response;
     }
 }

@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 34.0.1
+_10 March 2022_
+
+### Bug Fixes
+* Upon password reset only change the password of the account associated with the token
+
+---
+
 ## Version 34.0.0
 _7 March 2022_
 

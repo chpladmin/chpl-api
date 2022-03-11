@@ -15,7 +15,7 @@ import gov.healthit.chpl.dao.IncumbentDevelopersStatisticsDAO;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResult;
 
 /**
  * Populates the criterion_product_statistics table with summarized count
@@ -49,7 +49,7 @@ public class IncumbentDevelopersStatisticsCalculator {
      *            incoming data
      * @return statistics objects
      */
-    public List<IncumbentDevelopersStatisticsDTO> getCounts(List<CertifiedProductBasicSearchResult> certifiedProducts) {
+    public List<IncumbentDevelopersStatisticsDTO> getCounts(List<ListingSearchResult> certifiedProducts) {
 
         /**
          * Loop through every Listing. For each Listing, add that Listing's
@@ -64,16 +64,16 @@ public class IncumbentDevelopersStatisticsCalculator {
         HashSet<String> developers2011 = new HashSet<String>();
         HashSet<String> developers2014 = new HashSet<String>();
         HashSet<String> developers2015 = new HashSet<String>();
-        for (CertifiedProductBasicSearchResult listing : certifiedProducts) {
-            switch (listing.getEdition()) {
+        for (ListingSearchResult listing : certifiedProducts) {
+            switch (listing.getEdition().getName()) {
             case "2011":
-                developers2011.add(listing.getDeveloper());
+                developers2011.add(listing.getDeveloper().getName());
                 break;
             case "2014":
-                developers2014.add(listing.getDeveloper());
+                developers2014.add(listing.getDeveloper().getName());
                 break;
             case "2015":
-                developers2015.add(listing.getDeveloper());
+                developers2015.add(listing.getDeveloper().getName());
                 break;
             default:
                 LOGGER.info("Listing has no edition");
