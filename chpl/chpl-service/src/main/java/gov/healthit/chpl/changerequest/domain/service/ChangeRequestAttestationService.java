@@ -1,7 +1,6 @@
 package gov.healthit.chpl.changerequest.domain.service;
 
 import java.text.DateFormat;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -95,6 +94,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     }
 
     @Override
+    @Transactional
     public ChangeRequestAttestationSubmission getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
         return crAttesttionDAO.getByChangeRequestId(changeRequestId);
     }
@@ -151,6 +151,10 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                 .build();
 
         attestationManager.saveDeveloperAttestation(developerAttestation);
+
+        attestationManager.deleteAttestationPeriodDeveloperExceptions(
+                developerAttestation.getDeveloper().getDeveloperId(),
+                developerAttestation.getPeriod().getId());
         return cr;
     }
 
@@ -275,11 +279,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     }
 
     private AttestationPeriod getAttestationPeriod(ChangeRequest cr) {
-        return attestationManager.getAllPeriods().stream()
-                .filter(per -> LocalDate.now().compareTo(per.getSubmissionStart()) >= 0
-                        && LocalDate.now().compareTo(per.getSubmissionEnd()) <= 0)
-                .findAny()
-                .orElse(null);
+        return attestationManager.getMostRecentPastAttestationPeriod();
     }
 
     private UserDTO getUserById(Long userId) throws UserRetrievalException {
