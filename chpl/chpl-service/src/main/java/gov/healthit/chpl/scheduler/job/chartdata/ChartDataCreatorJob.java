@@ -17,8 +17,8 @@ import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
-import gov.healthit.chpl.search.CertifiedProductSearchManager;
-import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
+import gov.healthit.chpl.search.ListingSearchManager;
+import gov.healthit.chpl.search.domain.ListingSearchResult;
 
 /**
  * This is the starting point for populating statistics tables that will be used for the charts. As new tables need to
@@ -32,7 +32,7 @@ public final class ChartDataCreatorJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
 
     @Autowired
-    private CertifiedProductSearchManager certifiedProductSearchManager;
+    private ListingSearchManager listingSearchManager;
 
     public ChartDataCreatorJob() throws Exception {
         super();
@@ -42,29 +42,29 @@ public final class ChartDataCreatorJob extends QuartzJob {
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
         LOGGER.info("*****Chart Data Generator is starting now.*****");
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        List<CertifiedProductBasicSearchResult> certifiedProducts = certifiedProductSearchManager.getSearchListingCollection();
-        LOGGER.info("Certified Product Count: " + certifiedProducts.size());
+        List<ListingSearchResult> listings = listingSearchManager.getAllListings();
+        LOGGER.info("Certified Product Count: " + listings.size());
 
         try {
-            analyzeSed(certifiedProducts);
+            analyzeSed(listings);
         } catch (Exception e) {
             LOGGER.error("Problem analyzing sed " + e.getMessage());
         }
 
         try {
-            analyzeProducts(certifiedProducts);
+            analyzeProducts(listings);
         } catch (Exception e) {
             LOGGER.error("Problem analyzing products " + e.getMessage());
         }
 
         try {
-            analyzeDevelopers(certifiedProducts);
+            analyzeDevelopers(listings);
         } catch (Exception e) {
             LOGGER.error("Problem analyzing developers " + e.getMessage());
         }
 
         try {
-            analyzeListingCounts(certifiedProducts);
+            analyzeListingCounts(listings);
         } catch (Exception e) {
             LOGGER.error("Problem analyzing listing counts " + e.getMessage());
         }
@@ -74,20 +74,20 @@ public final class ChartDataCreatorJob extends QuartzJob {
         } catch (Exception e) {
             LOGGER.error("Problem analyzing nonconformities " + e.getMessage());
         }
-        certifiedProducts = null;
+        listings = null;
         LOGGER.info("*****Chart Data Generator is done running.*****");
     }
 
-    private void analyzeDevelopers(List<CertifiedProductBasicSearchResult> listings) {
+    private void analyzeDevelopers(List<ListingSearchResult> listings) {
         IncumbentDevelopersStatisticsCalculator incumbentDevelopersStatisticsCalculator = new IncumbentDevelopersStatisticsCalculator();
         List<IncumbentDevelopersStatisticsDTO> dtos = incumbentDevelopersStatisticsCalculator.getCounts(listings);
         incumbentDevelopersStatisticsCalculator.logCounts(dtos);
         incumbentDevelopersStatisticsCalculator.save(dtos);
     }
 
-    private void analyzeListingCounts(List<CertifiedProductBasicSearchResult> listings) {
+    private void analyzeListingCounts(List<ListingSearchResult> listings) {
         ListingCountDataFilter listingCountDataFilter = new ListingCountDataFilter();
-        List<CertifiedProductBasicSearchResult> filteredListings = listingCountDataFilter.filterData(listings);
+        List<ListingSearchResult> filteredListings = listingCountDataFilter.filterData(listings);
         ListingCountStatisticsCalculator listingCountStatisticsCalculator = new ListingCountStatisticsCalculator();
         List<ListingCountStatisticsDTO> dtos = listingCountStatisticsCalculator.getCounts(filteredListings);
         listingCountStatisticsCalculator.logCounts(dtos);
@@ -101,16 +101,16 @@ public final class ChartDataCreatorJob extends QuartzJob {
         nonconformityStatisticsCalculator.saveCounts(dtos);
     }
 
-    private void analyzeProducts(List<CertifiedProductBasicSearchResult> listings) throws NumberFormatException, EntityRetrievalException {
+    private void analyzeProducts(List<ListingSearchResult> listings) throws NumberFormatException, EntityRetrievalException {
         CriterionProductDataFilter criterionProductDataFilter = new CriterionProductDataFilter();
         CriterionProductStatisticsCalculator criterionProductStatisticsCalculator = new CriterionProductStatisticsCalculator();
-        List<CertifiedProductBasicSearchResult> filteredListings = criterionProductDataFilter.filterData(listings);
+        List<ListingSearchResult> filteredListings = criterionProductDataFilter.filterData(listings);
         Map<Long, Long> productCounts = criterionProductStatisticsCalculator.getCounts(filteredListings);
         criterionProductStatisticsCalculator.logCounts(productCounts);
         criterionProductStatisticsCalculator.save(productCounts);
     }
 
-    private void analyzeSed(List<CertifiedProductBasicSearchResult> listings) {
+    private void analyzeSed(List<ListingSearchResult> listings) {
         // Get Certified Products
         SedDataCollector sedDataCollector = new SedDataCollector();
         List<CertifiedProductSearchDetails> seds = sedDataCollector.retreiveData(listings);

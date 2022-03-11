@@ -12,6 +12,7 @@ import lombok.experimental.SuperBuilder;
 @Data
 @AllArgsConstructor
 @SuperBuilder
+@Deprecated
 public class CertifiedProductBasicSearchResult extends CertifiedProductSearchResult {
     private static final long serialVersionUID = -2547390525592841038L;
 
