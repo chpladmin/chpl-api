@@ -202,7 +202,6 @@ public class RealWorldTestingEligiblityService {
                 .isPresent();
     }
 
-
     private List<CertificationCriterion> getRwtEligibleCriteria() {
         return Arrays.asList(eligibleCriteriaKeys).stream()
                 .map(key -> certificationCriterionService.get(key))
