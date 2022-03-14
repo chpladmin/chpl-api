@@ -829,5 +829,25 @@
             <durability>true</durability>
             <recover>true</recover>
         </job>
+        
+        <job>
+            <name>Developer Attestations Report Email</name>
+            <group>chplJobs</group>
+            <description>Sends the Developer Attestations Report</description>
+            <job-class>gov.healthit.chpl.scheduler.job.developer.attestation.DeveloperAttestationReportJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF;ROLE_ACB</value>
+                </entry>
+                <entry>
+                    <key>acbSpecific</key>
+                    <value>true</value>
+                </entry>
+            </job-data-map>
+        </job>
+        
     </schedule>
 </job-scheduling-data>
