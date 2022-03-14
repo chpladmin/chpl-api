@@ -13,8 +13,6 @@ public class AttestationPeriodXmlGenerator extends XmlGenerator {
             createSimpleElement(period.getId(), "id", sw);
             createSimpleElement(period.getPeriodEnd(), "periodEnd", sw);
             createSimpleElement(period.getPeriodStart(), "periodStart", sw);
-            createSimpleElement(period.getSubmissionEnd(), "submissionEnd", sw);
-            createSimpleElement(period.getSubmissionStart(), "submissionStart", sw);
             sw.writeEndElement();
         }
     }
