@@ -7,9 +7,11 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorOrder;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -57,22 +59,12 @@ public class AttestationPeriod {
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate periodEnd;
 
-    /**
-     * The date the submission window of the attestation period starts.
-     */
-    @XmlElement(required = true)
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    @XmlTransient
+    @JsonIgnore
     private LocalDate submissionStart;
 
-    /**
-     * The date the submission window of the attestation period ends.
-     */
-    @XmlElement(required = true)
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    @XmlTransient
+    @JsonIgnore
     private LocalDate submissionEnd;
 
     /**
