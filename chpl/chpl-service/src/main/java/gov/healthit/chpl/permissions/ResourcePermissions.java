@@ -300,19 +300,15 @@ public class ResourcePermissions {
             throw new EntityRetrievalException(errorMessageUtil.getMessage("developer.notFound"));
         }
 
-        List<Developer> dtos = getAllDevelopersForCurrentUser();
-        CollectionUtils.filter(dtos, new Predicate<Developer>() {
-            @Override
-            public boolean evaluate(final Developer object) {
-                return object.getDeveloperId().equals(id);
-            }
+        List<Developer> developers = getAllDevelopersForCurrentUser();
+        List<Developer> developersWithId = developers.stream()
+            .filter(developer -> developer.getDeveloperId().equals(id))
+            .toList();
 
-        });
-
-        if (dtos.size() == 0) {
+        if (developersWithId.size() == 0) {
             throw new AccessDeniedException(errorMessageUtil.getMessage("access.denied"));
         }
-        return dtos.get(0);
+        return developersWithId.get(0);
     }
 
     @Transactional(readOnly = true)
