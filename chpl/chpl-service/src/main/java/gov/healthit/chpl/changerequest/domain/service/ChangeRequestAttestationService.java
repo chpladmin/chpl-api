@@ -28,6 +28,7 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
@@ -36,6 +37,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -48,6 +50,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private AttestationManager attestationManager;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
     private UserDAO userDAO;
+    private ActivityManager activityManager;
 
     private ObjectMapper mapper;
 
@@ -79,7 +82,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     public ChangeRequestAttestationService(ChangeRequestDAO crDAO, ChangeRequestAttestationDAO crAttesttionDAO,
             UserDeveloperMapDAO userDeveloperMapDAO, AttestationManager attestationManager,
             ChplEmailFactory chplEmailFactory, ChplHtmlEmailBuilder chplHtmlEmailBuilder,
-            UserDAO userDAO) {
+            UserDAO userDAO, ActivityManager activityManager) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crAttesttionDAO = crAttesttionDAO;
@@ -87,7 +90,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         this.chplEmailFactory = chplEmailFactory;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
         this.userDAO = userDAO;
-
+        this.activityManager = activityManager;
 
         this.mapper = new ObjectMapper();
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
@@ -127,7 +130,24 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Override
     public ChangeRequest update(ChangeRequest cr) throws InvalidArgumentsException {
         try {
-            return null;
+            ChangeRequest crFromDb = crDAO.get(cr.getId());
+            ChangeRequestAttestationSubmission attestation = getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails());
+
+            // Use the id from the DB, not the object. Client could have changed the id.
+            attestation.setId(((ChangeRequestAttestationSubmission) crFromDb.getDetails()).getId());
+            cr.setDetails(attestation);
+
+            if (!((ChangeRequestAttestationSubmission) cr.getDetails()).equals((crFromDb.getDetails()))) {
+                cr.setDetails(crAttesttionDAO.update((ChangeRequestAttestationSubmission) cr.getDetails()));
+
+                activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
+                        "Change request details updated",
+                        crFromDb, cr);
+            } else {
+                return null;
+            }
+            return cr;
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -170,7 +190,6 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Override
     protected void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         chplEmailFactory.emailBuilder()
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
@@ -182,7 +201,6 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Override
     protected void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         chplEmailFactory.emailBuilder()
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
@@ -194,7 +212,6 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Override
     protected void sendRejectedEmail(ChangeRequest cr) throws EmailNotSentException {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         chplEmailFactory.emailBuilder()
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())

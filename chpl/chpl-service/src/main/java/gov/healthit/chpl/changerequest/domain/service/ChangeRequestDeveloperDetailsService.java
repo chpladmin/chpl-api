@@ -94,11 +94,9 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
         try {
             // Get the current cr to determine if the developer details changed
             ChangeRequest crFromDb = crDAO.get(cr.getId());
-            // Convert the map of key/value pairs to a ChangeRequestDeveloperDetails
-            // object
+            // Convert the map of key/value pairs to a ChangeRequestDeveloperDetails object
             ChangeRequestDeveloperDetails crDevDetails = getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails());
-            // Use the id from the DB, not the object. Client could have changed
-            // the id.
+            // Use the id from the DB, not the object. Client could have changed the id.
             crDevDetails.setId(((ChangeRequestDeveloperDetails) crFromDb.getDetails()).getId());
             cr.setDetails(crDevDetails);
 
