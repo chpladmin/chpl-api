@@ -42,7 +42,7 @@ public class AttestationPeriod {
     private Long id;
 
     /**
-     * The date the attestation period starts.
+     * The starting date for which the submitted Attestations are based.
      */
     @XmlElement(required = true)
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -51,7 +51,7 @@ public class AttestationPeriod {
     private LocalDate periodStart;
 
     /**
-     * The date the attestation period ends.
+     * The ending date for which the submitted Attestations are based.
      */
     @XmlElement(required = true)
     @JsonDeserialize(using = LocalDateDeserializer.class)

@@ -25,19 +25,21 @@ import lombok.NoArgsConstructor;
 public class PublicAttestation {
 
     /**
-     * The internal ID of the attestation
+     * Identifier used to reference the Attestations status for a given
+     * Developer during the associated Attestations period.
      */
     @XmlElement(required = true)
     private Long id;
 
     /**
-     * The period of time to which the attestation applies.
+     * The period for which the Attestations status is valid.
      */
     @XmlElement(required = true)
     private AttestationPeriod attestationPeriod;
 
     /**
-     * The attestation status.
+     * A status of 'Attestations submitted' indicates that the Attestations for the selected
+     * Developer have been submitted to the Office of the National Coordinator.
      */
     @XmlElement(required = true)
     private PublicAttestationStatus status;
