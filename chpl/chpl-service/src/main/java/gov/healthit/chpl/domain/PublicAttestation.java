@@ -1,5 +1,7 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -22,7 +24,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PublicAttestation {
+public class PublicAttestation implements Serializable {
+    private static final long serialVersionUID = -5574794434517251480L;
 
     /**
      * Identifier used to reference the Attestations status for a given

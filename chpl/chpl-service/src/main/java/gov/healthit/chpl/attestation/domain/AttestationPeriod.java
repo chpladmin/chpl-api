@@ -1,5 +1,6 @@
 package gov.healthit.chpl.attestation.domain;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 import javax.xml.bind.annotation.XmlAccessOrder;
@@ -33,7 +34,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AttestationPeriod {
+public class AttestationPeriod implements Serializable {
+    private static final long serialVersionUID = 6251042464421884050L;
 
     /**
      * The internal ID of the attestation period.
