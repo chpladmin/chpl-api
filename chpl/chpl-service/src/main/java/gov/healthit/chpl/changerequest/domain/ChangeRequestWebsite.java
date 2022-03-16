@@ -1,6 +1,7 @@
 package gov.healthit.chpl.changerequest.domain;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@EqualsAndHashCode
 public class ChangeRequestWebsite implements Serializable, ChangeRequestDetails {
     private static final long serialVersionUID = -5572794875424284955L;
 
@@ -30,5 +30,25 @@ public class ChangeRequestWebsite implements Serializable, ChangeRequestDetails 
         }
     }
 
-    //TODO - need to implement equals
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ChangeRequestWebsite other = (ChangeRequestWebsite) obj;
+        return Objects.equals(id, other.id) && Objects.equals(website, other.website);
+    }
+
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, website);
+    }
 }
