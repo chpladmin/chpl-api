@@ -30,9 +30,5 @@ public class ChangeRequestWebsite implements Serializable, ChangeRequestDetails 
         }
     }
 
-    @Override
-    public boolean matches(Object obj) {
-        return equals(obj);
-    }
-
+    //TODO - need to implement equals
 }

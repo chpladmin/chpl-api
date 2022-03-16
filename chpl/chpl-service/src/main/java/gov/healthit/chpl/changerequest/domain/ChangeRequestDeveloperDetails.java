@@ -33,8 +33,5 @@ public class ChangeRequestDeveloperDetails implements Serializable, ChangeReques
         }
     }
 
-    @Override
-    public boolean matches(Object obj) {
-        return equals(obj);
-    }
+    //TODO - Need to implement equals
 }

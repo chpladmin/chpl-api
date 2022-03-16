@@ -36,6 +36,4 @@ public class AttestationSubmittedResponse {
     public int hashCode() {
         return Objects.hash(attestation.getId(), id, response.getId());
     }
-
-
 }
