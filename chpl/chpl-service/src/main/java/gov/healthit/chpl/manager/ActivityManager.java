@@ -84,8 +84,7 @@ public class ActivityManager extends SecuredManager {
         }
 
         addActivity(concept, objectId, activityDescription, originalData, newData, new Date(), asUser);
-        questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, originalData, newData,
-                reason);
+        questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, originalData, newData, reason);
     }
 
     @Transactional
