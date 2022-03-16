@@ -71,7 +71,6 @@ public class ActivityManager extends SecuredManager {
         }
 
         addActivity(concept, objectId, activityDescription, originalData, newData, new Date(), asUser);
-
         questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, originalData, newData);
     }
 
@@ -85,7 +84,6 @@ public class ActivityManager extends SecuredManager {
         }
 
         addActivity(concept, objectId, activityDescription, originalData, newData, new Date(), asUser);
-
         questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, originalData, newData,
                 reason);
     }
@@ -95,13 +93,7 @@ public class ActivityManager extends SecuredManager {
             Object newData, Long asUser) throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         addActivity(concept, objectId, activityDescription, originalData, newData, new Date(), asUser);
-    }
-
-    @Transactional
-    public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
-            Object newData, Date timestamp) throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-
-        addActivity(concept, objectId, activityDescription, originalData, newData, timestamp, AuthUtil.getAuditId());
+        questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, originalData, newData);
     }
 
     private void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
