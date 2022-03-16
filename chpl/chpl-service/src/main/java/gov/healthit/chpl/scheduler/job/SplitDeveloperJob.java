@@ -184,6 +184,7 @@ public class SplitDeveloperJob implements Job {
                     + " is not owned by " + preSplitDeveloper.getName());
             }
             productToMove.getOwner().setId(createdDeveloperId);
+            productToMove.getOwner().setDeveloperId(createdDeveloperId);
             ProductOwner newOwner = new ProductOwner();
             newOwner.setDeveloper(preSplitDeveloper);
             newOwner.setTransferDate(splitDate.getTime());
