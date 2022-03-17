@@ -23,6 +23,7 @@ import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
+import gov.healthit.chpl.domain.CertifiedProductChplProductNumberHistory;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSed;
@@ -158,6 +159,7 @@ public class ListingService {
                 .countOpenNonconformities(dto.getCountOpenNonconformities())
                 .countClosedNonconformities(dto.getCountClosedNonconformities())
                 .surveillance(survManager.getByCertifiedProduct(dto.getId()))
+                .chplProductNumberHistory(getCertifiedProductChplProductNumberHistory(dto.getId()))
                 .qmsStandards(getCertifiedProductQmsStandards(dto.getId()))
                 .measures(listingMeasureService.getCertifiedProductMeasures(dto.getId(), false))
                 .targetedUsers(getCertifiedProductTargetedUsers(dto.getId()))
@@ -281,10 +283,9 @@ public class ListingService {
         return practiceType;
     }
 
-    private List<CertifiedProductQmsStandard> getCertifiedProductChplProductNumberHistory(Long id) throws EntityRetrievalException {
+    private List<CertifiedProductChplProductNumberHistory> getCertifiedProductChplProductNumberHistory(Long id) throws EntityRetrievalException {
         return chplProductNumberHistoryDao.getHistoricalChplProductNumbers(id).stream()
-                .map(dto -> new CertifiedProductQmsStandard(dto))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private List<CertifiedProductQmsStandard> getCertifiedProductQmsStandards(Long id) throws EntityRetrievalException {

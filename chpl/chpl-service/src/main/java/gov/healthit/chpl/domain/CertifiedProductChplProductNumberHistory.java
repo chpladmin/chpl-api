@@ -2,7 +2,6 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -14,9 +13,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.util.LocalDateDeserializer;
-import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.LocalDateTimeAdapter;
+import gov.healthit.chpl.util.LocalDateTimeDeserializer;
+import gov.healthit.chpl.util.LocalDateTimeSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -46,13 +45,13 @@ public class CertifiedProductChplProductNumberHistory implements Serializable {
     private String chplProductNumber;
 
     /**
-     * A timestamp indicating when this historial CHPL Product Number stopped being referenced
+     * A timestamp indicating when this historical CHPL Product Number stopped being referenced
      * for this listing.
      */
     @XmlElement(required = true)
     @XmlJavaTypeAdapter(value = LocalDateTimeAdapter.class)
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime endDateTime;
 
     public CertifiedProductChplProductNumberHistory() {
@@ -75,11 +74,11 @@ public class CertifiedProductChplProductNumberHistory implements Serializable {
         this.chplProductNumber = chplProductNumber;
     }
 
-    public Date getEndDateTime() {
+    public LocalDateTime getEndDateTime() {
         return endDateTime;
     }
 
-    public void setEndDateTime(Date endDateTime) {
+    public void setEndDateTime(LocalDateTime endDateTime) {
         this.endDateTime = endDateTime;
     }
 

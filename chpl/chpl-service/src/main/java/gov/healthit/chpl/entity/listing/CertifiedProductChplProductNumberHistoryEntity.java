@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.domain.CertifiedProductChplProductNumberHistory;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -47,4 +49,12 @@ public class CertifiedProductChplProductNumberHistoryEntity {
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
+
+    public CertifiedProductChplProductNumberHistory toDomain() {
+        return CertifiedProductChplProductNumberHistory.builder()
+                .id(this.getId())
+                .chplProductNumber(this.getChplProductNumber())
+                .endDateTime(DateUtil.toLocalDateTime(this.getEndDate().getTime()))
+                .build();
+    }
 }

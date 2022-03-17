@@ -398,6 +398,7 @@
                         <source>src/main/java/gov/healthit/chpl/domain/UcdProcess.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertifiedProduct.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertifiedProductAccessibilityStandard.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/CertifiedProductChplProductNumberHistory.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertifiedProductDownloadResponse.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertifiedProductQmsStandard.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertifiedProductSearchDetails.java</source>

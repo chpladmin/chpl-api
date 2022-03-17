@@ -10,6 +10,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.CertifiedProductChplProductNumberHistory;
 import gov.healthit.chpl.entity.listing.CertifiedProductChplProductNumberHistoryEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -32,13 +33,13 @@ public class CertifiedProductChplProductNumberHistoryDao extends BaseDAOImpl {
         }
     }
 
-    public List<String> getHistoricalChplProductNumbers(Long listingId) throws EntityRetrievalException {
+    public List<CertifiedProductChplProductNumberHistory> getHistoricalChplProductNumbers(Long listingId) throws EntityRetrievalException {
         List<CertifiedProductChplProductNumberHistoryEntity> entities = getEntitiesByListingId(listingId);
         if (CollectionUtils.isEmpty(entities)) {
             return Collections.emptyList();
         }
         return entities.stream()
-                .map(entity -> entity.getChplProductNumber())
+                .map(entity -> entity.toDomain())
                 .toList();
     }
 
