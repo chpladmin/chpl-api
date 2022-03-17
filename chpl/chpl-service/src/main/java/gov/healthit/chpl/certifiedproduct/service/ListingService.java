@@ -8,11 +8,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
+import gov.healthit.chpl.dao.CertifiedProductChplProductNumberHistoryDao;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
@@ -61,6 +62,7 @@ public class ListingService {
 
     private CertifiedProductTestingLabDAO certifiedProductTestingLabDao;
     private ListingGraphDAO listingGraphDao;
+    private CertifiedProductChplProductNumberHistoryDao chplProductNumberHistoryDao;
     private CertifiedProductQmsStandardDAO certifiedProductQmsStandardDao;
     private CertifiedProductTargetedUserDAO certifiedProductTargetedUserDao;
     private CertifiedProductAccessibilityStandardDAO certifiedProductAsDao;
@@ -80,6 +82,7 @@ public class ListingService {
             SurveillanceManager survManager,
             CertifiedProductTestingLabDAO certifiedProductTestingLabDao,
             ListingGraphDAO listingGraphDao,
+            CertifiedProductChplProductNumberHistoryDao chplProductNumberHistoryDao,
             CertifiedProductQmsStandardDAO certifiedProductQmsStandardDao,
             CertifiedProductTargetedUserDAO certifiedProductTargetedUserDao,
             CertifiedProductAccessibilityStandardDAO certifiedProductAsDao,
@@ -96,6 +99,7 @@ public class ListingService {
         this.survManager = survManager;
         this.certifiedProductTestingLabDao = certifiedProductTestingLabDao;
         this.listingGraphDao = listingGraphDao;
+        this.chplProductNumberHistoryDao = chplProductNumberHistoryDao;
         this.certifiedProductQmsStandardDao = certifiedProductQmsStandardDao;
         this.certifiedProductTargetedUserDao = certifiedProductTargetedUserDao;
         this.certifiedProductAsDao = certifiedProductAsDao;
@@ -275,6 +279,12 @@ public class ListingService {
         practiceType.put("id", dto.getPracticeTypeId());
         practiceType.put("name", dto.getPracticeTypeName());
         return practiceType;
+    }
+
+    private List<CertifiedProductQmsStandard> getCertifiedProductChplProductNumberHistory(Long id) throws EntityRetrievalException {
+        return chplProductNumberHistoryDao.getHistoricalChplProductNumbers(id).stream()
+                .map(dto -> new CertifiedProductQmsStandard(dto))
+                .collect(Collectors.toList());
     }
 
     private List<CertifiedProductQmsStandard> getCertifiedProductQmsStandards(Long id) throws EntityRetrievalException {

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dao.CertifiedProductChplProductNumberHistoryDao;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.exception.EntityCreationException;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -21,8 +22,8 @@ public class ChplProductNumberChangedListiner {
         this.chplProductNumberHistoryDao = chplProductNumberHistoryDao;
     }
 
-    public void recordChplProductNumberChanged(ActivityConcept concept, Long objectId, String activityDescription,
-            Object originalData, Object newData) {
+    public void recordChplProductNumberChanged(ActivityConcept concept, Long objectId,
+            Object originalData, Object newData) throws EntityCreationException {
         if (isListingUpdateActivity(concept, originalData, newData)) {
             CertifiedProductSearchDetails originalListing = (CertifiedProductSearchDetails) originalData;
             CertifiedProductSearchDetails newListing = (CertifiedProductSearchDetails) newData;
@@ -30,7 +31,7 @@ public class ChplProductNumberChangedListiner {
                 LOGGER.info("CHPL product number for listing ID " + objectId + " changed from "
                         + originalListing.getChplProductNumber() + " to "
                         + newListing.getChplProductNumber());
-                chplProductNumberHistoryDao.createChplProductNumberHistoryMapping(objectId, originalListing.getChplProductNumber())
+                chplProductNumberHistoryDao.createChplProductNumberHistoryMapping(objectId, originalListing.getChplProductNumber());
             }
         }
     }
