@@ -23,17 +23,13 @@ import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlAccessorOrder(value = XmlAccessOrder.ALPHABETICAL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Data
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 public class AttestationPeriod implements Serializable {
     private static final long serialVersionUID = 6251042464421884050L;
 
@@ -46,7 +42,7 @@ public class AttestationPeriod implements Serializable {
     /**
      * The starting date for which the submitted Attestations are based.
      */
-    @XmlElement(required = true)
+    @XmlElement(required = true, nillable = false)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
@@ -55,7 +51,7 @@ public class AttestationPeriod implements Serializable {
     /**
      * The ending date for which the submitted Attestations are based.
      */
-    @XmlElement(required = true)
+    @XmlElement(required = true, nillable = false)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
@@ -75,6 +71,10 @@ public class AttestationPeriod implements Serializable {
     @XmlElement(required = true)
     private String description;
 
+    public AttestationPeriod() {
+        super();
+    }
+
     public AttestationPeriod(AttestationPeriodEntity entity) {
         this.id = entity.getId();
         this.periodStart = entity.getPeriodStart();
@@ -82,5 +82,53 @@ public class AttestationPeriod implements Serializable {
         this.submissionEnd = entity.getSubmissionEnd();
         this.submissionStart = entity.getSubmissionStart();
         this.description = entity.getDescription();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDate getPeriodStart() {
+        return periodStart;
+    }
+
+    public void setPeriodStart(LocalDate periodStart) {
+        this.periodStart = periodStart;
+    }
+
+    public LocalDate getPeriodEnd() {
+        return periodEnd;
+    }
+
+    public void setPeriodEnd(LocalDate periodEnd) {
+        this.periodEnd = periodEnd;
+    }
+
+    public LocalDate getSubmissionStart() {
+        return submissionStart;
+    }
+
+    public void setSubmissionStart(LocalDate submissionStart) {
+        this.submissionStart = submissionStart;
+    }
+
+    public LocalDate getSubmissionEnd() {
+        return submissionEnd;
+    }
+
+    public void setSubmissionEnd(LocalDate submissionEnd) {
+        this.submissionEnd = submissionEnd;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

@@ -14,15 +14,11 @@ import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.domain.concept.PublicAttestationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class PublicAttestation implements Serializable {
     private static final long serialVersionUID = -5574794434517251480L;
@@ -50,5 +46,33 @@ public class PublicAttestation implements Serializable {
     @XmlTransient
     public String getStatusText() {
         return status.getName();
+    }
+
+    public PublicAttestation() {
+        super();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public AttestationPeriod getAttestationPeriod() {
+        return attestationPeriod;
+    }
+
+    public void setAttestationPeriod(AttestationPeriod attestationPeriod) {
+        this.attestationPeriod = attestationPeriod;
+    }
+
+    public PublicAttestationStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(PublicAttestationStatus status) {
+        this.status = status;
     }
 }
