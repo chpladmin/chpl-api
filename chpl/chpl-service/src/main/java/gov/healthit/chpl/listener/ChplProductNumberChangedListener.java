@@ -14,11 +14,11 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-public class ChplProductNumberChangedListiner {
+public class ChplProductNumberChangedListener {
     private CertifiedProductChplProductNumberHistoryDao chplProductNumberHistoryDao;
 
     @Autowired
-    public ChplProductNumberChangedListiner(CertifiedProductChplProductNumberHistoryDao chplProductNumberHistoryDao) {
+    public ChplProductNumberChangedListener(CertifiedProductChplProductNumberHistoryDao chplProductNumberHistoryDao) {
         this.chplProductNumberHistoryDao = chplProductNumberHistoryDao;
     }
 
@@ -44,6 +44,6 @@ public class ChplProductNumberChangedListiner {
     }
 
     private boolean chplProductNumberChanged(CertifiedProductSearchDetails originalListing, CertifiedProductSearchDetails newListing) {
-        return Objects.equals(originalListing.getChplProductNumber(), newListing.getChplProductNumber());
+        return !Objects.equals(originalListing.getChplProductNumber(), newListing.getChplProductNumber());
     }
 }

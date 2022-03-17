@@ -35,7 +35,7 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
-import gov.healthit.chpl.listener.ChplProductNumberChangedListiner;
+import gov.healthit.chpl.listener.ChplProductNumberChangedListener;
 import gov.healthit.chpl.listener.QuestionableActivityListener;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.util.AuthUtil;
@@ -50,12 +50,12 @@ public class ActivityManager extends SecuredManager {
     private ObjectMapper jsonMapper = new ObjectMapper();
     private JsonFactory factory = jsonMapper.getFactory();
     private QuestionableActivityListener questionableActivityListener;
-    private ChplProductNumberChangedListiner chplProductNumberChangedListener;
+    private ChplProductNumberChangedListener chplProductNumberChangedListener;
 
     @Autowired
     public ActivityManager(ActivityDAO activityDAO, DeveloperDAO devDao,
             QuestionableActivityListener questionableActivityListener,
-            ChplProductNumberChangedListiner chplProductNumberChangedListener) {
+            ChplProductNumberChangedListener chplProductNumberChangedListener) {
         this.activityDAO = activityDAO;
         this.devDao = devDao;
         this.questionableActivityListener = questionableActivityListener;
