@@ -287,9 +287,8 @@ public class CertifiedProductSearchDetails implements Serializable {
     private boolean directReviewsAvailable;
 
     /**
-     * This variable indicates that if there is the standard(s) or lack thereof used to meet the accessibility-centered
-     * design certification criterion for 2015 Certification Edtion. It is a string variable that does not have any
-     * restrictions on formatting or values.
+     * A record of CHPL Product Numbers which have been used at some time in the past to
+     * reference the listing.
      */
     @XmlElementWrapper(name = "chplProductNumberHistory", nillable = true, required = false)
     @XmlElement(name = "chplProductNumberHistoryItem")

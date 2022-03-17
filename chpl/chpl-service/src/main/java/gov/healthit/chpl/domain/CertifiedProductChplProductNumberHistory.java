@@ -19,11 +19,6 @@ import gov.healthit.chpl.util.LocalDateTimeSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
-/**
- * A record of CHPL Product Numbers which may have been used
- * at some time in the past to reference this listing.
- *
- */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
