@@ -92,12 +92,14 @@ public class TransactionalDeveloperMergeManager {
             ProductOwner historyToAdd = new ProductOwner();
             Developer prevOwner = new Developer();
             prevOwner.setId(product.getOwner().getDeveloperId());
+            prevOwner.setDeveloperId(product.getOwner().getDeveloperId());
             historyToAdd.setDeveloper(prevOwner);
             historyToAdd.setTransferDate(System.currentTimeMillis());
             product.getOwnerHistory().add(historyToAdd);
             // reassign those products to the new developer
             product.setOwner(Developer.builder()
                     .id(createdDeveloperId)
+                    .developerId(createdDeveloperId)
                     .build());
             productManager.update(product);
 
