@@ -78,6 +78,12 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Value("${changeRequest.attestation.pendingDeveloperAction.body}")
     private String pendingDeveloperActionEmailBody;
 
+    @Value("${changeRequest.attestation.updated.subject}")
+    private String updatedEmailSubject;
+
+    @Value("${changeRequest.attestation.updated.body}")
+    private String updatedEmailBody;
+
     @Autowired
     public ChangeRequestAttestationService(ChangeRequestDAO crDAO, ChangeRequestAttestationDAO crAttesttionDAO,
             UserDeveloperMapDAO userDeveloperMapDAO, AttestationManager attestationManager,
@@ -143,6 +149,8 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                 activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
                         "Change request details updated",
                         crFromDb, cr);
+
+                sendUpdatedDetailsEmail(cr);
             } else {
                 return null;
             }
@@ -176,6 +184,16 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                 developerAttestation.getDeveloper().getDeveloperId(),
                 developerAttestation.getPeriod().getId());
         return cr;
+    }
+
+    private void sendUpdatedDetailsEmail(ChangeRequest cr) throws EmailNotSentException {
+        chplEmailFactory.emailBuilder()
+                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
+                        .map(user -> user.getEmail())
+                        .collect(Collectors.toList()))
+                .subject(updatedEmailSubject)
+                .htmlMessage(createUpdatedHtmlMessage(cr))
+                .sendEmail();
     }
 
     private void sendSubmittedEmail(ChangeRequest cr) throws EmailNotSentException {
@@ -221,12 +239,24 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                 .sendEmail();
     }
 
+    private String createUpdatedHtmlMessage(ChangeRequest cr) {
+        ChangeRequestAttestationSubmission details = (ChangeRequestAttestationSubmission) cr.getDetails();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, YYYY");
+        String period = formatter.format(details.getAttestationPeriod().getPeriodStart()) + " - " + formatter.format(details.getAttestationPeriod().getPeriodEnd());
+        return chplHtmlEmailBuilder.initialize()
+                .heading("Developer Attestations Submitted")
+                .paragraph("", String.format(updatedEmailBody, cr.getDeveloper().getName(), period))
+                .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
+                .footer(true)
+                .build();
+    }
+
     private String createSubmittedHtmlMessage(ChangeRequest cr) {
         ChangeRequestAttestationSubmission details = (ChangeRequestAttestationSubmission) cr.getDetails();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, YYYY");
         String period = formatter.format(details.getAttestationPeriod().getPeriodStart()) + " - " + formatter.format(details.getAttestationPeriod().getPeriodEnd());
         return chplHtmlEmailBuilder.initialize()
-                .heading("Developer Attestation Submitted")
+                .heading("Developer Attestations Submitted")
                 .paragraph("", String.format(submittedEmailBody, cr.getDeveloper().getName(), period))
                 .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
                 .footer(true)
@@ -236,7 +266,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private String createAcceptedHtmlMessage(ChangeRequest cr) {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         return chplHtmlEmailBuilder.initialize()
-                .heading("Developer Attestation Accepted")
+                .heading("Developer Attestations Accepted")
                 .paragraph("", String.format(approvalEmailBody, df.format(cr.getSubmittedDate()), getApprovalBody(cr)))
                 .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
                 .footer(true)
@@ -246,7 +276,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private String createPendingDeveloperActionHtmlMessage(ChangeRequest cr) {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         return chplHtmlEmailBuilder.initialize()
-                .heading("Developer Attestation Requires Developer Action")
+                .heading("Developer Attestations Requires Developer Action")
                 .paragraph("", String.format(pendingDeveloperActionEmailBody, df.format(cr.getSubmittedDate()), getApprovalBody(cr), cr.getCurrentStatus().getComment()))
                 .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
                 .footer(true)
@@ -256,7 +286,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private String createRejectedHtmlMessage(ChangeRequest cr) {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         return chplHtmlEmailBuilder.initialize()
-                .heading("Developer Attestation Rejected")
+                .heading("Developer Attestations Rejected")
                 .paragraph("", String.format(rejectedEmailBody, df.format(cr.getSubmittedDate()), getApprovalBody(cr), cr.getCurrentStatus().getComment()))
                 .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
                 .footer(true)
