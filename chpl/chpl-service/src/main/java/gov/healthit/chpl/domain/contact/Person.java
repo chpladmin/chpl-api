@@ -13,7 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.dto.ContactDTO;
 import lombok.AllArgsConstructor;
 
 /**
@@ -53,13 +52,6 @@ public class Person implements Serializable {
     private String title;
 
     public Person() {}
-
-    public Person(ContactDTO dto) {
-        this.fullName = dto.getFullName();
-        this.email = dto.getEmail();
-        this.phoneNumber = dto.getPhoneNumber();
-        this.title = dto.getTitle();
-    }
 
     public Person(HashMap<String, Object> map) {
         if (map.containsKey("fullName") && map.get("fullName") != null) {

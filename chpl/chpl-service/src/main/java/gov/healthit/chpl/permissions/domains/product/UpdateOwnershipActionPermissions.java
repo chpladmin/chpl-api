@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.ProductDAO;
-import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
@@ -21,17 +21,17 @@ public class UpdateOwnershipActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess(Object obj) {
-        if (!(obj instanceof ProductDTO)) {
+        if (!(obj instanceof Product)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             try {
-                ProductDTO dto = (ProductDTO) obj;
-                // Get the original ProductDTO, since the one passed in has the "new" developer id
-                ProductDTO originalProductDto = getProductDTO(dto.getId());
-                if (getResourcePermissions().isDeveloperActive(originalProductDto.getOwner().getId())) {
-                    return doesCurrentUserHaveAccessToAllOfProductListings(originalProductDto.getId());
+                Product product = (Product) obj;
+                // Get the original Product, since the one passed in has the "new" developer id
+                Product originalProduct = getProduct(product.getProductId());
+                if (getResourcePermissions().isDeveloperActive(originalProduct.getOwner().getDeveloperId())) {
+                    return doesCurrentUserHaveAccessToAllOfProductListings(originalProduct.getProductId());
                 } else {
                     return false;
                 }
@@ -43,7 +43,7 @@ public class UpdateOwnershipActionPermissions extends ActionPermissions {
         }
     }
 
-    private ProductDTO getProductDTO(final Long productId) throws EntityRetrievalException {
+    private Product getProduct(Long productId) throws EntityRetrievalException {
         return productDao.getById(productId);
     }
 }

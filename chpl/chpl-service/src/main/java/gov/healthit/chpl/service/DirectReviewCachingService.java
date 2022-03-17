@@ -21,9 +21,9 @@ import gov.healthit.chpl.DirectReviewDeserializingObjectMapper;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.HttpStatusAwareCache;
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.exception.JiraRequestFailedException;
 import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.CacheManager;
@@ -94,10 +94,10 @@ public class DirectReviewCachingService {
         drCache.removeAll();
 
         //insert an entry in the cache for every developer ID
-        List<DeveloperDTO> allDeveloperIds = developerDao.findAllIdsAndNames();
+        List<Developer> allDeveloperIds = developerDao.findAllIdsAndNames();
         LOGGER.info("Adding " + allDeveloperIds.size() + " keys to the Direct Review cache.");
         allDeveloperIds.stream()
-            .forEach(dev -> drCache.put(new Element(dev.getId(), new ArrayList<DirectReview>())));
+            .forEach(dev -> drCache.put(new Element(dev.getDeveloperId(), new ArrayList<DirectReview>())));
 
         //insert each direct review into the right place in our cache
         LOGGER.info("Inserting " + allDirectReviews.size() + " values into the Direct Review cache.");

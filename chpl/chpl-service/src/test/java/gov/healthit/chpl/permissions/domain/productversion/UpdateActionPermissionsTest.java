@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.dao.ProductVersionDAO;
-import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
@@ -74,8 +74,8 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         version.setId(1L);
         version.setDeveloperId(2L);
 
-        DeveloperDTO dto = new DeveloperDTO();
-        dto.setId(1L);
+        Developer dev = new Developer();
+        dev.setId(1L);
 
         Mockito.when(productVersionDAO.getById(ArgumentMatchers.anyLong())).thenReturn(version);
 

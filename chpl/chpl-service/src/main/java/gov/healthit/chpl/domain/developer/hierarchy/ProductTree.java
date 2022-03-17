@@ -6,7 +6,6 @@ import java.util.Set;
 import org.apache.commons.lang3.ObjectUtils;
 
 import gov.healthit.chpl.domain.Product;
-import gov.healthit.chpl.dto.ProductDTO;
 import lombok.Data;
 
 @Data
@@ -19,8 +18,16 @@ public class ProductTree extends Product {
         super();
     }
 
-    public ProductTree(ProductDTO dto) {
-        super(dto);
+    public ProductTree(Product product) {
+        super();
+        this.setId(product.getId());
+        this.setProductId(product.getProductId());
+        this.setContact(product.getContact());
+        this.setLastModifiedDate(product.getLastModifiedDate());
+        this.setName(product.getName());
+        this.setOwner(product.getOwner());
+        this.setOwnerHistory(product.getOwnerHistory());
+        this.setReportFileLocation(product.getReportFileLocation());
     }
 
     public boolean equals(Object obj) {

@@ -2,6 +2,7 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -9,20 +10,19 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.dto.AddressDTO;
-import gov.healthit.chpl.entity.AddressEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
 public class Address implements Serializable {
@@ -89,26 +89,6 @@ public class Address implements Serializable {
     public Address() {
     }
 
-    public Address(AddressDTO dto) {
-        this.addressId = dto.getId();
-        this.line1 = dto.getStreetLineOne();
-        this.line2 = dto.getStreetLineTwo();
-        this.city = dto.getCity();
-        this.state = dto.getState();
-        this.zipcode = dto.getZipcode();
-        this.country = dto.getCountry();
-    }
-
-    public Address(AddressEntity entity) {
-        this.addressId = entity.getId();
-        this.line1 = entity.getStreetLineOne();
-        this.line2 = entity.getStreetLineTwo();
-        this.city = entity.getCity();
-        this.state = entity.getState();
-        this.zipcode = entity.getZipcode();
-        this.country = entity.getCountry();
-    }
-
     public Address(HashMap<String, Object> map) {
         if (map.containsKey("addressId") && map.get("addressId") != null) {
             try {
@@ -146,12 +126,12 @@ public class Address implements Serializable {
         if ((this.addressId != null && anotherAddress.addressId != null
                 && this.addressId.longValue() == anotherAddress.addressId.longValue())
                 || (this.addressId == null && anotherAddress.addressId == null)) {
-            return ObjectUtils.equals(this.line1, anotherAddress.line1)
-                    && ObjectUtils.equals(this.line2, anotherAddress.line2)
-                    && ObjectUtils.equals(this.city, anotherAddress.city)
-                    && ObjectUtils.equals(this.state, anotherAddress.state)
-                    && ObjectUtils.equals(this.zipcode, anotherAddress.zipcode)
-                    && ObjectUtils.equals(this.country, anotherAddress.country);
+            return Objects.equals(this.line1, anotherAddress.line1)
+                    && Objects.equals(this.line2, anotherAddress.line2)
+                    && Objects.equals(this.city, anotherAddress.city)
+                    && Objects.equals(this.state, anotherAddress.state)
+                    && Objects.equals(this.zipcode, anotherAddress.zipcode)
+                    && Objects.equals(this.country, anotherAddress.country);
         }
         return false;
     }

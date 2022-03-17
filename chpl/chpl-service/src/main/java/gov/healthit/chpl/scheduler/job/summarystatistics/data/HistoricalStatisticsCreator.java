@@ -20,9 +20,9 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.statistics.ListingStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import lombok.extern.log4j.Log4j2;
 import one.util.streamex.StreamEx;
@@ -122,7 +122,7 @@ public class HistoricalStatisticsCreator {
     private Long getTotalDevelopers(List<CertifiedProductDetailsDTO> allListings,
             Map<Long, List<CertificationStatusEvent>> allStatuses, Date endDate) {
 
-        List<DeveloperDTO> developers = allListings.stream()
+        List<Developer> developers = allListings.stream()
                 .filter(listing -> doesListingExistAsOfDate(listing.getId(),
                         allStatuses,
                         endDate))
@@ -130,35 +130,35 @@ public class HistoricalStatisticsCreator {
                 .collect(Collectors.toList());
 
         return StreamEx.of(developers)
-                .distinct(DeveloperDTO::getId)
+                .distinct(Developer::getDeveloperId)
                 .count();
     }
 
     private Long getTotalDevelopersWith2014Listings(List<CertifiedProductDetailsDTO> allListings,
             Map<Long, List<CertificationStatusEvent>> allStatuses, Date endDate) {
 
-        List<DeveloperDTO> developers = allListings.stream()
+        List<Developer> developers = allListings.stream()
                 .filter(listing -> listing.getCertificationEditionId().equals(EDITION_2014_ID)
                         && doesListingExistAsOfDate(listing.getId(), allStatuses, endDate))
                 .map(listing -> listing.getDeveloper())
                 .collect(Collectors.toList());
 
         return StreamEx.of(developers)
-                .distinct(DeveloperDTO::getId)
+                .distinct(Developer::getDeveloperId)
                 .count();
     }
 
     private Long getTotalDevelopersWith2015Listings(List<CertifiedProductDetailsDTO> allListings,
             Map<Long, List<CertificationStatusEvent>> allStatuses, Date endDate) {
 
-        List<DeveloperDTO> developers = allListings.stream()
+        List<Developer> developers = allListings.stream()
                 .filter(listing -> listing.getCertificationEditionId().equals(EDITION_2015_ID)
                         && doesListingExistAsOfDate(listing.getId(), allStatuses, endDate))
                 .map(listing -> listing.getDeveloper())
                 .collect(Collectors.toList());
 
         return StreamEx.of(developers)
-                .distinct(DeveloperDTO::getId)
+                .distinct(Developer::getDeveloperId)
                 .count();
 
     }
@@ -166,13 +166,13 @@ public class HistoricalStatisticsCreator {
     private Long getTotalUniqueProducts(List<CertifiedProductDetailsDTO> allListings,
             Map<Long, List<CertificationStatusEvent>> allStatuses, Date endDate) {
 
-        List<ProductDTO> products = allListings.stream()
+        List<Product> products = allListings.stream()
                 .filter(listing -> doesListingExistAsOfDate(listing.getId(), allStatuses, endDate))
                 .map(listing -> listing.getProduct())
                 .collect(Collectors.toList());
 
         return StreamEx.of(products)
-                .distinct(ProductDTO::getId)
+                .distinct(Product::getProductId)
                 .count();
 
     }
@@ -180,41 +180,41 @@ public class HistoricalStatisticsCreator {
     private Long getTotalProductsActive2014Listings(List<CertifiedProductDetailsDTO> allListings,
             Map<Long, List<CertificationStatusEvent>> allStatuses, Date endDate) {
 
-        List<ProductDTO> products = allListings.stream()
+        List<Product> products = allListings.stream()
                 .filter(listing -> listing.getCertificationEditionId().equals(EDITION_2014_ID)
                         && isListingActiveAsOfDate(listing.getId(), allStatuses, endDate))
                 .map(listing -> listing.getProduct())
                 .collect(Collectors.toList());
 
         return StreamEx.of(products)
-                .distinct(ProductDTO::getId)
+                .distinct(Product::getProductId)
                 .count();
     }
 
     private Long getTotalProductsActive2015Listings(List<CertifiedProductDetailsDTO> allListings,
             Map<Long, List<CertificationStatusEvent>> allStatuses, Date endDate) {
 
-        List<ProductDTO> products = allListings.stream()
+        List<Product> products = allListings.stream()
                 .filter(listing -> listing.getCertificationEditionId().equals(EDITION_2015_ID)
                         && isListingActiveAsOfDate(listing.getId(), allStatuses, endDate))
                 .map(listing -> listing.getProduct())
                 .collect(Collectors.toList());
 
         return StreamEx.of(products)
-                .distinct(ProductDTO::getId)
+                .distinct(Product::getProductId)
                 .count();
     }
 
     private Long getTotalUniqueProductsActiveListings(List<CertifiedProductDetailsDTO> allListings,
             Map<Long, List<CertificationStatusEvent>> allStatuses, Date endDate) {
 
-        List<ProductDTO> products = allListings.stream()
+        List<Product> products = allListings.stream()
                 .filter(listing -> isListingActiveAsOfDate(listing.getId(), allStatuses, endDate))
                 .map(listing -> listing.getProduct())
                 .collect(Collectors.toList());
 
         return StreamEx.of(products)
-                .distinct(ProductDTO::getId)
+                .distinct(Product::getProductId)
                 .count();
     }
 

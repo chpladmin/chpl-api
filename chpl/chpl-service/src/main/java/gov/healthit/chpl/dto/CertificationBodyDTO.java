@@ -8,6 +8,7 @@ import org.springframework.beans.BeanUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 import lombok.AllArgsConstructor;
@@ -28,11 +29,11 @@ public class CertificationBodyDTO implements Serializable {
     private String acbCode;
     private String name;
     private String website;
-    private AddressDTO address;
+    private Address address;
     private boolean retired;
     private Date retirementDate;
 
-    public CertificationBodyDTO(final CertificationBodyEntity entity) {
+    public CertificationBodyDTO(CertificationBodyEntity entity) {
         this.id = entity.getId();
         this.acbCode = entity.getAcbCode();
         this.name = entity.getName();
@@ -40,11 +41,11 @@ public class CertificationBodyDTO implements Serializable {
         this.retired = entity.getRetired();
         this.retirementDate = entity.getRetirementDate();
         if (entity.getAddress() != null) {
-            this.address = new AddressDTO(entity.getAddress());
+            this.address = entity.getAddress().toDomain();
         }
     }
 
-    public CertificationBodyDTO(final CertificationBody domain) {
+    public CertificationBodyDTO(CertificationBody domain) {
         BeanUtils.copyProperties(domain, this);
     }
 

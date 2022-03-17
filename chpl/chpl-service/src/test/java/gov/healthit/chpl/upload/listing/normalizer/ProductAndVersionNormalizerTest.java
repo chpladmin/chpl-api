@@ -15,7 +15,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
-import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 
 public class ProductAndVersionNormalizerTest {
@@ -150,8 +149,9 @@ public class ProductAndVersionNormalizerTest {
                 .version(null)
                 .build();
         Mockito.when(productDao.getByDeveloperAndName(ArgumentMatchers.anyLong(), ArgumentMatchers.anyString()))
-        .thenReturn(ProductDTO.builder()
+        .thenReturn(Product.builder()
                 .id(1L)
+                .productId(1L)
                 .name("Test 1")
                 .build());
         normalizer.normalize(listing);
@@ -227,8 +227,9 @@ public class ProductAndVersionNormalizerTest {
                         .build())
                 .build();
         Mockito.when(productDao.getByDeveloperAndName(ArgumentMatchers.anyLong(), ArgumentMatchers.anyString()))
-        .thenReturn(ProductDTO.builder()
+        .thenReturn(Product.builder()
                 .id(1L)
+                .productId(1L)
                 .name("Test 1")
                 .build());
         Mockito.when(versionDao.getByProductAndVersion(ArgumentMatchers.anyLong(), ArgumentMatchers.anyString()))
@@ -293,8 +294,9 @@ public class ProductAndVersionNormalizerTest {
                         .build())
                 .build();
         Mockito.when(productDao.getByDeveloperAndName(ArgumentMatchers.anyLong(), ArgumentMatchers.anyString()))
-        .thenReturn(ProductDTO.builder()
+        .thenReturn(Product.builder()
                 .id(1L)
+                .productId(1L)
                 .name("Test 1")
                 .build());
         Mockito.when(versionDao.getByProductAndVersion(ArgumentMatchers.anyLong(), ArgumentMatchers.anyString()))

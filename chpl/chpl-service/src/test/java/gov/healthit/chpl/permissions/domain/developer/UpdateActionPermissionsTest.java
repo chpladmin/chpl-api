@@ -3,6 +3,8 @@ package gov.healthit.chpl.permissions.domain.developer;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Date;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -12,9 +14,9 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusDTO;
-import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.DeveloperStatus;
+import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.developer.UpdateActionPermissions;
@@ -43,7 +45,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForAdminUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-        assertTrue(permissions.hasAccess(new DeveloperDTO()));
+        assertTrue(permissions.hasAccess(new Developer()));
     }
 
     @Override
@@ -52,7 +54,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForOncUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-        assertTrue(permissions.hasAccess(new DeveloperDTO()));
+        assertTrue(permissions.hasAccess(new Developer()));
     }
 
     @Override
@@ -71,25 +73,27 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
         assertFalse(permissions.hasAccess());
 
-        DeveloperDTO dto = new DeveloperDTO();
-        dto.setId(1L);
-        DeveloperStatusEventDTO statusEvent = new DeveloperStatusEventDTO();
+        Developer dev = new Developer();
+        dev.setId(1L);
+        dev.setDeveloperId(1L);
+        DeveloperStatusEvent statusEvent = new DeveloperStatusEvent();
         statusEvent.setDeveloperId(1L);
-        DeveloperStatusDTO status = new DeveloperStatusDTO();
-        status.setStatusName("Active");
+        statusEvent.setStatusDate(new Date());
+        DeveloperStatus status = new DeveloperStatus();
+        status.setStatus("Active");
         statusEvent.setStatus(status);
-        dto.getStatusEvents().add(statusEvent);
+        dev.getStatusEvents().add(statusEvent);
 
-        Mockito.when(developerDAO.getById(ArgumentMatchers.anyLong())).thenReturn(dto);
+        Mockito.when(developerDAO.getById(ArgumentMatchers.anyLong())).thenReturn(dev);
         // If the current status is Active
-        assertTrue(permissions.hasAccess(dto));
+        assertTrue(permissions.hasAccess(dev));
 
         // If the current status is Non-Active
-        status.setStatusName("Suspended by ONC");
-        dto.getStatusEvents().clear();
+        status.setStatus("Suspended by ONC");
+        dev.getStatusEvents().clear();
         statusEvent.setStatus(status);
-        dto.getStatusEvents().add(statusEvent);
-        assertFalse(permissions.hasAccess(dto));
+        dev.getStatusEvents().add(statusEvent);
+        assertFalse(permissions.hasAccess(dev));
     }
 
     @Override

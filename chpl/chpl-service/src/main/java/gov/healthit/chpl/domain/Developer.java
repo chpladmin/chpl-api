@@ -3,6 +3,7 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Comparator;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -15,10 +16,10 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import gov.healthit.chpl.domain.contact.PointOfContact;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Singular;
@@ -26,8 +27,8 @@ import lombok.Singular;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Builder
 @AllArgsConstructor
+@Builder
 public class Developer implements Serializable {
     private static final long serialVersionUID = 7341544844577617247L;
 
@@ -35,7 +36,18 @@ public class Developer implements Serializable {
      * The internal ID of the developer.
      */
     @XmlElement(required = true)
+    @Deprecated
     private Long developerId;
+
+    /**
+     * This property exists solely to be able to deserialize developer activity events. When deserializing
+     * the activity we sometimes care about the developer ID. This property
+     * should not be visible in the generated XSD or any response from an API call. The eventual plan is to deprecate
+     * the above "developerId" field in favor of this "id" anyway.
+     */
+    @JsonProperty(access = Access.WRITE_ONLY)
+    @XmlTransient
+    private Long id;
 
     /**
      * A four-digit code assigned to each developer when it was created.
@@ -91,6 +103,13 @@ public class Developer implements Serializable {
     @Singular
     private List<DeveloperStatusEvent> statusEvents;
 
+    /**
+     * Public attestations submitted by the developer.
+     */
+    @XmlElementWrapper(name = "attestations", nillable = true, required = false)
+    @XmlElement(name = "attestation")
+    private List<PublicAttestation> attestations;
+
     @XmlTransient
     @JsonIgnore
     private String userEnteredName;
@@ -115,39 +134,22 @@ public class Developer implements Serializable {
         this.statusEvents = new ArrayList<DeveloperStatusEvent>();
     }
 
-    public Developer(DeveloperDTO dto) {
-        this();
-        this.developerId = dto.getId();
-        this.developerCode = dto.getDeveloperCode();
-        this.name = dto.getName();
-        this.website = dto.getWebsite();
-        this.deleted = dto.getDeleted();
-        this.selfDeveloper = dto.getSelfDeveloper();
-        if (dto.getAddress() != null) {
-            this.address = new Address(dto.getAddress());
-        }
-        if (dto.getContact() != null) {
-            this.contact = new PointOfContact(dto.getContact());
-        }
-
-        if (dto.getLastModifiedDate() != null) {
-            this.lastModifiedDate = dto.getLastModifiedDate().getTime() + "";
-        }
-
-        if (dto.getStatusEvents() != null && dto.getStatusEvents().size() > 0) {
-            for (DeveloperStatusEventDTO historyItem : dto.getStatusEvents()) {
-                DeveloperStatusEvent toAdd = new DeveloperStatusEvent(historyItem);
-                this.statusEvents.add(toAdd);
-            }
-        }
-    }
-
+    @Deprecated
     public Long getDeveloperId() {
         return developerId;
     }
 
+    @Deprecated
     public void setDeveloperId(Long developerId) {
         this.developerId = developerId;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -241,6 +243,14 @@ public class Developer implements Serializable {
         this.statusEvents = statusEvents;
     }
 
+    public List<PublicAttestation> getAttestations() {
+        return attestations;
+    }
+
+    public void setAttestations(List<PublicAttestation> attestations) {
+        this.attestations = attestations;
+    }
+
     public String getUserEnteredName() {
         return userEnteredName;
     }
@@ -279,5 +289,110 @@ public class Developer implements Serializable {
 
     public void setUserEnteredSelfDeveloper(String userEnteredSelfDeveloper) {
         this.userEnteredSelfDeveloper = userEnteredSelfDeveloper;
+    }
+
+    // Not all attributes have been included. The attributes being used were selected so the DeveloperManager could
+    // determine equality when updating a Developer
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((address == null) ? 0 : address.hashCode());
+        result = prime * result + ((contact == null) ? 0 : contact.hashCode());
+        result = prime * result + ((developerCode == null) ? 0 : developerCode.hashCode());
+        result = prime * result + ((developerId == null) ? 0 : developerId.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((selfDeveloper == null) ? 0 : selfDeveloper.hashCode());
+        result = prime * result + ((statusEvents == null) ? 0 : statusEvents.hashCode());
+        result = prime * result + ((website == null) ? 0 : website.hashCode());
+        return result;
+    }
+
+    // Not all attributes have been included. The attributes being used were selected so the DeveloperManager could
+    // determine equality when updating a Developer
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Developer other = (Developer) obj;
+        if (address == null) {
+            if (other.address != null) {
+                return false;
+            }
+        } else if (!address.equals(other.address)) {
+            return false;
+        }
+        if (contact == null) {
+            if (other.contact != null) {
+                return false;
+            }
+        } else if (!contact.equals(other.contact)) {
+            return false;
+        }
+        if (developerCode == null) {
+            if (other.developerCode != null) {
+                return false;
+            }
+        } else if (!developerCode.equals(other.developerCode)) {
+            return false;
+        }
+        if (developerId == null) {
+            if (other.developerId != null) {
+                return false;
+            }
+        } else if (!developerId.equals(other.developerId)) {
+            return false;
+        }
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
+        if (selfDeveloper == null) {
+            if (other.selfDeveloper != null) {
+                return false;
+            }
+        } else if (!selfDeveloper.equals(other.selfDeveloper)) {
+            return false;
+        }
+        if (statusEvents == null) {
+            if (other.statusEvents != null) {
+                return false;
+            }
+        } else if (!isStatusEventListEqual(other.statusEvents)) {
+            return false;
+        }
+        if (website == null) {
+            if (other.website != null) {
+                return false;
+            }
+        } else if (!website.equals(other.website)) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isStatusEventListEqual(List<DeveloperStatusEvent> other) {
+        if (statusEvents.size() != other.size()) {
+            return false;
+        } else {
+            // Make copies of both lists and order them
+            List<DeveloperStatusEvent> clonedThis = statusEvents.stream()
+                    .sorted(Comparator.comparing(DeveloperStatusEvent::getStatusDate))
+                    .toList();
+            List<DeveloperStatusEvent> clonedOther = other.stream()
+                    .sorted(Comparator.comparing(DeveloperStatusEvent::getStatusDate))
+                    .toList();
+            return clonedThis.equals(clonedOther);
+        }
     }
 }

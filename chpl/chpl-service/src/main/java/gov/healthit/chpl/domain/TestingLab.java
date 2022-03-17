@@ -35,9 +35,7 @@ public class TestingLab implements Serializable {
         this.retired = dto.isRetired();
         this.setRetirementDate(dto.getRetirementDate());
         this.accredidationNumber = dto.getAccredidationNumber();
-        if (dto.getAddress() != null) {
-            this.address = new Address(dto.getAddress());
-        }
+        this.address = dto.getAddress();
     }
 
     public Long getId() {

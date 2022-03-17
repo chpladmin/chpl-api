@@ -1,13 +1,13 @@
 package gov.healthit.chpl.manager.rules.developer;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
 public class DeveloperNameValidation extends ValidationRule<DeveloperValidationContext> {
     @Override
     public boolean isValid(DeveloperValidationContext context) {
-        if (StringUtils.isEmpty(context.getDeveloperDTO().getName())) {
+        if (ObjectUtils.isEmpty(context.getDeveloper().getName())) {
             getMessages().add(getErrorMessage("developer.nameRequired"));
             return false;
         }
