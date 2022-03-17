@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -22,7 +23,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UsersResponse;
-import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -149,14 +149,14 @@ public class CertificationBodyController {
         return create(acbInfo);
     }
 
-    private CertificationBody create(final CertificationBody acbInfo)
+    private CertificationBody create(CertificationBody acbInfo)
             throws InvalidArgumentsException, UserRetrievalException, EntityRetrievalException,
             EntityCreationException, JsonProcessingException {
 
         CertificationBodyDTO toCreate = new CertificationBodyDTO();
         toCreate.setAcbCode(acbInfo.getAcbCode());
         toCreate.setName(acbInfo.getName());
-        if (StringUtils.isEmpty(acbInfo.getWebsite())) {
+        if (ObjectUtils.isEmpty(acbInfo.getWebsite())) {
             throw new InvalidArgumentsException("A website is required for a new certification body");
         }
         toCreate.setWebsite(acbInfo.getWebsite());
@@ -164,15 +164,7 @@ public class CertificationBodyController {
         if (acbInfo.getAddress() == null) {
             throw new InvalidArgumentsException("An address is required for a new certification body");
         }
-        AddressDTO address = new AddressDTO();
-        address.setId(acbInfo.getAddress().getAddressId());
-        address.setStreetLineOne(acbInfo.getAddress().getLine1());
-        address.setStreetLineTwo(acbInfo.getAddress().getLine2());
-        address.setCity(acbInfo.getAddress().getCity());
-        address.setState(acbInfo.getAddress().getState());
-        address.setZipcode(acbInfo.getAddress().getZipcode());
-        address.setCountry(acbInfo.getAddress().getCountry());
-        toCreate.setAddress(address);
+        toCreate.setAddress(acbInfo.getAddress());
         toCreate = acbManager.create(toCreate);
         return new CertificationBody(toCreate);
     }
@@ -240,15 +232,7 @@ public class CertificationBodyController {
             if (updatedAcb.getAddress() == null) {
                 throw new InvalidArgumentsException("An address is required to update the certification body");
             }
-            AddressDTO address = new AddressDTO();
-            address.setId(updatedAcb.getAddress().getAddressId());
-            address.setStreetLineOne(updatedAcb.getAddress().getLine1());
-            address.setStreetLineTwo(updatedAcb.getAddress().getLine2());
-            address.setCity(updatedAcb.getAddress().getCity());
-            address.setState(updatedAcb.getAddress().getState());
-            address.setZipcode(updatedAcb.getAddress().getZipcode());
-            address.setCountry(updatedAcb.getAddress().getCountry());
-            toUpdate.setAddress(address);
+            toUpdate.setAddress(updatedAcb.getAddress());
             acbManager.update(toUpdate);
         }
         CertificationBodyDTO result = acbManager.getById(updatedAcb.getId());

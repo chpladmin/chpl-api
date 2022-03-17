@@ -19,11 +19,6 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.contact.PointOfContact;
-import gov.healthit.chpl.dto.AddressDTO;
-import gov.healthit.chpl.dto.ContactDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusDTO;
-import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -97,7 +92,7 @@ public class DeveloperNormalizerTest {
     @Test
     public void normalize_nullDeveloperDeveloperExistsByCode_getsSystemInfo() {
         Mockito.when(developerDao.getByCode(ArgumentMatchers.eq("2526")))
-            .thenReturn(buildSystemDeveloperDto());
+            .thenReturn(buildSystemDeveloper());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
                 .developer(null)
@@ -112,7 +107,7 @@ public class DeveloperNormalizerTest {
     @Test
     public void normalize_developerExistsByCode_getsSystemInfo() {
         Mockito.when(developerDao.getByCode(ArgumentMatchers.eq("2526")))
-            .thenReturn(buildSystemDeveloperDto());
+            .thenReturn(buildSystemDeveloper());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
                 .developer(new Developer())
@@ -151,7 +146,7 @@ public class DeveloperNormalizerTest {
                 .userEnteredName("Test Name")
                 .build();
         Mockito.when(developerDao.getByName(ArgumentMatchers.eq("Test Name")))
-            .thenReturn(buildSystemDeveloperDto());
+            .thenReturn(buildSystemDeveloper());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.1234.WEBe.06.00.1.210101")
@@ -199,46 +194,16 @@ public class DeveloperNormalizerTest {
         assertEquals("Test Name", listing.getDeveloper().getUserEnteredName());
     }
 
-    private DeveloperDTO buildSystemDeveloperDto() {
-        return buildDeveloperDto(1L);
-    }
-
-    private DeveloperDTO buildDeveloperDto(Long id) {
-        return DeveloperDTO.builder()
-                .id(id)
-                .name("Test Name")
-                .selfDeveloper(true)
-                .website("http://www.test.com")
-                .address(AddressDTO.builder()
-                        .streetLineOne("test")
-                        .city("test")
-                        .state("test")
-                        .zipcode("12345")
-                        .build())
-                .contact(ContactDTO.builder()
-                        .fullName("test")
-                        .email("test@test.com")
-                        .phoneNumber("123-456-7890")
-                        .build())
-                .statusEvent(DeveloperStatusEventDTO.builder()
-                        .status(DeveloperStatusDTO.builder()
-                                .statusName(DeveloperStatusType.Active.getName())
-                                .build())
-                        .statusDate(new Date())
-                        .build())
-                .build();
-    }
-
     private Developer buildSystemDeveloper() {
         return buildDeveloper(1L);
     }
 
     private Developer buildDeveloper(Long id) {
         return Developer.builder()
+                .id(id)
                 .developerId(id)
                 .name("Test Name")
                 .selfDeveloper(true)
-                .userEnteredSelfDeveloper("1")
                 .website("http://www.test.com")
                 .address(Address.builder()
                         .line1("test")
@@ -252,11 +217,9 @@ public class DeveloperNormalizerTest {
                         .phoneNumber("123-456-7890")
                         .build())
                 .statusEvent(DeveloperStatusEvent.builder()
-                        .developerId(id)
-                        .id(1L)
                         .status(DeveloperStatus.builder()
-                            .status(DeveloperStatusType.Active.getName())
-                            .build())
+                                .status(DeveloperStatusType.Active.getName())
+                                .build())
                         .statusDate(new Date())
                         .build())
                 .build();

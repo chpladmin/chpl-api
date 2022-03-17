@@ -9,7 +9,6 @@ import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
-import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 
 @Component
@@ -30,10 +29,10 @@ public class ProductAndVersionNormalizer {
 
         if (listing.getProduct() != null && listing.getProduct().getProductId() == null
                 && !StringUtils.isEmpty(listing.getProduct().getName())) {
-            ProductDTO foundProduct = productDao.getByDeveloperAndName(listing.getDeveloper().getDeveloperId(),
+            Product foundProduct = productDao.getByDeveloperAndName(listing.getDeveloper().getDeveloperId(),
                     listing.getProduct().getName());
             if (foundProduct != null) {
-                listing.setProduct(new Product(foundProduct));
+                listing.setProduct(foundProduct);
             }
         }
 

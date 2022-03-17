@@ -26,16 +26,14 @@ public class CertificationBody implements Serializable {
     public CertificationBody() {
     }
 
-    public CertificationBody(final CertificationBodyDTO dto) {
+    public CertificationBody(CertificationBodyDTO dto) {
         this.id = dto.getId();
         this.acbCode = dto.getAcbCode();
         this.name = dto.getName();
         this.website = dto.getWebsite();
         this.retired = dto.isRetired();
         this.retirementDate = dto.getRetirementDate();
-        if (dto.getAddress() != null) {
-            this.address = new Address(dto.getAddress());
-        }
+        this.address = dto.getAddress();
     }
 
     public CertificationBody(final CertificationBodyEntity entity) {
@@ -46,7 +44,7 @@ public class CertificationBody implements Serializable {
         this.retired = entity.getRetired();
         this.retirementDate = entity.getRetirementDate();
         if (entity.getAddress() != null) {
-            this.address = new Address(entity.getAddress());
+            this.address = entity.getAddress().toDomain();
         }
     }
 

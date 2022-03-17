@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import gov.healthit.chpl.attestation.domain.AttestationForm;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
 import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -50,6 +52,9 @@ public class AttestationManager {
     }
 
     @Transactional
+    @CacheEvict(value = {
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED
+    }, allEntries = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ATTESTATION, "
             + "T(gov.healthit.chpl.permissions.domains.AttestationDomainPermissions).CREATE, #developerAttestationSubmission)")
     public DeveloperAttestationSubmission saveDeveloperAttestation(DeveloperAttestationSubmission developerAttestationSubmission) throws EntityRetrievalException {

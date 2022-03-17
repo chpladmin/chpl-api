@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -8,46 +7,34 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.DeveloperStatusDTO;
+import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.entity.developer.DeveloperStatusEntity;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 
 @Repository("developerStatusDAO")
 public class DeveloperStatusDAO extends BaseDAOImpl {
 
-    public DeveloperStatusDTO getById(final Long id) {
-
-        DeveloperStatusDTO dto = null;
+    public DeveloperStatus getById(Long id) {
         DeveloperStatusEntity entity = getEntityById(id);
-
         if (entity != null) {
-            dto = new DeveloperStatusDTO(entity);
+            return entity.toDomain();
         }
-        return dto;
+        return null;
     }
 
-    public DeveloperStatusDTO getByName(final String name) {
-
-        DeveloperStatusDTO dto = null;
+    public DeveloperStatus getByName(String name) {
         List<DeveloperStatusEntity> entities = getEntitiesByName(name);
-
         if (entities != null && entities.size() > 0) {
-            dto = new DeveloperStatusDTO(entities.get(0));
+            return entities.get(0).toDomain();
         }
-        return dto;
+        return null;
     }
 
-    public List<DeveloperStatusDTO> findAll() {
-
+    public List<DeveloperStatus> findAll() {
         List<DeveloperStatusEntity> entities = getAllEntities();
-        List<DeveloperStatusDTO> dtos = new ArrayList<DeveloperStatusDTO>();
-
-        for (DeveloperStatusEntity entity : entities) {
-            DeveloperStatusDTO dto = new DeveloperStatusDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
-
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .toList();
     }
 
     List<DeveloperStatusEntity> getAllEntities() {

@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.DeveloperActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
 
 @Component("developerActivityMetadataBuilder")
 public class DeveloperActivityMetadataBuilder extends ActivityMetadataBuilder {
@@ -33,20 +33,21 @@ public class DeveloperActivityMetadataBuilder extends ActivityMetadataBuilder {
         //parse developer specific metadata
         //for merges, the original data is a list of developers.
         //for other developer activities it's just a single developer.
-        DeveloperDTO origDeveloper = null;
-        List<DeveloperDTO> origDevelopers = null;
+        Developer origDeveloper = null;
+        List<Developer> origDevelopers = null;
         if (activity.getOriginalData() != null) {
             try {
                 origDeveloper =
-                    jsonMapper.readValue(activity.getOriginalData(), DeveloperDTO.class);
-            } catch (final Exception ignore) { }
+                    jsonMapper.readValue(activity.getOriginalData(), Developer.class);
+            } catch (final Exception ignore) {
+            }
 
-            //if we couldn't parse it as a DeveloperDTO
+            //if we couldn't parse it as a Developer
             //try to parse it as a List.
             if (origDeveloper == null) {
                 try {
                     origDevelopers = jsonMapper.readValue(activity.getOriginalData(),
-                            jsonMapper.getTypeFactory().constructCollectionType(List.class, DeveloperDTO.class));
+                            jsonMapper.getTypeFactory().constructCollectionType(List.class, Developer.class));
                 } catch (final Exception ignore) {
                 }
             }
@@ -54,24 +55,25 @@ public class DeveloperActivityMetadataBuilder extends ActivityMetadataBuilder {
             //if the orig data is not a developer or a list, log an error
             if (origDeveloper == null && origDevelopers == null) {
                 LOGGER.error("Could not parse activity ID " + activity.getId() + " original data as "
-                    + "a DeveloperDTO or List<DeveloperDTO>. JSON was: " + activity.getOriginalData());
+                    + "a Developer or List<Developer>. JSON was: " + activity.getOriginalData());
             }
         }
 
-        DeveloperDTO newDeveloper = null;
-        List<DeveloperDTO> newDevelopers = null;
+        Developer newDeveloper = null;
+        List<Developer> newDevelopers = null;
         if (activity.getNewData() != null) {
             try {
                 newDeveloper =
-                    jsonMapper.readValue(activity.getNewData(), DeveloperDTO.class);
-            } catch (final Exception ignore) { }
+                    jsonMapper.readValue(activity.getNewData(), Developer.class);
+            } catch (final Exception ignore) {
+            }
 
-            //if we couldn't parse it as a DeveloperDTO
+            //if we couldn't parse it as a Developer
             //try to parse it as a List.
             if (newDeveloper == null) {
                 try {
                     newDevelopers = jsonMapper.readValue(activity.getNewData(),
-                            jsonMapper.getTypeFactory().constructCollectionType(List.class, DeveloperDTO.class));
+                            jsonMapper.getTypeFactory().constructCollectionType(List.class, Developer.class));
                 } catch (final Exception ignore) {
                 }
             }
@@ -79,7 +81,7 @@ public class DeveloperActivityMetadataBuilder extends ActivityMetadataBuilder {
             //if the new data is not a developer or a list, log an error
             if (newDeveloper == null && newDevelopers == null) {
                 LOGGER.error("Could not parse activity ID " + activity.getId() + " new data as "
-                    + "a DeveloperDTO or List<DeveloperDTO>. JSON was: " + activity.getNewData());
+                    + "a Developer or List<Developer>. JSON was: " + activity.getNewData());
             }
         }
 
@@ -113,8 +115,7 @@ public class DeveloperActivityMetadataBuilder extends ActivityMetadataBuilder {
         developerMetadata.getCategories().add(ActivityCategory.DEVELOPER);
     }
 
-    private void parseDeveloperMetadata(
-            final DeveloperActivityMetadata developerMetadata, final DeveloperDTO developer) {
+    private void parseDeveloperMetadata(DeveloperActivityMetadata developerMetadata, Developer developer) {
         developerMetadata.setDeveloperName(developer.getName());
         developerMetadata.setDeveloperCode(developer.getDeveloperCode());
     }
@@ -127,14 +128,23 @@ public class DeveloperActivityMetadataBuilder extends ActivityMetadataBuilder {
      * @param developers
      */
     private void parseDeveloperMetadata(
-            final DeveloperActivityMetadata developerMetadata, final ActivityDTO activity,
-            final List<DeveloperDTO> developers) {
+            DeveloperActivityMetadata developerMetadata, ActivityDTO activity,
+            List<Developer> developers) {
         Long idToFind = activity.getActivityObjectId();
-        for (DeveloperDTO currDev : developers) {
-            if (currDev != null && currDev.getId().longValue() == idToFind.longValue()) {
+        for (Developer currDev : developers) {
+            if (currDev != null && idsMatch(currDev, idToFind)) {
                 parseDeveloperMetadata(developerMetadata, currDev);
                 break;
             }
         }
+    }
+
+    private boolean idsMatch(Developer developer, Long id) {
+        if (developer.getId() != null) {
+            return developer.getId().equals(id);
+        } else if (developer.getDeveloperId() != null) {
+            return developer.getDeveloperId().equals(id);
+        }
+        return false;
     }
 }

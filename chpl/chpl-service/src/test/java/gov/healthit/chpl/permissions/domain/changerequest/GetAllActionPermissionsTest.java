@@ -52,7 +52,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
                 .build()));
 
         assertFalse(permissions.hasAccess(ChangeRequest.builder()
-                .developer(Developer.builder().developerId(3l).build())
+                .developer(Developer.builder().developerId(3L).build())
                 .build()));
     }
 

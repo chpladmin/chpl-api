@@ -182,9 +182,7 @@ public class DeveloperAttestationReportDataCollection {
     }
 
     private List<Developer> getAllDevelopers() {
-        return developerDAO.findAll().stream()
-                .map(dto -> new Developer(dto))
-                .toList();
+        return developerDAO.findAll();
     }
 
     private DeveloperAttestationSubmission getDeveloperAttestation(Long developerId, Long attestationPeriodId) {

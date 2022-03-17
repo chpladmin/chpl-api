@@ -27,10 +27,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ConfirmListingRequest;
 import gov.healthit.chpl.domain.ListingUpload;
-import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.DeprecatedUploadTemplateException;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -472,10 +472,10 @@ public class ListingUploadManagerTest {
         dto.setName("Test");
         dto.setRetired(false);
         dto.setWebsite("http://www.test.com");
-        AddressDTO address = new AddressDTO();
-        address.setId(1L);
-        address.setStreetLineOne("111 Test Road");
-        address.setStreetLineTwo("Suite 4");
+        Address address = new Address();
+        address.setAddressId(1L);
+        address.setLine1("111 Test Road");
+        address.setLine2("Suite 4");
         address.setCity("Baltimore");
         address.setState("MD");
         address.setZipcode("21008");

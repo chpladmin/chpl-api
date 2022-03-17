@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.ProductActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.ProductDTO;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -40,18 +40,18 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
         //for merges, original data is a list of products
         //for splits, new data is a list of products
         //otherwise we expect orig/new data to be a single product
-        ProductDTO origProduct = null;
-        List<ProductDTO> origProducts = null;
+        Product origProduct = null;
+        List<Product> origProducts = null;
         if (activity.getOriginalData() != null) {
             try {
                 origProduct =
-                    jsonMapper.readValue(activity.getOriginalData(), ProductDTO.class);
+                    jsonMapper.readValue(activity.getOriginalData(), Product.class);
             } catch (Exception ignore) { }
 
             if (origProduct == null) {
                 try {
                     origProducts = jsonMapper.readValue(activity.getOriginalData(),
-                            jsonMapper.getTypeFactory().constructCollectionType(List.class, ProductDTO.class));
+                            jsonMapper.getTypeFactory().constructCollectionType(List.class, Product.class));
                 } catch (Exception ignore) { }
             }
 
@@ -61,18 +61,18 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
             }
         }
 
-        ProductDTO newProduct = null;
-        List<ProductDTO> newProducts = null;
+        Product newProduct = null;
+        List<Product> newProducts = null;
         if (activity.getNewData() != null) {
             try {
                 newProduct =
-                    jsonMapper.readValue(activity.getNewData(), ProductDTO.class);
+                    jsonMapper.readValue(activity.getNewData(), Product.class);
             } catch (Exception ignore) { }
 
             if (newProduct == null) {
                 try {
                     newProducts = jsonMapper.readValue(activity.getNewData(),
-                            jsonMapper.getTypeFactory().constructCollectionType(List.class, ProductDTO.class));
+                            jsonMapper.getTypeFactory().constructCollectionType(List.class, Product.class));
                 } catch (Exception ignore) { }
             }
 
@@ -113,33 +113,51 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
     }
 
     private void parseProductMetadata(
-            ProductActivityMetadata productMetadata, ProductDTO product) {
+            ProductActivityMetadata productMetadata, Product product) {
         //Developer id is always filled in the activity object
         //but the name does not seem to be. If the name is available
         //use it but if not look up the developer by ID
-        if (!StringUtils.isEmpty(product.getDeveloperName())) {
-            productMetadata.setDeveloperName(product.getDeveloperName());
-        } else if (product.getDeveloperId() != null) {
+        if (product.getOwner() != null && !StringUtils.isEmpty(product.getOwner().getName())) {
+            productMetadata.setDeveloperName(product.getOwner().getName());
+        } else if (product.getOwner() != null && product.getOwner().getDeveloperId() != null) {
             try {
-                DeveloperDTO developer = developerDao.getSimpleDeveloperById(product.getDeveloperId(), true);
+                Developer developer = developerDao.getSimpleDeveloperById(product.getOwner().getDeveloperId(), true);
                 productMetadata.setDeveloperName(developer.getName());
             } catch (Exception ex) {
                 LOGGER.error("Unable to find developer with ID " + product.getDeveloperId() + " referenced "
-                        + "in activity for product " + product.getId());
+                        + "in activity for product " + product.getProductId());
+            }
+        } else if (!StringUtils.isEmpty(product.getDeveloperName())) {
+            productMetadata.setDeveloperName(product.getDeveloperName());
+        } else if (product.getDeveloperId() != null) {
+            try {
+                Developer developer = developerDao.getSimpleDeveloperById(product.getDeveloperId(), true);
+                productMetadata.setDeveloperName(developer.getName());
+            } catch (Exception ex) {
+                LOGGER.error("Unable to find developer with ID " + product.getDeveloperId() + " referenced "
+                        + "in activity for product " + product.getProductId());
             }
         }
         productMetadata.setProductName(product.getName());
     }
 
-    private void parseProductMetadata(
-            ProductActivityMetadata productMetadata, ActivityDTO activity,
-            List<ProductDTO> products) {
+    private void parseProductMetadata(ProductActivityMetadata productMetadata, ActivityDTO activity,
+            List<Product> products) {
         Long idToFind = activity.getActivityObjectId();
-        for (ProductDTO currProduct : products) {
-            if (currProduct.getId().longValue() == idToFind.longValue()) {
+        for (Product currProduct : products) {
+            if (currProduct != null && idsMatch(currProduct, idToFind)) {
                 parseProductMetadata(productMetadata, currProduct);
                 break;
             }
         }
+    }
+
+    private boolean idsMatch(Product product, Long id) {
+        if (product.getId() != null) {
+            return product.getId().equals(id);
+        } else if (product.getProductId() != null) {
+            return product.getProductId().equals(id);
+        }
+        return false;
     }
 }
