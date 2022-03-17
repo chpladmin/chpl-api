@@ -13,8 +13,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.compliance.DirectReview;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import lombok.extern.log4j.Log4j2;
@@ -55,15 +55,15 @@ public class DirectReviewUpdateEmailService {
      * @param originalListings
      * @param changedListings
      */
-    public void sendEmail(List<DeveloperDTO> originalDevelopers, List<DeveloperDTO> changedDevelopers,
+    public void sendEmail(List<Developer> originalDevelopers, List<Developer> changedDevelopers,
             Map<Long, CertifiedProductSearchDetails> originalListings,
             Map<Long, CertifiedProductSearchDetails> changedListings) {
         List<DirectReview> originalDeveloperDrs = new ArrayList<DirectReview>();
-        for (DeveloperDTO originalDeveloper : originalDevelopers) {
+        for (Developer originalDeveloper : originalDevelopers) {
             try {
-                originalDeveloperDrs.addAll(directReviewService.getDirectReviews(originalDeveloper.getId()));
+                originalDeveloperDrs.addAll(directReviewService.getDirectReviews(originalDeveloper.getDeveloperId()));
             } catch (Exception ex) {
-                LOGGER.error("Error querying Jira for direct reviews related to developer ID " + originalDeveloper.getId());
+                LOGGER.error("Error querying Jira for direct reviews related to developer ID " + originalDeveloper.getDeveloperId());
                 originalDeveloperDrs = null;
             }
         }
@@ -88,7 +88,7 @@ public class DirectReviewUpdateEmailService {
     }
 
     private void sendDirectReviewEmails(List<DirectReview> drs,
-            List<DeveloperDTO> originalDevelopers, List<DeveloperDTO> changedDevelopers,
+            List<Developer> originalDevelopers, List<Developer> changedDevelopers,
             Map<Long, CertifiedProductSearchDetails> originalListings,
             Map<Long, CertifiedProductSearchDetails> changedListings)
         throws EmailNotSentException {
@@ -122,8 +122,8 @@ public class DirectReviewUpdateEmailService {
                 .sendEmail();
     }
 
-    private void sendUnknownDirectReviewEmails(List<DeveloperDTO> originalDevelopers,
-            List<DeveloperDTO> changedDevelopers,
+    private void sendUnknownDirectReviewEmails(List<Developer> originalDevelopers,
+            List<Developer> changedDevelopers,
             Map<Long, CertifiedProductSearchDetails> originalListings,
             Map<Long, CertifiedProductSearchDetails> changedListings) throws EmailNotSentException {
         LOGGER.info("Sending email about unknown direct reviews.");
@@ -151,44 +151,44 @@ public class DirectReviewUpdateEmailService {
                 .sendEmail();
     }
 
-    private String formatDeveloperActionHtml(List<DeveloperDTO> originalDevelopers,
-            List<DeveloperDTO> changedDevelopers) {
+    private String formatDeveloperActionHtml(List<Developer> originalDevelopers,
+            List<Developer> changedDevelopers) {
         String html = "";
         if (!ObjectUtils.allNotNull(originalDevelopers, changedDevelopers)) {
             return html;
         } else if (originalDevelopers.size() == 1 && changedDevelopers.size() > 1) {
-            DeveloperDTO newDeveloper = null;
-            for (DeveloperDTO changedDeveloper : changedDevelopers) {
-                if (!(changedDeveloper.getId().equals(originalDevelopers.get(0).getId()))) {
+            Developer newDeveloper = null;
+            for (Developer changedDeveloper : changedDevelopers) {
+                if (!(changedDeveloper.getDeveloperId().equals(originalDevelopers.get(0).getDeveloperId()))) {
                     newDeveloper = changedDeveloper;
                 }
             }
             html = String.format("<p>The developer %s (ID: %s) was split. "
                     + "The new developer is %s (ID: %s).</p>",
                     originalDevelopers.get(0).getName(),
-                    originalDevelopers.get(0).getId(),
+                    originalDevelopers.get(0).getDeveloperId(),
                     newDeveloper.getName(),
-                    newDeveloper.getId());
+                    newDeveloper.getDeveloperId());
         }  else if (originalDevelopers.size() > 1 && changedDevelopers.size() == 1) {
             List<String> originalDeveloperNames = originalDevelopers.stream()
                     .map(dev -> dev.getName())
                     .collect(Collectors.toList());
             List<String> originalDeveloperIds = originalDevelopers.stream()
-                    .map(dev -> dev.getId().toString())
+                    .map(dev -> dev.getDeveloperId().toString())
                     .collect(Collectors.toList());
             html = String.format("<p>The developers %s (IDs: %s) were merged into a single new developer. "
                     + "The newly created developer is %s (ID: %s).</p>",
                     String.join(",", originalDeveloperNames),
                     String.join(",", originalDeveloperIds),
                     changedDevelopers.get(0).getName(),
-                    changedDevelopers.get(0).getId());
+                    changedDevelopers.get(0).getDeveloperId());
         } else if (originalDevelopers.size() == 1 && changedDevelopers.size() == 1) {
             html = String.format("<p>A product changed ownership from developer %s (IDs: %s) "
                     + "to developer %s (ID: %s).</p>",
                     originalDevelopers.get(0).getName(),
-                    originalDevelopers.get(0).getId(),
+                    originalDevelopers.get(0).getDeveloperId(),
                     changedDevelopers.get(0).getName(),
-                    changedDevelopers.get(0).getId());
+                    changedDevelopers.get(0).getDeveloperId());
         } else {
             html += "<p>A change to developers occurred.</p>";
         }

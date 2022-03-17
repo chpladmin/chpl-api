@@ -1,5 +1,6 @@
 package gov.healthit.chpl.validation.pendingListing.reviewer;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -33,55 +34,55 @@ public class RequiredDataReviewer extends PermissionBasedReviewer {
         if (listing.getCertificationBodyId() == null) {
             listing.getErrorMessages().add("ONC-ACB is required but was not found.");
         }
-        if (StringUtils.isEmpty(listing.getUniqueId())) {
+        if (ObjectUtils.isEmpty(listing.getUniqueId())) {
             listing.getErrorMessages().add("The product unique id is required.");
         }
-        if (StringUtils.isEmpty(listing.getDeveloperName())) {
+        if (ObjectUtils.isEmpty(listing.getDeveloperName())) {
             listing.getErrorMessages().add(msgUtil.getMessage("developer.nameRequired"));
         }
-        if (StringUtils.isEmpty(listing.getProductName())) {
+        if (ObjectUtils.isEmpty(listing.getProductName())) {
             listing.getErrorMessages().add("A product name is required.");
         }
-        if (StringUtils.isEmpty(listing.getProductVersion())) {
+        if (ObjectUtils.isEmpty(listing.getProductVersion())) {
             listing.getErrorMessages().add("A product version is required.");
         }
         if (listing.getDeveloperAddress() != null) {
-            if (StringUtils.isEmpty(listing.getDeveloperAddress().getStreetLineOne())) {
+            if (ObjectUtils.isEmpty(listing.getDeveloperAddress().getLine1())) {
                 listing.getErrorMessages().add(msgUtil.getMessage("developer.address.streetRequired"));
             }
-            if (StringUtils.isEmpty(listing.getDeveloperAddress().getCity())) {
+            if (ObjectUtils.isEmpty(listing.getDeveloperAddress().getCity())) {
                 listing.getErrorMessages().add(msgUtil.getMessage("developer.address.cityRequired"));
             }
-            if (StringUtils.isEmpty(listing.getDeveloperAddress().getState())) {
+            if (ObjectUtils.isEmpty(listing.getDeveloperAddress().getState())) {
                 listing.getErrorMessages().add(msgUtil.getMessage("developer.address.stateRequired"));
             }
-            if (StringUtils.isEmpty(listing.getDeveloperAddress().getZipcode())) {
+            if (ObjectUtils.isEmpty(listing.getDeveloperAddress().getZipcode())) {
                 listing.getErrorMessages().add(msgUtil.getMessage("developer.address.zipRequired"));
             }
         } else {
-            if (StringUtils.isEmpty(listing.getDeveloperStreetAddress())) {
+            if (ObjectUtils.isEmpty(listing.getDeveloperStreetAddress())) {
                 listing.getErrorMessages().add(msgUtil.getMessage("developer.address.streetRequired"));
             }
-            if (StringUtils.isEmpty(listing.getDeveloperCity())) {
+            if (ObjectUtils.isEmpty(listing.getDeveloperCity())) {
                 listing.getErrorMessages().add(msgUtil.getMessage("developer.address.cityRequired"));
             }
-            if (StringUtils.isEmpty(listing.getDeveloperState())) {
+            if (ObjectUtils.isEmpty(listing.getDeveloperState())) {
                 listing.getErrorMessages().add(msgUtil.getMessage("developer.address.stateRequired"));
             }
-            if (StringUtils.isEmpty(listing.getDeveloperZipCode())) {
+            if (ObjectUtils.isEmpty(listing.getDeveloperZipCode())) {
                 listing.getErrorMessages().add(msgUtil.getMessage("developer.address.zipRequired"));
             }
         }
-        if (StringUtils.isEmpty(listing.getDeveloperWebsite())) {
+        if (ObjectUtils.isEmpty(listing.getDeveloperWebsite())) {
             listing.getErrorMessages().add(msgUtil.getMessage("developer.websiteRequired"));
         }
-        if (StringUtils.isEmpty(listing.getDeveloperEmail())) {
+        if (ObjectUtils.isEmpty(listing.getDeveloperEmail())) {
             listing.getErrorMessages().add(msgUtil.getMessage("developer.contact.emailRequired"));
         }
-        if (StringUtils.isEmpty(listing.getDeveloperPhoneNumber())) {
+        if (ObjectUtils.isEmpty(listing.getDeveloperPhoneNumber())) {
             listing.getErrorMessages().add(msgUtil.getMessage("developer.contact.phoneRequired"));
         }
-        if (StringUtils.isEmpty(listing.getDeveloperContactName())) {
+        if (ObjectUtils.isEmpty(listing.getDeveloperContactName())) {
             listing.getErrorMessages().add(msgUtil.getMessage("developer.contact.nameRequired"));
         }
 

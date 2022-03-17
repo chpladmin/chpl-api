@@ -18,7 +18,6 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequestWebsite;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -116,11 +115,11 @@ public class ChangeRequestWebsiteService extends ChangeRequestDetailsService<Cha
     protected ChangeRequest execute(ChangeRequest cr)
             throws EntityRetrievalException, EntityCreationException {
         ChangeRequestWebsite crWebsite = (ChangeRequestWebsite) cr.getDetails();
-        DeveloperDTO developer = developerManager.getById(cr.getDeveloper().getDeveloperId());
+        Developer developer = developerManager.getById(cr.getDeveloper().getDeveloperId());
         developer.setWebsite(crWebsite.getWebsite());
         try {
-            DeveloperDTO updatedDeveloper = developerManager.update(developer, false);
-            cr.setDeveloper(new Developer(updatedDeveloper));
+            Developer updatedDeveloper = developerManager.update(developer, false);
+            cr.setDeveloper(updatedDeveloper);
             return cr;
         } catch (JsonProcessingException | ValidationException e) {
             throw new RuntimeException(e);

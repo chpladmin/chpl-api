@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -13,7 +14,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,16 +26,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductOwner;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.SplitProductsRequest;
 import gov.healthit.chpl.domain.UpdateProductsRequest;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.ContactDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.ProductDTO;
-import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -82,25 +79,15 @@ public class ProductController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @DeprecatedResponseFields(responseClass = ProductResults.class)
     public @ResponseBody ProductResults getAllProducts(@RequestParam(required = false) final Long developerId) {
-
-        List<ProductDTO> productList = null;
-
+        List<Product> productList = null;
         if (developerId != null && developerId > 0) {
             productList = productManager.getByDeveloper(developerId);
         } else {
             productList = productManager.getAll();
         }
 
-        List<Product> products = new ArrayList<Product>();
-        if (productList != null && productList.size() > 0) {
-            for (ProductDTO dto : productList) {
-                Product result = new Product(dto);
-                products.add(result);
-            }
-        }
-
         ProductResults results = new ProductResults();
-        results.setProducts(products);
+        results.setProducts(productList);
         return results;
     }
 
@@ -112,13 +99,7 @@ public class ProductController {
     @DeprecatedResponseFields(responseClass = Product.class)
     public @ResponseBody Product getProductById(@PathVariable("productId") final Long productId)
             throws EntityRetrievalException {
-        ProductDTO product = productManager.getById(productId);
-
-        Product result = null;
-        if (product != null) {
-            result = new Product(product);
-        }
-        return result;
+        return  productManager.getById(productId);
     }
 
     @Operation(summary = "Get all listings owned by the specified product.", description = "",
@@ -164,7 +145,7 @@ public class ProductController {
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
             JsonProcessingException, ValidationException {
 
-        ProductDTO result = null;
+        Product result = null;
         HttpHeaders responseHeaders = new HttpHeaders();
 
         if (productInfo.getProductIds() == null || productInfo.getProductIds().size() == 0) {
@@ -186,43 +167,10 @@ public class ProductController {
                             getDuplicateChplProductNumberErrorMessages(duplicateChplProdNbrs), null);
                 }
             }
-            // build a new product dto that has all of the updated data
-            ProductDTO toUpdate = new ProductDTO();
-            toUpdate.setId(productInfo.getProductIds().get(0));
-            toUpdate.setName(productInfo.getProduct().getName());
-            toUpdate.setReportFileLocation(productInfo.getProduct().getReportFileLocation());
-            if (productInfo.getProduct().getContact() != null) {
-                ContactDTO contact = new ContactDTO();
-                contact.setId(productInfo.getProduct().getContact().getContactId());
-                contact.setFullName(productInfo.getProduct().getContact().getFullName());
-                contact.setTitle(productInfo.getProduct().getContact().getTitle());
-                contact.setEmail(productInfo.getProduct().getContact().getEmail());
-                contact.setPhoneNumber(productInfo.getProduct().getContact().getPhoneNumber());
-                toUpdate.setContact(contact);
-            }
-            // update the developer if an id is supplied
-            if (productInfo.getNewDeveloperId() != null) {
-                toUpdate.getOwner().setId(productInfo.getNewDeveloperId());
-            } else {
-                toUpdate.getOwner().setId(productInfo.getProduct().getOwner().getDeveloperId());
-            }
-            // product could have updated ownership history
-            if (productInfo.getProduct().getOwnerHistory() != null) {
-                for (ProductOwner prevOwner : productInfo.getProduct().getOwnerHistory()) {
-                    ProductOwnerDTO prevOwnerDTO = new ProductOwnerDTO();
-                    prevOwnerDTO.setId(prevOwner.getId());
-                    prevOwnerDTO.setProductId(toUpdate.getId());
-                    DeveloperDTO dev = new DeveloperDTO();
-                    dev.setId(prevOwner.getDeveloper().getDeveloperId());
-                    prevOwnerDTO.setDeveloper(dev);
-                    prevOwnerDTO.setTransferDate(prevOwner.getTransferDate());
-                    toUpdate.getOwnerHistory().add(prevOwnerDTO);
-                }
-            }
             if (didOwnerHistoryChange(productInfo)) {
-                result = productManager.updateProductOwnership(toUpdate);
+                result = productManager.updateProductOwnership(productInfo.getProduct());
             } else {
-                result = productManager.update(toUpdate);
+                result = productManager.update(productInfo.getProduct());
             }
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         }
@@ -233,18 +181,15 @@ public class ProductController {
 
         // get the updated product since all transactions should be complete by
         // this point
-        ProductDTO updatedProduct = productManager.getById(result.getId());
-        return new ResponseEntity<Product>(new Product(updatedProduct), responseHeaders, HttpStatus.OK);
+        Product updatedProduct = productManager.getById(result.getProductId());
+        return new ResponseEntity<Product>(updatedProduct, responseHeaders, HttpStatus.OK);
     }
 
     private Boolean didOwnerHistoryChange(UpdateProductsRequest request) {
         try {
-            ProductDTO origProduct = productManager.getById(request.getProduct().getProductId());
+            Product origProduct = productManager.getById(request.getProduct().getProductId());
             if (origProduct != null) {
-                // Convert the dto list to domain objects
-                List<ProductOwner> origProductOwners = convertToProductOwnerDomainTypes(origProduct.getOwnerHistory());
-                List<ProductOwner> newProductOwners = request.getProduct().getOwnerHistory();
-                return !isProductOwnerListEqual(origProductOwners, newProductOwners);
+                return !isProductOwnerListEqual(origProduct.getOwnerHistory(), request.getProduct().getOwnerHistory());
             }
         } catch (EntityRetrievalException e) {
             return false;
@@ -267,14 +212,6 @@ public class ProductController {
         return true;
     }
 
-    private List<ProductOwner> convertToProductOwnerDomainTypes(List<ProductOwnerDTO> dtos) {
-        List<ProductOwner> productOwners = new ArrayList<ProductOwner>();
-        for (ProductOwnerDTO dto : dtos) {
-            productOwners.add(new ProductOwner(dto));
-        }
-        return productOwners;
-    }
-
     private Set<String> getDuplicateChplProductNumberErrorMessages(
             final List<DuplicateChplProdNumber> duplicateChplProdNumbers) {
 
@@ -294,7 +231,7 @@ public class ProductController {
             final Long productId, final Long newDeveloperId) throws EntityRetrievalException {
 
         List<DuplicateChplProdNumber> duplicateChplProductNumbers = new ArrayList<DuplicateChplProdNumber>();
-        DeveloperDTO newDeveloper = developerManager.getById(newDeveloperId);
+        Developer newDeveloper = developerManager.getById(newDeveloperId);
 
         // cpManager.getByProduct(productId)
         List<CertifiedProductDetailsDTO> newDeveloperCertifiedProducts = cpManager.getByDeveloperId(newDeveloperId);
@@ -372,13 +309,13 @@ public class ProductController {
         if (splitRequest.getNewProductCode() != null) {
             splitRequest.setNewProductCode(splitRequest.getNewProductCode().trim());
         }
-        if (StringUtils.isEmpty(splitRequest.getNewProductCode())) {
+        if (ObjectUtils.isEmpty(splitRequest.getNewProductCode())) {
             throw new InvalidArgumentsException("A new product code is required.");
         }
         if (splitRequest.getNewProductName() != null) {
             splitRequest.setNewProductName(splitRequest.getNewProductName().trim());
         }
-        if (StringUtils.isEmpty(splitRequest.getNewProductName())) {
+        if (ObjectUtils.isEmpty(splitRequest.getNewProductName())) {
             throw new InvalidArgumentsException("A new product name is required.");
         }
         if (splitRequest.getNewVersions() == null || splitRequest.getNewVersions().size() == 0) {
@@ -398,10 +335,13 @@ public class ProductController {
         }
 
         HttpHeaders responseHeaders = new HttpHeaders();
-        ProductDTO oldProduct = productManager.getById(splitRequest.getOldProduct().getProductId());
-        ProductDTO newProduct = new ProductDTO();
+        Product oldProduct = productManager.getById(splitRequest.getOldProduct().getProductId());
+        Product newProduct = new Product();
         newProduct.setName(splitRequest.getNewProductName());
-        newProduct.getOwner().setId(oldProduct.getOwner().getId());
+        newProduct.setOwner(Developer.builder()
+                .id(oldProduct.getOwner().getDeveloperId())
+                .developerId(oldProduct.getOwner().getDeveloperId())
+                .build());
         List<ProductVersionDTO> newProductVersions = new ArrayList<ProductVersionDTO>();
         for (ProductVersion requestVersion : splitRequest.getNewVersions()) {
             ProductVersionDTO newVersion = new ProductVersionDTO();
@@ -409,18 +349,18 @@ public class ProductController {
             newVersion.setVersion(requestVersion.getVersion());
             newProductVersions.add(newVersion);
         }
-        ProductDTO splitProductNew = productManager.split(oldProduct, newProduct, splitRequest.getNewProductCode(),
+        Product splitProductNew = productManager.split(oldProduct, newProduct, splitRequest.getNewProductCode(),
                 newProductVersions);
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-        ProductDTO splitProductOld = productManager.getById(oldProduct.getId());
+        Product splitProductOld = productManager.getById(oldProduct.getProductId());
         SplitProductResponse response = new SplitProductResponse();
-        response.setNewProduct(new Product(splitProductNew));
-        response.setOldProduct(new Product(splitProductOld));
+        response.setNewProduct(splitProductNew);
+        response.setOldProduct(splitProductOld);
 
         // find out which CHPL product numbers would have changed (only
         // new-style ones)
         // and add them to the response header
-        List<CertifiedProductDetailsDTO> possibleChangedChplIds = cpManager.getByProduct(splitProductNew.getId());
+        List<CertifiedProductDetailsDTO> possibleChangedChplIds = cpManager.getByProduct(splitProductNew.getProductId());
         if (possibleChangedChplIds != null && possibleChangedChplIds.size() > 0) {
             StringBuffer buf = new StringBuffer();
             for (CertifiedProductDetailsDTO possibleChanged : possibleChangedChplIds) {
@@ -436,26 +376,8 @@ public class ProductController {
         return new ResponseEntity<SplitProductResponse>(response, responseHeaders, HttpStatus.OK);
     }
 
-    private ProductDTO mergeProducts(final UpdateProductsRequest productInfo) throws JsonProcessingException, EntityRetrievalException, EntityCreationException {
-        ProductDTO newProduct = new ProductDTO();
-        newProduct.setName(productInfo.getProduct().getName());
-        newProduct.setReportFileLocation(productInfo.getProduct().getReportFileLocation());
-        if (productInfo.getNewDeveloperId() != null) {
-            newProduct.getOwner().setId(productInfo.getNewDeveloperId());
-        }
-        // new product could be created with ownership history
-        if (productInfo.getProduct().getOwnerHistory() != null) {
-            for (ProductOwner prevOwner : productInfo.getProduct().getOwnerHistory()) {
-                ProductOwnerDTO prevOwnerDTO = new ProductOwnerDTO();
-                prevOwnerDTO.setId(prevOwner.getId());
-                DeveloperDTO dev = new DeveloperDTO();
-                dev.setId(prevOwner.getDeveloper().getDeveloperId());
-                prevOwnerDTO.setDeveloper(dev);
-                prevOwnerDTO.setTransferDate(prevOwner.getTransferDate());
-                newProduct.getOwnerHistory().add(prevOwnerDTO);
-            }
-        }
-        return productManager.merge(productInfo.getProductIds(), newProduct);
+    private Product mergeProducts(UpdateProductsRequest productInfo) throws JsonProcessingException, EntityRetrievalException, EntityCreationException {
+        return productManager.merge(productInfo.getProductIds(), productInfo.getProduct());
     }
 
     private class DuplicateChplProdNumber {

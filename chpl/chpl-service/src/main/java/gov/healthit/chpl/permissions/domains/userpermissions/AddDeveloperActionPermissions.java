@@ -2,7 +2,7 @@ package gov.healthit.chpl.permissions.domains.userpermissions;
 
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
 @Component(value = "userPermissionsAddDeveloperActionPermissions")
@@ -15,7 +15,7 @@ public class AddDeveloperActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess(final Object obj) {
-        if (!(obj instanceof DeveloperDTO)) {
+        if (!(obj instanceof Developer)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin()
                 || getResourcePermissions().isUserRoleOnc()
@@ -23,8 +23,8 @@ public class AddDeveloperActionPermissions extends ActionPermissions {
                 || getResourcePermissions().isUserRoleInvitedUserCreator()) {
             return true;
         } else if (getResourcePermissions().isUserRoleDeveloperAdmin()) {
-            DeveloperDTO developer = (DeveloperDTO) obj;
-            return isDeveloperValidForCurrentUser(developer.getId());
+            Developer developer = (Developer) obj;
+            return isDeveloperValidForCurrentUser(developer.getDeveloperId());
         } else {
             return false;
         }

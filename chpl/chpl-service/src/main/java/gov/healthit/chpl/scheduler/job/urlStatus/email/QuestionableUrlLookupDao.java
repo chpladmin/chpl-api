@@ -20,7 +20,6 @@ import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlResult;
@@ -77,15 +76,15 @@ public class QuestionableUrlLookupDao {
 
     @Transactional
     public List<FailedUrlResult> getDevelopersWithUrl(UrlResult urlResult) {
-        List<DeveloperDTO> devsWithBadUrl = devDao.getByWebsite(urlResult.getUrl());
+        List<Developer> devsWithBadUrl = devDao.getByWebsite(urlResult.getUrl());
         return devsWithBadUrl.stream()
-            .map(devDto -> FailedUrlResult.builder()
+            .map(dev -> FailedUrlResult.builder()
                     .lastChecked(urlResult.getLastChecked())
                     .responseCode(urlResult.getResponseCode())
                     .responseMessage(urlResult.getResponseMessage())
                     .url(urlResult.getUrl())
                     .urlType(urlResult.getUrlType())
-                    .developer(new Developer(devDto))
+                    .developer(dev)
                     .build())
             .collect(Collectors.toList());
     }

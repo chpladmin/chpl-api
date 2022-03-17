@@ -5,7 +5,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.domain.DeveloperStatus;
+import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.dto.DeveloperStatusEventPair;
 
 /**
@@ -19,15 +20,15 @@ public final class DeveloperStatusEventsHelper {
 
     /**
      * Determine if an event was added.
-     * @param originalEvents - List<DeveloperStatusEventDTO>
-     * @param updatedEvents - List<DeveloperStatusEventDTO>
-     * @return List<DeveloperStatusEventDTO>
+     * @param originalEvents - List<DeveloperStatusEvent>
+     * @param updatedEvents - List<DeveloperStatusEvent>
+     * @return List<DeveloperStatusEvent>
      */
-    public static List<DeveloperStatusEventDTO> getAddedEvents(final List<DeveloperStatusEventDTO> originalEvents,
-            final List<DeveloperStatusEventDTO> updatedEvents) {
-        List<DeveloperStatusEventDTO> originalStatuses =
+    public static List<DeveloperStatusEvent> getAddedEvents(final List<DeveloperStatusEvent> originalEvents,
+            final List<DeveloperStatusEvent> updatedEvents) {
+        List<DeveloperStatusEvent> originalStatuses =
                 cloneDeveloperStatusEventList(originalEvents);
-        List<DeveloperStatusEventDTO> updatedStatuses =
+        List<DeveloperStatusEvent> updatedStatuses =
                 cloneDeveloperStatusEventList(updatedEvents);
 
         updatedStatuses.removeAll(originalStatuses);
@@ -36,15 +37,15 @@ public final class DeveloperStatusEventsHelper {
 
     /**
      * Determine if an event was removed.
-     * @param originalEvents - List<DeveloperStatusEventDTO>
-     * @param updatedEvents - List<DeveloperStatusEventDTO>
-     * @return List<DeveloperStatusEventDTO>
+     * @param originalEvents - List<DeveloperStatusEvent>
+     * @param updatedEvents - List<DeveloperStatusEvent>
+     * @return List<DeveloperStatusEvent>
      */
-    public static List<DeveloperStatusEventDTO> getRemovedEvents(final List<DeveloperStatusEventDTO> originalEvents,
-            final List<DeveloperStatusEventDTO> updatedEvents) {
-        List<DeveloperStatusEventDTO> originalStatuses =
+    public static List<DeveloperStatusEvent> getRemovedEvents(final List<DeveloperStatusEvent> originalEvents,
+            final List<DeveloperStatusEvent> updatedEvents) {
+        List<DeveloperStatusEvent> originalStatuses =
                 cloneDeveloperStatusEventList(originalEvents);
-        List<DeveloperStatusEventDTO> updatedStatuses =
+        List<DeveloperStatusEvent> updatedStatuses =
                 cloneDeveloperStatusEventList(updatedEvents);
 
         originalStatuses.removeAll(updatedStatuses);
@@ -53,21 +54,21 @@ public final class DeveloperStatusEventsHelper {
 
     /**
      * Determine if an event was updated.
-     * @param originalEvents - List<DeveloperStatusEventDTO>
-     * @param updatedEvents - List<DeveloperStatusEventDTO>
-     * @return List<DeveloperStatusEventDTO>
+     * @param originalEvents - List<DeveloperStatusEvent>
+     * @param updatedEvents - List<DeveloperStatusEvent>
+     * @return List<DeveloperStatusEvent>
      */
-    public static List<DeveloperStatusEventPair> getUpdatedEvents(final List<DeveloperStatusEventDTO> originalEvents,
-            final List<DeveloperStatusEventDTO> updatedEvents) {
+    public static List<DeveloperStatusEventPair> getUpdatedEvents(final List<DeveloperStatusEvent> originalEvents,
+            final List<DeveloperStatusEvent> updatedEvents) {
         List<DeveloperStatusEventPair> statuses = new ArrayList<DeveloperStatusEventPair>();
-        for (DeveloperStatusEventDTO updatedStatusEvent : updatedEvents) {
-            for (DeveloperStatusEventDTO existingStatusEvent : originalEvents) {
+        for (DeveloperStatusEvent updatedStatusEvent : updatedEvents) {
+            for (DeveloperStatusEvent existingStatusEvent : originalEvents) {
                 if (updatedStatusEvent.equals(existingStatusEvent)) {
                     if (!nullSafeEquals(updatedStatusEvent.getReason(), existingStatusEvent.getReason())
                             || !nullSafeDateEquals(
                                     updatedStatusEvent.getStatusDate(), existingStatusEvent.getStatusDate())
-                            || !nullSafeEquals(updatedStatusEvent.getStatus().getStatusName(),
-                                    existingStatusEvent.getStatus().getStatusName())) {
+                            || !nullSafeEquals(updatedStatusEvent.getStatus().getStatus(),
+                                    existingStatusEvent.getStatus().getStatus())) {
 
                         statuses.add(new DeveloperStatusEventPair(existingStatusEvent, updatedStatusEvent));
                     }
@@ -104,14 +105,23 @@ public final class DeveloperStatusEventsHelper {
         }
     }
 
-    private static List<DeveloperStatusEventDTO> cloneDeveloperStatusEventList(
-            final List<DeveloperStatusEventDTO> original) {
-        List<DeveloperStatusEventDTO> clone = new ArrayList<DeveloperStatusEventDTO>();
-        if (original == null) {
+    public static List<DeveloperStatusEvent> cloneDeveloperStatusEventList(
+            List<DeveloperStatusEvent> originals) {
+        List<DeveloperStatusEvent> clone = new ArrayList<DeveloperStatusEvent>();
+        if (originals == null) {
             return clone;
         } else {
-            for (DeveloperStatusEventDTO event : original) {
-                clone.add(new DeveloperStatusEventDTO(event));
+            for (DeveloperStatusEvent original : originals) {
+                clone.add(DeveloperStatusEvent.builder()
+                        .developerId(original.getDeveloperId())
+                        .id(original.getId())
+                        .reason(original.getReason())
+                        .status(DeveloperStatus.builder()
+                                .id(original.getStatus().getId())
+                                .status(original.getStatus().getStatus())
+                                .build())
+                        .statusDate(original.getStatusDate())
+                        .build());
             }
             return clone;
         }

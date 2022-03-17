@@ -86,7 +86,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 
         if (dto.getDeveloperAddress() != null) {
             Address address = new Address();
-            address.setAddressId(dto.getDeveloperAddress().getId());
+            address.setAddressId(dto.getDeveloperAddress().getAddressId());
             address.setLine1(dto.getDeveloperStreetAddress());
             address.setCity(dto.getDeveloperCity());
             address.setState(dto.getDeveloperState());

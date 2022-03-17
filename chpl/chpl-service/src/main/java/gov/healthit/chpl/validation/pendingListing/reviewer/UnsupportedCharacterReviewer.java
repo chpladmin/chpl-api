@@ -43,10 +43,10 @@ public class UnsupportedCharacterReviewer implements Reviewer {
         addListingWarningIfNotValid(listing, listing.getCertificationEdition(),
                 "Certification Edition '" + listing.getCertificationEdition() + "'");
         if (listing.getDeveloperAddress() != null) {
-            addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getStreetLineOne(),
-                    "Developer's Street Address (Line 1) '" + listing.getDeveloperAddress().getStreetLineOne() + "'");
-            addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getStreetLineTwo(),
-                    "Developer's Street Address (Line 2) '" + listing.getDeveloperAddress().getStreetLineTwo() + "'");
+            addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getLine1(),
+                    "Developer's Street Address (Line 1) '" + listing.getDeveloperAddress().getLine1() + "'");
+            addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getLine2(),
+                    "Developer's Street Address (Line 2) '" + listing.getDeveloperAddress().getLine2() + "'");
             addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getCity(),
                     "Developer's City '" + listing.getDeveloperAddress().getCity() + "'");
             addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getState(),

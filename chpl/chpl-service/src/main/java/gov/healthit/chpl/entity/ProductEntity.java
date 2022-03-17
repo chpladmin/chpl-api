@@ -113,6 +113,7 @@ public class ProductEntity implements Serializable {
     public Product toDomain() {
         return Product.builder()
                 .productId(this.getId())
+                .id(this.getId())
                 .contact(this.getContact() != null ? this.getContact().toDomain() : null)
                 .lastModifiedDate(this.getLastModifiedDate() + "")
                 .name(this.getName())

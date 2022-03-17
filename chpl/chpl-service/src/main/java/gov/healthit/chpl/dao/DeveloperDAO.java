@@ -4,28 +4,25 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.ContactDTO;
-import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
-import gov.healthit.chpl.entity.AddressEntity;
-import gov.healthit.chpl.entity.ContactEntity;
+import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.KeyValueModelStatuses;
+import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.entity.UserDeveloperMapEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
@@ -39,11 +36,21 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Repository("developerDAO")
 public class DeveloperDAO extends BaseDAOImpl {
+    private static final String DEVELOPER_HQL = "SELECT DISTINCT v FROM "
+            + "DeveloperEntity v "
+            + "LEFT OUTER JOIN FETCH v.address "
+            + "LEFT OUTER JOIN FETCH v.contact "
+            + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
+            + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
+            + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
+            + "LEFT OUTER JOIN FETCH v.publicAttestations devAtt "
+            + "LEFT OUTER JOIN FETCH devAtt.period per ";
 
-    private static final Logger LOGGER = LogManager.getLogger(DeveloperDAO.class);
     private static final DeveloperStatusType DEFAULT_STATUS = DeveloperStatusType.Active;
     private AddressDAO addressDao;
     private ContactDAO contactDao;
@@ -72,148 +79,59 @@ public class DeveloperDAO extends BaseDAOImpl {
             developerEntity.setLastModifiedUser(AuthUtil.getAuditId());
             create(developerEntity);
 
-            DeveloperStatusEventEntity initialStatusEntity = new DeveloperStatusEventEntity();
-            initialStatusEntity.setDeveloperId(developerEntity.getId());
-            DeveloperStatusEntity defaultStatus = getStatusByName(DEFAULT_STATUS.toString());
-            initialStatusEntity.setDeveloperStatusId(defaultStatus.getId());
-            initialStatusEntity.setStatusDate(new Date());
-            initialStatusEntity.setLastModifiedUser(AuthUtil.getAuditId());
-            create(initialStatusEntity);
+            if (CollectionUtils.isEmpty(developer.getStatusEvents())) {
+                DeveloperStatusEventEntity initialStatusEntity = new DeveloperStatusEventEntity();
+                initialStatusEntity.setDeveloperId(developerEntity.getId());
+                DeveloperStatusEntity defaultStatus = getStatusByName(DEFAULT_STATUS.toString());
+                initialStatusEntity.setDeveloperStatusId(defaultStatus.getId());
+                initialStatusEntity.setStatusDate(new Date());
+                initialStatusEntity.setLastModifiedUser(AuthUtil.getAuditId());
+                create(initialStatusEntity);
+            } else {
+                for (DeveloperStatusEvent providedDeveloperStatusEvent : developer.getStatusEvents()) {
+                    if (providedDeveloperStatusEvent.getStatus() != null
+                            && !ObjectUtils.isEmpty(providedDeveloperStatusEvent.getStatus().getStatus())
+                            && providedDeveloperStatusEvent.getStatusDate() != null) {
+                        DeveloperStatusEventEntity currDevStatus = new DeveloperStatusEventEntity();
+                        currDevStatus.setDeveloperId(developerEntity.getId());
+                        DeveloperStatusEntity defaultStatus = getStatusByName(
+                                providedDeveloperStatusEvent.getStatus().getStatus());
+                        if (defaultStatus != null) {
+                            currDevStatus.setDeveloperStatusId(defaultStatus.getId());
+                            currDevStatus.setStatusDate(providedDeveloperStatusEvent.getStatusDate());
+                            currDevStatus.setLastModifiedUser(AuthUtil.getAuditId());
+                            create(currDevStatus);
+                        } else {
+                            String msg = "Could not find status with name "
+                                    + providedDeveloperStatusEvent.getStatus().getStatus()
+                                    + "; cannot insert this status history entry for developer " + developer.getName();
+                            LOGGER.error(msg);
+                            throw new EntityCreationException(msg);
+                        }
+                    } else {
+                        String msg = "Developer Status name and date must be provided but at least one was not found;"
+                                + "cannot insert this status history for developer " + developer.getName();
+                        LOGGER.error(msg);
+                        throw new EntityCreationException(msg);
+                    }
+                }
+            }
             return developerEntity.getId();
         } catch (Exception ex) {
             throw new EntityCreationException(ex);
         }
     }
 
-    public DeveloperDTO create(DeveloperDTO dto) throws EntityCreationException, EntityRetrievalException {
-
-        DeveloperEntity entity = null;
-        try {
-            if (dto.getId() != null) {
-                entity = this.getEntityById(dto.getId());
-            }
-        } catch (final EntityRetrievalException e) {
-            throw new EntityCreationException(e);
-        }
-
-        if (entity != null) {
-            throw new EntityCreationException("An entity with this ID already exists.");
-        } else {
-            entity = new DeveloperEntity();
-
-            if (dto.getAddress() != null) {
-                entity.setAddress(addressDao.saveAddress(dto.getAddress()));
-                entity.setAddressId(entity.getAddress().getId());
-            }
-            if (dto.getContact() != null) {
-                if (dto.getContact().getId() != null) {
-                    ContactDTO contact = contactDao.getById(dto.getContact().getId());
-                    if (contact != null && contact.getId() != null) {
-                        entity.setContactId(contact.getId());
-                    }
-                } else {
-                    ContactEntity contact = contactDao.create(dto.getContact());
-                    if (contact != null) {
-                        entity.setContactId(contact.getId());
-                    }
-                }
-            }
-
-            entity.setName(dto.getName());
-            entity.setWebsite(dto.getWebsite());
-
-            if (dto.getSelfDeveloper() != null) {
-                entity.setSelfDeveloper(dto.getSelfDeveloper());
-            } else {
-                entity.setSelfDeveloper(false);
-            }
-
-            if (dto.getDeleted() != null) {
-                entity.setDeleted(dto.getDeleted());
-            } else {
-                entity.setDeleted(false);
-            }
-
-            if (dto.getLastModifiedUser() != null) {
-                entity.setLastModifiedUser(dto.getLastModifiedUser());
-            } else {
-                entity.setLastModifiedUser(AuthUtil.getAuditId());
-            }
-
-            if (dto.getLastModifiedDate() != null) {
-                entity.setLastModifiedDate(dto.getLastModifiedDate());
-            } else {
-                entity.setLastModifiedDate(new Date());
-            }
-
-            if (dto.getCreationDate() != null) {
-                entity.setCreationDate(dto.getCreationDate());
-            } else {
-                entity.setCreationDate(new Date());
-            }
-
-            create(entity);
-
-            // create a status history entry - will be Active by default
-            if (dto.getStatusEvents() == null || dto.getStatusEvents().size() == 0) {
-                DeveloperStatusEventEntity initialDeveloperStatus = new DeveloperStatusEventEntity();
-                initialDeveloperStatus.setDeveloperId(entity.getId());
-                DeveloperStatusEntity defaultStatus = getStatusByName(DEFAULT_STATUS.toString());
-                initialDeveloperStatus.setDeveloperStatusId(defaultStatus.getId());
-                initialDeveloperStatus.setStatusDate(entity.getCreationDate());
-                initialDeveloperStatus.setDeleted(false);
-                initialDeveloperStatus.setLastModifiedUser(entity.getLastModifiedUser());
-                entityManager.persist(initialDeveloperStatus);
-                entityManager.flush();
-            } else {
-                for (DeveloperStatusEventDTO providedDeveloperStatusEvent : dto.getStatusEvents()) {
-                    if (providedDeveloperStatusEvent.getStatus() != null
-                            && !StringUtils.isEmpty(providedDeveloperStatusEvent.getStatus().getStatusName())
-                            && providedDeveloperStatusEvent.getStatusDate() != null) {
-                        DeveloperStatusEventEntity currDevStatus = new DeveloperStatusEventEntity();
-                        currDevStatus.setDeveloperId(entity.getId());
-                        DeveloperStatusEntity defaultStatus = getStatusByName(
-                                providedDeveloperStatusEvent.getStatus().getStatusName());
-                        if (defaultStatus != null) {
-                            currDevStatus.setDeveloperStatusId(defaultStatus.getId());
-                            currDevStatus.setStatusDate(providedDeveloperStatusEvent.getStatusDate());
-                            currDevStatus.setDeleted(false);
-                            currDevStatus.setLastModifiedUser(entity.getLastModifiedUser());
-                            entityManager.persist(currDevStatus);
-                            entityManager.flush();
-                        } else {
-                            String msg = "Could not find status with name "
-                                    + providedDeveloperStatusEvent.getStatus().getStatusName()
-                                    + "; cannot insert this status history entry for developer " + entity.getName();
-                            LOGGER.error(msg);
-                            throw new EntityCreationException(msg);
-                        }
-                    } else {
-                        String msg = "Developer Status name and date must be provided but at least one was not found;"
-                                + "cannot insert this status history for developer " + entity.getName();
-                        LOGGER.error(msg);
-                        throw new EntityCreationException(msg);
-                    }
-                }
-            }
-
-            Long id = entity.getId();
-            entityManager.clear();
-            return getById(id);
-        }
-    }
-
-    public DeveloperDTO update(DeveloperDTO dto) throws EntityRetrievalException, EntityCreationException {
-        DeveloperEntity entity = this.getEntityById(dto.getId());
+    public void update(Developer developer) throws EntityRetrievalException, EntityCreationException {
+        DeveloperEntity entity = this.getEntityById(developer.getDeveloperId());
         if (entity == null) {
-            throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
+            throw new EntityRetrievalException("Entity with id " + developer.getDeveloperId() + " does not exist");
         }
 
-        if (dto.getAddress() != null) {
+        if (developer.getAddress() != null) {
             try {
-                AddressEntity address = addressDao.saveAddress(dto.getAddress());
-                entity.setAddress(address);
-                entity.setAddressId(address.getId());
+                Long addressId = addressDao.saveAddress(developer.getAddress());
+                entity.setAddressId(addressId);
             } catch (EntityCreationException ex) {
                 LOGGER.error("Could not create new address in the database.", ex);
                 entity.setAddress(null);
@@ -224,21 +142,14 @@ public class DeveloperDAO extends BaseDAOImpl {
             entity.setAddressId(null);
         }
 
-        if (dto.getContact() != null) {
-            if (dto.getContact().getId() == null) {
+        if (developer.getContact() != null) {
+            if (developer.getContact().getContactId() == null) {
                 // if there is not contact id then it must not exist - create it
-                ContactEntity contact = contactDao.create(dto.getContact());
-                if (contact != null && contact.getId() != null) {
-                    entity.setContactId(contact.getId());
-                    entity.setContact(contact);
-                }
+                Long contactId = contactDao.create(developer.getContact());
+                entity.setContactId(contactId);
             } else {
                 // if there is a contact id then set that on the object
-                ContactEntity contact = contactDao.update(dto.getContact());
-                if (contact != null) {
-                    entity.setContactId(dto.getContact().getId());
-                    entity.setContact(contact);
-                }
+                contactDao.update(developer.getContact());
             }
         } else {
             // if there's no contact at all, set the id to null
@@ -246,99 +157,73 @@ public class DeveloperDAO extends BaseDAOImpl {
             entity.setContact(null);
         }
 
-        entity.setWebsite(dto.getWebsite());
-        if (dto.getSelfDeveloper() != null) {
-            entity.setSelfDeveloper(dto.getSelfDeveloper());
-        } else {
-            entity.setSelfDeveloper(false);
-        }
-        if (dto.getName() != null) {
-            entity.setName(dto.getName());
-        }
-
-        if (dto.getDeleted() != null) {
-            entity.setDeleted(dto.getDeleted());
-        }
-
-        if (dto.getLastModifiedUser() != null) {
-            entity.setLastModifiedUser(dto.getLastModifiedUser());
-        } else {
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
-        }
-
-        if (dto.getLastModifiedDate() != null) {
-            entity.setLastModifiedDate(dto.getLastModifiedDate());
-        } else {
-            entity.setLastModifiedDate(new Date());
-        }
-
+        entity.setWebsite(developer.getWebsite());
+        entity.setSelfDeveloper(developer.getSelfDeveloper() == null ? false : developer.getSelfDeveloper());
+        entity.setName(developer.getName());
+        entity.setDeleted(false);
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
-        return getById(dto.getId());
     }
 
-    public void createDeveloperStatusEvent(final DeveloperStatusEventDTO statusEventDto)
+    public void createDeveloperStatusEvent(DeveloperStatusEvent statusEvent)
             throws EntityCreationException {
-        if (statusEventDto.getStatus() != null && !StringUtils.isEmpty(statusEventDto.getStatus().getStatusName())
-                && statusEventDto.getStatusDate() != null) {
-            DeveloperStatusEventEntity statusEvent = new DeveloperStatusEventEntity();
-            statusEvent.setDeveloperId(statusEventDto.getDeveloperId());
-            DeveloperStatusEntity defaultStatus = getStatusByName(statusEventDto.getStatus().getStatusName());
+        if (statusEvent.getStatus() != null && !ObjectUtils.isEmpty(statusEvent.getStatus().getStatus())
+                && statusEvent.getStatusDate() != null) {
+            DeveloperStatusEventEntity statusEventEntity = new DeveloperStatusEventEntity();
+            statusEventEntity.setDeveloperId(statusEvent.getDeveloperId());
+            DeveloperStatusEntity defaultStatus = getStatusByName(statusEvent.getStatus().getStatus());
             if (defaultStatus != null) {
-                statusEvent.setDeveloperStatusId(defaultStatus.getId());
-                statusEvent.setReason(statusEventDto.getReason());
-                statusEvent.setStatusDate(statusEventDto.getStatusDate());
-                statusEvent.setLastModifiedUser(AuthUtil.getAuditId());
-                statusEvent.setDeleted(Boolean.FALSE);
-                entityManager.persist(statusEvent);
-                entityManager.flush();
+                statusEventEntity.setDeveloperStatusId(defaultStatus.getId());
+                statusEventEntity.setReason(statusEvent.getReason());
+                statusEventEntity.setStatusDate(statusEvent.getStatusDate());
+                statusEventEntity.setLastModifiedUser(AuthUtil.getAuditId());
+                statusEventEntity.setDeleted(Boolean.FALSE);
+                create(statusEventEntity);
             } else {
                 String msg = msgUtil.getMessage("developer.updateStatus.statusNotFound",
-                        statusEventDto.getStatus().getStatusName(), statusEventDto.getDeveloperId());
+                        statusEvent.getStatus().getStatus(), statusEvent.getDeveloperId());
                 LOGGER.error(msg);
                 throw new EntityCreationException(msg);
             }
         } else {
-            String msg = msgUtil.getMessage("developer.updateStatus.missingData", statusEventDto.getDeveloperId());
+            String msg = msgUtil.getMessage("developer.updateStatus.missingData", statusEvent.getDeveloperId());
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
         }
-        entityManager.clear();
     }
 
-    public void updateDeveloperStatusEvent(DeveloperStatusEventDTO statusEventDto) throws EntityRetrievalException {
-        DeveloperStatusEventEntity entityToUpdate = entityManager.find(DeveloperStatusEventEntity.class,
-                statusEventDto.getId());
-        if (entityToUpdate == null) {
-            String msg = msgUtil.getMessage("developer.updateStatus.idNotFound", statusEventDto.getId());
+    public void updateDeveloperStatusEvent(DeveloperStatusEvent statusEvent) throws EntityRetrievalException {
+        DeveloperStatusEventEntity statusEventEntity = entityManager.find(DeveloperStatusEventEntity.class,
+                statusEvent.getId());
+        if (statusEventEntity == null) {
+            String msg = msgUtil.getMessage("developer.updateStatus.idNotFound", statusEvent.getId());
             LOGGER.error(msg);
             throw new EntityRetrievalException(msg);
         } else {
-            if (statusEventDto.getStatus() != null && statusEventDto.getStatus().getStatusName() != null) {
-                DeveloperStatusEntity newStatus = getStatusByName(statusEventDto.getStatus().getStatusName());
-                if (newStatus != null && newStatus.getId() != null) {
-                    entityToUpdate.setDeveloperStatus(newStatus);
-                    entityToUpdate.setReason(statusEventDto.getReason());
-                    entityToUpdate.setDeveloperStatusId(newStatus.getId());
+            if (statusEvent.getStatus() != null && statusEvent.getStatus().getStatus() != null) {
+                DeveloperStatusEntity newStatusEventEntity = getStatusByName(statusEvent.getStatus().getStatus());
+                if (newStatusEventEntity != null && newStatusEventEntity.getId() != null) {
+                    statusEventEntity.setDeveloperStatus(newStatusEventEntity);
+                    statusEventEntity.setReason(statusEvent.getReason());
+                    statusEventEntity.setDeveloperStatusId(newStatusEventEntity.getId());
                 }
-                entityToUpdate.setStatusDate(statusEventDto.getStatusDate());
+                statusEventEntity.setStatusDate(statusEvent.getStatusDate());
             }
-            entityManager.merge(entityToUpdate);
-            entityManager.flush();
+            update(statusEventEntity);
         }
     }
 
-    public void deleteDeveloperStatusEvent(DeveloperStatusEventDTO statusEventDto) throws EntityRetrievalException {
+    public void deleteDeveloperStatusEvent(DeveloperStatusEvent statusEvent) throws EntityRetrievalException {
         DeveloperStatusEventEntity statusEventEntity = entityManager.find(DeveloperStatusEventEntity.class,
-                statusEventDto.getId());
+                statusEvent.getId());
         if (statusEventEntity == null) {
-            String msg = msgUtil.getMessage("developer.updateStatus.idNotFound", statusEventDto.getId());
+            String msg = msgUtil.getMessage("developer.updateStatus.idNotFound", statusEvent.getId());
             LOGGER.error(msg);
             throw new EntityRetrievalException(msg);
         } else {
             statusEventEntity.setDeleted(Boolean.TRUE);
-            entityManager.merge(statusEventEntity);
-            entityManager.flush();
-            entityManager.clear();
+            statusEventEntity.setLastModifiedUser(AuthUtil.getAuditId());
+            update(statusEventEntity);
         }
     }
 
@@ -348,48 +233,49 @@ public class DeveloperDAO extends BaseDAOImpl {
 
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedDate(new Date());
             toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             update(toDelete);
         }
     }
 
-    public List<DeveloperDTO> findAllIdsAndNames() {
-
+    public List<Developer> findAllIdsAndNames() {
         @SuppressWarnings("unchecked") List<DeveloperEntitySimple> entities = entityManager.createQuery("SELECT dev "
                 + "FROM DeveloperEntitySimple dev "
                 + "WHERE dev.deleted = false").getResultList();
-        List<DeveloperDTO> dtos = new ArrayList<>();
-
-        for (DeveloperEntitySimple entity : entities) {
-            DeveloperDTO dto = new DeveloperDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .toList();
     }
 
-    public List<DeveloperDTO> findAll() {
-
+    public List<Developer> findAll() {
         List<DeveloperEntity> entities = getAllEntities();
-        List<DeveloperDTO> dtos = new ArrayList<>();
-
-        for (DeveloperEntity entity : entities) {
-            DeveloperDTO dto = new DeveloperDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .toList();
     }
 
-    public List<DeveloperDTO> findAllIncludingDeleted() {
+    public Set<KeyValueModelStatuses> findAllWithStatuses() {
+        List<DeveloperEntity> entities = getAllEntities();
+        return entities.stream()
+                .map(entity -> new KeyValueModelStatuses(entity.getId(), entity.getName(), createStatuses(entity)))
+                .collect(Collectors.toSet());
+    }
 
+    private Statuses createStatuses(DeveloperEntity entity) {
+        return new Statuses(entity.getDeveloperCertificationStatuses().getActive(),
+                entity.getDeveloperCertificationStatuses().getRetired(),
+                entity.getDeveloperCertificationStatuses().getWithdrawnByDeveloper(),
+                entity.getDeveloperCertificationStatuses().getWithdrawnByAcb(),
+                entity.getDeveloperCertificationStatuses().getSuspendedByAcb(),
+                entity.getDeveloperCertificationStatuses().getSuspendedByOnc(),
+                entity.getDeveloperCertificationStatuses().getTerminatedByOnc());
+    }
+
+    public List<Developer> findAllIncludingDeleted() {
         List<DeveloperEntity> entities = getAllEntitiesIncludingDeleted();
-        List<DeveloperDTO> dtos = new ArrayList<>();
-
-        for (DeveloperEntity entity : entities) {
-            DeveloperDTO dto = new DeveloperDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .toList();
     }
 
     public Developer findById(Long id) throws EntityRetrievalException {
@@ -397,22 +283,18 @@ public class DeveloperDAO extends BaseDAOImpl {
         return entity.toDomain();
     }
 
-    public DeveloperDTO getById(Long id) throws EntityRetrievalException {
+    public Developer getById(Long id) throws EntityRetrievalException {
         return getById(id, false);
     }
 
-    public DeveloperDTO getById(final Long id, final boolean includeDeleted) throws EntityRetrievalException {
+    public Developer getById(Long id, final boolean includeDeleted) throws EntityRetrievalException {
         DeveloperEntity entity = getEntityById(id, includeDeleted);
-        DeveloperDTO dto = null;
-        if (entity != null) {
-            dto = new DeveloperDTO(entity);
-        }
-        return dto;
+        return entity.toDomain();
     }
 
     @Transactional(readOnly = true)
-    public DeveloperDTO getSimpleDeveloperById(Long id, boolean includeDeleted) throws EntityRetrievalException {
-        DeveloperDTO result = null;
+    public Developer getSimpleDeveloperById(Long id, boolean includeDeleted) throws EntityRetrievalException {
+        Developer result = null;
         String queryStr = "SELECT DISTINCT de "
                 + "FROM DeveloperEntitySimple de "
                 + "WHERE de.id = :entityid ";
@@ -430,31 +312,28 @@ public class DeveloperDAO extends BaseDAOImpl {
         } else if (entities.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate developer id in database.");
         } else if (entities.size() == 1) {
-            result = new DeveloperDTO(entities.get(0));
+            result = entities.get(0).toDomain();
         }
-
         return result;
     }
 
-    public DeveloperDTO getByName(String name) {
+    public Developer getByName(String name) {
         DeveloperEntity entity = getEntityByName(name);
-        DeveloperDTO dto = null;
         if (entity != null) {
-            dto = new DeveloperDTO(entity);
+            return entity.toDomain();
         }
-        return dto;
+        return null;
     }
 
-    public DeveloperDTO getByCode(String code) {
+    public Developer getByCode(String code) {
         DeveloperEntity entity = getEntityByCode(code);
-        DeveloperDTO dto = null;
         if (entity != null) {
-            dto = new DeveloperDTO(entity);
+            return entity.toDomain();
         }
-        return dto;
+        return null;
     }
 
-    public DeveloperDTO getByVersion(Long productVersionId) throws EntityRetrievalException {
+    public Developer getByVersion(Long productVersionId) throws EntityRetrievalException {
         if (productVersionId == null) {
             throw new EntityRetrievalException("Version ID cannot be null!");
         }
@@ -465,18 +344,12 @@ public class DeveloperDAO extends BaseDAOImpl {
         getDeveloperByVersionIdQuery.setParameter("versionId", productVersionId);
         @SuppressWarnings("unchecked") List<DeveloperEntity> results = getDeveloperByVersionIdQuery.getResultList();
         if (results != null && results.size() > 0) {
-            return new DeveloperDTO(results.get(0));
+            return results.get(0).toDomain();
         }
         return null;
     }
 
-    /**
-     * Find any Developers with the given website.
-     *
-     * @param website
-     * @return the developers
-     */
-    public List<DeveloperDTO> getByWebsite(final String website) {
+    public List<Developer> getByWebsite(String website) {
         Query query = entityManager.createQuery("SELECT DISTINCT dev "
                 + "FROM DeveloperEntity dev "
                 + "LEFT OUTER JOIN FETCH dev.address "
@@ -487,11 +360,9 @@ public class DeveloperDAO extends BaseDAOImpl {
                 + "AND dev.website = :website ", DeveloperEntity.class);
         query.setParameter("website", website);
         @SuppressWarnings("unchecked") List<DeveloperEntity> results = query.getResultList();
-        List<DeveloperDTO> resultDtos = new ArrayList<DeveloperDTO>();
-        for (DeveloperEntity entity : results) {
-            resultDtos.add(new DeveloperDTO(entity));
-        }
-        return resultDtos;
+        return results.stream()
+                .map(result -> result.toDomain())
+                .toList();
     }
 
     public List<DecertifiedDeveloperResult> getDecertifiedDevelopers() {
@@ -563,39 +434,30 @@ public class DeveloperDAO extends BaseDAOImpl {
         return decertifiedDevelopers;
     }
 
-    public List<DecertifiedDeveloperDTO> getDecertifiedDeveloperCollection() {
-
+    public List<DecertifiedDeveloper> getDecertifiedDeveloperCollection() {
         Query query = entityManager.createQuery("FROM ListingsFromBannedDevelopersEntity ",
                 ListingsFromBannedDevelopersEntity.class);
         @SuppressWarnings("unchecked") List<ListingsFromBannedDevelopersEntity> listingsFromBannedDevelopers = query
                 .getResultList();
-        List<DecertifiedDeveloperDTO> decertifiedDevelopers = new ArrayList<DecertifiedDeveloperDTO>();
+        List<DecertifiedDeveloper> decertifiedDevelopers = new ArrayList<DecertifiedDeveloper>();
         for (ListingsFromBannedDevelopersEntity currListing : listingsFromBannedDevelopers) {
             boolean devExists = false;
             if (decertifiedDevelopers.size() > 0) {
-                for (DecertifiedDeveloperDTO currDecertDev : decertifiedDevelopers) {
+                for (DecertifiedDeveloper currDecertDev : decertifiedDevelopers) {
                     // if developer already exists just add the acb
-                    if (currDecertDev.getDeveloper() != null && currDecertDev.getDeveloper().getId() != null
-                            && currDecertDev.getDeveloper().getId().equals(currListing.getDeveloperId())) {
-                        CertificationBodyDTO acb = new CertificationBodyDTO();
-                        acb.setId(currListing.getAcbId());
-                        acb.setName(currListing.getAcbName());
-                        currDecertDev.getAcbs().add(acb);
+                    if (currDecertDev.getDeveloperId() != null
+                            && currDecertDev.getDeveloperId().equals(currListing.getDeveloperId())) {
+                        currDecertDev.getAcbNames().add(currListing.getAcbName());
                         devExists = true;
                         break;
                     }
                 }
             }
             if (!devExists) {
-                DecertifiedDeveloperDTO decertDev = new DecertifiedDeveloperDTO();
-                DeveloperDTO dev = new DeveloperDTO();
-                dev.setId(currListing.getDeveloperId());
-                dev.setName(currListing.getDeveloperName());
-                decertDev.setDeveloper(dev);
-                CertificationBodyDTO acb = new CertificationBodyDTO();
-                acb.setId(currListing.getAcbId());
-                acb.setName(currListing.getAcbName());
-                decertDev.getAcbs().add(acb);
+                DecertifiedDeveloper decertDev = new DecertifiedDeveloper();
+                decertDev.setDeveloperId(currListing.getDeveloperId());
+                decertDev.setDeveloperName(currListing.getDeveloperName());
+                decertDev.getAcbNames().add(currListing.getAcbName());
                 decertDev.setDecertificationDate(currListing.getDeveloperStatusDate());
                 decertifiedDevelopers.add(decertDev);
             }
@@ -604,13 +466,13 @@ public class DeveloperDAO extends BaseDAOImpl {
         return decertifiedDevelopers;
     }
 
-    public List<DeveloperDTO> getByCertificationBodyId(final List<Long> certificationBodyIds) {
+    public List<Developer> getByCertificationBodyId(List<Long> certificationBodyIds) {
         return getEntitiesByCertificationBodyId(certificationBodyIds).stream()
-                .map(dev -> new DeveloperDTO(dev))
-                .collect(Collectors.<DeveloperDTO> toList());
+                .map(dev -> dev.toDomain())
+                .toList();
     }
 
-    public List<DeveloperDTO> getDevelopersByUserId(final Long userId) {
+    public List<Developer> getDevelopersByUserId(Long userId) {
         Query query = entityManager.createQuery(
                 "FROM UserDeveloperMapEntity udm "
                 + "join fetch udm.developer developer "
@@ -621,58 +483,34 @@ public class DeveloperDAO extends BaseDAOImpl {
                 UserDeveloperMapEntity.class);
         query.setParameter("userId", userId);
         List<UserDeveloperMapEntity> result = query.getResultList();
-
-        List<DeveloperDTO> dtos = new ArrayList<DeveloperDTO>();
-        if (result != null) {
-            for (UserDeveloperMapEntity entity : result) {
-                dtos.add(new DeveloperDTO(entity.getDeveloper()));
-            }
-        }
-        return dtos;
+        return result.stream()
+                .map(entity -> entity.getDeveloper().toDomain())
+                .toList();
     }
 
     private List<DeveloperEntity> getAllEntities() {
         List<DeveloperEntity> result = entityManager.createQuery(
-                "SELECT DISTINCT v from "
-                        + "DeveloperEntity v "
-                        + "LEFT OUTER JOIN FETCH v.address "
-                        + "LEFT OUTER JOIN FETCH v.contact "
-                        + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
-                        + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
-                        + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
-                        + "where (NOT v.deleted = true)",
+                DEVELOPER_HQL
+                + "WHERE (NOT v.deleted = true)",
                 DeveloperEntity.class).getResultList();
         return result;
     }
 
     private List<DeveloperEntity> getAllEntitiesIncludingDeleted() {
         List<DeveloperEntity> result = entityManager
-                .createQuery("SELECT DISTINCT v from "
-                        + "DeveloperEntity v "
-                        + "LEFT OUTER JOIN FETCH v.address "
-                        + "LEFT OUTER JOIN FETCH v.contact "
-                        + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
-                        + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
-                        + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses ", DeveloperEntity.class)
+                .createQuery(DEVELOPER_HQL, DeveloperEntity.class)
                 .getResultList();
         return result;
     }
 
-    private DeveloperEntity getEntityById(final Long id) throws EntityRetrievalException {
+    private DeveloperEntity getEntityById(Long id) throws EntityRetrievalException {
         return getEntityById(id, false);
     }
 
-    private DeveloperEntity getEntityById(final Long id, final boolean includeDeleted) throws EntityRetrievalException {
-
+    private DeveloperEntity getEntityById(Long id, boolean includeDeleted) throws EntityRetrievalException {
         DeveloperEntity entity = null;
-        String queryStr = "SELECT DISTINCT v FROM "
-                + "DeveloperEntity v "
-                + "LEFT OUTER JOIN FETCH v.address "
-                + "LEFT OUTER JOIN FETCH v.contact "
-                + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
-                + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
-                + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
-                + "WHERE v.id = :entityid ";
+        String queryStr = DEVELOPER_HQL
+                + " WHERE v.id = :entityid ";
         if (!includeDeleted) {
             queryStr += " AND v.deleted = false";
         }
@@ -690,53 +528,37 @@ public class DeveloperDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private DeveloperEntity getEntityByName(final String name) {
-
+    private DeveloperEntity getEntityByName(String name) {
         DeveloperEntity entity = null;
-
         Query query = entityManager
-                .createQuery("SELECT DISTINCT v from "
-                        + "DeveloperEntity v "
-                        + "LEFT OUTER JOIN FETCH v.address "
-                        + "LEFT OUTER JOIN FETCH v.contact "
-                        + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
-                        + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
-                        + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
-                        + "where (NOT v.deleted = true) AND (v.name = :name) ", DeveloperEntity.class);
+                .createQuery(DEVELOPER_HQL
+                        + " WHERE (NOT v.deleted = true) "
+                        + "AND (v.name = :name) ", DeveloperEntity.class);
         query.setParameter("name", name);
         @SuppressWarnings("unchecked") List<DeveloperEntity> result = query.getResultList();
 
         if (result.size() > 0) {
             entity = result.get(0);
         }
-
         return entity;
     }
 
-    private DeveloperEntity getEntityByCode(final String code) {
-
+    private DeveloperEntity getEntityByCode(String code) {
         DeveloperEntity entity = null;
-
         Query query = entityManager
-                .createQuery("SELECT DISTINCT v from "
-                        + "DeveloperEntity v "
-                        + "LEFT OUTER JOIN FETCH v.address "
-                        + "LEFT OUTER JOIN FETCH v.contact "
-                        + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
-                        + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
-                        + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
-                        + "where (NOT v.deleted = true) AND (v.developerCode = :code) ", DeveloperEntity.class);
+                .createQuery(DEVELOPER_HQL
+                        + " WHERE (NOT v.deleted = true) "
+                        + "AND (v.developerCode = :code) ", DeveloperEntity.class);
         query.setParameter("code", code);
         @SuppressWarnings("unchecked") List<DeveloperEntity> result = query.getResultList();
 
         if (result.size() > 0) {
             entity = result.get(0);
         }
-
         return entity;
     }
 
-    private DeveloperStatusEntity getStatusByName(final String statusName) {
+    private DeveloperStatusEntity getStatusByName(String statusName) {
         List<DeveloperStatusEntity> statuses = statusDao.getEntitiesByName(statusName);
         if (statuses == null || statuses.size() == 0) {
             LOGGER.error("Could not find the " + statusName + " status");
@@ -745,7 +567,7 @@ public class DeveloperDAO extends BaseDAOImpl {
         return statuses.get(0);
     }
 
-    private List<DeveloperEntity> getEntitiesByCertificationBodyId(final List<Long> certificationBodyIds) {
+    private List<DeveloperEntity> getEntitiesByCertificationBodyId(List<Long> certificationBodyIds) {
         String hql = "SELECT DISTINCT dev "
                 + "FROM CertifiedProductEntity cp "
                 + "JOIN FETCH cp.productVersion pv "

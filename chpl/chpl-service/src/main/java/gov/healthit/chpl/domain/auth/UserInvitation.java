@@ -45,7 +45,7 @@ public class UserInvitation {
         }
 
         Date now = new Date();
-        if ((now.getTime() - this.lastModifiedDate.getTime()) > numDaysInMillis) {
+        if ((now.getTime() - this.creationDate.getTime()) > numDaysInMillis) {
             return true;
         }
         return false;

@@ -10,12 +10,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.VersionActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import lombok.extern.log4j.Log4j2;
 
@@ -124,7 +124,7 @@ public class VersionActivityMetadataBuilder extends ActivityMetadataBuilder {
             versionMetadata.setDeveloperName(version.getDeveloperName());
         } else if (version.getDeveloperId() != null) {
             try {
-                DeveloperDTO developer = developerDao.getSimpleDeveloperById(version.getDeveloperId(), true);
+                Developer developer = developerDao.getSimpleDeveloperById(version.getDeveloperId(), true);
                 versionMetadata.setDeveloperName(developer.getName());
             } catch (Exception ex) {
                 LOGGER.error("Unable to find developer with ID " + version.getDeveloperId() + " referenced "
@@ -136,7 +136,7 @@ public class VersionActivityMetadataBuilder extends ActivityMetadataBuilder {
             versionMetadata.setProductName(version.getProductName());
         } else if (version.getProductId() != null) {
             try {
-                ProductDTO product = productDao.getSimpleProductById(version.getProductId(), true);
+                Product product = productDao.getSimpleProductById(version.getProductId(), true);
                 versionMetadata.setProductName(product.getName());
             } catch (Exception ex) {
                 LOGGER.error("Unable to find product with ID " + version.getProductId() + " referenced "

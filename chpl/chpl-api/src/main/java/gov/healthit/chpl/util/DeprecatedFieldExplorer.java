@@ -13,9 +13,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -50,9 +51,10 @@ public class DeprecatedFieldExplorer {
 
         //get any normal field that is deprecated and could be returned in the JSON
         List<String> filteredFieldNames = Arrays.stream(clazz.getDeclaredFields())
-          .filter(f -> f.getAnnotation(Deprecated.class) != null)
-          .map(f -> fieldPrefix + f.getName())
-          .collect(Collectors.toList());
+                .filter(f -> !hasJsonIgnorableAnnotation(f))
+                .filter(f -> f.getAnnotation(Deprecated.class) != null)
+                .map(f -> fieldPrefix + f.getName())
+                .toList();
         allDeprecatedFieldNames.addAll(filteredFieldNames);
 
         //get the property associated with any deprecated "getter" method that could also be returned in the json
@@ -60,7 +62,8 @@ public class DeprecatedFieldExplorer {
             for (PropertyDescriptor propertyDescriptor
                     : Introspector.getBeanInfo(clazz).getPropertyDescriptors()) {
                 Method readMethod = propertyDescriptor.getReadMethod();
-                if (readMethod != null && readMethod.getAnnotation(Deprecated.class) != null) {
+                if (readMethod != null && !hasJsonIgnorableAnnotation(readMethod)
+                        && readMethod.getAnnotation(Deprecated.class) != null) {
                     allDeprecatedFieldNames.add(fieldPrefix + propertyDescriptor.getDisplayName());
                 }
             }
@@ -71,6 +74,18 @@ public class DeprecatedFieldExplorer {
         Map<String, Class<?>> nestedClassesToCheckForDeprecatedFields = getNestedClasses(clazz, fieldPrefix);
         nestedClassesToCheckForDeprecatedFields.keySet().stream()
             .forEach(nestedClassPrefix -> getAllDeprecatedFields(nestedClassesToCheckForDeprecatedFields.get(nestedClassPrefix), allDeprecatedFieldNames, nestedClassPrefix));
+    }
+
+    private boolean hasJsonIgnorableAnnotation(Field field) {
+        return field.getAnnotation(JsonIgnore.class) != null
+                || (field.getAnnotation(JsonProperty.class) != null
+                        && field.getAnnotation(JsonProperty.class).access().equals(Access.WRITE_ONLY));
+    }
+
+    private boolean hasJsonIgnorableAnnotation(Method method) {
+        return method.getAnnotation(JsonIgnore.class) != null
+                || (method.getAnnotation(JsonProperty.class) != null
+                        && method.getAnnotation(JsonProperty.class).access().equals(Access.WRITE_ONLY));
     }
 
     private Map<String, Class<?>> getNestedClasses(Class<?> clazz, String fieldPrefix) {

@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.attestation.entity.AttestationPeriodDeveloperExceptionEntity;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.AllArgsConstructor;
@@ -31,7 +30,7 @@ public class AttestationPeriodDeveloperException {
     public AttestationPeriodDeveloperException(AttestationPeriodDeveloperExceptionEntity entity) {
         this.id = entity.getId();
         this.period = new AttestationPeriod(entity.getPeriod());
-        this.developer = new Developer(new DeveloperDTO(entity.getDeveloper()));
+        this.developer = entity.getDeveloper().toDomain();
         this.exceptionEnd = entity.getExceptionEnd();
     }
 

@@ -30,9 +30,9 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.PublicAttestation;
+import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.domain.concept.PublicAttestationStatus;
 import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
 import gov.healthit.chpl.domain.developer.hierarchy.ProductTree;
 import gov.healthit.chpl.domain.developer.hierarchy.SimpleListing;
@@ -41,11 +41,7 @@ import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventPair;
-import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
@@ -115,7 +111,7 @@ public class DeveloperManager extends SecuredManager {
 
     @Transactional(readOnly = true)
     @Cacheable(CacheNames.ALL_DEVELOPERS)
-    public List<DeveloperDTO> getAll() {
+    public List<Developer> getAll() {
         return developerDao.findAll();
     }
 
@@ -123,26 +119,27 @@ public class DeveloperManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).GET_ALL_WITH_DELETED)")
     @Cacheable(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED)
-    public List<DeveloperDTO> getAllIncludingDeleted() {
+    public List<Developer> getAllIncludingDeleted() {
         return developerDao.findAllIncludingDeleted();
     }
 
     @Transactional(readOnly = true)
-    public DeveloperDTO getById(Long id, boolean allowDeleted) throws EntityRetrievalException {
-        return developerDao.getById(id, allowDeleted);
+    public Developer getById(Long id, boolean allowDeleted) throws EntityRetrievalException {
+        Developer developer = developerDao.getById(id, allowDeleted);
+        return developer;
     }
 
     @Transactional(readOnly = true)
-    public DeveloperDTO getById(Long id) throws EntityRetrievalException {
+    public Developer getById(Long id) throws EntityRetrievalException {
         return getById(id, false);
     }
 
     public DeveloperTree getHierarchyById(Long id) throws EntityRetrievalException {
         List<CertificationBodyDTO> acbs = acbManager.getAll();
-        DeveloperDTO developer = getById(id);
-        List<ProductDTO> products = productManager.getByDeveloper(developer.getId());
-        List<ProductVersionDTO> versions = versionManager.getByDeveloper(developer.getId());
-        List<CertifiedProductDetailsDTO> listings = certifiedProductDao.findListingsByDeveloperId(developer.getId());
+        Developer developer = getById(id);
+        List<Product> products = productManager.getByDeveloper(developer.getDeveloperId());
+        List<ProductVersionDTO> versions = versionManager.getByDeveloper(developer.getDeveloperId());
+        List<CertifiedProductDetailsDTO> listings = certifiedProductDao.findListingsByDeveloperId(developer.getDeveloperId());
 
         DeveloperTree developerTree = new DeveloperTree(developer);
         products.stream().forEach(product -> {
@@ -197,7 +194,7 @@ public class DeveloperManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).GET_ALL_USERS, #devId)")
     public List<UserDTO> getAllUsersOnDeveloper(Long devId) throws EntityRetrievalException {
-        DeveloperDTO dev = getById(devId);
+        Developer dev = getById(devId);
         return resourcePermissions.getAllUsersOnDeveloper(dev);
     }
 
@@ -208,9 +205,9 @@ public class DeveloperManager extends SecuredManager {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
-    public DeveloperDTO update(DeveloperDTO updatedDev, boolean doUpdateValidations)
+    public Developer update(Developer updatedDev, boolean doUpdateValidations)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
-        DeveloperDTO beforeDev = getById(updatedDev.getId());
+        Developer beforeDev = getById(updatedDev.getDeveloperId());
 
         if (updatedDev.equals(beforeDev)) {
             LOGGER.info("Developer did not change - not saving");
@@ -232,23 +229,23 @@ public class DeveloperManager extends SecuredManager {
             throw new ValidationException(errors);
         }
 
-        if (beforeDev.getContact() != null && beforeDev.getContact().getId() != null) {
-            updatedDev.getContact().setId(beforeDev.getContact().getId());
+        if (beforeDev.getContact() != null && beforeDev.getContact().getContactId() != null) {
+            updatedDev.getContact().setContactId(beforeDev.getContact().getContactId());
         }
         developerDao.update(updatedDev);
         updateStatusHistory(beforeDev, updatedDev);
-        DeveloperDTO after = getById(updatedDev.getId());
-        activityManager.addActivity(ActivityConcept.DEVELOPER, after.getId(),
+        Developer after = getById(updatedDev.getDeveloperId());
+        activityManager.addActivity(ActivityConcept.DEVELOPER, after.getDeveloperId(),
                 "Developer " + updatedDev.getName() + " was updated.", beforeDev, after);
         return after;
     }
 
-    private void updateStatusHistory(DeveloperDTO beforeDev, DeveloperDTO updatedDev)
+    private void updateStatusHistory(Developer beforeDev, Developer updatedDev)
             throws EntityRetrievalException, EntityCreationException {
         // update status history
-        List<DeveloperStatusEventDTO> statusEventsToAdd = new ArrayList<DeveloperStatusEventDTO>();
+        List<DeveloperStatusEvent> statusEventsToAdd = new ArrayList<DeveloperStatusEvent>();
         List<DeveloperStatusEventPair> statusEventsToUpdate = new ArrayList<DeveloperStatusEventPair>();
-        List<DeveloperStatusEventDTO> statusEventsToRemove = new ArrayList<DeveloperStatusEventDTO>();
+        List<DeveloperStatusEvent> statusEventsToRemove = new ArrayList<DeveloperStatusEvent>();
 
         statusEventsToUpdate = DeveloperStatusEventsHelper.getUpdatedEvents(beforeDev.getStatusEvents(),
                 updatedDev.getStatusEvents());
@@ -262,25 +259,25 @@ public class DeveloperManager extends SecuredManager {
             if (!Objects.equals(toUpdate.getOrig().getStatusDate(), toUpdate.getUpdated().getStatusDate())
                     || !Objects.equals(toUpdate.getOrig().getStatus().getId(),
                             toUpdate.getUpdated().getStatus().getId())
-                    || !Objects.equals(toUpdate.getOrig().getStatus().getStatusName(),
-                            toUpdate.getUpdated().getStatus().getStatusName())
+                    || !Objects.equals(toUpdate.getOrig().getStatus().getStatus(),
+                            toUpdate.getUpdated().getStatus().getStatus())
                     || !Objects.equals(toUpdate.getOrig().getReason(), toUpdate.getUpdated().getReason())) {
                 hasChanged = true;
             }
 
             if (hasChanged) {
-                DeveloperStatusEventDTO dseToUpdate = toUpdate.getUpdated();
-                dseToUpdate.setDeveloperId(beforeDev.getId());
+                DeveloperStatusEvent dseToUpdate = toUpdate.getUpdated();
+                dseToUpdate.setDeveloperId(beforeDev.getDeveloperId());
                 developerDao.updateDeveloperStatusEvent(dseToUpdate);
             }
         }
 
-        for (DeveloperStatusEventDTO toAdd : statusEventsToAdd) {
-            toAdd.setDeveloperId(beforeDev.getId());
+        for (DeveloperStatusEvent toAdd : statusEventsToAdd) {
+            toAdd.setDeveloperId(beforeDev.getDeveloperId());
             developerDao.createDeveloperStatusEvent(toAdd);
         }
 
-        for (DeveloperStatusEventDTO toRemove : statusEventsToRemove) {
+        for (DeveloperStatusEvent toRemove : statusEventsToRemove) {
             developerDao.deleteDeveloperStatusEvent(toRemove);
         }
     }
@@ -293,39 +290,22 @@ public class DeveloperManager extends SecuredManager {
     }, allEntries = true)
     public Long create(Developer developer)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-        Long developerId = developerDao.create(developer);
-        developer.setDeveloperId(developerId);
 
-        DeveloperDTO createdDevloperDto = developerDao.getById(developerId);
-        activityManager.addActivity(ActivityConcept.DEVELOPER, developerId,
-                "Developer " + developer.getName() + " has been created.", null, createdDevloperDto);
-        return developerId;
-    }
-
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
-            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).CREATE)")
-    @Transactional(readOnly = false)
-    @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED
-    }, allEntries = true)
-    public DeveloperDTO create(DeveloperDTO dto)
-            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-
-        /*
-         * Check to see that the Developer's website is valid.
-         */
-        if (!StringUtils.isEmpty(dto.getWebsite())) {
-            if (!validationUtils.isWellFormedUrl(dto.getWebsite())) {
+        //Check to see that the Developer's website is valid.
+        if (!StringUtils.isEmpty(developer.getWebsite())) {
+            if (!validationUtils.isWellFormedUrl(developer.getWebsite())) {
                 String msg = msgUtil.getMessage("developer.websiteIsInvalid");
                 throw new EntityCreationException(msg);
             }
         }
 
-        DeveloperDTO created = developerDao.create(dto);
-        dto.setId(created.getId());
-        activityManager.addActivity(ActivityConcept.DEVELOPER, created.getId(),
-                "Developer " + created.getName() + " has been created.", null, created);
-        return created;
+        Long developerId = developerDao.create(developer);
+        developer.setDeveloperId(developerId);
+
+        Developer createdDevloperDto = developerDao.getById(developerId);
+        activityManager.addActivity(ActivityConcept.DEVELOPER, developerId,
+                "Developer " + developer.getName() + " has been created.", null, createdDevloperDto);
+        return developerId;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
@@ -335,7 +315,7 @@ public class DeveloperManager extends SecuredManager {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
-    public ChplOneTimeTrigger merge(List<Long> developerIdsToMerge, DeveloperDTO developerToCreate)
+    public ChplOneTimeTrigger merge(List<Long> developerIdsToMerge, Developer developerToCreate)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
             SchedulerException, ValidationException {
         // merging doesn't require developer address so runUpdateValidations is used here
@@ -344,7 +324,7 @@ public class DeveloperManager extends SecuredManager {
             throw new ValidationException(errors);
         }
 
-        List<DeveloperDTO> beforeDevelopers = new ArrayList<DeveloperDTO>();
+        List<Developer> beforeDevelopers = new ArrayList<Developer>();
         for (Long developerId : developerIdsToMerge) {
             beforeDevelopers.add(developerDao.getById(developerId));
         }
@@ -384,7 +364,7 @@ public class DeveloperManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
-    public ChplOneTimeTrigger split(DeveloperDTO oldDeveloper, DeveloperDTO developerToCreate,
+    public ChplOneTimeTrigger split(Developer oldDeveloper, Developer developerToCreate,
             List<Long> productIdsToMove) throws ValidationException, SchedulerException {
         // check developer fields for all valid values
         Set<String> devErrors = runCreateValidations(developerToCreate);
@@ -415,18 +395,8 @@ public class DeveloperManager extends SecuredManager {
         return splitDeveloperTrigger;
     }
 
-    public static List<DeveloperStatusEventDTO> cloneDeveloperStatusEventList(List<DeveloperStatusEventDTO> original) {
-        List<DeveloperStatusEventDTO> clone = new ArrayList<DeveloperStatusEventDTO>();
-        for (DeveloperStatusEventDTO event : original) {
-            clone.add(new DeveloperStatusEventDTO(event));
-        }
-        return clone;
-    }
-
     private Set<String> getDuplicateChplProductNumberErrorMessages(List<DuplicateChplProdNumber> duplicateChplProdNumbers) {
-
         Set<String> messages = new HashSet<String>();
-
         for (DuplicateChplProdNumber dup : duplicateChplProdNumbers) {
             messages.add(msgUtil.getMessage("developer.merge.dupChplProdNbrs", dup.getOrigChplProductNumberA(),
                     dup.getOrigChplProductNumberB()));
@@ -478,7 +448,7 @@ public class DeveloperManager extends SecuredManager {
     public void validateDeveloperInSystemIfExists(PendingCertifiedProductDTO pendingCp)
             throws EntityRetrievalException, ValidationException {
         if (!isNewDeveloperCode(pendingCp.getUniqueId())) {
-            DeveloperDTO systemDeveloperDTO = null;
+            Developer systemDeveloperDTO = null;
             if (pendingCp.getDeveloperId() != null) {
                 systemDeveloperDTO = getById(pendingCp.getDeveloperId());
             }
@@ -511,21 +481,7 @@ public class DeveloperManager extends SecuredManager {
     @Transactional(readOnly = true)
     @Cacheable(CacheNames.GET_DECERTIFIED_DEVELOPERS)
     public List<DecertifiedDeveloper> getDecertifiedDeveloperCollection() {
-        List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
-        List<DecertifiedDeveloper> decertifiedDeveloperResults = new ArrayList<DecertifiedDeveloper>();
-        dtoList = developerDao.getDecertifiedDeveloperCollection();
-
-        for (DecertifiedDeveloperDTO dto : dtoList) {
-            DecertifiedDeveloper decertDev = new DecertifiedDeveloper();
-            decertDev.setDeveloperId(dto.getDeveloper().getId());
-            decertDev.setDeveloperName(dto.getDeveloper().getName());
-            decertDev.setDecertificationDate(dto.getDecertificationDate());
-            for (CertificationBodyDTO acb : dto.getAcbs()) {
-                decertDev.getAcbNames().add(acb.getName());
-            }
-            decertifiedDeveloperResults.add(decertDev);
-        }
-        return decertifiedDeveloperResults;
+        return developerDao.getDecertifiedDeveloperCollection();
     }
 
     private boolean isNewDeveloperCode(String chplProductNumber) {
@@ -533,53 +489,53 @@ public class DeveloperManager extends SecuredManager {
         return StringUtils.equals(devCode, getNewDeveloperCode());
     }
 
-    private Set<String> runUpdateValidations(DeveloperDTO dto) {
+    private Set<String> runUpdateValidations(Developer developer) {
         List<ValidationRule<DeveloperValidationContext>> rules = new ArrayList<ValidationRule<DeveloperValidationContext>>();
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.NAME));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.WEBSITE_WELL_FORMED));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.CONTACT));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.STATUS_EVENTS));
-        return runValidations(rules, dto);
+        return runValidations(rules, developer);
     }
 
-    private Set<String> runChangeValidations(DeveloperDTO dto, DeveloperDTO beforeDev) {
+    private Set<String> runChangeValidations(Developer afterDev, Developer beforeDev) {
         List<ValidationRule<DeveloperValidationContext>> rules = new ArrayList<ValidationRule<DeveloperValidationContext>>();
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.HAS_STATUS));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.STATUS_MISSING_BAN_REASON));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.PRIOR_STATUS_ACTIVE));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.EDIT_STATUS_HISTORY));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.STATUS_CHANGED));
-        return runValidations(rules, dto, beforeDev);
+        return runValidations(rules, afterDev, beforeDev);
     }
 
-    public Set<String> runCreateValidations(DeveloperDTO dto) {
+    public Set<String> runCreateValidations(Developer developer) {
         List<ValidationRule<DeveloperValidationContext>> rules = new ArrayList<ValidationRule<DeveloperValidationContext>>();
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.NAME));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.WEBSITE_WELL_FORMED));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.CONTACT));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.ADDRESS));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.ACTIVE_STATUS));
-        return runValidations(rules, dto);
+        return runValidations(rules, developer);
     }
 
-    public Set<String> runSystemValidations(DeveloperDTO dto) {
+    public Set<String> runSystemValidations(Developer developer) {
         List<ValidationRule<DeveloperValidationContext>> rules = new ArrayList<ValidationRule<DeveloperValidationContext>>();
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.NAME));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.WEBSITE_REQUIRED));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.CONTACT));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.ADDRESS));
-        return runValidations(rules, dto);
+        return runValidations(rules, developer);
     }
 
     private Set<String> runValidations(List<ValidationRule<DeveloperValidationContext>> rules,
-            DeveloperDTO dto) {
-        return runValidations(rules, dto, null);
+            Developer developer) {
+        return runValidations(rules, developer, null);
     }
 
     private Set<String> runValidations(List<ValidationRule<DeveloperValidationContext>> rules,
-            DeveloperDTO dto, DeveloperDTO beforeDev) {
+            Developer developer, Developer beforeDev) {
         Set<String> errorMessages = new HashSet<String>();
-        DeveloperValidationContext context = new DeveloperValidationContext(dto, msgUtil, beforeDev);
+        DeveloperValidationContext context = new DeveloperValidationContext(developer, msgUtil, beforeDev);
 
         for (ValidationRule<DeveloperValidationContext> rule : rules) {
             if (!rule.isValid(context)) {
@@ -587,17 +543,6 @@ public class DeveloperManager extends SecuredManager {
             }
         }
         return errorMessages;
-    }
-
-    @Transactional
-    public List<PublicAttestation> getDeveloperPublicAttestations(Long developerId) {
-        return attestationDAO.getDeveloperAttestationSubmissionsByDeveloper(developerId).stream()
-                .map(att -> PublicAttestation.builder()
-                        .id(att.getId())
-                        .attestationPeriod(att.getPeriod())
-                        .status(PublicAttestationStatus.ATTESTATIONS_SUBMITTED)
-                        .build())
-                .collect(Collectors.toList());
     }
 
     public static String getNewDeveloperCode() {
