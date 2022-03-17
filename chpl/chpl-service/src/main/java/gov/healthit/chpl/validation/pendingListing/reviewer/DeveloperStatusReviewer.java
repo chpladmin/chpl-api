@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -34,9 +34,9 @@ public class DeveloperStatusReviewer implements Reviewer {
     public void review(PendingCertifiedProductDTO listing) {
         try {
             if (listing.getDeveloperId() != null) {
-                DeveloperDTO developer = developerDao.getById(listing.getDeveloperId());
+                Developer developer = developerDao.getById(listing.getDeveloperId());
                 if (developer != null) {
-                    DeveloperStatusEventDTO mostRecentStatus = developer.getStatus();
+                    DeveloperStatus mostRecentStatus = developer.getStatus();
                     if (mostRecentStatus == null || mostRecentStatus.getStatus() == null) {
                         listing.getErrorMessages().add(msgUtil.getMessage(
                                 "listing.developer.noStatusFound.noCreate", developer.getName()));
@@ -45,14 +45,14 @@ public class DeveloperStatusReviewer implements Reviewer {
                             if (!checkAdminOrOncAllowedToCreate(developer)) {
                                 listing.getErrorMessages().add(msgUtil.getMessage(
                                     "listing.developer.notActiveOrBanned.noCreate",
-                                    developer.getName(), mostRecentStatus.getStatus().getStatusName(),
+                                    developer.getName(), mostRecentStatus.getStatus(),
                                     DeveloperStatusType.Active.getName(),
                                     DeveloperStatusType.UnderCertificationBanByOnc.getName()));
                             }
                         } else if (!checkAcbAllowedToCreate(developer)) {
                             listing.getErrorMessages().add(msgUtil.getMessage(
                                     "listing.developer.notActive.noCreate",
-                                    developer.getName(), mostRecentStatus.getStatus().getStatusName()));
+                                    developer.getName(), mostRecentStatus.getStatus()));
                         }
                     }
                 } else {
@@ -66,14 +66,14 @@ public class DeveloperStatusReviewer implements Reviewer {
     }
 
 
-    private boolean checkAcbAllowedToCreate(DeveloperDTO developer) {
-        DeveloperStatusEventDTO mostRecentStatus = developer.getStatus();
-        return mostRecentStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.getName());
+    private boolean checkAcbAllowedToCreate(Developer developer) {
+        DeveloperStatus mostRecentStatus = developer.getStatus();
+        return mostRecentStatus.getStatus().equals(DeveloperStatusType.Active.getName());
     }
 
-    private boolean checkAdminOrOncAllowedToCreate(DeveloperDTO developer) {
-        DeveloperStatusEventDTO mostRecentStatus = developer.getStatus();
-        return mostRecentStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.getName())
-                || mostRecentStatus.getStatus().getStatusName().equals(DeveloperStatusType.UnderCertificationBanByOnc.getName());
+    private boolean checkAdminOrOncAllowedToCreate(Developer developer) {
+        DeveloperStatus mostRecentStatus = developer.getStatus();
+        return mostRecentStatus.getStatus().equals(DeveloperStatusType.Active.getName())
+                || mostRecentStatus.getStatus().equals(DeveloperStatusType.UnderCertificationBanByOnc.getName());
     }
 }

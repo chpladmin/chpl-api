@@ -3,8 +3,8 @@ package gov.healthit.chpl.manager.rules.developer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -22,9 +22,9 @@ public class DeveloperPriorStatusActiveValidation extends ValidationRule<Develop
     @Override
     public boolean isValid(DeveloperValidationContext context) {
         ErrorMessageUtil msgUtil = context.getErrorMessageUtil();
-        DeveloperDTO beforeDev = context.getBeforeDev();
-        DeveloperStatusEventDTO currDevStatus = beforeDev.getStatus();
-        if (!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())
+        Developer beforeDev = context.getBeforeDev();
+        DeveloperStatus currDevStatus = beforeDev.getStatus();
+        if (!currDevStatus.getStatus().equals(DeveloperStatusType.Active.toString())
                 && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
             String msg = msgUtil.getMessage("developer.notActiveNotAdminCantChangeStatus", AuthUtil.getUsername(),
                     beforeDev.getName());

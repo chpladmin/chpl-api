@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -58,5 +59,16 @@ public class AttestationPeriodEntity {
 
     @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
     private Date lastModifiedDate;
+
+    public AttestationPeriod toDomain() {
+        return AttestationPeriod.builder()
+                .id(this.getId())
+                .periodStart(this.getPeriodStart())
+                .periodEnd(this.getPeriodEnd())
+                .submissionStart(this.getSubmissionStart())
+                .submissionEnd(this.getSubmissionEnd())
+                .description(this.getDescription())
+                .build();
+    }
 
 }

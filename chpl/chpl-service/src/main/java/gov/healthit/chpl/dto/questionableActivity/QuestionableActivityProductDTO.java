@@ -1,11 +1,11 @@
 package gov.healthit.chpl.dto.questionableActivity;
 
-import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityProductEntity;
 
 public class QuestionableActivityProductDTO extends QuestionableActivityDTO {
     private Long productId;
-    private ProductDTO product;
+    private Product product;
 
     public QuestionableActivityProductDTO() {
         super();
@@ -15,12 +15,12 @@ public class QuestionableActivityProductDTO extends QuestionableActivityDTO {
         super(entity);
         this.productId = entity.getProductId();
         if (entity.getProduct() != null) {
-            this.product = new ProductDTO(entity.getProduct());
+            this.product = entity.getProduct().toDomain();
         }
     }
 
     public Class<?> getActivityObjectClass() {
-        return ProductDTO.class;
+        return Product.class;
     }
 
     public Long getProductId() {
@@ -31,11 +31,11 @@ public class QuestionableActivityProductDTO extends QuestionableActivityDTO {
         this.productId = productId;
     }
 
-    public ProductDTO getProduct() {
+    public Product getProduct() {
         return product;
     }
 
-    public void setProduct(ProductDTO product) {
+    public void setProduct(Product product) {
         this.product = product;
     }
 }

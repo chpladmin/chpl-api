@@ -22,9 +22,6 @@ import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.contact.PointOfContact;
-import gov.healthit.chpl.dto.AddressDTO;
-import gov.healthit.chpl.dto.ContactDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -122,14 +119,14 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
     protected ChangeRequest execute(ChangeRequest cr)
             throws EntityRetrievalException, EntityCreationException {
         ChangeRequestDeveloperDetails crDevDetails = (ChangeRequestDeveloperDetails) cr.getDetails();
-        DeveloperDTO developer = developerManager.getById(cr.getDeveloper().getDeveloperId());
+        Developer developer = developerManager.getById(cr.getDeveloper().getDeveloperId());
         if (crDevDetails.getSelfDeveloper() != null) {
             developer.setSelfDeveloper(crDevDetails.getSelfDeveloper());
         }
         if (crDevDetails.getAddress() != null) {
-            AddressDTO address = developer.getAddress() != null ? developer.getAddress() : new AddressDTO();
-            address.setStreetLineOne(crDevDetails.getAddress().getLine1());
-            address.setStreetLineTwo(crDevDetails.getAddress().getLine2());
+            Address address = developer.getAddress() != null ? developer.getAddress() : new Address();
+            address.setLine1(crDevDetails.getAddress().getLine1());
+            address.setLine2(crDevDetails.getAddress().getLine2());
             address.setCity(crDevDetails.getAddress().getCity());
             address.setState(crDevDetails.getAddress().getState());
             address.setZipcode(crDevDetails.getAddress().getZipcode());
@@ -137,7 +134,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
             developer.setAddress(address);
         }
         if (crDevDetails.getContact() != null) {
-            ContactDTO contact = developer.getContact() != null ? developer.getContact() : new ContactDTO();
+            PointOfContact contact = developer.getContact() != null ? developer.getContact() : new PointOfContact();
             contact.setFullName(crDevDetails.getContact().getFullName());
             contact.setEmail(crDevDetails.getContact().getEmail());
             contact.setPhoneNumber(crDevDetails.getContact().getPhoneNumber());
@@ -145,8 +142,8 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
             developer.setContact(contact);
         }
         try {
-            DeveloperDTO updatedDeveloper = developerManager.update(developer, false);
-            cr.setDeveloper(new Developer(updatedDeveloper));
+            Developer updatedDeveloper = developerManager.update(developer, false);
+            cr.setDeveloper(updatedDeveloper);
             return cr;
         } catch (JsonProcessingException | ValidationException e) {
             throw new RuntimeException(e);

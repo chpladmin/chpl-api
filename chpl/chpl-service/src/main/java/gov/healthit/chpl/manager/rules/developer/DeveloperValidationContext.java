@@ -1,21 +1,21 @@
 package gov.healthit.chpl.manager.rules.developer;
 
-import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.Data;
 
 @Data
 public class DeveloperValidationContext {
-    private DeveloperDTO developerDTO;
+    private Developer developer;
     private ErrorMessageUtil errorMessageUtil;
-    private DeveloperDTO beforeDev;
+    private Developer beforeDev;
 
-    public DeveloperValidationContext(DeveloperDTO developerDTO, ErrorMessageUtil errorMessageUtil) {
-        this(developerDTO, errorMessageUtil, null);
+    public DeveloperValidationContext(Developer developer, ErrorMessageUtil errorMessageUtil) {
+        this(developer, errorMessageUtil, null);
     }
 
-    public DeveloperValidationContext(DeveloperDTO developerDTO, ErrorMessageUtil errorMessageUtil, DeveloperDTO beforeDev) {
-        this.developerDTO = developerDTO;
+    public DeveloperValidationContext(Developer developer, ErrorMessageUtil errorMessageUtil, Developer beforeDev) {
+        this.developer = developer;
         this.errorMessageUtil = errorMessageUtil;
         this.beforeDev = beforeDev;
     }

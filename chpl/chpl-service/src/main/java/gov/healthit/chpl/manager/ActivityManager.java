@@ -30,7 +30,6 @@ import gov.healthit.chpl.domain.activity.ProductActivityDetails;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -423,9 +422,9 @@ public class ActivityManager extends SecuredManager {
                 Long devId = devIdNode.asLong();
                 if (devId != null) {
                     try {
-                        DeveloperDTO dev = devDao.getById(devId, true);
+                        Developer dev = devDao.getById(devId, true);
                         if (dev != null) {
-                            ((ProductActivityDetails) event).setDeveloper(new Developer(dev));
+                            ((ProductActivityDetails) event).setDeveloper(dev);
                         }
                     } catch (EntityRetrievalException ex) {
                         LOGGER.error("Could not get developer with id " + devId);

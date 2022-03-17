@@ -25,8 +25,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.attestation.entity.DeveloperAttestationSubmissionEntity;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.PublicAttestation;
+import gov.healthit.chpl.domain.concept.PublicAttestationStatus;
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.ContactEntity;
 import lombok.AllArgsConstructor;
@@ -113,9 +116,16 @@ public class DeveloperEntity implements Serializable {
     @Where(clause = "deleted <> 'true'")
     private Set<DeveloperStatusEventEntity> statusEvents = new LinkedHashSet<DeveloperStatusEventEntity>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "developer")
+    @Basic(optional = false)
+    @Column(name = "developer_id", nullable = false)
+    @Where(clause = "deleted <> 'true'")
+    private Set<DeveloperAttestationSubmissionEntity> publicAttestations = new LinkedHashSet<DeveloperAttestationSubmissionEntity>();
+
     public Developer toDomain() {
         return Developer.builder()
                 .developerId(this.getId())
+                .id(this.getId())
                 .address(this.getAddress() != null ? this.getAddress().toDomain() : null)
                 .contact(this.getContact() != null ? this.getContact().toDomain() : null)
                 .deleted(this.getDeleted())
@@ -123,8 +133,9 @@ public class DeveloperEntity implements Serializable {
                 .name(this.getName())
                 .selfDeveloper(this.getSelfDeveloper())
                 .statusEvents(toStatusEventDomains())
-                .lastModifiedDate(this.getLastModifiedDate() + "")
+                .lastModifiedDate(this.getLastModifiedDate().getTime() + "")
                 .website(this.getWebsite())
+                .attestations(toPublicAttestationDomains())
                 .build();
     }
 
@@ -135,5 +146,18 @@ public class DeveloperEntity implements Serializable {
         return this.statusEvents.stream()
                 .map(statusEvent -> statusEvent.toDomain())
                 .collect(Collectors.toList());
+    }
+
+    private List<PublicAttestation> toPublicAttestationDomains() {
+        if (CollectionUtils.isEmpty(this.getPublicAttestations())) {
+            return new ArrayList<PublicAttestation>();
+        }
+        return this.publicAttestations.stream()
+                .map(entity -> PublicAttestation.builder()
+                        .id(entity.getId())
+                        .attestationPeriod(entity.getPeriod() == null ? null : entity.getPeriod().toDomain())
+                        .status(PublicAttestationStatus.ATTESTATIONS_SUBMITTED)
+                        .build())
+                .toList();
     }
 }

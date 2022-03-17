@@ -29,10 +29,8 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
-import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
-import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.domain.compliance.DirectReview;
@@ -144,8 +142,8 @@ public class ListingService {
                 .sedIntendedUserDescription(dto.getSedIntendedUserDescription())
                 .sedTestingEndDate(dto.getSedTestingEnd())
                 .testingLabs(getTestingLabs(dto.getId()))
-                .developer(new Developer(dto.getDeveloper()))
-                .product(new Product(dto.getProduct()))
+                .developer(dto.getDeveloper())
+                .product(dto.getProduct())
                 .version(new ProductVersion(dto.getVersion()))
                 .productAdditionalSoftware(dto.getProductAdditionalSoftware())
                 .transparencyAttestationUrl(dto.getMandatoryDisclosures())

@@ -59,6 +59,7 @@ import gov.healthit.chpl.dao.TestTaskDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
+import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -71,16 +72,20 @@ import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.DeveloperStatus;
+import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
+import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
-import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
@@ -102,14 +107,9 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
-import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.CuresUpdateEventDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusDTO;
-import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
-import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
@@ -460,37 +460,40 @@ public class CertifiedProductManager extends SecuredManager {
         toCreate.setMandatoryDisclosures(pendingCp.getMandatoryDisclosures());
         toCreate.setSvapNoticeUrl(pendingCp.getSvapNoticeUrl());
 
-        DeveloperDTO developer = null;
+        Long developerId = null;
         if (pendingCp.getDeveloperId() == null) {
-            DeveloperDTO newDeveloper = new DeveloperDTO();
+            Developer newDeveloper = new Developer();
             if (StringUtils.isEmpty(pendingCp.getDeveloperName())) {
                 throw new EntityCreationException("You must provide a developer name to create a new developer.");
             }
             newDeveloper.setName(pendingCp.getDeveloperName());
             newDeveloper.setWebsite(pendingCp.getDeveloperWebsite());
             newDeveloper.setSelfDeveloper(pendingCp.getSelfDeveloper() == null ? Boolean.FALSE : pendingCp.getSelfDeveloper());
-            AddressDTO developerAddress = pendingCp.getDeveloperAddress();
+            Address developerAddress = pendingCp.getDeveloperAddress();
             newDeveloper.setAddress(developerAddress);
-            ContactDTO developerContact = new ContactDTO();
+            PointOfContact developerContact = new PointOfContact();
             developerContact.setFullName(pendingCp.getDeveloperContactName());
             developerContact.setPhoneNumber(pendingCp.getDeveloperPhoneNumber());
             developerContact.setEmail(pendingCp.getDeveloperEmail());
             newDeveloper.setContact(developerContact);
             // create the dev, address, and contact
-            developer = developerManager.create(newDeveloper);
-            pendingCp.setDeveloperId(developer.getId());
+            developerId = developerManager.create(newDeveloper);
+            pendingCp.setDeveloperId(developerId);
         }
 
         if (pendingCp.getProductId() == null) {
-            ProductDTO newProduct = new ProductDTO();
+            Product newProduct = new Product();
             if (pendingCp.getProductName() == null) {
                 throw new EntityCreationException("Either product name or ID must be provided.");
             }
             newProduct.setName(pendingCp.getProductName());
-            newProduct.getOwner().setId(pendingCp.getDeveloperId());
+            newProduct.setOwner(Developer.builder()
+                    .id(pendingCp.getDeveloperId())
+                    .developerId(pendingCp.getDeveloperId())
+                    .build());
             newProduct.setReportFileLocation(pendingCp.getReportFileLocation());
             newProduct = productManager.create(newProduct);
-            pendingCp.setProductId(newProduct.getId());
+            pendingCp.setProductId(newProduct.getProductId());
         }
 
         if (pendingCp.getProductVersionId() == null) {
@@ -1229,13 +1232,13 @@ public class CertifiedProductManager extends SecuredManager {
             // look at the updated status and see if a developer ban is
             // appropriate
             CertificationStatus updatedStatusObj = certStatusDao.getById(updatedStatus.getId());
-            DeveloperDTO cpDeveloper = developerDao.getByVersion(productVersionId);
+            Developer cpDeveloper = developerDao.getByVersion(productVersionId);
             if (cpDeveloper == null) {
                 LOGGER.error("Could not find developer for product version with id " + productVersionId);
                 throw new EntityNotFoundException(
                         "No developer could be located for the certified product in the update. Update cannot continue.");
             }
-            DeveloperStatusDTO newDevStatusDto = null;
+            DeveloperStatus newDevStatus = null;
             switch (CertificationStatusType.getValue(updatedStatusObj.getName())) {
             case SuspendedByOnc:
             case TerminatedByOnc:
@@ -1244,10 +1247,10 @@ public class CertifiedProductManager extends SecuredManager {
                 if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
                     // find the new developer status
                     if (updatedStatusObj.getName().equals(CertificationStatusType.SuspendedByOnc.toString())) {
-                        newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.SuspendedByOnc.toString());
+                        newDevStatus = devStatusDao.getByName(DeveloperStatusType.SuspendedByOnc.toString());
                     } else if (updatedStatusObj.getName()
                             .equals(CertificationStatusType.TerminatedByOnc.toString())) {
-                        newDevStatusDto = devStatusDao
+                        newDevStatus = devStatusDao
                                 .getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
                     }
                 } else if (!resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
@@ -1269,10 +1272,10 @@ public class CertifiedProductManager extends SecuredManager {
                         + " which does not trigger a developer ban.");
                 break;
             }
-            if (newDevStatusDto != null) {
-                DeveloperStatusEventDTO statusHistoryToAdd = new DeveloperStatusEventDTO();
-                statusHistoryToAdd.setDeveloperId(cpDeveloper.getId());
-                statusHistoryToAdd.setStatus(newDevStatusDto);
+            if (newDevStatus != null) {
+                DeveloperStatusEvent statusHistoryToAdd = new DeveloperStatusEvent();
+                statusHistoryToAdd.setDeveloperId(cpDeveloper.getDeveloperId());
+                statusHistoryToAdd.setStatus(newDevStatus);
                 statusHistoryToAdd.setStatusDate(new Date());
                 statusHistoryToAdd.setReason(msgUtil.getMessage("developer.statusAutomaticallyChanged"));
                 cpDeveloper.getStatusEvents().add(statusHistoryToAdd);

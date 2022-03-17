@@ -9,6 +9,7 @@ public class DeveloperXmlGenerator extends XmlGenerator {
     public static void addDeveloper(Developer dev, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         sw.writeStartElement(rootNodeName);
         AddressXmlGenerator.addAddress(dev.getAddress(), "address", sw);
+        PublicAttestationXmlGenerator.add(dev.getAttestations(), "attestations", sw);
         PointOfContactXmlGenerator.addContact(dev.getContact(), "contact", sw);
         createSimpleElement(dev.getDeveloperCode(), "developerCode", sw);
         createSimpleElement(dev.getDeveloperId(), "developerId", sw);

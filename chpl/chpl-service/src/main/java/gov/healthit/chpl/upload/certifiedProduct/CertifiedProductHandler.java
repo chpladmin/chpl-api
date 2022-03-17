@@ -14,13 +14,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CQMCriterion;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
-import gov.healthit.chpl.dto.ContactDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
-import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
@@ -91,17 +91,17 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         pendingCertifiedProduct.setProductName(product);
         pendingCertifiedProduct.setProductVersion(productVersion);
 
-        DeveloperDTO foundDeveloper = developerDao.getByName(developer);
+        Developer foundDeveloper = developerDao.getByName(developer);
         if (foundDeveloper != null) {
-            pendingCertifiedProduct.setDeveloperId(foundDeveloper.getId());
+            pendingCertifiedProduct.setDeveloperId(foundDeveloper.getDeveloperId());
 
             // product
-            ProductDTO foundProduct = productDao.getByDeveloperAndName(foundDeveloper.getId(), product);
+            Product foundProduct = productDao.getByDeveloperAndName(foundDeveloper.getDeveloperId(), product);
             if (foundProduct != null) {
-                pendingCertifiedProduct.setProductId(foundProduct.getId());
+                pendingCertifiedProduct.setProductId(foundProduct.getProductId());
 
                 // version
-                ProductVersionDTO foundVersion = versionDao.getByProductAndVersion(foundProduct.getId(),
+                ProductVersionDTO foundVersion = versionDao.getByProductAndVersion(foundProduct.getProductId(),
                         productVersion);
                 if (foundVersion != null) {
                     pendingCertifiedProduct.setProductVersionId(foundVersion.getId());
@@ -131,13 +131,13 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         pendingCertifiedProduct.setDeveloperContactName(developerContactName);
 
         // look for contact in db
-        ContactDTO contactToFind = new ContactDTO();
+        PointOfContact contactToFind = new PointOfContact();
         contactToFind.setFullName(developerContactName);
         contactToFind.setEmail(developerEmail);
         contactToFind.setPhoneNumber(developerPhone);
-        ContactDTO foundContact = contactDao.getByValues(contactToFind);
+        PointOfContact foundContact = contactDao.getByValues(contactToFind);
         if (foundContact != null) {
-            pendingCertifiedProduct.setDeveloperContactId(foundContact.getId());
+            pendingCertifiedProduct.setDeveloperContactId(foundContact.getContactId());
         }
     }
 

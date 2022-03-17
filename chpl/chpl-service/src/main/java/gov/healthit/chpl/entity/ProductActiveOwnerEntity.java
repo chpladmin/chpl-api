@@ -29,7 +29,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "product_active_owner_history_map")
-public class ProductActiveOwnerEntity implements ProductOwnerEntity, Serializable {
+public class ProductActiveOwnerEntity implements Serializable {
     private static final long serialVersionUID = -8325348768063869639L;
 
     @Id
@@ -65,10 +65,10 @@ public class ProductActiveOwnerEntity implements ProductOwnerEntity, Serializabl
     private Long lastModifiedUser;
 
     public ProductOwner toDomain() {
-        ProductOwner domain = new ProductOwner();
-        domain.setDeveloper(this.getDeveloper() != null ? this.getDeveloper().toDomain() : null);
-        domain.setId(this.getId());
-        domain.setTransferDate(this.getTransferDate().getTime());
-        return domain;
+        return ProductOwner.builder()
+                .id(this.getId())
+                .developer(this.getDeveloper() != null ? this.getDeveloper().toDomain() : null)
+                .transferDate(this.getTransferDate().getTime())
+                .build();
     }
 }

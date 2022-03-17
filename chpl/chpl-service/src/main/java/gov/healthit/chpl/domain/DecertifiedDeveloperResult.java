@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
@@ -43,31 +42,6 @@ public class DecertifiedDeveloperResult implements Serializable {
             Date decertificationDate, Long promotingInteroperabilityUsers,
             Date earliestPromotingInteroperabilityUserCountDate, Date latestPromotingInteroperabilityUserCountDate) {
         this.developer = developer;
-        this.certifyingBody = certifyingBody;
-        this.decertificationDate = decertificationDate;
-        this.promotingInteroperabilityUsers = promotingInteroperabilityUsers;
-        if (earliestPromotingInteroperabilityUserCountDate != null) {
-            this.earliestPromotingInteroperabilityUserCountDate
-                = DateUtil.toLocalDate(earliestPromotingInteroperabilityUserCountDate.getTime());
-        }
-        if (latestPromotingInteroperabilityUserCountDate != null) {
-            this.latestPromotingInteroperabilityUserCountDate
-                = DateUtil.toLocalDate(latestPromotingInteroperabilityUserCountDate.getTime());
-        }
-
-        this.estimatedUsers = promotingInteroperabilityUsers;
-        if (earliestPromotingInteroperabilityUserCountDate != null) {
-            this.earliestMeaningfulUseDate = earliestPromotingInteroperabilityUserCountDate.getTime();
-        }
-        if (latestPromotingInteroperabilityUserCountDate != null) {
-            this.latestMeaningfulUseDate = latestPromotingInteroperabilityUserCountDate.getTime();
-        }
-    }
-
-    public DecertifiedDeveloperResult(DeveloperDTO developerDTO, List<CertificationBody> certifyingBody,
-            Date decertificationDate, Long promotingInteroperabilityUsers,
-            Date earliestPromotingInteroperabilityUserCountDate, Date latestPromotingInteroperabilityUserCountDate) {
-        this.developer = new Developer(developerDTO);
         this.certifyingBody = certifyingBody;
         this.decertificationDate = decertificationDate;
         this.promotingInteroperabilityUsers = promotingInteroperabilityUsers;

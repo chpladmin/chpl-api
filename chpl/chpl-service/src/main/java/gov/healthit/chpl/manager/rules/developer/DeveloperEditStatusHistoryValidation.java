@@ -1,7 +1,8 @@
 package gov.healthit.chpl.manager.rules.developer;
 
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.DeveloperStatus;
+import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -22,14 +23,14 @@ public class DeveloperEditStatusHistoryValidation extends ValidationRule<Develop
     @Override
     public boolean isValid(DeveloperValidationContext context) {
         ErrorMessageUtil msgUtil = context.getErrorMessageUtil();
-        DeveloperDTO updatedDev = context.getDeveloperDTO();
-        DeveloperDTO beforeDev = context.getBeforeDev();
-        DeveloperStatusEventDTO newDevStatus = updatedDev.getStatus();
+        Developer updatedDev = context.getDeveloper();
+        Developer beforeDev = context.getBeforeDev();
+        DeveloperStatus newDevStatus = updatedDev.getStatus();
 
         boolean devStatusHistoryUpdated = isStatusHistoryUpdated(beforeDev, updatedDev);
 
         if (devStatusHistoryUpdated
-                && newDevStatus.getStatus().getStatusName()
+                && newDevStatus.getStatus()
                         .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
                 && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
             String msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdmin",
@@ -37,7 +38,7 @@ public class DeveloperEditStatusHistoryValidation extends ValidationRule<Develop
             getMessages().add(msg);
             return false;
         } else if (devStatusHistoryUpdated
-                && !newDevStatus.getStatus().getStatusName()
+                && !newDevStatus.getStatus()
                         .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
                 && resourcePermissions.isUserRoleAdmin() && resourcePermissions.isUserRoleOnc()) {
             String msg = msgUtil.getMessage("developer.statusHistoryChangeNotAllowedWithoutAdmin");
@@ -47,7 +48,7 @@ public class DeveloperEditStatusHistoryValidation extends ValidationRule<Develop
         return true;
     }
 
-    private static boolean isStatusHistoryUpdated(final DeveloperDTO original, final DeveloperDTO changed) {
+    private static boolean isStatusHistoryUpdated(Developer original, Developer changed) {
         boolean hasChanged = false;
         if ((original.getStatusEvents() != null && changed.getStatusEvents() == null)
                 || (original.getStatusEvents() == null && changed.getStatusEvents() != null)
@@ -57,9 +58,9 @@ public class DeveloperEditStatusHistoryValidation extends ValidationRule<Develop
             // neither status history is null and they have the same size
             // history arrays so now check for any differences in the values of
             // each
-            for (DeveloperStatusEventDTO origStatusHistory : original.getStatusEvents()) {
+            for (DeveloperStatusEvent origStatusHistory : original.getStatusEvents()) {
                 boolean foundMatchInChanged = false;
-                for (DeveloperStatusEventDTO changedStatusHistory : changed.getStatusEvents()) {
+                for (DeveloperStatusEvent changedStatusHistory : changed.getStatusEvents()) {
                     if (origStatusHistory.getStatus().getId() != null
                             && changedStatusHistory.getStatus().getId() != null
                             && origStatusHistory.getStatus().getId().equals(changedStatusHistory.getStatus().getId())

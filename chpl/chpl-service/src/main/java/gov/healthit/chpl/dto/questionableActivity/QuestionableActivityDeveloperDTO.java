@@ -1,11 +1,11 @@
 package gov.healthit.chpl.dto.questionableActivity;
 
-import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityDeveloperEntity;
 
 public class QuestionableActivityDeveloperDTO extends QuestionableActivityDTO {
     private Long developerId;
-    private DeveloperDTO developer;
+    private Developer developer;
     private String reason;
 
     public QuestionableActivityDeveloperDTO() {
@@ -17,12 +17,12 @@ public class QuestionableActivityDeveloperDTO extends QuestionableActivityDTO {
         this.developerId = entity.getDeveloperId();
         this.reason = entity.getReason();
         if (entity.getDeveloper() != null) {
-            this.developer = new DeveloperDTO(entity.getDeveloper());
+            this.developer = entity.getDeveloper().toDomain();
         }
     }
 
     public Class<?> getActivityObjectClass() {
-        return DeveloperDTO.class;
+        return Developer.class;
     }
 
     public Long getDeveloperId() {
@@ -33,11 +33,11 @@ public class QuestionableActivityDeveloperDTO extends QuestionableActivityDTO {
         this.developerId = developerId;
     }
 
-    public DeveloperDTO getDeveloper() {
+    public Developer getDeveloper() {
         return developer;
     }
 
-    public void setDeveloper(DeveloperDTO developer) {
+    public void setDeveloper(Developer developer) {
         this.developer = developer;
     }
 

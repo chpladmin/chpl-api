@@ -17,6 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.dao.auth.InvitationDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.dao.auth.UserPermissionDAO;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.auth.CreateUserRequest;
@@ -24,7 +25,6 @@ import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UserInvitation;
 import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserInvitationDTO;
@@ -304,7 +304,7 @@ public class InvitationManager extends SecuredManager {
             throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException {
         CertificationBodyDTO userAcb = null;
         TestingLabDTO userAtl = null;
-        DeveloperDTO userDeveloper = null;
+        Developer userDeveloper = null;
 
         if (!StringUtils.isEmpty(invitation.getRole()) && invitation.getRole().equals(Authority.ROLE_ACB)
                 && invitation.getPermissionObjectId() != null) {
