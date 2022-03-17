@@ -132,6 +132,7 @@ public final class ChangeRequestConverter {
                                 .name(entity.getAttestation().getCondition().getName())
                                 .sortOrder(entity.getAttestation().getCondition().getSortOrder())
                                 .build())
+                        .validResponses(entity.getAttestation().getValidResponses().stream().map(ent -> new AttestationValidResponse(ent)).toList())
                         .sortOrder(entity.getAttestation().getSortOrder())
                         .build())
                 .response(AttestationValidResponse.builder()
