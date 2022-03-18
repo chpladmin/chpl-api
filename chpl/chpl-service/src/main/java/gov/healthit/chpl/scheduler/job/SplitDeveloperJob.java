@@ -22,6 +22,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -170,7 +171,7 @@ public class SplitDeveloperJob implements Job {
             // need to get details for affected listings now before the product is re-assigned
             // so that any listings with a generated new-style CHPL ID have the old developer code
             List<Future<CertifiedProductSearchDetails>> beforeListingFutures
-                = getCertifiedProductSearchDetailsFutures(affectedListings);
+                = getCertifiedProductSearchDetailsFuturesFromCache(affectedListings);
             for (Future<CertifiedProductSearchDetails> future : beforeListingFutures) {
                 CertifiedProductSearchDetails details = future.get();
                 LOGGER.info("Complete retrieving details for id: " + details.getId());
@@ -194,7 +195,7 @@ public class SplitDeveloperJob implements Job {
 
             // get the listing details again - this time they will have the new developer code
             List<Future<CertifiedProductSearchDetails>> afterListingFutures
-                = getCertifiedProductSearchDetailsFutures(affectedListings);
+                = getCurrentCertifiedProductSearchDetailsFutures(affectedListings);
             for (Future<CertifiedProductSearchDetails> future : afterListingFutures) {
                 CertifiedProductSearchDetails details = future.get();
                 LOGGER.info("Complete retrieving details for id: " + details.getId());
@@ -224,7 +225,7 @@ public class SplitDeveloperJob implements Job {
         return afterDeveloper;
     }
 
-    private List<Future<CertifiedProductSearchDetails>> getCertifiedProductSearchDetailsFutures(
+    private List<Future<CertifiedProductSearchDetails>> getCertifiedProductSearchDetailsFuturesFromCache(
             List<CertifiedProductDetailsDTO> listings) throws Exception {
 
         List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
@@ -233,6 +234,22 @@ public class SplitDeveloperJob implements Job {
                 LOGGER.info("Getting details for affected listing " + currListing.getChplProductNumber());
                 futures.add(schedulerCertifiedProductSearchDetailsAsync.getCertifiedProductDetail(
                         currListing.getId(), cpdManager));
+            } catch (EntityRetrievalException e) {
+                LOGGER.error("Could not retrieve certified product details for id: " + currListing.getId(), e);
+            }
+        }
+        return futures;
+    }
+
+    private List<Future<CertifiedProductSearchDetails>> getCurrentCertifiedProductSearchDetailsFutures(
+            List<CertifiedProductDetailsDTO> listings) throws Exception {
+
+        List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
+        for (CertifiedProductDetailsDTO currListing : listings) {
+            try {
+                LOGGER.info("Getting details for affected listing " + currListing.getChplProductNumber());
+                futures.add(new AsyncResult<CertifiedProductSearchDetails>(
+                        cpdManager.getCertifiedProductDetails(currListing.getId())));
             } catch (EntityRetrievalException e) {
                 LOGGER.error("Could not retrieve certified product details for id: " + currListing.getId(), e);
             }
