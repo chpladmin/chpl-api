@@ -9,6 +9,7 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -81,7 +82,7 @@ public class TransactionalDeveloperMergeManager {
             // need to get details for affected listings now before the product is re-assigned
             // so that any listings with a generated new-style CHPL ID have the old developer code
             List<Future<CertifiedProductSearchDetails>> beforeListingFutures
-                = getCertifiedProductSearchDetailsFutures(affectedListings);
+                = getCertifiedProductSearchDetailsFuturesFromCache(affectedListings);
             for (Future<CertifiedProductSearchDetails> future : beforeListingFutures) {
                 CertifiedProductSearchDetails details = future.get();
                 LOGGER.info("Complete retrieving details for id: " + details.getId());
@@ -105,7 +106,7 @@ public class TransactionalDeveloperMergeManager {
 
             // get the listing details again - this time they will have the new developer code
             List<Future<CertifiedProductSearchDetails>> afterListingFutures
-                = getCertifiedProductSearchDetailsFutures(affectedListings);
+                = getCurrentCertifiedProductSearchDetailsFutures(affectedListings);
             for (Future<CertifiedProductSearchDetails> future : afterListingFutures) {
                 CertifiedProductSearchDetails details = future.get();
                 LOGGER.info("Complete retrieving details for id: " + details.getId());
@@ -142,7 +143,7 @@ public class TransactionalDeveloperMergeManager {
         return createdDeveloper;
     }
 
-    private List<Future<CertifiedProductSearchDetails>> getCertifiedProductSearchDetailsFutures(
+    private List<Future<CertifiedProductSearchDetails>> getCertifiedProductSearchDetailsFuturesFromCache(
             List<CertifiedProductDetailsDTO> listings) throws Exception {
 
         List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
@@ -158,4 +159,19 @@ public class TransactionalDeveloperMergeManager {
         return futures;
     }
 
+    private List<Future<CertifiedProductSearchDetails>> getCurrentCertifiedProductSearchDetailsFutures(
+            List<CertifiedProductDetailsDTO> listings) throws Exception {
+
+        List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
+        for (CertifiedProductDetailsDTO currListing : listings) {
+            try {
+                LOGGER.info("Getting details for affected listing " + currListing.getChplProductNumber());
+                futures.add(new AsyncResult<CertifiedProductSearchDetails>(
+                        cpdManager.getCertifiedProductDetails(currListing.getId())));
+            } catch (EntityRetrievalException e) {
+                LOGGER.error("Could not retrieve certified product details for id: " + currListing.getId(), e);
+            }
+        }
+        return futures;
+    }
 }
