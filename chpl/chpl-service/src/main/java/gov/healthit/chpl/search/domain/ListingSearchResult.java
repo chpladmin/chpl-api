@@ -35,6 +35,7 @@ public class ListingSearchResult implements Serializable {
 
     private Long id;
     private String chplProductNumber;
+    private Set<String> previousChplProductNumbers;
     private IdNamePairSearchResult edition;
     private IdNamePairSearchResult certificationBody;
     private String acbCertificationId;
@@ -82,6 +83,7 @@ public class ListingSearchResult implements Serializable {
         this.setClosedSurveillanceCount(0L);
         this.setOpenSurveillanceNonConformityCount(0L);
         this.setClosedSurveillanceNonConformityCount(0L);
+        previousChplProductNumbers = new HashSet<String>();
         previousDevelopers = new HashSet<IdNamePairSearchResult>();
         criteriaMet = new HashSet<CertificationCriterionSearchResult>();
         cqmsMet = new HashSet<CQMSearchResult>();
