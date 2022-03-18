@@ -12,11 +12,11 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
@@ -132,17 +132,17 @@ public class ChplNumberReviewer implements Reviewer {
             }
 
             if (listing.getDeveloperId() != null && !developerCode.matches("X+")) {
-                DeveloperDTO developer = developerDao.getById(listing.getDeveloperId());
+                Developer developer = developerDao.getById(listing.getDeveloperId());
                 if (developer != null) {
-                    DeveloperStatusEventDTO mostRecentStatus = developer.getStatus();
+                    DeveloperStatus mostRecentStatus = developer.getStatus();
                     if (mostRecentStatus == null || mostRecentStatus.getStatus() == null) {
                         listing.getErrorMessages().add("The current status of the developer " + developer.getName()
                                 + " cannot be determined. A developer must be listed as Active "
                                 + "in order to create certified products belongong to it.");
-                    } else if (!mostRecentStatus.getStatus().getStatusName()
+                    } else if (!mostRecentStatus.getStatus()
                             .equals(DeveloperStatusType.Active.toString())) {
                         listing.getErrorMessages().add("The developer " + developer.getName() + " has a status of "
-                                + mostRecentStatus.getStatus().getStatusName()
+                                + mostRecentStatus.getStatus()
                                 + ". Certified products belonging to this developer cannot be "
                                 + "created until its status returns to Active.");
                     }
@@ -155,7 +155,7 @@ public class ChplNumberReviewer implements Reviewer {
                     }
                 }
             } else if (!developerCode.matches("X+")) {
-                DeveloperDTO developerByCode = developerDao.getByCode(developerCode);
+                Developer developerByCode = developerDao.getByCode(developerCode);
                 if (developerByCode == null) {
                     listing.getErrorMessages().add("The developer code " + developerCode
                             + " does not match any developer in the system. New developers should use the code 'XXXX'.");

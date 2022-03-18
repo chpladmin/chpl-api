@@ -17,10 +17,8 @@ import gov.healthit.chpl.changerequest.entity.ChangeRequestTypeEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestWebsiteEntity;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
 
 public final class ChangeRequestConverter {
 
@@ -46,7 +44,7 @@ public final class ChangeRequestConverter {
         ChangeRequest cr = new ChangeRequest();
         cr.setId(entity.getId());
         cr.setChangeRequestType(convert(entity.getChangeRequestType()));
-        cr.setDeveloper(new Developer(new DeveloperDTO(entity.getDeveloper())));
+        cr.setDeveloper(entity.getDeveloper().toDomain());
         cr.setSubmittedDate(entity.getCreationDate());
         return cr;
     }

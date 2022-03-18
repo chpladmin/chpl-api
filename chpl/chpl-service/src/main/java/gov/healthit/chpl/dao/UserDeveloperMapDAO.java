@@ -182,7 +182,7 @@ public class UserDeveloperMapDAO extends BaseDAOImpl {
             throws EntityRetrievalException {
         UserDeveloperMapEntity entity = new UserDeveloperMapEntity();
         entity.setId(dto.getId());
-        entity.setDeveloper(getDeveloperEntityById(dto.getDeveloper().getId()));
+        entity.setDeveloper(getDeveloperEntityById(dto.getDeveloper().getDeveloperId()));
         entity.setUser(getUserEntityById(dto.getUser().getId()));
         return entity;
     }

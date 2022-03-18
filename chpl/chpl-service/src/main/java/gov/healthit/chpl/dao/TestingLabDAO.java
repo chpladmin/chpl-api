@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.TestingLabEntity;
 import gov.healthit.chpl.entity.UserTestingLabMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -49,7 +50,9 @@ public class TestingLabDAO extends BaseDAOImpl {
             entity = new TestingLabEntity();
 
             if (dto.getAddress() != null) {
-                entity.setAddress(addressDao.saveAddress(dto.getAddress()));
+                Long addressId = addressDao.saveAddress(dto.getAddress());
+                AddressEntity addressEntity = addressDao.getEntityById(addressId);
+                entity.setAddress(addressEntity);
             }
 
             entity.setName(dto.getName());
@@ -74,7 +77,9 @@ public class TestingLabDAO extends BaseDAOImpl {
 
         if (dto.getAddress() != null) {
             try {
-                entity.setAddress(addressDao.saveAddress(dto.getAddress()));
+                Long addressId = addressDao.saveAddress(dto.getAddress());
+                AddressEntity addressEntity = addressDao.getEntityById(addressId);
+                entity.setAddress(addressEntity);
             } catch (final EntityCreationException ex) {
                 LOGGER.error("Could not create new address in the database.", ex);
                 entity.setAddress(null);

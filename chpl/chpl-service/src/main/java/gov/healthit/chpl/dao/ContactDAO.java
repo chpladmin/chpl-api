@@ -1,18 +1,14 @@
 package gov.healthit.chpl.dao;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.contact.PointOfContact;
-import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.entity.ContactEntity;
-import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 
@@ -32,76 +28,52 @@ public class ContactDAO extends BaseDAOImpl {
         return toInsert.getId();
     }
 
-    @Deprecated
-    public ContactEntity create(ContactDTO dto) throws EntityCreationException, EntityRetrievalException {
-        ContactEntity toInsert = new ContactEntity();
-        toInsert.setEmail(dto.getEmail());
-        toInsert.setFullName(dto.getFullName());
-        toInsert.setPhoneNumber(dto.getPhoneNumber());
-        toInsert.setTitle(dto.getTitle());
-        toInsert.setSignatureDate(null);
-
-        toInsert.setDeleted(false);
-        toInsert.setLastModifiedUser(AuthUtil.getAuditId());
-        entityManager.persist(toInsert);
-        entityManager.flush();
-        return toInsert;
+    public void update(PointOfContact contact) throws EntityRetrievalException {
+        ContactEntity contactEntity = this.getEntityById(contact.getContactId());
+        contactEntity.setEmail(contact.getEmail());
+        contactEntity.setFullName(contact.getFullName());
+        contactEntity.setPhoneNumber(contact.getPhoneNumber());
+        contactEntity.setTitle(contact.getTitle());
+        contactEntity.setSignatureDate(null);
+        contactEntity.setDeleted(false);
+        contactEntity.setLastModifiedUser(AuthUtil.getAuditId());
+        update(contactEntity);
     }
 
-    @Transactional
-    public ContactEntity update(ContactDTO dto) throws EntityRetrievalException {
-        ContactEntity contact = this.getEntityById(dto.getId());
-
-        contact.setEmail(dto.getEmail());
-        contact.setFullName(dto.getFullName());
-        contact.setPhoneNumber(dto.getPhoneNumber());
-        contact.setTitle(dto.getTitle());
-        contact.setSignatureDate(dto.getSignatureDate());
-
-        contact.setLastModifiedUser(AuthUtil.getAuditId());
-        entityManager.merge(contact);
-        return contact;
-    }
-
-    @Transactional
     public void delete(Long id) throws EntityRetrievalException {
         ContactEntity toDelete = getEntityById(id);
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedUser(AuthUtil.getAuditId());
-            entityManager.merge(toDelete);
+            update(toDelete);
         }
     }
 
-    public List<ContactDTO> findAll() {
+    public List<PointOfContact> findAll() {
         List<ContactEntity> result = this.findAllEntities();
         if (result == null) {
             return null;
         }
 
-        List<ContactDTO> dtos = new ArrayList<ContactDTO>(result.size());
-        for (ContactEntity entity : result) {
-            dtos.add(new ContactDTO(entity));
-        }
-        return dtos;
+        return result.stream()
+                .map(contactEntity -> contactEntity.toDomain())
+                .toList();
     }
 
-    public ContactDTO getById(Long id) throws EntityRetrievalException {
-        ContactDTO dto = null;
-        ContactEntity entity = this.getEntityById(id);
-
-        if (entity != null) {
-            dto = new ContactDTO(entity);
+    public PointOfContact getById(Long id) throws EntityRetrievalException {
+        ContactEntity result = this.getEntityById(id);
+        if (result != null) {
+            return result.toDomain();
         }
-        return dto;
+        return null;
     }
 
-    public ContactDTO getByValues(ContactDTO contact) {
-        ContactEntity entity = this.searchEntities(contact);
-        if (entity == null) {
+    public PointOfContact getByValues(PointOfContact contact) {
+        ContactEntity result = this.searchEntities(contact);
+        if (result == null) {
             return null;
         }
-        return new ContactDTO(entity);
+        return result.toDomain();
     }
 
     private List<ContactEntity> findAllEntities() {
@@ -111,9 +83,8 @@ public class ContactDAO extends BaseDAOImpl {
         return query.getResultList();
     }
 
-    public ContactEntity getEntityById(final Long id) throws EntityRetrievalException {
+    public ContactEntity getEntityById(Long id) throws EntityRetrievalException {
         ContactEntity entity = null;
-
         Query query = entityManager.createQuery(
                 "SELECT c "
                 + "FROM ContactEntity c "
@@ -130,9 +101,8 @@ public class ContactDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private ContactEntity searchEntities(ContactDTO toSearch) {
+    private ContactEntity searchEntities(PointOfContact toSearch) {
         ContactEntity entity = null;
-
         String contactQuery = "SELECT c "
                 + "FROM ContactEntity c "
                 + "WHERE (NOT deleted = true) ";

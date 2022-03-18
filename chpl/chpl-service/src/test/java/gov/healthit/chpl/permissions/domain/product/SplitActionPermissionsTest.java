@@ -12,7 +12,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.access.AccessDeniedException;
 
-import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.product.SplitActionPermissions;
@@ -42,7 +43,7 @@ public class SplitActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForAdminUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-        assertTrue(permissions.hasAccess(new ProductDTO()));
+        assertTrue(permissions.hasAccess(new Product()));
     }
 
     @Override
@@ -51,7 +52,7 @@ public class SplitActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForOncUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-        assertTrue(permissions.hasAccess(new ProductDTO()));
+        assertTrue(permissions.hasAccess(new Product()));
     }
 
     @Override
@@ -60,7 +61,7 @@ public class SplitActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForOncStaffUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(new ProductDTO()));
+        assertFalse(permissions.hasAccess(new Product()));
     }
 
     @Override
@@ -71,26 +72,29 @@ public class SplitActionPermissionsTest extends ActionPermissionsBaseTest {
         SplitActionPermissions spyPermissions = Mockito.spy(permissions);
         assertFalse(permissions.hasAccess());
 
-        ProductDTO dto = new ProductDTO();
-        dto.setId(1L);
-        dto.getOwner().setId(2L);
+        Product product = new Product();
+        product.setId(1L);
+        product.setOwner(Developer.builder()
+                .id(2L)
+                .developerId(2L)
+                .build());
 
         // Non Active Developer
         Mockito.when(resourcePermissions.isDeveloperActive(ArgumentMatchers.anyLong())).thenReturn(false);
-        assertFalse(permissions.hasAccess(dto));
+        assertFalse(permissions.hasAccess(product));
 
         // User has access to associated certified products
         Mockito.when(resourcePermissions.isDeveloperActive(ArgumentMatchers.anyLong())).thenReturn(true);
         Mockito.doReturn(true).when(spyPermissions)
                 .doesCurrentUserHaveAccessToAllOfDevelopersListings(ArgumentMatchers.anyLong(),
                         ArgumentMatchers.any());
-        assertTrue(spyPermissions.hasAccess(dto));
+        assertTrue(spyPermissions.hasAccess(product));
 
         // User does not have access to associated certified products
         Mockito.when(resourcePermissions.isDeveloperActive(ArgumentMatchers.anyLong())).thenReturn(true);
         Mockito.doReturn(false).when(spyPermissions)
                 .doesCurrentUserHaveAccessToAllOfDevelopersListings(ArgumentMatchers.anyLong(), ArgumentMatchers.any());
-        spyPermissions.hasAccess(dto);
+        spyPermissions.hasAccess(product);
     }
 
     @Override

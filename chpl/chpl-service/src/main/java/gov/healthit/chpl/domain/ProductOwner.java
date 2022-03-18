@@ -7,10 +7,16 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import gov.healthit.chpl.dto.ProductOwnerDTO;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@AllArgsConstructor
 public class ProductOwner implements Serializable {
     private static final long serialVersionUID = 5678373560374145870L;
 
@@ -37,19 +43,11 @@ public class ProductOwner implements Serializable {
 
     }
 
-    public ProductOwner(ProductOwnerDTO dto) {
-        this.id = dto.getId();
-        if (dto.getDeveloper() != null) {
-            this.developer = new Developer(dto.getDeveloper());
-        }
-        this.transferDate = dto.getTransferDate();
-    }
-
     public Developer getDeveloper() {
         return developer;
     }
 
-    public void setDeveloper(final Developer developer) {
+    public void setDeveloper(Developer developer) {
         this.developer = developer;
     }
 
@@ -57,7 +55,7 @@ public class ProductOwner implements Serializable {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -65,7 +63,7 @@ public class ProductOwner implements Serializable {
         return transferDate;
     }
 
-    public void setTransferDate(final Long transferDate) {
+    public void setTransferDate(Long transferDate) {
         this.transferDate = transferDate;
     }
 

@@ -1,7 +1,7 @@
 package gov.healthit.chpl.changerequest.validation;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
-import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.rules.ValidationRule;
@@ -24,16 +24,16 @@ public class DeveloperActiveValidation extends ValidationRule<ChangeRequestValid
             crToTest = context.getNewChangeRequest();
         }
 
-        DeveloperDTO devDTO;
+        Developer dev;
         try {
-            devDTO = context.getValidationDAOs().getDeveloperDAO().getById(crToTest.getDeveloper().getDeveloperId());
+            dev = context.getValidationDAOs().getDeveloperDAO().getById(crToTest.getDeveloper().getDeveloperId());
         } catch (Exception e) {
             // This should be caught be DeveloperExistenceValidation
             return true;
         }
 
         // Is the developer active?
-        if (!devDTO.getStatus().getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+        if (!dev.getStatus().getStatus().equals(DeveloperStatusType.Active.toString())) {
             getMessages().add(getErrorMessage("changeRequest.developer.notActive"));
             return false;
         }

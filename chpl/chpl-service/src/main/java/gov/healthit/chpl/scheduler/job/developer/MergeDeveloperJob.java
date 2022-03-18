@@ -26,7 +26,7 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -56,8 +56,8 @@ public class MergeDeveloperJob implements Job {
     @Autowired
     private ChplEmailFactory chplEmailFactory;
 
-    private List<DeveloperDTO> preMergeDevelopers;
-    private DeveloperDTO postMergeDeveloper;
+    private List<Developer> preMergeDevelopers;
+    private Developer postMergeDeveloper;
     private Map<Long, CertifiedProductSearchDetails> preMergeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
     private Map<Long, CertifiedProductSearchDetails> postMergeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
 
@@ -74,8 +74,8 @@ public class MergeDeveloperJob implements Job {
         } else {
             setSecurityContext(user);
 
-            preMergeDevelopers = (List<DeveloperDTO>) jobDataMap.get(OLD_DEVELOPERS_KEY);
-            DeveloperDTO newDeveloper = (DeveloperDTO) jobDataMap.get(NEW_DEVELOPER_KEY);
+            preMergeDevelopers = (List<Developer>) jobDataMap.get(OLD_DEVELOPERS_KEY);
+            Developer newDeveloper = (Developer) jobDataMap.get(NEW_DEVELOPER_KEY);
             Exception mergeException = null;
             try {
                 confirmDevelopersExistBeforeMerge();
@@ -84,7 +84,7 @@ public class MergeDeveloperJob implements Job {
             } catch (Exception e) {
                 LOGGER.error("Error completing merge of developers '"
                         + StringUtils.join(preMergeDevelopers.stream()
-                            .map(DeveloperDTO::getName)
+                            .map(Developer::getName)
                             .collect(Collectors.toList()), ",")
                         + "' to new developer '"
                         + newDeveloper.getName() + "'.", e);
@@ -126,7 +126,7 @@ public class MergeDeveloperJob implements Job {
     }
 
     private void confirmDevelopersExistBeforeMerge() throws EntityRetrievalException {
-        List<Long> preMergeDeveloperIds = preMergeDevelopers.stream().map(dev -> dev.getId()).collect(Collectors.toList());
+        List<Long> preMergeDeveloperIds = preMergeDevelopers.stream().map(dev -> dev.getDeveloperId()).collect(Collectors.toList());
         for (Long developerId : preMergeDeveloperIds) {
             devDao.getById(developerId);
         }
@@ -141,7 +141,7 @@ public class MergeDeveloperJob implements Job {
         CacheManager.getInstance().getCache(CacheNames.GET_DECERTIFIED_DEVELOPERS).removeAll();
     }
 
-    private void sendJobCompletionEmails(DeveloperDTO newDeveloper, List<DeveloperDTO> oldDevelopers,
+    private void sendJobCompletionEmails(Developer newDeveloper, List<Developer> oldDevelopers,
             Exception mergeException, List<String> recipients) throws IOException, AddressException, MessagingException {
 
         String subject = getSubject(mergeException == null);
@@ -185,29 +185,29 @@ public class MergeDeveloperJob implements Job {
         }
     }
 
-    private String createHtmlEmailBodySuccess(DeveloperDTO createdDeveloper, List<DeveloperDTO> preMergeDevelopers) {
+    private String createHtmlEmailBodySuccess(Developer createdDeveloper, List<Developer> preMergeDevelopers) {
         String htmlMessage = String.format("<p>The Developer <a href=\"%s/#/organizations/developers/%d\">%s</a> has been "
                 + "created. It was merged from the following developers: </p>"
                 + "<ul>",
                 env.getProperty("chplUrlBegin"), // root of URL
-                createdDeveloper.getId(),
+                createdDeveloper.getDeveloperId(),
                 createdDeveloper.getName());
-        for (DeveloperDTO dev : preMergeDevelopers) {
+        for (Developer dev : preMergeDevelopers) {
             htmlMessage += String.format("<li><a href=\"%s/#/organizations/developers/%d\">%s</a></li>",
                     env.getProperty("chplUrlBegin"),
-                    dev.getId(),
+                    dev.getDeveloperId(),
                     dev.getName());
         }
         htmlMessage += "</ul>";
         return htmlMessage;
     }
 
-    private String createHtmlEmailBodyFailure(List<DeveloperDTO> preMergeDevelopers, Exception ex) {
+    private String createHtmlEmailBodyFailure(List<Developer> preMergeDevelopers, Exception ex) {
         String htmlMessage = "The developers <ul> ";
-        for (DeveloperDTO dev : preMergeDevelopers) {
+        for (Developer dev : preMergeDevelopers) {
             htmlMessage += String.format("<li><a href=\"%s/#/organizations/developers/%d\">%s</a></li>",
                     env.getProperty("chplUrlBegin"),
-                    dev.getId(),
+                    dev.getDeveloperId(),
                     dev.getName());
         }
         htmlMessage += String.format(

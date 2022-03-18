@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -38,16 +38,16 @@ public class SplitActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess(final Object obj) {
-        if (!(obj instanceof ProductDTO)) {
+        if (!(obj instanceof Product)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-            ProductDTO product = (ProductDTO) obj;
-            if (!getResourcePermissions().isDeveloperActive(product.getOwner().getId())) {
+            Product product = (Product) obj;
+            if (!getResourcePermissions().isDeveloperActive(product.getOwner().getDeveloperId())) {
                 //ACB can never split product if developer is not active
                 return false;
-            } else if (!doesCurrentUserHaveAccessToAllOfDevelopersListings(product.getOwner().getId(), allowedCertStatuses)) {
+            } else if (!doesCurrentUserHaveAccessToAllOfDevelopersListings(product.getOwner().getDeveloperId(), allowedCertStatuses)) {
                 //ACB can only split product if developer is active and all non-retired
                 //listings owned by the developer belong to the user's ACB
                 throw new AccessDeniedException(msgUtil.getMessage("product.split.notAllowedMultipleAcbs"));

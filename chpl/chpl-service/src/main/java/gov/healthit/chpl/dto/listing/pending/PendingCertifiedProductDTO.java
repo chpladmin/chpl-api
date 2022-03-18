@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -32,7 +33,6 @@ import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
-import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -68,7 +68,7 @@ public class PendingCertifiedProductDTO implements Serializable {
     private Long id;
     private Long practiceTypeId;
     private Long developerId;
-    private AddressDTO developerAddress;
+    private Address developerAddress;
     private Long productId;
     private Long productVersionId;
     private Long certificationEditionId;
@@ -159,16 +159,7 @@ public class PendingCertifiedProductDTO implements Serializable {
             this.developerContactName = details.getDeveloper().getContact().getFullName();
             this.developerPhoneNumber = details.getDeveloper().getContact().getPhoneNumber();
         }
-        if (details.getDeveloper().getAddress() != null) {
-            AddressDTO address = new AddressDTO();
-            address.setId(details.getDeveloper().getAddress().getAddressId());
-            address.setStreetLineOne(details.getDeveloper().getAddress().getLine1());
-            address.setCity(details.getDeveloper().getAddress().getCity());
-            address.setState(details.getDeveloper().getAddress().getState());
-            address.setZipcode(details.getDeveloper().getAddress().getZipcode());
-            address.setCountry("US");
-            this.developerAddress = address;
-        }
+        this.developerAddress = details.getDeveloper().getAddress();
 
         if (details.getProduct() != null && details.getProduct().getProductId() != null) {
             this.productId = Long.valueOf(details.getProduct().getProductId().toString());

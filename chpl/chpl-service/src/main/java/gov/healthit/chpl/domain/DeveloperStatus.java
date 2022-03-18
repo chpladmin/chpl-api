@@ -7,12 +7,14 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import gov.healthit.chpl.dto.DeveloperStatusDTO;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
 public class DeveloperStatus implements Serializable {
@@ -33,9 +35,48 @@ public class DeveloperStatus implements Serializable {
     public DeveloperStatus() {
     }
 
-    public DeveloperStatus(DeveloperStatusDTO dto) {
-        this.id = dto.getId();
-        this.status = dto.getStatusName();
+    public DeveloperStatus(DeveloperStatus other) {
+        this();
+        this.setId(other.getId());
+        this.setStatus(other.getStatus());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        DeveloperStatus other = (DeveloperStatus) obj;
+        if (id == null) {
+            if (other.id != null) {
+                return false;
+            }
+        } else if (!id.equals(other.id)) {
+            return false;
+        }
+        if (status == null) {
+            if (other.status != null) {
+                return false;
+            }
+        } else if (!status.equals(other.status)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((status == null) ? 0 : status.hashCode());
+        return result;
     }
 
     public Long getId() {
