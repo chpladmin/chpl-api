@@ -2,6 +2,7 @@ package gov.healthit.chpl.scheduler.job.curesStatistics;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
@@ -22,36 +23,51 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
-import gov.healthit.chpl.service.CuresUpdateService;
 import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2(topic = "curesStatisticsCreatorJobLogger")
 public class ListingCriterionForCuresAchievementStatisticsCalculator {
     private CertificationCriterionService certService;
-    private CuresUpdateService curesUpdateService;
     private ListingToCriterionForCuresAchievementStatisticsDAO listingToCuresAchievementDao;
     private CertifiedProductDetailsManager cpdManager;
-    private Long b6Id;
     private Integer threadCount;
+    private List<Long> needsToBeUpdatedOrRemovedCriteriaIds;
     private List<Long> privacyAndSecurityCriteriaIds;
     private List<Long> privacyAndSecurityRequiredCriteriaIds;
 
     @Autowired
     public ListingCriterionForCuresAchievementStatisticsCalculator(CertificationCriterionService certService,
-            CuresUpdateService curesUpdateService,
             ListingToCriterionForCuresAchievementStatisticsDAO listingToCuresAchievementDao,
             CertifiedProductDetailsManager cpdManager,
             @Value("${privacyAndSecurityCriteria}") String privacyAndSecurityCriteriaIdList,
             @Value("${privacyAndSecurityRequiredCriteria}") String privacyAndSecurityRequiredCriteriaIdList,
             @Value("${executorThreadCountForQuartzJobs}") Integer threadCount) {
         this.certService = certService;
-        this.curesUpdateService = curesUpdateService;
         this.listingToCuresAchievementDao = listingToCuresAchievementDao;
         this.cpdManager = cpdManager;
         this.threadCount = threadCount;
 
-        this.b6Id = certService.get(Criteria2015.B_6).getId();
+        needsToBeUpdatedOrRemovedCriteriaIds = new ArrayList<Long>(Arrays.asList(
+                certService.get(Criteria2015.B_1_OLD).getId(),
+                certService.get(Criteria2015.B_2_OLD).getId(),
+                certService.get(Criteria2015.B_3_OLD).getId(),
+                certService.get(Criteria2015.B_7_OLD).getId(),
+                certService.get(Criteria2015.B_8_OLD).getId(),
+                certService.get(Criteria2015.B_9_OLD).getId(),
+                certService.get(Criteria2015.C_3_OLD).getId(),
+                certService.get(Criteria2015.D_2_OLD).getId(),
+                certService.get(Criteria2015.D_3_OLD).getId(),
+                certService.get(Criteria2015.D_10_OLD).getId(),
+                certService.get(Criteria2015.E_1_OLD).getId(),
+                certService.get(Criteria2015.F_5_OLD).getId(),
+                certService.get(Criteria2015.G_6_OLD).getId(),
+                certService.get(Criteria2015.G_8).getId(),
+                certService.get(Criteria2015.G_9_OLD).getId(),
+                //in addition to the original versions of criteria that need to be updated,
+                //b6 will have to be removed.
+                certService.get(Criteria2015.B_6).getId()));
+
         if (!StringUtils.isEmpty(privacyAndSecurityCriteriaIdList)) {
             privacyAndSecurityCriteriaIds = Stream.of(privacyAndSecurityCriteriaIdList.split(","))
                 .map(criterionId -> Long.valueOf(criterionId))
@@ -145,13 +161,10 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
     }
 
     private List<CertificationCriterionDTO> getCriteriaNeedingUpdates(CertifiedProductSearchDetails listing) {
-        List<Long> criteriaIdsNeedingUpdate = curesUpdateService.getNeedsToBeUpdatedCriteriaIds();
-        //in addition to whatever criteria need updated, b6 will have to be removed.
-        criteriaIdsNeedingUpdate.add(b6Id);
         List<Long> attestedCriterionIdsNeedingUpdate = listing.getCertificationResults().stream()
             .filter(certResult -> certResult.isSuccess())
             .map(attestedCertResult -> attestedCertResult.getCriterion().getId())
-            .filter(attestedCriterionId -> criteriaIdsNeedingUpdate.contains(attestedCriterionId))
+            .filter(attestedCriterionId -> needsToBeUpdatedOrRemovedCriteriaIds.contains(attestedCriterionId))
             .collect(Collectors.toList());
         return attestedCriterionIdsNeedingUpdate.stream()
             .map(criterionId -> certService.get(criterionId))

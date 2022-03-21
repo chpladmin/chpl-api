@@ -29,7 +29,6 @@ import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
-import gov.healthit.chpl.service.CuresUpdateService;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "curesStatisticsCreatorJobLogger")
@@ -46,7 +45,7 @@ public class CuresListingByAcbStatisticsCalculator {
 
     @Autowired
     public CuresListingByAcbStatisticsCalculator(CertifiedProductDetailsManager certifiedProductDetailsManager, CertifiedProductDAO certifiedProductDAO,
-            CuresUpdateService curesUpdateService, CertificationCriterionService certificationCriterionService, CuresListingStatisticsByAcbDAO curesListingStatisticsByAcbDAO,
+            CertificationCriterionService certificationCriterionService, CuresListingStatisticsByAcbDAO curesListingStatisticsByAcbDAO,
             CertificationBodyDAO certificationBodyDAO, @Value("${executorThreadCountForQuartzJobs}") Integer threadCount) {
 
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
