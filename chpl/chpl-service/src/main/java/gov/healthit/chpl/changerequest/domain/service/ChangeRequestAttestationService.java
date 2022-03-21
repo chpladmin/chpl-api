@@ -42,6 +42,7 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -87,6 +88,15 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Value("${changeRequest.attestation.updated.body}")
     private String updatedEmailBody;
+
+    @Value("${changeRequest.attestation.withdrawn.subject}")
+    private String withdrawnEmailSubject;
+
+    @Value("${changeRequest.attestation.withdrawn.body}")
+    private String withdrawnEmailBody;
+
+    @Value("${changerequest.status.cancelledbyrequester}")
+    private Long cancelledStatus;
 
     @Autowired
     public ChangeRequestAttestationService(ChangeRequestDAO crDAO, ChangeRequestAttestationDAO crAttesttionDAO,
@@ -146,7 +156,12 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
             attestation.setId(((ChangeRequestAttestationSubmission) crFromDb.getDetails()).getId());
             cr.setDetails(attestation);
 
-            if (!((ChangeRequestAttestationSubmission) cr.getDetails()).equals((crFromDb.getDetails()))) {
+            if (isNewCurrentStatusCancelledByRequestor(cr, crFromDb)){
+                sendWithdrawnDetailsEmail(cr);
+                activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
+                        "Change request cancelled by requestor",
+                        crFromDb, cr);
+            } else if (haveDetailsBeenUpdated(cr, crFromDb)) {
                 cr.setDetails(crAttesttionDAO.update((ChangeRequestAttestationSubmission) cr.getDetails()));
 
                 activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
@@ -195,6 +210,16 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
             LOGGER.error("Error writing activity about attestation submission approval.", ex);
         }
         return cr;
+    }
+
+    private void sendWithdrawnDetailsEmail(ChangeRequest cr) throws EmailNotSentException {
+        chplEmailFactory.emailBuilder()
+                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
+                        .map(user -> user.getEmail())
+                        .collect(Collectors.toList()))
+                .subject(withdrawnEmailSubject)
+                .htmlMessage(withdrawnUpdatedHtmlMessage(cr))
+                .sendEmail();
     }
 
     private void sendUpdatedDetailsEmail(ChangeRequest cr) throws EmailNotSentException {
@@ -248,6 +273,19 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                 .subject(rejectedEmailSubject)
                 .htmlMessage(createRejectedHtmlMessage(cr))
                 .sendEmail();
+    }
+
+    private String withdrawnUpdatedHtmlMessage(ChangeRequest cr) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, YYYY");
+        return chplHtmlEmailBuilder.initialize()
+                .heading("Developer Attestations Withdrawn")
+                .paragraph("", String.format(withdrawnEmailBody,
+                        cr.getDeveloper().getName(),
+                        formatter.format(DateUtil.toLocalDate(cr.getSubmittedDate().getTime())),
+                        AuthUtil.getUsername()))
+                .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
+                .footer(true)
+                .build();
     }
 
     private String createUpdatedHtmlMessage(ChangeRequest cr) {
@@ -342,5 +380,14 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     private UserDTO getUserById(Long userId) throws UserRetrievalException {
         return userDAO.getById(userId);
+    }
+
+    private Boolean isNewCurrentStatusCancelledByRequestor(ChangeRequest updatedCr, ChangeRequest originalCr) {
+        return updatedCr.getCurrentStatus().getChangeRequestStatusType().getId().equals(cancelledStatus)
+                && !originalCr.getCurrentStatus().getChangeRequestStatusType().getId().equals(cancelledStatus);
+    }
+
+    private Boolean haveDetailsBeenUpdated(ChangeRequest updatedCr, ChangeRequest originalCr) {
+        return !((ChangeRequestAttestationSubmission) updatedCr.getDetails()).equals((originalCr.getDetails()));
     }
 }
