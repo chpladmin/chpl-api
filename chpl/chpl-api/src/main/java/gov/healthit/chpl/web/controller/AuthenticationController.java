@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nulabinc.zxcvbn.Strength;
 
 import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
+import gov.healthit.chpl.auth.ChplAccountStatusException;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
@@ -39,6 +40,7 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,15 +59,18 @@ public class AuthenticationController {
     private UserManager userManager;
     private JWTUserConverter userConverter;
     private Environment env;
+    private ErrorMessageUtil msgUtil;
     private ChplEmailFactory chplEmailFactory;
 
     @Autowired
     public AuthenticationController(AuthenticationManager authenticationManager, BCryptPasswordEncoder bCryptPasswordEncoder,
-            UserManager userManager, JWTUserConverter userConverter, Environment env, ChplEmailFactory chplEmailFactory) {
+            UserManager userManager, JWTUserConverter userConverter, ErrorMessageUtil msgUtil,
+            Environment env, ChplEmailFactory chplEmailFactory) {
         this.authenticationManager = authenticationManager;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userManager = userManager;
         this.userConverter = userConverter;
+        this.msgUtil = msgUtil;
         this.env = env;
         this.chplEmailFactory = chplEmailFactory;
     }
@@ -86,6 +91,9 @@ public class AuthenticationController {
             ChplAccountEmailNotConfirmedException {
 
         String jwt = authenticationManager.authenticate(credentials);
+        if (jwt == null) {
+            throw new ChplAccountStatusException(msgUtil.getMessage("auth.loginNotAllowed"));
+        }
         String jwtJSON = "{\"token\": \"" + jwt + "\"}";
         return jwtJSON;
     }

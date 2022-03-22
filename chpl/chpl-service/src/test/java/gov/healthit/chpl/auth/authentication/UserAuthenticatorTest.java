@@ -1,6 +1,7 @@
 package gov.healthit.chpl.auth.authentication;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.util.Date;
@@ -131,8 +132,8 @@ public class UserAuthenticatorTest {
         fail();
     }
 
-    @Test(expected = ChplAccountStatusException.class)
-    public void getUser_PasswordNotValid_ThrowsChplAccountStatusException()
+    @Test
+    public void getUser_PasswordNotValid_ReturnsNullUser()
             throws BadCredentialsException, AccountStatusException, UserRetrievalException, MultipleUserAccountsException, ChplAccountEmailNotConfirmedException {
 
         Mockito.when(bCryptPasswordEncoder.matches(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
@@ -141,9 +142,8 @@ public class UserAuthenticatorTest {
         LoginCredentials creds = new LoginCredentials("username", "password");
         AuthenticationManager authenticator = new AuthenticationManager(jwtAuthor, userManager, userDAO, bCryptPasswordEncoder,
                 userDetailsChecker, msgUtil, invitationManager, RESEND_CONFIRMATION_EMAIL_WINDOW_IN_DAYS);
-        authenticator.getUser(creds);
-
-        fail();
+        UserDTO authenticatedUser  = authenticator.getUser(creds);
+        assertNull(authenticatedUser);
     }
 
 }
