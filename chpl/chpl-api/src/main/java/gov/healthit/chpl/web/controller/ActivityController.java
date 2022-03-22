@@ -523,23 +523,6 @@ public class ActivityController {
         return pagedMetadataManager.getUserMaintenanceActivityMetadata(start, end, pageNum, pageSize);
     }
 
-    @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for users.",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @Deprecated
-    @RequestMapping(value = "/metadata/users", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityMetadata> metadataForUsers(@RequestParam final Long start,
-            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDatesAndDateRange(start, end);
-        return activityMetadataManager.getUserMaintenanceActivityMetadata(startDate, endDate);
-    }
-
     @Operation(summary = "Get metadata about auditable records in the system for announcements.",
             description = "All parameters are optional and will default to the first page of announcement activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
@@ -634,23 +617,6 @@ public class ActivityController {
         return pagedMetadataManager.getPendingListingActivityMetadata(start, end, pageNum, pageSize);
     }
 
-    @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for pending listings.",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @Deprecated
-    @RequestMapping(value = "/metadata/pending_listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityMetadata> metadataForPendingListings(@RequestParam final Long start,
-            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDatesAndDateRange(start, end);
-        return activityMetadataManager.getPendingListingActivityMetadata(startDate, endDate);
-    }
-
     @Operation(summary = "Get metadata about auditable records in the system for corrective action plans.",
             description = "All parameters are optional and will default to the first page of corrective action plan activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
@@ -680,24 +646,6 @@ public class ActivityController {
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getPendingSurveillanceActivityMetadata(start, end, pageNum, pageSize);
-    }
-
-    @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for pending surveillances.",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @Deprecated
-    @RequestMapping(value = "/metadata/pending_surveillances", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public List<ActivityMetadata> metadataForPendingSurveillances(@RequestParam final Long start,
-            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDatesAndDateRange(start, end);
-        return activityMetadataManager.getPendingSurveillanceActivityMetadata(startDate, endDate);
     }
 
     @Operation(summary = "Get metadata about auditable records in the system for change requests.",
