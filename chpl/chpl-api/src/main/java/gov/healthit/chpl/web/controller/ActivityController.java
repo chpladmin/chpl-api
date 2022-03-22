@@ -140,24 +140,6 @@ public class ActivityController {
                 ActivityConcept.CERTIFIED_PRODUCT, start, end, pageNum, pageSize);
     }
 
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for listings.",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/metadata/listings", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public List<ActivityMetadata> metadataForListings(@RequestParam Long start,
-            @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDatesAndDateRange(start, end);
-        return activityMetadataManager.getActivityMetadataByConcept(
-                ActivityConcept.CERTIFIED_PRODUCT, startDate, endDate);
-    }
-
     @Operation(summary = "Get metadata about auditable records in the system for a specific listing.",
             description = "A start and end date may optionally be provided to limit activity results.",
             security = {
@@ -306,24 +288,6 @@ public class ActivityController {
                 ActivityConcept.DEVELOPER, start, end, pageNum, pageSize);
     }
 
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for developers.",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/metadata/developers", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public List<ActivityMetadata> metadataForDevelopers(@RequestParam final Long start,
-            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDatesAndDateRange(start, end);
-        return activityMetadataManager.getActivityMetadataByConcept(
-                ActivityConcept.DEVELOPER, startDate, endDate);
-    }
-
     @Operation(summary = "Get metadata about auditable records in the system for a specific developer.",
             description = "A start or end date may optionally be provided to limit activity results.",
             security = {
@@ -372,24 +336,6 @@ public class ActivityController {
                 ActivityConcept.PRODUCT, start, end, pageNum, pageSize);
     }
 
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for products.",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/metadata/products", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public List<ActivityMetadata> metadataForProducts(@RequestParam final Long start,
-            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDatesAndDateRange(start, end);
-        return activityMetadataManager.getActivityMetadataByConcept(
-                ActivityConcept.PRODUCT, startDate, endDate);
-    }
-
     @Operation(summary = "Get metadata about auditable records in the system for a specific product.",
             description = "A start or end date may optionally be provided to limit activity results.",
             security = {
@@ -436,24 +382,6 @@ public class ActivityController {
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getActivityMetadataByConcept(
                 ActivityConcept.VERSION, start, end, pageNum, pageSize);
-    }
-
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for version.",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/metadata/versions", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public List<ActivityMetadata> metadataForVersions(@RequestParam final Long start,
-            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDatesAndDateRange(start, end);
-        return activityMetadataManager.getActivityMetadataByConcept(
-                ActivityConcept.VERSION, startDate, endDate);
     }
 
     @Operation(summary = "Get metadata about auditable records in the system for a specific version.",

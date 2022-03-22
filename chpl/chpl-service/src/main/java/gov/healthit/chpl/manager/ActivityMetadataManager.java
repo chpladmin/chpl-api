@@ -44,15 +44,6 @@ public class ActivityMetadataManager extends SecuredManager {
         this.metadataBuilderFactory = metadataBuilderFactory;
     }
 
-
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
-            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ACTIVITY_METADATA_BY_CONCEPT, #concept)")
-    public List<ActivityMetadata> getActivityMetadataByConcept(final ActivityConcept concept, final Date startDate,
-            final Date endDate) throws JsonParseException, IOException {
-        return getActivityMetadataByConceptWithoutSecurity(concept, startDate, endDate);
-    }
-
     @Transactional
     public List<ActivityMetadata> getActivityMetadataByObject(final Long objectId, final ActivityConcept concept,
             final Date startDate, final Date endDate) throws JsonParseException, IOException {
