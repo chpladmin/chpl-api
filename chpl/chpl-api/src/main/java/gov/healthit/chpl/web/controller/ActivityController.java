@@ -1175,54 +1175,6 @@ public class ActivityController {
     }
 
     @Deprecated
-    @Operation(summary = "DEPRECATED. Get auditable data about all developers",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityDetails> activityForDevelopers(@RequestParam final Long start,
-            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
-
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDatesAndDateRange(start, end);
-        return getActivityEventsForDevelopers(startDate, endDate);
-    }
-
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Get auditable data for a specific developer.",
-            description = "A start and end date may optionally be provided to limit activity results.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/developers/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityDetails> activityForDeveloperById(@PathVariable("id") final Long id,
-            @RequestParam(required = false) final Long start,
-            @RequestParam(required = false) final Long end)
-            throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        developerManager.getById(id); // returns 404 if bad id
-
-        // if one of start of end is provided then the other must also be
-        // provided.
-        // if neither is provided then query all dates
-        Date startDate = new Date(0);
-        Date endDate = new Date();
-        if (start != null && end != null) {
-            validateActivityDatesAndDateRange(start, end);
-            startDate = new Date(start);
-            endDate = new Date(end);
-        } else if (start == null && end != null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
-        } else if (start != null && end == null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
-        }
-        return getActivityEventsForDevelopers(id, startDate, endDate);
-    }
-
-    @Deprecated
     @Operation(summary = "DEPRECATED. Track the actions of all users in the system",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
                     + "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
@@ -1317,15 +1269,6 @@ public class ActivityController {
         return events;
     }
 
-    private List<ActivityDetails> getActivityEventsForDevelopers(final Long id, final Date startDate, final Date endDate)
-            throws JsonParseException, IOException {
-
-        List<ActivityDetails> events = null;
-        ActivityConcept concept = ActivityConcept.DEVELOPER;
-        events = getActivityEventsForObject(concept, id, startDate, endDate);
-        return events;
-    }
-
     private List<ActivityDetails> getActivityEventsForVersions(final Long id, final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
 
@@ -1343,18 +1286,6 @@ public class ActivityController {
 
         List<ActivityDetails> events = null;
         ActivityConcept concept = ActivityConcept.PRODUCT;
-        events = getActivityEventsForConcept(concept, startDate, endDate);
-
-        return events;
-    }
-
-    private List<ActivityDetails> getActivityEventsForDevelopers(final Date startDate, final Date endDate)
-            throws JsonParseException, IOException {
-        LOGGER.info("User " + AuthUtil.getUsername() + " requested developer activity between " + startDate + " and "
-                + endDate);
-
-        List<ActivityDetails> events = null;
-        ActivityConcept concept = ActivityConcept.DEVELOPER;
         events = getActivityEventsForConcept(concept, startDate, endDate);
 
         return events;
