@@ -71,10 +71,12 @@ public class AuthenticationManager {
             UserDTO user = getUser(credentials);
             if (user != null && user.isPasswordResetRequired()) {
                 throw new UserRetrievalException(msgUtil.getMessage("auth.changePasswordRequired"));
+            } else if (user != null) {
+                String jwt = getJWT(credentials);
+                logWhenUsername(credentials, user);
+                return jwt;
             }
-            String jwt = getJWT(credentials);
-            logWhenUsername(credentials, user);
-            return jwt;
+            return null;
         } catch (ChplAccountEmailNotConfirmedException e) {
             if (!isConfirmationPeriodExpired(credentials)) {
                 invitationManager.resendConfirmAddressEmailToUser(
@@ -131,7 +133,7 @@ public class AuthenticationManager {
                 } catch (UserManagementException ex) {
                     LOGGER.error("Error adding failed login", ex);
                 }
-                throw new ChplAccountStatusException(msgUtil.getMessage("auth.loginNotAllowed"));
+                return null;
             }
         } else {
             throw new ChplAccountStatusException(msgUtil.getMessage("auth.loginNotAllowed"));
@@ -192,6 +194,8 @@ public class AuthenticationManager {
 
         if (user != null) {
             jwt = getJWT(user);
+        } else {
+            throw new ChplAccountStatusException(msgUtil.getMessage("auth.loginNotAllowed"));
         }
 
         return jwt;
