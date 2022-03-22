@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
+import gov.healthit.chpl.auth.ChplAccountStatusException;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.auth.Authority;
@@ -215,8 +216,10 @@ public class UserManagementController {
 
         // Log the user in, if they are not logged in
         if (Objects.isNull(loggedInUser)) {
-            authenticationManager.authenticate(credentials);
             UserDTO user = authenticationManager.getUser(credentials);
+            if (user == null) {
+                throw new ChplAccountStatusException(msgUtil.getMessage("auth.loginNotAllowed"));
+            }
             Authentication invitedUserAuthenticator = AuthUtil.getInvitedUserAuthenticator(user.getId());
             SecurityContextHolder.getContext().setAuthentication(invitedUserAuthenticator);
             loggedInUser = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
