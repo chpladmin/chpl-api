@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -14,7 +15,6 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -146,36 +146,6 @@ public class PendingCertifiedProductManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).GET_ALL_METADATA, filterObject)")
     public List<PendingCertifiedProductMetadataDTO> getAllPendingCertifiedProductMetadata() {
         List<PendingCertifiedProductMetadataDTO> products = pcpDao.getAllMetadata();
-        return products;
-    }
-
-    @Transactional(readOnly = true)
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).GET_ALL)")
-    public List<PendingCertifiedProductDTO> getAllPendingCertifiedProducts() {
-        List<PendingCertifiedProductDTO> products = pcpDao.findAll();
-        updateCertResults(products);
-        validate(products);
-
-        return products;
-    }
-
-    /**
-     * This method is included so that the pending listings may be pre-loaded in a background cache without having to
-     * duplicate manager logic. Prefer users of this class to call getPendingCertifiedProductsCached.
-     *
-     * @param acbId
-     * @return
-     */
-
-    @Transactional(readOnly = true)
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions).GET_BY_ACB, #acbId)")
-    public List<PendingCertifiedProductDTO> getPendingCertifiedProducts(final Long acbId) {
-        List<PendingCertifiedProductDTO> products = pcpDao.findByAcbId(acbId);
-        updateCertResults(products);
-        validate(products);
-
         return products;
     }
 
@@ -420,15 +390,6 @@ public class PendingCertifiedProductManager extends SecuredManager {
             }
         }
         return criteria;
-    }
-
-    private void validate(final List<PendingCertifiedProductDTO> products) {
-        for (PendingCertifiedProductDTO dto : products) {
-            PendingValidator validator = validatorFactory.getValidator(dto);
-            if (validator != null) {
-                validator.validate(dto);
-            }
-        }
     }
 
     private void validate(final PendingCertifiedProductDTO... products) {

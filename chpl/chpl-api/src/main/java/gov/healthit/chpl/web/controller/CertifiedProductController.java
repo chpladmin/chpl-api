@@ -46,7 +46,6 @@ import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.PendingCertifiedProductMetadata;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMetadataDTO;
@@ -822,46 +821,6 @@ public class CertifiedProductController {
             result.add(new PendingCertifiedProductMetadata(metadataDto));
         }
         return result;
-    }
-
-    @Deprecated
-    @Operation(summary = "DEPRECATED. List pending certified products.",
-            description = "Pending certified products are created via CSV file upload and are left in the 'pending' state "
-                    + " until validated and approved.  Security Restrictions: ROLE_ADMIN, ROLE_ACB and have "
-                    + "administrative authority on the ACB that uploaded the product.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts()
-            throws EntityRetrievalException, AccessDeniedException {
-
-        List<PendingCertifiedProductDTO> pcps = new ArrayList<PendingCertifiedProductDTO>();
-        if (resourcePermissions.isUserRoleAdmin()) {
-            pcps = pcpManager.getAllPendingCertifiedProducts();
-        } else if (resourcePermissions.isUserRoleAcbAdmin()) {
-            List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-            for (CertificationBodyDTO acb : allowedAcbs) {
-                pcps.addAll(pcpManager.getPendingCertifiedProducts(acb.getId()));
-            }
-        } else {
-            throw new AccessDeniedException(msgUtil.getMessage("access.denied"));
-        }
-
-        List<PendingCertifiedProductDetails> result = new ArrayList<PendingCertifiedProductDetails>();
-        for (PendingCertifiedProductDTO product : pcps) {
-            PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(product);
-            pcpManager.addAllVersionsToCmsCriterion(pcpDetails);
-            pcpManager.addAvailableConformanceMethods(pcpDetails);
-            pcpManager.addAvailableTestFunctionalities(pcpDetails);
-            pcpManager.addAvailableOptionalStandards(pcpDetails);
-            result.add(pcpDetails);
-        }
-        PendingCertifiedProductResults results = new PendingCertifiedProductResults();
-        results.getPendingCertifiedProducts().addAll(result);
-        return results;
     }
 
     @Operation(summary = "List a specific pending certified product.",
