@@ -175,13 +175,6 @@ public class ActivityManager extends SecuredManager {
 
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public List<ActivityDetails> getApiKeyActivity(Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-        return getActivityForConcept(ActivityConcept.API_KEY, startDate, endDate);
-    }
-
-    @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public List<ActivityDetails> getAllPendingListingActivity(Date startDate, Date endDate)
             throws JsonParseException, IOException {
         List<ActivityDTO> pendingListingActivity = activityDAO
