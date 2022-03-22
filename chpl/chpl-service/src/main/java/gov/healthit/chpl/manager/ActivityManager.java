@@ -141,20 +141,6 @@ public class ActivityManager extends SecuredManager {
     }
 
     @Transactional
-    public List<ActivityDetails> getActivityForConcept(ActivityConcept concept, Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-
-        List<ActivityDTO> dtos = activityDAO.findByConcept(concept, startDate, endDate);
-        List<ActivityDetails> events = new ArrayList<ActivityDetails>();
-
-        for (ActivityDTO dto : dtos) {
-            ActivityDetails event = getActivityDetailsFromDTO(dto);
-            events.add(event);
-        }
-        return events;
-    }
-
-    @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_USER_ACTIVITY)")
     public List<ActivityDetails> getUserActivity(Set<Long> userIds, Date startDate, Date endDate)

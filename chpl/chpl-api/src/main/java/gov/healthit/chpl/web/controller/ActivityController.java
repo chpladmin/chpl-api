@@ -504,35 +504,6 @@ public class ActivityController {
         return pagedMetadataManager.getCertificationBodyActivityMetadata(start, end, pageNum, pageSize);
     }
 
-    @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for certification bodies.",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
-                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all certification bodies.  "
-                    + "ROLE_ACB can see activity for their own ACBs.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @Deprecated
-    @RequestMapping(value = "/metadata/acbs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityMetadata> metadataForAcbs(@RequestParam(required = false) final Long start,
-            @RequestParam(required = false) final Long end)
-            throws JsonParseException, IOException, ValidationException {
-
-        Date startDate = new Date(0);
-        Date endDate = new Date();
-        if (start != null && end != null) {
-            validateActivityDates(start, end);
-            startDate = new Date(start);
-            endDate = new Date(end);
-        } else if (start == null && end != null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
-        } else if (start != null && end == null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
-        }
-        return activityMetadataManager.getCertificationBodyActivityMetadata(startDate, endDate);
-    }
-
     @Operation(summary = "Get metadata about auditable records in the system for a specific certification body.",
             description = "A start and end date may optionally be provided to limit activity results.",
             security = {
