@@ -1,5 +1,22 @@
 # Release Notes
 
+## Version 34.1.0
+_22 March 2022_
+
+### Features
+* Add public attestations to developer details
+* Create Developer Attestations report
+* Add /search/v2 endpoint and deprecate /search/beta endpoint
+
+### Flagged Features
+* Add controls to grant and limit access to Attestation submission process
+
+### Bug Fixes
+* Do not include b6 in criteria that need to be updated to meet Cures certification
+* Record failed login count for incorrect login attempts
+
+---
+
 ## Version 34.0.1
 _10 March 2022_
 
