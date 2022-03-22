@@ -11,13 +11,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,7 +25,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
-import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
@@ -43,10 +39,8 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.ActivityMetadataManager;
 import gov.healthit.chpl.manager.ActivityPagedMetadataManager;
-import gov.healthit.chpl.manager.AnnouncementManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
-import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.manager.TestingLabManager;
@@ -59,21 +53,20 @@ import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.log4j.Log4j2;
 
 @Tag(name = "activity", description = "Find historical activity about objects in the CHPL.")
 @RestController
+@Log4j2
 @RequestMapping("/activity")
 public class ActivityController {
-    private static final Logger LOGGER = LogManager.getLogger(ActivityController.class);
     public static final int DEFAULT_MAX_ACTIVITY_RANGE_DAYS = 30;
 
     private ActivityManager activityManager;
     private ActivityMetadataManager activityMetadataManager;
     private ActivityPagedMetadataManager pagedMetadataManager;
-    private AnnouncementManager announcementManager;
     private TestingLabManager atlManager;
     private CertifiedProductManager cpManager;
-    private PendingCertifiedProductManager pcpManager;
     private DeveloperManager developerManager;
     private ProductManager productManager;
     private ProductVersionManager versionManager;
@@ -92,8 +85,8 @@ public class ActivityController {
     })
     @Autowired
     public ActivityController(ActivityManager activityManager, ActivityMetadataManager activityMetadataManager,
-            ActivityPagedMetadataManager pagedMetadataManager, AnnouncementManager announcementManager,
-            TestingLabManager atlManager, CertifiedProductManager cpManager, PendingCertifiedProductManager pcpManager,
+            ActivityPagedMetadataManager pagedMetadataManager,
+            TestingLabManager atlManager, CertifiedProductManager cpManager,
             DeveloperManager developerManager, ProductManager productManager,
             ProductVersionManager versionManager, UserManager userManager,
             ChplProductNumberUtil chplProductNumberUtil, CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
@@ -101,10 +94,8 @@ public class ActivityController {
         this.activityManager = activityManager;
         this.activityMetadataManager = activityMetadataManager;
         this.pagedMetadataManager = pagedMetadataManager;
-        this.announcementManager = announcementManager;
         this.atlManager = atlManager;
         this.cpManager = cpManager;
-        this.pcpManager = pcpManager;
         this.developerManager = developerManager;
         this.productManager = productManager;
         this.versionManager = versionManager;
@@ -931,30 +922,6 @@ public class ActivityController {
         return pagedMetadataManager.getApiKeyManagementMetadata(start, end, pageNum, pageSize);
     }
 
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Get auditable data about all CHPL user accounts",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.  "
-                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_CMS_STAFF "
-                    + "(of ROLE_CMS_STAFF Users), ROLE_ACB (of their own), or ROLE_ATL (of their own).",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/users", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @PreAuthorize("isAuthenticated()")
-    public List<ActivityDetails> activityForUsers(@RequestParam final Long start,
-            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDatesAndDateRange(start, end);
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
-            return activityManager.getAllUserActivity(startDate, endDate);
-        }
-        Set<Long> userIdsToSearch = getAllowedUsersForActivitySearch();
-        return activityManager.getUserActivity(userIdsToSearch, startDate, endDate);
-    }
-
     @Operation(summary = "Get auditable data about a specific CHPL user account.",
             description = "A start and end date may optionally be provided to limit activity results.  "
                     + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_CMS_STAFF "
@@ -998,25 +965,6 @@ public class ActivityController {
         Set<Long> userIdsToSearch = new HashSet<Long>();
         userIdsToSearch.add(id);
         return activityManager.getUserActivity(userIdsToSearch, startDate, endDate);
-    }
-
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Track the actions of all users in the system",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
-                    + "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/user_activities", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<UserActivity> activityByUser(@RequestParam final Long start,
-            @RequestParam final Long end)
-            throws JsonParseException, IOException, UserRetrievalException, ValidationException {
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDatesAndDateRange(start, end);
-        return activityManager.getActivityByUserInDateRange(startDate, endDate);
     }
 
     @Operation(summary = "Track the actions of a specific user in the system",

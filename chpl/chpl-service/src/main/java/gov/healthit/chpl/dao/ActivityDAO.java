@@ -2,9 +2,7 @@ package gov.healthit.chpl.dao;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.Query;
 
@@ -279,7 +277,6 @@ public class ActivityDAO extends BaseDAOImpl {
 
 
     public List<ActivityDTO> findByUserId(final Long userId, final Date startDate, final Date endDate) {
-
         List<ActivityEntity> entities = this.getEntitiesByUserId(userId, startDate, endDate);
         List<ActivityDTO> activities = new ArrayList<>();
 
@@ -290,32 +287,7 @@ public class ActivityDAO extends BaseDAOImpl {
         return activities;
     }
 
-
-    public Map<Long, List<ActivityDTO>> findAllByUserInDateRange(final Date startDate, final Date endDate) {
-
-        Map<Long, List<ActivityDTO>> activityByUser = new HashMap<Long, List<ActivityDTO>>();
-
-        List<ActivityEntity> entities = this.getAllEntitiesInDateRange(startDate, endDate);
-
-        for (ActivityEntity entity : entities) {
-
-            ActivityDTO result = mapEntityToDto(entity);
-            Long userId = result.getLastModifiedUser();
-            if (userId != null) {
-                if (activityByUser.containsKey(userId)) {
-                    activityByUser.get(userId).add(result);
-                } else {
-                    List<ActivityDTO> activity = new ArrayList<ActivityDTO>();
-                    activity.add(result);
-                    activityByUser.put(userId, activity);
-                }
-            }
-        }
-        return activityByUser;
-    }
-
     private ActivityEntity getEntityById(final Long id) throws EntityRetrievalException {
-
         ActivityEntity entity = null;
         String queryStr = "SELECT ae "
                 + "FROM ActivityEntity ae "
@@ -406,36 +378,6 @@ public class ActivityDAO extends BaseDAOImpl {
         }
         Query query = entityManager.createQuery(queryStr, ActivityEntity.class);
         query.setParameter("conceptName", concept.name());
-        if (startDate != null) {
-            query.setParameter("startDate", startDate);
-        }
-        if (endDate != null) {
-            query.setParameter("endDate", endDate);
-        }
-        List<ActivityEntity> result = query.getResultList();
-        return result;
-    }
-
-    private List<ActivityEntity> getAllEntitiesInDateRange(final Date startDate, final Date endDate) {
-        String queryStr = "SELECT ae "
-                + "FROM ActivityEntity ae "
-                + "JOIN FETCH ae.concept "
-                + "LEFT OUTER JOIN FETCH ae.user "
-                + "WHERE ";
-        if (startDate != null) {
-            if (!queryStr.endsWith("WHERE ")) {
-                queryStr += "AND ";
-            }
-            queryStr += "(ae.activityDate >= :startDate) ";
-        }
-        if (endDate != null) {
-            if (!queryStr.endsWith("WHERE ")) {
-                queryStr += "AND ";
-            }
-            queryStr += "(ae.activityDate <= :endDate)";
-        }
-
-        Query query = entityManager.createQuery(queryStr, ActivityEntity.class);
         if (startDate != null) {
             query.setParameter("startDate", startDate);
         }

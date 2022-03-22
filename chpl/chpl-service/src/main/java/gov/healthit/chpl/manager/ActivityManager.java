@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -25,16 +24,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.activity.ProductActivityDetails;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.ActivityDTO;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.listener.QuestionableActivityListener;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.util.AuthUtil;
@@ -159,13 +155,6 @@ public class ActivityManager extends SecuredManager {
     }
 
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public List<ActivityDetails> getAllUserActivity(Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-        return getActivityForConcept(ActivityConcept.USER, startDate, endDate);
-    }
-
-    @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_USER_ACTIVITY)")
     public List<ActivityDetails> getUserActivity(Set<Long> userIds, Date startDate, Date endDate)
@@ -180,35 +169,6 @@ public class ActivityManager extends SecuredManager {
             events.add(event);
         }
         return events;
-    }
-
-    @Transactional(readOnly = true)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public List<UserActivity> getActivityByUserInDateRange(Date startDate, Date endDate)
-            throws JsonParseException, IOException, UserRetrievalException {
-
-        Map<Long, List<ActivityDTO>> activity = activityDAO.findAllByUserInDateRange(startDate, endDate);
-        List<UserActivity> userActivities = new ArrayList<UserActivity>();
-
-        for (Map.Entry<Long, List<ActivityDTO>> userEntry : activity.entrySet()) {
-            UserDTO activityUser = userEntry.getValue().get(0).getUser();
-            if (activityUser != null) {
-                User userObj = new User(activityUser);
-
-                List<ActivityDetails> userActivityEvents = new ArrayList<ActivityDetails>();
-
-                for (ActivityDTO userEventDTO : userEntry.getValue()) {
-                    ActivityDetails event = getActivityDetailsFromDTO(userEventDTO);
-                    userActivityEvents.add(event);
-                }
-
-                UserActivity userActivity = new UserActivity();
-                userActivity.setUser(userObj);
-                userActivity.setEvents(userActivityEvents);
-                userActivities.add(userActivity);
-            }
-        }
-        return userActivities;
     }
 
     @Transactional(readOnly = true)
