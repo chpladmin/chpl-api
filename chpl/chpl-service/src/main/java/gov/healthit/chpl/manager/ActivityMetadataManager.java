@@ -125,16 +125,6 @@ public class ActivityMetadataManager extends SecuredManager {
         return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.PENDING_SURVEILLANCE, startDate, endDate);
     }
 
-
-    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
-            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ANNOUNCEMENT_METADATA, filterObject)")
-    @Transactional
-    public List<ActivityMetadata> getAnnouncementActivityMetadata(final Date startDate, final Date endDate)
-            throws IOException {
-        return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.ANNOUNCEMENT, startDate, endDate);
-    }
-
-
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_COMPLAINT_METADATA)")
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "

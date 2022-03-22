@@ -1,6 +1,5 @@
 package gov.healthit.chpl.permissions.domains;
 
-import gov.healthit.chpl.permissions.domains.activity.GetApiKeyManagementActivityMetadataActionPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -10,8 +9,8 @@ import gov.healthit.chpl.permissions.domains.activity.GetActivityDetailsActionPe
 import gov.healthit.chpl.permissions.domains.activity.GetActivityMetadataByAcbActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetActivityMetadataByAtlActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetActivityMetadataByConceptActionPermissions;
-import gov.healthit.chpl.permissions.domains.activity.GetAnnouncementMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetAnnualReportActivityMetadataActionPermissions;
+import gov.healthit.chpl.permissions.domains.activity.GetApiKeyManagementActivityMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetAtlActivityMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetByAcbActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetChangeRequestActivityMetadataActionPermissions;
@@ -39,7 +38,6 @@ public class ActivityDomainPermissions extends DomainPermissions {
     public static final String GET_ACTIVITY_METADATA_BY_CONCEPT = "GET_ACTIVITY_METADATA_BY_CONCEPT";
     public static final String GET_PENDING_LISTING_METADATA = "GET_PENDING_LISTING_METADATA";
     public static final String GET_PENDING_SURVEILLANCE_METADATA = "GET_PENDING_SURVEILLANCE_METADATA";
-    public static final String GET_ANNOUNCEMENT_METADATA = "GET_ANNOUNCEMENT_METADATA";
     public static final String GET_COMPLAINT_METADATA = "GET_COMPLAINT_METADATA";
     public static final String GET_QUARTERLY_REPORT_METADATA = "GET_QUARTERLY_REPORT_METADATA";
     public static final String GET_ANNUAL_REPORT_METADATA = "GET_ANNUAL_REPORT_METADATA";
@@ -61,7 +59,6 @@ public class ActivityDomainPermissions extends DomainPermissions {
             @Qualifier("activityGetActivityMetadataByConceptActionPermissions") GetActivityMetadataByConceptActionPermissions getActivityMetadataByConceptActionPermissions,
             @Qualifier("activityGetPendingListingMetadataActionPermissions") GetPendingListingMetadataActionPermissions getPendingListingMetadataActionPermissions,
             @Qualifier("activityGetPendingSurveillanceMetadataActionPermissions") GetPendingSurveillanceMetadataActionPermissions getPendingSurveillanceMetadataActionPermissions,
-            @Qualifier("activityGetAnnouncementMetadataActionPermissions") GetAnnouncementMetadataActionPermissions getAnnouncementMetadataActionPermissions,
             @Qualifier("activityGetComplaintActivityMetadataActionPermissions") GetComplaintActivityMetadataActionPermissions getComplaintActivityMetadataActionPermissions,
             @Qualifier("activityGetQuarterlyReportActivityMetadataActionPermissions") GetQuarterlyReportActivityMetadataActionPermissions getQuarterlyReportActivityMetadataActionPermissions,
             @Qualifier("activityGetAnnualReportActivityMetadataActionPermissions") GetAnnualReportActivityMetadataActionPermissions getAnnualReportActivityMetadataActionPermissions,
@@ -81,7 +78,6 @@ public class ActivityDomainPermissions extends DomainPermissions {
         getActionPermissions().put(GET_ACTIVITY_METADATA_BY_CONCEPT, getActivityMetadataByConceptActionPermissions);
         getActionPermissions().put(GET_PENDING_LISTING_METADATA, getPendingListingMetadataActionPermissions);
         getActionPermissions().put(GET_PENDING_SURVEILLANCE_METADATA, getPendingSurveillanceMetadataActionPermissions);
-        getActionPermissions().put(GET_ANNOUNCEMENT_METADATA, getAnnouncementMetadataActionPermissions);
         getActionPermissions().put(GET_COMPLAINT_METADATA, getComplaintActivityMetadataActionPermissions);
         getActionPermissions().put(GET_QUARTERLY_REPORT_METADATA, getQuarterlyReportActivityMetadataActionPermissions);
         getActionPermissions().put(GET_ANNUAL_REPORT_METADATA, getAnnualReportActivityMetadataActionPermissions);

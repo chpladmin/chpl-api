@@ -657,26 +657,7 @@ public class ActivityController {
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getAnnouncementActivityMetadata(start, end, pageNum, pageSize);
-    }
-
-    @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for announcements.",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
-                    + "Security Restrictions: Anonymous users are only allowed to see activity for public "
-                    + "announcements.  All other roles can see private and public announcements.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @Deprecated
-    @RequestMapping(value = "/metadata/announcements", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityMetadata> metadataForAnnouncements(@RequestParam final Long start,
-            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDatesAndDateRange(start, end);
-        return activityMetadataManager.getAnnouncementActivityMetadata(startDate, endDate);
-    }
+    }}
 
     @Operation(summary = "Get metadata about auditable records in the system for complaints.",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
