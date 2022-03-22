@@ -216,11 +216,10 @@ public class UserManagementController {
 
         // Log the user in, if they are not logged in
         if (Objects.isNull(loggedInUser)) {
-            String jwt = authenticationManager.authenticate(credentials);
-            if (jwt == null) {
+            UserDTO user = authenticationManager.getUser(credentials);
+            if (user == null) {
                 throw new ChplAccountStatusException(msgUtil.getMessage("auth.loginNotAllowed"));
             }
-            UserDTO user = userManager.getByNameOrEmail(credentials.getUserName());
             Authentication invitedUserAuthenticator = AuthUtil.getInvitedUserAuthenticator(user.getId());
             SecurityContextHolder.getContext().setAuthentication(invitedUserAuthenticator);
             loggedInUser = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
