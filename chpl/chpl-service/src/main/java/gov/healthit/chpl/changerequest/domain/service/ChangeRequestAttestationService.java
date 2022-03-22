@@ -156,7 +156,14 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
             attestation.setId(((ChangeRequestAttestationSubmission) crFromDb.getDetails()).getId());
             cr.setDetails(attestation);
 
-            if (isNewCurrentStatusCancelledByRequestor(cr, crFromDb)){
+            //The Attestation period is not editable - use from the existing details
+            ((ChangeRequestAttestationSubmission) cr.getDetails()).setAttestationPeriod(
+                    ((ChangeRequestAttestationSubmission) crFromDb.getDetails()).getAttestationPeriod());
+
+            //Get email that based on current user
+            ((ChangeRequestAttestationSubmission) cr.getDetails()).setSignatureEmail(getUserById(AuthUtil.getCurrentUser().getId()).getEmail());
+
+            if (isNewCurrentStatusCancelledByRequestor(cr, crFromDb)) {
                 sendWithdrawnDetailsEmail(cr);
                 activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
                         "Change request cancelled by requestor",

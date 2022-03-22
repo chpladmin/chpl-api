@@ -57,9 +57,13 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
                             .findAny()
                             .get();
 
-                    response.getValidResponse().setId(submittedResponse.getResponse().getId());
-                    response.setLastModifiedUser(AuthUtil.getAuditId());
-                    update(response);
+                    AttestationValidResponseEntity avre = null;
+                    try {
+                        avre = getAttestationValidResponseEntity(submittedResponse.getResponse().getId());
+                    } catch (EntityRetrievalException e) {
+                        LOGGER.error("Could not retreive AttestationValidResponseEntity with id " + submittedResponse.getResponse().getId());
+                    }
+                    response.setValidResponse(avre);
                 });
 
         update(entity);
