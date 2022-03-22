@@ -738,23 +738,6 @@ public class ActivityController {
                 ActivityConcept.CORRECTIVE_ACTION_PLAN, start, end, pageNum, pageSize);
     }
 
-    @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for corrective action plans.",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @Deprecated
-    @RequestMapping(value = "/metadata/corrective_action_plans", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityMetadata> metadataForCorrectiveActionPlans(@RequestParam final Long start,
-            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDatesAndDateRange(start, end);
-        return activityMetadataManager.getActivityMetadataByConcept(
-                ActivityConcept.CORRECTIVE_ACTION_PLAN, startDate, endDate);
-    }
-
     @Operation(summary = "Get metadata about auditable records in the system for pending surveillances.",
             description = "All parameters are optional and will default to the first page of pending surveillance activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
