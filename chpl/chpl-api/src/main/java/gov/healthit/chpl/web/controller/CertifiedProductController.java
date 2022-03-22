@@ -895,36 +895,6 @@ public class CertifiedProductController {
         return "{\"success\" : true}";
     }
 
-    // TODO - We might want to take a look at reworking this. Maybe should be a
-    // PUT and the parameters
-    // should be re-evaluated
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Confirm a pending certified product.",
-            description = "Creates a new certified product in the system based on all of the information "
-                    + "passed in on the request. This information may differ from what was previously "
-                    + "entered for the pending certified product during upload. It will first be validated "
-                    + "to check for errors, then a new certified product is created, and the old pending certified"
-                    + "product will be removed. Security Restrictions:  ROLE_ADMIN or have ROLE_ACB and "
-                    + "administrative authority on the ACB for each pending certified product is required.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}/confirm", method = RequestMethod.POST,
-            produces = "application/json; charset=utf-8")
-    public ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProduct(
-            @RequestBody(required = true) PendingCertifiedProductDetails pendingCp)
-            throws InvalidArgumentsException, ValidationException,
-            EntityCreationException, EntityRetrievalException,
-            ObjectMissingValidationException, IOException {
-
-        ConfirmCertifiedProductRequest request = new ConfirmCertifiedProductRequest();
-        request.setPendingListing(pendingCp);
-        request.setAcknowledgeWarnings(false);
-        return addPendingCertifiedProduct(request);
-    }
-
     @Operation(summary = "Confirm a pending certified product.",
             description = "Creates a new certified product in the system based on all of the information "
                     + "passed in on the request. This information may differ from what was previously "
@@ -943,16 +913,6 @@ public class CertifiedProductController {
             throws InvalidArgumentsException, ValidationException,
             EntityCreationException, EntityRetrievalException,
             ObjectMissingValidationException, IOException {
-
-        return addPendingCertifiedProduct(request);
-    }
-
-    @SuppressWarnings({
-            "checkstyle:linelength"
-    })
-    private ResponseEntity<CertifiedProductSearchDetails> addPendingCertifiedProduct(ConfirmCertifiedProductRequest request)
-            throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, ObjectMissingValidationException,
-            IOException {
         Long acbId = getAcbIdFromPendingListing(request.getPendingListing());
         if (acbId == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("pendlingListing.missingAcb"));
