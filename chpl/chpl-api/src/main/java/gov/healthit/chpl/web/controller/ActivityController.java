@@ -936,152 +936,6 @@ public class ActivityController {
     }
 
     @Deprecated
-    @Operation(summary = "DEPRECATED. Get auditable data for certified products",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/certified_products", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityDetails> activityForCertifiedProducts(@RequestParam final Long start,
-            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDatesAndDateRange(start, end);
-        return getActivityEventsForCertifiedProducts(startDate, endDate);
-    }
-
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Get auditable data for a specific certified product.",
-            description = "A start and end date may optionally be provided to limit activity results.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/certified_products/{id:^-?\\d+$}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityDetails> activityForCertifiedProductById(@PathVariable("id") final Long id,
-            @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
-            throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        cpManager.getById(id); // throws 404 if bad id
-
-        // if one of start of end is provided then the other must also be
-        // provided.
-        // if neither is provided then query all dates
-        Date startDate = new Date(0);
-        Date endDate = new Date();
-        if (start != null && end != null) {
-            validateActivityDatesAndDateRange(start, end);
-            startDate = new Date(start);
-            endDate = new Date(end);
-        } else if (start == null && end != null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
-        } else if (start != null && end == null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
-        }
-
-        return getActivityEventsForCertifiedProductsByIdAndDateRange(id, startDate, endDate);
-    }
-
-    @Deprecated
-    @SuppressWarnings({
-            "checkstyle:parameternumber", "checkstyle:linelength"
-    })
-    @Operation(summary = "DEPRECATED Get auditable data for a specific certified product based on CHPL Product Number.",
-            description = "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} "
-                    + "represents a valid CHPL Product Number.  A valid call to this service would look like "
-                    + "activity/certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD. "
-                    + "A start and end date may optionally be provided to limit activity results.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}",
-            method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityDetails> activityForCertifiedProductByChplProductNumber(
-            @PathVariable("year") final String year,
-            @PathVariable("testingLab") final String testingLab,
-            @PathVariable("certBody") final String certBody,
-            @PathVariable("vendorCode") final String vendorCode,
-            @PathVariable("productCode") final String productCode,
-            @PathVariable("versionCode") final String versionCode,
-            @PathVariable("icsCode") final String icsCode,
-            @PathVariable("addlSoftwareCode") final String addlSoftwareCode,
-            @PathVariable("certDateCode") final String certDateCode,
-            @RequestParam(required = false) final Long start,
-            @RequestParam(required = false) final Long end)
-            throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-
-        String chplProductNumber = chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode,
-                versionCode, icsCode, addlSoftwareCode, certDateCode);
-
-        List<CertifiedProductDetailsDTO> dtos = certifiedProductSearchResultDAO.getByChplProductNumber(chplProductNumber);
-        if (dtos.size() == 0) {
-            throw new EntityRetrievalException("Could not retrieve CertifiedProductSearchDetails.");
-        }
-
-        // if one of start of end is provided then the other must also be
-        // provided.
-        // if neither is provided then query all dates
-        Date startDate = new Date(0);
-        Date endDate = new Date();
-        if (start != null && end != null) {
-            validateActivityDatesAndDateRange(start, end);
-            startDate = new Date(start);
-            endDate = new Date(end);
-        } else if (start == null && end != null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
-        } else if (start != null && end == null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
-        }
-        return getActivityEventsForCertifiedProductsByIdAndDateRange(dtos.get(0).getId(), startDate, endDate);
-    }
-
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Get auditable data for a specific certified product based "
-            + "on a legacy CHPL Product Number.",
-            description = "{chplPrefix}-{identifier} represents a valid CHPL Product Number.  "
-                    + "A valid call to this service "
-                    + "would look like activity/certified_products/CHP-999999. "
-                    + "A start and end date may optionally be provided to limit activity results.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/certified_products/{chplPrefix}-{identifier}",
-            method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityDetails> activityForCertifiedProductByChplProductNumber(
-            @PathVariable("chplPrefix") final String chplPrefix,
-            @PathVariable("identifier") final String identifier,
-            @RequestParam(required = false) final Long start,
-            @RequestParam(required = false) final Long end)
-            throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-
-        String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
-
-        List<CertifiedProductDetailsDTO> dtos = certifiedProductSearchResultDAO.getByChplProductNumber(chplProductNumber);
-        if (dtos.size() == 0) {
-            throw new EntityRetrievalException("Could not retrieve CertifiedProductSearchDetails.");
-        }
-
-        // if one of start of end is provided then the other must also be
-        // provided.
-        // if neither is provided then query all dates
-        Date startDate = new Date(0);
-        Date endDate = new Date();
-        if (start != null && end != null) {
-            validateActivityDatesAndDateRange(start, end);
-            startDate = new Date(start);
-            endDate = new Date(end);
-        } else if (start == null && end != null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
-        } else if (start != null && end == null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
-        }
-
-        return getActivityEventsForCertifiedProductsByIdAndDateRange(dtos.get(0).getId(), startDate, endDate);
-    }
-
-    @Deprecated
     @Operation(summary = "DEPRECATED. Get auditable data for all pending certified products",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.  "
                     + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB (specific to own ACB).",
@@ -1454,16 +1308,6 @@ public class ActivityController {
         return allowedUserIds;
     }
 
-    private List<ActivityDetails> getActivityEventsForCertifiedProductsByIdAndDateRange(final Long id,
-            final Date startDate, final Date endDate)
-            throws JsonParseException, IOException {
-
-        List<ActivityDetails> events = null;
-        ActivityConcept concept = ActivityConcept.CERTIFIED_PRODUCT;
-        events = getActivityEventsForObject(concept, id, startDate, endDate);
-        return events;
-    }
-
     private List<ActivityDetails> getActivityEventsForProducts(final Long id, final Date startDate, final Date endDate)
             throws JsonParseException, IOException {
 
@@ -1490,18 +1334,6 @@ public class ActivityController {
         events = getActivityEventsForObject(concept, id, startDate, endDate);
         return events;
 
-    }
-
-    private List<ActivityDetails> getActivityEventsForCertifiedProducts(final Date startDate, final Date endDate)
-            throws JsonParseException, IOException {
-        LOGGER.info("User " + AuthUtil.getUsername() + " requested certified product activity between " + startDate
-                + " and " + endDate);
-
-        List<ActivityDetails> events = null;
-        ActivityConcept concept = ActivityConcept.CERTIFIED_PRODUCT;
-        events = getActivityEventsForConcept(concept, startDate, endDate);
-
-        return events;
     }
 
     private List<ActivityDetails> getActivityEventsForProducts(final Date startDate, final Date endDate)
