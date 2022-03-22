@@ -2,7 +2,10 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -12,10 +15,10 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import gov.healthit.chpl.domain.contact.PointOfContact;
-import gov.healthit.chpl.dto.ProductDTO;
-import gov.healthit.chpl.dto.ProductOwnerDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -31,7 +34,40 @@ public class Product implements Serializable {
      * Product internal ID
      */
     @XmlElement(required = true)
+    @Deprecated
     private Long productId;
+
+    /**
+     * This property exists solely to be able to deserialize product activity events. When deserializing
+     * the activity we sometimes care about the product ID. This property
+     * should not be visible in the generated XSD or any response from an API call. The eventual plan is to deprecate
+     * the above "productId" field in favor of this "id" anyway.
+     */
+    @JsonProperty(access = Access.WRITE_ONLY)
+    @XmlTransient
+    private Long id;
+
+    /**
+     * This property exists solely to be able to deserialize product activity events. When deserializing
+     * the activity we sometimes care about the developer ID and in older activity it came from this field.
+     * In newer activity it comes from the "owner field.
+     * This property should not be visible in the generated XSD or any response from an API call. 
+     */
+    @JsonProperty(access = Access.WRITE_ONLY)
+    @XmlTransient
+    @Deprecated
+    private Long developerId;
+
+    /**
+     * This property exists solely to be able to deserialize product activity events. When deserializing
+     * the activity we sometimes care about the developer name and in older activity it came from this field.
+     * In newer activity it comes from the "owner" field. 
+     * This property should not be visible in the generated XSD or any response from an API call. 
+     */
+    @JsonProperty(access = Access.WRITE_ONLY)
+    @XmlTransient
+    @Deprecated
+    private String developerName;
 
     /**
      * The name of the product being uploaded. It is applicable for 2014 and
@@ -75,38 +111,74 @@ public class Product implements Serializable {
         ownerHistory = new ArrayList<ProductOwner>();
     }
 
-    public Product(ProductDTO dto) {
-        this();
-        this.productId = dto.getId();
-        this.name = dto.getName();
-        this.reportFileLocation = dto.getReportFileLocation();
-        if (dto.getLastModifiedDate() != null) {
-            this.lastModifiedDate = dto.getLastModifiedDate().getTime() + "";
+    public ProductOwner getOwnerOnDate(Date date) {
+        List<ProductOwner> localOwnerHistory = new ArrayList<ProductOwner>();
+        if (this.getOwnerHistory() != null && this.getOwnerHistory().size() > 0) {
+            localOwnerHistory.addAll(this.getOwnerHistory().stream().collect(Collectors.toList()));
         }
-        if (dto.getContact() != null) {
-            this.contact = new PointOfContact(dto.getContact());
-        }
-        if (dto.getOwner() != null) {
-            this.owner = new Developer();
-            this.owner.setDeveloperId(dto.getOwner().getId());
-            this.owner.setName(dto.getOwner().getName());
-            this.owner.setDeveloperCode(dto.getOwner().getDeveloperCode());
-            this.owner.setSelfDeveloper(dto.getOwner().getSelfDeveloper());
-        }
-        if (dto.getOwnerHistory() != null && dto.getOwnerHistory().size() > 0) {
-            for (ProductOwnerDTO prevOwnerDto : dto.getOwnerHistory()) {
-                ProductOwner prevOwner = new ProductOwner(prevOwnerDto);
-                this.ownerHistory.add(prevOwner);
+        ProductOwner currentOwner = new ProductOwner();
+        currentOwner.setDeveloper(this.getOwner());
+        currentOwner.setTransferDate(System.currentTimeMillis());
+        localOwnerHistory.add(currentOwner);
+        // first we need to make sure the status events are in ascending order
+        localOwnerHistory.sort(new Comparator<ProductOwner>() {
+            @Override
+            public int compare(ProductOwner o1, ProductOwner o2) {
+                if (o1.getTransferDate() != null && o2.getTransferDate() != null) {
+                    return o1.getTransferDate().compareTo(o2.getTransferDate());
+                }
+                return 0;
+            }
+        });
+
+        ProductOwner result = null;
+        for (int i = 0; i < localOwnerHistory.size() && result == null; i++) {
+            ProductOwner currOwner = localOwnerHistory.get(i);
+            if (currOwner.getTransferDate() != null && currOwner.getTransferDate().longValue() >= date.getTime()) {
+                result = currOwner;
             }
         }
+        return result;
     }
 
+    @Deprecated
     public Long getProductId() {
         return productId;
     }
 
+    @Deprecated
     public void setProductId(Long productId) {
         this.productId = productId;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Deprecated
+    @JsonProperty(access = Access.WRITE_ONLY)
+    public Long getDeveloperId() {
+        return developerId;
+    }
+
+    @Deprecated
+    public void setDeveloperId(Long developerId) {
+        this.developerId = developerId;
+    }
+
+    @Deprecated
+    @JsonProperty(access = Access.WRITE_ONLY)
+    public String getDeveloperName() {
+        return developerName;
+    }
+
+    @Deprecated
+    public void setDeveloperName(String developerName) {
+        this.developerName = developerName;
     }
 
     public String getName() {

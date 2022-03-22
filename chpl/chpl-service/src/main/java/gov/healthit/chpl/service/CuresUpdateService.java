@@ -238,8 +238,4 @@ public class CuresUpdateService {
     private Boolean isPast36Months() {
         return false;
     }
-
-    public List<Long> getNeedsToBeUpdatedCriteriaIds() {
-        return this.needsToBeUpdatedCriteriaIds;
-    }
 }

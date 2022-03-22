@@ -14,9 +14,8 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext.ValidationDAOs;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusDTO;
-import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.domain.DeveloperStatus;
+import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public class DeveloperExistenceValidationTest {
@@ -30,14 +29,14 @@ public class DeveloperExistenceValidationTest {
 
         developerDAO = Mockito.mock(DeveloperDAO.class);
         Mockito.when(developerDAO.getById(ArgumentMatchers.anyLong())).thenReturn(
-                DeveloperDTO.builder()
+                Developer.builder()
                         .id(1L)
-                        .statusEvents(Arrays.asList(DeveloperStatusEventDTO.builder()
+                        .statusEvents(Arrays.asList(DeveloperStatusEvent.builder()
                                 .id(1L)
                                 .developerId(1L)
-                                .status(DeveloperStatusDTO.builder()
+                                .status(DeveloperStatus.builder()
                                         .id(1L)
-                                        .statusName("Active")
+                                        .status("Active")
                                         .build())
                                 .statusDate(new Date())
                                 .build()))

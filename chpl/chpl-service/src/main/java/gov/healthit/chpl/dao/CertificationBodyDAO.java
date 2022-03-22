@@ -46,7 +46,8 @@ public class CertificationBodyDAO extends BaseDAOImpl {
             throw new EntityCreationException("An entity with this ID already exists.");
         } else {
             entity = new CertificationBodyEntity();
-            entity.setAddress(addressDao.create(dto.getAddress()));
+            Long addressId = addressDao.create(dto.getAddress());
+            entity.setAddress(addressDao.getEntityById(addressId));
             entity.setName(dto.getName());
             entity.setWebsite(dto.getWebsite());
             entity.setAcbCode(dto.getAcbCode());
@@ -68,7 +69,8 @@ public class CertificationBodyDAO extends BaseDAOImpl {
 
         if (dto.getAddress() != null) {
             try {
-                entity.setAddress(addressDao.saveAddress(dto.getAddress()));
+                Long addressId = addressDao.saveAddress(dto.getAddress());
+                entity.setAddress(addressDao.getEntityById(addressId));
             } catch (final EntityCreationException ex) {
                 LOGGER.error("Could not create new address in the database.", ex);
                 entity.setAddress(null);

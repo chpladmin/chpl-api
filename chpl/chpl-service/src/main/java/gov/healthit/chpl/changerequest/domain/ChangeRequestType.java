@@ -20,4 +20,8 @@ public class ChangeRequestType implements Serializable {
     public Boolean isDemographic() {
         return !this.name.equalsIgnoreCase("Developer Attestation Change Request");
     }
+
+    public Boolean isAttestation() {
+        return this.name.equalsIgnoreCase("Developer Attestation Change Request");
+    }
 }

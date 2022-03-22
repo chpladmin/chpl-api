@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.attestation.GetByDeveloperIdActionPermissions;
@@ -29,7 +29,7 @@ public class GetByDeveloperIdActionPermissionsTest extends ActionPermissionsBase
         MockitoAnnotations.initMocks(this);
 
         Mockito.when(resourcePermissions.getAllDevelopersForCurrentUser()).thenReturn(
-                Arrays.asList(DeveloperDTO.builder().id(1L).build()));
+                Arrays.asList(Developer.builder().id(1L).developerId(1L).build()));
     }
 
     @Override

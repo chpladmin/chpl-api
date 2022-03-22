@@ -12,10 +12,10 @@ import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.ChplProductNumberDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTestingLabDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -332,14 +332,14 @@ public class ChplProductNumberUtil {
     }
 
     private String getDeveloperCode(final Long developerId) {
-        DeveloperDTO dto = null;
+        Developer dev = null;
         try {
-            dto = developerDAO.getById(developerId);
+            dev = developerDAO.getById(developerId);
         } catch (EntityRetrievalException e) {
             return null; // Throw Exception??
         }
-        if (dto != null) {
-            return dto.getDeveloperCode();
+        if (dev != null) {
+            return dev.getDeveloperCode();
         } else {
             return null; // Throw exception?
         }

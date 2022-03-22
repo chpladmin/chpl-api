@@ -6,13 +6,13 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
 public class DeveloperStatusEventsValidation extends ValidationRule<DeveloperValidationContext> {
     @Override
     public boolean isValid(DeveloperValidationContext context) {
-        List<String> errors = validateDeveloperStatusEvents(context.getDeveloperDTO().getStatusEvents(), context);
+        List<String> errors = validateDeveloperStatusEvents(context.getDeveloper().getStatusEvents(), context);
         if (!errors.isEmpty()) {
             getMessages().addAll(errors);
             return false;
@@ -20,7 +20,7 @@ public class DeveloperStatusEventsValidation extends ValidationRule<DeveloperVal
         return true;
     }
 
-    private List<String> validateDeveloperStatusEvents(final List<DeveloperStatusEventDTO> statusEvents,
+    private List<String> validateDeveloperStatusEvents(List<DeveloperStatusEvent> statusEvents,
             DeveloperValidationContext context) {
         List<String> errors = new ArrayList<String>();
         if (statusEvents == null || statusEvents.size() == 0) {
@@ -31,8 +31,8 @@ public class DeveloperStatusEventsValidation extends ValidationRule<DeveloperVal
 
             // now that the list is sorted by date, make sure no two statuses
             // next to each other are the same
-            Iterator<DeveloperStatusEventDTO> iter = statusEvents.iterator();
-            DeveloperStatusEventDTO prev = null, curr = null;
+            Iterator<DeveloperStatusEvent> iter = statusEvents.iterator();
+            DeveloperStatusEvent prev = null, curr = null;
             while (iter.hasNext()) {
                 if (prev == null) {
                     prev = iter.next();
@@ -44,20 +44,20 @@ public class DeveloperStatusEventsValidation extends ValidationRule<DeveloperVal
                 }
 
                 if (prev != null && curr != null
-                        && prev.getStatus().getStatusName().equalsIgnoreCase(curr.getStatus().getStatusName())) {
+                        && prev.getStatus().getStatus().equalsIgnoreCase(curr.getStatus().getStatus())) {
                     errors.add(context.getErrorMessageUtil().getMessage("developer.status.duplicateStatus",
-                            prev.getStatus().getStatusName()));
+                            prev.getStatus().getStatus()));
                 }
             }
         }
         return errors;
     }
 
-    static class DeveloperStatusEventComparator implements Comparator<DeveloperStatusEventDTO>, Serializable {
+    static class DeveloperStatusEventComparator implements Comparator<DeveloperStatusEvent>, Serializable {
         private static final long serialVersionUID = 7816629342251138939L;
 
         @Override
-        public int compare(final DeveloperStatusEventDTO o1, final DeveloperStatusEventDTO o2) {
+        public int compare(final DeveloperStatusEvent o1, final DeveloperStatusEvent o2) {
             if (o1 != null && o2 != null) {
                 // neither are null, compare the dates
                 return o1.getStatusDate().compareTo(o2.getStatusDate());

@@ -37,7 +37,7 @@ public class FieldLengthReviewer implements Reviewer {
         checkField(listing, listing.getProductName(), "productName", ERROR);
         checkField(listing, listing.getProductVersion(), "productVersion", ERROR);
         if (listing.getDeveloperAddress() != null) {
-            checkField(listing, listing.getDeveloperAddress().getStreetLineOne(), "developerStreetAddress", ERROR);
+            checkField(listing, listing.getDeveloperAddress().getLine1(), "developerStreetAddress", ERROR);
             checkField(listing, listing.getDeveloperAddress().getCity(), "developerCity", ERROR);
             checkField(listing, listing.getDeveloperAddress().getState(), "developerState", ERROR);
             checkField(listing, listing.getDeveloperAddress().getZipcode(), "developerZip", ERROR);

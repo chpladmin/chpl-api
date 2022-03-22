@@ -2,7 +2,7 @@ package gov.healthit.chpl.permissions.domains.userpermissions;
 
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
 @Component(value = "userPermissionsDeleteDeveloperActionPermissions")
@@ -16,8 +16,8 @@ public class DeleteDeveloperActionPermissions extends ActionPermissions {
     @Override
     public boolean hasAccess(final Object obj) {
         Long developerId = null;
-        if (obj instanceof DeveloperDTO) {
-            developerId = ((DeveloperDTO) obj).getId();
+        if (obj instanceof Developer) {
+            developerId = ((Developer) obj).getDeveloperId();
         } else if (obj instanceof Long) {
             developerId = (Long) obj;
         }

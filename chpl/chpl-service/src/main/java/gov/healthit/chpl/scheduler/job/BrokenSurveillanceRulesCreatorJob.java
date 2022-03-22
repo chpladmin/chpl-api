@@ -30,7 +30,6 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.dao.scheduler.BrokenSurveillanceRulesDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.OversightRuleResult;
@@ -42,7 +41,8 @@ import gov.healthit.chpl.dto.scheduler.BrokenSurveillanceRulesDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.surveillance.rules.RuleComplianceCalculator;
-import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
+import gov.healthit.chpl.search.dao.ListingSearchDao;
+import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.service.CertificationCriterionService;
 
 @DisallowConcurrentExecution
@@ -52,7 +52,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     private DateTimeFormatter dateFormatter;
 
     @Autowired
-    private CertifiedProductSearchDAO certifiedProductSearchDAO;
+    private ListingSearchDao listingSearchDao;
 
     @Autowired
     private BrokenSurveillanceRulesDAO brokenSurveillanceRulesDAO;
@@ -86,13 +86,13 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         ExecutorService executorService = null;
         try {
             executorService = Executors.newFixedThreadPool(getThreadCountForJob());
-            List<CertifiedProductBasicSearchResult> listingsForReport = getListingsForReport();
+            List<ListingSearchResult> listingsForReport = getListingsForReport();
             LOGGER.info(String.format("Found %s listings to process", listingsForReport.size()));
 
             List<BrokenSurveillanceRulesDTO> allBrokenRules = new ArrayList<BrokenSurveillanceRulesDTO>();
 
             List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
-            for (CertifiedProductBasicSearchResult listing : listingsForReport) {
+            for (ListingSearchResult listing : listingsForReport) {
                 futures.add(CompletableFuture.supplyAsync(() ->
                     processListing(listing.getId()), executorService)
                         .thenAccept(result -> allBrokenRules.addAll(result)));
@@ -115,23 +115,24 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         LOGGER.info("********* Completed the Broken Surveillance Rules Creator job. *********");
     }
 
-    private List<CertifiedProductBasicSearchResult> getListingsForReport() {
-        return certifiedProductSearchDAO.getCertifiedProducts().stream()
+    private List<ListingSearchResult> getListingsForReport() {
+        return listingSearchDao.getListingSearchResults().stream()
                 .filter(listing -> isEdition2015(listing)
                         && (isCertificationStatusSuspendedByAcb(listing)
                                 || hasSurveillances(listing)))
                 .collect(Collectors.toList());
     }
 
-    private boolean isEdition2015(CertifiedProductBasicSearchResult listing) {
-        return listing.getEdition().equals(EDITION_2015);
+    private boolean isEdition2015(ListingSearchResult listing) {
+        return listing.getEdition() != null && listing.getEdition().getName().equals(EDITION_2015);
     }
 
-    private boolean isCertificationStatusSuspendedByAcb(CertifiedProductBasicSearchResult listing) {
-        return listing.getCertificationStatus().equalsIgnoreCase(CertificationStatusType.SuspendedByAcb.getName());
+    private boolean isCertificationStatusSuspendedByAcb(ListingSearchResult listing) {
+        return listing.getCertificationStatus() != null
+                && listing.getCertificationStatus().getName().equalsIgnoreCase(CertificationStatusType.SuspendedByAcb.getName());
     }
 
-    private boolean hasSurveillances(CertifiedProductBasicSearchResult listing) {
+    private boolean hasSurveillances(ListingSearchResult listing) {
         return listing.getSurveillanceCount() > 0;
     }
 

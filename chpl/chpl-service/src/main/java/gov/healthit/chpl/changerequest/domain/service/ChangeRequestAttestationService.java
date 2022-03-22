@@ -1,7 +1,6 @@
 package gov.healthit.chpl.changerequest.domain.service;
 
 import java.text.DateFormat;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -27,8 +27,11 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestAttestationDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
@@ -37,6 +40,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -49,6 +53,8 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private AttestationManager attestationManager;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
     private UserDAO userDAO;
+    private DeveloperDAO developerDao;
+    private ActivityManager activityManager;
 
     private ObjectMapper mapper;
 
@@ -80,7 +86,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     public ChangeRequestAttestationService(ChangeRequestDAO crDAO, ChangeRequestAttestationDAO crAttesttionDAO,
             UserDeveloperMapDAO userDeveloperMapDAO, AttestationManager attestationManager,
             ChplEmailFactory chplEmailFactory, ChplHtmlEmailBuilder chplHtmlEmailBuilder,
-            UserDAO userDAO) {
+            UserDAO userDAO, DeveloperDAO developerDao, ActivityManager activityManager) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crAttesttionDAO = crAttesttionDAO;
@@ -88,13 +94,15 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         this.chplEmailFactory = chplEmailFactory;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
         this.userDAO = userDAO;
-
+        this.developerDao = developerDao;
+        this.activityManager = activityManager;
 
         this.mapper = new ObjectMapper();
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
 
     @Override
+    @Transactional
     public ChangeRequestAttestationSubmission getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
         return crAttesttionDAO.getByChangeRequestId(changeRequestId);
     }
@@ -104,9 +112,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     public ChangeRequest create(ChangeRequest cr) {
         try {
             ChangeRequestAttestationSubmission attestation = getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails());
-
             attestation.setSignatureEmail(getUserById(AuthUtil.getCurrentUser().getId()).getEmail());
-
             attestation.setAttestationPeriod(getAttestationPeriod(cr));
 
             crAttesttionDAO.create(cr, attestation);
@@ -135,8 +141,9 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Override
     protected ChangeRequest execute(ChangeRequest cr) throws EntityRetrievalException, EntityCreationException {
-        ChangeRequestAttestationSubmission attestationSubmission = (ChangeRequestAttestationSubmission) cr.getDetails();
+        Developer beforeDeveloper = developerDao.getById(cr.getDeveloper().getDeveloperId());
 
+        ChangeRequestAttestationSubmission attestationSubmission = (ChangeRequestAttestationSubmission) cr.getDetails();
         DeveloperAttestationSubmission developerAttestation = DeveloperAttestationSubmission.builder()
                 .developer(cr.getDeveloper())
                 .period(attestationSubmission.getAttestationPeriod())
@@ -151,6 +158,17 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                 .build();
 
         attestationManager.saveDeveloperAttestation(developerAttestation);
+        attestationManager.deleteAttestationPeriodDeveloperExceptions(
+                developerAttestation.getDeveloper().getDeveloperId(),
+                developerAttestation.getPeriod().getId());
+
+        Developer updatedDeveloper = developerDao.getById(cr.getDeveloper().getDeveloperId());
+        try {
+            activityManager.addActivity(ActivityConcept.DEVELOPER, updatedDeveloper.getDeveloperId(),
+                "Developer attestation created.", beforeDeveloper, updatedDeveloper);
+        } catch (JsonProcessingException ex) {
+            LOGGER.error("Error writing activity about attestation submission approval.", ex);
+        }
         return cr;
     }
 
@@ -275,11 +293,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     }
 
     private AttestationPeriod getAttestationPeriod(ChangeRequest cr) {
-        return attestationManager.getAllPeriods().stream()
-                .filter(per -> LocalDate.now().compareTo(per.getSubmissionStart()) >= 0
-                        && LocalDate.now().compareTo(per.getSubmissionEnd()) <= 0)
-                .findAny()
-                .orElse(null);
+        return attestationManager.getMostRecentPastAttestationPeriod();
     }
 
     private UserDTO getUserById(Long userId) throws UserRetrievalException {

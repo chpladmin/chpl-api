@@ -380,6 +380,7 @@
                     <verbose>true</verbose>
                     <createJavaDocAnnotations>true</createJavaDocAnnotations>
                     <sources>
+                        <source>src/main/java/gov/healthit/chpl/attestation/domain/AttestationPeriod.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/Address.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertifiedProductSed.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResult.java</source>
@@ -410,6 +411,8 @@
                         <source>src/main/java/gov/healthit/chpl/domain/Product.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/ProductOwner.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/ProductVersion.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/PublicAttestation.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/concept/PublicAttestationStatus.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/Surveillance.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceNonconformity.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceNonconformityDocument.java</source>
@@ -418,8 +421,6 @@
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceRequirementType.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceResultType.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceType.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/TransparencyAttestationMap.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/TransparencyAttestation.java</source>
                         <source>src/main/java/gov/healthit/chpl/optionalStandard/domain/CertificationResultOptionalStandard.java</source>
                         <source>src/main/java/gov/healthit/chpl/svap/domain/CertificationResultSvap.java</source>
                     </sources>

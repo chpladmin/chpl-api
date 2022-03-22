@@ -2,8 +2,8 @@ package gov.healthit.chpl.manager.rules.developer;
 
 import org.apache.commons.lang3.StringUtils;
 
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -16,9 +16,9 @@ public class DeveloperStatusMissingBanReasonValidation extends ValidationRule<De
     @Override
     public boolean isValid(DeveloperValidationContext context) {
         ErrorMessageUtil msgUtil = context.getErrorMessageUtil();
-        DeveloperDTO updatedDev = context.getDeveloperDTO();
-        for (DeveloperStatusEventDTO statusEvent : updatedDev.getStatusEvents()) {
-            if (statusEvent.getStatus().getStatusName()
+        Developer updatedDev = context.getDeveloper();
+        for (DeveloperStatusEvent statusEvent : updatedDev.getStatusEvents()) {
+            if (statusEvent.getStatus().getStatus()
                     .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
                     && StringUtils.isEmpty(statusEvent.getReason())) {
                 getMessages().add(msgUtil.getMessage("developer.missingReasonForBan",
