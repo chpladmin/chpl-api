@@ -145,20 +145,6 @@ public class ActivityManager extends SecuredManager {
     }
 
     @Transactional
-    public List<ActivityDetails> getActivityForObject(ActivityConcept concept, Long objectId, Date startDate,
-            Date endDate) throws JsonParseException, IOException {
-
-        List<ActivityDTO> dtos = activityDAO.findByObjectId(objectId, concept, startDate, endDate);
-        List<ActivityDetails> events = new ArrayList<ActivityDetails>();
-
-        for (ActivityDTO dto : dtos) {
-            ActivityDetails event = getActivityDetailsFromDTO(dto);
-            events.add(event);
-        }
-        return events;
-    }
-
-    @Transactional
     public List<ActivityDetails> getActivityForConcept(ActivityConcept concept, Date startDate, Date endDate)
             throws JsonParseException, IOException {
 
