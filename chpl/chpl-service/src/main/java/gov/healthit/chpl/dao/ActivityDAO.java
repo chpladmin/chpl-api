@@ -204,43 +204,6 @@ public class ActivityDAO extends BaseDAOImpl {
         return activities;
     }
 
-
-    public List<ActivityDTO> findPublicAnnouncementActivity(final Date startDate, final Date endDate) {
-        Query query = entityManager.createNamedQuery("getPublicAnnouncementActivityByDate",
-                ActivityEntity.class);
-        query.setParameter("conceptName", ActivityConcept.ANNOUNCEMENT.name());
-        query.setParameter("startDate", startDate);
-        query.setParameter("endDate", endDate);
-
-        List<ActivityDTO> results = new ArrayList<ActivityDTO>();
-        List<ActivityEntity> entities = query.getResultList();
-        for (ActivityEntity entity : entities) {
-            ActivityDTO result = mapEntityToDto(entity);
-            results.add(result);
-        }
-        return results;
-    }
-
-
-    public List<ActivityDTO> findPublicAnnouncementActivityById(final Long announcementId,
-            final Date startDate, final Date endDate) {
-        Query query = entityManager.createNamedQuery("getPublicAnnouncementActivityByIdAndDate",
-                ActivityEntity.class);
-        query.setParameter("announcementId", announcementId);
-        query.setParameter("conceptName", ActivityConcept.ANNOUNCEMENT.name());
-        query.setParameter("startDate", startDate);
-        query.setParameter("endDate", endDate);
-
-        List<ActivityDTO> results = new ArrayList<ActivityDTO>();
-        List<ActivityEntity> entities = query.getResultList();
-        for (ActivityEntity entity : entities) {
-            ActivityDTO result = mapEntityToDto(entity);
-            results.add(result);
-        }
-        return results;
-    }
-
-
     public List<ActivityDTO> findAcbActivity(final List<CertificationBodyDTO> acbs,
             final Date startDate, final Date endDate) {
         List<Long> acbIds = new ArrayList<Long>();

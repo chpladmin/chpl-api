@@ -32,7 +32,6 @@ import gov.healthit.chpl.domain.activity.ProductActivityDetails;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -174,104 +173,11 @@ public class ActivityManager extends SecuredManager {
         return events;
     }
 
-    /**
-     * Get activity only for public announcements. This will return activity where the isPublic flag is true on both the
-     * original and updated data.
-     */
-    @Transactional
-    public List<ActivityDetails> getPublicAnnouncementActivity(Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-        List<ActivityDTO> dtos = activityDAO.findPublicAnnouncementActivity(startDate, endDate);
-        List<ActivityDetails> events = new ArrayList<ActivityDetails>();
-
-        for (ActivityDTO dto : dtos) {
-            ActivityDetails event = getActivityDetailsFromDTO(dto);
-            events.add(event);
-        }
-        return events;
-    }
-
-    /**
-     * Get activity only for a specific public announcement. This will only return activity for the announcement if the
-     * isPublic flag is set to true in both the original data and new data.
-     */
-    @Transactional
-    public List<ActivityDetails> getPublicAnnouncementActivity(Long id, Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-        List<ActivityDTO> dtos = activityDAO.findPublicAnnouncementActivityById(id, startDate, endDate);
-        List<ActivityDetails> events = new ArrayList<ActivityDetails>();
-
-        for (ActivityDTO dto : dtos) {
-            ActivityDetails event = getActivityDetailsFromDTO(dto);
-            events.add(event);
-        }
-        return events;
-    }
-
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public List<ActivityDetails> getApiKeyActivity(Date startDate, Date endDate)
             throws JsonParseException, IOException {
         return getActivityForConcept(ActivityConcept.API_KEY, startDate, endDate);
-    }
-
-    @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public List<ActivityDetails> getAllAcbActivity(Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-        List<ActivityDTO> acbActivity = activityDAO.findByConcept(ActivityConcept.CERTIFICATION_BODY,
-                startDate, endDate);
-
-        List<ActivityDetails> events = new ArrayList<ActivityDetails>();
-        for (ActivityDTO dto : acbActivity) {
-            ActivityDetails event = getActivityDetailsFromDTO(dto);
-            events.add(event);
-        }
-        return events;
-    }
-
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
-            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_BY_ACB)")
-    public List<ActivityDetails> getAcbActivity(List<CertificationBodyDTO> acbs, Date startDate,
-            Date endDate) throws JsonParseException, IOException {
-
-        List<ActivityDTO> acbActivity = activityDAO.findAcbActivity(acbs, startDate, endDate);
-        List<ActivityDetails> events = new ArrayList<ActivityDetails>();
-        for (ActivityDTO dto : acbActivity) {
-            ActivityDetails event = getActivityDetailsFromDTO(dto);
-            events.add(event);
-        }
-        return events;
-    }
-
-    @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public List<ActivityDetails> getAllAtlActivity(Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-        List<ActivityDTO> atlActivity = activityDAO.findByConcept(ActivityConcept.TESTING_LAB, startDate,
-                endDate);
-
-        List<ActivityDetails> events = new ArrayList<ActivityDetails>();
-        for (ActivityDTO dto : atlActivity) {
-            ActivityDetails event = getActivityDetailsFromDTO(dto);
-            events.add(event);
-        }
-        return events;
-    }
-
-    @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ATL')")
-    public List<ActivityDetails> getAtlActivity(List<TestingLabDTO> atls, Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-        List<ActivityDTO> atlActivity = activityDAO.findAtlActivity(atls, startDate, endDate);
-
-        List<ActivityDetails> events = new ArrayList<ActivityDetails>();
-        for (ActivityDTO dto : atlActivity) {
-            ActivityDetails event = getActivityDetailsFromDTO(dto);
-            events.add(event);
-        }
-        return events;
     }
 
     @Transactional
