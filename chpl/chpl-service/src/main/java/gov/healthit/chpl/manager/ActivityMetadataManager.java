@@ -70,22 +70,6 @@ public class ActivityMetadataManager extends SecuredManager {
                 endDate);
     }
 
-
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
-            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ATL_METADATA)")
-    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
-            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ATL_METADATA, filterObject)")
-    @Transactional
-    public List<ActivityMetadata> getTestingLabActivityMetadata(final Date startDate, final Date endDate)
-            throws JsonParseException, IOException {
-        // there is very little ATL activity so just get it all for the date
-        // range
-        // and apply a post filter to remove whatever the current user should
-        // not see.
-        return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.TESTING_LAB, startDate, endDate);
-    }
-
-
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_METADATA_BY_ATL, #atlId)")
     @Transactional

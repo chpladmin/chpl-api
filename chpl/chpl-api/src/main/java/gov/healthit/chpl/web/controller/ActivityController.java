@@ -550,35 +550,6 @@ public class ActivityController {
         return pagedMetadataManager.getTestingLabActivityMetadata(start, end, pageNum, pageSize);
     }
 
-    @Operation(summary = "DEPRECATED. Get metadata about auditable records in the system for testing labs.",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
-                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC may see activity for all testing labs.  "
-                    + "ROLE_ATL can see activity for their own ATLs.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @Deprecated
-    @RequestMapping(value = "/metadata/atls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityMetadata> metadataForAtls(@RequestParam(required = false) final Long start,
-            @RequestParam(required = false) final Long end)
-            throws JsonParseException, IOException, ValidationException {
-
-        Date startDate = new Date(0);
-        Date endDate = new Date();
-        if (start != null && end != null) {
-            validateActivityDates(start, end);
-            startDate = new Date(start);
-            endDate = new Date(end);
-        } else if (start == null && end != null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
-        } else if (start != null && end == null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
-        }
-        return activityMetadataManager.getTestingLabActivityMetadata(startDate, endDate);
-    }
-
     @Operation(summary = "Get metadata about auditable records in the system for a specific testing lab.",
             description = "A start and end date may optionally be provided to limit activity results.",
             security = {
