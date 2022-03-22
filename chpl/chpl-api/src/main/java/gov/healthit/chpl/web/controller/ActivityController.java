@@ -840,24 +840,6 @@ public class ActivityController {
         return activityMetadataManager.getChangeRequestActivityMetadata(startDate, endDate);
     }
 
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Get auditable data for all API keys",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
-                    + "Security Restrictions: Only ROLE_ADMIN or ROLE_ONC",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/metadata/api-keys", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityMetadata> metadataForApiKeys(@RequestParam final Long start,
-            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDatesAndDateRange(start, end);
-        return activityMetadataManager.getApiKeyManagementMetadata(startDate, endDate);
-    }
-
     @Operation(summary = "Get metadata about auditable records in the system for API Keys.",
             description = "All parameters are optional and will default to the first page of API Key activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "

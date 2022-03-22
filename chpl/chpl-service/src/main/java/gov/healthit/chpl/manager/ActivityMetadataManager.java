@@ -180,15 +180,6 @@ public class ActivityMetadataManager extends SecuredManager {
         return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.CHANGE_REQUEST, startDate, endDate);
     }
 
-
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
-        + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_API_KEY_MANAGEMENT_METADATA)")
-    @Transactional
-    public List<ActivityMetadata> getApiKeyManagementMetadata(Date startDate, Date endDate)
-        throws IOException {
-        return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.API_KEY, startDate, endDate);
-    }
-
     private List<ActivityMetadata> getActivityMetadataByConceptWithoutSecurity(final ActivityConcept concept,
             final Date startDate, final Date endDate) throws JsonParseException, IOException {
         LOGGER.info("Getting " + concept.name() + " activity from " + startDate + " through " + endDate);
