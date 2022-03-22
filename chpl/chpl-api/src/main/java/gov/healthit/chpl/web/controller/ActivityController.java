@@ -657,7 +657,7 @@ public class ActivityController {
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getAnnouncementActivityMetadata(start, end, pageNum, pageSize);
-    }}
+    }
 
     @Operation(summary = "Get metadata about auditable records in the system for complaints.",
             description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results."
