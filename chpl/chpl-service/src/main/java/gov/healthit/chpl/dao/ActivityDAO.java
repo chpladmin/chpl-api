@@ -265,21 +265,6 @@ public class ActivityDAO extends BaseDAOImpl {
         return results;
     }
 
-
-    public List<ActivityDTO> findPendingListingActivity(final Long pendingListingId,
-            final Date startDate, final Date endDate) {
-        List<ActivityEntity> entities = getEntitiesByObjectId(pendingListingId,
-                ActivityConcept.PENDING_CERTIFIED_PRODUCT, startDate, endDate);
-
-        List<ActivityDTO> results = new ArrayList<ActivityDTO>();
-        for (ActivityEntity entity : entities) {
-            ActivityDTO result = mapEntityToDto(entity);
-            results.add(result);
-        }
-        return results;
-    }
-
-
     public List<ActivityDTO> findUserActivity(final List<Long> userIds, final Date startDate, final Date endDate) {
         List<ActivityEntity> entities = getEntitiesByObjectIds(userIds,
                 ActivityConcept.USER, startDate, endDate);

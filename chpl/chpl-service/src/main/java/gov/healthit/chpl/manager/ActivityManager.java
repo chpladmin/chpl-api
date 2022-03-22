@@ -31,7 +31,6 @@ import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.activity.ProductActivityDetails;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.ActivityDTO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -167,52 +166,6 @@ public class ActivityManager extends SecuredManager {
         List<ActivityDetails> events = new ArrayList<ActivityDetails>();
 
         for (ActivityDTO dto : dtos) {
-            ActivityDetails event = getActivityDetailsFromDTO(dto);
-            events.add(event);
-        }
-        return events;
-    }
-
-    @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public List<ActivityDetails> getAllPendingListingActivity(Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-        List<ActivityDTO> pendingListingActivity = activityDAO
-                .findByConcept(ActivityConcept.PENDING_CERTIFIED_PRODUCT, startDate, endDate);
-
-        List<ActivityDetails> events = new ArrayList<ActivityDetails>();
-        for (ActivityDTO dto : pendingListingActivity) {
-            ActivityDetails event = getActivityDetailsFromDTO(dto);
-            events.add(event);
-        }
-        return events;
-    }
-
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
-            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_PENDING_LISTING_ACTIVITY_BY_ACB)")
-    public List<ActivityDetails> getPendingListingActivityByAcb(List<CertificationBodyDTO> acbs, Date startDate,
-            Date endDate) throws JsonParseException, IOException {
-        List<ActivityDTO> pendingListingActivity = activityDAO.findPendingListingActivity(acbs, startDate, endDate);
-
-        List<ActivityDetails> events = new ArrayList<ActivityDetails>();
-        for (ActivityDTO dto : pendingListingActivity) {
-            ActivityDetails event = getActivityDetailsFromDTO(dto);
-            events.add(event);
-        }
-        return events;
-    }
-
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
-            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_PENDING_LISTING_ACTIVITY)")
-    public List<ActivityDetails> getPendingListingActivity(Long pendingListingId, Date startDate, Date endDate)
-            throws JsonParseException, IOException, EntityRetrievalException {
-        List<ActivityDTO> pendingListingActivity = activityDAO.findPendingListingActivity(pendingListingId, startDate,
-                endDate);
-
-        List<ActivityDetails> events = new ArrayList<ActivityDetails>();
-        for (ActivityDTO dto : pendingListingActivity) {
             ActivityDetails event = getActivityDetailsFromDTO(dto);
             events.add(event);
         }

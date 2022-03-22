@@ -10,8 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,8 +28,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
@@ -933,82 +929,6 @@ public class ActivityController {
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getApiKeyManagementMetadata(start, end, pageNum, pageSize);
-    }
-
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Get auditable data for all pending certified products",
-            description = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.  "
-                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB (specific to own ACB).",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/pending_certified_products", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public List<ActivityDetails> activityForPendingCertifiedProducts(@RequestParam final Long start,
-            @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDatesAndDateRange(start, end);
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
-            return activityManager.getAllPendingListingActivity(startDate, endDate);
-        }
-        List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-        return activityManager.getPendingListingActivityByAcb(allowedAcbs, startDate, endDate);
-    }
-
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Get auditable data for a specific pending certified product.",
-            description = "A start and end date may optionally be provided to limit activity results.  "
-                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB (specific to own ACB).",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/pending_certified_products/{id}", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public List<ActivityDetails> activityForPendingCertifiedProductById(@PathVariable("id") final Long id,
-            @RequestParam(required = false) final Long start,
-            @RequestParam(required = false) final Long end)
-            throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        // pcpManager will return 404 if the user is not allowed to access it
-        // b/c of acb permissions
-        // using the "getByIdForActivity" call so ROLE_ONC has access to the
-        // pending listing activity.
-        // Normally they are not able to see anything else regarding pending
-        // listings.
-        PendingCertifiedProductDetails pendingListing = pcpManager.getByIdForActivity(id);
-        if (pendingListing == null) {
-            throw new EntityNotFoundException(msgUtil.getMessage("pendingListing.notFound"));
-        } else {
-            // make sure the user has permissions on the pending listings acb
-            // will throw access denied if they do not have the permissions
-            Long pendingListingAcbId = new Long(pendingListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
-            resourcePermissions.getAcbIfPermissionById(pendingListingAcbId);
-        }
-
-        // if one of start of end is provided then the other must also be
-        // provided.
-        // if neither is provided then query all dates
-        Date startDate = new Date(0);
-        Date endDate = new Date();
-        if (start != null && end != null) {
-            validateActivityDatesAndDateRange(start, end);
-            startDate = new Date(start);
-            endDate = new Date(end);
-        } else if (start == null && end != null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
-        } else if (start != null && end == null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
-        }
-
-        // admin can get anything
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
-            return activityManager.getPendingListingActivity(id, startDate, endDate);
-        }
-        return activityManager.getPendingListingActivity(pendingListing.getId(), startDate, endDate);
     }
 
     @Deprecated
