@@ -3,7 +3,6 @@ package gov.healthit.chpl.search;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,7 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
@@ -21,9 +19,6 @@ import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
-import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResultLegacy;
-import gov.healthit.chpl.domain.search.SearchRequestLegacy;
-import gov.healthit.chpl.domain.search.SearchResponseLegacy;
 import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.service.DirectReviewSearchService;
@@ -35,30 +30,15 @@ import lombok.extern.log4j.Log4j2;
 public class CertifiedProductSearchManager {
     private static final String CERT_STATUS_EVENT_DATE_FORMAT = "yyyy-MM-dd";
     private CertifiedProductSearchDAO searchDao;
-    private ListingSearchManager searchManager;
     private DirectReviewSearchService drService;
     private DateTimeFormatter dateFormatter;
 
     @Autowired
     public CertifiedProductSearchManager(CertifiedProductSearchDAO searchDao,
-            ListingSearchManager searchManager,
             DirectReviewSearchService drService) {
         this.searchDao = searchDao;
-        this.searchManager = searchManager;
         this.drService = drService;
         this.dateFormatter = DateTimeFormatter.ofPattern(CERT_STATUS_EVENT_DATE_FORMAT);
-    }
-
-    @Transactional
-    @Deprecated
-    public SearchResponseLegacy search(SearchRequestLegacy searchRequest) {
-
-        Collection<CertifiedProductBasicSearchResultLegacy> searchResults = searchDao.search(searchRequest);
-        int totalCountSearchResults = searchDao.getTotalResultCount(searchRequest);
-
-        SearchResponseLegacy response = new SearchResponseLegacy(Integer.valueOf(totalCountSearchResults),
-                searchResults, searchRequest.getPageSize(), searchRequest.getPageNumber());
-        return response;
     }
 
     @Deprecated
