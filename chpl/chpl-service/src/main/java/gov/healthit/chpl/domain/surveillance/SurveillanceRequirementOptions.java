@@ -29,10 +29,14 @@ public class SurveillanceRequirementOptions implements Serializable {
     @Singular
     private List<Removable<String>> realWorldTestingOptions;
 
+    @Singular
+    private List<Removable<String>> attestationsSubmissionOptions;
+
     public SurveillanceRequirementOptions() {
         criteriaOptions2014 = new ArrayList<CertificationCriterion>();
         criteriaOptions2015 = new ArrayList<CertificationCriterion>();
         transparencyOptions = new ArrayList<Removable<String>>();
         realWorldTestingOptions = new ArrayList<Removable<String>>();
+        attestationsSubmissionOptions = new ArrayList<Removable<String>>();
     }
 }
