@@ -1,20 +1,14 @@
 package gov.healthit.chpl.dao;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationStatus;
@@ -26,16 +20,12 @@ import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
-import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Repository("certifiedProductSearchDAO")
 @Log4j2
 public class CertifiedProductSearchDAO extends BaseDAOImpl {
-    private final DateFormat certificationDateFormatter =
-            new SimpleDateFormat(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
-
     public Long getListingIdByUniqueChplNumber(String chplProductNumber) {
         Long id = null;
         Query query = entityManager.createQuery(
@@ -154,24 +144,6 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
                 .cqmsMet(entity.getCqms())
                 .previousDevelopers(entity.getPreviousDevelopers())
                 .build();
-    }
-
-    private Set<String> convertToSetOfStringsWithDelimiter(String value, String delimeter) {
-        if (StringUtils.isEmpty(value)) {
-            return new LinkedHashSet<String>();
-        }
-
-        String[] splitValues = value.split(delimeter);
-        return Stream.of(splitValues).collect(Collectors.toSet());
-    }
-
-    private Set<Long> convertToSetOfLongsWithDelimiter(String value, String delimeter) {
-        if (StringUtils.isEmpty(value)) {
-            return new LinkedHashSet<Long>();
-        }
-
-        String[] splitValues = value.split(delimeter);
-        return Stream.of(splitValues).map(val -> Long.valueOf(val)).collect(Collectors.toSet());
     }
 
     private IcsFamilyTreeNode convertIcs(final CertifiedProductBasicSearchResultEntity result) {
