@@ -12,6 +12,7 @@ public enum NonconformityType implements Serializable {
     L("170.523 (l)", false),
     ANNUAL_RWT_PLAN("Annual Real World Testing Plan", false),
     ANNUAL_RWT_RESULTS("Annual Real World Testing Results", false),
+    SEMIANNUAL_ATTESTATIONS_SUBMISSION("Semiannual Attestations Submission", false),
     OTHER("Other Non-Conformity", false);
 
     private String name;
