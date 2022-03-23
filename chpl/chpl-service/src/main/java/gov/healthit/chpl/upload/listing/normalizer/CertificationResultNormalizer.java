@@ -2,11 +2,13 @@ package gov.healthit.chpl.upload.listing.normalizer;
 
 import java.util.Iterator;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component
 public class CertificationResultNormalizer {
@@ -19,6 +21,7 @@ public class CertificationResultNormalizer {
     private OptionalStandardNormalizer optionalStandardNormalizer;
     private TestToolNormalizer testToolNormalizer;
     private SvapNormalizer svapNormalizer;
+    private CertificationResultRules certResultRules;
 
     @Autowired
     public CertificationResultNormalizer(CertificationCriterionNormalizer criterionNormalizer,
@@ -29,7 +32,8 @@ public class CertificationResultNormalizer {
         TestProcedureNormalizer testProcedureNormalizer,
         OptionalStandardNormalizer optionalStandardNormalizer,
         TestToolNormalizer testToolNormalizer,
-        SvapNormalizer svapNormalizer) {
+        SvapNormalizer svapNormalizer,
+        CertificationResultRules certResultRules) {
         this.criterionNormalizer = criterionNormalizer;
         this.additionalSoftwareNormalizer = additionalSoftwareNormalizer;
         this.testDataNormalizer = testDataNormalizer;
@@ -39,6 +43,7 @@ public class CertificationResultNormalizer {
         this.optionalStandardNormalizer = optionalStandardNormalizer;
         this.testToolNormalizer = testToolNormalizer;
         this.svapNormalizer = svapNormalizer;
+        this.certResultRules = certResultRules;
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
@@ -52,7 +57,16 @@ public class CertificationResultNormalizer {
         this.testToolNormalizer.normalize(listing);
         this.svapNormalizer.normalize(listing);
 
+        setSedTrueIfApplicableToCriteria(listing);
         removeCertificationResultsWithNullCriterion(listing);
+    }
+
+    private void setSedTrueIfApplicableToCriteria(CertifiedProductSearchDetails listing) {
+        listing.getCertificationResults().stream()
+            .filter(certResult -> certResult.getCriterion() != null
+                    && BooleanUtils.isTrue(certResult.isSuccess())
+                    && certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SED))
+            .forEach(certResult -> certResult.setSed(true));
     }
 
     private void removeCertificationResultsWithNullCriterion(CertifiedProductSearchDetails listing) {

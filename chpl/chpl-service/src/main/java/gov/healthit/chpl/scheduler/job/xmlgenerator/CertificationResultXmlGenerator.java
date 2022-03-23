@@ -24,6 +24,7 @@ public class CertificationResultXmlGenerator extends XmlGenerator {
             CertificationResultAdditionalSoftwareXmlGenerator.add(result.getAdditionalSoftware(), "additionalSoftwareList", sw);
             createSimpleElement(result.getApiDocumentation(), "apiDocumentation", sw);
             createSimpleElement(result.getAttestationAnswer(), "attestationAnswer", sw);
+            CertificationResultConformanceMethodXmlGenerator.add(result.getConformanceMethods(), "conformanceMethods", sw);
             CertificationCriterionXmlGenerator.add(result.getCriterion(), "criterion", sw);
             createSimpleElement(result.getDocumentationUrl(), "documentationUrl", sw);
             createSimpleElement(result.getExportDocumentation(), "exportDocumentation", sw);
