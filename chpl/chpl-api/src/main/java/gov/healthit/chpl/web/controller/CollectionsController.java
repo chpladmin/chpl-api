@@ -5,7 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -161,19 +160,6 @@ public class CollectionsController {
         }
 
         return result;
-    }
-
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Get a list of all developers with transparency attestation URLs and ACB attestations. "
-            + "With the removal of all transparency attestations, this is always going to return an empty list.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody List<Object> getDeveloperCollection() {
-        return Collections.emptyList();
     }
 
     @Operation(summary = "Get a list of all banned developers.",
