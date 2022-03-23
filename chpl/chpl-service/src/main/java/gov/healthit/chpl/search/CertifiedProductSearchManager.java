@@ -22,7 +22,6 @@ import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResultLegacy;
-import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResultLegacy;
 import gov.healthit.chpl.domain.search.SearchRequestLegacy;
 import gov.healthit.chpl.domain.search.SearchResponseLegacy;
 import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
@@ -50,14 +49,6 @@ public class CertifiedProductSearchManager {
         this.dateFormatter = DateTimeFormatter.ofPattern(CERT_STATUS_EVENT_DATE_FORMAT);
     }
 
-    @Transactional(readOnly = true)
-    @Cacheable(value = CacheNames.COLLECTIONS_LISTINGS, key = "'legacyListings'")
-    @Deprecated
-    public List<CertifiedProductFlatSearchResultLegacy> searchLegacy() {
-        List<CertifiedProductFlatSearchResultLegacy> results = searchDao.getFlatCertifiedProductsLegacy();
-        return results;
-    }
-
     @Transactional
     @Deprecated
     public SearchResponseLegacy search(SearchRequestLegacy searchRequest) {
@@ -71,7 +62,7 @@ public class CertifiedProductSearchManager {
     }
 
     @Deprecated
-    @Cacheable(value = CacheNames.COLLECTIONS_LISTINGS, key = "'listings'")
+    @Cacheable(value = CacheNames.COLLECTIONS_LISTINGS)
     public List<CertifiedProductFlatSearchResult> getFlatListingCollection() {
         List<CertifiedProductFlatSearchResult> results = searchDao.getFlatCertifiedProducts();
         LOGGER.info("Populating Direct Review fields for collections");
