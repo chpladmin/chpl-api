@@ -1,7 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.ff4j.FF4j;
@@ -566,23 +565,6 @@ public class DimensionalDataController {
     public @ResponseBody SurveillanceRequirementOptions getSurveillanceRequirementOptions() {
         SurveillanceRequirementOptions data = dimensionalDataManager.getSurveillanceRequirementOptions();
         return data;
-    }
-
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Get all possible nonconformity status type options in the CHPL",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/nonconformity_status_types", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchOption getNonconformityStatusTypes() {
-        Set<KeyValueModel> data = new HashSet<KeyValueModel>();
-        SearchOption result = new SearchOption();
-        result.setExpandable(false);
-        result.setData(data);
-        return result;
     }
 
     @Deprecated
