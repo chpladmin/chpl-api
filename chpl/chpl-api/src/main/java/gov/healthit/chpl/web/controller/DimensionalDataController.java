@@ -31,7 +31,6 @@ import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
-import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptionsDeprecated;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -530,20 +529,6 @@ public class DimensionalDataController {
         result.setExpandable(false);
         result.setData(data);
         return result;
-    }
-
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Get all possible surveillance requirement options in the CHPL",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/surveillance_requirements", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SurveillanceRequirementOptionsDeprecated getSurveillanceRequirementOptionsDeprecated() {
-        SurveillanceRequirementOptionsDeprecated data = dimensionalDataManager.getSurveillanceRequirementOptionsDeprecated();
-        return data;
     }
 
     @Operation(summary = "Get all possible surveillance requirement options in the CHPL",

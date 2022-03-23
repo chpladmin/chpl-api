@@ -52,7 +52,6 @@ import gov.healthit.chpl.domain.TestTool;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
 import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
-import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptionsDeprecated;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
@@ -327,30 +326,6 @@ public class DimensionalDataManager {
             results.add(new KeyValueModel(result.getId(), result.getName()));
         }
         return results;
-    }
-
-    @Deprecated
-    public SurveillanceRequirementOptionsDeprecated getSurveillanceRequirementOptionsDeprecated() {
-        LOGGER.debug("Getting all surveillance requirements from the database (not cached).");
-
-        SurveillanceRequirementOptionsDeprecated result = new SurveillanceRequirementOptionsDeprecated();
-
-        List<CertificationCriterionDTO> criteria2014 = certificationCriterionDao.findByCertificationEditionYear("2014");
-        for (CertificationCriterionDTO crit : criteria2014) {
-            result.getCriteriaOptions2014()
-                    .add(new CriteriaSpecificDescriptiveModel(crit.getId(), crit.getNumber(), crit.getDescription(),
-                            new CertificationCriterion(crit)));
-        }
-        List<CertificationCriterionDTO> criteria2015 = certificationCriterionDao.findByCertificationEditionYear("2015");
-        for (CertificationCriterionDTO crit : criteria2015) {
-            result.getCriteriaOptions2015()
-                    .add(new CriteriaSpecificDescriptiveModel(crit.getId(), crit.getNumber(), crit.getDescription(),
-                            new CertificationCriterion(crit)));
-        }
-
-        result.getTransparencyOptions().add(RequirementTypeEnum.K1.getName());
-        result.getTransparencyOptions().add(RequirementTypeEnum.K2.getName());
-        return result;
     }
 
     public SurveillanceRequirementOptions getSurveillanceRequirementOptions() {
