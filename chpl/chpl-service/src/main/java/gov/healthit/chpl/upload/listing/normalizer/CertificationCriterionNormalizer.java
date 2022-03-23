@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,6 +39,11 @@ public class CertificationCriterionNormalizer {
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
+        addEditionCriteriaNotPresentInListing(listing);
+        nullifyNotApplicableFieldsInUnattestedCriteria(listing);
+    }
+
+    private void addEditionCriteriaNotPresentInListing(CertifiedProductSearchDetails listing) {
         List<CertificationCriterionDTO> all2015Criteria = criterionDao.findByCertificationEditionYear(
                 CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
         if (listing != null && listing.getCertificationResults() != null) {
@@ -68,27 +74,135 @@ public class CertificationCriterionNormalizer {
             .number(criterion.getNumber())
             .title(criterion.getTitle())
             .success(Boolean.FALSE)
-            .additionalSoftware(!isFieldAllowed(criterion, CertificationResultRules.ADDITIONAL_SOFTWARE) ? null : new ArrayList<CertificationResultAdditionalSoftware>())
-            .apiDocumentation(!isFieldAllowed(criterion, CertificationResultRules.API_DOCUMENTATION) ? null : "")
-            .attestationAnswer(!isFieldAllowed(criterion, CertificationResultRules.ATTESTATION_ANSWER) ? null : false)
-            .conformanceMethods(!isFieldAllowed(criterion, CertificationResultRules.CONFORMANCE_METHOD) ? null : new ArrayList<CertificationResultConformanceMethod>())
-            .documentationUrl(!isFieldAllowed(criterion, CertificationResultRules.DOCUMENTATION_URL) ? null : "")
-            .exportDocumentation(!isFieldAllowed(criterion, CertificationResultRules.EXPORT_DOCUMENTATION) ? null : "")
-            .testFunctionality(!isFieldAllowed(criterion, CertificationResultRules.FUNCTIONALITY_TESTED) ? null : new ArrayList<CertificationResultTestFunctionality>())
-            .g1Success(!isFieldAllowed(criterion, CertificationResultRules.G1_SUCCESS) ? null : false)
-            .g2Success(!isFieldAllowed(criterion, CertificationResultRules.G2_SUCCESS) ? null : false)
-            .gap(!isFieldAllowed(criterion, CertificationResultRules.GAP) ? null : false)
-            .optionalStandards(!isFieldAllowed(criterion, CertificationResultRules.OPTIONAL_STANDARD) ? null : new ArrayList<CertificationResultOptionalStandard>())
-            .privacySecurityFramework(!isFieldAllowed(criterion, CertificationResultRules.PRIVACY_SECURITY) ? null : "")
-            .sed(!isFieldAllowed(criterion, CertificationResultRules.SED) ? null : false)
-            .serviceBaseUrlList(!isFieldAllowed(criterion, CertificationResultRules.SERVICE_BASE_URL_LIST) ? null : "")
-            .testStandards(!isFieldAllowed(criterion, CertificationResultRules.STANDARDS_TESTED) ? null : new ArrayList<CertificationResultTestStandard>())
-            .svaps(!isFieldAllowed(criterion, CertificationResultRules.SVAP) ? null : new ArrayList<CertificationResultSvap>())
-            .testDataUsed(!isFieldAllowed(criterion, CertificationResultRules.TEST_DATA) ? null : new ArrayList<CertificationResultTestData>())
-            .testProcedures(!isFieldAllowed(criterion, CertificationResultRules.TEST_PROCEDURE) ? null : new ArrayList<CertificationResultTestProcedure>())
-            .testToolsUsed(!isFieldAllowed(criterion, CertificationResultRules.TEST_TOOLS_USED) ? null : new ArrayList<CertificationResultTestTool>())
-            .useCases(!isFieldAllowed(criterion, CertificationResultRules.USE_CASES) ? null : "")
         .build();
+    }
+
+    private void nullifyNotApplicableFieldsInUnattestedCriteria(CertifiedProductSearchDetails listing) {
+        listing.getCertificationResults().stream()
+            .filter(certResult -> BooleanUtils.isFalse(certResult.isSuccess()))
+            .forEach(unattestedCertResult -> nullifyNotApplicableFields(unattestedCertResult));
+    }
+
+    private void nullifyNotApplicableFields(CertificationResult certResult) {
+        if (!isFieldAllowed(certResult.getCriterion(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
+            certResult.setAdditionalSoftware(null);
+        } else if (certResult.getAdditionalSoftware() == null) {
+            certResult.setAdditionalSoftware(new ArrayList<CertificationResultAdditionalSoftware>());
+        }
+
+        if (!isFieldAllowed(certResult.getCriterion(), CertificationResultRules.API_DOCUMENTATION)) {
+            certResult.setApiDocumentation(null);
+        } else if (certResult.getApiDocumentation() == null) {
+            certResult.setApiDocumentation("");
+        }
+
+        if (!isFieldAllowed(certResult.getCriterion(), CertificationResultRules.ATTESTATION_ANSWER)) {
+            certResult.setAttestationAnswer(null);
+        } else if (certResult.getAttestationAnswer() == null) {
+            certResult.setAttestationAnswer(false);
+        }
+
+        if (!isFieldAllowed(certResult.getCriterion(), CertificationResultRules.CONFORMANCE_METHOD)) {
+            certResult.setConformanceMethods(null);
+        } else if (certResult.getConformanceMethods() == null) {
+            certResult.setConformanceMethods(new ArrayList<CertificationResultConformanceMethod>());
+        }
+
+        if (!isFieldAllowed(certResult.getCriterion(), CertificationResultRules.DOCUMENTATION_URL)) {
+            certResult.setDocumentationUrl(null);
+        } else if (certResult.getDocumentationUrl() == null) {
+            certResult.setDocumentationUrl("");
+        }
+
+        if (!isFieldAllowed(certResult.getCriterion(), CertificationResultRules.EXPORT_DOCUMENTATION)) {
+            certResult.setExportDocumentation(null);
+        } else if (certResult.getExportDocumentation() == null) {
+            certResult.setExportDocumentation("");
+        }
+
+        if (!isFieldAllowed(certResult.getCriterion(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
+            certResult.setTestFunctionality(null);
+        } else if (certResult.getTestFunctionality() == null) {
+            certResult.setTestFunctionality(new ArrayList<CertificationResultTestFunctionality>());
+        }
+
+        if (!isFieldAllowed(certResult.getCriterion(), CertificationResultRules.G1_SUCCESS)) {
+            certResult.setG1Success(null);
+        } else if (certResult.isG1Success() == null) {
+            certResult.setG1Success(false);
+        }
+
+        if (!isFieldAllowed(certResult.getCriterion(), CertificationResultRules.G2_SUCCESS)) {
+            certResult.setG2Success(null);
+        } else if (certResult.isG2Success() == null) {
+            certResult.setG2Success(false);
+        }
+
+        if (!isFieldAllowed(certResult.getCriterion(), CertificationResultRules.GAP)) {
+            certResult.setGap(null);
+        } else if (certResult.isGap() == null) {
+            certResult.setGap(false);
+        }
+
+        if (!isFieldAllowed(certResult.getCriterion(), CertificationResultRules.OPTIONAL_STANDARD)) {
+            certResult.setOptionalStandards(null);
+        } else if (certResult.getOptionalStandards() == null) {
+            certResult.setOptionalStandards(new ArrayList<CertificationResultOptionalStandard>());
+        }
+
+        if (!isFieldAllowed(certResult.getCriterion(), CertificationResultRules.PRIVACY_SECURITY)) {
+            certResult.setPrivacySecurityFramework(null);
+        } else if (certResult.getPrivacySecurityFramework() == null) {
+            certResult.setPrivacySecurityFramework("");
+        }
+
+        if (!isFieldAllowed(certResult.getCriterion(), CertificationResultRules.SED)) {
+            certResult.setSed(null);
+        } else if (certResult.isSed() == null) {
+            certResult.setSed(false);
+        }
+
+        if (!isFieldAllowed(certResult.getCriterion(), CertificationResultRules.SERVICE_BASE_URL_LIST)) {
+            certResult.setServiceBaseUrlList(null);
+        } else if (certResult.getServiceBaseUrlList() == null) {
+            certResult.setServiceBaseUrlList("");
+        }
+
+        if (!isFieldAllowed(certResult.getCriterion(), CertificationResultRules.STANDARDS_TESTED)) {
+            certResult.setTestStandards(null);
+        } else if (certResult.getTestStandards() == null) {
+            certResult.setTestStandards(new ArrayList<CertificationResultTestStandard>());
+        }
+
+        if (!isFieldAllowed(certResult.getCriterion(), CertificationResultRules.SVAP)) {
+            certResult.setSvaps(null);
+        } else if (certResult.getSvaps() == null) {
+            certResult.setSvaps(new ArrayList<CertificationResultSvap>());
+        }
+
+        if (!isFieldAllowed(certResult.getCriterion(), CertificationResultRules.TEST_DATA)) {
+            certResult.setTestDataUsed(null);
+        } else if (certResult.getTestDataUsed() == null) {
+            certResult.setTestDataUsed(new ArrayList<CertificationResultTestData>());
+        }
+
+        if (!isFieldAllowed(certResult.getCriterion(), CertificationResultRules.TEST_PROCEDURE)) {
+            certResult.setTestProcedures(null);
+        } else if (certResult.getTestProcedures() == null) {
+            certResult.setTestProcedures(new ArrayList<CertificationResultTestProcedure>());
+        }
+
+        if (!isFieldAllowed(certResult.getCriterion(), CertificationResultRules.TEST_TOOLS_USED)) {
+            certResult.setTestToolsUsed(null);
+        } else if (certResult.getTestToolsUsed() == null) {
+            certResult.setTestToolsUsed(new ArrayList<CertificationResultTestTool>());
+        }
+
+        if (!isFieldAllowed(certResult.getCriterion(), CertificationResultRules.USE_CASES)) {
+            certResult.setUseCases(null);
+        } else if (certResult.getUseCases() == null) {
+            certResult.setUseCases("");
+        }
     }
 
     private boolean isFieldAllowed(CertificationCriterion criterion, String field) {

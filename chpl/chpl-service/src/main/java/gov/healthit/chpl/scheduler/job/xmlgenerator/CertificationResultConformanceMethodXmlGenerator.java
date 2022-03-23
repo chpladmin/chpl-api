@@ -21,9 +21,9 @@ public class CertificationResultConformanceMethodXmlGenerator extends XmlGenerat
     public static void add(CertificationResultConformanceMethod method, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (method != null) {
             sw.writeStartElement(rootNodeName);
-            createSimpleElement(method.getId(), "id", sw);
-            ConformanceMethodXmlGenerator.add(method.getConformanceMethod(), "testProcedure", sw);
+            ConformanceMethodXmlGenerator.add(method.getConformanceMethod(), "conformanceMethod", sw);
             createSimpleElement(method.getConformanceMethodVersion(), "conformanceMethodVersion", sw);
+            createSimpleElement(method.getId(), "id", sw);
             sw.writeEndElement();
         }
     }

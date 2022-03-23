@@ -4,19 +4,20 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
+import gov.healthit.chpl.validation.listing.reviewer.ConformanceMethodReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.GapAllowedReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.OldCriteriaWithoutIcsReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
@@ -25,22 +26,6 @@ public class CertificationResultReviewerTest {
     private static final String MISSING_CERT_RESULTS = "At least one certification result is required for the listing.";
 
     private ErrorMessageUtil msgUtil;
-    private CertificationCriterion a6;
-    private RemovedCriteriaReviewer removedCriteriaReviewer;
-    private CriteriaReviewer criteriaReviewer;
-    private PrivacyAndSecurityFrameworkReviewer pAndSFrameworkReviewer;
-    private AdditionalSoftwareReviewer additionalSoftwareReviewer;
-    private GapAllowedReviewer gapAllowedReviewer;
-    private TestToolReviewer testToolReviewer;
-    private TestDataReviewer testDataReviewer;
-    private TestProcedureReviewer testProcedureReviewer;
-    private TestFunctionalityReviewer testFunctionalityReviewer;
-    private TestStandardReviewer testStandardReviewer;
-    private OptionalStandardReviewer optionalStandardReviewer;
-    private SvapReviewer svapReviewer;
-    private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
-    private OldCriteriaWithoutIcsReviewer oldCriteriaWithoutIcsReviewer;
-    private SedG32015Reviewer sedG3Reviewer;
     private CertificationResultReviewer reviewer;
 
     @Before
@@ -50,34 +35,22 @@ public class CertificationResultReviewerTest {
         Mockito.when(msgUtil.getMessage("listing.missingCertificationResults"))
             .thenReturn(MISSING_CERT_RESULTS);
 
-        a6 = CertificationCriterion.builder()
-                .id(6L)
-                .certificationEditionId(3L)
-                .number("170.315 (a)(6)")
-                .title("a6")
-                .removed(true)
-                .build();
-
-        removedCriteriaReviewer = Mockito.mock(RemovedCriteriaReviewer.class);
-        criteriaReviewer = Mockito.mock(CriteriaReviewer.class);
-        pAndSFrameworkReviewer = Mockito.mock(PrivacyAndSecurityFrameworkReviewer.class);
-        additionalSoftwareReviewer = Mockito.mock(AdditionalSoftwareReviewer.class);
-        gapAllowedReviewer = Mockito.mock(GapAllowedReviewer.class);
-        testToolReviewer = Mockito.mock(TestToolReviewer.class);
-        testDataReviewer = Mockito.mock(TestDataReviewer.class);
-        testProcedureReviewer =  Mockito.mock(TestProcedureReviewer.class);
-        testFunctionalityReviewer = Mockito.mock(TestFunctionalityReviewer.class);
-        testStandardReviewer = Mockito.mock(TestStandardReviewer.class);
-        optionalStandardReviewer = Mockito.mock(OptionalStandardReviewer.class);
-        svapReviewer = Mockito.mock(SvapReviewer.class);
-        unattestedCriteriaWithDataReviewer = Mockito.mock(UnattestedCriteriaWithDataReviewer.class);
-        oldCriteriaWithoutIcsReviewer = Mockito.mock(OldCriteriaWithoutIcsReviewer.class);
-        sedG3Reviewer = Mockito.mock(SedG32015Reviewer.class);
-        reviewer = new CertificationResultReviewer(removedCriteriaReviewer, criteriaReviewer,
-                pAndSFrameworkReviewer, additionalSoftwareReviewer, gapAllowedReviewer, testToolReviewer,
-                testDataReviewer, testProcedureReviewer, testFunctionalityReviewer, testStandardReviewer,
-                optionalStandardReviewer, svapReviewer, unattestedCriteriaWithDataReviewer,
-                oldCriteriaWithoutIcsReviewer, sedG3Reviewer,
+        reviewer = new CertificationResultReviewer(Mockito.mock(RemovedCriteriaReviewer.class),
+                Mockito.mock(CriteriaReviewer.class),
+                Mockito.mock(PrivacyAndSecurityFrameworkReviewer.class),
+                Mockito.mock(AdditionalSoftwareReviewer.class),
+                Mockito.mock(GapAllowedReviewer.class),
+                Mockito.mock(TestToolReviewer.class),
+                Mockito.mock(TestDataReviewer.class),
+                Mockito.mock(TestProcedureReviewer.class),
+                Mockito.mock(ConformanceMethodReviewer.class),
+                Mockito.mock(TestFunctionalityReviewer.class),
+                Mockito.mock(TestStandardReviewer.class),
+                Mockito.mock(OptionalStandardReviewer.class),
+                Mockito.mock(SvapReviewer.class),
+                Mockito.mock(UnattestedCriteriaWithDataReviewer.class),
+                Mockito.mock(OldCriteriaWithoutIcsReviewer.class),
+                Mockito.mock(SedG32015Reviewer.class),
                 Mockito.mock(CertificationResultRules.class),
                 new ValidationUtils(Mockito.mock(CertificationCriterionService.class)),
                 msgUtil);

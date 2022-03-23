@@ -42,6 +42,7 @@ public class CertificationResultUploadHandlerTest {
                 Mockito.mock(CertificationCriterionUploadHandler.class),
                 Mockito.mock(AdditionalSoftwareUploadHandler.class),
                 Mockito.mock(TestProcedureUploadHandler.class),
+                Mockito.mock(ConformanceMethodUploadHandler.class),
                 Mockito.mock(TestToolUploadHandler.class),
                 Mockito.mock(TestDataUploadHandler.class),
                 handlerUtil);
