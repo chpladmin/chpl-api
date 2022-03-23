@@ -400,6 +400,8 @@ public class DimensionalDataManager {
         result.getRealWorldTestingOptions().add(new Removable<String>(RequirementTypeEnum.ANNUAL_RWT_PLAN.getName(), RequirementTypeEnum.ANNUAL_RWT_PLAN.getRemoved()));
         result.getRealWorldTestingOptions().add(new Removable<String>(RequirementTypeEnum.ANNUAL_RWT_RESULTS.getName(), RequirementTypeEnum.ANNUAL_RWT_RESULTS.getRemoved()));
 
+        result.getAttestationsSubmissionOptions().add(new Removable<String>(RequirementTypeEnum.SEMIANNUAL_ATTESTATIONS_SUBMISSION.getName(), RequirementTypeEnum.SEMIANNUAL_ATTESTATIONS_SUBMISSION.getRemoved()));
+
         return result;
     }
 
@@ -446,6 +448,12 @@ public class DimensionalDataManager {
         otherType.setNumber(NonconformityType.OTHER.getName());
         otherType.setRemoved(NonconformityType.OTHER.getRemoved());
         result.add(otherType);
+
+        CertificationCriterion attestationsSubmissionType = new CertificationCriterion();
+        attestationsSubmissionType.setNumber(NonconformityType.SEMIANNUAL_ATTESTATIONS_SUBMISSION.getName());
+        attestationsSubmissionType.setRemoved(NonconformityType.SEMIANNUAL_ATTESTATIONS_SUBMISSION.getRemoved());
+        result.add(attestationsSubmissionType);
+
         return result;
     }
 
