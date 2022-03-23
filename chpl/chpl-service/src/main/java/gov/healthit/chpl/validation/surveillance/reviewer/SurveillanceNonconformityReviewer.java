@@ -96,7 +96,8 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
                     && !NonconformityType.L.getName().equals(nc.getNonconformityType())
                     && !NonconformityType.OTHER.getName().equals(nc.getNonconformityType())
                     && !NonconformityType.ANNUAL_RWT_PLAN.getName().equals(nc.getNonconformityType())
-                    && !NonconformityType.ANNUAL_RWT_RESULTS.getName().equals(nc.getNonconformityType())) {
+                    && !NonconformityType.ANNUAL_RWT_RESULTS.getName().equals(nc.getNonconformityType())
+                    && !NonconformityType.SEMIANNUAL_ATTESTATIONS_SUBMISSION.getName().equals(nc.getNonconformityType())) {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.nonConformityTypeMatchException",
                                 nc.getNonconformityTypeName(), NonconformityType.K1.getName(),

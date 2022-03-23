@@ -10,6 +10,7 @@ import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AccessibilityStandardDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AdditionalSoftwareDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AtlDuplicateReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.duplicate.ConformanceMethodDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.IcsSourceDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.MeasureDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.OptionalStandardDuplicateReviewer;
@@ -28,6 +29,7 @@ public class DuplicateDataReviewer implements Reviewer {
     private TestFunctionalityDuplicateReviewer testFunctionalityDuplicateReviewer;
     private TestDataDuplicateReviewer testDataDuplicateReviewer;
     private TestToolDuplicateReviewer testToolDuplicateReviewer;
+    private ConformanceMethodDuplicateReviewer conformanceMethodDuplicateReviewer;
     private TestProcedureDuplicateReviewer testProcedureDuplicateReviewer;
     private TestStandardDuplicateReviewer testStandardDuplicateReviewer;
     private OptionalStandardDuplicateReviewer optionalStandardDuplicateReviewer;
@@ -49,6 +51,7 @@ public class DuplicateDataReviewer implements Reviewer {
             @Qualifier("testDataDuplicateReviewer") TestDataDuplicateReviewer testDataDuplicateReviewer,
             @Qualifier("testToolDuplicateReviewer") TestToolDuplicateReviewer testToolDuplicateReviewer,
             @Qualifier("testProcedureDuplicateReviewer") TestProcedureDuplicateReviewer testProcedureDuplicateReviewer,
+            @Qualifier("conformanceMethodDuplicateReviewer") ConformanceMethodDuplicateReviewer conformanceMethodDuplicateReviewer,
             @Qualifier("testStandardDuplicateReviewer") TestStandardDuplicateReviewer testStandardDuplicateReviewer,
             @Qualifier("optionalStandardDuplicateReviewer") OptionalStandardDuplicateReviewer optionalStandardDuplicateReviewer,
             @Qualifier("svapDuplicateReviewer") SvapDuplicateReviewer svapDuplicateReviewer,
@@ -65,6 +68,7 @@ public class DuplicateDataReviewer implements Reviewer {
         this.testDataDuplicateReviewer = testDataDuplicateReviewer;
         this.testToolDuplicateReviewer = testToolDuplicateReviewer;
         this.testProcedureDuplicateReviewer = testProcedureDuplicateReviewer;
+        this.conformanceMethodDuplicateReviewer = conformanceMethodDuplicateReviewer;
         this.testStandardDuplicateReviewer = testStandardDuplicateReviewer;
         this.optionalStandardDuplicateReviewer = optionalStandardDuplicateReviewer;
         this.svapDuplicateReviewer = svapDuplicateReviewer;
@@ -94,6 +98,7 @@ public class DuplicateDataReviewer implements Reviewer {
                 additionalSoftwareDuplicateReviewer.review(listing, cr);
                 testToolDuplicateReviewer.review(listing, cr);
                 testProcedureDuplicateReviewer.review(listing, cr);
+                conformanceMethodDuplicateReviewer.review(listing, cr);
                 testDataDuplicateReviewer.review(listing, cr);
                 testStandardDuplicateReviewer.review(listing, cr);
                 optionalStandardDuplicateReviewer.review(listing, cr);
