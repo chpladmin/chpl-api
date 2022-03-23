@@ -2,7 +2,6 @@ package gov.healthit.chpl.web.controller;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.ff4j.FF4j;
@@ -23,7 +22,6 @@ import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
-import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DimensionalData;
 import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.domain.KeyValueModel;
@@ -55,7 +53,6 @@ import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.CertificationCriterionResults;
-import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 import gov.healthit.chpl.web.controller.results.SvapResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -664,24 +661,6 @@ public class DimensionalDataController {
             @RequestParam(value = "simple", required = false, defaultValue = "false") Boolean simple)
             throws EntityRetrievalException {
         return dimensionalDataManager.getDimensionalData(simple);
-    }
-
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Use /collections/decertified-developers instead. "
-            + "Get all developer decertifications in the CHPL",
-            description = "This returns all decertified developers.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/decertifications/developers", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException {
-        DecertifiedDeveloperResults ddr = new DecertifiedDeveloperResults();
-        List<DecertifiedDeveloperResult> results = developerManager.getDecertifiedDevelopers();
-        ddr.setDecertifiedDeveloperResults(results);
-        return ddr;
     }
 
     @Operation(summary = "Get all available filter type.",
