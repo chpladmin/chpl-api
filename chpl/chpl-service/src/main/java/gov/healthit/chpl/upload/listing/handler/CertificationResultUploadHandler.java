@@ -22,6 +22,7 @@ public class CertificationResultUploadHandler {
     private CertificationCriterionUploadHandler criterionHandler;
     private AdditionalSoftwareUploadHandler additionalSoftwareHandler;
     private TestProcedureUploadHandler testProcedureHandler;
+    private ConformanceMethodUploadHandler conformanceMethodHandler;
     private TestToolUploadHandler testToolHandler;
     private TestDataUploadHandler testDataHandler;
     private ListingUploadHandlerUtil uploadUtil;
@@ -30,12 +31,14 @@ public class CertificationResultUploadHandler {
     public CertificationResultUploadHandler(CertificationCriterionUploadHandler criterionHandler,
             AdditionalSoftwareUploadHandler additionalSoftwareHandler,
             TestProcedureUploadHandler testProcedureHandler,
+            ConformanceMethodUploadHandler conformanceMethodHandler,
             TestToolUploadHandler testToolHandler,
             TestDataUploadHandler testDataHandler,
             ListingUploadHandlerUtil uploadUtil) {
         this.criterionHandler = criterionHandler;
         this.additionalSoftwareHandler = additionalSoftwareHandler;
         this.testProcedureHandler = testProcedureHandler;
+        this.conformanceMethodHandler = conformanceMethodHandler;
         this.testToolHandler = testToolHandler;
         this.testDataHandler = testDataHandler;
         this.uploadUtil = uploadUtil;
@@ -57,6 +60,7 @@ public class CertificationResultUploadHandler {
                 .additionalSoftware(additionalSoftwareHandler.handle(certHeadingRecord, certResultRecords))
                 .testDataUsed(testDataHandler.handle(certHeadingRecord, certResultRecords))
                 .testProcedures(testProcedureHandler.handle(certHeadingRecord, certResultRecords))
+                .conformanceMethods(conformanceMethodHandler.handle(certHeadingRecord, certResultRecords))
                 .testToolsUsed(testToolHandler.handle(certHeadingRecord, certResultRecords))
                 .exportDocumentation(parseExportDocumentation(certHeadingRecord, certResultRecords))
                 .attestationAnswer(parseAttestationAnswer(certHeadingRecord, certResultRecords))
