@@ -354,32 +354,6 @@ public class DimensionalDataManager {
         return result;
     }
 
-    @Deprecated
-    public Set<KeyValueModel> getNonconformityTypeOptionsDeprecated() {
-        LOGGER.debug("Getting all nonconformity types from the database (not cached).");
-
-        Set<KeyValueModel> result = new HashSet<KeyValueModel>();
-
-        List<CertificationCriterionDTO> criteria2014 = certificationCriterionDao.findByCertificationEditionYear("2014");
-        for (CertificationCriterionDTO crit : criteria2014) {
-            result.add(new CriteriaSpecificDescriptiveModel(crit.getId(), crit.getNumber(), crit.getDescription(),
-                    new CertificationCriterion(crit)));
-        }
-        List<CertificationCriterionDTO> criteria2015 = certificationCriterionDao.findByCertificationEditionYear("2015");
-        for (CertificationCriterionDTO crit : criteria2015) {
-            result.add(new CriteriaSpecificDescriptiveModel(crit.getId(), crit.getNumber(), crit.getDescription(),
-                    new CertificationCriterion(crit)));
-        }
-
-        result.add(new KeyValueModel(null, NonconformityType.K1.getName()));
-        result.add(new KeyValueModel(null, NonconformityType.K2.getName()));
-        result.add(new KeyValueModel(null, NonconformityType.L.getName()));
-        result.add(new KeyValueModel(null, NonconformityType.ANNUAL_RWT_PLAN.getName()));
-        result.add(new KeyValueModel(null, NonconformityType.ANNUAL_RWT_RESULTS.getName()));
-        result.add(new KeyValueModel(null, NonconformityType.OTHER.getName()));
-        return result;
-    }
-
     public SurveillanceRequirementOptions getSurveillanceRequirementOptions() {
         LOGGER.debug("Getting all surveillance requirements from the database (not cached).");
 

@@ -567,23 +567,6 @@ public class DimensionalDataController {
         return data;
     }
 
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Get all possible nonconformity type options in the CHPL",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/nonconformity_types", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchOption getNonconformityTypeOptionsDeprecated() {
-        Set<KeyValueModel> data = dimensionalDataManager.getNonconformityTypeOptionsDeprecated();
-        SearchOption result = new SearchOption();
-        result.setExpandable(false);
-        result.setData(data);
-        return result;
-    }
-
     @Operation(summary = "Get all possible nonconformity type options in the CHPL",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
