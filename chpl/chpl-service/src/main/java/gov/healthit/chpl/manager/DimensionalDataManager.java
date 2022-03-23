@@ -48,7 +48,6 @@ import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
-import gov.healthit.chpl.domain.TestTool;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
 import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
@@ -68,7 +67,6 @@ import gov.healthit.chpl.dto.TestDataCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestProcedureCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
-import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -226,21 +224,6 @@ public class DimensionalDataManager {
         }
 
         return testFuncs;
-    }
-
-    @Transactional
-    public Set<KeyValueModel> getTestTools() {
-        LOGGER.debug("Getting all test tools from the database (not cached).");
-        List<TestToolDTO> dtos = this.testToolDao.findAll();
-        Set<KeyValueModel> testTools = new HashSet<KeyValueModel>();
-
-        for (TestToolDTO dto : dtos) {
-            TestTool tt = new TestTool(dto.getId(), dto.getName(), dto.getDescription());
-            tt.setRetired(dto.isRetired());
-            testTools.add(tt);
-        }
-
-        return testTools;
     }
 
     @Transactional
