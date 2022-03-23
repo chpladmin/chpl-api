@@ -82,7 +82,7 @@ public class ListingUploadController {
 
 
     @Autowired
-    public ListingUploadController(ListingUploadManager listingUploadManager, ErrorMessageUtil msgUtil, FF4j ff4j, 
+    public ListingUploadController(ListingUploadManager listingUploadManager, ErrorMessageUtil msgUtil, FF4j ff4j,
             Environment env, ChplEmailFactory chplEmailFactory) {
         this.listingUploadManager = listingUploadManager;
         this.msgUtil = msgUtil;
@@ -255,9 +255,11 @@ public class ListingUploadController {
         listingUploadManager.reject(id);
     }
 
+    @Deprecated
     @Operation(summary = "Reject several uploaded listings.",
             description = "Marks a list of uploaded listings as deleted. ROLE_ADMIN or ROLE_ACB "
                     + " and administrative authority on the ONC-ACB for each uploaded listing is required.",
+            deprecated = true,
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/pending", method = RequestMethod.DELETE,

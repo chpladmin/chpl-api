@@ -87,7 +87,9 @@ public class TestProcedureReviewer {
 
     private void reviewTestProceduresRequiredWhenCertResultIsNotGap(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!isGapEligibileAndHasGap(certResult)
-                && certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_PROCEDURE)
+                && (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_PROCEDURE)
+                        && (!ff4j.check(FeatureList.CONFORMANCE_METHOD)
+                                || !certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.CONFORMANCE_METHOD)))
                 && CollectionUtils.isEmpty(certResult.getTestProcedures())) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingTestProcedure",
                         Util.formatCriteriaNumber(certResult.getCriterion())));

@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -21,7 +22,17 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ConformanceMethod implements Serializable {
     private static final long serialVersionUID = -3763885258251744916L;
+
+    /**
+     * Conformance Method internal ID.
+     */
+    @XmlElement(required = true)
     private Long id;
+
+    /**
+     * Conformance method name.
+     */
+    @XmlElement(required = true)
     private String name;
 
     public ConformanceMethod(ConformanceMethodEntity entity) {
