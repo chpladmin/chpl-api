@@ -46,7 +46,6 @@ import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.Product;
-import gov.healthit.chpl.domain.SearchableDimensionalData;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.TestTool;
@@ -631,28 +630,5 @@ public class DimensionalDataManager {
 
     public Set<DescriptiveModel> getCQMCriterionNumbers(final Boolean simple) {
         return cacheableDimensionalDataManager.getCQMCriterionNumbers(simple);
-    }
-
-    @Deprecated
-    public SearchableDimensionalData getSearchableDimensionalData(final Boolean simple) throws EntityRetrievalException {
-        SearchableDimensionalData searchOptions = new SearchableDimensionalData();
-        //the following calls contain data that could possibly change
-        //without the system rebooting so we need to make sure to
-        //keep their cached data up-to-date
-        searchOptions.setProductNames(getProducts());
-        searchOptions.setDeveloperNames(getDevelopers());
-        //acb names can change but there are so few that it's fine to not cache them
-        searchOptions.setCertBodyNames(getCertBodyNames());
-
-        //the following calls will be cached and their data
-        //will never change without the system being rebooted
-        //so we do not need to worry about re-getting the data
-        searchOptions.setEditions(getEditionNames(simple));
-        searchOptions.setCertificationStatuses(getCertificationStatuses());
-        searchOptions.setPracticeTypeNames(getPracticeTypeNames());
-        searchOptions.setProductClassifications(getClassificationNames());
-        searchOptions.setCqmCriterionNumbers(getCQMCriterionNumbers(simple));
-        searchOptions.setCertificationCriterionNumbers(getCertificationCriterionNumbers());
-        return searchOptions;
     }
 }

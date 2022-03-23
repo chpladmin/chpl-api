@@ -3,7 +3,6 @@ package gov.healthit.chpl.web.controller;
 import java.io.IOException;
 import java.util.Set;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +27,6 @@ import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.domain.SearchOption;
-import gov.healthit.chpl.domain.SearchableDimensionalData;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
@@ -40,7 +38,6 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.ComplaintManager;
-import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.manager.FilterManager;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
@@ -63,33 +60,27 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class DimensionalDataController {
     private DimensionalDataManager dimensionalDataManager;
     private FuzzyChoicesManager fuzzyChoicesManager;
-    private DeveloperManager developerManager;
     private FilterManager filterManager;
     private ComplaintManager complaintManager;
     private SurveillanceReportManager survReportManager;
     private ChangeRequestManager changeRequestManager;
     private SvapManager svapManager;
-    private FF4j ff4j;
 
     @Autowired
-    @SuppressWarnings("checkstyle:parameternumber")
     public DimensionalDataController(DimensionalDataManager dimensionalDataManager,
             FuzzyChoicesManager fuzzyChoicesManager,
-            DeveloperManager developerManager,
             FilterManager filterManager,
             ComplaintManager complaintManager,
             SurveillanceReportManager survReportManager,
             ChangeRequestManager changeRequestManager,
-            SvapManager svapManager, FF4j ff4j) {
+            SvapManager svapManager) {
         this.dimensionalDataManager = dimensionalDataManager;
         this.fuzzyChoicesManager = fuzzyChoicesManager;
-        this.developerManager = developerManager;
         this.filterManager = filterManager;
         this.complaintManager = complaintManager;
         this.survReportManager = survReportManager;
         this.changeRequestManager = changeRequestManager;
         this.svapManager = svapManager;
-        this.ff4j = ff4j;
     }
 
     @Operation(summary = "Get all fuzzy matching choices for the items that be fuzzy matched.",
@@ -595,23 +586,6 @@ public class DimensionalDataController {
         result.setExpandable(false);
         result.setData(data);
         return result;
-    }
-
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Use /data/search-options instead. Get all search options in the CHPL",
-            description = "This returns all of the other /data/{something} results in one single response.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/search_options", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchableDimensionalData getSearchOptionsDeprecated(
-            @RequestParam(value = "simple", required = false, defaultValue = "false") Boolean simple)
-            throws EntityRetrievalException {
-
-        return dimensionalDataManager.getSearchableDimensionalData(simple);
     }
 
     @Operation(summary = "Get all search options in the CHPL",
