@@ -292,7 +292,6 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElementWrapper(name = "chplProductNumberHistory", nillable = true, required = false)
     @XmlElement(name = "chplProductNumberHistoryItem")
-    @SuppressWarnings({"checkstyle:linelength"})
     private List<CertifiedProductChplProductNumberHistory> chplProductNumberHistory = new ArrayList<CertifiedProductChplProductNumberHistory>();
 
     /**
@@ -303,7 +302,6 @@ public class CertifiedProductSearchDetails implements Serializable {
     @XmlElementWrapper(name = "accessibilityStandards", nillable = true, required = false)
     @XmlElement(name = "accessibilityStandard")
     @Singular
-    @SuppressWarnings({"checkstyle:linelength"})
     private List<CertifiedProductAccessibilityStandard> accessibilityStandards = new ArrayList<CertifiedProductAccessibilityStandard>();
 
     /**
