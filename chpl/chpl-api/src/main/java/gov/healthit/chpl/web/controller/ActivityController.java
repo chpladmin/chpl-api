@@ -131,9 +131,27 @@ public class ActivityController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/metadata/beta/listings", method = RequestMethod.GET,
+    @RequestMapping(value = "/metadata/listings", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForListings(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getActivityMetadataByConcept(
+                ActivityConcept.CERTIFIED_PRODUCT, start, end, pageNum, pageSize);
+    }
+
+    @Deprecated
+    @Operation(summary = "Get metadata about auditable records in the system for listings.",
+            description = "All parameters are optional and will default to the first page of listing activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first.",
+            deprecated = true,
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/metadata/beta/listings", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForListingsDeprecated(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getActivityMetadataByConcept(
@@ -147,32 +165,16 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/listings/{id:^-?\\d+$}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public List<ActivityMetadata> metadataForListingById(@PathVariable("id") final Long id,
-            @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
+    public List<ActivityMetadata> metadataForListingById(@PathVariable("id") Long id,
+            @RequestParam(required = false) Long start, @RequestParam(required = false) Long end)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         cpManager.getById(id); // throws 404 if bad id
 
-        // if one of start of end is provided then the other must also be
-        // provided.
-        // if neither is provided then query all dates
-        Date startDate = new Date(0);
-        Date endDate = new Date();
-        if (start != null && end != null) {
-            validateActivityDates(start, end);
-            startDate = new Date(start);
-            endDate = new Date(end);
-        } else if (start == null && end != null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
-        } else if (start != null && end == null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
-        }
-
-        return activityMetadataManager.getActivityMetadataByObject(
-                id, ActivityConcept.CERTIFIED_PRODUCT, startDate, endDate);
+        return getActivityForListing(start, end, id);
     }
 
     @SuppressWarnings({
-            "checkstyle:parameternumber", "checkstyle:linelength"
+            "checkstyle:parameternumber"
     })
     @Operation(summary = "Get metadata about auditable records in the system for a specific listing given its "
             + "new-style CHPL product number.",
@@ -208,23 +210,7 @@ public class ActivityController {
             throw new EntityRetrievalException("Could not retrieve CertifiedProductSearchDetails.");
         }
 
-        // if one of start of end is provided then the other must also be
-        // provided.
-        // if neither is provided then query all dates
-        Date startDate = new Date(0);
-        Date endDate = new Date();
-        if (start != null && end != null) {
-            validateActivityDates(start, end);
-            startDate = new Date(start);
-            endDate = new Date(end);
-        } else if (start == null && end != null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
-        } else if (start != null && end == null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
-        }
-
-        return activityMetadataManager.getActivityMetadataByObject(
-                dtos.get(0).getId(), ActivityConcept.CERTIFIED_PRODUCT, startDate, endDate);
+        return getActivityForListing(start, end, dtos.get(0).getId());
     }
 
     @Operation(summary = "Get metadata about auditable records in the system for a specific listing given its "
@@ -252,7 +238,11 @@ public class ActivityController {
         if (dtos.size() == 0) {
             throw new EntityRetrievalException("Could not retrieve CertifiedProductSearchDetails.");
         }
+        return getActivityForListing(start, end, dtos.get(0).getId());
+    }
 
+    private List<ActivityMetadata> getActivityForListing(Long start, Long end, Long certifiedProductId)
+        throws IOException {
         // if one of start of end is provided then the other must also be
         // provided.
         // if neither is provided then query all dates
@@ -269,7 +259,7 @@ public class ActivityController {
         }
 
         return activityMetadataManager.getActivityMetadataByObject(
-                dtos.get(0).getId(), ActivityConcept.CERTIFIED_PRODUCT, startDate, endDate);
+                certifiedProductId, ActivityConcept.CERTIFIED_PRODUCT, startDate, endDate);
     }
 
     @Operation(summary = "Get metadata about auditable records in the system for developers.",
@@ -279,9 +269,27 @@ public class ActivityController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/metadata/beta/developers", method = RequestMethod.GET,
+    @RequestMapping(value = "/metadata/developers", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForDevelopers(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getActivityMetadataByConcept(
+                ActivityConcept.DEVELOPER, start, end, pageNum, pageSize);
+    }
+
+    @Deprecated
+    @Operation(summary = "Get metadata about auditable records in the system for developers.",
+            description = "All parameters are optional and will default to the first page of listing activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first.",
+            deprecated = true,
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/metadata/beta/developers", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForDevelopersDeprecated(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getActivityMetadataByConcept(
@@ -327,9 +335,27 @@ public class ActivityController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/metadata/beta/products", method = RequestMethod.GET,
+    @RequestMapping(value = "/metadata/products", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForProducts(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getActivityMetadataByConcept(
+                ActivityConcept.PRODUCT, start, end, pageNum, pageSize);
+    }
+
+    @Deprecated
+    @Operation(summary = "Get metadata about auditable records in the system for products.",
+            description = "All parameters are optional and will default to the first page of product activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first.",
+            deprecated = true,
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/metadata/beta/products", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForProductsDeprecated(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getActivityMetadataByConcept(
@@ -375,9 +401,27 @@ public class ActivityController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/metadata/beta/versions", method = RequestMethod.GET,
+    @RequestMapping(value = "/metadata/versions", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForVersions(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getActivityMetadataByConcept(
+                ActivityConcept.VERSION, start, end, pageNum, pageSize);
+    }
+
+    @Deprecated
+    @Operation(summary = "Get metadata about auditable records in the system for versions.",
+            description = "All parameters are optional and will default to the first page of version activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first.",
+            deprecated = true,
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/metadata/beta/versions", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForVersionsDeprecated(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getActivityMetadataByConcept(
@@ -424,9 +468,27 @@ public class ActivityController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/metadata/beta/acbs", method = RequestMethod.GET,
+    @RequestMapping(value = "/metadata/acbs", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForAcbs(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getCertificationBodyActivityMetadata(start, end, pageNum, pageSize);
+    }
+
+    @Deprecated
+    @Operation(summary = "Get metadata about auditable records in the system for certification bodies.",
+            description = "All parameters are optional and will default to the first page of ONC-ACB activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first.",
+            deprecated = true,
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/metadata/beta/acbs", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForAcbsDeprecated(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getCertificationBodyActivityMetadata(start, end, pageNum, pageSize);
@@ -470,9 +532,27 @@ public class ActivityController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/metadata/beta/atls", method = RequestMethod.GET,
+    @RequestMapping(value = "/metadata/atls", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForAtls(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getTestingLabActivityMetadata(start, end, pageNum, pageSize);
+    }
+
+    @Deprecated
+    @Operation(summary = "Get metadata about auditable records in the system for testing labs.",
+            description = "All parameters are optional and will default to the first page of ONC-ATL activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first.",
+            deprecated = true,
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/metadata/beta/atls", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForAtlsDeprecated(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getTestingLabActivityMetadata(start, end, pageNum, pageSize);
@@ -516,8 +596,25 @@ public class ActivityController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/metadata/beta/users", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/metadata/users", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForUsers(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getUserMaintenanceActivityMetadata(start, end, pageNum, pageSize);
+    }
+
+    @Deprecated
+    @Operation(summary = "Get metadata about auditable records in the system for users.",
+            description = "All parameters are optional and will default to the first page of user activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first.",
+            deprecated = true,
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/metadata/beta/users", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForUsersDeprecated(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getUserMaintenanceActivityMetadata(start, end, pageNum, pageSize);
@@ -533,9 +630,29 @@ public class ActivityController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/metadata/beta/announcements", method = RequestMethod.GET,
+    @RequestMapping(value = "/metadata/announcements", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForAnnouncements(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getAnnouncementActivityMetadata(start, end, pageNum, pageSize);
+    }
+
+    @Deprecated
+    @Operation(summary = "Get metadata about auditable records in the system for announcements.",
+            description = "All parameters are optional and will default to the first page of announcement activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first. "
+                    + "Security Restrictions: Anonymous users are only allowed to see activity for public "
+                    + "announcements. All other roles can see private and public announcements.",
+            deprecated = true,
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/metadata/beta/announcements", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForAnnouncementsDeprecated(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getAnnouncementActivityMetadata(start, end, pageNum, pageSize);
@@ -610,8 +727,25 @@ public class ActivityController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/metadata/beta/pending-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/metadata/pending-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForPendingListings(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getPendingListingActivityMetadata(start, end, pageNum, pageSize);
+    }
+
+    @Deprecated
+    @Operation(summary = "Get metadata about auditable records in the system for pending listings.",
+            description = "All parameters are optional and will default to the first page of pending listing activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first.",
+            deprecated = true,
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/metadata/beta/pending-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForPendingListingsDeprecated(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getPendingListingActivityMetadata(start, end, pageNum, pageSize);
@@ -624,8 +758,25 @@ public class ActivityController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/metadata/beta/corrective-action-plans", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/metadata/corrective-action-plans", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForCorrectiveActionPlans(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getActivityMetadataByConcept(
+                ActivityConcept.CORRECTIVE_ACTION_PLAN, start, end, pageNum, pageSize);
+    }
+
+    @Deprecated
+    @Operation(summary = "Get metadata about auditable records in the system for corrective action plans.",
+            description = "All parameters are optional and will default to the first page of corrective action plan activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first.",
+            deprecated = true,
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/metadata/beta/corrective-action-plans", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForCorrectiveActionPlansDeprecated(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getActivityMetadataByConcept(
@@ -640,9 +791,27 @@ public class ActivityController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/metadata/beta/pending-surveillances", method = RequestMethod.GET,
+    @RequestMapping(value = "/metadata/pending-surveillances", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForPendingSurveillances(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getPendingSurveillanceActivityMetadata(start, end, pageNum, pageSize);
+    }
+
+    @Deprecated
+    @Operation(summary = "Get metadata about auditable records in the system for pending surveillances.",
+            description = "All parameters are optional and will default to the first page of pending surveillance activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first.",
+            deprecated = true,
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/metadata/beta/pending-surveillances", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForPendingSurveillancesDeprecated(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getPendingSurveillanceActivityMetadata(start, end, pageNum, pageSize);
@@ -678,7 +847,7 @@ public class ActivityController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/metadata/beta/api-keys", method = RequestMethod.GET,
+    @RequestMapping(value = "/metadata/api-keys", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForApiKeys(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
@@ -686,10 +855,30 @@ public class ActivityController {
         return pagedMetadataManager.getApiKeyManagementMetadata(start, end, pageNum, pageSize);
     }
 
+    @Deprecated
+    @Operation(summary = "Get metadata about auditable records in the system for API Keys.",
+            description = "All parameters are optional and will default to the first page of API Key activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first.",
+            deprecated = true,
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/metadata/beta/api-keys", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForApiKeysDeprecated(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getApiKeyManagementMetadata(start, end, pageNum, pageSize);
+    }
+
+    @Deprecated
     @Operation(summary = "Get auditable data about a specific CHPL user account.",
             description = "A start and end date may optionally be provided to limit activity results.  "
                     + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_CMS_STAFF "
                     + "(of ROLE_CMS_STAFF Users), ROLE_ACB (of their own), or ROLE_ATL (of their own).",
+            deprecated = true,
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -731,9 +920,11 @@ public class ActivityController {
         return activityManager.getUserActivity(userIdsToSearch, startDate, endDate);
     }
 
+    @Deprecated
     @Operation(summary = "Track the actions of a specific user in the system",
             description = "A start and end date may optionally be provided to limit activity results."
                     + "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
+            deprecated = true,
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
