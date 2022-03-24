@@ -1,8 +1,8 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -49,7 +49,7 @@ public class RequiredDataReviewer extends PermissionBasedReviewer {
 
         for (CertificationResult cert : listing.getCertificationResults()) {
             if (cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE)
-                    && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
+                    && certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.GAP)
                     && cert.isGap() == null) {
                 addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingGap",
                         Util.formatCriteriaNumber(cert.getCriterion()));

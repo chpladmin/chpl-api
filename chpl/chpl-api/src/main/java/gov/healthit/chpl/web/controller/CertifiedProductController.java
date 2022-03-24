@@ -584,13 +584,10 @@ public class CertifiedProductController {
     })
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/certification_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = CertificationResults.class)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
-
         CertificationResults results = new CertificationResults(cpdManager.getCertifiedProductCertificationResults(certifiedProductId));
-
         return results;
     }
 
@@ -621,7 +618,6 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}"
             + ".{certDateCode}/certification_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = CertificationResults.class)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
             @PathVariable("year") String year,
@@ -633,12 +629,9 @@ public class CertifiedProductController {
             @PathVariable("icsCode") String icsCode,
             @PathVariable("addlSoftwareCode") String addlSoftwareCode,
             @PathVariable("certDateCode") String certDateCode) throws EntityRetrievalException {
-
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode,
                 versionCode, icsCode, addlSoftwareCode, certDateCode);
-
         CertificationResults results = new CertificationResults(cpdManager.getCertifiedProductCertificationResults(chplProductNumber));
-
         return results;
     }
 
@@ -663,16 +656,13 @@ public class CertifiedProductController {
     })
     @RequestMapping(value = "/{chplPrefix}-{identifier}/certification_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = CertificationResults.class)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
             @PathVariable("chplPrefix") String chplPrefix,
             @PathVariable("identifier") String identifier) throws EntityRetrievalException {
 
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
-
         CertificationResults results = new CertificationResults(cpdManager.getCertifiedProductCertificationResults(chplProductNumber));
-
         return results;
     }
 

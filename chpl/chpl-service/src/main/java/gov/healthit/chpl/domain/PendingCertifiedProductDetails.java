@@ -256,8 +256,6 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
             CertificationCriterion criterion = new CertificationCriterion(certCriterion.getCriterion());
             CertificationResult cert = new CertificationResult();
             cert.setCriterion(criterion);
-            cert.setNumber(criterion.getNumber());
-            cert.setTitle(criterion.getTitle());
             cert.setSuccess(certCriterion.getMeetsCriteria());
             cert.setGap(certCriterion.getGap());
             cert.setSed(certCriterion.getSed());
