@@ -256,10 +256,8 @@ public class DeprecatedFieldExplorerTest {
     @Test
     public void findDeprecatedFields_ApiKey() {
         Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ApiKey.class);
-
         assertNotNull(deprecatedFieldNames);
-        assertEquals(1, deprecatedFieldNames.size());
-        assertTrue(deprecatedFieldNames.contains("apiKey"));
+        assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
