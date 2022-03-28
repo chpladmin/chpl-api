@@ -319,11 +319,8 @@ public class DeprecatedFieldExplorerTest {
     @Test
     public void findDeprecatedFields_QuarterlyReport() {
         Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(QuarterlyReport.class);
-
         assertNotNull(deprecatedFieldNames);
-        assertEquals(2, deprecatedFieldNames.size());
-        assertTrue(deprecatedFieldNames.contains("reactiveSummary"));
-        assertTrue(deprecatedFieldNames.contains("transparencyDisclosureSummary"));
+        assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
