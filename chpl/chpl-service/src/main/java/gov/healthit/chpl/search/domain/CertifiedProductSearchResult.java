@@ -137,11 +137,6 @@ public class CertifiedProductSearchResult implements Serializable {
     private Long closedSurveillanceCount;
     private Long decertificationDate;
 
-    @Deprecated
-    private Long numMeaningfulUse;
-    @Deprecated
-    private Long numMeaningfulUseDate;
-
     private Long promotingInteroperabilityUserCount;
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -172,8 +167,6 @@ public class CertifiedProductSearchResult implements Serializable {
         this.directReviewCount = other.getDirectReviewCount();
         this.openDirectReviewNonConformityCount = other.getOpenDirectReviewNonConformityCount();
         this.closedDirectReviewNonConformityCount = other.getClosedDirectReviewNonConformityCount();
-        this.numMeaningfulUse = other.getNumMeaningfulUse();
-        this.numMeaningfulUseDate = other.getNumMeaningfulUseDate();
         this.promotingInteroperabilityUserCount = other.getPromotingInteroperabilityUserCount();
         this.promotingInteroperabilityUserDate = other.getPromotingInteroperabilityUserDate();
         this.mandatoryDisclosures = other.getMandatoryDisclosures();

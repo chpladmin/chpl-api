@@ -641,8 +641,6 @@ public class ListingSearchService {
                 .version(searchResult.getVersion().getName())
                 .promotingInteroperabilityUserCount(searchResult.getPromotingInteroperability() == null ? null : searchResult.getPromotingInteroperability().getUserCount())
                 .promotingInteroperabilityUserDate(searchResult.getPromotingInteroperability() == null ? null : searchResult.getPromotingInteroperability().getUserDate())
-                .numMeaningfulUse(searchResult.getPromotingInteroperability() == null ? null : searchResult.getPromotingInteroperability().getUserCount())
-                .numMeaningfulUseDate(searchResult.getPromotingInteroperability() == null ? null : DateUtil.toEpochMillis(searchResult.getPromotingInteroperability().getUserDate()))
                 .decertificationDate(searchResult.getDecertificationDate() == null ? null : DateUtil.toEpochMillis(searchResult.getDecertificationDate()))
                 .certificationDate(DateUtil.toEpochMillis(searchResult.getCertificationDate()))
                 .certificationStatus(searchResult.getCertificationStatus().getName())
