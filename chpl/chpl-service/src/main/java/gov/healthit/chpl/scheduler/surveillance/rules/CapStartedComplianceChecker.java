@@ -1,10 +1,8 @@
 package gov.healthit.chpl.scheduler.surveillance.rules;
 
 import java.time.Duration;
-import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 
 import org.springframework.stereotype.Component;
 
@@ -21,22 +19,15 @@ public class CapStartedComplianceChecker implements RuleComplianceChecker {
         return SurveillanceOversightRule.CAP_NOT_STARTED;
     }
 
-    public Date check(CertifiedProductSearchDetails cp, Surveillance surv, SurveillanceNonconformity nc) {
-        Date result = null;
-        if (nc.getCapStartDate() == null) {
-            LocalDateTime capApprovalDate = null;
-            if (nc.getCapApprovalDate() != null) {
-                capApprovalDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(nc.getCapApprovalDate().getTime()),
-                        ZoneId.systemDefault());
-                Duration timeBetween = Duration.between(capApprovalDate, LocalDateTime.now());
-                long numDays = timeBetween.toDays();
-                if (numDays > getNumDaysAllowed()) {
-                    LocalDateTime dateBroken = capApprovalDate.plusDays(getNumDaysAllowed() + 1);
-                    result = Date.from(dateBroken.atZone(ZoneId.systemDefault()).toInstant());
-                }
+    public LocalDate check(CertifiedProductSearchDetails cp, Surveillance surv, SurveillanceNonconformity nc) {
+        LocalDate result = null;
+        if (nc.getCapStartDay() == null && nc.getCapApprovalDay() != null) {
+            Duration timeBetween = Duration.between(nc.getCapApprovalDay(), LocalDateTime.now());
+            long numDays = timeBetween.toDays();
+            if (numDays > getNumDaysAllowed()) {
+                result = nc.getCapApprovalDay().plusDays(getNumDaysAllowed() + 1);
             }
         }
-
         return result;
     }
 

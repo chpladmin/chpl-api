@@ -2,9 +2,8 @@ package gov.healthit.chpl.scheduler.surveillance.rules;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -24,8 +23,8 @@ public class LongSuspensionComplianceChecker implements RuleComplianceChecker {
         return SurveillanceOversightRule.LONG_SUSPENSION;
     }
 
-    public Date check(CertifiedProductSearchDetails cp, Surveillance surv, SurveillanceNonconformity nc) {
-        Date result = null;
+    public LocalDate check(CertifiedProductSearchDetails cp, Surveillance surv, SurveillanceNonconformity nc) {
+        LocalDate result = null;
         if (cp.getCurrentStatus().getStatus().getName().equals(CertificationStatusType.SuspendedByAcb.getName())) {
             List<CertificationStatusEvent> statusEvents = cp.getCertificationEvents();
             // find the most recent one
@@ -38,13 +37,12 @@ public class LongSuspensionComplianceChecker implements RuleComplianceChecker {
             }
 
             if (mostRecent != null) {
-                LocalDateTime statusDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(mostRecent.getEventDate()),
+                LocalDate statusDate = LocalDate.ofInstant(Instant.ofEpochMilli(mostRecent.getEventDate()),
                         ZoneId.systemDefault());
-                Duration timeBetween = Duration.between(statusDate, LocalDateTime.now());
+                Duration timeBetween = Duration.between(statusDate, LocalDate.now());
                 long numDays = timeBetween.toDays();
                 if (numDays > getNumDaysAllowed()) {
-                    LocalDateTime dateBroken = statusDate.plusDays(getNumDaysAllowed() + 1);
-                    result = Date.from(dateBroken.atZone(ZoneId.systemDefault()).toInstant());
+                    result = statusDate.plusDays(getNumDaysAllowed() + 1);
                 }
             }
         }

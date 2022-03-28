@@ -2,9 +2,8 @@ package gov.healthit.chpl.scheduler.surveillance.rules;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -24,9 +23,9 @@ public class CapClosedComplianceChecker implements RuleComplianceChecker {
         return SurveillanceOversightRule.CAP_NOT_CLOSED;
     }
 
-    public Date check(CertifiedProductSearchDetails cp, Surveillance surv, SurveillanceNonconformity nc) {
-        Date result = null;
-        if (nc.getCapEndDate() == null
+    public LocalDate check(CertifiedProductSearchDetails cp, Surveillance surv, SurveillanceNonconformity nc) {
+        LocalDate result = null;
+        if (nc.getCapEndDay() == null
                 && (cp.getCurrentStatus().getStatus().getName().equals(CertificationStatusType.WithdrawnByAcb.getName())
                         || cp.getCurrentStatus().getStatus().getName()
                                 .equals(CertificationStatusType.WithdrawnByDeveloper.getName())
@@ -43,13 +42,12 @@ public class CapClosedComplianceChecker implements RuleComplianceChecker {
             }
 
             if (mostRecent != null) {
-                LocalDateTime statusDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(mostRecent.getEventDate()),
+                LocalDate statusDate = LocalDate.ofInstant(Instant.ofEpochMilli(mostRecent.getEventDate()),
                         ZoneId.systemDefault());
-                Duration timeBetween = Duration.between(statusDate, LocalDateTime.now());
+                Duration timeBetween = Duration.between(statusDate, LocalDate.now());
                 long numDays = timeBetween.toDays();
                 if (numDays > getNumDaysAllowed()) {
-                    LocalDateTime dateBroken = statusDate.plusDays(getNumDaysAllowed() + 1);
-                    result = Date.from(dateBroken.atZone(ZoneId.systemDefault()).toInstant());
+                    result = statusDate.plusDays(getNumDaysAllowed() + 1);
                 }
             }
         }

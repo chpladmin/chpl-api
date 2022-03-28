@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,7 +58,6 @@ import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceReportingActivityJob;
 import gov.healthit.chpl.util.AuthUtil;
-import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceCreationValidator;
 import gov.healthit.chpl.validation.surveillance.SurveillanceReadValidator;
@@ -370,16 +368,10 @@ public class SurveillanceManager extends SecuredManager {
                     for (SurveillanceNonconformityEntity ncEntity : reqEntity.getNonconformities()) {
                         SurveillanceNonconformity nc = new SurveillanceNonconformity();
                         nc.setCapApprovalDay(ncEntity.getCapApproval());
-                        nc.setCapApprovalDate(ncEntity.getCapApproval() == null ? null : new Date(DateUtil.toEpochMillis(ncEntity.getCapApproval())));
                         nc.setCapEndDay(ncEntity.getCapEndDate());
-                        nc.setCapEndDate(ncEntity.getCapEndDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(ncEntity.getCapEndDate())));
                         nc.setCapMustCompleteDay(ncEntity.getCapMustCompleteDate());
-                        nc.setCapMustCompleteDate(ncEntity.getCapMustCompleteDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(ncEntity.getCapMustCompleteDate())));
                         nc.setCapStartDay(ncEntity.getCapStart());
-                        nc.setCapStartDate(ncEntity.getCapStart() == null ? null : new Date(DateUtil.toEpochMillis(ncEntity.getCapStart())));
                         nc.setDateOfDeterminationDay(ncEntity.getDateOfDetermination());
-                        nc.setDateOfDetermination(ncEntity.getDateOfDetermination() == null ? null : new Date(DateUtil.toEpochMillis(ncEntity.getDateOfDetermination())));
-                        nc.setNonconformityCloseDate(ncEntity.getNonconformityCloseDate());
                         nc.setNonconformityCloseDay(ncEntity.getNonconformityCloseDate());
                         nc.setDeveloperExplanation(ncEntity.getDeveloperExplanation());
                         nc.setFindings(ncEntity.getFindings());
@@ -396,15 +388,11 @@ public class SurveillanceManager extends SecuredManager {
                         nc.setTotalSites(ncEntity.getTotalSites());
                         nc.setLastModifiedDate(ncEntity.getLastModifiedDate());
 
-                        SurveillanceNonconformityStatus status = new SurveillanceNonconformityStatus();
                         if (ncEntity.getNonconformityCloseDate() == null) {
-                            status.setName(SurveillanceNonconformityStatus.OPEN);
                             nc.setNonconformityStatus(SurveillanceNonconformityStatus.OPEN);
                         } else {
-                            status.setName(SurveillanceNonconformityStatus.CLOSED);
                             nc.setNonconformityStatus(SurveillanceNonconformityStatus.CLOSED);
                         }
-                        nc.setStatus(status);
 
                         req.getNonconformities().add(nc);
 
