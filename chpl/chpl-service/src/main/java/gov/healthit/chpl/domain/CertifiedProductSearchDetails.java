@@ -917,22 +917,6 @@ public class CertifiedProductSearchDetails implements Serializable {
         return result;
     }
 
-    @Deprecated
-    public MeaningfulUseUser getCurrentMeaningfulUseUsers() {
-        if (this.getMeaningfulUseUserHistory() == null
-                || this.getMeaningfulUseUserHistory().size() == 0) {
-            return null;
-        }
-
-        MeaningfulUseUser newest = this.getMeaningfulUseUserHistory().get(0);
-        for (MeaningfulUseUser muuItem : this.getMeaningfulUseUserHistory()) {
-            if (muuItem.getMuuDate() > newest.getMuuDate()) {
-                newest = muuItem;
-            }
-        }
-        return newest;
-    }
-
     public LegacyCertificationStatus getCertificationStatus() {
         return certificationStatus;
     }
