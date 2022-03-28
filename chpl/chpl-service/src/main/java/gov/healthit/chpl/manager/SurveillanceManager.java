@@ -19,13 +19,13 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
-import gov.healthit.chpl.dao.auth.UserPermissionDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -77,7 +77,6 @@ public class SurveillanceManager extends SecuredManager {
     private SurveillanceReadValidator survReadValidator;
     private SurveillanceUpdateValidator survUpdateValidator;
     private SurveillanceCreationValidator survCreationValidator;
-    private UserPermissionDAO userPermissionDao;
     private FileUtils fileUtils;
     private Environment env;
     private UserDAO userDAO;
@@ -89,7 +88,6 @@ public class SurveillanceManager extends SecuredManager {
             SchedulerManager schedulerManager, SurveillanceReadValidator survReadValidator,
             SurveillanceCreationValidator survCreationValidator,
             SurveillanceUpdateValidator survUpdateValidator,
-            UserPermissionDAO userPermissionDao,
             FileUtils fileUtils, Environment env, ResourcePermissions resourcePermissions,
             UserDAO userDAO) {
         this.survDao = survDao;
@@ -100,7 +98,6 @@ public class SurveillanceManager extends SecuredManager {
         this.survUpdateValidator = survUpdateValidator;
         this.survCreationValidator = survCreationValidator;
         this.survReadValidator = survReadValidator;
-        this.userPermissionDao = userPermissionDao;
         this.fileUtils = fileUtils;
         this.env = env;
         this.userDAO = userDAO;
@@ -304,9 +301,7 @@ public class SurveillanceManager extends SecuredManager {
         surv.setId(entity.getId());
         surv.setFriendlyId(entity.getFriendlyId());
         surv.setStartDay(entity.getStartDate());
-        surv.setStartDate(new Date(DateUtil.toEpochMillis(entity.getStartDate())));
         surv.setEndDay(entity.getEndDate());
-        surv.setEndDate(entity.getEndDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(entity.getEndDate())));
         surv.setRandomizedSitesUsed(entity.getNumRandomizedSites());
         surv.setAuthority(Surveillance.AUTHORITY_ACB);
         surv.setLastModifiedDate(entity.getLastModifiedDate());

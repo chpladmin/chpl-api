@@ -351,9 +351,7 @@ public class PendingSurveillanceManager extends SecuredManager {
                 .id(pr.getId())
                 .surveillanceIdToReplace(pr.getSurvFriendlyIdToReplace())
                 .startDay(pr.getStartDate())
-                .startDate(pr.getStartDate() == null ? null : new Date(DateUtil.toEpochMillis(pr.getStartDate())))
                 .endDay(pr.getEndDate())
-                .endDate(pr.getEndDate() == null ? null : new Date(DateUtil.toEpochMillisEndOfDay(pr.getEndDate())))
                 .randomizedSitesUsed(pr.getNumRandomizedSites())
                 .authority(Surveillance.AUTHORITY_ACB)
                 .build();
@@ -520,9 +518,7 @@ public class PendingSurveillanceManager extends SecuredManager {
         surv.setId(entity.getId());
         surv.setFriendlyId(entity.getFriendlyId());
         surv.setStartDay(entity.getStartDate());
-        surv.setStartDate(new Date(DateUtil.toEpochMillis(entity.getStartDate())));
         surv.setEndDay(entity.getEndDate());
-        surv.setEndDate(entity.getEndDate() == null ? null : new Date(DateUtil.toEpochMillis(entity.getEndDate())));
         surv.setRandomizedSitesUsed(entity.getNumRandomizedSites());
         surv.setAuthority(Surveillance.AUTHORITY_ACB);
         surv.setLastModifiedDate(entity.getLastModifiedDate());
