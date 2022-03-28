@@ -203,8 +203,7 @@ public class DeprecatedFieldExplorerTest {
         Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(CertificationIdResults.class);
 
         assertNotNull(deprecatedFieldNames);
-        assertEquals(1, deprecatedFieldNames.size());
-        assertTrue(deprecatedFieldNames.contains("isValid"));
+        assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
