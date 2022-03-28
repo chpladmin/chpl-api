@@ -211,14 +211,19 @@ public class DeprecatedFieldExplorerTest {
     public void findDeprecatedFields_CertifiedProductFlatSearchResult() {
         Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(CertifiedProductFlatSearchResult.class);
         assertNotNull(deprecatedFieldNames);
-        assertEquals(0, deprecatedFieldNames.size());
+        assertEquals(2, deprecatedFieldNames.size());
+        assertTrue(deprecatedFieldNames.contains("numMeaningfulUse"));
+        assertTrue(deprecatedFieldNames.contains("numMeaningfulUseDate"));
     }
 
     @Test
     public void findDeprecatedFields_SearchResponse() {
         Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(SearchResponse.class);
         assertNotNull(deprecatedFieldNames);
-        assertEquals(0, deprecatedFieldNames.size());
+        assertEquals(2, deprecatedFieldNames.size());
+
+        assertTrue(deprecatedFieldNames.contains("results" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "numMeaningfulUse"));
+        assertTrue(deprecatedFieldNames.contains("results" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "numMeaningfulUseDate"));
     }
 
     @Test
