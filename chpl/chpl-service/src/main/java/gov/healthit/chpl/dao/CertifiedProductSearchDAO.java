@@ -129,7 +129,6 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
                 .decertificationDate(entity.getDecertificationDate() == null ? null : entity.getDecertificationDate().getTime())
                 .certificationDate(entity.getCertificationDate().getTime())
                 .certificationStatus(entity.getCertificationStatus())
-                .transparencyAttestationUrl(entity.getMandatoryDisclosures())
                 .mandatoryDisclosures(entity.getMandatoryDisclosures())
                 .apiDocumentation(entity.getApiDocumentation())
                 .serviceBaseUrlList(entity.getServiceBaseUrlList() != null ? entity.getServiceBaseUrlList() : "")

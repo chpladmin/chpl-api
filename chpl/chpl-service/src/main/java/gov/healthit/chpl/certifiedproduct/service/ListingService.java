@@ -8,9 +8,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
@@ -141,7 +141,6 @@ public class ListingService {
                 .product(dto.getProduct())
                 .version(new ProductVersion(dto.getVersion()))
                 .productAdditionalSoftware(dto.getProductAdditionalSoftware())
-                .transparencyAttestationUrl(dto.getMandatoryDisclosures())
                 .mandatoryDisclosures(dto.getMandatoryDisclosures())
                 .lastModifiedDate(dto.getLastModifiedDate().getTime())
                 .countCerts(dto.getCountCertifications())

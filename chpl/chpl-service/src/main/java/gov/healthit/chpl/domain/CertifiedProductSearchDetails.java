@@ -254,13 +254,6 @@ public class CertifiedProductSearchDetails implements Serializable {
      * A hyperlink to the mandatory disclosures required by 170.523(k)(1) for the Health IT Module
      */
     @XmlElement(required = false, nillable = true)
-    @Deprecated
-    private String transparencyAttestationUrl;
-
-    /**
-     * A hyperlink to the mandatory disclosures required by 170.523(k)(1) for the Health IT Module
-     */
-    @XmlElement(required = false, nillable = true)
     private String mandatoryDisclosures;
 
     /**
@@ -624,16 +617,6 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setProductAdditionalSoftware(String productAdditionalSoftware) {
         this.productAdditionalSoftware = productAdditionalSoftware;
-    }
-
-    @Deprecated
-    public String getTransparencyAttestationUrl() {
-        return transparencyAttestationUrl;
-    }
-
-    @Deprecated
-    public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
-        this.transparencyAttestationUrl = transparencyAttestationUrl;
     }
 
     public String getMandatoryDisclosures() {

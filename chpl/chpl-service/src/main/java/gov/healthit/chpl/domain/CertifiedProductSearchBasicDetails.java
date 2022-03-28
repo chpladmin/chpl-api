@@ -188,12 +188,6 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
     /**
      * A hyperlink to the mandatory disclosures required by 170.523(k)(1) for the Health IT Module
      */
-    @Deprecated
-    private String transparencyAttestationUrl;
-
-    /**
-     * A hyperlink to the mandatory disclosures required by 170.523(k)(1) for the Health IT Module
-     */
     private String mandatoryDisclosures;
 
     /**

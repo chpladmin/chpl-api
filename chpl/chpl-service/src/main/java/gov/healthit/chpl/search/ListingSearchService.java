@@ -646,7 +646,6 @@ public class ListingSearchService {
                 .decertificationDate(searchResult.getDecertificationDate() == null ? null : DateUtil.toEpochMillis(searchResult.getDecertificationDate()))
                 .certificationDate(DateUtil.toEpochMillis(searchResult.getCertificationDate()))
                 .certificationStatus(searchResult.getCertificationStatus().getName())
-                .transparencyAttestationUrl(searchResult.getMandatoryDisclosures())
                 .mandatoryDisclosures(searchResult.getMandatoryDisclosures())
                 .apiDocumentation(
                         searchResult.getApiDocumentation().stream()

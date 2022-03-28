@@ -1112,7 +1112,6 @@ public class CertifiedProductController {
                 .surveillance(e.getSurveillance())
                 .targetedUsers(e.getTargetedUsers())
                 .testingLabs(e.getTestingLabs())
-                .transparencyAttestationUrl(e.getTransparencyAttestationUrl())
                 .version(e.getVersion())
                 .build();
     };
