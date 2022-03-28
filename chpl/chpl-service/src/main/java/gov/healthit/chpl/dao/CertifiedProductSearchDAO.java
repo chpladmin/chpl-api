@@ -20,7 +20,6 @@ import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
-import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Repository("certifiedProductSearchDAO")
@@ -124,8 +123,6 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
                 .version(entity.getVersion())
                 .promotingInteroperabilityUserCount(entity.getPromotingInteroperabilityUserCount())
                 .promotingInteroperabilityUserDate(entity.getPromotingInteroperabilityUserCountDate())
-                .numMeaningfulUse(entity.getPromotingInteroperabilityUserCount())
-                .numMeaningfulUseDate(DateUtil.toEpochMillis(entity.getPromotingInteroperabilityUserCountDate()))
                 .decertificationDate(entity.getDecertificationDate() == null ? null : entity.getDecertificationDate().getTime())
                 .certificationDate(entity.getCertificationDate().getTime())
                 .certificationStatus(entity.getCertificationStatus())
