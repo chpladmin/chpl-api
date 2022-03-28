@@ -275,32 +275,28 @@ public class DeprecatedFieldExplorerTest {
     public void findDeprecatedFields_ChplOneTimeTrigger() {
         Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ChplOneTimeTrigger.class);
         assertNotNull(deprecatedFieldNames);
-        assertEquals(1, deprecatedFieldNames.size());
-        assertTrue(deprecatedFieldNames.contains("job" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "frequency"));
+        assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_ScheduleTriggersResults() {
         Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ScheduleTriggersResults.class);
         assertNotNull(deprecatedFieldNames);
-        assertEquals(1, deprecatedFieldNames.size());
-        assertTrue(deprecatedFieldNames.contains("results" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "job" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "frequency"));
+        assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_ScheduleOneTimeTriggersResults() {
         Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ScheduleOneTimeTriggersResults.class);
         assertNotNull(deprecatedFieldNames);
-        assertEquals(1, deprecatedFieldNames.size());
-        assertTrue(deprecatedFieldNames.contains("results" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "job" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "frequency"));
+        assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_ChplJobsResults() {
         Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ChplJobsResults.class);
         assertNotNull(deprecatedFieldNames);
-        assertEquals(1, deprecatedFieldNames.size());
-        assertTrue(deprecatedFieldNames.contains("results" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "frequency"));
+        assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
