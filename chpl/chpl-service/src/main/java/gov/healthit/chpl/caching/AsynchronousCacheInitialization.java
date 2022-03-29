@@ -39,6 +39,9 @@ public class AsynchronousCacheInitialization {
     @Async
     public void initializeSearchOptions() throws EntityRetrievalException {
         LOGGER.info("Starting cache initialization for SearchViewController.getPopulateSearchData()");
+        dimensionalDataManager.getProducts();
+        dimensionalDataManager.getDevelopers();
+        dimensionalDataManager.getCertificationCriterionNumbers();
         dimensionalDataManager.getDimensionalData(true);
         dimensionalDataManager.getDimensionalData(false);
         LOGGER.info("Finished cache initialization for SearchViewController.getPopulateSearchData()");
