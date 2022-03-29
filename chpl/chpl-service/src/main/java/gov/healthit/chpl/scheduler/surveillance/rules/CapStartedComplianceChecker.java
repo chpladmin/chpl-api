@@ -1,8 +1,7 @@
 package gov.healthit.chpl.scheduler.surveillance.rules;
 
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 import org.springframework.stereotype.Component;
 
@@ -22,8 +21,7 @@ public class CapStartedComplianceChecker implements RuleComplianceChecker {
     public LocalDate check(CertifiedProductSearchDetails cp, Surveillance surv, SurveillanceNonconformity nc) {
         LocalDate result = null;
         if (nc.getCapStartDay() == null && nc.getCapApprovalDay() != null) {
-            Duration timeBetween = Duration.between(nc.getCapApprovalDay(), LocalDateTime.now());
-            long numDays = timeBetween.toDays();
+            long numDays = ChronoUnit.DAYS.between(nc.getCapApprovalDay(), LocalDate.now());
             if (numDays > getNumDaysAllowed()) {
                 result = nc.getCapApprovalDay().plusDays(getNumDaysAllowed() + 1);
             }

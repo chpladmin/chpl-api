@@ -1,9 +1,9 @@
 package gov.healthit.chpl.scheduler.surveillance.rules;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -39,8 +39,7 @@ public class LongSuspensionComplianceChecker implements RuleComplianceChecker {
             if (mostRecent != null) {
                 LocalDate statusDate = LocalDate.ofInstant(Instant.ofEpochMilli(mostRecent.getEventDate()),
                         ZoneId.systemDefault());
-                Duration timeBetween = Duration.between(statusDate, LocalDate.now());
-                long numDays = timeBetween.toDays();
+                long numDays = ChronoUnit.DAYS.between(statusDate, LocalDate.now());
                 if (numDays > getNumDaysAllowed()) {
                     result = statusDate.plusDays(getNumDaysAllowed() + 1);
                 }
