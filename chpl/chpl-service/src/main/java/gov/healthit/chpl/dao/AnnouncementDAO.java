@@ -15,16 +15,17 @@ import gov.healthit.chpl.entity.AnnouncementEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.DateUtil;
 
 @Repository(value = "announcementDAO")
 public class AnnouncementDAO extends BaseDAOImpl {
 
     @Transactional
-    public Announcement create(Announcement dto) throws EntityRetrievalException, EntityCreationException {
+    public Announcement create(Announcement announcement) throws EntityRetrievalException, EntityCreationException {
         AnnouncementEntity entity = null;
         try {
-            if (dto.getId() != null) {
-                entity = this.getEntityById(dto.getId(), false);
+            if (announcement.getId() != null) {
+                entity = this.getEntityById(announcement.getId(), false);
             }
         } catch (final EntityRetrievalException e) {
             throw new EntityCreationException(e);
@@ -35,48 +36,48 @@ public class AnnouncementDAO extends BaseDAOImpl {
         } else {
             entity = new AnnouncementEntity();
 
-            if (dto.getTitle() != null) {
-                entity.setTitle(dto.getTitle());
+            if (announcement.getTitle() != null) {
+                entity.setTitle(announcement.getTitle());
             }
 
-            if (dto.getText() != null) {
-                entity.setText(dto.getText());
+            if (announcement.getText() != null) {
+                entity.setText(announcement.getText());
             }
 
-            if (dto.getStartDate() != null) {
-                entity.setStartDate(dto.getStartDate());
+            if (announcement.getStartDateTime() != null) {
+                entity.setStartDate(new Date(DateUtil.toEpochMillis(announcement.getStartDateTime())));
             }
 
-            if (dto.getEndDate() != null) {
-                entity.setEndDate(dto.getEndDate());
+            if (announcement.getEndDateTime() != null) {
+                entity.setEndDate(new Date(DateUtil.toEpochMillis(announcement.getEndDateTime())));
             }
 
-            if (dto.getIsPublic() != null) {
-                entity.setIsPublic(dto.getIsPublic());
+            if (announcement.getIsPublic() != null) {
+                entity.setIsPublic(announcement.getIsPublic());
             } else {
                 entity.setIsPublic(false);
             }
 
-            if (dto.getDeleted() != null) {
-                entity.setDeleted(dto.getDeleted());
+            if (announcement.getDeleted() != null) {
+                entity.setDeleted(announcement.getDeleted());
             } else {
                 entity.setDeleted(false);
             }
 
-            if (dto.getLastModifiedUser() != null) {
-                entity.setLastModifiedUser(dto.getLastModifiedUser());
+            if (announcement.getLastModifiedUser() != null) {
+                entity.setLastModifiedUser(announcement.getLastModifiedUser());
             } else {
                 entity.setLastModifiedUser(AuthUtil.getAuditId());
             }
 
-            if (dto.getLastModifiedDate() != null) {
-                entity.setLastModifiedDate(dto.getLastModifiedDate());
+            if (announcement.getLastModifiedDate() != null) {
+                entity.setLastModifiedDate(announcement.getLastModifiedDate());
             } else {
                 entity.setLastModifiedDate(new Date());
             }
 
-            if (dto.getCreationDate() != null) {
-                entity.setCreationDate(dto.getCreationDate());
+            if (announcement.getCreationDate() != null) {
+                entity.setCreationDate(announcement.getCreationDate());
             } else {
                 entity.setCreationDate(new Date());
             }
@@ -87,47 +88,47 @@ public class AnnouncementDAO extends BaseDAOImpl {
     }
 
     @Transactional
-    public Announcement update(Announcement dto, boolean includeDeleted) throws EntityRetrievalException {
+    public Announcement update(Announcement announcement, boolean includeDeleted) throws EntityRetrievalException {
 
-        AnnouncementEntity entity = getEntityById(dto.getId(), includeDeleted);
+        AnnouncementEntity entity = getEntityById(announcement.getId(), includeDeleted);
         if (entity == null) {
             throw new EntityRetrievalException(
-                    "Cannot update entity with id " + dto.getId() + ". Entity does not exist.");
+                    "Cannot update entity with id " + announcement.getId() + ". Entity does not exist.");
         }
 
-        if (dto.getText() != null) {
-            entity.setText(dto.getText());
+        if (announcement.getText() != null) {
+            entity.setText(announcement.getText());
         }
 
-        if (dto.getTitle() != null) {
-            entity.setTitle(dto.getTitle());
+        if (announcement.getTitle() != null) {
+            entity.setTitle(announcement.getTitle());
         }
 
-        if (dto.getStartDate() != null) {
-            entity.setStartDate(dto.getStartDate());
+        if (announcement.getStartDateTime() != null) {
+            entity.setStartDate(new Date(DateUtil.toEpochMillis(announcement.getStartDateTime())));
         }
 
-        if (dto.getEndDate() != null) {
-            entity.setEndDate(dto.getEndDate());
+        if (announcement.getEndDateTime() != null) {
+            entity.setEndDate(new Date(DateUtil.toEpochMillis(announcement.getEndDateTime())));
         }
 
-        if (dto.getIsPublic() != null) {
-            entity.setIsPublic(dto.getIsPublic());
+        if (announcement.getIsPublic() != null) {
+            entity.setIsPublic(announcement.getIsPublic());
         } else {
             entity.setIsPublic(false);
         }
 
-        if (dto.getDeleted() != null) {
-            entity.setDeleted(dto.getDeleted());
+        if (announcement.getDeleted() != null) {
+            entity.setDeleted(announcement.getDeleted());
         }
-        if (dto.getLastModifiedUser() != null) {
-            entity.setLastModifiedUser(dto.getLastModifiedUser());
+        if (announcement.getLastModifiedUser() != null) {
+            entity.setLastModifiedUser(announcement.getLastModifiedUser());
         } else {
             entity.setLastModifiedUser(AuthUtil.getAuditId());
         }
 
-        if (dto.getLastModifiedDate() != null) {
-            entity.setLastModifiedDate(dto.getLastModifiedDate());
+        if (announcement.getLastModifiedDate() != null) {
+            entity.setLastModifiedDate(announcement.getLastModifiedDate());
         } else {
             entity.setLastModifiedDate(new Date());
         }
@@ -212,11 +213,11 @@ public class AnnouncementDAO extends BaseDAOImpl {
     public Announcement getById(Long announcementId, boolean includeDeleted) throws EntityRetrievalException {
         AnnouncementEntity entity = getEntityById(announcementId, includeDeleted);
 
-        Announcement dto = null;
+        Announcement announcement = null;
         if (entity != null) {
-            dto = new Announcement(entity);
+            announcement = new Announcement(entity);
         }
-        return dto;
+        return announcement;
 
     }
 
@@ -224,25 +225,22 @@ public class AnnouncementDAO extends BaseDAOImpl {
             throws EntityRetrievalException {
         AnnouncementEntity entity = getEntityById(announcementId, includeDeleted);
 
-        Announcement dto = null;
+        Announcement announcement = null;
         if (entity != null) {
-            dto = new Announcement(entity);
+            announcement = new Announcement(entity);
         }
-        return dto;
+        return announcement;
 
     }
 
     private void create(AnnouncementEntity announcement) {
-
         entityManager.persist(announcement);
         entityManager.flush();
     }
 
     private void update(AnnouncementEntity announcement) {
-
         entityManager.merge(announcement);
         entityManager.flush();
-
     }
 
     private List<AnnouncementEntity> getAllCurrentEntities() {
@@ -255,7 +253,7 @@ public class AnnouncementDAO extends BaseDAOImpl {
         return result;
     }
 
-    private AnnouncementEntity getEntityById(final Long entityId, final boolean includeDeleted)
+    private AnnouncementEntity getEntityById(Long entityId, boolean includeDeleted)
             throws EntityRetrievalException {
 
         List<AnnouncementEntity> results = null;
