@@ -476,7 +476,9 @@ public class DeprecatedFieldExplorerTest {
         Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(AnnouncementResults.class);
 
         assertNotNull(deprecatedFieldNames);
-        assertEquals(0, deprecatedFieldNames.size());
+        assertEquals(2, deprecatedFieldNames.size());
+        assertTrue(deprecatedFieldNames.contains("announcements" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "startDate"));
+        assertTrue(deprecatedFieldNames.contains("announcements" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "endDate"));
     }
 
     @Test
@@ -484,7 +486,9 @@ public class DeprecatedFieldExplorerTest {
         Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(Announcement.class);
 
         assertNotNull(deprecatedFieldNames);
-        assertEquals(0, deprecatedFieldNames.size());
+        assertEquals(2, deprecatedFieldNames.size());
+        assertTrue(deprecatedFieldNames.contains("startDate"));
+        assertTrue(deprecatedFieldNames.contains("endDate"));
     }
 
     @Test
