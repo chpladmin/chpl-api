@@ -3,7 +3,7 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.Date;
 
-import gov.healthit.chpl.dto.AnnouncementDTO;
+import gov.healthit.chpl.entity.AnnouncementEntity;
 import gov.healthit.chpl.util.Util;
 
 public class Announcement implements Serializable {
@@ -22,7 +22,7 @@ public class Announcement implements Serializable {
     public Announcement() {
     }
 
-    public Announcement(AnnouncementDTO dto) {
+    public Announcement(AnnouncementEntity dto) {
         this.id = dto.getId();
         this.title = dto.getTitle();
         this.text = dto.getText();

@@ -1,22 +1,21 @@
 package gov.healthit.chpl.permissions.domains.activity;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.AnnouncementDAO;
+import gov.healthit.chpl.domain.Announcement;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
-import gov.healthit.chpl.dto.AnnouncementDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component("activityGetAnnouncementMetadataActionPermissions")
 public class GetAnnouncementMetadataActionPermissions extends ActionPermissions {
-    private static final Logger LOGGER = LogManager.getLogger(GetAnnouncementMetadataActionPermissions.class);
     private AnnouncementDAO announcementDAO;
 
     @Autowired
-    public GetAnnouncementMetadataActionPermissions(final AnnouncementDAO announcementDAO) {
+    public GetAnnouncementMetadataActionPermissions(AnnouncementDAO announcementDAO) {
         this.announcementDAO = announcementDAO;
     }
 
@@ -33,7 +32,7 @@ public class GetAnnouncementMetadataActionPermissions extends ActionPermissions 
             try {
                 // Need to look at the Announcement and see if it is public
                 ActivityMetadata activityMetadata = (ActivityMetadata) obj;
-                AnnouncementDTO announcement = announcementDAO.getById(activityMetadata.getObjectId(), true);
+                Announcement announcement = announcementDAO.getById(activityMetadata.getObjectId(), true);
                 return announcement.getIsPublic();
             } catch (Exception e) {
                 LOGGER.error("There was an error checking permissions.", e);

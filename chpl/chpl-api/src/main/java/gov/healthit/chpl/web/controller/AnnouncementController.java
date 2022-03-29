@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.domain.Announcement;
-import gov.healthit.chpl.dto.AnnouncementDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -53,15 +52,15 @@ public class AnnouncementController {
     public @ResponseBody AnnouncementResults getAnnouncements(
             @RequestParam(required = false, defaultValue = "false") final boolean future) {
         AnnouncementResults results = new AnnouncementResults();
-        List<AnnouncementDTO> announcements = null;
+        List<Announcement> announcements = null;
         if (!future) {
             announcements = announcementManager.getAll();
         } else {
             announcements = announcementManager.getAllCurrentAndFuture();
         }
         if (announcements != null) {
-            for (AnnouncementDTO announcement : announcements) {
-                results.getAnnouncements().add(new Announcement(announcement));
+            for (Announcement announcement : announcements) {
+                results.getAnnouncements().add(announcement);
             }
         }
         return results;
@@ -79,9 +78,9 @@ public class AnnouncementController {
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.FOUR_HOURS)
     public @ResponseBody Announcement getAnnouncementById(@PathVariable("announcementId") final Long announcementId)
             throws EntityRetrievalException {
-        AnnouncementDTO announcement = announcementManager.getById(announcementId);
+        Announcement announcement = announcementManager.getById(announcementId);
 
-        return new Announcement(announcement);
+        return announcement;
     }
 
     @Operation(summary = "Create a new announcement.",
@@ -101,7 +100,7 @@ public class AnnouncementController {
     private Announcement createAnnouncement(final Announcement announcementInfo) throws InvalidArgumentsException,
             UserRetrievalException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
-        AnnouncementDTO toCreate = new AnnouncementDTO();
+        Announcement toCreate = new Announcement();
         if (StringUtils.isEmpty(announcementInfo.getTitle())) {
             throw new InvalidArgumentsException("A title is required for a new announcement");
         } else {
@@ -120,7 +119,7 @@ public class AnnouncementController {
         }
         toCreate.setIsPublic(announcementInfo.getIsPublic() != null ? announcementInfo.getIsPublic() : Boolean.FALSE);
         toCreate = announcementManager.create(toCreate);
-        return new Announcement(toCreate);
+        return toCreate;
     }
 
     @Operation(summary = "Change an existing announcement.",
@@ -140,7 +139,7 @@ public class AnnouncementController {
 
     private Announcement update(final Announcement announcementInfo) throws InvalidArgumentsException,
             EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
-        AnnouncementDTO toUpdate = new AnnouncementDTO();
+        Announcement toUpdate = new Announcement();
         toUpdate.setId(announcementInfo.getId());
         toUpdate.setTitle(announcementInfo.getTitle());
         toUpdate.setText(announcementInfo.getText());
@@ -148,8 +147,8 @@ public class AnnouncementController {
         toUpdate.setStartDate(announcementInfo.getStartDate());
         toUpdate.setEndDate(announcementInfo.getEndDate());
 
-        AnnouncementDTO result = announcementManager.update(toUpdate);
-        return new Announcement(result);
+        Announcement result = announcementManager.update(toUpdate);
+        return result;
     }
 
     @Operation(summary = "Delete an existing announcement.",
@@ -169,7 +168,7 @@ public class AnnouncementController {
     private String delete(final Long announcementId)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
 
-        AnnouncementDTO toDelete = announcementManager.getById(announcementId, false);
+        Announcement toDelete = announcementManager.getById(announcementId, false);
         announcementManager.delete(toDelete);
         return "{\"deletedAnnouncement\" : true}";
     }

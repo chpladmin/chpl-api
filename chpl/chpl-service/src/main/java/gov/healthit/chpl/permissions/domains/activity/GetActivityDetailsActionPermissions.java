@@ -13,11 +13,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.domain.Announcement;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.complaint.Complaint;
-import gov.healthit.chpl.dto.AnnouncementDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
@@ -31,7 +31,7 @@ import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingD
 
 @Component("actionGetActivityDetailsActionPermissions")
 public class GetActivityDetailsActionPermissions extends ActionPermissions {
-    private static final Logger LOGGER = LogManager.getLogger(GetActivityDetailsActionPermissions.class);
+    private static Logger LOGGER = LogManager.getLogger(GetActivityDetailsActionPermissions.class);
 
     private UserDAO userDao;
     private QuarterlyReportDAO quarterlyReportDao;
@@ -39,9 +39,9 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
     private ObjectMapper jsonMapper;
 
     @Autowired
-    public GetActivityDetailsActionPermissions(final UserDAO userDao,
-            final QuarterlyReportDAO quarterlyReportDao,
-            final AnnualReportDAO annualReportDao) {
+    public GetActivityDetailsActionPermissions(UserDAO userDao,
+            QuarterlyReportDAO quarterlyReportDao,
+            AnnualReportDAO annualReportDao) {
         jsonMapper = new ObjectMapper();
         this.userDao = userDao;
         this.quarterlyReportDao = quarterlyReportDao;
@@ -54,7 +54,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
     }
 
     @Override
-    public boolean hasAccess(final Object obj) {
+    public boolean hasAccess(Object obj) {
         if (!(obj instanceof ActivityDetails)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
@@ -147,7 +147,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
         return false;
     }
 
-    private boolean hasAccessToComplaint(final JsonNode complaintJson) {
+    private boolean hasAccessToComplaint(JsonNode complaintJson) {
         if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
@@ -164,7 +164,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
         }
     }
 
-    private boolean hasAccessToQuarterlyReport(final Long reportId, final JsonNode quarterlyReportJson) {
+    private boolean hasAccessToQuarterlyReport(Long reportId, JsonNode quarterlyReportJson) {
         if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
@@ -192,7 +192,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
         }
     }
 
-    private boolean hasAccessToQuarterlyReportListing(final JsonNode quarterlyReportListingJson) {
+    private boolean hasAccessToQuarterlyReportListing(JsonNode quarterlyReportListingJson) {
         if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
@@ -210,7 +210,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
         }
     }
 
-    private boolean hasAccessToAnnualReport(final Long reportId, final JsonNode annualReportJson) {
+    private boolean hasAccessToAnnualReport(Long reportId, JsonNode annualReportJson) {
         if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
@@ -244,12 +244,12 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
      * @param announcementJson
      * @return
      */
-    private boolean hasAccessToAnnouncement(final JsonNode announcementJson) {
+    private boolean hasAccessToAnnouncement(JsonNode announcementJson) {
         boolean hasAccess = false;
-        AnnouncementDTO announcement = null;
+        Announcement announcement = null;
         try {
-            announcement = jsonMapper.convertValue(announcementJson, AnnouncementDTO.class);
-        } catch (final Exception ex) {
+            announcement = jsonMapper.convertValue(announcementJson, Announcement.class);
+        } catch (Exception ex) {
             LOGGER.error("Could not parse announcement activity as AnnouncementDTO." + "JSON was: " + announcementJson,
                     ex);
         }
@@ -269,14 +269,14 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
      * @param atlJson
      * @return
      */
-    private boolean hasAccessToTestingLab(final JsonNode atlJson) {
+    private boolean hasAccessToTestingLab(JsonNode atlJson) {
         boolean hasAccess = getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
 
         if (!hasAccess) {
             TestingLabDTO atl = null;
             try {
                 atl = jsonMapper.convertValue(atlJson, TestingLabDTO.class);
-            } catch (final Exception ex) {
+            } catch (Exception ex) {
                 LOGGER.error("Could not parse activity as TestingLabDTO. " + "JSON was: " + atlJson, ex);
             }
 
@@ -294,7 +294,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
      * @param acbJson
      * @return
      */
-    private boolean hasAccessToCertificationBody(final JsonNode acbJson) {
+    private boolean hasAccessToCertificationBody(JsonNode acbJson) {
         return getResourcePermissions().isUserRoleAdmin()
                 || getResourcePermissions().isUserRoleOnc()
                 || getResourcePermissions().isUserRoleAcbAdmin();
@@ -308,14 +308,14 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
      * @param pendingListingJson
      * @return
      */
-    private boolean hasAccessToPendingListing(final JsonNode pendingListingJson) {
+    private boolean hasAccessToPendingListing(JsonNode pendingListingJson) {
         boolean hasAccess = getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
 
         if (!hasAccess) {
             PendingCertifiedProductDTO pcp = null;
             try {
                 pcp = jsonMapper.convertValue(pendingListingJson, PendingCertifiedProductDTO.class);
-            } catch (final Exception ex) {
+            } catch (Exception ex) {
                 LOGGER.error(
                         "Could not parse activity as PendingCertifiedProductDTO. " + "JSON was: " + pendingListingJson,
                         ex);
@@ -336,7 +336,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
      * @param userJson
      * @return
      */
-    private boolean hasAccessToUser(final JsonNode userJson) {
+    private boolean hasAccessToUser(JsonNode userJson) {
         boolean hasAccess = getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
                 || getResourcePermissions().isUserRoleOncStaff();
 
@@ -344,7 +344,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
             UserDTO user = null;
             try {
                 user = jsonMapper.convertValue(userJson, UserDTO.class);
-            } catch (final Exception ex) {
+            } catch (Exception ex) {
                 LOGGER.error("Could not parse activity as UserDTO. " + "JSON was: " + userJson, ex);
             }
 
@@ -381,14 +381,14 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
         return hasAccess;
     }
 
-    private boolean hasAccessToChangeRequest(final JsonNode crJson) {
+    private boolean hasAccessToChangeRequest(JsonNode crJson) {
         if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             ChangeRequest cr = null;
             try {
                 cr = jsonMapper.convertValue(crJson, ChangeRequest.class);
-            } catch (final Exception ex) {
+            } catch (Exception ex) {
                 LOGGER.error("Could not parse activity as ChangeReqest. " + "JSON was: " + crJson, ex);
             }
 

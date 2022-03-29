@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.AnnouncementDTO;
+import gov.healthit.chpl.domain.Announcement;
 import gov.healthit.chpl.entity.AnnouncementEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -20,7 +20,7 @@ import gov.healthit.chpl.util.AuthUtil;
 public class AnnouncementDAO extends BaseDAOImpl {
 
     @Transactional
-    public AnnouncementDTO create(AnnouncementDTO dto) throws EntityRetrievalException, EntityCreationException {
+    public Announcement create(Announcement dto) throws EntityRetrievalException, EntityCreationException {
         AnnouncementEntity entity = null;
         try {
             if (dto.getId() != null) {
@@ -82,12 +82,12 @@ public class AnnouncementDAO extends BaseDAOImpl {
             }
 
             create(entity);
-            return new AnnouncementDTO(entity);
+            return new Announcement(entity);
         }
     }
 
     @Transactional
-    public AnnouncementDTO update(AnnouncementDTO dto, boolean includeDeleted) throws EntityRetrievalException {
+    public Announcement update(Announcement dto, boolean includeDeleted) throws EntityRetrievalException {
 
         AnnouncementEntity entity = getEntityById(dto.getId(), includeDeleted);
         if (entity == null) {
@@ -133,7 +133,7 @@ public class AnnouncementDAO extends BaseDAOImpl {
         }
 
         update(entity);
-        return new AnnouncementDTO(entity);
+        return new Announcement(entity);
     }
 
     @Transactional
@@ -148,46 +148,46 @@ public class AnnouncementDAO extends BaseDAOImpl {
 
     }
 
-    public List<AnnouncementDTO> findCurrent() {
+    public List<Announcement> findCurrent() {
 
         List<AnnouncementEntity> entities = getAllCurrentEntities();
-        List<AnnouncementDTO> announcements = new ArrayList<>();
+        List<Announcement> announcements = new ArrayList<>();
 
         for (AnnouncementEntity entity : entities) {
-            AnnouncementDTO announcement = new AnnouncementDTO(entity);
+            Announcement announcement = new Announcement(entity);
             announcements.add(announcement);
         }
         return announcements;
 
     }
 
-    public List<AnnouncementDTO> findAllCurrentAndFuture() {
+    public List<Announcement> findAllCurrentAndFuture() {
 
         List<AnnouncementEntity> entities = getAllEntitiesCurrentAndFuture();
-        List<AnnouncementDTO> announcements = new ArrayList<>();
+        List<Announcement> announcements = new ArrayList<>();
 
         for (AnnouncementEntity entity : entities) {
-            AnnouncementDTO announcement = new AnnouncementDTO(entity);
+            Announcement announcement = new Announcement(entity);
             announcements.add(announcement);
         }
         return announcements;
 
     }
 
-    public List<AnnouncementDTO> findAllFuture() {
+    public List<Announcement> findAllFuture() {
 
         List<AnnouncementEntity> entities = getAllEntitiesFuture();
-        List<AnnouncementDTO> announcements = new ArrayList<>();
+        List<Announcement> announcements = new ArrayList<>();
 
         for (AnnouncementEntity entity : entities) {
-            AnnouncementDTO announcement = new AnnouncementDTO(entity);
+            Announcement announcement = new Announcement(entity);
             announcements.add(announcement);
         }
         return announcements;
 
     }
 
-    public List<AnnouncementDTO> findAll(boolean includeDeleted, boolean includePrivate) {
+    public List<Announcement> findAll(boolean includeDeleted, boolean includePrivate) {
         String hql = "SELECT a "
                 + "FROM AnnouncementEntity a ";
         if (!includePrivate) {
@@ -204,29 +204,29 @@ public class AnnouncementDAO extends BaseDAOImpl {
 
         Query query = entityManager.createQuery(hql);
         List<AnnouncementEntity> entities = query.getResultList();
-        List<AnnouncementDTO> announcements = new ArrayList<>();
-        entities.stream().forEach(entity -> announcements.add(new AnnouncementDTO(entity)));
+        List<Announcement> announcements = new ArrayList<>();
+        entities.stream().forEach(entity -> announcements.add(new Announcement(entity)));
         return announcements;
     }
 
-    public AnnouncementDTO getById(Long announcementId, boolean includeDeleted) throws EntityRetrievalException {
+    public Announcement getById(Long announcementId, boolean includeDeleted) throws EntityRetrievalException {
         AnnouncementEntity entity = getEntityById(announcementId, includeDeleted);
 
-        AnnouncementDTO dto = null;
+        Announcement dto = null;
         if (entity != null) {
-            dto = new AnnouncementDTO(entity);
+            dto = new Announcement(entity);
         }
         return dto;
 
     }
 
-    public AnnouncementDTO getByIdToUpdate(Long announcementId, boolean includeDeleted)
+    public Announcement getByIdToUpdate(Long announcementId, boolean includeDeleted)
             throws EntityRetrievalException {
         AnnouncementEntity entity = getEntityById(announcementId, includeDeleted);
 
-        AnnouncementDTO dto = null;
+        Announcement dto = null;
         if (entity != null) {
-            dto = new AnnouncementDTO(entity);
+            dto = new Announcement(entity);
         }
         return dto;
 
