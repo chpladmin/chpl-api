@@ -3,8 +3,6 @@ package gov.healthit.chpl.web.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.NotImplementedException;
-import org.ff4j.FF4j;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.caching.CacheNames;
@@ -67,7 +64,6 @@ public class DeveloperController {
     private UserPermissionsManager userPermissionsManager;
     private AttestationManager attestationManager;
     private DirectReviewCachingService directReviewService;
-    private FF4j ff4j;
 
     @Autowired
     public DeveloperController(DeveloperManager developerManager,
@@ -75,14 +71,12 @@ public class DeveloperController {
             UserPermissionsManager userPermissionsManager,
             AttestationManager attestationManager,
             ErrorMessageUtil msgUtil,
-            DirectReviewCachingService directReviewService,
-            FF4j ff4j) {
+            DirectReviewCachingService directReviewService) {
         this.developerManager = developerManager;
         this.userPermissionsManager = userPermissionsManager;
         this.attestationManager = attestationManager;
         this.msgUtil = msgUtil;
         this.directReviewService = directReviewService;
-        this.ff4j = ff4j;
     }
 
     @Operation(summary = "List all developers in the system.",
@@ -288,9 +282,6 @@ public class DeveloperController {
             })
     @RequestMapping(value = "/{developerId}/attestations", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody DeveloperAttestationSubmissionResults getAttestations(@PathVariable("developerId") Long developerId) throws InvalidArgumentsException, EntityRetrievalException {
-        if (!ff4j.check(FeatureList.ATTESTATIONS)) {
-            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
-        }
         return DeveloperAttestationSubmissionResults.builder()
                 .developerAttestations(attestationManager.getDeveloperAttestations(developerId))
                 .canSubmitAttestationChangeRequest(attestationManager.canDeveloperSubmitChangeRequest(developerId))
@@ -307,9 +298,6 @@ public class DeveloperController {
     @RequestMapping(value = "/{developerId}/attestations/exception", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(@PathVariable("developerId") Long developerId)
             throws EntityRetrievalException, ValidationException {
-        if (!ff4j.check(FeatureList.ATTESTATIONS)) {
-            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
-        }
         return attestationManager.createAttestationPeriodDeveloperException(developerId);
     }
 }

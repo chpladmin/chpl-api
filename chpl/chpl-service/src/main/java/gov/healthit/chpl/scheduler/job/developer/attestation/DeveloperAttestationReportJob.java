@@ -19,7 +19,6 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
@@ -79,25 +78,19 @@ public class DeveloperAttestationReportJob implements Job {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
-                    if (!ff4j.check(FeatureList.ATTESTATIONS)) {
-                        LOGGER.info("Sending report not implemented email to: {}", context.getMergedJobDataMap().getString("email"));
-                        sendNotImplementedEmail(context);
-
-                    } else {
-                        List<DeveloperAttestationReport> reportRows = developerAttestationReportDataCollection.collect(getAcbIds(context));
-                        File csv = developerAttestationReportCsvWriter.generateFile(reportRows);
-                        chplEmailFactory.emailBuilder()
-                                .recipient(context.getMergedJobDataMap().getString("email"))
-                                .subject(emailSubject)
-                                .fileAttachments(Arrays.asList(csv))
-                                .htmlMessage(chplHtmlEmailBuilder.initialize()
-                                        .heading(emailSubject)
-                                        .paragraph(String.format(emailBody), getAcbNamesAsBrSeparatedList(context))
-                                        .footer(true)
-                                        .build())
-                                .sendEmail();
-                        LOGGER.info("Report sent to: {}", context.getMergedJobDataMap().getString("email"));
-                    }
+                    List<DeveloperAttestationReport> reportRows = developerAttestationReportDataCollection.collect(getAcbIds(context));
+                    File csv = developerAttestationReportCsvWriter.generateFile(reportRows);
+                    chplEmailFactory.emailBuilder()
+                            .recipient(context.getMergedJobDataMap().getString("email"))
+                            .subject(emailSubject)
+                            .fileAttachments(Arrays.asList(csv))
+                            .htmlMessage(chplHtmlEmailBuilder.initialize()
+                                    .heading(emailSubject)
+                                    .paragraph(String.format(emailBody), getAcbNamesAsBrSeparatedList(context))
+                                    .footer(true)
+                                    .build())
+                            .sendEmail();
+                    LOGGER.info("Report sent to: {}", context.getMergedJobDataMap().getString("email"));
                 } catch (Exception e) {
                     LOGGER.catching(e);
                 }
