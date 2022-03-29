@@ -101,29 +101,27 @@ public class AnnouncementController {
         return createAnnouncement(announcementInfo);
     }
 
-    private Announcement createAnnouncement(Announcement announcementInfo) throws InvalidArgumentsException,
+    private Announcement createAnnouncement(Announcement announcement) throws InvalidArgumentsException,
             UserRetrievalException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
-
-        Announcement toCreate = new Announcement();
-        if (StringUtils.isEmpty(announcementInfo.getTitle())) {
+        if (!StringUtils.hasText(announcement.getTitle())) {
             throw new InvalidArgumentsException("A title is required for a new announcement");
-        } else {
-            toCreate.setTitle(announcementInfo.getTitle());
-        }
-        toCreate.setText(announcementInfo.getText());
-        if (StringUtils.isEmpty(announcementInfo.getStartDate())) {
+        };
+        if (announcement.getStartDateTime() == null) {
             throw new InvalidArgumentsException("A start date is required for a new announcement");
-        } else {
-            toCreate.setStartDate(announcementInfo.getStartDate());
         }
-        if (StringUtils.isEmpty(announcementInfo.getEndDate())) {
+        if (announcement.getEndDateTime() == null) {
             throw new InvalidArgumentsException("An end date is required for a new announcement");
-        } else {
-            toCreate.setEndDate(announcementInfo.getEndDate());
         }
-        toCreate.setIsPublic(announcementInfo.getIsPublic() != null ? announcementInfo.getIsPublic() : Boolean.FALSE);
-        toCreate = announcementManager.create(toCreate);
-        return toCreate;
+        Announcement toCreate = Announcement.builder()
+                .title(announcement.getTitle())
+                .text(announcement.getText())
+                .startDateTime(announcement.getStartDateTime())
+                .endDateTime(announcement.getEndDateTime())
+                .isPublic(announcement.getIsPublic())
+                .build();
+
+        Announcement result = announcementManager.create(toCreate);
+        return result;
     }
 
     @Operation(summary = "Change an existing announcement.",
@@ -142,16 +140,16 @@ public class AnnouncementController {
         return update(announcementInfo);
     }
 
-    private Announcement update(Announcement announcementInfo) throws InvalidArgumentsException,
+    private Announcement update(Announcement announcement) throws InvalidArgumentsException,
             EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
-        Announcement toUpdate = new Announcement();
-        toUpdate.setId(announcementInfo.getId());
-        toUpdate.setTitle(announcementInfo.getTitle());
-        toUpdate.setText(announcementInfo.getText());
-        toUpdate.setIsPublic(announcementInfo.getIsPublic());
-        toUpdate.setStartDate(announcementInfo.getStartDate());
-        toUpdate.setEndDate(announcementInfo.getEndDate());
-
+        Announcement toUpdate = Announcement.builder()
+                .id(announcement.getId())
+                .title(announcement.getTitle())
+                .text(announcement.getText())
+                .startDateTime(announcement.getStartDateTime())
+                .endDateTime(announcement.getEndDateTime())
+                .isPublic(announcement.getIsPublic())
+                .build();
         Announcement result = announcementManager.update(toUpdate);
         return result;
     }
