@@ -26,6 +26,7 @@ import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
 import gov.healthit.chpl.web.controller.results.AnnouncementResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -48,9 +49,10 @@ public class AnnouncementController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @DeprecatedResponseFields(responseClass = AnnouncementResults.class)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.FOUR_HOURS)
     public @ResponseBody AnnouncementResults getAnnouncements(
-            @RequestParam(required = false, defaultValue = "false") final boolean future) {
+            @RequestParam(required = false, defaultValue = "false") boolean future) {
         AnnouncementResults results = new AnnouncementResults();
         List<Announcement> announcements = null;
         if (!future) {
@@ -75,8 +77,9 @@ public class AnnouncementController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @Deprecated
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.FOUR_HOURS)
-    public @ResponseBody Announcement getAnnouncementById(@PathVariable("announcementId") final Long announcementId)
+    public @ResponseBody Announcement getAnnouncementById(@PathVariable("announcementId") Long announcementId)
             throws EntityRetrievalException {
         Announcement announcement = announcementManager.getById(announcementId);
 
@@ -89,15 +92,16 @@ public class AnnouncementController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
+    @DeprecatedResponseFields(responseClass = Announcement.class)
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public Announcement create(@RequestBody final Announcement announcementInfo) throws InvalidArgumentsException,
+    public Announcement create(@RequestBody Announcement announcementInfo) throws InvalidArgumentsException,
             UserRetrievalException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
         return createAnnouncement(announcementInfo);
     }
 
-    private Announcement createAnnouncement(final Announcement announcementInfo) throws InvalidArgumentsException,
+    private Announcement createAnnouncement(Announcement announcementInfo) throws InvalidArgumentsException,
             UserRetrievalException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
         Announcement toCreate = new Announcement();
@@ -128,16 +132,17 @@ public class AnnouncementController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
+    @DeprecatedResponseFields(responseClass = Announcement.class)
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public Announcement updateAnnouncement(@RequestBody final Announcement announcementInfo)
+    public Announcement updateAnnouncement(@RequestBody Announcement announcementInfo)
             throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateCertifiedBodyException {
 
         return update(announcementInfo);
     }
 
-    private Announcement update(final Announcement announcementInfo) throws InvalidArgumentsException,
+    private Announcement update(Announcement announcementInfo) throws InvalidArgumentsException,
             EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
         Announcement toUpdate = new Announcement();
         toUpdate.setId(announcementInfo.getId());
@@ -159,13 +164,13 @@ public class AnnouncementController {
             })
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
-    public String deleteAnnouncement(@PathVariable("announcementId") final Long announcementId)
+    public String deleteAnnouncement(@PathVariable("announcementId") Long announcementId)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
 
         return delete(announcementId);
     }
 
-    private String delete(final Long announcementId)
+    private String delete(Long announcementId)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
 
         Announcement toDelete = announcementManager.getById(announcementId, false);
