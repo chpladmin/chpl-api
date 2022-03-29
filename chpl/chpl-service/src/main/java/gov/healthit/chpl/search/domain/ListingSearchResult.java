@@ -125,7 +125,8 @@ public class ListingSearchResult implements Serializable {
     @SuperBuilder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class IdNamePairSearchResult {
+    public static class IdNamePairSearchResult implements Serializable {
+        private static final long serialVersionUID = -2377078036832863130L;
         private Long id;
         private String name;
     }
@@ -135,6 +136,7 @@ public class ListingSearchResult implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DeveloperSearchResult extends IdNamePairSearchResult {
+        private static final long serialVersionUID = 2613618482034013795L;
         private IdNamePairSearchResult status;
     }
 
@@ -142,7 +144,8 @@ public class ListingSearchResult implements Serializable {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class PromotingInteroperabilitySearchResult {
+    public static class PromotingInteroperabilitySearchResult implements Serializable {
+        private static final long serialVersionUID = 2278077507370451530L;
         private Long userCount;
         @JsonDeserialize(using = LocalDateDeserializer.class)
         @JsonSerialize(using = LocalDateSerializer.class)
@@ -153,7 +156,8 @@ public class ListingSearchResult implements Serializable {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CertificationCriterionSearchResult {
+    public static class CertificationCriterionSearchResult implements Serializable  {
+        private static final long serialVersionUID = -3239646505785162609L;
         private Long id;
         private String number;
         private String title;
@@ -163,7 +167,8 @@ public class ListingSearchResult implements Serializable {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CertificationCriterionSearchResultWithStringField {
+    public static class CertificationCriterionSearchResultWithStringField implements Serializable  {
+        private static final long serialVersionUID = 2228742866328063730L;
         private CertificationCriterionSearchResult criterion;
         private String value;
     }
@@ -172,7 +177,8 @@ public class ListingSearchResult implements Serializable {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CQMSearchResult {
+    public static class CQMSearchResult implements Serializable {
+        private static final long serialVersionUID = 4266643022213089438L;
         private Long id;
         private String number;
     }
@@ -181,7 +187,8 @@ public class ListingSearchResult implements Serializable {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class StatusEventSearchResult {
+    public static class StatusEventSearchResult implements Serializable {
+        private static final long serialVersionUID = -6553219041130182281L;
         @JsonDeserialize(using = LocalDateDeserializer.class)
         @JsonSerialize(using = LocalDateSerializer.class)
         private LocalDate statusStart;
@@ -192,7 +199,8 @@ public class ListingSearchResult implements Serializable {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class DateRangeSearchResult {
+    public static class DateRangeSearchResult implements Serializable {
+        private static final long serialVersionUID = 3820451684223011046L;
         @JsonDeserialize(using = LocalDateDeserializer.class)
         @JsonSerialize(using = LocalDateSerializer.class)
         private LocalDate start;
