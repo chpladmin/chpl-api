@@ -29,8 +29,9 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
 
         ChangeRequestAttestationSubmission attestationSubmission = getChangeRequestAttestationFromMap((HashMap) context.getNewChangeRequest().getDetails());
 
+        getMessages().addAll(validateSignature(context, attestationSubmission));
+
         if (isChangeRequestNew(context)) {
-            getMessages().addAll(validateSignature(context, attestationSubmission));
             getMessages().addAll(canDeveloperSubmitChangeRequest(context));
         }
 
