@@ -34,7 +34,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "conformanceMethodConversionJobLogger")
 public class ConformanceMethodConversionJob extends CertifiedProduct2015Gatherer implements Job {
     private static final String WILDCARD = "*";
 
