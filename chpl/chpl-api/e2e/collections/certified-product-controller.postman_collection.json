@@ -387,11 +387,9 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"/search/beta end point response should have meaningfulUseUserHistory and promotingInteroperabilityUserHistory fields\", function () {\r",
+									"pm.test(\"/search/beta end point response should have promotingInteroperabilityUserHistory fields\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.response.to.have.status(200);\r",
-									"    pm.expect(jsonData.results[0]).to.have.property('numMeaningfulUse');\r",
-									"    pm.expect(jsonData.results[0]).to.have.property('numMeaningfulUseDate');\r",
 									"    pm.expect(jsonData.results[0]).to.have.property('promotingInteroperabilityUserCount');\r",
 									"    pm.expect(jsonData.results[0]).to.have.property('promotingInteroperabilityUserDate');\r",
 									"});"
