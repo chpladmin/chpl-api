@@ -29,7 +29,6 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
-import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
 import gov.healthit.chpl.service.DirectReviewUpdateEmailService;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -50,9 +49,6 @@ public class TransactionalDeveloperMergeManager {
 
     @Autowired
     private CertifiedProductDetailsManager cpdManager;
-
-    @Autowired
-    private SchedulerCertifiedProductSearchDetailsAsync schedulerCertifiedProductSearchDetailsAsync;
 
     @Autowired
     private ActivityManager activityManager;
@@ -82,7 +78,7 @@ public class TransactionalDeveloperMergeManager {
             // need to get details for affected listings now before the product is re-assigned
             // so that any listings with a generated new-style CHPL ID have the old developer code
             List<Future<CertifiedProductSearchDetails>> beforeListingFutures
-                = getCertifiedProductSearchDetailsFuturesFromCache(affectedListings);
+                = getCurrentCertifiedProductSearchDetailsFutures(affectedListings);
             for (Future<CertifiedProductSearchDetails> future : beforeListingFutures) {
                 CertifiedProductSearchDetails details = future.get();
                 LOGGER.info("Complete retrieving details for id: " + details.getId());
@@ -141,22 +137,6 @@ public class TransactionalDeveloperMergeManager {
                 beforeDevelopers, afterDeveloper);
 
         return createdDeveloper;
-    }
-
-    private List<Future<CertifiedProductSearchDetails>> getCertifiedProductSearchDetailsFuturesFromCache(
-            List<CertifiedProductDetailsDTO> listings) throws Exception {
-
-        List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
-        for (CertifiedProductDetailsDTO currListing : listings) {
-            try {
-                LOGGER.info("Getting details for affected listing " + currListing.getChplProductNumber());
-                futures.add(schedulerCertifiedProductSearchDetailsAsync.getCertifiedProductDetail(
-                        currListing.getId(), cpdManager));
-            } catch (EntityRetrievalException e) {
-                LOGGER.error("Could not retrieve certified product details for id: " + currListing.getId(), e);
-            }
-        }
-        return futures;
     }
 
     private List<Future<CertifiedProductSearchDetails>> getCurrentCertifiedProductSearchDetailsFutures(
