@@ -113,7 +113,7 @@ public class ConformanceMethodConversionJob extends CertifiedProduct2015Gatherer
     }
 
     private Boolean doesTestProcedureMatchRule(CertificationResultTestProcedure crtp, Boolean hasGap, ConversionRule rule) {
-        Boolean gapCheck = rule.hasGap == null ? true : hasGap;
+        Boolean gapCheck = rule.getHasGap() == null ? true : hasGap == rule.getHasGap();
         return (StringUtils.isNotEmpty(crtp.getTestProcedure().getName())
                         && rule.getTestProcedureName().equals(WILDCARD)
                         && gapCheck)
@@ -221,7 +221,7 @@ public class ConformanceMethodConversionJob extends CertifiedProduct2015Gatherer
 
         @Override
         public String toString() {
-            return String.format("Criterion: %s - Converted TP(%s) to CM(%s)", criterion.getNumber(), testProcedureName, conformanceMethodName);
+            return String.format("Criterion: %s - Convert TP(%s) to CM(%s)", criterion.getNumber(), testProcedureName, conformanceMethodName);
         }
     }
 
