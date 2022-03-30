@@ -96,7 +96,7 @@ public class ConformanceMethodConversionJob extends CertifiedProduct2015Gatherer
     }
 
     private void convertTestProcedureToConformanceMethod(CertifiedProductSearchDetails listing, CertificationResult cr,  CertificationResultTestProcedure crtp, ConversionRule rule) {
-        if (doesTestProcedureMatchRule(crtp, rule)) {
+        if (doesTestProcedureMatchRule(crtp, cr.isGap(), rule)) {
             deleteCertificationResultTestProcedure(crtp);
             addCertificationResultConformanceMethod(cr, rule.getConformanceMethodName(), crtp.getTestProcedureVersion());
             LOGGER.info(listing.getChplProductNumber() + " | " + rule.toString());
@@ -112,9 +112,14 @@ public class ConformanceMethodConversionJob extends CertifiedProduct2015Gatherer
         conformanceMethodConversionDAO.addCertificationResultConformanceMethod(cr.getId(), conformanceMethodName, version);
     }
 
-    private Boolean doesTestProcedureMatchRule(CertificationResultTestProcedure crtp, ConversionRule rule) {
-        return (StringUtils.isNotEmpty(crtp.getTestProcedure().getName()) && rule.getTestProcedureName().equals(WILDCARD))
-                || (StringUtils.isNotEmpty(crtp.getTestProcedure().getName()) && rule.getTestProcedureName().equals(crtp.getTestProcedure().getName()));
+    private Boolean doesTestProcedureMatchRule(CertificationResultTestProcedure crtp, Boolean hasGap, ConversionRule rule) {
+        Boolean gapCheck = rule.hasGap == null ? true : hasGap;
+        return (StringUtils.isNotEmpty(crtp.getTestProcedure().getName())
+                        && rule.getTestProcedureName().equals(WILDCARD)
+                        && gapCheck)
+                || (StringUtils.isNotEmpty(crtp.getTestProcedure().getName())
+                        && rule.getTestProcedureName().equals(crtp.getTestProcedure().getName())
+                        && gapCheck);
     }
 
     private List<ConversionRule> getConversionRules() {
