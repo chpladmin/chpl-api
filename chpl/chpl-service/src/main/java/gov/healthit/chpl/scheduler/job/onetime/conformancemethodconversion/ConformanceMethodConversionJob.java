@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -18,6 +19,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.conformanceMethod.entity.ConformanceMethodEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -47,35 +49,43 @@ public class ConformanceMethodConversionJob extends CertifiedProduct2015Gatherer
     @Autowired
     private JpaTransactionManager txManager;
 
+    @Autowired
+    private FF4j ff4j;
+
     private List<ConversionRule> conversionRules;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Conformance Method Conversion job. *********");
-        conversionRules = getConversionRules();
 
-        // We need to manually create a transaction in this case because of how AOP works. When a method is
-        // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
-        // The object's proxy is not called when the method is called from within this class. The object's proxy
-        // is called when the method is public and is called from a different object.
-        // https://stackoverflow.com/questions/3037006/starting-new-transaction-in-spring-bean
-        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
-        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        txTemplate.execute(new TransactionCallbackWithoutResult() {
+        if (ff4j.check(FeatureList.CONFORMANCE_METHOD)) {
+            conversionRules = getConversionRules();
 
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                try {
+            // We need to manually create a transaction in this case because of how AOP works. When a method is
+            // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
+            // The object's proxy is not called when the method is called from within this class. The object's proxy
+            // is called when the method is public and is called from a different object.
+            // https://stackoverflow.com/questions/3037006/starting-new-transaction-in-spring-bean
+            TransactionTemplate txTemplate = new TransactionTemplate(txManager);
+            txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+            txTemplate.execute(new TransactionCallbackWithoutResult() {
 
-                    getAll2015CertifiedProducts(LOGGER, 2).stream()
-                        .forEach(listing -> convertListing(listing));
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus status) {
+                    try {
 
-                } catch (Exception e) {
-                    LOGGER.error(e);
+                        getAll2015CertifiedProducts(LOGGER, 2).stream()
+                            .forEach(listing -> convertListing(listing));
+
+                    } catch (Exception e) {
+                        LOGGER.error(e);
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            LOGGER.info("Could not run job - 'conformance-method' flag is not on.");
+        }
         LOGGER.info("********* Completed the Conformance Method Conversion job. *********");
     }
 
