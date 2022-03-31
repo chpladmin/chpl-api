@@ -14,7 +14,7 @@
     <name>chpl-service library</name>
 
     <properties>
-      <jackson.version>2.13.1</jackson.version>
+      <jackson.version>2.13.2.1</jackson.version>
       <poi.version>5.2.0</poi.version>
     </properties>
 
