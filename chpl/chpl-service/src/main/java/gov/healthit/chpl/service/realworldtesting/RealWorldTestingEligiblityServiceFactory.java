@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.activity.history.ListingActivityUtil;
 import gov.healthit.chpl.activity.history.explorer.RealWorldTestingEligibilityActivityExplorer;
+import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 
@@ -26,20 +27,23 @@ public class RealWorldTestingEligiblityServiceFactory {
     private CertificationCriterionService criterionService;
     private RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer;
     private ListingActivityUtil listingActivityUtil;
+    private CertificationStatusEventsService certStatusService;
     private CertifiedProductDAO certifiedProductDAO;
 
     @Autowired
     public RealWorldTestingEligiblityServiceFactory(CertificationCriterionService criterionService, RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer,
-            ListingActivityUtil listingActivityUtil, CertifiedProductDAO certifiedProductDAO) {
+            ListingActivityUtil listingActivityUtil, CertificationStatusEventsService certStatusService, CertifiedProductDAO certifiedProductDAO) {
         this.criterionService = criterionService;
         this.realWorldTestingEligibilityActivityExplorer = realWorldTestingEligibilityActivityExplorer;
         this.listingActivityUtil = listingActivityUtil;
+        this.certStatusService = certStatusService;
         this.certifiedProductDAO = certifiedProductDAO;
     }
 
     public RealWorldTestingEligiblityService getInstance() {
        return  new RealWorldTestingEligiblityService(criterionService, realWorldTestingEligibilityActivityExplorer,
-               listingActivityUtil, certifiedProductDAO, eligibleCriteriaKeys, rwtProgramStartDate, rwtProgramFirstEligibilityYear);
+               certStatusService, listingActivityUtil, certifiedProductDAO, eligibleCriteriaKeys,
+               rwtProgramStartDate, rwtProgramFirstEligibilityYear);
     }
 
 }
