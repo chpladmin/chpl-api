@@ -636,7 +636,7 @@ public class ListingSearchServiceTest {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setChplProductNumber("15.02.02.3007.A055.01.00.0.180214");
         allListings.get(0).setPreviousChplProductNumbers(Stream.of("15.02.02.3007.A056.01.00.0.180215")
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toList()));
         allListings.get(1).setChplProductNumber("CHP-123456");
         allListings.get(2).setChplProductNumber("15.02.02.3007.A056.01.00.0.180215");
         Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
