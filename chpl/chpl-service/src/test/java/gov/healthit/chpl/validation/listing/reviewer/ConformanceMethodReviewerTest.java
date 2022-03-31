@@ -24,6 +24,8 @@ import gov.healthit.chpl.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -34,6 +36,7 @@ public class ConformanceMethodReviewerTest {
     private static final String MISSING_CM_VERSION_MSG = "Conformance Method Version is required for certification %s with Conformance Method \"%s\".";
     private static final String UNALLOWED_CM_VERSION_MSG = "Conformance Method Version is not allowed for certification %s with Conformance Method \"%s\".";
     private static final String INVALID_CRITERIA_MSG = "Conformance Method \"%s\" is not valid for criteria %s.";
+    private static final String F3_GAP_MISMATCH_MSG = "Certification %s cannot use Conformance Method \"%s\" since GAP is %s.";
 
     private ConformanceMethodDAO conformanceMethodDAO;
     private ErrorMessageUtil msgUtil;
@@ -46,6 +49,7 @@ public class ConformanceMethodReviewerTest {
     public void before() throws EntityRetrievalException {
         conformanceMethodDAO = Mockito.mock(ConformanceMethodDAO.class);
         Mockito.when(conformanceMethodDAO.getByCriterionId(1L)).thenReturn(getConformanceMethods());
+        Mockito.when(conformanceMethodDAO.getByCriterionId(getF3().getId())).thenReturn(getConformanceMethods());
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethodNotApplicable"), ArgumentMatchers.anyString()))
@@ -61,18 +65,25 @@ public class ConformanceMethodReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.invalidCriteria"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_CRITERIA_MSG, i.getArgument(1), i.getArgument(2)));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.f3GapMismatch"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(F3_GAP_MISMATCH_MSG, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
 
         certResultRules = Mockito.mock(CertificationResultRules.class);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(),
                 ArgumentMatchers.eq(CertificationResultRules.CONFORMANCE_METHOD)))
             .thenReturn(true);
 
+        CertificationCriterionService criterionService = Mockito.mock(CertificationCriterionService.class);
+        Mockito.when(criterionService.get(ArgumentMatchers.eq(Criteria2015.F_3)))
+            .thenReturn(getF3());
+
         ff4j = Mockito.mock(FF4j.class);
         Mockito.when(ff4j.check(FeatureList.CONFORMANCE_METHOD))
             .thenReturn(true);
 
         conformanceMethodReviewer = new ConformanceMethodReviewer(conformanceMethodDAO, msgUtil,
-                new ValidationUtils(), certResultRules,
+                new ValidationUtils(), certResultRules, criterionService,
                 resourcePermissions, ff4j);
     }
 
@@ -283,6 +294,118 @@ public class ConformanceMethodReviewerTest {
     }
 
     @Test
+    public void review_conformanceMethodF3HasGapAndNonGapConformanceMethod_hasError() {
+        CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
+                .conformanceMethod(ConformanceMethod.builder()
+                        .id(2L)
+                        .name("ONC Test Procedure")
+                        .build())
+                .conformanceMethodVersion("1.1")
+                .build();
+
+        List<CertificationResultConformanceMethod> crcms = new ArrayList<CertificationResultConformanceMethod>();
+        crcms.add(crcm);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .gap(true)
+                        .criterion(getF3())
+                        .conformanceMethods(crcms)
+                        .build())
+                .certificationEdition(get2015CertificationEdition())
+                .build();
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(F3_GAP_MISMATCH_MSG, "170.315 (f)(3)", "ONC Test Procedure", "true")));
+    }
+
+    @Test
+    public void review_conformanceMethodF3DoesNotHaveGapAndHasGapConformanceMethod_hasError() {
+        CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
+                .conformanceMethod(ConformanceMethod.builder()
+                        .id(1L)
+                        .name("Attestation")
+                        .build())
+                .build();
+
+        List<CertificationResultConformanceMethod> crcms = new ArrayList<CertificationResultConformanceMethod>();
+        crcms.add(crcm);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .gap(false)
+                        .criterion(getF3())
+                        .conformanceMethods(crcms)
+                        .build())
+                .certificationEdition(get2015CertificationEdition())
+                .build();
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(F3_GAP_MISMATCH_MSG, "170.315 (f)(3)", "Attestation", "false")));
+    }
+
+    @Test
+    public void review_conformanceMethodF3DoesNotHaveGapAndHasNonGapConformanceMethod_noError() {
+        CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
+                .conformanceMethod(ConformanceMethod.builder()
+                        .id(2L)
+                        .name("ONC Test Procedure")
+                        .build())
+                .conformanceMethodVersion("1.1")
+                .build();
+
+        List<CertificationResultConformanceMethod> crcms = new ArrayList<CertificationResultConformanceMethod>();
+        crcms.add(crcm);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .gap(false)
+                        .criterion(getF3())
+                        .conformanceMethods(crcms)
+                        .build())
+                .certificationEdition(get2015CertificationEdition())
+                .build();
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_conformanceMethodF3HasGapAndHasGapConformanceMethod_noError() {
+        CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
+                .conformanceMethod(ConformanceMethod.builder()
+                        .id(1L)
+                        .name("Attestation")
+                        .build())
+                .build();
+
+        List<CertificationResultConformanceMethod> crcms = new ArrayList<CertificationResultConformanceMethod>();
+        crcms.add(crcm);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .gap(true)
+                        .criterion(getF3())
+                        .conformanceMethods(crcms)
+                        .build())
+                .certificationEdition(get2015CertificationEdition())
+                .build();
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
     public void review_validConformanceMethodAndValidCriterion_noErrorsNoWarnings() {
         CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
                 .conformanceMethod(ConformanceMethod.builder()
@@ -324,6 +447,14 @@ public class ConformanceMethodReviewerTest {
                 .name("ONC Test Procedure")
                 .build());
         return cms;
+    }
+
+    private CertificationCriterion getF3() {
+        return CertificationCriterion.builder()
+                .id(10L)
+                .number("170.315 (f)(3)")
+                .title("f3 title")
+                .build();
     }
 
     private Map<String, Object> get2015CertificationEdition() {
