@@ -109,7 +109,11 @@ public class ConformanceMethodConversionJob extends CertifiedProduct2015Gatherer
         if (doesTestProcedureMatchRule(crtp, cr.isGap(), rule)) {
             deleteCertificationResultTestProcedure(crtp);
             addCertificationResultConformanceMethod(cr, rule.getConformanceMethodName(), crtp.getTestProcedureVersion());
-            LOGGER.info(listing.getChplProductNumber() + " | " + rule.toString());
+            LOGGER.info(listing.getChplProductNumber() + " | "
+                    + String.format("Criterion: %s - Convert TP(%s) to CM(%s)",
+                            CertificationCriterionService.formatCriteriaNumber(cr.getCriterion()),
+                            crtp.getTestProcedure().getName(),
+                            rule.getConformanceMethodName()));
         }
     }
 
