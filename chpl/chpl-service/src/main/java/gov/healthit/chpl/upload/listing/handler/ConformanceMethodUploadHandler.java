@@ -75,13 +75,13 @@ public class ConformanceMethodUploadHandler {
 
     private List<String> parseConformanceMethodNames(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.CONFORMANCE_METHOD, certHeadingRecord, certResultRecords);
+                Headings.TEST_PROCEDURE, certHeadingRecord, certResultRecords);
         return values;
     }
 
     private List<String> parseConformanceMethodVersions(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.CONFORMANCE_METHOD_VERSION, certHeadingRecord, certResultRecords);
+                Headings.TEST_PROCEDURE_VERSION, certHeadingRecord, certResultRecords);
         return values;
     }
 }

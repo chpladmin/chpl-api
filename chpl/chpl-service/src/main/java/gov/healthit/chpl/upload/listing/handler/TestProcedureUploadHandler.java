@@ -9,9 +9,11 @@ import java.util.stream.IntStream;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.TestProcedure;
 import gov.healthit.chpl.upload.listing.Headings;
@@ -20,13 +22,19 @@ import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 @Component("testProcedureUploadHandler")
 public class TestProcedureUploadHandler {
     private ListingUploadHandlerUtil uploadUtil;
+    private FF4j ff4j;
 
     @Autowired
-    public TestProcedureUploadHandler(ListingUploadHandlerUtil uploadUtil) {
+    public TestProcedureUploadHandler(ListingUploadHandlerUtil uploadUtil, FF4j ff4j) {
         this.uploadUtil = uploadUtil;
+        this.ff4j = ff4j;
     }
 
     public List<CertificationResultTestProcedure> handle(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
+        if (ff4j.check(FeatureList.CONFORMANCE_METHOD)) {
+            return new ArrayList<CertificationResultTestProcedure>();
+        }
+
         List<CertificationResultTestProcedure> testProcedures = new ArrayList<CertificationResultTestProcedure>();
         List<String> testProcedureNames = parseTestProceduredNames(certHeadingRecord, certResultRecords);
         List<String> testProcedureVersions = parseTestProcedureVersions(certHeadingRecord, certResultRecords);
