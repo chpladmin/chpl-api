@@ -16,9 +16,9 @@
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <org.springframework.version>5.3.15</org.springframework.version>
+        <org.springframework.version>5.3.18</org.springframework.version>
         <org.springsecurity.version>5.6.1</org.springsecurity.version>
-        <org.springboot.version>2.6.2</org.springboot.version>
+        <org.springboot.version>2.6.6</org.springboot.version>
         <java.version>17</java.version>
         <lombok.version>1.18.22</lombok.version>
         <log4j2.version>2.17.1</log4j2.version>
