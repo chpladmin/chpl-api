@@ -250,7 +250,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
         try {
             announcement = jsonMapper.convertValue(announcementJson, Announcement.class);
         } catch (Exception ex) {
-            LOGGER.error("Could not parse announcement activity as AnnouncementDTO." + "JSON was: " + announcementJson,
+            LOGGER.error("Could not parse announcement activity as Announcement." + "JSON was: " + announcementJson,
                     ex);
         }
 
