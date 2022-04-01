@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.ff4j.FF4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -40,9 +39,6 @@ public class DeveloperAttestationReportJob implements Job {
 
     @Autowired
     private CertificationBodyDAO certificationBodyDAO;
-
-    @Autowired
-    private FF4j ff4j;
 
     @Autowired
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
