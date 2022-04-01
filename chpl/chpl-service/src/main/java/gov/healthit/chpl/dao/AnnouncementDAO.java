@@ -1,6 +1,6 @@
 package gov.healthit.chpl.dao;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,8 +25,8 @@ public class AnnouncementDAO extends BaseDAOImpl {
         AnnouncementEntity entity = new AnnouncementEntity();
         entity.setTitle(announcement.getTitle());
         entity.setText(announcement.getText());
-        entity.setStartDate(new Date(DateUtil.toEpochMillis(announcement.getStartDateTime())));
-        entity.setEndDate(new Date(DateUtil.toEpochMillis(announcement.getEndDateTime())));
+        entity.setStartDate(announcement.getStartDateTime());
+        entity.setEndDate(announcement.getEndDateTime());
         entity.setIsPublic(announcement.getIsPublic());
         entity.setIsPublic(false);
         entity.setDeleted(false);
@@ -45,8 +45,8 @@ public class AnnouncementDAO extends BaseDAOImpl {
 
         entity.setText(announcement.getText());
         entity.setTitle(announcement.getTitle());
-        entity.setStartDate(new Date(DateUtil.toEpochMillis(announcement.getStartDateTime())));
-        entity.setEndDate(new Date(DateUtil.toEpochMillis(announcement.getEndDateTime())));
+        entity.setStartDate(announcement.getStartDateTime());
+        entity.setEndDate(announcement.getEndDateTime());
         entity.setIsPublic(announcement.getIsPublic());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
@@ -119,19 +119,19 @@ public class AnnouncementDAO extends BaseDAOImpl {
     }
 
     private List<AnnouncementEntity> getAllCurrentEntities() {
-        Date nowInEastern = DateUtil.getNowInEasternTime();
+        LocalDateTime nowInEastern = DateUtil.getNowInEasternTime();
         Query query = entityManager.createQuery(
                 "FROM AnnouncementEntity "
                         + "WHERE deleted = false "
-                        + "AND start_date <= :nowInEastern "
-                        + "AND end_date > :nowInEastern ",
+                        + "AND startDate <= :nowInEastern "
+                        + "AND endDate > :nowInEastern ",
                 AnnouncementEntity.class);
         query.setParameter("nowInEastern", nowInEastern);
         return query.getResultList();
     }
 
     private List<AnnouncementEntity> getAllEntitiesFuture() {
-        Date nowInEastern = DateUtil.getNowInEasternTime();
+        LocalDateTime nowInEastern = DateUtil.getNowInEasternTime();
         Query query = entityManager.createQuery("FROM AnnouncementEntity "
                         + "WHERE deleted = false "
                         + "AND (startDate > :nowInEastern)");
@@ -140,7 +140,7 @@ public class AnnouncementDAO extends BaseDAOImpl {
     }
 
     private List<AnnouncementEntity> getAllEntitiesCurrentAndFuture() {
-        Date nowInEastern = DateUtil.getNowInEasternTime();
+        LocalDateTime nowInEastern = DateUtil.getNowInEasternTime();
         Query query = entityManager.createQuery("FROM AnnouncementEntity "
                         + "WHERE deleted = false "
                         + "AND (endDate > :nowInEastern)");

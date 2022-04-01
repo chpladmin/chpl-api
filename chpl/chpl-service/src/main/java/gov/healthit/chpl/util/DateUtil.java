@@ -86,9 +86,11 @@ public final class DateUtil {
         return Instant.ofEpochMilli(epochMillis).atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
-    public static Date getNowInEasternTime() {
-        Date result = Date.from(ZonedDateTime.now().withZoneSameInstant(ZoneId.of(ET_ZONE_ID)).toInstant());
-        LOGGER.info("Now in Eastern Time: " + result);
-        return result;
+    public static LocalDateTime getNowInEasternTime() {
+        Instant nowUtc = Instant.now();
+        ZoneId eastern = ZoneId.of(ET_ZONE_ID);
+        LocalDateTime nowEastern = ZonedDateTime.ofInstant(nowUtc, eastern).toLocalDateTime();
+        LOGGER.info("Now in Eastern Time: " + nowEastern);
+        return nowEastern;
     }
 }

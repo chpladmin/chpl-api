@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -36,10 +37,10 @@ public class AnnouncementEntity {
     private String text;
 
     @Column(name = "start_date", nullable = false)
-    private Date startDate;
+    private LocalDateTime startDate;
 
     @Column(name = "end_date", nullable = false)
-    private Date endDate;
+    private LocalDateTime endDate;
 
     @Column(name = "ispublic", nullable = false)
     private Boolean isPublic;
@@ -61,10 +62,10 @@ public class AnnouncementEntity {
                 .id(this.getId())
                 .title(this.getTitle())
                 .text(this.getText())
-                .startDateTime(DateUtil.toLocalDateTime(this.getStartDate().getTime()))
-                .endDateTime(DateUtil.toLocalDateTime(this.getEndDate().getTime()))
-                .startDate(this.getStartDate())
-                .endDate(this.getEndDate())
+                .startDateTime(this.getStartDate())
+                .endDateTime(this.getEndDate())
+                .startDate(new Date(DateUtil.toEpochMillis(this.getStartDate())))
+                .endDate(new Date(DateUtil.toEpochMillis(this.getEndDate())))
                 .isPublic(this.getIsPublic())
                 .build();
     }
