@@ -10,7 +10,8 @@ public enum RequirementTypeEnum implements Serializable {
     K2("170.523 (k)(2)", true),
     L("170.523 (l)", false),
     ANNUAL_RWT_PLAN("Annual Real World Testing Plan", false),
-    ANNUAL_RWT_RESULTS("Annual Real World Testing Results", false);
+    ANNUAL_RWT_RESULTS("Annual Real World Testing Results", false),
+    SEMIANNUAL_ATTESTATIONS_SUBMISSION("Semiannual Attestations Submission", false);
 
     private String name;
     private Boolean removed;

@@ -35,18 +35,20 @@ public class CertificationResultConformanceMethod implements Serializable {
     private Long id;
 
     /**
-     * This variable explains the conformance method being used to test
-     * the associated criteria. It is applicable for 2015 Edition.
+     * The method used to evaluate compliance with a certification criterion. It is applicable for 2015 Edition.
+     * For the Test Procedure method, this also includes the version used during testing of the certification
+     * criterion functionality.
      */
     @XmlElement(required = true)
     private ConformanceMethod conformanceMethod;
 
     /**
-     * The conformance method version used for a given certification criteria. This
-     * variable is a string variable that does not take any restrictions on
-     * formatting or values and is applicable for 2014 and 2015 Edition.
+     * The conformance method version used for a given certification criteria.
+     * It is valid for Test Procedure method only.
+     * This variable is a string variable that does not take any restrictions on
+     * formatting or values and is applicable for 2015 Edition.
      */
-    @XmlElement(required = true)
+    @XmlElement(required = false)
     private String conformanceMethodVersion;
 
     public CertificationResultConformanceMethod() {
