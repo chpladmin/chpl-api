@@ -35,10 +35,9 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
 
         if (isChangeRequestNew(context)) {
             getMessages().addAll(canDeveloperSubmitChangeRequest(context));
-        } else {
-            if (hasAttestationInformationChanged(context)) {
+            getMessages().addAll(validateSignature(context, attestationSubmission));
+        } else if (hasAttestationInformationChanged(context)) {
                 getMessages().addAll(validateSignature(context, attestationSubmission));
-            }
         }
 
         getMessages().addAll(getMissingAttestations(attestationSubmission, attestationForm).stream()
@@ -58,7 +57,7 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
     private List<String> canDeveloperSubmitChangeRequest(ChangeRequestValidationContext context) {
         List<String> errors = new ArrayList<String>();
         try {
-            if (!context.getDomainManagers().getAttestationManager().canDeveloperSubmitChangeRequest(context.getNewChangeRequest().getDeveloper().getDeveloperId())) {
+            if (!context.getDomainManagers().getAttestationManager().canDeveloperSubmitChangeRequest(context.getNewChangeRequest().getDeveloper().getId())) {
                 errors.add(getErrorMessage("changeRequest.attestation.submissionWindow"));
             }
         } catch (EntityRetrievalException e) {
