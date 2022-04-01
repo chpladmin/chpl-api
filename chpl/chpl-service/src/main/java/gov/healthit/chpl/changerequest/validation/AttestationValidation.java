@@ -29,10 +29,13 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
 
         ChangeRequestAttestationSubmission attestationSubmission = getChangeRequestAttestationFromMap((HashMap) context.getNewChangeRequest().getDetails());
 
-        getMessages().addAll(validateSignature(context, attestationSubmission));
 
         if (isChangeRequestNew(context)) {
             getMessages().addAll(canDeveloperSubmitChangeRequest(context));
+        } else {
+            if (hasAttestationInformationChanged(context)) {
+                getMessages().addAll(validateSignature(context, attestationSubmission));
+            }
         }
 
         getMessages().addAll(getMissingAttestations(attestationSubmission, attestationForm).stream()
@@ -44,6 +47,7 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
                         getValidResponseText(resp.getResponse().getId(), attestationForm),
                         getAttestationText(resp.getAttestation().getId(), attestationForm)))
                 .collect(Collectors.toList()));
+
 
         return getMessages().size() == 0;
     }
@@ -125,5 +129,16 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
 
     private boolean isChangeRequestNew(ChangeRequestValidationContext context) {
         return context.getOrigChangeRequest() == null;
+    }
+
+    private boolean hasAttestationInformationChanged(ChangeRequestValidationContext context) {
+        ChangeRequestAttestationSubmission attestationSubmission = getChangeRequestAttestationFromMap((HashMap) context.getNewChangeRequest().getDetails());
+
+        if (!isChangeRequestNew(context)) {
+            ChangeRequestAttestationSubmission attestationOriginal = (ChangeRequestAttestationSubmission) context.getOrigChangeRequest().getDetails();
+            return !attestationSubmission.equals(attestationOriginal);
+        } else {
+            return false;
+        }
     }
 }
