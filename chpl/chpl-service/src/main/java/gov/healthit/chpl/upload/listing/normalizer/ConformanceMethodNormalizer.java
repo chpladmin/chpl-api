@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -64,11 +65,13 @@ public class ConformanceMethodNormalizer {
                 certResult.setConformanceMethods(new ArrayList<CertificationResultConformanceMethod>());
             }
 
-            ConformanceMethod defaultConformanceMethod = getDefaultConformanceMethodForCriteria(certResult.getCriterion());
-            if (defaultConformanceMethod != null) {
-                certResult.getConformanceMethods().add(CertificationResultConformanceMethod.builder()
-                        .conformanceMethod(defaultConformanceMethod)
-                        .build());
+            if (BooleanUtils.isTrue(certResult.isSuccess())) {
+                ConformanceMethod defaultConformanceMethod = getDefaultConformanceMethodForCriteria(certResult.getCriterion());
+                if (defaultConformanceMethod != null) {
+                    certResult.getConformanceMethods().add(CertificationResultConformanceMethod.builder()
+                            .conformanceMethod(defaultConformanceMethod)
+                            .build());
+                }
             }
         } else {
             certResult.getConformanceMethods().stream()

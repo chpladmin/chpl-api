@@ -138,6 +138,23 @@ public class ConformanceMethodNormalizerTest {
     }
 
     @Test
+    public void normalize_emptyConformanceMethodAndUnattestedCriteriaHasOneAllowed_NoDefaultPopulated() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(false)
+                        .criterion(CertificationCriterion.builder()
+                                .id(2L)
+                                .number("170.315 (b)(1)")
+                                .build())
+                        .conformanceMethods(new ArrayList<CertificationResultConformanceMethod>())
+                        .build())
+                .build();
+        normalizer.normalize(listing);
+        assertNotNull(listing.getCertificationResults().get(0).getConformanceMethods());
+        assertEquals(0, listing.getCertificationResults().get(0).getConformanceMethods().size());
+    }
+
+    @Test
     public void normalize_conformanceMethodNotAllowedForCriterion_idIsNull() {
         List<CertificationResultConformanceMethod> cms = new ArrayList<CertificationResultConformanceMethod>();
         cms.add(CertificationResultConformanceMethod.builder()
