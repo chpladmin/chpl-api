@@ -7,8 +7,6 @@ import java.util.Date;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.entity.AnnouncementEntity;
-import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.LocalDateTimeDeserializer;
 import gov.healthit.chpl.util.LocalDateTimeSerializer;
 import lombok.AllArgsConstructor;
@@ -23,7 +21,7 @@ import lombok.Setter;
 public class Announcement implements Serializable {
     private static final long serialVersionUID = -7647761708813529969L;
     private Long id;
-    public String title;
+    private String title;
     private String text;
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
@@ -43,20 +41,5 @@ public class Announcement implements Serializable {
 
     public Announcement() {
         super();
-    }
-
-    public Announcement(AnnouncementEntity entity) {
-        this.id = entity.getId();
-        this.title = entity.getTitle();
-        this.text = entity.getText();
-        this.startDate = entity.getStartDate();
-        this.endDate = entity.getEndDate();
-        this.startDateTime = DateUtil.toLocalDateTime(entity.getStartDate().getTime());
-        this.endDateTime = DateUtil.toLocalDateTime(entity.getEndDate().getTime());
-        this.isPublic = entity.getIsPublic();
-        this.deleted = entity.getDeleted();
-        this.lastModifiedDate = entity.getLastModifiedDate();
-        this.lastModifiedUser = entity.getLastModifiedUser();
-        this.creationDate = entity.getCreationDate();
     }
 }

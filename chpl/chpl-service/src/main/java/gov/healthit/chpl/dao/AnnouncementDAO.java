@@ -83,7 +83,7 @@ public class AnnouncementDAO extends BaseDAOImpl {
             }
 
             create(entity);
-            return new Announcement(entity);
+            return entity.toDomain();
         }
     }
 
@@ -134,7 +134,7 @@ public class AnnouncementDAO extends BaseDAOImpl {
         }
 
         update(entity);
-        return new Announcement(entity);
+        return entity.toDomain();
     }
 
     @Transactional
@@ -155,7 +155,7 @@ public class AnnouncementDAO extends BaseDAOImpl {
         List<Announcement> announcements = new ArrayList<>();
 
         for (AnnouncementEntity entity : entities) {
-            Announcement announcement = new Announcement(entity);
+            Announcement announcement = entity.toDomain();
             announcements.add(announcement);
         }
         return announcements;
@@ -168,7 +168,7 @@ public class AnnouncementDAO extends BaseDAOImpl {
         List<Announcement> announcements = new ArrayList<>();
 
         for (AnnouncementEntity entity : entities) {
-            Announcement announcement = new Announcement(entity);
+            Announcement announcement = entity.toDomain();
             announcements.add(announcement);
         }
         return announcements;
@@ -181,7 +181,7 @@ public class AnnouncementDAO extends BaseDAOImpl {
         List<Announcement> announcements = new ArrayList<>();
 
         for (AnnouncementEntity entity : entities) {
-            Announcement announcement = new Announcement(entity);
+            Announcement announcement = entity.toDomain();
             announcements.add(announcement);
         }
         return announcements;
@@ -206,7 +206,7 @@ public class AnnouncementDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(hql);
         List<AnnouncementEntity> entities = query.getResultList();
         List<Announcement> announcements = new ArrayList<>();
-        entities.stream().forEach(entity -> announcements.add(new Announcement(entity)));
+        entities.stream().forEach(entity -> announcements.add(entity.toDomain()));
         return announcements;
     }
 
@@ -215,7 +215,7 @@ public class AnnouncementDAO extends BaseDAOImpl {
 
         Announcement announcement = null;
         if (entity != null) {
-            announcement = new Announcement(entity);
+            announcement = entity.toDomain();
         }
         return announcement;
 
@@ -227,7 +227,7 @@ public class AnnouncementDAO extends BaseDAOImpl {
 
         Announcement announcement = null;
         if (entity != null) {
-            announcement = new Announcement(entity);
+            announcement = entity.toDomain();
         }
         return announcement;
 
