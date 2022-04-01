@@ -2,6 +2,7 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
@@ -60,10 +61,8 @@ public class AnnouncementController {
         } else {
             announcements = announcementManager.getAllCurrentAndFuture();
         }
-        if (announcements != null) {
-            for (Announcement announcement : announcements) {
-                results.getAnnouncements().add(announcement);
-            }
+        if (!CollectionUtils.isEmpty(announcements)) {
+            results.setAnnouncements(announcements);
         }
         return results;
     }
@@ -105,7 +104,7 @@ public class AnnouncementController {
             UserRetrievalException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
         if (!StringUtils.hasText(announcement.getTitle())) {
             throw new InvalidArgumentsException("A title is required for a new announcement");
-        };
+        }
         if (announcement.getStartDateTime() == null) {
             throw new InvalidArgumentsException("A start date is required for a new announcement");
         }

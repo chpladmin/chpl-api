@@ -27,13 +27,12 @@ public class AnnouncementManager extends ApplicationObjectSupport {
 
     @Autowired
     private ActivityManager activityManager;
-    
+
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ANNOUNCEMENT, "
             + "T(gov.healthit.chpl.permissions.domains.AnnouncementDomainPermissions).CREATE)")
     public Announcement create(Announcement announcement)
             throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
-        // Create the announcement itself
         Announcement result = announcementDAO.create(announcement);
 
         String activityMsg = "Created announcement: " + announcement.getTitle();
@@ -48,10 +47,8 @@ public class AnnouncementManager extends ApplicationObjectSupport {
             + "T(gov.healthit.chpl.permissions.domains.AnnouncementDomainPermissions).UPDATE)")
     public Announcement update(Announcement announcement)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-
         Announcement result = null;
-        Announcement toUpdate = announcementDAO.getByIdToUpdate(announcement.getId(), false);
-
+        Announcement toUpdate = announcementDAO.getById(announcement.getId(), false);
         result = announcementDAO.update(announcement, false);
 
         String activityMsg = "Updated announcement: " + announcement.getTitle();
