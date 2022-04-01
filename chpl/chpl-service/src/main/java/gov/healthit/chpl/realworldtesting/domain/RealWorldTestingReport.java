@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.BooleanUtils;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +22,7 @@ public class RealWorldTestingReport {
     private String developerName;
     private Long developerId;
     private Integer rwtEligibilityYear;
+    private Boolean ics;
     private String rwtPlansUrl;
     private LocalDate rwtPlansCheckDate;
     private String rwtResultsUrl;
@@ -37,6 +40,7 @@ public class RealWorldTestingReport {
         results.add(developerName);
         results.add(developerId == null ? null : developerId.toString());
         results.add(rwtEligibilityYear == null ? null : rwtEligibilityYear.toString());
+        results.add(BooleanUtils.isTrue(ics) ? "Yes" : "");
         results.add(rwtPlansUrl);
         results.add(rwtPlansCheckDate == null ? null : rwtPlansCheckDate.toString());
         results.add(rwtResultsUrl);
@@ -56,6 +60,7 @@ public class RealWorldTestingReport {
         results.add("Developer Name");
         results.add("Developer DBID");
         results.add("Initial RWT Year");
+        results.add("ICS");
         results.add("RWT Plans URL");
         results.add("RWT Plans Submission Confirmed");
         results.add("RWT Results URL");
