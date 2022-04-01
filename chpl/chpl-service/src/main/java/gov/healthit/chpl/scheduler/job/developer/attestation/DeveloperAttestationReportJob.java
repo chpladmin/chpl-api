@@ -22,7 +22,6 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
-import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import lombok.extern.log4j.Log4j2;
@@ -97,18 +96,6 @@ public class DeveloperAttestationReportJob implements Job {
             }
         });
         LOGGER.info("********* Completed Developer Attestation Report job. *********");
-    }
-
-    private void sendNotImplementedEmail(JobExecutionContext context) throws EmailNotSentException {
-        chplEmailFactory.emailBuilder()
-                .recipient(context.getMergedJobDataMap().getString("email"))
-                .subject(emailSubject)
-                .htmlMessage(chplHtmlEmailBuilder.initialize()
-                        .heading(emailSubject)
-                        .paragraph("", "This report is not yet implemented.")
-                        .footer(true)
-                        .build())
-                .sendEmail();
     }
 
     private List<Long> getAcbIds(JobExecutionContext context) {
