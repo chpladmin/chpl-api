@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.functors.DefaultEquator;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -131,12 +134,16 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
         return context.getOrigChangeRequest() == null;
     }
 
+    @SuppressWarnings("unchecked")
     private boolean hasAttestationInformationChanged(ChangeRequestValidationContext context) {
         ChangeRequestAttestationSubmission attestationSubmission = getChangeRequestAttestationFromMap((HashMap) context.getNewChangeRequest().getDetails());
 
         if (!isChangeRequestNew(context)) {
             ChangeRequestAttestationSubmission attestationOriginal = (ChangeRequestAttestationSubmission) context.getOrigChangeRequest().getDetails();
-            return !attestationSubmission.equals(attestationOriginal);
+            return !CollectionUtils.isEqualCollection(
+                    attestationSubmission.getAttestationResponses(),
+                    attestationOriginal.getAttestationResponses(),
+                    DefaultEquator.INSTANCE);
         } else {
             return false;
         }
