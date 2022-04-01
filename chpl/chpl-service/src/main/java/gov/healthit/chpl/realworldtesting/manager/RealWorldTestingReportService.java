@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +21,13 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.RealWorldTestingEligibility;
+import gov.healthit.chpl.service.RealWorldTestingEligiblityReason;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityService;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityServiceFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Service
 public class RealWorldTestingReportService {
-
     private CertifiedProductDAO certifiedProductDAO;
     private ErrorMessageUtil errorMsg;
     private Environment env;
@@ -112,6 +113,8 @@ public class RealWorldTestingReportService {
                 .developerName(listing.getDeveloper().getName())
                 .developerId(listing.getDeveloper().getDeveloperId())
                 .rwtEligibilityYear(rwtElig.getEligibilityYear() != null ? rwtElig.getEligibilityYear() : null)
+                .ics(rwtElig.getReason().equals(RealWorldTestingEligiblityReason.ICS)
+                        || rwtElig.getReason().equals(RealWorldTestingEligiblityReason.SELF_AND_ICS))
                 .rwtPlansUrl(listing.getRwtPlansUrl())
                 .rwtPlansCheckDate(listing.getRwtPlansCheckDate())
                 .rwtResultsUrl(listing.getRwtResultsUrl())
@@ -125,26 +128,33 @@ public class RealWorldTestingReportService {
         }
     }
 
-    @SuppressWarnings("checkstyle:linelength")
     private RealWorldTestingReport addMessages(RealWorldTestingReport report) {
         if (isRwtPlansEmpty(report)) {
-            if (arePlansLateWarning(report.getRwtEligibilityYear())) {
-                report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.missingPlansWarning",
+            if (BooleanUtils.isTrue(report.getIcs())
+                    && (arePlansLateWarning(report.getRwtEligibilityYear()) || arePlansLateError(report.getRwtEligibilityYear()))) {
+                report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.eligibleByIcs.warning",
+                        report.getRwtEligibilityYear().toString()));
+            } else if (arePlansLateWarning(report.getRwtEligibilityYear())) {
+                report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingPlansWarning",
                         report.getRwtEligibilityYear().toString(),
                         getPlansLateDate(report.getRwtEligibilityYear()).toString()));
             } else if (arePlansLateError(report.getRwtEligibilityYear())) {
-                report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.missingPlansError",
+                report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingPlansError",
                         report.getRwtEligibilityYear().toString(),
                         getPlansLateDate(report.getRwtEligibilityYear()).toString()));
             }
         }
         if (isRwtResultsEmpty(report)) {
-            if (areResultsLateWarning(report.getRwtEligibilityYear())) {
-                report.setRwtResultsMessage(errorMsg.getMessage("realWorldTesting.report.missingResultsWarning",
+            if (BooleanUtils.isTrue(report.getIcs())
+                    && (areResultsLateWarning(report.getRwtEligibilityYear()) || areResultsLateError(report.getRwtEligibilityYear()))) {
+                report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.eligibleByIcs.warning",
+                        report.getRwtEligibilityYear().toString()));
+            } else if (areResultsLateWarning(report.getRwtEligibilityYear())) {
+                report.setRwtResultsMessage(errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingResultsWarning",
                         report.getRwtEligibilityYear().toString(),
                         getResultsLateDate(report.getRwtEligibilityYear()).toString()));
             } else if (areResultsLateError(report.getRwtEligibilityYear())) {
-                report.setRwtResultsMessage(errorMsg.getMessage("realWorldTesting.report.missingResultsError",
+                report.setRwtResultsMessage(errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingResultsError",
                         report.getRwtEligibilityYear().toString(),
                         getResultsLateDate(report.getRwtEligibilityYear()).toString()));
             }
