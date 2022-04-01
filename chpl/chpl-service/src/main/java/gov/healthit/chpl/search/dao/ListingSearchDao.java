@@ -3,7 +3,6 @@ import static gov.healthit.chpl.util.LambdaExceptionUtil.rethrowFunction;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -130,7 +129,7 @@ public class ListingSearchDao extends BaseDAOImpl {
                 .statusEvents(convertToSetOfStatusEvents(entity.getStatusEvents(), STANDARD_VALUE_SPLIT_CHAR))
                 .criteriaMet(convertToSetOfCriteria(entity.getCertificationCriteriaMet(), STANDARD_VALUE_SPLIT_CHAR))
                 .cqmsMet(convertToSetOfCqms(entity.getCqmsMet(), STANDARD_VALUE_SPLIT_CHAR))
-                .previousChplProductNumbers(convertToListOfStrings(entity.getPreviousChplProductNumbers(), STANDARD_VALUE_SPLIT_CHAR))
+                .previousChplProductNumbers(convertToSetOfStrings(entity.getPreviousChplProductNumbers(), STANDARD_VALUE_SPLIT_CHAR))
                 .previousDevelopers(convertToSetOfProductOwners(entity.getPreviousDevelopers(), ListingSearchEntity.SMILEY_SPLIT_CHAR))
                 .apiDocumentation(convertToSetOfCriteriaWithStringFields(entity.getCriteriaWithApiDocumentation(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
                 .serviceBaseUrlList(convertToCriterionWithStringField(entity.getCriteriaWithServiceBaseUrlList()))
@@ -148,15 +147,15 @@ public class ListingSearchDao extends BaseDAOImpl {
             .build();
     }
 
-    private List<String> convertToListOfStrings(String delimitedString, String delimeter)
+    private Set<String> convertToSetOfStrings(String delimitedString, String delimeter)
             throws EntityRetrievalException, NumberFormatException {
         if (ObjectUtils.isEmpty(delimitedString)) {
-            return new ArrayList<String>();
+            return new LinkedHashSet<String>();
         }
 
         String[] splitStrings = delimitedString.split(delimeter);
         return Stream.of(splitStrings)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     private Set<DateRangeSearchResult> convertToSetOfDateRangesWithDelimiter(String delimitedDateRangeString, String delimeter)

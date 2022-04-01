@@ -2,9 +2,8 @@ package gov.healthit.chpl.search.domain;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -37,7 +36,7 @@ public class ListingSearchResult implements Serializable {
 
     private Long id;
     private String chplProductNumber;
-    private List<String> previousChplProductNumbers;
+    private Set<String> previousChplProductNumbers;
     private IdNamePairSearchResult edition;
     private IdNamePairSearchResult certificationBody;
     private String acbCertificationId;
@@ -85,7 +84,7 @@ public class ListingSearchResult implements Serializable {
         this.setClosedSurveillanceCount(0L);
         this.setOpenSurveillanceNonConformityCount(0L);
         this.setClosedSurveillanceNonConformityCount(0L);
-        previousChplProductNumbers = new ArrayList<String>();
+        previousChplProductNumbers = new LinkedHashSet<String>();
         previousDevelopers = new HashSet<IdNamePairSearchResult>();
         criteriaMet = new HashSet<CertificationCriterionSearchResult>();
         cqmsMet = new HashSet<CQMSearchResult>();

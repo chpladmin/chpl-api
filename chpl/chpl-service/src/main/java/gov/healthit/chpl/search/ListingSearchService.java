@@ -123,11 +123,11 @@ public class ListingSearchService {
                 .findAny().isPresent();
     }
 
-    private boolean doPreviousChplProductNumbersMatchSearchTerm(List<String> previousChplProductNumbers, String searchTerm) {
-        List<String> uppercaseChplProductNumbers = previousChplProductNumbers.stream()
+    private boolean doPreviousChplProductNumbersMatchSearchTerm(Set<String> previousChplProductNumbers, String searchTerm) {
+        Set<String> uppercaseChplProductNumbers = previousChplProductNumbers.stream()
             .filter(chplProductNumber -> !StringUtils.isEmpty(chplProductNumber))
             .map(chplProductNumber -> chplProductNumber.toUpperCase())
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
         return uppercaseChplProductNumbers.stream()
                 .filter(chplProductNumber -> chplProductNumber.contains(searchTerm))
                 .findAny().isPresent();
