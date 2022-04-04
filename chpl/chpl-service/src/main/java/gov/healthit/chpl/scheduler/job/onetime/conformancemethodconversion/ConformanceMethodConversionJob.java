@@ -128,12 +128,10 @@ public class ConformanceMethodConversionJob extends CertifiedProduct2015Gatherer
 
     private Boolean doesTestProcedureMatchRule(CertificationResultTestProcedure crtp, Boolean hasGap, ConversionRule rule) {
         Boolean gapCheck = rule.getHasGap() == null ? true : hasGap == rule.getHasGap();
-        return (StringUtils.isNotEmpty(crtp.getTestProcedure().getName())
-                        && rule.getTestProcedureName().equals(WILDCARD)
-                        && gapCheck)
-                || (StringUtils.isNotEmpty(crtp.getTestProcedure().getName())
-                        && rule.getTestProcedureName().equals(crtp.getTestProcedure().getName())
-                        && gapCheck);
+        return StringUtils.isNotEmpty(crtp.getTestProcedure().getName())
+                && gapCheck
+                && (rule.getTestProcedureName().equals(WILDCARD)
+                        || rule.getTestProcedureName().equals(crtp.getTestProcedure().getName()));
     }
 
     private List<ConversionRule> getConversionRules() {
