@@ -11,6 +11,7 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionDefinition;
@@ -52,6 +53,9 @@ public class ConformanceMethodConversionJob extends CertifiedProduct2015Gatherer
     @Autowired
     private FF4j ff4j;
 
+    @Value("${executorThreadCountForQuartzJobs}")
+    private Integer threadCount;
+
     private List<ConversionRule> conversionRules;
 
     @Override
@@ -75,7 +79,7 @@ public class ConformanceMethodConversionJob extends CertifiedProduct2015Gatherer
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
                     try {
 
-                        getAll2015CertifiedProducts(LOGGER, 2).stream()
+                        getAll2015CertifiedProducts(LOGGER, threadCount, false).stream()
                             .forEach(listing -> convertListing(listing));
 
                     } catch (Exception e) {
