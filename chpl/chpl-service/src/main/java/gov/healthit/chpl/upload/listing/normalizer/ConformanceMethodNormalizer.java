@@ -8,9 +8,11 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
@@ -24,10 +26,13 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 public class ConformanceMethodNormalizer {
+    private FF4j ff4j;
     private List<ConformanceMethodCriteriaMap> conformanceMethodCriteriaMap = new ArrayList<ConformanceMethodCriteriaMap>();
 
     @Autowired
-    public ConformanceMethodNormalizer(ConformanceMethodDAO conformanceMethodDao) {
+    public ConformanceMethodNormalizer(ConformanceMethodDAO conformanceMethodDao, FF4j ff4j) {
+        this.ff4j = ff4j;
+
         try {
             this.conformanceMethodCriteriaMap = conformanceMethodDao.getAllConformanceMethodCriteriaMap();
         } catch (EntityRetrievalException ex) {
@@ -36,6 +41,10 @@ public class ConformanceMethodNormalizer {
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
+        if (!ff4j.check(FeatureList.CONFORMANCE_METHOD)) {
+            return;
+        }
+
         if (!CollectionUtils.isEmpty(listing.getCertificationResults())) {
             listing.getCertificationResults().stream()
                 .forEach(certResult -> fillInConformanceMethodData(certResult));
@@ -111,25 +120,28 @@ public class ConformanceMethodNormalizer {
     private void populateConformanceMethodIds(CertificationCriterion criterion, List<CertificationResultConformanceMethod> conformanceMethods) {
         if (!CollectionUtils.isEmpty(conformanceMethods)) {
             conformanceMethods.stream()
+                .filter(conformanceMethod -> isConformanceMethodIdMissing(conformanceMethod))
                 .forEach(conformanceMethod -> populateConformanceMethodId(criterion, conformanceMethod));
         }
     }
 
+    private boolean isConformanceMethodIdMissing(CertificationResultConformanceMethod conformanceMethod) {
+        return conformanceMethod.getConformanceMethod() != null
+                && !StringUtils.isEmpty(conformanceMethod.getConformanceMethod().getName())
+                && conformanceMethod.getConformanceMethod().getId() == null;
+    }
+
     private void populateConformanceMethodId(CertificationCriterion criterion, CertificationResultConformanceMethod conformanceMethod) {
-        if (conformanceMethod != null && conformanceMethod.getConformanceMethod() != null
-                && conformanceMethod.getConformanceMethod().getId() == null
-                && !StringUtils.isEmpty(conformanceMethod.getConformanceMethod().getName())) {
-            List<ConformanceMethod> allowedConformanceMethodsForCriterion = this.conformanceMethodCriteriaMap.stream()
-                .filter(cmcMap -> cmcMap.getCriterion().getId().equals(criterion.getId()))
-                .map(cmcMap -> cmcMap.getConformanceMethod())
-                .collect(Collectors.toList());
-            if (!CollectionUtils.isEmpty(allowedConformanceMethodsForCriterion)) {
-                Optional<ConformanceMethod> cmWithName = allowedConformanceMethodsForCriterion.stream()
-                    .filter(cm -> cm.getName().equals(conformanceMethod.getConformanceMethod().getName()))
-                    .findFirst();
-                if (cmWithName.isPresent()) {
-                    conformanceMethod.getConformanceMethod().setId(cmWithName.get().getId());
-                }
+        List<ConformanceMethod> allowedConformanceMethodsForCriterion = this.conformanceMethodCriteriaMap.stream()
+            .filter(cmcMap -> cmcMap.getCriterion().getId().equals(criterion.getId()))
+            .map(cmcMap -> cmcMap.getConformanceMethod())
+            .collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(allowedConformanceMethodsForCriterion)) {
+            Optional<ConformanceMethod> cmWithName = allowedConformanceMethodsForCriterion.stream()
+                .filter(cm -> cm.getName().equals(conformanceMethod.getConformanceMethod().getName()))
+                .findFirst();
+            if (cmWithName.isPresent()) {
+                conformanceMethod.getConformanceMethod().setId(cmWithName.get().getId());
             }
         }
     }
