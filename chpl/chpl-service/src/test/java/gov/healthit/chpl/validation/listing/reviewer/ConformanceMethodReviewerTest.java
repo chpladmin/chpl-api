@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.ff4j.FF4j;
 import org.junit.Before;
@@ -18,6 +19,7 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
+import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultConformanceMethod;
@@ -35,10 +37,10 @@ public class ConformanceMethodReviewerTest {
     private static final String CM_REQUIRED_MSG = "Conformance Methods are required for certification criteria %s.";
     private static final String MISSING_CM_VERSION_MSG = "Conformance Method Version is required for certification %s with Conformance Method \"%s\".";
     private static final String UNALLOWED_CM_VERSION_MSG = "Conformance Method Version is not allowed for certification %s with Conformance Method \"%s\".";
+    private static final String UNALLOWED_CM_VERSION_REMOVED_MSG = "Conformance Method Version is not allowed for certification %s with Conformance Method \"%s\". The version \"%s\" was removed.";
     private static final String INVALID_CRITERIA_MSG = "Conformance Method \"%s\" is not valid for criteria %s.";
     private static final String F3_GAP_MISMATCH_MSG = "Certification %s cannot use Conformance Method \"%s\" since GAP is %s.";
 
-    private ConformanceMethodDAO conformanceMethodDAO;
     private ErrorMessageUtil msgUtil;
     private CertificationResultRules certResultRules;
     private ResourcePermissions resourcePermissions;
@@ -47,9 +49,53 @@ public class ConformanceMethodReviewerTest {
 
     @Before
     public void before() throws EntityRetrievalException {
-        conformanceMethodDAO = Mockito.mock(ConformanceMethodDAO.class);
-        Mockito.when(conformanceMethodDAO.getByCriterionId(1L)).thenReturn(getConformanceMethods());
-        Mockito.when(conformanceMethodDAO.getByCriterionId(getF3().getId())).thenReturn(getConformanceMethods());
+        ConformanceMethodDAO conformanceMethodDao = Mockito.mock(ConformanceMethodDAO.class);
+        Mockito.when(conformanceMethodDao.getAllConformanceMethodCriteriaMap())
+            .thenReturn(Stream.of(ConformanceMethodCriteriaMap.builder()
+                        .criterion(CertificationCriterion.builder()
+                            .number("170.315 (a)(1)")
+                            .id(1L)
+                            .build())
+                        .conformanceMethod(ConformanceMethod.builder()
+                            .id(1L)
+                            .name("Attestation")
+                            .build())
+                        .build(),
+                    ConformanceMethodCriteriaMap.builder()
+                        .criterion(CertificationCriterion.builder()
+                            .number("170.315 (a)(1)")
+                            .id(1L)
+                            .build())
+                        .conformanceMethod(ConformanceMethod.builder()
+                            .id(2L)
+                            .name("ONC Test Procedure")
+                            .build())
+                        .build(),
+                    ConformanceMethodCriteriaMap.builder()
+                        .criterion(getF3())
+                        .conformanceMethod(ConformanceMethod.builder()
+                            .id(1L)
+                            .name("Attestation")
+                            .build())
+                        .build(),
+                    ConformanceMethodCriteriaMap.builder()
+                        .criterion(getF3())
+                        .conformanceMethod(ConformanceMethod.builder()
+                            .id(2L)
+                            .name("ONC Test Procedure")
+                            .build())
+                        .build(),
+                    ConformanceMethodCriteriaMap.builder()
+                        .criterion(CertificationCriterion.builder()
+                            .number("170.315 (a)(2)")
+                            .id(2L)
+                            .build())
+                        .conformanceMethod(ConformanceMethod.builder()
+                            .id(1L)
+                            .name("Attestation")
+                            .build())
+                        .build())
+                    .toList());
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethodNotApplicable"), ArgumentMatchers.anyString()))
@@ -62,6 +108,9 @@ public class ConformanceMethodReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.unallowedConformanceMethodVersion"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(UNALLOWED_CM_VERSION_MSG, i.getArgument(1), i.getArgument(2)));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.unallowedConformanceMethodVersionRemoved"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(UNALLOWED_CM_VERSION_REMOVED_MSG, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.invalidCriteria"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_CRITERIA_MSG, i.getArgument(1), i.getArgument(2)));
@@ -82,7 +131,7 @@ public class ConformanceMethodReviewerTest {
         Mockito.when(ff4j.check(FeatureList.CONFORMANCE_METHOD))
             .thenReturn(true);
 
-        conformanceMethodReviewer = new ConformanceMethodReviewer(conformanceMethodDAO, msgUtil,
+        conformanceMethodReviewer = new ConformanceMethodReviewer(conformanceMethodDao, msgUtil,
                 new ValidationUtils(), certResultRules, criterionService,
                 resourcePermissions, ff4j);
     }
@@ -233,7 +282,7 @@ public class ConformanceMethodReviewerTest {
     }
 
     @Test
-    public void review_conformanceMethodMayNotHaveVersion_hasError() {
+    public void review_conformanceMethodMayNotHaveVersionButCanHaveOtherConformanceMethods_hasError() {
         CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
                 .conformanceMethod(ConformanceMethod.builder()
                         .id(1L)
@@ -261,6 +310,38 @@ public class ConformanceMethodReviewerTest {
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(UNALLOWED_CM_VERSION_MSG, "170.315 (a)(6)", "Attestation")));
+    }
+
+    @Test
+    public void review_conformanceMethodMayNotHaveVersionAndCannotHaveOtherConformanceMethods_hasWarningAndVersionRemoved() {
+        CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
+                .conformanceMethod(ConformanceMethod.builder()
+                        .id(1L)
+                        .name("Attestation")
+                        .build())
+                .conformanceMethodVersion("bad version")
+                .build();
+
+        List<CertificationResultConformanceMethod> crcms = new ArrayList<CertificationResultConformanceMethod>();
+        crcms.add(crcm);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (a)(2)")
+                                .id(2L)
+                                .build())
+                        .conformanceMethods(crcms)
+                        .build())
+                .certificationEdition(get2015CertificationEdition())
+                .build();
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(UNALLOWED_CM_VERSION_REMOVED_MSG, "170.315 (a)(2)", "Attestation", "bad version")));
+        assertNull(listing.getCertificationResults().get(0).getConformanceMethods().get(0).getConformanceMethodVersion());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -434,19 +515,6 @@ public class ConformanceMethodReviewerTest {
 
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(0, listing.getErrorMessages().size());
-    }
-
-    private List<ConformanceMethod> getConformanceMethods() {
-        List<ConformanceMethod> cms = new ArrayList<ConformanceMethod>();
-        cms.add(ConformanceMethod.builder()
-                .id(1L)
-                .name("Attestation")
-                .build());
-        cms.add(ConformanceMethod.builder()
-                .id(2L)
-                .name("ONC Test Procedure")
-                .build());
-        return cms;
     }
 
     private CertificationCriterion getF3() {
