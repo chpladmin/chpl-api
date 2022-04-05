@@ -75,13 +75,13 @@ public class TestProcedureUploadHandler {
 
     private List<String> parseTestProceduredNames(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.TEST_PROCEDURE, certHeadingRecord, certResultRecords);
+                Headings.CONFORMANCE_METHOD, certHeadingRecord, certResultRecords);
         return values;
     }
 
     private List<String> parseTestProcedureVersions(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.TEST_PROCEDURE_VERSION, certHeadingRecord, certResultRecords);
+                Headings.CONFORMANCE_METHOD_VERSION, certHeadingRecord, certResultRecords);
         return values;
     }
 }
