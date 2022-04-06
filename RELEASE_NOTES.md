@@ -1,5 +1,19 @@
 # Release Notes
 
+## Version 34.2.0
+_1 April 2022_
+
+### Features
+* Add Attestations Requirement and Non-conformity Type values for Surveillance
+* Deprecate DELETE /listings/pending for multiple pending listing IDs
+* Add parsing, validation, tests for conformance methods on flexible upload
+* Add ICS column to RWT Report and add ICS as part of the reason for errors or warnings in the report.
+
+### Bug Fixes
+* Update Spring to 5.3.18 to address CVE-2022-22965
+
+---
+
 ## Version 34.1.0
 _22 March 2022_
 
