@@ -16,6 +16,7 @@ import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
+import gov.healthit.chpl.scheduler.job.curesStatistics.email.spreadsheet.CuresChartsOverTimeSpreadheet;
 import gov.healthit.chpl.scheduler.job.curesStatistics.email.spreadsheet.CuresStatisticsChartSpreadsheet;
 import lombok.extern.log4j.Log4j2;
 
@@ -41,6 +42,9 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
 
     @Autowired
     private CuresStatisticsChartSpreadsheet curesStatisticsChartSpreadsheet;
+
+    @Autowired
+    private CuresChartsOverTimeSpreadheet curesChartsOverTimeSpreadsheet;
 
     @Autowired
     private CuresStatisticsChartData curesStatisticsChartData;
@@ -97,6 +101,12 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
             attachments.add(curesStatisticsChartSpreadsheet.generateSpreadsheet(reportDate));
         } catch (IOException ex) {
             LOGGER.error("Error creating charts spreadhseet", ex);
+        }
+
+        try {
+            attachments.add(curesChartsOverTimeSpreadsheet.generateSpreadsheet());
+        } catch (IOException ex) {
+            LOGGER.error("Error creating statistics", ex);
         }
 
         try {
