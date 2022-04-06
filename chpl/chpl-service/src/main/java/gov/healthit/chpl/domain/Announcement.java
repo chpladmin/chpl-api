@@ -7,8 +7,8 @@ import java.util.Date;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.util.LocalDateTimeDeserializer;
-import gov.healthit.chpl.util.LocalDateTimeSerializer;
+import gov.healthit.chpl.util.EasternToUtcLocalDateTimeDeserializer;
+import gov.healthit.chpl.util.UtcToEasternLocalDateTimeSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,11 +23,11 @@ public class Announcement implements Serializable {
     private Long id;
     private String title;
     private String text;
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = EasternToUtcLocalDateTimeDeserializer.class)
+    @JsonSerialize(using = UtcToEasternLocalDateTimeSerializer.class)
     private LocalDateTime startDateTime;
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = EasternToUtcLocalDateTimeDeserializer.class)
+    @JsonSerialize(using = UtcToEasternLocalDateTimeSerializer.class)
     private LocalDateTime endDateTime;
     @Deprecated
     private Date startDate;

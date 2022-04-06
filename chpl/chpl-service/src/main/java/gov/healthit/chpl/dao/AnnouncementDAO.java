@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,7 +13,6 @@ import gov.healthit.chpl.entity.AnnouncementEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
-import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Repository(value = "announcementDAO")
@@ -119,32 +117,26 @@ public class AnnouncementDAO extends BaseDAOImpl {
     }
 
     private List<AnnouncementEntity> getAllCurrentEntities() {
-        LocalDateTime nowInEastern = DateUtil.getNowInEasternTime();
         Query query = entityManager.createQuery(
                 "FROM AnnouncementEntity "
                         + "WHERE deleted = false "
-                        + "AND startDate <= :nowInEastern "
-                        + "AND endDate > :nowInEastern ",
+                        + "AND startDate <= NOW() "
+                        + "AND endDate > NOW() ",
                 AnnouncementEntity.class);
-        query.setParameter("nowInEastern", nowInEastern);
         return query.getResultList();
     }
 
     private List<AnnouncementEntity> getAllEntitiesFuture() {
-        LocalDateTime nowInEastern = DateUtil.getNowInEasternTime();
         Query query = entityManager.createQuery("FROM AnnouncementEntity "
                         + "WHERE deleted = false "
-                        + "AND (startDate > :nowInEastern)");
-        query.setParameter("nowInEastern", nowInEastern);
+                        + "AND startDate > NOW()");
         return query.getResultList();
     }
 
     private List<AnnouncementEntity> getAllEntitiesCurrentAndFuture() {
-        LocalDateTime nowInEastern = DateUtil.getNowInEasternTime();
         Query query = entityManager.createQuery("FROM AnnouncementEntity "
                         + "WHERE deleted = false "
-                        + "AND (endDate > :nowInEastern)");
-        query.setParameter("nowInEastern", nowInEastern);
+                        + "AND endDate > NOW()");
         return query.getResultList();
     }
 

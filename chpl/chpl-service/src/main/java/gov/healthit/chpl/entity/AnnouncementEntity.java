@@ -67,6 +67,9 @@ public class AnnouncementEntity {
                 .startDate(new Date(DateUtil.toEpochMillis(this.getStartDate())))
                 .endDate(new Date(DateUtil.toEpochMillis(this.getEndDate())))
                 .isPublic(this.getIsPublic())
+                .creationDate(this.getCreationDate())
+                .lastModifiedDate(this.getLastModifiedDate())
+                .deleted(this.getDeleted())
                 .build();
     }
 }

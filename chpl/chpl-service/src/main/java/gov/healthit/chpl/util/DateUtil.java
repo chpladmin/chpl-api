@@ -86,11 +86,23 @@ public final class DateUtil {
         return Instant.ofEpochMilli(epochMillis).atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
-    public static LocalDateTime getNowInEasternTime() {
-        Instant nowUtc = Instant.now();
-        ZoneId eastern = ZoneId.of(ET_ZONE_ID);
-        LocalDateTime nowEastern = ZonedDateTime.ofInstant(nowUtc, eastern).toLocalDateTime();
-        LOGGER.info("Now in Eastern Time: " + nowEastern);
-        return nowEastern;
+    public static LocalDateTime fromEasternToUtc(LocalDateTime input) {
+        System.out.println("Input LDT: " + input);
+        ZonedDateTime easternZoned = ZonedDateTime.of(input, ZoneId.of(ET_ZONE_ID));
+        System.out.println("ET Zoned DT: " + easternZoned);
+        ZonedDateTime utc = easternZoned.withZoneSameInstant(ZoneId.of(UTC_ZONE_ID));
+        System.out.println("UTC Zoned DT: " + utc);
+        System.out.println("To Local DT: " + utc.toLocalDateTime());
+        return utc.toLocalDateTime();
+    }
+
+    public static LocalDateTime fromUtcToEastern(LocalDateTime input) {
+        System.out.println("Input LDT: " + input);
+        ZonedDateTime utcZoned = ZonedDateTime.of(input, ZoneId.of(UTC_ZONE_ID));
+        System.out.println("UTC Zoned DT: " + utcZoned);
+        ZonedDateTime eastern = utcZoned.withZoneSameInstant(ZoneId.of(ET_ZONE_ID));
+        System.out.println("ET Zoned DT: " + eastern);
+        System.out.println("To Local DT: " + eastern.toLocalDateTime());
+        return eastern.toLocalDateTime();
     }
 }
