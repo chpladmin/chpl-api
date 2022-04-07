@@ -78,4 +78,8 @@ public final class DateUtil {
     public static LocalDate toLocalDate(long epochMillis) {
         return Instant.ofEpochMilli(epochMillis).atZone(ZoneId.systemDefault()).toLocalDate();
     }
+
+    public static LocalDateTime toLocalDateTime(long epochMillis) {
+        return Instant.ofEpochMilli(epochMillis).atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
 }

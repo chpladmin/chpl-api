@@ -31,6 +31,9 @@ public class ListingSearchEntity {
     @Column(name = "chpl_product_number")
     private String chplProductNumber;
 
+    @Column(name = "previous_chpl_product_numbers")
+    private String previousChplProductNumbers;
+
     @Column(name = "certification_edition_id")
     private Long certificationEditionId;
 
