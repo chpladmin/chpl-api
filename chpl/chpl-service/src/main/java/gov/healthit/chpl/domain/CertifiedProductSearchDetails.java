@@ -287,6 +287,14 @@ public class CertifiedProductSearchDetails implements Serializable {
     private boolean directReviewsAvailable;
 
     /**
+     * A record of CHPL Product Numbers which have been used at some time in the past to
+     * reference the listing.
+     */
+    @XmlElementWrapper(name = "chplProductNumberHistory", nillable = true, required = false)
+    @XmlElement(name = "chplProductNumberHistoryItem")
+    private List<CertifiedProductChplProductNumberHistory> chplProductNumberHistory = new ArrayList<CertifiedProductChplProductNumberHistory>();
+
+    /**
      * This variable indicates that if there is the standard(s) or lack thereof used to meet the accessibility-centered
      * design certification criterion for 2015 Certification Edtion. It is a string variable that does not have any
      * restrictions on formatting or values.
@@ -294,7 +302,6 @@ public class CertifiedProductSearchDetails implements Serializable {
     @XmlElementWrapper(name = "accessibilityStandards", nillable = true, required = false)
     @XmlElement(name = "accessibilityStandard")
     @Singular
-    @SuppressWarnings({"checkstyle:linelength"})
     private List<CertifiedProductAccessibilityStandard> accessibilityStandards = new ArrayList<CertifiedProductAccessibilityStandard>();
 
     /**
@@ -682,6 +689,14 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setAccessibilityCertifiedStr(String accessibilityCertifiedStr) {
         this.accessibilityCertifiedStr = accessibilityCertifiedStr;
+    }
+
+    public List<CertifiedProductChplProductNumberHistory> getChplProductNumberHistory() {
+        return chplProductNumberHistory;
+    }
+
+    public void setChplProductNumberHistory(List<CertifiedProductChplProductNumberHistory> chplProductNumberHistory) {
+        this.chplProductNumberHistory = chplProductNumberHistory;
     }
 
     public List<CertifiedProductAccessibilityStandard> getAccessibilityStandards() {
