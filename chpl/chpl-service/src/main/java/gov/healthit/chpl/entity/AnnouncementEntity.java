@@ -69,6 +69,7 @@ public class AnnouncementEntity {
                 .isPublic(this.getIsPublic())
                 .creationDate(this.getCreationDate())
                 .lastModifiedDate(this.getLastModifiedDate())
+                .lastModifiedUser(this.getLastModifiedUser())
                 .deleted(this.getDeleted())
                 .build();
     }
