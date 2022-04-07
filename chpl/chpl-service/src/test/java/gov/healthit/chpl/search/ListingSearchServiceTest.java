@@ -46,7 +46,7 @@ public class ListingSearchServiceTest {
         Mockito.when(drService.getDirectReviewsAvailable()).thenReturn(true);
         listingSearchManager = Mockito.mock(ListingSearchManager.class);
 
-        listingSearchService = new ListingSearchService(searchRequestValidator, Mockito.mock(CertifiedProductSearchManager.class),
+        listingSearchService = new ListingSearchService(searchRequestValidator,
                 listingSearchManager, drService);
     }
 
@@ -621,6 +621,27 @@ public class ListingSearchServiceTest {
         Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
             .searchTerm("15.02.02.3007.A056.01.00.0.18021")
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_searchTermProvided_findsListingsWithMatchingChplProductNumberHistory() throws ValidationException {
+        List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
+        allListings.get(0).setChplProductNumber("15.02.02.3007.A055.01.00.0.180214");
+        allListings.get(0).setPreviousChplProductNumbers(Stream.of("15.02.02.3007.A056.01.00.0.180215")
+                .collect(Collectors.toSet()));
+        allListings.get(1).setChplProductNumber("CHP-123456");
+        allListings.get(2).setChplProductNumber("15.02.02.3007.A056.01.00.0.180215");
+        Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .searchTerm("15.02.02.3007.A056.01.00.0.180215")
             .pageNumber(0)
             .pageSize(10)
         .build();

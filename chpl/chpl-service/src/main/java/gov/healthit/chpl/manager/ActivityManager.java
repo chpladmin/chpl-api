@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,27 +29,31 @@ import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.listener.ChplProductNumberChangedListener;
 import gov.healthit.chpl.listener.QuestionableActivityListener;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.JSONUtils;
+import lombok.extern.log4j.Log4j2;
 
 @Service("activityManager")
+@Log4j2
 public class ActivityManager extends SecuredManager {
-    private static Logger LOGGER = LogManager.getLogger(ActivityManager.class);
-
     private ActivityDAO activityDAO;
     private DeveloperDAO devDao;
     private ObjectMapper jsonMapper = new ObjectMapper();
     private JsonFactory factory = jsonMapper.getFactory();
     private QuestionableActivityListener questionableActivityListener;
+    private ChplProductNumberChangedListener chplProductNumberChangedListener;
 
     @Autowired
     public ActivityManager(ActivityDAO activityDAO, DeveloperDAO devDao,
-            QuestionableActivityListener questionableActivityListener) {
+            QuestionableActivityListener questionableActivityListener,
+            ChplProductNumberChangedListener chplProductNumberChangedListener) {
         this.activityDAO = activityDAO;
         this.devDao = devDao;
         this.questionableActivityListener = questionableActivityListener;
+        this.chplProductNumberChangedListener = chplProductNumberChangedListener;
     }
 
     @Transactional
@@ -64,8 +66,8 @@ public class ActivityManager extends SecuredManager {
         }
 
         addActivity(concept, objectId, activityDescription, originalData, newData, new Date(), asUser);
-
         questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, originalData, newData);
+        chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData);
     }
 
     @Transactional
@@ -78,9 +80,8 @@ public class ActivityManager extends SecuredManager {
         }
 
         addActivity(concept, objectId, activityDescription, originalData, newData, new Date(), asUser);
-
-        questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, originalData, newData,
-                reason);
+        questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, originalData, newData, reason);
+        chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData);
     }
 
     @Transactional
@@ -88,13 +89,8 @@ public class ActivityManager extends SecuredManager {
             Object newData, Long asUser) throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         addActivity(concept, objectId, activityDescription, originalData, newData, new Date(), asUser);
-    }
-
-    @Transactional
-    public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
-            Object newData, Date timestamp) throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-
-        addActivity(concept, objectId, activityDescription, originalData, newData, timestamp, AuthUtil.getAuditId());
+        questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, originalData, newData);
+        chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData);
     }
 
     private void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,

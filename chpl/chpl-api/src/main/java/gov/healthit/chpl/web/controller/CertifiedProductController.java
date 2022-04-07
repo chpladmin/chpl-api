@@ -778,7 +778,6 @@ public class CertifiedProductController {
                     "Changed ACB ownership.",
                     existingListing,
                     changedProduct);
-            existingListing = changedProduct;
         }
 
         cpManager.update(updateRequest);

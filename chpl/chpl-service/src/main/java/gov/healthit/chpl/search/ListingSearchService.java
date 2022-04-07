@@ -47,18 +47,15 @@ public class ListingSearchService {
     private static final String CURES_UPDATE_EDITION = "2015" + CertificationEdition.CURES_SUFFIX;
     private SearchRequestValidator searchRequestValidator;
     private SearchRequestNormalizer searchRequestNormalizer;
-    private CertifiedProductSearchManager cpSearchManager;
     private ListingSearchManager listingSearchManager;
     private DirectReviewSearchService drService;
     private DateTimeFormatter dateFormatter;
 
     @Autowired
     public ListingSearchService(SearchRequestValidator searchRequestValidator,
-            CertifiedProductSearchManager cpSearchManager,
             ListingSearchManager listingSearchManager,
             DirectReviewSearchService drService) {
         this.searchRequestValidator = searchRequestValidator;
-        this.cpSearchManager = cpSearchManager;
         this.listingSearchManager = listingSearchManager;
         this.searchRequestNormalizer = new SearchRequestNormalizer();
         this.drService = drService;
@@ -111,6 +108,7 @@ public class ListingSearchService {
         return (listing.getDeveloper() != null && !StringUtils.isEmpty(listing.getDeveloper().getName()) && listing.getDeveloper().getName().toUpperCase().contains(searchTermUpperCase))
                 || (listing.getProduct() != null && !StringUtils.isEmpty(listing.getProduct().getName()) && listing.getProduct().getName().toUpperCase().contains(searchTermUpperCase))
                 || (!CollectionUtils.isEmpty(listing.getPreviousDevelopers()) && doProductOwnersMatchSearchTerm(listing.getPreviousDevelopers(), searchTermUpperCase))
+                || (!CollectionUtils.isEmpty(listing.getPreviousChplProductNumbers()) && doPreviousChplProductNumbersMatchSearchTerm(listing.getPreviousChplProductNumbers(), searchTermUpperCase))
                 || (!StringUtils.isEmpty(listing.getChplProductNumber()) && listing.getChplProductNumber().toUpperCase().contains(searchTermUpperCase))
                 || (!StringUtils.isEmpty(listing.getAcbCertificationId()) && listing.getAcbCertificationId().toUpperCase().contains(searchTermUpperCase));
     }
@@ -122,6 +120,16 @@ public class ListingSearchService {
             .collect(Collectors.toSet());
         return uppercaseNames.stream()
                 .filter(productOwnerName -> productOwnerName.contains(searchTerm))
+                .findAny().isPresent();
+    }
+
+    private boolean doPreviousChplProductNumbersMatchSearchTerm(Set<String> previousChplProductNumbers, String searchTerm) {
+        Set<String> uppercaseChplProductNumbers = previousChplProductNumbers.stream()
+            .filter(chplProductNumber -> !StringUtils.isEmpty(chplProductNumber))
+            .map(chplProductNumber -> chplProductNumber.toUpperCase())
+            .collect(Collectors.toSet());
+        return uppercaseChplProductNumbers.stream()
+                .filter(chplProductNumber -> chplProductNumber.contains(searchTerm))
                 .findAny().isPresent();
     }
 

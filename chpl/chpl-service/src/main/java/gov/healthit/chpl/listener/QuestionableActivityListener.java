@@ -2,7 +2,6 @@ package gov.healthit.chpl.listener;
 
 import java.util.Date;
 
-import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
@@ -21,7 +20,6 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-@Aspect
 public class QuestionableActivityListener implements EnvironmentAware {
     private Environment env;
     private CertifiedProductDAO listingDao;
