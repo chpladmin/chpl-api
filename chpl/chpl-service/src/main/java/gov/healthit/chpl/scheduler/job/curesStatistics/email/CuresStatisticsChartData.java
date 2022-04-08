@@ -179,7 +179,6 @@ public class CuresStatisticsChartData {
                     .findAny()
                     .get();
         } catch (Exception e) {
-            LOGGER.info(criterion.toString());
             return null;
         }
     }

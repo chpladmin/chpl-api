@@ -21,6 +21,11 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 public class CuresChartsOverTimeSheet {
+    private static final Integer DATE_ROW_IDX = 0;
+    private static final Integer REQUIRES_UPDATE_ROW_IDX = 1;
+    private static final Integer EXISTING_CERTIFICATION_ROW_IDX = 2;
+    private static final Integer NEW_CERTIFICATIONS_ROW_IDX = 3;
+    private static final Integer MONTHS_IN_YEAR = 12;
 
     private CuresStatisticsChartData curesStatisticsChartData;
 
@@ -34,27 +39,28 @@ public class CuresChartsOverTimeSheet {
         Integer columnIndex = 1;
 
         for (LocalDate dateForColumn : dataOverTime.keySet()) {
-            populateColumn(dataOverTime.get(dateForColumn).get(criterion),
-                dateForColumn,
-                sheet,
-                columnIndex);
+            CuresCriterionChartStatistic stat = dataOverTime.containsKey(dateForColumn) && dataOverTime.get(dateForColumn).containsKey(criterion)
+                    ? dataOverTime.get(dateForColumn).get(criterion)
+                    : null;
+
+            populateColumn(stat, dateForColumn, sheet, columnIndex);
 
             columnIndex++;
         }
     }
 
     private void populateColumn(CuresCriterionChartStatistic stats, LocalDate dateForColumn, Sheet sheet, Integer columnIndex) {
-        Row currentRow = sheet.getRow(0);
+        Row currentRow = sheet.getRow(DATE_ROW_IDX);
         currentRow.getCell(columnIndex).setCellValue(dateForColumn);
 
-        currentRow = sheet.getRow(1);
-        currentRow.getCell(columnIndex).setCellValue(stats.getRequiresUpdateCount());
+        currentRow = sheet.getRow(REQUIRES_UPDATE_ROW_IDX);
+        currentRow.getCell(columnIndex).setCellValue(stats == null ? 0 : stats.getRequiresUpdateCount());
 
-        currentRow = sheet.getRow(2);
-        currentRow.getCell(columnIndex).setCellValue(stats.getExistingCertificationCount());
+        currentRow = sheet.getRow(EXISTING_CERTIFICATION_ROW_IDX);
+        currentRow.getCell(columnIndex).setCellValue(stats == null ? 0 : stats.getExistingCertificationCount());
 
-        currentRow = sheet.getRow(3);
-        currentRow.getCell(columnIndex).setCellValue(stats.getNewCertificationCount());
+        currentRow = sheet.getRow(NEW_CERTIFICATIONS_ROW_IDX);
+        currentRow.getCell(columnIndex).setCellValue(stats == null ? 0 : stats.getNewCertificationCount());
     }
 
     private Map<LocalDate, Map<CertificationCriterionDTO, CuresCriterionChartStatistic>> getDataOverTime() {
@@ -63,14 +69,19 @@ public class CuresChartsOverTimeSheet {
 
         getTargetDatesForPastYear().stream()
                 .sorted()
-                .forEach(targetDate -> dataOverTime.put(targetDate, getDataAtOrNearTargetData(targetDate)));
+                .forEach(targetDate -> {
+                    Map<CertificationCriterionDTO, CuresCriterionChartStatistic> stats = getDataAtOrNearTargetData(targetDate);
+                    if (stats != null) {
+                        dataOverTime.put(targetDate, stats);
+                    }
+                });
 
         return dataOverTime;
     }
 
     private List<LocalDate> getTargetDatesForPastYear() {
         List<LocalDate> targetDates = new ArrayList<LocalDate>();
-        for (Integer i = 0; i <= 10; ++i) {
+        for (Integer i = 0; i < MONTHS_IN_YEAR; ++i) {
             targetDates.add(LocalDate.now().minusMonths(i).with(TemporalAdjusters.firstDayOfMonth()));
         }
         return targetDates;
