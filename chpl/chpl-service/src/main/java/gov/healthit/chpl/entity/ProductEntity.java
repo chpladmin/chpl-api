@@ -115,7 +115,7 @@ public class ProductEntity implements Serializable {
                 .productId(this.getId())
                 .id(this.getId())
                 .contact(this.getContact() != null ? this.getContact().toDomain() : null)
-                .lastModifiedDate(this.getLastModifiedDate() + "")
+                .lastModifiedDate(this.getLastModifiedDate().getTime() + "")
                 .name(this.getName())
                 .owner(this.getDeveloper() != null ? this.getDeveloper().toDomain() : null)
                 .reportFileLocation(this.getReportFileLocation())
