@@ -16,8 +16,10 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.statistics.CuresCriterionChartStatistic;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.scheduler.job.curesStatistics.email.CuresStatisticsChartData;
+import lombok.extern.log4j.Log4j2;
 
 @Component
+@Log4j2
 public class CuresChartsOverTimeSheet {
 
     private CuresStatisticsChartData curesStatisticsChartData;
@@ -75,16 +77,17 @@ public class CuresChartsOverTimeSheet {
     }
 
     private Map<CertificationCriterionDTO, CuresCriterionChartStatistic> getDataAtOrNearTargetData(LocalDate targetDate) {
-        List<Integer> offsets = List.of(0, -1, 1, -2, 2, -3, 3);
-        Integer offsetIndex = 0;
         Map<CertificationCriterionDTO, CuresCriterionChartStatistic> data = null;
 
-        do {
-            data = curesStatisticsChartData.getCuresCriterionChartStatistics(targetDate.plusDays(offsets.get(offsetIndex)));
-            offsetIndex++;
-        } while (!isTheDataComplete(data));
-
-        return data;
+        for (Integer offset : getDayOffsetList()) {
+            data = curesStatisticsChartData.getCuresCriterionChartStatistics(targetDate.plusDays(offset));
+            if (isTheDataComplete(data)) {
+                LOGGER.info("{} - found data for {}", targetDate, targetDate.plusDays(offset));
+                return data;
+            }
+        }
+        LOGGER.info("{} - data was not found", targetDate);
+        return null;
     }
 
     private Boolean isTheDataComplete(Map<CertificationCriterionDTO, CuresCriterionChartStatistic> data) {
@@ -98,5 +101,20 @@ public class CuresChartsOverTimeSheet {
             }
         }
         return true;
+    }
+
+    private List<Integer> getDayOffsetList() {
+        //This generates a list in this pattern 0, -1, 1, -2, 2, -3, 3 ....
+        List<Integer> dayOffsets = new ArrayList<Integer>();
+        Integer maxDaysToCheck = 7;
+
+        for (Integer i = 0; i < maxDaysToCheck; i++) {
+            Integer offset = i / 2;
+            if (i % 2 == 1) {
+                offset = offset * -1;
+            }
+            dayOffsets.add(offset);
+        }
+        return dayOffsets;
     }
 }
