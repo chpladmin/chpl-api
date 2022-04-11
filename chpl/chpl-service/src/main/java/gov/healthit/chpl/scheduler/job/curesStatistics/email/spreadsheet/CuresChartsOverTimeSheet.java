@@ -39,7 +39,10 @@ public class CuresChartsOverTimeSheet {
         Integer columnIndex = 1;
 
         for (LocalDate dateForColumn : dataOverTime.keySet()) {
-            CuresCriterionChartStatistic stat = dataOverTime.containsKey(dateForColumn) && dataOverTime.get(dateForColumn).containsKey(criterion)
+            CuresCriterionChartStatistic stat = dataOverTime.containsKey(dateForColumn)
+                        && dataOverTime.get(dateForColumn) != null
+                        && dataOverTime.get(dateForColumn).containsKey(criterion)
+                        && dataOverTime.get(dateForColumn).get(criterion) != null
                     ? dataOverTime.get(dateForColumn).get(criterion)
                     : null;
 
@@ -51,7 +54,7 @@ public class CuresChartsOverTimeSheet {
 
     private void populateColumn(CuresCriterionChartStatistic stats, LocalDate dateForColumn, Sheet sheet, Integer columnIndex) {
         Row currentRow = sheet.getRow(DATE_ROW_IDX);
-        currentRow.getCell(columnIndex).setCellValue(dateForColumn);
+        currentRow.getCell(columnIndex).setCellValue(dateForColumn.minusDays(1)); //Last day of the previous month
 
         currentRow = sheet.getRow(REQUIRES_UPDATE_ROW_IDX);
         currentRow.getCell(columnIndex).setCellValue(stats == null ? 0 : stats.getRequiresUpdateCount());
@@ -71,9 +74,9 @@ public class CuresChartsOverTimeSheet {
                 .sorted()
                 .forEach(targetDate -> {
                     Map<CertificationCriterionDTO, CuresCriterionChartStatistic> stats = getDataAtOrNearTargetData(targetDate);
-                    if (stats != null) {
+                    //if (stats != null) {
                         dataOverTime.put(targetDate, stats);
-                    }
+                    //}
                 });
 
         return dataOverTime;
