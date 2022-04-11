@@ -63,6 +63,7 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
                 sw.writeEndElement();
             }
             createSimpleElement(cp.getChplProductNumber(), "chplProductNumber", sw);
+            CertifiedProductChplProductNumberHistoryXmlGenerator.add(cp.getChplProductNumberHistory(), "chplProductNumberHistory", sw);
             if (cp.getClassificationType() != null && cp.getClassificationType().size() > 0) {
                 sw.writeStartElement("classificationType");
                 for (Entry<String, Object> entry : cp.getClassificationType().entrySet()) {
