@@ -22,11 +22,15 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 @Service
 public class AnnouncementManager extends ApplicationObjectSupport {
 
-    @Autowired
     private AnnouncementDAO announcementDAO;
+    private ActivityManager activityManager;
+
 
     @Autowired
-    private ActivityManager activityManager;
+    public AnnouncementManager(AnnouncementDAO announcementDAO, ActivityManager activityManager) {
+        this.announcementDAO = announcementDAO;
+        this.activityManager = activityManager;
+    }
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ANNOUNCEMENT, "

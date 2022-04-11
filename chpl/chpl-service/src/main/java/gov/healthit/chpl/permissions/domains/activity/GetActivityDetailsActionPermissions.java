@@ -3,8 +3,6 @@ package gov.healthit.chpl.permissions.domains.activity;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,11 +26,11 @@ import gov.healthit.chpl.surveillance.report.QuarterlyReportDAO;
 import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component("actionGetActivityDetailsActionPermissions")
 public class GetActivityDetailsActionPermissions extends ActionPermissions {
-    private static Logger LOGGER = LogManager.getLogger(GetActivityDetailsActionPermissions.class);
-
     private UserDAO userDao;
     private QuarterlyReportDAO quarterlyReportDao;
     private AnnualReportDAO annualReportDao;
