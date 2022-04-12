@@ -11,6 +11,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.statistics.CuresCriterionChartStatistic;
@@ -28,14 +29,16 @@ public class CuresChartsOverTimeSheet {
     private static final Integer MONTHS_IN_YEAR = 12;
 
     private CuresStatisticsChartData curesStatisticsChartData;
+    private Integer maxDaysToCheckForData;
 
     @Autowired
-    public CuresChartsOverTimeSheet(CuresStatisticsChartData curesStatisticsChartData) {
+    public CuresChartsOverTimeSheet(CuresStatisticsChartData curesStatisticsChartData, @Value("${maxDaysToCheckForData}") Integer maxDaysToCheckForData) {
         this.curesStatisticsChartData = curesStatisticsChartData;
+        this.maxDaysToCheckForData = maxDaysToCheckForData;
     }
 
     public void populate(Sheet sheet, CertificationCriterionDTO criterion) {
-        Map<LocalDate, Map<CertificationCriterionDTO, CuresCriterionChartStatistic>> dataOverTime = getDataOverTime();
+        Map<LocalDate, Map<CertificationCriterionDTO, CuresCriterionChartStatistic>> dataOverTime = getDataOverTime(criterion);
         Integer columnIndex = 1;
 
         for (LocalDate dateForColumn : dataOverTime.keySet()) {
@@ -66,17 +69,15 @@ public class CuresChartsOverTimeSheet {
         currentRow.getCell(columnIndex).setCellValue(stats == null ? 0 : stats.getNewCertificationCount());
     }
 
-    private Map<LocalDate, Map<CertificationCriterionDTO, CuresCriterionChartStatistic>> getDataOverTime() {
+    private Map<LocalDate, Map<CertificationCriterionDTO, CuresCriterionChartStatistic>> getDataOverTime(CertificationCriterionDTO criterion) {
         Map<LocalDate, Map<CertificationCriterionDTO, CuresCriterionChartStatistic>> dataOverTime =
                 new TreeMap<LocalDate, Map<CertificationCriterionDTO, CuresCriterionChartStatistic>>();
 
         getTargetDatesForPastYear().stream()
                 .sorted()
                 .forEach(targetDate -> {
-                    Map<CertificationCriterionDTO, CuresCriterionChartStatistic> stats = getDataAtOrNearTargetData(targetDate);
-                    //if (stats != null) {
-                        dataOverTime.put(targetDate, stats);
-                    //}
+                    Map<CertificationCriterionDTO, CuresCriterionChartStatistic> stats = getDataAtOrNearTargetData(targetDate, criterion);
+                    dataOverTime.put(targetDate, stats);
                 });
 
         return dataOverTime;
@@ -90,17 +91,17 @@ public class CuresChartsOverTimeSheet {
         return targetDates;
     }
 
-    private Map<CertificationCriterionDTO, CuresCriterionChartStatistic> getDataAtOrNearTargetData(LocalDate targetDate) {
+    private Map<CertificationCriterionDTO, CuresCriterionChartStatistic> getDataAtOrNearTargetData(LocalDate targetDate, CertificationCriterionDTO criterion) {
         Map<CertificationCriterionDTO, CuresCriterionChartStatistic> data = null;
 
         for (Integer offset : getDayOffsetList()) {
             data = curesStatisticsChartData.getCuresCriterionChartStatistics(targetDate.plusDays(offset));
             if (isTheDataComplete(data)) {
-                LOGGER.info("{} - found data for {}", targetDate, targetDate.plusDays(offset));
+                LOGGER.info("{} - {} - found data on {}", criterion.getNumber(), targetDate, targetDate.plusDays(offset));
                 return data;
             }
         }
-        LOGGER.info("{} - data was not found", targetDate);
+        LOGGER.info("{} - {} - data was not found", criterion.getNumber(), targetDate);
         return null;
     }
 
@@ -118,11 +119,10 @@ public class CuresChartsOverTimeSheet {
     }
 
     private List<Integer> getDayOffsetList() {
-        //This generates a list in this pattern 0, -1, 1, -2, 2, -3, 3 ....
+        //This generates a list in the pattern 0, -1, 1, -2, 2, -3, 3 ....
         List<Integer> dayOffsets = new ArrayList<Integer>();
-        Integer maxDaysToCheck = 7;
 
-        for (Integer i = 0; i < maxDaysToCheck; i++) {
+        for (Integer i = 0; i < maxDaysToCheckForData; i++) {
             Integer offset = i / 2;
             if (i % 2 == 1) {
                 offset = offset * -1;
