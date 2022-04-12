@@ -11,9 +11,11 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import lombok.extern.log4j.Log4j2;
 
 @Component
-public class CuresChartsOverTimeSpreadheet extends CuresSpreadsheet {
+@Log4j2(topic = "curesStatisticsEmailJobLogger")
+public final class CuresChartsOverTimeSpreadheet extends CuresSpreadsheet {
 
     private String template;
     private CertificationCriterionService certificationCriteriaService;

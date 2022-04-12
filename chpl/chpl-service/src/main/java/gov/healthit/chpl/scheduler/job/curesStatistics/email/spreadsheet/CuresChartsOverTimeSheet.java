@@ -20,7 +20,7 @@ import gov.healthit.chpl.scheduler.job.curesStatistics.email.CuresStatisticsChar
 import lombok.extern.log4j.Log4j2;
 
 @Component
-@Log4j2
+@Log4j2(topic = "curesStatisticsEmailJobLogger")
 public class CuresChartsOverTimeSheet {
     private static final Integer DATE_ROW_IDX = 0;
     private static final Integer REQUIRES_UPDATE_ROW_IDX = 1;
