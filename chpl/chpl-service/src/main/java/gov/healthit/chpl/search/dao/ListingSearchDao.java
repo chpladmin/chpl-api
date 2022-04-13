@@ -129,6 +129,7 @@ public class ListingSearchDao extends BaseDAOImpl {
                 .statusEvents(convertToSetOfStatusEvents(entity.getStatusEvents(), STANDARD_VALUE_SPLIT_CHAR))
                 .criteriaMet(convertToSetOfCriteria(entity.getCertificationCriteriaMet(), STANDARD_VALUE_SPLIT_CHAR))
                 .cqmsMet(convertToSetOfCqms(entity.getCqmsMet(), STANDARD_VALUE_SPLIT_CHAR))
+                .previousChplProductNumbers(convertToSetOfStrings(entity.getPreviousChplProductNumbers(), entity.getChplProductNumber(), STANDARD_VALUE_SPLIT_CHAR))
                 .previousDevelopers(convertToSetOfProductOwners(entity.getPreviousDevelopers(), ListingSearchEntity.SMILEY_SPLIT_CHAR))
                 .apiDocumentation(convertToSetOfCriteriaWithStringFields(entity.getCriteriaWithApiDocumentation(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
                 .serviceBaseUrlList(convertToCriterionWithStringField(entity.getCriteriaWithServiceBaseUrlList()))
@@ -144,6 +145,18 @@ public class ListingSearchDao extends BaseDAOImpl {
             .userCount(userCount)
             .userDate(userDate)
             .build();
+    }
+
+    private Set<String> convertToSetOfStrings(String delimitedString, String valueToIgnore, String delimeter)
+            throws EntityRetrievalException, NumberFormatException {
+        if (ObjectUtils.isEmpty(delimitedString)) {
+            return new LinkedHashSet<String>();
+        }
+
+        String[] splitStrings = delimitedString.split(delimeter);
+        return Stream.of(splitStrings)
+                .filter(str -> !str.equals(valueToIgnore))
+                .collect(Collectors.toSet());
     }
 
     private Set<DateRangeSearchResult> convertToSetOfDateRangesWithDelimiter(String delimitedDateRangeString, String delimeter)
