@@ -32,6 +32,4 @@ public class ChangeRequestDeveloperDetails implements Serializable, ChangeReques
             throw new RuntimeException("Could not cast object as type ChangeRequestDeveloperDetails");
         }
     }
-
-    //TODO - Need to implement equals
 }
