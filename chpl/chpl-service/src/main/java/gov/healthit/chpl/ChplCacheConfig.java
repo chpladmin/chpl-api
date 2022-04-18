@@ -89,6 +89,7 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.TEST_FUNCTIONALITY_MAPS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.UPLOAD_TEMPLATE_VERSIONS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.UPLOADED_LISTING_DETAILS));
+
         backingManager.addCacheIfAbsent(createCache(CacheNames.LISTING_DETAILS, listingDetailsTimeToLiveInHours * SECONDS_IN_HOUR));
         return cacheManager;
     }
