@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version 34.3.0
+_13 April 2022_
+
+### Features
+* Modify Cures Reporting for ONC-ACB changes to remove ONC-ACB "UL, LLC"
+* Calculate and save CHPL Product Number history when Listings are updated
+
+### Bug Fixes
+* Record listing activity on Developer split
+* Record listing activity on Developer merge
+
+---
+
 ## Version 34.2.0
 _1 April 2022_
 
