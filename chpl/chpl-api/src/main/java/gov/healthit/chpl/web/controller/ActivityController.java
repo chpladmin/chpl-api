@@ -12,10 +12,8 @@ import java.util.Set;
 
 import javax.persistence.EntityNotFoundException;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
@@ -28,7 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonParseException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
@@ -86,7 +83,6 @@ public class ActivityController {
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     private ErrorMessageUtil msgUtil;
     private ResourcePermissions resourcePermissions;
-    private FF4j ff4j;
 
     @Value("${maxActivityRangeInDays}")
     private Integer maxActivityRangeInDays;
@@ -101,7 +97,7 @@ public class ActivityController {
             DeveloperManager developerManager, ProductManager productManager,
             ProductVersionManager versionManager, UserManager userManager,
             ChplProductNumberUtil chplProductNumberUtil, CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
-            ResourcePermissions resourcePermissions, ErrorMessageUtil msgUtil, FF4j ff4j) {
+            ResourcePermissions resourcePermissions, ErrorMessageUtil msgUtil) {
         this.activityManager = activityManager;
         this.activityMetadataManager = activityMetadataManager;
         this.pagedMetadataManager = pagedMetadataManager;
@@ -117,7 +113,6 @@ public class ActivityController {
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.resourcePermissions = resourcePermissions;
         this.msgUtil = msgUtil;
-        this.ff4j = ff4j;
         if (maxActivityRangeInDays == null) {
             maxActivityRangeInDays = DEFAULT_MAX_ACTIVITY_RANGE_DAYS;
         }
@@ -891,10 +886,6 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForChangeRequests(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
-        if (!ff4j.check(FeatureList.CHANGE_REQUEST)) {
-            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
-        }
-
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDatesAndDateRange(start, end);

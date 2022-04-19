@@ -2,8 +2,6 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
-import org.apache.commons.lang3.NotImplementedException;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -23,7 +20,6 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
 import gov.healthit.chpl.web.controller.results.ChangeRequestResults;
@@ -37,14 +33,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class ChangeRequestController {
 
     private ChangeRequestManager changeRequestManager;
-    private ErrorMessageUtil msgUtil;
-    private FF4j ff4j;
 
     @Autowired
-    public ChangeRequestController(ChangeRequestManager changeRequestManager, ErrorMessageUtil msgUtil, FF4j ff4j) {
+    public ChangeRequestController(ChangeRequestManager changeRequestManager) {
         this.changeRequestManager = changeRequestManager;
-        this.msgUtil = msgUtil;
-        this.ff4j = ff4j;
     }
 
     @Operation(summary = "Get details about a specific change request.",
@@ -58,10 +50,6 @@ public class ChangeRequestController {
     @RequestMapping(value = "/{changeRequestId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @DeprecatedResponseFields(responseClass = ChangeRequest.class)
     public @ResponseBody ChangeRequest getChangeRequest(@PathVariable final Long changeRequestId) throws EntityRetrievalException {
-        if (!ff4j.check(FeatureList.CHANGE_REQUEST)) {
-            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
-        }
-
         return changeRequestManager.getChangeRequest(changeRequestId);
     }
 
@@ -76,9 +64,6 @@ public class ChangeRequestController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @DeprecatedResponseFields(responseClass = ChangeRequest.class)
     public @ResponseBody List<ChangeRequest> getAllChangeRequests() throws EntityRetrievalException {
-        if (!ff4j.check(FeatureList.CHANGE_REQUEST)) {
-            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
-        }
         return changeRequestManager.getAllChangeRequestsForUser();
     }
 
@@ -94,10 +79,6 @@ public class ChangeRequestController {
     public ChangeRequestResults createChangeRequest(@RequestBody final ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException {
-        if (!ff4j.check(FeatureList.CHANGE_REQUEST)) {
-            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
-        }
-
         List<ChangeRequest> createdCrs = changeRequestManager.createChangeRequests(cr);
         ChangeRequestResults results = new ChangeRequestResults();
         results.getResults().addAll(createdCrs);
@@ -118,10 +99,6 @@ public class ChangeRequestController {
     public ChangeRequest updateChangeRequest(@RequestBody final ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
-        if (!ff4j.check(FeatureList.CHANGE_REQUEST)) {
-            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
-        }
-
         return changeRequestManager.updateChangeRequest(cr);
     }
 }
