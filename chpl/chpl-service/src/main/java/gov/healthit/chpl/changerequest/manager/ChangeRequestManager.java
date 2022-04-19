@@ -130,7 +130,7 @@ public class ChangeRequestManager extends SecurityManager {
     @Transactional(readOnly = true)
     public Set<KeyValueModel> getChangeRequestTypes() {
         return changeRequestTypeDAO.getChangeRequestTypes().stream()
-                .filter(entity -> (entity.getName().equals("Developer Attestation Change Request") && ff4j.check(FeatureList.ATTESTATIONS))
+                .filter(entity -> entity.getName().equals("Developer Attestation Change Request")
                         || (entity.getName().equals("Developer Details Change Request") && ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST))
                         || (entity.getName().equals("Website Change Request") && ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST)))
                 .map(crType -> new KeyValueModel(crType.getId(), crType.getName()))
