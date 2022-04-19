@@ -3,6 +3,7 @@ package gov.healthit.chpl.sharedstorage;
 import java.io.Serializable;
 import java.util.Objects;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 import lombok.AllArgsConstructor;
@@ -20,7 +21,10 @@ import lombok.Setter;
 public class SharedDataPrimaryKey implements Serializable {
     private static final long serialVersionUID = 8887068260992258871L;
 
+    @Column(name = "type")
     private String type;
+
+    @Column(name = "key")
     private String key;
 
     @Override

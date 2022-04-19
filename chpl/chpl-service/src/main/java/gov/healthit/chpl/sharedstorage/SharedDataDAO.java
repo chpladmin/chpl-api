@@ -3,11 +3,14 @@ package gov.healthit.chpl.sharedstorage;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 
+@Component
 public class SharedDataDAO extends BaseDAOImpl {
 
-    public void create(SharedData data) {
+    public void add(SharedData data) {
         SharedDataEntity entity = SharedDataEntity.builder()
                 .primaryKey(SharedDataPrimaryKey.builder()
                         .type(data.getType())
@@ -48,8 +51,8 @@ public class SharedDataDAO extends BaseDAOImpl {
     private SharedDataEntity getEntity(String type, String key) throws SharedDataNotFoundException {
         List<SharedDataEntity> result = entityManager.createQuery(
                 "FROM SharedDataEntity sde "
-                + "WHERE sde.type = :type "
-                + "AND sde.key = : key ", SharedDataEntity.class)
+                + "WHERE sde.primaryKey.type = :type "
+                + "AND sde.primaryKey.key = :key ", SharedDataEntity.class)
                 .setParameter("type", type)
                 .setParameter("key", key)
                 .getResultList();

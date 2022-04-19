@@ -3,11 +3,9 @@ package gov.healthit.chpl.certifiedproduct;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.service.CertificationResultService;
 import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.certifiedproduct.service.CqmResultsService;
@@ -21,8 +19,11 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.sharedstorage.ListingSharedDataProvider;
+import lombok.extern.log4j.Log4j2;
 
 @Component("certifiedProductDetailsManager")
+@Log4j2
 public class CertifiedProductDetailsManager {
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     private ListingService listingService;
@@ -30,6 +31,7 @@ public class CertifiedProductDetailsManager {
     private CertificationResultService certificationResultService;
     private ListingMeasuresService listingMeasuresService;
     private CertificationStatusEventsService certificationStatusEventsService;
+    private ListingSharedDataProvider listingSharedDataProvider;
 
     @Autowired
     public CertifiedProductDetailsManager(
@@ -38,7 +40,8 @@ public class CertifiedProductDetailsManager {
             CqmResultsService cqmResultsService,
             CertificationResultService certificationResultService,
             ListingMeasuresService listingMeasuresService,
-            CertificationStatusEventsService certificationStatusEventsService) {
+            CertificationStatusEventsService certificationStatusEventsService,
+            ListingSharedDataProvider listingSharedDataProvider) {
 
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.listingService = listingService;
@@ -46,6 +49,7 @@ public class CertifiedProductDetailsManager {
         this.certificationResultService = certificationResultService;
         this.listingMeasuresService = listingMeasuresService;
         this.certificationStatusEventsService = certificationStatusEventsService;
+        this.listingSharedDataProvider = listingSharedDataProvider;
     }
 
     @Transactional(readOnly = true)
@@ -60,9 +64,29 @@ public class CertifiedProductDetailsManager {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = CacheNames.LISTING_DETAILS)
+    //@Cacheable(value = CacheNames.LISTING_DETAILS)
     public CertifiedProductSearchDetails getCertifiedProductDetailsUsingCache(Long certifiedProductId) throws EntityRetrievalException {
-        return listingService.createCertifiedSearchDetails(certifiedProductId);
+        LOGGER.info("Getting listing: {}", certifiedProductId);
+        //Supplier<CertifiedProductSearchDetails> s = ()
+        return listingSharedDataProvider.get(certifiedProductId, () -> {
+            try {
+                return listingService.createCertifiedSearchDetails(certifiedProductId);
+            } catch (EntityRetrievalException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return null;
+            }
+        });
+
+        /*
+        if (listingSharedDataProvider.containsKey(certifiedProductId)) {
+            return listingSharedDataProvider.get(certifiedProductId).get(;
+        } else {
+            CertifiedProductSearchDetails listing = listingService.createCertifiedSearchDetails(certifiedProductId);
+            listingSharedDataProvider.put(listing.getId(), listing);
+            return listing;
+        }
+        */
     }
 
     @Transactional(readOnly = true)
