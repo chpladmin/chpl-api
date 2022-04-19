@@ -44,13 +44,18 @@ public class UscdiCriteriaByAcbWorksheet {
 
         Integer currentRowIdx = 1;
         Row currentRow;
+        String previousCriteria = "";
 
         for (CertificationCriterion criterion : getUscdiCriteria()) {
             for (CertificationBody acb : getActiveAcbs()) {
                 CuresCriteriaStatisticsByAcb stat = getCuresStatisticByAcbAndCriteria(stats, acb, criterion);
                 currentRow = sheet.createRow(currentRowIdx);
                 Cell cell = currentRow.createCell(0);
-                cell.setCellValue(stat.getCuresCriterion().getNumber());
+                if (!previousCriteria.equals(stat.getCuresCriterion().getNumber())) {
+                    cell.setCellValue(stat.getCuresCriterion().getNumber());
+                } else {
+                    cell.setCellValue("");
+                }
 
                 cell = currentRow.createCell(cell.getColumnIndex() + 1);
                 cell.setCellValue(stat.getCertificationBody().getName());
@@ -70,6 +75,7 @@ public class UscdiCriteriaByAcbWorksheet {
                 cell = currentRow.createCell(cell.getColumnIndex() + 1);
                 cell.setCellFormula("D" + (currentRowIdx + 1) + "+E" + (currentRowIdx + 1));
 
+                previousCriteria = stat.getCuresCriterion().getNumber();
                 ++currentRowIdx;
             }
         }
