@@ -10,7 +10,6 @@ import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.dto.TestDataDTO;
 
 @Component
@@ -33,28 +32,7 @@ public class TestDataNormalizer {
             List<CertificationResultTestData> testDatas) {
         if (testDatas != null && testDatas.size() > 0) {
             testDatas.stream()
-                .filter(testData -> isMissingName(testData))
-                .forEach(testData -> fillInDefaultName(testData));
-            testDatas.stream()
                 .forEach(testData -> populateTestDataId(criterion, testData));
-        }
-    }
-
-    private boolean isMissingName(CertificationResultTestData testData) {
-        if (testData == null) {
-            return false;
-        }
-        return (!StringUtils.isEmpty(testData.getVersion())
-                || !StringUtils.isEmpty(testData.getAlteration()))
-                && (testData.getTestData() == null || StringUtils.isEmpty(testData.getTestData().getName()));
-    }
-
-    private void fillInDefaultName(CertificationResultTestData testData) {
-        if (testData != null) {
-            if (testData.getTestData() == null) {
-                testData.setTestData(new TestData());
-            }
-            testData.getTestData().setName(TestDataDTO.DEFAULT_TEST_DATA);
         }
     }
 

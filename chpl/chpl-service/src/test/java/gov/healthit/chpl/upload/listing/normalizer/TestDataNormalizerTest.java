@@ -133,7 +133,7 @@ public class TestDataNormalizerTest {
 
     @Test
     @SuppressWarnings("checkstyle:magicnumber")
-    public void normalize_testDataNameEmpty_fillsInData() {
+    public void normalize_testDataNameEmpty_doesNotFillInData() {
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
                 .testData(TestData.builder()
@@ -160,40 +160,7 @@ public class TestDataNormalizerTest {
         normalizer.normalize(listing);
         assertEquals(1, listing.getCertificationResults().get(0).getTestDataUsed().size());
         CertificationResultTestData normalizedTestData = listing.getCertificationResults().get(0).getTestDataUsed().get(0);
-        assertNotNull(normalizedTestData.getTestData().getId());
-        assertEquals(TestDataDTO.DEFAULT_TEST_DATA, normalizedTestData.getTestData().getName());
-        assertEquals("1.1", normalizedTestData.getVersion());
-    }
-
-    @Test
-    @SuppressWarnings("checkstyle:magicnumber")
-    public void normalize_testDataNull_fillsInData() {
-        List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
-        testData.add(CertificationResultTestData.builder()
-                .testData(null)
-                .version("1.1")
-                .build());
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                .id(1L)
-                                .number("170.315 (b)(1)")
-                                .build())
-                        .testDataUsed(testData)
-                        .build())
-                .build();
-        List<TestDataDTO> foundTestData = new ArrayList<TestDataDTO>();
-        foundTestData.add(TestDataDTO.builder()
-                .id(5L)
-                .name(TestDataDTO.DEFAULT_TEST_DATA)
-                .build());
-        Mockito.when(testDataDao.getByCriterionId(ArgumentMatchers.eq(1L))).thenReturn(foundTestData);
-
-        normalizer.normalize(listing);
-        assertEquals(1, listing.getCertificationResults().get(0).getTestDataUsed().size());
-        CertificationResultTestData normalizedTestData = listing.getCertificationResults().get(0).getTestDataUsed().get(0);
-        assertNotNull(normalizedTestData.getTestData().getId());
-        assertEquals(TestDataDTO.DEFAULT_TEST_DATA, normalizedTestData.getTestData().getName());
+        assertNull(normalizedTestData.getTestData().getId());
         assertEquals("1.1", normalizedTestData.getVersion());
     }
 }
