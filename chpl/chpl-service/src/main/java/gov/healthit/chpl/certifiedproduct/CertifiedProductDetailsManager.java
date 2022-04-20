@@ -64,29 +64,15 @@ public class CertifiedProductDetailsManager {
     }
 
     @Transactional(readOnly = true)
-    //@Cacheable(value = CacheNames.LISTING_DETAILS)
     public CertifiedProductSearchDetails getCertifiedProductDetailsUsingCache(Long certifiedProductId) throws EntityRetrievalException {
-        LOGGER.info("Getting listing: {}", certifiedProductId);
-        //Supplier<CertifiedProductSearchDetails> s = ()
         return listingSharedDataProvider.get(certifiedProductId, () -> {
             try {
                 return listingService.createCertifiedSearchDetails(certifiedProductId);
             } catch (EntityRetrievalException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOGGER.error(e);
                 return null;
             }
         });
-
-        /*
-        if (listingSharedDataProvider.containsKey(certifiedProductId)) {
-            return listingSharedDataProvider.get(certifiedProductId).get(;
-        } else {
-            CertifiedProductSearchDetails listing = listingService.createCertifiedSearchDetails(certifiedProductId);
-            listingSharedDataProvider.put(listing.getId(), listing);
-            return listing;
-        }
-        */
     }
 
     @Transactional(readOnly = true)

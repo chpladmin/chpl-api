@@ -8,8 +8,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import lombok.extern.log4j.Log4j2;
 
 @Component
+@Log4j2
 public class ListingSharedDataProvider extends SharedDataProvider<Long, CertifiedProductSearchDetails> {
     private ObjectMapper mapper = new ObjectMapper();
     private Integer timeToLiveInHours;
@@ -33,14 +35,8 @@ public class ListingSharedDataProvider extends SharedDataProvider<Long, Certifie
     }
 
     @Override
-    public CertifiedProductSearchDetails getFromJson(String json) {
-
-        try {
-            return mapper.readValue(json, CertifiedProductSearchDetails.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public CertifiedProductSearchDetails getFromJson(String json) throws JsonProcessingException {
+        return mapper.readValue(json, CertifiedProductSearchDetails.class);
     }
 
     @Override

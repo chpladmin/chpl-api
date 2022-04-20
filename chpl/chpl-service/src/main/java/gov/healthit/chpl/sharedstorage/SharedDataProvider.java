@@ -25,16 +25,8 @@ public abstract class SharedDataProvider<K, V> {
 
     public abstract String getDomain();
     public abstract Class<V> getClazz();
-    public abstract V getFromJson(String json);
+    public abstract V getFromJson(String json) throws JsonProcessingException;
     public abstract Integer getTimeToLive();
-
-    public void clean() {
-
-    }
-
-    public void clear() {
-
-    }
 
     public boolean containsKey(K key) {
         return sharedDataDAO.get(getDomain(), key.toString()) != null;
@@ -42,14 +34,19 @@ public abstract class SharedDataProvider<K, V> {
 
     public V get(K key, Supplier<V> s) {
         SharedData data = sharedDataDAO.get(getDomain(), key.toString());
-        V obj;
+        V obj = null;
         if (data != null && !isExpired(data)) {
-            obj = getFromJson(data.getValue());
-            LOGGER.info("Retreived from shared data: {} {}", getClazz().getName(), key.toString());
+            try {
+                LOGGER.info("Retreived from shared data: {} {}", getDomain(), key.toString());
+                obj = getFromJson(data.getValue());
+            } catch (JsonProcessingException e) {
+                LOGGER.error("Could not create object from JSON: {} {}", getDomain(), data.getValue().substring(0, 200), e);
+            }
+
         } else {
             obj = s.get();
             put(key, obj);
-            LOGGER.info("Retreived from supplier: {} {}", getClazz().getName(), key.toString());
+            LOGGER.info("Retreived from supplier: {} {}", getDomain(), key.toString());
         }
         return obj;
     }
@@ -65,11 +62,9 @@ public abstract class SharedDataProvider<K, V> {
                     .value(mapper.writeValueAsString(value))
                     .build());
         } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.error("Could not write object to JSON: {} {}", getDomain(), key.toString(), e);
         }
     }
-
 
     private void remove(K key) {
         sharedDataDAO.remove(getDomain(), key.toString());
