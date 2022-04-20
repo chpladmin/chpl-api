@@ -60,7 +60,7 @@ public abstract class SharedDataProvider<K, V> {
         }
         try {
             sharedDataDAO.add(SharedData.builder()
-                    .type(getType())
+                    .domain(getDomain())
                     .key(key.toString())
                     .value(mapper.writeValueAsString(value))
                     .build());

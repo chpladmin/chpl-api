@@ -13,7 +13,7 @@ public class SharedDataDAO extends BaseDAOImpl {
     public void add(SharedData data) {
         SharedDataEntity entity = SharedDataEntity.builder()
                 .primaryKey(SharedDataPrimaryKey.builder()
-                        .type(data.getType())
+                        .domain(data.getDomain())
                         .key(data.getKey())
                         .build())
                 .value(data.getValue())
@@ -48,12 +48,12 @@ public class SharedDataDAO extends BaseDAOImpl {
         }
     }
 
-    private SharedDataEntity getEntity(String type, String key) throws SharedDataNotFoundException {
+    private SharedDataEntity getEntity(String domain, String key) throws SharedDataNotFoundException {
         List<SharedDataEntity> result = entityManager.createQuery(
                 "FROM SharedDataEntity sde "
-                + "WHERE sde.primaryKey.type = :type "
+                + "WHERE sde.primaryKey.domain = :domain "
                 + "AND sde.primaryKey.key = :key ", SharedDataEntity.class)
-                .setParameter("type", type)
+                .setParameter("domain", domain)
                 .setParameter("key", key)
                 .getResultList();
 

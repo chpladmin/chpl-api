@@ -35,7 +35,7 @@ public class SharedDataEntity implements Serializable {
 
     public SharedData toDomain() {
         return SharedData.builder()
-                .type(this.getPrimaryKey().getType())
+                .domain(this.getPrimaryKey().getDomain())
                 .key(this.getPrimaryKey().getKey())
                 .value(this.getValue())
                 .putDate(this.getPutDate())

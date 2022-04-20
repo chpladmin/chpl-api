@@ -21,8 +21,8 @@ import lombok.Setter;
 public class SharedDataPrimaryKey implements Serializable {
     private static final long serialVersionUID = 8887068260992258871L;
 
-    @Column(name = "type")
-    private String type;
+    @Column(name = "domain")
+    private String domain;
 
     @Column(name = "key")
     private String key;
@@ -31,7 +31,7 @@ public class SharedDataPrimaryKey implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + Objects.hash(key, type);
+        result = prime * result + Objects.hash(key, domain);
         return result;
     }
 
@@ -47,7 +47,7 @@ public class SharedDataPrimaryKey implements Serializable {
             return false;
         }
         SharedDataPrimaryKey other = (SharedDataPrimaryKey) obj;
-        return Objects.equals(key, other.key) && Objects.equals(type, other.type);
+        return Objects.equals(key, other.key) && Objects.equals(domain, other.domain);
     }
 
 }

@@ -60,7 +60,8 @@ public class CertifiedProductDetailsManager {
 
     @Transactional(readOnly = true)
     public CertifiedProductSearchDetails getCertifiedProductDetails(Long certifiedProductId) throws EntityRetrievalException {
-        return listingService.createCertifiedSearchDetails(certifiedProductId);
+        //return listingService.createCertifiedSearchDetails(certifiedProductId);
+        return getCertifiedProductDetailsUsingCache(certifiedProductId);
     }
 
     @Transactional(readOnly = true)
