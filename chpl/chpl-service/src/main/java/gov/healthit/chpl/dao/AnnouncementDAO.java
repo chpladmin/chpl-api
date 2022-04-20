@@ -26,8 +26,6 @@ public class AnnouncementDAO extends BaseDAOImpl {
         entity.setStartDate(announcement.getStartDateTime());
         entity.setEndDate(announcement.getEndDateTime());
         entity.setIsPublic(announcement.getIsPublic());
-        entity.setIsPublic(false);
-        entity.setDeleted(false);
         entity.setLastModifiedUser(AuthUtil.getAuditId());
 
         create(entity);
