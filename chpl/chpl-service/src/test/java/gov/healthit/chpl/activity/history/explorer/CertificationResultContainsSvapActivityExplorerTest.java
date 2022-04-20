@@ -1,13 +1,13 @@
 package gov.healthit.chpl.activity.history.explorer;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
@@ -47,7 +47,7 @@ public class CertificationResultContainsSvapActivityExplorerTest {
     }
 
     @Test
-    public void getActivityWhenCertificationResultHasSvap_nullActivityForListing_returnsNull() {
+    public void getActivityWhenCertificationResultHasSvap_nullActivityForListing_returnsEmptyList() {
         Mockito.when(activityDao.findByObjectId(ArgumentMatchers.anyLong(),
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
@@ -57,12 +57,13 @@ public class CertificationResultContainsSvapActivityExplorerTest {
                 .criterion(CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("").build())
                 .svap(Svap.builder().svapId(1L).regulatoryTextCitation("stuff").build())
                 .build();
-        ActivityDTO activity = explorer.getActivity(query);
-        assertNull(activity);
+        List<ActivityDTO> activities = explorer.getActivities(query);
+        assertNotNull(activities);
+        assertEquals(0, activities.size());
     }
 
     @Test
-    public void getActivityWhenCertificationResultHasSvap_emptyActivityForListing_returnsNull() {
+    public void getActivityWhenCertificationResultHasSvap_emptyActivityForListing_returnsEmptyList() {
         Mockito.when(activityDao.findByObjectId(ArgumentMatchers.anyLong(),
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
@@ -72,12 +73,13 @@ public class CertificationResultContainsSvapActivityExplorerTest {
                 .criterion(CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("").build())
                 .svap(Svap.builder().svapId(1L).regulatoryTextCitation("stuff").build())
                 .build();
-        ActivityDTO activity = explorer.getActivity(query);
-        assertNull(activity);
+        List<ActivityDTO> activities = explorer.getActivities(query);
+        assertNotNull(activities);
+        assertEquals(0, activities.size());
     }
 
     @Test
-    public void getActivityWhenCertificationResultHasSvap_noActivityWithMatchingSvaps_returnsNull() throws ParseException, JsonProcessingException {
+    public void getActivityWhenCertificationResultHasSvap_noActivityWithMatchingSvaps_returnsEmptyList() throws ParseException, JsonProcessingException {
         CertificationCriterion criterion = CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("").build();
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
@@ -105,12 +107,13 @@ public class CertificationResultContainsSvapActivityExplorerTest {
                 .criterion(criterion)
                 .svap(Svap.builder().svapId(1L).regulatoryTextCitation("stuff").build())
                 .build();
-        ActivityDTO foundActivity = explorer.getActivity(query);
-        assertNull(foundActivity);
+        List<ActivityDTO> activities = explorer.getActivities(query);
+        assertNotNull(activities);
+        assertEquals(0, activities.size());
     }
 
     @Test
-    public void getActivityWhenCertificationResultHasSvap_noActivityWithMatchingCriterion_returnsNull() throws ParseException, JsonProcessingException {
+    public void getActivityWhenCertificationResultHasSvap_noActivityWithMatchingCriterion_returnsEmptyList() throws ParseException, JsonProcessingException {
         CertificationCriterion a1 = CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("").build();
         CertificationCriterion a2 = CertificationCriterion.builder().id(2L).number("170.315 (a)(2)").title("").build();
         Svap svap = Svap.builder().svapId(1L).regulatoryTextCitation("stuff").build();
@@ -145,8 +148,9 @@ public class CertificationResultContainsSvapActivityExplorerTest {
                 .criterion(a2)
                 .svap(svap)
                 .build();
-        ActivityDTO foundActivity = explorer.getActivity(query);
-        assertNull(foundActivity);
+        List<ActivityDTO> activities = explorer.getActivities(query);
+        assertNotNull(activities);
+        assertEquals(0, activities.size());
     }
 
     @Test
@@ -184,9 +188,11 @@ public class CertificationResultContainsSvapActivityExplorerTest {
                 .criterion(a1)
                 .svap(svap)
                 .build();
-        ActivityDTO foundActivity = explorer.getActivity(query);
-        assertNotNull(foundActivity);
-        assertEquals(1L, foundActivity.getId());
+
+        List<ActivityDTO> activities = explorer.getActivities(query);
+        assertNotNull(activities);
+        assertEquals(1, activities.size());
+        assertEquals(1L, activities.get(0).getId());
     }
 
     @Test
@@ -240,9 +246,10 @@ public class CertificationResultContainsSvapActivityExplorerTest {
                 .criterion(a1)
                 .svap(svap)
                 .build();
-        ActivityDTO foundActivity = explorer.getActivity(query);
-        assertNotNull(foundActivity);
-        assertEquals(2L, foundActivity.getId());
+        List<ActivityDTO> activities = explorer.getActivities(query);
+        assertNotNull(activities);
+        assertEquals(1, activities.size());
+        assertEquals(2L, activities.get(0).getId());
     }
 
     @Test
@@ -296,9 +303,10 @@ public class CertificationResultContainsSvapActivityExplorerTest {
                 .criterion(a1)
                 .svap(svap)
                 .build();
-        ActivityDTO foundActivity = explorer.getActivity(query);
-        assertNotNull(foundActivity);
-        assertEquals(2L, foundActivity.getId());
+        List<ActivityDTO> activities = explorer.getActivities(query);
+        assertNotNull(activities);
+        assertEquals(1, activities.size());
+        assertEquals(2L, activities.get(0).getId());
     }
 
     @Test
@@ -372,8 +380,9 @@ public class CertificationResultContainsSvapActivityExplorerTest {
                 .criterion(a1)
                 .svap(svap)
                 .build();
-        ActivityDTO foundActivity = explorer.getActivity(query);
-        assertNotNull(foundActivity);
-        assertEquals(3L, foundActivity.getId());
+        List<ActivityDTO> activities = explorer.getActivities(query);
+        assertNotNull(activities);
+        assertEquals(1, activities.size());
+        assertEquals(3L, activities.get(0).getId());
     }
 }

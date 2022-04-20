@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.activity.history.ListingActivityUtil;
@@ -169,11 +170,11 @@ public class RealWorldTestingEligiblityService {
 
     private Optional<CertifiedProductSearchDetails> getListingAsOfDate(Long listingId, LocalDate asOfDate) {
         RealWorldTestingEligibilityQuery query = new RealWorldTestingEligibilityQuery(listingId, asOfDate);
-        ActivityDTO activity = realWorldTestingEligibilityActivityExplorer.getActivity(query);
-        if (activity == null) {
+        List<ActivityDTO> activities = realWorldTestingEligibilityActivityExplorer.getActivities(query);
+        if (CollectionUtils.isEmpty(activities)) {
             return Optional.empty();
         } else {
-            CertifiedProductSearchDetails listing = listingActivityUtil.getListing(activity.getNewData(), true);
+            CertifiedProductSearchDetails listing = listingActivityUtil.getListing(activities.get(0).getNewData(), true);
             return Optional.of(listing);
         }
     }

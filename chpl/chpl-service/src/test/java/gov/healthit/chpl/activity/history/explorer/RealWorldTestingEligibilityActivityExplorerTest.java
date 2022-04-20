@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -21,17 +22,17 @@ import org.mockito.Mockito;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.activity.history.ListingActivityUtil;
-import gov.healthit.chpl.activity.history.query.SvapNoticeUrlLastUpdateActivityQuery;
+import gov.healthit.chpl.activity.history.query.RealWorldTestingEligibilityQuery;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.util.JSONUtils;
 
-public class SvapNoticeUrlLastUpdateActivityExplorerTest {
+public class RealWorldTestingEligibilityActivityExplorerTest {
     private ActivityDAO activityDao;
     private ListingActivityUtil listingActivityUtil = new ListingActivityUtil(null, null);
-    private SvapNoticeUrlLastUpdateActivityExplorer explorer;
+    private RealWorldTestingEligibilityActivityExplorer explorer;
     private SimpleDateFormat formatter;
     @Before
     public void setup() {
@@ -39,18 +40,18 @@ public class SvapNoticeUrlLastUpdateActivityExplorerTest {
         formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
 
         activityDao = Mockito.mock(ActivityDAO.class);
-        explorer = new SvapNoticeUrlLastUpdateActivityExplorer(activityDao, listingActivityUtil);
+        explorer = new RealWorldTestingEligibilityActivityExplorer(activityDao);
     }
 
     @Test
-    public void getActivityForLastUpdateToSvapNoticeUrl_nullActivityForListing_returnsEmptyList() {
+    public void getActivityForRwtEligibility_nullAsOfDateAndNullActivityForListing_returnsEmptyList() {
         Mockito.when(activityDao.findByObjectId(ArgumentMatchers.anyLong(),
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(null);
-        SvapNoticeUrlLastUpdateActivityQuery query = SvapNoticeUrlLastUpdateActivityQuery.builder()
+        RealWorldTestingEligibilityQuery query = RealWorldTestingEligibilityQuery.builder()
                 .listingId(1L)
-                .svapNoticeUrl("test")
+                .asOfDate(null)
                 .build();
         List<ActivityDTO> foundActivities = explorer.getActivities(query);
         assertNotNull(foundActivities);
@@ -58,14 +59,14 @@ public class SvapNoticeUrlLastUpdateActivityExplorerTest {
     }
 
     @Test
-    public void getActivityForLastUpdateToSvapNoticeUrl_emptyActivityForListing_returnsEmptyList() {
+    public void getActivityForRwtEligibility_nullAsOfDateAndEmptyActivityForListing_returnsEmptyList() {
         Mockito.when(activityDao.findByObjectId(ArgumentMatchers.anyLong(),
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(new ArrayList<ActivityDTO>());
-        SvapNoticeUrlLastUpdateActivityQuery query = SvapNoticeUrlLastUpdateActivityQuery.builder()
+        RealWorldTestingEligibilityQuery query = RealWorldTestingEligibilityQuery.builder()
                 .listingId(1L)
-                .svapNoticeUrl("test")
+                .asOfDate(null)
                 .build();
         List<ActivityDTO> foundActivities = explorer.getActivities(query);
         assertNotNull(foundActivities);
@@ -73,10 +74,10 @@ public class SvapNoticeUrlLastUpdateActivityExplorerTest {
     }
 
     @Test
-    public void getActivityForLastUpdateToSvapNoticeUrl_nullCurrentSvapNoticeUrl_returnsEmptyList() throws ParseException, JsonProcessingException {
+    public void getActivityForRwtEligibility_nullAsOfDateAndOneActivityForListing_returnsOldestActivity()
+            throws ParseException, JsonProcessingException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
-                .svapNoticeUrl(null)
                 .build());
         ActivityDTO activity = ActivityDTO.builder()
             .id(1L)
@@ -88,84 +89,9 @@ public class SvapNoticeUrlLastUpdateActivityExplorerTest {
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(Stream.of(activity).collect(Collectors.toList()));
-        SvapNoticeUrlLastUpdateActivityQuery query = SvapNoticeUrlLastUpdateActivityQuery.builder()
+        RealWorldTestingEligibilityQuery query = RealWorldTestingEligibilityQuery.builder()
                 .listingId(1L)
-                .svapNoticeUrl("test")
-                .build();
-        List<ActivityDTO> foundActivities = explorer.getActivities(query);
-        assertNotNull(foundActivities);
-        assertEquals(0, foundActivities.size());
-    }
-
-    @Test
-    public void getActivityForLastUpdateToSvapNoticeUrl_emptyCurrentSvapNoticeUrl_returnsNull() throws ParseException, JsonProcessingException {
-        String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
-                .id(2L)
-                .svapNoticeUrl("")
-                .build());
-        ActivityDTO activity = ActivityDTO.builder()
-            .id(1L)
-            .activityDate(formatter.parse("02-01-2020 10:00:00 AM"))
-            .originalData(null)
-            .newData(listingConfirmActivity)
-            .build();
-        Mockito.when(activityDao.findByObjectId(ArgumentMatchers.anyLong(),
-                ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
-                ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
-        .thenReturn(Stream.of(activity).collect(Collectors.toList()));
-        SvapNoticeUrlLastUpdateActivityQuery query = SvapNoticeUrlLastUpdateActivityQuery.builder()
-                .listingId(1L)
-                .svapNoticeUrl("test")
-                .build();
-        List<ActivityDTO> foundActivities = explorer.getActivities(query);
-        assertNotNull(foundActivities);
-        assertEquals(0, foundActivities.size());
-    }
-
-    @Test
-    public void getActivityForLastUpdateToSvapNoticeUrl_noActivityWithMatchingSvapNoticeUrl_returnsEmptyList() throws ParseException, JsonProcessingException {
-        String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
-                .id(2L)
-                .svapNoticeUrl("url1")
-                .build());
-        ActivityDTO activity = ActivityDTO.builder()
-            .id(1L)
-            .activityDate(formatter.parse("02-01-2020 10:00:00 AM"))
-            .originalData(null)
-            .newData(listingConfirmActivity)
-            .build();
-        Mockito.when(activityDao.findByObjectId(ArgumentMatchers.anyLong(),
-                ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
-                ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
-        .thenReturn(Stream.of(activity).collect(Collectors.toList()));
-        SvapNoticeUrlLastUpdateActivityQuery query = SvapNoticeUrlLastUpdateActivityQuery.builder()
-                .listingId(1L)
-                .svapNoticeUrl("url2")
-                .build();
-        List<ActivityDTO> foundActivities = explorer.getActivities(query);
-        assertNotNull(foundActivities);
-        assertEquals(0, foundActivities.size());
-    }
-
-    @Test
-    public void getActivityForLastUpdateToSvapNoticeUrl_confirmActivityWithMatchingSvapNoticeUrl_returnsCorrectDate() throws ParseException, JsonProcessingException {
-        String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
-                .id(2L)
-                .svapNoticeUrl("url1")
-                .build());
-        ActivityDTO activity = ActivityDTO.builder()
-            .id(1L)
-            .activityDate(formatter.parse("02-01-2020 10:00:00 AM"))
-            .originalData(null)
-            .newData(listingConfirmActivity)
-            .build();
-        Mockito.when(activityDao.findByObjectId(ArgumentMatchers.anyLong(),
-                ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
-                ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
-        .thenReturn(Stream.of(activity).collect(Collectors.toList()));
-        SvapNoticeUrlLastUpdateActivityQuery query = SvapNoticeUrlLastUpdateActivityQuery.builder()
-                .listingId(1L)
-                .svapNoticeUrl("url1")
+                .asOfDate(null)
                 .build();
         List<ActivityDTO> foundActivities = explorer.getActivities(query);
         assertNotNull(foundActivities);
@@ -174,14 +100,10 @@ public class SvapNoticeUrlLastUpdateActivityExplorerTest {
     }
 
     @Test
-    public void getActivityForLastUpdateToSvapNoticeUrl_confirmAndEditActivityWithMatchingSvapNoticeUrl_returnsCorrectDate() throws ParseException, JsonProcessingException {
+    public void getActivityForRwtEligibility_nullAsOfDateAndTwoActivitiesForListing_returnsOldestActivity()
+            throws ParseException, JsonProcessingException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
-                .svapNoticeUrl("url1")
-                .build());
-        String listingUpdateActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
-                .id(2L)
-                .svapNoticeUrl("url2")
                 .build());
         ActivityDTO confirmActivity = ActivityDTO.builder()
             .id(1L)
@@ -189,40 +111,35 @@ public class SvapNoticeUrlLastUpdateActivityExplorerTest {
             .originalData(null)
             .newData(listingConfirmActivity)
             .build();
-        ActivityDTO updateActivity = ActivityDTO.builder()
+        String listingUpdateActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
-                .activityDate(formatter.parse("02-02-2020 10:00:00 AM"))
-                .originalData(listingConfirmActivity)
-                .newData(listingUpdateActivity)
-                .build();
+                .rwtPlansUrl("test")
+                .build());
+        ActivityDTO updateActivity = ActivityDTO.builder()
+            .id(2L)
+            .activityDate(formatter.parse("02-02-2020 10:00:00 AM"))
+            .originalData(listingConfirmActivity)
+            .newData(listingUpdateActivity)
+            .build();
         Mockito.when(activityDao.findByObjectId(ArgumentMatchers.anyLong(),
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
-        .thenReturn(Stream.of(confirmActivity, updateActivity).collect(Collectors.toList()));
-        SvapNoticeUrlLastUpdateActivityQuery query = SvapNoticeUrlLastUpdateActivityQuery.builder()
+        .thenReturn(Stream.of(updateActivity, confirmActivity).collect(Collectors.toList()));
+        RealWorldTestingEligibilityQuery query = RealWorldTestingEligibilityQuery.builder()
                 .listingId(1L)
-                .svapNoticeUrl("url2")
+                .asOfDate(null)
                 .build();
         List<ActivityDTO> foundActivities = explorer.getActivities(query);
         assertNotNull(foundActivities);
         assertEquals(1, foundActivities.size());
-        assertEquals(2L, foundActivities.get(0).getId());
+        assertEquals(1L, foundActivities.get(0).getId());
     }
 
     @Test
-    public void getActivityForLastUpdateToSvapNoticeUrl_confirmAndTwoEditActivitiesWithMatchingSvapNoticeUrl_returnsCorrectDate() throws ParseException, JsonProcessingException {
+    public void getActivityForRwtEligibility_AsOfDateBeforeOneActivityForListing_returnsEmptyList()
+            throws ParseException, JsonProcessingException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
-                .svapNoticeUrl("url1")
-                .build());
-        String listingUpdateActivity1 = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
-                .id(2L)
-                .svapNoticeUrl("url2")
-                .build());
-        String listingUpdateActivity2 = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
-                .id(3L)
-                .svapNoticeUrl("url2")
-                .otherAcb("other ACB")
                 .build());
         ActivityDTO confirmActivity = ActivityDTO.builder()
             .id(1L)
@@ -230,25 +147,145 @@ public class SvapNoticeUrlLastUpdateActivityExplorerTest {
             .originalData(null)
             .newData(listingConfirmActivity)
             .build();
-        ActivityDTO updateActivity1 = ActivityDTO.builder()
-                .id(2L)
-                .activityDate(formatter.parse("02-02-2020 10:00:00 AM"))
-                .originalData(listingConfirmActivity)
-                .newData(listingUpdateActivity1)
-                .build();
-        ActivityDTO updateActivity2 = ActivityDTO.builder()
-                .id(3L)
-                .activityDate(formatter.parse("02-03-2020 10:00:00 AM"))
-                .originalData(listingUpdateActivity1)
-                .newData(listingUpdateActivity2)
-                .build();
         Mockito.when(activityDao.findByObjectId(ArgumentMatchers.anyLong(),
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
-        .thenReturn(Stream.of(confirmActivity, updateActivity1, updateActivity2).collect(Collectors.toList()));
-        SvapNoticeUrlLastUpdateActivityQuery query = SvapNoticeUrlLastUpdateActivityQuery.builder()
+        .thenReturn(Stream.of(confirmActivity).collect(Collectors.toList()));
+        RealWorldTestingEligibilityQuery query = RealWorldTestingEligibilityQuery.builder()
                 .listingId(1L)
-                .svapNoticeUrl("url2")
+                .asOfDate(LocalDate.parse("2020-01-31"))
+                .build();
+        List<ActivityDTO> foundActivities = explorer.getActivities(query);
+        assertNotNull(foundActivities);
+        assertEquals(0, foundActivities.size());
+    }
+
+    @Test
+    public void getActivityForRwtEligibility_AsOfDateBeforeTwoActivitiesForListing_returnsEmptyList()
+            throws ParseException, JsonProcessingException {
+        String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+                .id(2L)
+                .build());
+        ActivityDTO confirmActivity = ActivityDTO.builder()
+            .id(1L)
+            .activityDate(formatter.parse("02-01-2020 10:00:00 AM"))
+            .originalData(null)
+            .newData(listingConfirmActivity)
+            .build();
+        String listingUpdateActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+                .id(2L)
+                .rwtPlansUrl("test")
+                .build());
+        ActivityDTO updateActivity = ActivityDTO.builder()
+            .id(2L)
+            .activityDate(formatter.parse("02-03-2020 10:00:00 AM"))
+            .originalData(listingConfirmActivity)
+            .newData(listingUpdateActivity)
+            .build();
+        Mockito.when(activityDao.findByObjectId(ArgumentMatchers.anyLong(),
+                ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
+                ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
+        .thenReturn(Stream.of(updateActivity, confirmActivity).collect(Collectors.toList()));
+        RealWorldTestingEligibilityQuery query = RealWorldTestingEligibilityQuery.builder()
+                .listingId(1L)
+                .asOfDate(LocalDate.parse("2020-01-31"))
+                .build();
+        List<ActivityDTO> foundActivities = explorer.getActivities(query);
+        assertNotNull(foundActivities);
+        assertEquals(0, foundActivities.size());
+    }
+
+    @Test
+    public void getActivityForRwtEligibility_AsOfDateAfterOneActivityForListing_returnsActivity()
+            throws ParseException, JsonProcessingException {
+        String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+                .id(2L)
+                .build());
+        ActivityDTO confirmActivity = ActivityDTO.builder()
+            .id(1L)
+            .activityDate(formatter.parse("02-01-2020 10:00:00 AM"))
+            .originalData(null)
+            .newData(listingConfirmActivity)
+            .build();
+        Mockito.when(activityDao.findByObjectId(ArgumentMatchers.anyLong(),
+                ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
+                ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
+        .thenReturn(Stream.of(confirmActivity).collect(Collectors.toList()));
+        RealWorldTestingEligibilityQuery query = RealWorldTestingEligibilityQuery.builder()
+                .listingId(1L)
+                .asOfDate(LocalDate.parse("2020-02-05"))
+                .build();
+        List<ActivityDTO> foundActivities = explorer.getActivities(query);
+        assertNotNull(foundActivities);
+        assertEquals(1, foundActivities.size());
+        assertEquals(1L, foundActivities.get(0).getId());
+    }
+
+    @Test
+    public void getActivityForRwtEligibility_AsOfDateBetweenTwoActivitiesForListing_returnsEarlierActivity()
+            throws ParseException, JsonProcessingException {
+        String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+                .id(2L)
+                .build());
+        ActivityDTO confirmActivity = ActivityDTO.builder()
+            .id(1L)
+            .activityDate(formatter.parse("02-01-2020 10:00:00 AM"))
+            .originalData(null)
+            .newData(listingConfirmActivity)
+            .build();
+        String listingUpdateActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+                .id(2L)
+                .rwtPlansUrl("test")
+                .build());
+        ActivityDTO updateActivity = ActivityDTO.builder()
+            .id(2L)
+            .activityDate(formatter.parse("02-03-2020 10:00:00 AM"))
+            .originalData(listingConfirmActivity)
+            .newData(listingUpdateActivity)
+            .build();
+        Mockito.when(activityDao.findByObjectId(ArgumentMatchers.anyLong(),
+                ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
+                ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
+        .thenReturn(Stream.of(updateActivity, confirmActivity).collect(Collectors.toList()));
+        RealWorldTestingEligibilityQuery query = RealWorldTestingEligibilityQuery.builder()
+                .listingId(1L)
+                .asOfDate(LocalDate.parse("2020-02-02"))
+                .build();
+        List<ActivityDTO> foundActivities = explorer.getActivities(query);
+        assertNotNull(foundActivities);
+        assertEquals(1, foundActivities.size());
+        assertEquals(1L, foundActivities.get(0).getId());
+    }
+
+    @Test
+    public void getActivityForRwtEligibility_AsOfDateAfterTwoActivitiesForListing_returnsLatestActivity()
+            throws ParseException, JsonProcessingException {
+        String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+                .id(2L)
+                .build());
+        ActivityDTO confirmActivity = ActivityDTO.builder()
+            .id(1L)
+            .activityDate(formatter.parse("02-01-2020 10:00:00 AM"))
+            .originalData(null)
+            .newData(listingConfirmActivity)
+            .build();
+        String listingUpdateActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
+                .id(2L)
+                .rwtPlansUrl("test")
+                .build());
+        ActivityDTO updateActivity = ActivityDTO.builder()
+            .id(2L)
+            .activityDate(formatter.parse("02-03-2020 10:00:00 AM"))
+            .originalData(listingConfirmActivity)
+            .newData(listingUpdateActivity)
+            .build();
+        Mockito.when(activityDao.findByObjectId(ArgumentMatchers.anyLong(),
+                ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
+                ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
+        .thenReturn(Stream.of(updateActivity, confirmActivity).collect(Collectors.toList()));
+        RealWorldTestingEligibilityQuery query = RealWorldTestingEligibilityQuery.builder()
+                .listingId(1L)
+                .asOfDate(LocalDate.parse("2020-02-04"))
                 .build();
         List<ActivityDTO> foundActivities = explorer.getActivities(query);
         assertNotNull(foundActivities);

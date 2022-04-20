@@ -15,7 +15,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public abstract class ListingActivityExplorer {
 
-    public abstract ActivityDTO getActivity(ListingActivityQuery query);
+    public abstract List<ActivityDTO> getActivities(ListingActivityQuery query);
 
     public ActivityDTO getActivityNearestAndBeforeDay(List<ActivityDTO> activities, Long listingId, LocalDate day) {
         sortOldestActivityFirst(activities);

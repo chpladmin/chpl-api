@@ -1,7 +1,6 @@
 package gov.healthit.chpl.activity.history.explorer;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.ParseException;
@@ -12,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -36,7 +36,7 @@ public class ListingOnDateActivityExplorerTest {
     }
 
     @Test
-    public void getActivity_nullActivityForListing_returnsNull() {
+    public void getActivity_nullActivityForListing_returnsEmptyList() {
         Mockito.when(activityDao.findByObjectId(ArgumentMatchers.anyLong(),
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
@@ -45,12 +45,13 @@ public class ListingOnDateActivityExplorerTest {
                 .listingId(1L)
                 .day(LocalDate.parse("2020-01-01"))
                 .build();
-        ActivityDTO foundActivity = explorer.getActivity(query);
-        assertNull(foundActivity);
+        List<ActivityDTO> foundActivities = explorer.getActivities(query);
+        assertNotNull(foundActivities);
+        assertEquals(0, foundActivities.size());
     }
 
     @Test
-    public void getActivity_emptyActivityForListing_returnsNull() {
+    public void getActivity_emptyActivityForListing_returnsEmptyList() {
         Mockito.when(activityDao.findByObjectId(ArgumentMatchers.anyLong(),
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
@@ -59,8 +60,9 @@ public class ListingOnDateActivityExplorerTest {
                 .listingId(1L)
                 .day(LocalDate.parse("2020-01-01"))
                 .build();
-        ActivityDTO foundActivity = explorer.getActivity(query);
-        assertNull(foundActivity);
+        List<ActivityDTO> foundActivities = explorer.getActivities(query);
+        assertNotNull(foundActivities);
+        assertEquals(0, foundActivities.size());
     }
 
     @Test
@@ -79,13 +81,14 @@ public class ListingOnDateActivityExplorerTest {
                 .listingId(1L)
                 .day(LocalDate.parse("2020-01-01"))
                 .build();
-        ActivityDTO foundActivity = explorer.getActivity(query);
-        assertNotNull(foundActivity);
-        assertEquals(1L, foundActivity.getId());
+        List<ActivityDTO> foundActivities = explorer.getActivities(query);
+        assertNotNull(foundActivities);
+        assertEquals(1, foundActivities.size());
+        assertEquals(1L, foundActivities.get(0).getId());
     }
 
     @Test
-    public void getActivity_oneActivityForListingAfterDate_returnsNull() throws ParseException {
+    public void getActivity_oneActivityForListingAfterDate_returnsEmptyList() throws ParseException {
         List<ActivityDTO> activities = new ArrayList<ActivityDTO>();
         activities.add(ActivityDTO.builder()
                 .id(1L)
@@ -100,12 +103,13 @@ public class ListingOnDateActivityExplorerTest {
                 .listingId(1L)
                 .day(LocalDate.parse("2020-01-01"))
                 .build();
-        ActivityDTO foundActivity = explorer.getActivity(query);
-        assertNull(foundActivity);
+        List<ActivityDTO> foundActivities = explorer.getActivities(query);
+        assertNotNull(foundActivities);
+        assertEquals(0, foundActivities.size());
     }
 
     @Test
-    public void getActivity_twoActivitiesForListingAfterDate_returnsNull() throws ParseException {
+    public void getActivity_twoActivitiesForListingAfterDate_returnsEmptyList() throws ParseException {
         List<ActivityDTO> activities = new ArrayList<ActivityDTO>();
         activities.add(ActivityDTO.builder()
                 .id(1L)
@@ -124,8 +128,9 @@ public class ListingOnDateActivityExplorerTest {
                 .listingId(1L)
                 .day(LocalDate.parse("2020-01-01"))
                 .build();
-        ActivityDTO foundActivity = explorer.getActivity(query);
-        assertNull(foundActivity);
+        List<ActivityDTO> foundActivities = explorer.getActivities(query);
+        assertNotNull(foundActivities);
+        assertEquals(0, foundActivities.size());
     }
 
     @Test
@@ -148,9 +153,10 @@ public class ListingOnDateActivityExplorerTest {
                 .listingId(1L)
                 .day(LocalDate.parse("2020-01-01"))
                 .build();
-        ActivityDTO foundActivity = explorer.getActivity(query);
-        assertNotNull(foundActivity);
-        assertEquals(2L, foundActivity.getId());
+        List<ActivityDTO> foundActivities = explorer.getActivities(query);
+        assertNotNull(foundActivities);
+        assertEquals(1, foundActivities.size());
+        assertEquals(2L, foundActivities.get(0).getId());
     }
 
     @Test
@@ -177,8 +183,9 @@ public class ListingOnDateActivityExplorerTest {
                 .listingId(1L)
                 .day(LocalDate.parse("2020-01-01"))
                 .build();
-        ActivityDTO foundActivity = explorer.getActivity(query);
-        assertNotNull(foundActivity);
-        assertEquals(2L, foundActivity.getId());
+        List<ActivityDTO> foundActivities = explorer.getActivities(query);
+        assertNotNull(foundActivities);
+        assertEquals(1, foundActivities.size());
+        assertEquals(2L, foundActivities.get(0).getId());
     }
 }

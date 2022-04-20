@@ -1,11 +1,14 @@
 package gov.healthit.chpl.activity.history.explorer;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,31 +33,36 @@ public class RealWorldTestingEligibilityActivityExplorer extends ListingActivity
 
     @Override
     @Transactional
-    public ActivityDTO getActivity(ListingActivityQuery query) {
+    public List<ActivityDTO> getActivities(ListingActivityQuery query) {
         ActivityDTO activityReturn = null;
         RealWorldTestingEligibilityQuery realWorldTestingEligibilityQuery = (RealWorldTestingEligibilityQuery) query;
-        List<ActivityDTO> listingActivities = getAllActivityforListing(realWorldTestingEligibilityQuery.getCertifiedProductId());
+        List<ActivityDTO> listingActivities = getAllActivityforListing(realWorldTestingEligibilityQuery.getListingId());
 
         if (realWorldTestingEligibilityQuery.getAsOfDate() == null) {
-            if (listingActivities.size() > 0) {
+            if (!CollectionUtils.isEmpty(listingActivities)) {
                 activityReturn = listingActivities.get(0);
             }
         } else {
             Iterator<ActivityDTO> listingActivityIter = listingActivities.iterator();
             while (listingActivityIter.hasNext()) {
                 ActivityDTO currActivity = listingActivityIter.next();
-
                 if (currActivity.getActivityDate().before(new Date(DateUtil.toEpochMillis(realWorldTestingEligibilityQuery.getAsOfDate())))) {
                     activityReturn = currActivity;
                 }
             }
         }
-        return activityReturn;
+
+        if (activityReturn == null) {
+            return Collections.emptyList();
+        }
+        return Stream.of(activityReturn).toList();
     }
 
     private List<ActivityDTO> getAllActivityforListing(Long listingId) {
         List<ActivityDTO> activities = activityDao.findByObjectId(listingId, ActivityConcept.CERTIFIED_PRODUCT, EPOCH, new Date());
-        sortOldestActivityFirst(activities);
+        if (!CollectionUtils.isEmpty(activities)) {
+            sortOldestActivityFirst(activities);
+        }
         return activities;
     }
 }

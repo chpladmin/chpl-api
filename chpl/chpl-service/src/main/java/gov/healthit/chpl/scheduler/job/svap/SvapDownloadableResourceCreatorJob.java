@@ -16,6 +16,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
@@ -143,10 +144,11 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
                 .listingId(listing.getId())
                 .svapNoticeUrl(listing.getSvapNoticeUrl())
                 .build();
-        ActivityDTO svapNoticeUrlLastUpdateActivity = svapNoticeUrlActivityExplorer.getActivity(svapNoticeUrlQuery);
+        List<ActivityDTO> svapNoticeUrlLastUpdateActivities = svapNoticeUrlActivityExplorer.getActivities(svapNoticeUrlQuery);
         ListingSvapActivity baseSvapActivity = ListingSvapActivity.builder()
             .listing(listing)
-            .svapNoticeLastUpdated(svapNoticeUrlLastUpdateActivity != null ? DateUtil.toLocalDate(svapNoticeUrlLastUpdateActivity.getActivityDate().getTime()) : null)
+            .svapNoticeLastUpdated(!CollectionUtils.isEmpty(svapNoticeUrlLastUpdateActivities)
+                    ? DateUtil.toLocalDate(svapNoticeUrlLastUpdateActivities.get(0).getActivityDate().getTime()) : null)
             .build();
         List<ListingSvapActivity> listingSvapActivities = new ArrayList<ListingSvapActivity>();
         if (!hasCertificationResultSvapData(listing)) {
@@ -195,13 +197,14 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
                 .criterion(listingSvapActivity.getCriterion())
                 .svap(listingSvapActivity.getCriterionSvap())
                 .build();
-        ActivityDTO activity = certResultSvapActivityExplorer.getActivity(query);
-        if (activity == null) {
+        List<ActivityDTO> activities = certResultSvapActivityExplorer.getActivities(query);
+        if (CollectionUtils.isEmpty(activities)) {
             LOGGER.warn("No activity was found where " + listingSvapActivity.getCriterionSvap().getRegulatoryTextCitation() + " was added to " + Util.formatCriteriaNumber(listingSvapActivity.getCriterion()) + " for listing ID " + listing.getId());
             return;
         }
-        listingSvapActivity.setCriterionSvapLastUpdated(DateUtil.toLocalDate(activity.getActivityDate().getTime()));
-        if (activity.getOriginalData() == null || !listingAttestsToCriteria(activityUtil.getListing(activity.getOriginalData()), listingSvapActivity.getCriterion())) {
+        listingSvapActivity.setCriterionSvapLastUpdated(DateUtil.toLocalDate(activities.get(0).getActivityDate().getTime()));
+        if (activities.get(0).getOriginalData() == null
+                || !listingAttestsToCriteria(activityUtil.getListing(activities.get(0).getOriginalData()), listingSvapActivity.getCriterion())) {
             listingSvapActivity.setWasCriterionAttestedToBeforeSvapAdded(false);
         } else {
             listingSvapActivity.setWasCriterionAttestedToBeforeSvapAdded(true);
