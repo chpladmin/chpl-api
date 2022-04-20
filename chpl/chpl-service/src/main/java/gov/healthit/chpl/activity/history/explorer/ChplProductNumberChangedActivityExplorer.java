@@ -1,11 +1,13 @@
 package gov.healthit.chpl.activity.history.explorer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,9 +48,9 @@ public class ChplProductNumberChangedActivityExplorer extends ListingActivityExp
 
         LOGGER.info("Finding all activity for listing ID " + query.getListingId() + ".");
         List<ActivityDTO> listingActivities = activityDao.findByObjectId(query.getListingId(), ActivityConcept.CERTIFIED_PRODUCT, EPOCH, new Date());
-        if (listingActivities == null || listingActivities.size() == 0) {
+        if (CollectionUtils.isEmpty(listingActivities)) {
             LOGGER.warn("No listing activities were found for listing ID " + query.getListingId() + ". Is the ID valid?");
-            return null;
+            return Collections.emptyList();
         }
         LOGGER.info("There are " + listingActivities.size() + " activities for listing ID " + query.getListingId());
 
