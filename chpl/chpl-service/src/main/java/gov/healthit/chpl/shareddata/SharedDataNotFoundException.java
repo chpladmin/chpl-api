@@ -1,4 +1,4 @@
-package gov.healthit.chpl.sharedstorage;
+package gov.healthit.chpl.shareddata;
 
 public class SharedDataNotFoundException extends Exception {
     private static final long serialVersionUID = 4054030238422080881L;

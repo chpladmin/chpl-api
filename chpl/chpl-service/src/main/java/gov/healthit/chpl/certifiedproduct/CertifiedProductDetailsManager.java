@@ -19,7 +19,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.sharedstorage.ListingSharedDataProvider;
+import gov.healthit.chpl.shareddata.ListingSharedDataProvider;
 import lombok.extern.log4j.Log4j2;
 
 @Component("certifiedProductDetailsManager")

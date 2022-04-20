@@ -23,8 +23,6 @@ import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
 @EnableCaching
 @Log4j2
 public class ChplCacheConfig {
-    //@Value("${listingDetailsTimeToLiveInHours}")
-    //private Integer listingDetailsTimeToLiveInHours;
 
     private static final int SECONDS_IN_HOUR = 3600;
     private static final int MAX_ENTRIES_LOCAL_HEAP = 10000;
@@ -89,7 +87,6 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.UPLOAD_TEMPLATE_VERSIONS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.UPLOADED_LISTING_DETAILS));
 
-        //backingManager.addCacheIfAbsent(createCache(CacheNames.LISTING_DETAILS, listingDetailsTimeToLiveInHours * SECONDS_IN_HOUR));
         return cacheManager;
     }
 

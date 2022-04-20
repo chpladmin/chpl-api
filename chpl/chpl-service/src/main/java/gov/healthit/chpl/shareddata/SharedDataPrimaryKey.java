@@ -1,4 +1,4 @@
-package gov.healthit.chpl.sharedstorage;
+package gov.healthit.chpl.shareddata;
 
 import java.io.Serializable;
 import java.util.Objects;
