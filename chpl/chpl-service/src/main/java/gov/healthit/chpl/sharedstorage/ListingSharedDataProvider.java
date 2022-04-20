@@ -1,6 +1,7 @@
 package gov.healthit.chpl.sharedstorage;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -11,14 +12,18 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 @Component
 public class ListingSharedDataProvider extends SharedDataProvider<Long, CertifiedProductSearchDetails> {
     private ObjectMapper mapper = new ObjectMapper();
+    private Integer timeToLiveInHours;
 
     @Autowired
-    public ListingSharedDataProvider(SharedDataDAO sharedDataDAO) {
+    public ListingSharedDataProvider(SharedDataDAO sharedDataDAO,
+          @Value("${sharedData.timeToLive.listings}") Integer timeToLiveInHours) {
         super(sharedDataDAO);
+
+        this.timeToLiveInHours = timeToLiveInHours;
     }
 
     @Override
-    public String getType() {
+    public String getDomain() {
         return CertifiedProductSearchDetails.class.getName();
     }
 
@@ -37,4 +42,11 @@ public class ListingSharedDataProvider extends SharedDataProvider<Long, Certifie
             return null;
         }
     }
+
+    @Override
+    public Integer getTimeToLive() {
+        return timeToLiveInHours;
+    }
+
+
 }
