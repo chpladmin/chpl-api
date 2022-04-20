@@ -20,7 +20,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "shared_data")
+@Table(name = "shared_data", schema = "shared_data")
 public class SharedDataEntity implements Serializable {
     private static final long serialVersionUID = -9211908180405673195L;
 
