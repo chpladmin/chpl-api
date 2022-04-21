@@ -1,8 +1,8 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2014;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
@@ -37,11 +37,11 @@ public class TestTool2014Reviewer implements Reviewer {
                                 && listing.getIcs().getInherits().booleanValue()) {
                             listing.getWarningMessages()
                             .add(msgUtil.getMessage("listing.criteria.missingTestToolVersion",
-                                    testTool.getTestToolName(), cert.getNumber()));
+                                    testTool.getTestToolName(), cert.getCriterion().getNumber()));
                         } else {
                             listing.getErrorMessages()
                             .add(msgUtil.getMessage("listing.criteria.missingTestToolVersion",
-                                    testTool.getTestToolName(), cert.getNumber()));
+                                    testTool.getTestToolName(), cert.getCriterion().getNumber()));
                         }
                     }
                 }

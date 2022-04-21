@@ -67,37 +67,6 @@ import lombok.ToString;
                 resultClass = ActivityEntity.class
             ),
     @NamedNativeQuery(
-            name = "getPublicAnnouncementActivityByDate",
-            query = "SELECT * "
-                    + "FROM " + BaseDAOImpl.SCHEMA_NAME + ".activity a "
-                    + "JOIN " + BaseDAOImpl.SCHEMA_NAME + ".activity_concept ac "
-                    + "ON a.activity_object_concept_id = ac.activity_concept_id "
-                    + "AND ac.concept = :conceptName "
-                    + "LEFT OUTER JOIN " + BaseDAOImpl.SCHEMA_NAME + ".user u "
-                    + "ON a.last_modified_user = u.user_id "
-                    + "WHERE a.original_data IS NOT NULL AND cast(a.original_data as json)->>'isPublic'= 'true' "
-                    + "AND a.new_data IS NOT NULL AND cast(a.new_data as json)->>'isPublic' = 'true' "
-                    + "AND (a.activity_date >= :startDate) "
-                    + "AND (a.activity_date <= :endDate)",
-                    resultClass = ActivityEntity.class
-            ),
-    @NamedNativeQuery(
-            name = "getPublicAnnouncementActivityByIdAndDate",
-            query = "SELECT * "
-                    + "FROM " + BaseDAOImpl.SCHEMA_NAME + ".activity a "
-                    + "JOIN " + BaseDAOImpl.SCHEMA_NAME + ".activity_concept ac "
-                    + "ON a.activity_object_concept_id = ac.activity_concept_id "
-                    + "AND ac.concept = :conceptName "
-                    + "LEFT OUTER JOIN " + BaseDAOImpl.SCHEMA_NAME + ".user u "
-                    + "ON a.last_modified_user = u.user_id "
-                    + "WHERE a.activity_object_id = :announcementId "
-                    + "AND a.original_data IS NOT NULL AND cast(a.original_data as json)->>'isPublic'= 'true' "
-                    + "AND a.new_data IS NOT NULL AND cast(a.new_data as json)->>'isPublic' = 'true' "
-                    + "AND (a.activity_date >= :startDate) "
-                    + "AND (a.activity_date <= :endDate)",
-                    resultClass = ActivityEntity.class
-            ),
-    @NamedNativeQuery(
             name = "getPendingListingActivityByAcbIdsAndDate",
             query = "SELECT * "
                     + "FROM " + BaseDAOImpl.SCHEMA_NAME + ".activity a "

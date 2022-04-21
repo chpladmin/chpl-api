@@ -3,6 +3,7 @@ package gov.healthit.chpl.upload.listing.handler;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Calendar;
@@ -328,8 +329,8 @@ public class ListingDetailsUploadHandlerTest {
 
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
         assertNotNull(listing);
-        assertNotNull(listing.getTransparencyAttestationUrl());
-        assertEquals("http://examplek1.com", listing.getTransparencyAttestationUrl());
+        assertNotNull(listing.getMandatoryDisclosures());
+        assertEquals("http://examplek1.com", listing.getMandatoryDisclosures());
     }
 
     @Test
@@ -341,8 +342,8 @@ public class ListingDetailsUploadHandlerTest {
 
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
         assertNotNull(listing);
-        assertNotNull(listing.getTransparencyAttestationUrl());
-        assertEquals("http://examplek1.com", listing.getTransparencyAttestationUrl());
+        assertNotNull(listing.getMandatoryDisclosures());
+        assertEquals("http://examplek1.com", listing.getMandatoryDisclosures());
     }
 
     @Test
@@ -354,8 +355,8 @@ public class ListingDetailsUploadHandlerTest {
 
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
         assertNotNull(listing);
-        assertNotNull(listing.getTransparencyAttestationUrl());
-        assertEquals("", listing.getTransparencyAttestationUrl());
+        assertNotNull(listing.getMandatoryDisclosures());
+        assertEquals("", listing.getMandatoryDisclosures());
     }
 
     @Test
@@ -367,7 +368,7 @@ public class ListingDetailsUploadHandlerTest {
 
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
         assertNotNull(listing);
-        assertNull(listing.getTransparencyAttestationUrl());
+        assertNull(listing.getMandatoryDisclosures());
     }
 
     @Test

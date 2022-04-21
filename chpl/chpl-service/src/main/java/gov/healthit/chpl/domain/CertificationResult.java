@@ -16,6 +16,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
@@ -43,22 +45,6 @@ public class CertificationResult implements Serializable {
 
     @XmlTransient
     private Long id;
-
-    /**
-     * Criteria number, i.e. 170.314 (a)(1). This field is deprecated and will be removed in a future release. Users
-     * should reference criterion.number instead.
-     */
-    @Deprecated
-    @XmlElement(required = true)
-    private String number;
-
-    /**
-     * Short description of the criteria. This field is deprecated and will be removed in a future release. Users should
-     * reference criterion.title instead.
-     */
-    @Deprecated
-    @XmlElement(required = true)
-    private String title;
 
     /**
      * Whether or not this criteria was met.
@@ -274,6 +260,17 @@ public class CertificationResult implements Serializable {
     @XmlElement(name = "criterion")
     private CertificationCriterion criterion;
 
+    /**
+     * This property exists solely to be able to deserialize listing activity events from very old data.
+     * Our Activity Explorer classes sometimes need to look at the "number" and "title" fields
+     * and deduce which criterion we were using so we need to be bale to read this value.
+     * This property should not be visible in the generated XSD or any response from an API call.
+     * Do not use it in any code unless you are specifically referencing legacy listing activity data.
+     */
+    @JsonProperty(access = Access.WRITE_ONLY)
+    @XmlTransient
+    private String number;
+
     public CertificationResult() {
         this.testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
         this.testToolsUsed = new ArrayList<CertificationResultTestTool>();
@@ -289,9 +286,7 @@ public class CertificationResult implements Serializable {
     public CertificationResult(CertificationResultDetailsDTO certResult) {
         this();
         this.setId(certResult.getId());
-        this.setNumber(certResult.getNumber());
         this.setSuccess(certResult.getSuccess());
-        this.setTitle(certResult.getTitle());
         this.setGap(certResult.getGap() == null ? Boolean.FALSE : certResult.getGap());
         this.setSed(certResult.getSed() == null ? Boolean.FALSE : certResult.getSed());
         this.setG1Success(certResult.getG1Success() == null ? Boolean.FALSE : certResult.getG1Success());
@@ -312,9 +307,7 @@ public class CertificationResult implements Serializable {
     public CertificationResult(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
         this();
         this.setId(certResult.getId());
-        this.setNumber(certResult.getNumber());
         this.setSuccess(certResult.getSuccess());
-        this.setTitle(certResult.getTitle());
         this.setSed(certResult.getSed() == null ? Boolean.FALSE : certResult.getSed());
         if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.GAP)) {
             this.setGap(null);
@@ -514,22 +507,6 @@ public class CertificationResult implements Serializable {
         this.testProcedures = testProcedures;
     }
 
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public Boolean isSuccess() {
         return success;
     }
@@ -696,6 +673,14 @@ public class CertificationResult implements Serializable {
 
     public void setCriterion(CertificationCriterion criterion) {
         this.criterion = criterion;
+    }
+
+    public String getNumber() {
+        return this.number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
     }
 
     public static String formatPrivacyAndSecurityFramework(String privacyAndSecurityFramework) {

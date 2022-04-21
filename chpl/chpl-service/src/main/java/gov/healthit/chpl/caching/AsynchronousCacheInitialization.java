@@ -39,8 +39,9 @@ public class AsynchronousCacheInitialization {
     @Async
     public void initializeSearchOptions() throws EntityRetrievalException {
         LOGGER.info("Starting cache initialization for SearchViewController.getPopulateSearchData()");
-        dimensionalDataManager.getSearchableDimensionalData(true);
-        dimensionalDataManager.getSearchableDimensionalData(false);
+        dimensionalDataManager.getProducts();
+        dimensionalDataManager.getDevelopers();
+        dimensionalDataManager.getCertificationCriterionNumbers();
         dimensionalDataManager.getDimensionalData(true);
         dimensionalDataManager.getDimensionalData(false);
         LOGGER.info("Finished cache initialization for SearchViewController.getPopulateSearchData()");
@@ -57,9 +58,6 @@ public class AsynchronousCacheInitialization {
         LOGGER.info("Starting cache initialization for listing collection");
         certifiedProductSearchManager.getFlatListingCollection();
         LOGGER.info("Finished cache initialization for listing collection");
-        LOGGER.info("Starting cache initialization for deprecated searchable listing collection");
-        certifiedProductSearchManager.searchLegacy();
-        LOGGER.info("Finished cache initialization for deprecated searchable listing collection");
     }
 
     @Async

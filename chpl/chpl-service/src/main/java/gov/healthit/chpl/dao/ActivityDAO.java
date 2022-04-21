@@ -205,8 +205,7 @@ public class ActivityDAO extends BaseDAOImpl {
             .collect(Collectors.toList());
     }
 
-    public List<ActivityDTO> findAcbActivity(List<CertificationBodyDTO> acbs,
-            Date startDate, Date endDate) {
+    public List<ActivityDTO> findAcbActivity(List<CertificationBodyDTO> acbs, Date startDate, Date endDate) {
         List<Long> acbIds = new ArrayList<Long>();
         for (CertificationBodyDTO acb : acbs) {
             acbIds.add(acb.getId());

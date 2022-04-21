@@ -18,7 +18,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
 import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
@@ -68,11 +67,8 @@ import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEnti
 import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.listing.measure.MeasureDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
-import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
-import gov.healthit.chpl.svap.dao.SvapDAO;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 
 @Service
@@ -83,8 +79,6 @@ public class CertificationResultManager extends SecuredManager {
     private CertifiedProductSearchDAO cpDao;
     private CertificationCriterionDAO criteriaDao;
     private CertificationResultDAO certResultDAO;
-    private ConformanceMethodDAO conformanceMethodDAO;
-    private OptionalStandardDAO optionalStandardDAO;
     private TestStandardDAO testStandardDAO;
     private TestToolDAO testToolDAO;
     private TestFunctionalityDAO testFunctionalityDAO;
@@ -93,21 +87,18 @@ public class CertificationResultManager extends SecuredManager {
     private EducationTypeDAO educDao;
     private TestTaskDAO testTaskDAO;
     private UcdProcessDAO ucdDao;
-    private MeasureDAO mmDao;
     private FuzzyChoicesDAO fuzzyChoicesDao;
-    private SvapDAO svapDao;
 
     @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
     public CertificationResultManager(CertifiedProductSearchDAO cpDao, CertificationCriterionDAO criteriaDao,
-            CertificationResultDAO certResultDAO, OptionalStandardDAO optionalStandardDAO, TestStandardDAO testStandardDAO,
+            CertificationResultDAO certResultDAO, TestStandardDAO testStandardDAO,
             TestToolDAO testToolDAO, TestFunctionalityDAO testFunctionalityDAO, TestParticipantDAO testParticipantDAO,
-            AgeRangeDAO ageDao, EducationTypeDAO educDao, TestTaskDAO testTaskDAO, UcdProcessDAO ucdDao, MeasureDAO mmDao,
-            FuzzyChoicesDAO fuzzyChoicesDao, SvapDAO svapDao, ConformanceMethodDAO conformanceMethodDAO) {
+            AgeRangeDAO ageDao, EducationTypeDAO educDao, TestTaskDAO testTaskDAO, UcdProcessDAO ucdDao,
+            FuzzyChoicesDAO fuzzyChoicesDao) {
         this.cpDao = cpDao;
         this.criteriaDao = criteriaDao;
         this.certResultDAO = certResultDAO;
-        this.optionalStandardDAO = optionalStandardDAO;
         this.testStandardDAO = testStandardDAO;
         this.testToolDAO = testToolDAO;
         this.testFunctionalityDAO = testFunctionalityDAO;
@@ -116,10 +107,7 @@ public class CertificationResultManager extends SecuredManager {
         this.educDao = educDao;
         this.testTaskDAO = testTaskDAO;
         this.ucdDao = ucdDao;
-        this.mmDao = mmDao;
         this.fuzzyChoicesDao = fuzzyChoicesDao;
-        this.svapDao = svapDao;
-        this.conformanceMethodDAO = conformanceMethodDAO;
     }
 
     @SuppressWarnings({"checkstyle:methodlength", "checkstyle:linelength"})
@@ -156,7 +144,7 @@ public class CertificationResultManager extends SecuredManager {
             CertificationCriterionDTO criteria = criteriaDao.getById(orig.getCriterion().getId());
             if (criteria == null || criteria.getId() == null) {
                 throw new EntityCreationException(
-                        "Cannot add certification result mapping for unknown criteria " + orig.getNumber());
+                        "Cannot add certification result mapping for unknown criteria " + orig.getCriterion().getNumber());
             } else {
                 toUpdate.setCertificationCriterionId(criteria.getId());
             }
@@ -676,7 +664,7 @@ public class CertificationResultManager extends SecuredManager {
                     if (foundStd == null) {
                         LOGGER.error("Could not find test standard " + updatedItem.getTestStandardName()
                                 + "; will not be adding this as a test standard to certification result id "
-                                + certResult.getId() + ", criteria " + certResult.getNumber());
+                                + certResult.getId() + ", criteria " + certResult.getCriterion().getNumber());
                     } else {
                         updatedItem.setTestStandardId(foundStd.getId());
                     }
@@ -756,7 +744,7 @@ public class CertificationResultManager extends SecuredManager {
                     if (foundTool == null) {
                         LOGGER.error("Could not find test tool " + updatedItem.getTestToolName()
                                 + "; will not be adding this as a test tool to certification result id "
-                                + certResult.getId() + ", criteria " + certResult.getNumber());
+                                + certResult.getId() + ", criteria " + certResult.getCriterion().getNumber());
                     } else {
                         updatedItem.setTestToolId(foundTool.getId());
                         updatedItem.setTestToolVersion(updatedItem.getTestToolVersion());
@@ -1007,7 +995,7 @@ public class CertificationResultManager extends SecuredManager {
                         LOGGER.error("Could not find test functionality " + updatedItem.getName()
                                 + " for certifiation edition id " + editionIdString
                                 + "; will not be adding this as a test functionality to listing id " + listing.getId()
-                                + ", criteria " + certResult.getNumber());
+                                + ", criteria " + certResult.getCriterion().getNumber());
                     } else {
                         updatedItem.setTestFunctionalityId(foundFunc.getId());
                     }

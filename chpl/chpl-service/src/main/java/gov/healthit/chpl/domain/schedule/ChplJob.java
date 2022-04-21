@@ -19,8 +19,6 @@ public class ChplJob implements Serializable {
     private String description;
     private String group;
     private String name;
-    @Deprecated
-    private String frequency;
     private JobDataMap jobDataMap;
 
     public ChplJob(JobDetail jobDetails) {

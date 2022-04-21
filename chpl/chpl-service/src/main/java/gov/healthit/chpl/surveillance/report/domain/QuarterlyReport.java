@@ -23,12 +23,8 @@ public class QuarterlyReport implements Serializable {
     private Long startDate;
     private Long endDate;
     private String surveillanceActivitiesAndOutcomes;
-    @Deprecated
-    private String reactiveSummary;
     private String reactiveSurveillanceSummary;
     private String prioritizedElementSummary;
-    @Deprecated
-    private String transparencyDisclosureSummary;
     private String disclosureRequirementsSummary;
     private boolean acknowledgeWarnings;
 
@@ -37,10 +33,8 @@ public class QuarterlyReport implements Serializable {
         this.id = dto.getId();
         this.year = dto.getYear();
         this.surveillanceActivitiesAndOutcomes = dto.getActivitiesOutcomesSummary();
-        this.reactiveSummary = dto.getReactiveSurveillanceSummary();
         this.reactiveSurveillanceSummary = dto.getReactiveSurveillanceSummary();
         this.prioritizedElementSummary = dto.getPrioritizedElementSummary();
-        this.transparencyDisclosureSummary = dto.getDisclosureRequirementsSummary();
         this.disclosureRequirementsSummary = dto.getDisclosureRequirementsSummary();
         if (dto.getQuarter() != null) {
             this.quarter = dto.getQuarter().getName();
