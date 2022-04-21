@@ -142,7 +142,8 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
             return !CollectionUtils.isEqualCollection(
                     attestationSubmission.getAttestationResponses(),
                     attestationOriginal.getAttestationResponses(),
-                    DefaultEquator.INSTANCE);
+                    DefaultEquator.INSTANCE)
+                    || !attestationOriginal.getSignature().equals(attestationSubmission.getSignature());
         } else {
             return false;
         }
