@@ -332,7 +332,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private String createPendingDeveloperActionHtmlMessage(ChangeRequest cr) {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         return chplHtmlEmailBuilder.initialize()
-                .heading("Developer Attestations Requires Developer Action")
+                .heading("Developer Action Required")
                 .paragraph("", String.format(pendingDeveloperActionEmailBody, df.format(cr.getSubmittedDate()), getApprovalBody(cr), cr.getCurrentStatus().getComment()))
                 .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
                 .footer(true)
