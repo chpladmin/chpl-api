@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.Announcement;
@@ -39,11 +40,21 @@ public class AnnouncementDAO extends BaseDAOImpl {
                     "Cannot update entity with id " + announcement.getId() + ". Entity does not exist.");
         }
 
-        entity.setText(announcement.getText());
-        entity.setTitle(announcement.getTitle());
-        entity.setStartDate(announcement.getStartDateTime());
-        entity.setEndDate(announcement.getEndDateTime());
-        entity.setIsPublic(announcement.getIsPublic());
+        if (StringUtils.hasText(announcement.getTitle())) {
+            entity.setText(announcement.getText());
+        }
+        if (StringUtils.hasText(announcement.getTitle())) {
+            entity.setTitle(announcement.getTitle());
+        }
+        if (announcement.getStartDateTime() != null) {
+            entity.setStartDate(announcement.getStartDateTime());
+        }
+        if (announcement.getEndDateTime() != null) {
+            entity.setEndDate(announcement.getEndDateTime());
+        }
+        if (announcement.getIsPublic() != null) {
+            entity.setIsPublic(announcement.getIsPublic());
+        }
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
         return entity.toDomain();
