@@ -17,7 +17,7 @@ public abstract class ListingActivityExplorer {
 
     public abstract List<ActivityDTO> getActivities(ListingActivityQuery query);
 
-    public ActivityDTO getActivityNearestAndBeforeDay(List<ActivityDTO> activities, Long listingId, LocalDate day) {
+    protected ActivityDTO getActivityNearestAndBeforeDay(List<ActivityDTO> activities, Long listingId, LocalDate day) {
         sortOldestActivityFirst(activities);
         ActivityDTO result = null;
         ListIterator<ActivityDTO> activityIter = activities.listIterator();
@@ -36,7 +36,7 @@ public abstract class ListingActivityExplorer {
         return result;
     }
 
-    public void sortNewestActivityFirst(List<ActivityDTO> activities) {
+    protected void sortNewestActivityFirst(List<ActivityDTO> activities) {
         activities.sort(new Comparator<ActivityDTO>() {
             @Override
             public int compare(ActivityDTO o1, ActivityDTO o2) {
@@ -48,7 +48,7 @@ public abstract class ListingActivityExplorer {
         });
     }
 
-    public void sortOldestActivityFirst(List<ActivityDTO> activities) {
+    protected void sortOldestActivityFirst(List<ActivityDTO> activities) {
         activities.sort(new Comparator<ActivityDTO>() {
             @Override
             public int compare(ActivityDTO o1, ActivityDTO o2) {
