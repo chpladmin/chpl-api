@@ -23,10 +23,10 @@ public abstract class SharedDataProvider<K, V> {
         this.mapper = new ObjectMapper();
     }
 
-    public abstract String getDomain();
-    public abstract Class<V> getClazz();
-    public abstract V getFromJson(String json) throws JsonProcessingException;
-    public abstract Integer getTimeToLive();
+    protected abstract String getDomain();
+    protected abstract Class<V> getClazz();
+    protected abstract V getFromJson(String json) throws JsonProcessingException;
+    protected abstract Integer getTimeToLive();
 
     public boolean containsKey(K key) {
         return sharedDataDAO.get(getDomain(), key.toString()) != null;
@@ -40,7 +40,7 @@ public abstract class SharedDataProvider<K, V> {
                 LOGGER.info("Retreived from shared data: {} {}", getDomain(), key.toString());
                 obj = getFromJson(data.getValue());
             } catch (JsonProcessingException e) {
-                LOGGER.error("Could not create object from JSON: {} {}", getDomain(), data.getValue().substring(0, 200), e);
+                LOGGER.error("Could not create object from JSON: {} {}", getDomain(), data.getValue().substring(0, Math.min(data.getValue().length(), 200)), e);
             }
 
         } else {

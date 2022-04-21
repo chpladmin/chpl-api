@@ -25,24 +25,22 @@ public class ListingSharedDataProvider extends SharedDataProvider<Long, Certifie
     }
 
     @Override
-    public String getDomain() {
+    protected String getDomain() {
         return CertifiedProductSearchDetails.class.getName();
     }
 
     @Override
-    public Class<CertifiedProductSearchDetails> getClazz() {
+    protected Class<CertifiedProductSearchDetails> getClazz() {
         return CertifiedProductSearchDetails.class;
     }
 
     @Override
-    public CertifiedProductSearchDetails getFromJson(String json) throws JsonProcessingException {
+    protected CertifiedProductSearchDetails getFromJson(String json) throws JsonProcessingException {
         return mapper.readValue(json, CertifiedProductSearchDetails.class);
     }
 
     @Override
-    public Integer getTimeToLive() {
+    protected Integer getTimeToLive() {
         return timeToLiveInHours;
     }
-
-
 }
