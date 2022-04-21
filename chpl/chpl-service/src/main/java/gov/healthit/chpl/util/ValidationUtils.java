@@ -342,7 +342,7 @@ public class ValidationUtils {
     public boolean containsCert(CertificationResult certToCompare, String[] certs) {
         boolean hasCert = false;
         for (String cert : certs) {
-            if (certToCompare.getNumber().equals(cert)) {
+            if (certToCompare.getCriterion().getNumber().equals(cert)) {
                 hasCert = true;
             }
         }

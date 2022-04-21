@@ -71,11 +71,6 @@ public class CertificationResultUploadHandler {
                 .apiDocumentation(parseApiDocumentation(certHeadingRecord, certResultRecords))
                 .svaps(parseSvaps(certHeadingRecord, certResultRecords))
             .build();
-
-        if (certResult.getCriterion() != null) {
-            certResult.setNumber(certResult.getCriterion().getNumber());
-            certResult.setTitle(certResult.getCriterion().getTitle());
-        }
         return certResult;
     }
 

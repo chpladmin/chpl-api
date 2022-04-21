@@ -25,7 +25,6 @@ import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
 import gov.healthit.chpl.web.controller.results.ChplJobsResults;
 import gov.healthit.chpl.web.controller.results.ScheduleOneTimeTriggersResults;
 import gov.healthit.chpl.web.controller.results.ScheduleTriggersResults;
@@ -50,7 +49,6 @@ public class SchedulerController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = ScheduleTriggersResults.class)
     @RequestMapping(value = "/triggers", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleTriggersResults createTrigger(@RequestBody(required = true) ChplRepeatableTrigger trigger) throws SchedulerException, ValidationException, EmailNotSentException {
         ChplRepeatableTrigger result = schedulerManager.createTrigger(trigger);
@@ -64,7 +62,6 @@ public class SchedulerController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = ScheduleOneTimeTriggersResults.class)
     @RequestMapping(value = "/triggers/one_time", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleOneTimeTriggersResults createOneTimeTrigger(@RequestBody(required = true) ChplOneTimeTrigger trigger) throws SchedulerException, ValidationException {
         ChplOneTimeTrigger result = schedulerManager.createOneTimeTrigger(trigger);
@@ -95,7 +92,6 @@ public class SchedulerController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = ScheduleTriggersResults.class)
     @RequestMapping(value = "/triggers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody Object getAllTriggersByJobType(@RequestParam(defaultValue = USER_JOB_TYPE) String jobType)
             throws SchedulerException {
@@ -119,7 +115,6 @@ public class SchedulerController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = ScheduleTriggersResults.class)
     @RequestMapping(value = "/triggers", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public @ResponseBody ScheduleTriggersResults updateTrigger(@RequestBody(required = true) ChplRepeatableTrigger trigger)
             throws SchedulerException, ValidationException, EmailNotSentException {
@@ -135,7 +130,6 @@ public class SchedulerController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = ChplJobsResults.class)
     @RequestMapping(value = "/jobs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody ChplJobsResults getAllJobs() throws SchedulerException {
@@ -152,7 +146,6 @@ public class SchedulerController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = ChplJobsResults.class)
     @RequestMapping(value = "/jobs", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public @ResponseBody ChplJobsResults updateJob(@RequestBody(required = true) ChplJob job)
             throws SchedulerException {

@@ -21,8 +21,6 @@ public class ApiKey implements Serializable {
     private String name;
     private String email;
     private String key;
-    @Deprecated
-    private String apiKey;
     private Date lastUsedDate;
     private Date deleteWarningSentDate;
 

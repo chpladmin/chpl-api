@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
@@ -25,7 +26,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
@@ -174,9 +174,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
                             for (OversightRuleResult currResult : oversightResult) {
                                 String dateBrokenStr = "";
                                 if (currResult.getDateBroken() != null) {
-                                    LocalDateTime dateBroken = LocalDateTime.ofInstant(Instant.ofEpochMilli(currResult.getDateBroken().getTime()), ZoneId.systemDefault());
-                                    dateBrokenStr = dateFormatter.format(dateBroken);
-
+                                    dateBrokenStr = dateFormatter.format(currResult.getDateBroken());
                                     switch (currResult.getRule()) {
                                     case CAP_NOT_APPROVED:
                                         rule.setCapNotApprovedRule(dateBrokenStr);
@@ -253,9 +251,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         }
         List<OversightRuleResult> result = ruleComplianceCalculator.calculateCompliance(listing, null, null);
         if (result != null && result.size() > 0 && result.get(0).getDateBroken() != null) {
-            LocalDateTime dateBroken = LocalDateTime.ofInstant(
-                    Instant.ofEpochMilli(result.get(0).getDateBroken().getTime()), ZoneId.systemDefault());
-            base.setLengthySuspensionRule(dateFormatter.format(dateBroken));
+            base.setLengthySuspensionRule(dateFormatter.format(result.get(0).getDateBroken()));
         }
         return base;
     }

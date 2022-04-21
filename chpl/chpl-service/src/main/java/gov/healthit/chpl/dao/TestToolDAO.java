@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,27 +45,10 @@ public class TestToolDAO extends BaseDAOImpl {
         return dto;
     }
 
-    public List<TestToolDTO> findAll() {
-        List<TestToolEntity> entities = getAllEntities();
-        List<TestToolDTO> dtos = new ArrayList<TestToolDTO>();
-
-        for (TestToolEntity entity : entities) {
-            TestToolDTO dto = new TestToolDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
-
-    }
-
     public List<TestToolCriteriaMap> getAllTestToolCriteriaMap() throws EntityRetrievalException {
         return getAllTestToolCriteriaMapEntities().stream()
                 .map(e -> new TestToolCriteriaMap(e))
                 .collect(Collectors.toList());
-    }
-
-    private List<TestToolEntity> getAllEntities() {
-        return entityManager.createQuery("from TestToolEntity where (NOT deleted = true) ", TestToolEntity.class)
-                .getResultList();
     }
 
     private TestToolEntity getEntityById(Long id) {

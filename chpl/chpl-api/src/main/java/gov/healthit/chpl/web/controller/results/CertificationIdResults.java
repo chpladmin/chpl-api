@@ -28,12 +28,6 @@ public class CertificationIdResults implements Serializable {
         return isValid;
     }
 
-    // Method required to maintain backwards compatibility
-    @Deprecated
-    public boolean getIsValid() {
-        return isValid;
-    }
-
     @Data
     public static class Product implements Serializable {
         private static final long serialVersionUID = 1487852426085184818L;

@@ -1,7 +1,6 @@
 package gov.healthit.chpl.entity.surveillance;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -75,14 +74,12 @@ public class SurveillanceBasicEntity {
                 .certifiedProductId(this.getCertifiedProductId())
                 .chplProductNumber(this.getChplProductNumber())
                 .endDay(this.getEndDate())
-                .endDate(this.getEndDate() == null ? null : Date.from(this.getEndDate().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant()))
                 .friendlyId(this.getFriendlyId())
                 .id(this.getId())
                 .numClosedNonconformities(this.getNumClosedNonconformities())
                 .numOpenNonconformities(this.getNumOpenNonconformities())
                 .numRandomizedSites(this.getNumRandomizedSites())
                 .startDay(this.getStartDate())
-                .startDate(this.getStartDate() == null ? null : Date.from(this.getStartDate().atStartOfDay(ZoneId.systemDefault()).toInstant()))
                 .surveillanceType(this.getSurveillanceType() != null ? this.getSurveillanceType().buildSurveillanceType() : null)
                 .surveillanceTypeId(this.getSurveillanceTypeId())
                 .userPermissionId(SurveillanceBasic.AUTHORITY_ACB)
