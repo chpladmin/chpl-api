@@ -223,28 +223,6 @@ public class AuthenticationManager {
         }
     }
 
-    @Deprecated
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
-            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).IMPERSONATE_USER, #username)")
-    public String impersonateUserByUsername(String username)
-            throws UserRetrievalException, JWTCreationException, UserManagementException {
-        JWTAuthenticatedUser user = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
-        if (user.getImpersonatingUser() != null) {
-            throw new UserManagementException(msgUtil.getMessage("user.impersonate.alreadyImpersonating"));
-        }
-        UserDTO impersonatingUser = null;
-        UserDTO impersonatedUser = null;
-        try {
-            impersonatingUser = getUserByNameOrEmail(user.getSubjectName());
-            impersonatedUser = getUserByNameOrEmail(username);
-        } catch (MultipleUserAccountsException ex) {
-            throw new UserRetrievalException(ex.getMessage());
-        }
-
-        impersonatedUser.setImpersonatedBy(impersonatingUser);
-        return getJWT(impersonatedUser);
-    }
-
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).IMPERSONATE_USER, #id)")
     public String impersonateUser(Long id)

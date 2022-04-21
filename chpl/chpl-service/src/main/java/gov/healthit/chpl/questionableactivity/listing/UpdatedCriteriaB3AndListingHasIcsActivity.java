@@ -65,7 +65,7 @@ public class UpdatedCriteriaB3AndListingHasIcsActivity implements ListingActivit
 
     private CertificationResult getB3Criteria(CertifiedProductSearchDetails listing) {
         return listing.getCertificationResults().stream()
-                .filter(result -> result.getNumber().equals(B3_CRITERIA_NUMER))
+                .filter(result -> result.getCriterion().getNumber().equals(B3_CRITERIA_NUMER))
                 .findFirst()
                 .orElse(null);
     }

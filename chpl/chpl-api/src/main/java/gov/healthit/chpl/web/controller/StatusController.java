@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.caching.CacheInitializer;
-import gov.healthit.chpl.domain.status.CacheStatus;
 import gov.healthit.chpl.domain.status.CacheStatusName;
-import gov.healthit.chpl.domain.status.ServerStatus;
 import gov.healthit.chpl.domain.status.ServerStatusName;
 import gov.healthit.chpl.domain.status.SystemStatus;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -43,40 +41,6 @@ public class StatusController {
         response.setRunning(ServerStatusName.OK.name());
         // calculate the cache status
         response.setCache(determineCacheStatus().name());
-        return response;
-    }
-
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Use /system-status instead. "
-            + "Check that the rest services are up and running."
-            + "{\"status\":\"OK\"} is returned if all is well.",
-            description = "",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody ServerStatus getStatus() {
-        LOGGER.warn("/status called");
-        ServerStatus response = new ServerStatus();
-        response.setStatus(ServerStatusName.OK.name());
-        return response;
-    }
-
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Use /system-status instead. "
-            + "Check the status of every cache. "
-            + "{\"status\":\"OK\"} is returned if all caches are loaded and "
-            + "{\"status\":\"INITIALIZING\"} is returned if not. ",
-            description = "",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/cache_status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody CacheStatus getCacheStatus() {
-        CacheStatus response = new CacheStatus();
-        response.setStatus(determineCacheStatus().name());
         return response;
     }
 
