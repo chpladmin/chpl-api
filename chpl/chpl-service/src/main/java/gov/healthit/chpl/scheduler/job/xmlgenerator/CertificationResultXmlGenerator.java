@@ -31,7 +31,6 @@ public class CertificationResultXmlGenerator extends XmlGenerator {
             createSimpleElement(result.isG1Success(), "g1Success", sw);
             createSimpleElement(result.isG2Success(), "g2Success", sw);
             createSimpleElement(result.isGap(), "gap", sw);
-            createSimpleElement(result.getNumber(), "number", sw);
             CertificationResultOptionalStandardXmlGenerator.add(result.getOptionalStandards(), "optionalStandards", sw);
             createSimpleElement(result.getPrivacySecurityFramework(), "privacySecurityFramework", sw);
             createSimpleElement(result.isSed(), "sed", sw);
@@ -43,7 +42,6 @@ public class CertificationResultXmlGenerator extends XmlGenerator {
             CertificationResultTestProcedureXmlGenerator.add(result.getTestProcedures(), "testProcedures", sw);
             CertificationResultTestStandardXmlGenerator.add(result.getTestStandards(), "testStandards", sw);
             CertificationResultTestToolXmlGenerator.add(result.getTestToolsUsed(), "testTools", sw);
-            createSimpleElement(result.getTitle(), "title", sw);
             createSimpleElement(result.getUseCases(), "useCases", sw);
             sw.writeEndElement();
         }

@@ -40,7 +40,7 @@ public class InpatientG1G2RequiredData2014Reviewer implements Reviewer {
      // check (g)(1)
         boolean hasG1Cert = false;
         for (CertificationResult certCriteria : listing.getCertificationResults()) {
-            if (certCriteria.getNumber().equals(G1_2014) && certCriteria.isSuccess()) {
+            if (certCriteria.getCriterion().getNumber().equals(G1_2014) && certCriteria.isSuccess()) {
                 hasG1Cert = true;
             }
         }
@@ -48,7 +48,7 @@ public class InpatientG1G2RequiredData2014Reviewer implements Reviewer {
             boolean hasAtLeastOneCertPartner = false;
             for (int i = 0; i < G1_COMPLEMENTARY_CERTS.length && !hasAtLeastOneCertPartner; i++) {
                 for (CertificationResult certCriteria : listing.getCertificationResults()) {
-                    if (certCriteria.getNumber().equals(G1_COMPLEMENTARY_CERTS[i]) && certCriteria.isSuccess()) {
+                    if (certCriteria.getCriterion().getNumber().equals(G1_COMPLEMENTARY_CERTS[i]) && certCriteria.isSuccess()) {
                         hasAtLeastOneCertPartner = true;
                     }
                 }
@@ -62,7 +62,7 @@ public class InpatientG1G2RequiredData2014Reviewer implements Reviewer {
         // check (g)(2)
         boolean hasG2Cert = false;
         for (CertificationResult certCriteria : listing.getCertificationResults()) {
-            if (certCriteria.getNumber().equals(G2_2014) && certCriteria.isSuccess()) {
+            if (certCriteria.getCriterion().getNumber().equals(G2_2014) && certCriteria.isSuccess()) {
                 hasG2Cert = true;
             }
         }
@@ -70,7 +70,7 @@ public class InpatientG1G2RequiredData2014Reviewer implements Reviewer {
             boolean hasAtLeastOneCertPartner = false;
             for (int i = 0; i < G2_COMPLEMENTARY_CERTS.length && !hasAtLeastOneCertPartner; i++) {
                 for (CertificationResult certCriteria : listing.getCertificationResults()) {
-                    if (certCriteria.getNumber().equals(G2_COMPLEMENTARY_CERTS[i]) && certCriteria.isSuccess()) {
+                    if (certCriteria.getCriterion().getNumber().equals(G2_COMPLEMENTARY_CERTS[i]) && certCriteria.isSuccess()) {
                         hasAtLeastOneCertPartner = true;
                     }
                 }

@@ -102,7 +102,7 @@ public class QuestionableActivityListener implements EnvironmentAware {
                 // original and new criteria number fields
                 for (CertificationResult origCertResult : originalData.getCertificationResults()) {
                     for (CertificationResult newCertResult : newData.getCertificationResults()) {
-                        if (origCertResult.getNumber().equals(newCertResult.getNumber())) {
+                        if (origCertResult.getCriterion().getId().equals(newCertResult.getCriterion().getId())) {
                             questionableActivityManager.checkCertificationResultQuestionableActivity(origCertResult,
                                     newCertResult,
                                     activityDate, activityUser, reason);

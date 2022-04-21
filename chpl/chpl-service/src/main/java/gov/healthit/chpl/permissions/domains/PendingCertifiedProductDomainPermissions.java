@@ -6,9 +6,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.permissions.domains.pendingcertifiedproduct.ConfirmActionPermissions;
 import gov.healthit.chpl.permissions.domains.pendingcertifiedproduct.CreateOrReplaceActionPermissions;
 import gov.healthit.chpl.permissions.domains.pendingcertifiedproduct.DeleteActionPermissions;
-import gov.healthit.chpl.permissions.domains.pendingcertifiedproduct.GetAllActionPermissions;
 import gov.healthit.chpl.permissions.domains.pendingcertifiedproduct.GetAllMetadataActionPermissions;
-import gov.healthit.chpl.permissions.domains.pendingcertifiedproduct.GetByAcbActionPermissions;
 import gov.healthit.chpl.permissions.domains.pendingcertifiedproduct.GetDetailsByIdActionPermissions;
 import gov.healthit.chpl.permissions.domains.pendingcertifiedproduct.GetDetailsByIdForActivityActionPermissions;
 import gov.healthit.chpl.permissions.domains.pendingcertifiedproduct.UpdateableActionPermissions;
@@ -19,8 +17,6 @@ public class PendingCertifiedProductDomainPermissions extends DomainPermissions 
     public static final String CONFIRM = "CONFIRM";
     public static final String DELETE = "DELETE";
     public static final String CREATE_OR_REPLACE = "CREATE_OR_REPLACE";
-    public static final String GET_BY_ACB = "GET_BY_ACB";
-    public static final String GET_ALL = "GET_ALL";
     public static final String GET_ALL_METADATA = "GET_ALL_METADATA";
     public static final String GET_DETAILS_BY_ID = "GET_DETAILS_BY_ID";
     public static final String GET_DETAILS_BY_ID_FOR_ACTIVITY = "GET_DETAILS_BY_ID_FOR_ACTIVITY";
@@ -30,8 +26,6 @@ public class PendingCertifiedProductDomainPermissions extends DomainPermissions 
             ConfirmActionPermissions confirmActionPermissions,
             DeleteActionPermissions deleteActionPermissions,
             CreateOrReplaceActionPermissions createOrReplaceActionPermissions,
-            GetByAcbActionPermissions getByAcbActionPermissions,
-            GetAllActionPermissions getAllActionPermissions,
             GetAllMetadataActionPermissions getAllMetadataActionPermissions,
             GetDetailsByIdActionPermissions getDetailsByIdActionPermissions,
             GetDetailsByIdForActivityActionPermissions getDetailsByIdForActivityActionPermissions) {
@@ -40,8 +34,6 @@ public class PendingCertifiedProductDomainPermissions extends DomainPermissions 
         getActionPermissions().put(CONFIRM, confirmActionPermissions);
         getActionPermissions().put(DELETE, deleteActionPermissions);
         getActionPermissions().put(CREATE_OR_REPLACE, createOrReplaceActionPermissions);
-        getActionPermissions().put(GET_BY_ACB, getByAcbActionPermissions);
-        getActionPermissions().put(GET_ALL, getAllActionPermissions);
         getActionPermissions().put(GET_ALL_METADATA, getAllMetadataActionPermissions);
         getActionPermissions().put(GET_DETAILS_BY_ID, getDetailsByIdActionPermissions);
         getActionPermissions().put(GET_DETAILS_BY_ID_FOR_ACTIVITY, getDetailsByIdForActivityActionPermissions);

@@ -174,7 +174,6 @@ public class SurveillanceReportController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = ChplOneTimeTrigger.class)
     @RequestMapping(value = "/export/annual/{annualReportId}", method = RequestMethod.GET)
     public ChplOneTimeTrigger exportAnnualReport(@PathVariable("annualReportId") Long annualReportId)
             throws ValidationException, SchedulerException, EntityRetrievalException,
@@ -197,7 +196,6 @@ public class SurveillanceReportController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = QuarterlyReport.class)
     @RequestMapping(value = "/quarterly", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<QuarterlyReport> getAllQuarterlyReports() throws AccessDeniedException {
         List<QuarterlyReportDTO> allReports = reportManager.getQuarterlyReports();
@@ -215,7 +213,6 @@ public class SurveillanceReportController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = QuarterlyReport.class)
     @RequestMapping(value = "/quarterly/{quarterlyReportId}",
             method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody QuarterlyReport getQuarterlyReport(@PathVariable Long quarterlyReportId)
@@ -277,7 +274,6 @@ public class SurveillanceReportController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = QuarterlyReport.class)
     @RequestMapping(value = "/quarterly", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public QuarterlyReport createQuarterlyReport(
             @RequestBody(required = true) QuarterlyReport createRequest)
@@ -391,7 +387,6 @@ public class SurveillanceReportController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = QuarterlyReport.class)
     @RequestMapping(value = "/quarterly", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public QuarterlyReport updateQuarterlyReport(
             @RequestBody(required = true) QuarterlyReport updateRequest)
@@ -426,7 +421,6 @@ public class SurveillanceReportController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = ChplOneTimeTrigger.class)
     @RequestMapping(value = "/export/quarterly/{quarterlyReportId}", method = RequestMethod.GET)
     public ChplOneTimeTrigger exportQuarterlyReport(@PathVariable("quarterlyReportId") Long quarterlyReportId)
             throws ValidationException, SchedulerException, UserRetrievalException {

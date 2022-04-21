@@ -42,7 +42,7 @@ public class SvapReviewer implements ComparisonReviewer {
             .filter(cr -> cr.getSvaps() != null && cr.getSvaps().size() > 0)
             .forEach(cr -> updatedListing.getErrorMessages().add(
                     errorMessageUtil.getMessage("listing.criteria.svap.invalidEdition",
-                            cr.getNumber(), getListingEdition(existingListing))));
+                            cr.getCriterion().getNumber(), getListingEdition(existingListing))));
         } else {
             validateSvapNoticeUrl(updatedListing);
 

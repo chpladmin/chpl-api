@@ -12,11 +12,11 @@ import java.util.Set;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import gov.healthit.chpl.domain.surveillance.Surveillance;
@@ -233,8 +233,8 @@ public class SurveillanceUploadManager extends SecuredManager {
         List<String> errors = new ArrayList<String>();
         for (SurveillanceRequirement req : pendingSurv.getRequirements()) {
             for (SurveillanceNonconformity nc : req.getNonconformities()) {
-                if (nc.getStatus() != null
-                        && nc.getStatus().getName().equalsIgnoreCase(SurveillanceNonconformityStatus.CLOSED)
+                if (nc.getNonconformityStatus() != null
+                        && nc.getNonconformityStatus().equalsIgnoreCase(SurveillanceNonconformityStatus.CLOSED)
                         && nc.getCapEndDay() == null) {
                     errors.add(errorMessageUtil.getMessage("surveillance.nonconformity.closedStatusInvalid", pendingSurv.getCertifiedProduct().getChplProductNumber()));
                 }
@@ -265,10 +265,9 @@ public class SurveillanceUploadManager extends SecuredManager {
     public Surveillance setNonConformityCloseDate(Surveillance pendingSurv) {
         for (SurveillanceRequirement req : pendingSurv.getRequirements()) {
             for (SurveillanceNonconformity nc : req.getNonconformities()) {
-                if (nc.getStatus() != null
-                        && nc.getStatus().getName().equalsIgnoreCase(SurveillanceNonconformityStatus.CLOSED)
+                if (nc.getNonconformityStatus() != null
+                        && nc.getNonconformityStatus().equalsIgnoreCase(SurveillanceNonconformityStatus.CLOSED)
                         && nc.getCapEndDay() != null) {
-                    nc.setNonconformityCloseDate(nc.getCapEndDay());
                     nc.setNonconformityCloseDay(nc.getCapEndDay());
                 }
             }

@@ -1,7 +1,5 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
-import java.util.Objects;
-
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,10 +23,8 @@ public class DeprecatedFieldReviewer implements ComparisonReviewer {
     @Override
     public void review(CertifiedProductSearchDetails existingListing,
             CertifiedProductSearchDetails updatedListing) {
-        if (!Objects.equals(existingListing.getTransparencyAttestationUrl(), updatedListing.getTransparencyAttestationUrl())) {
-            updatedListing.getWarningMessages()
-            .add(msgUtil.getMessage("deprecated.field.update", "transparencyAttestationUrl", "mandatoryDisclosures"));
-        }
+        //If there are deprecated fields that have been updated between existingListing and updatedListing
+        //add a warning to the updatedListing here using "deprecated.field.update"
         if (ff4j.check(FeatureList.PROMOTING_INTEROPERABILITY)) {
             boolean onlyInOld = existingListing.getMeaningfulUseUserHistory()
                     .stream()
