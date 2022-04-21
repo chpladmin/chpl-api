@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,6 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -551,31 +551,16 @@ public class SurveillanceReportManager extends SecuredManager {
         if (toCreate.isAcknowledgeWarnings()) {
             return;
         }
-        if (!StringUtils.isEmpty(toCreate.getReactiveSummary()) || !StringUtils.isEmpty(toCreate.getTransparencyDisclosureSummary())) {
-            HashSet<String> errors = new HashSet<String>();
-            HashSet<String> warnings = new HashSet<String>();
-            warnings.add("Deprecated fields will not be used when creating a Quarterly Report");
-            throw new ValidationException(errors, warnings);
-        }
+        //if fields are used that are deprecated create a Set of warnings
+        //and throw a ValidationException with those warnings from here
     }
 
     private void reviewQuarterlyReportForDeprecatedFields(QuarterlyReport toUpdate, QuarterlyReportDTO existing) throws ValidationException {
         if (toUpdate.isAcknowledgeWarnings()) {
             return;
         }
-        HashSet<String> warnings = new HashSet<String>();
-        if (!StringUtils.equalsIgnoreCase(toUpdate.getReactiveSummary(), toUpdate.getReactiveSurveillanceSummary())
-                && StringUtils.equalsIgnoreCase(existing.getReactiveSurveillanceSummary(), toUpdate.getReactiveSurveillanceSummary())) {
-            warnings.add(msgUtil.getMessage("deprecated.field.update", "reactiveSummary", "reactiveSurveillanceSummary"));
-        }
-        if (!StringUtils.equalsIgnoreCase(toUpdate.getTransparencyDisclosureSummary(), toUpdate.getDisclosureRequirementsSummary())
-                && StringUtils.equalsIgnoreCase(existing.getDisclosureRequirementsSummary(), toUpdate.getDisclosureRequirementsSummary())) {
-            warnings.add(msgUtil.getMessage("deprecated.field.update", "transparencyDisclosureSummary", "disclosureRequirementsSummary"));
-        }
-        if (warnings.size() > 0) {
-            HashSet<String> errors = new HashSet<String>();
-            throw new ValidationException(errors, warnings);
-        }
+        //if fields that are deprecated have updated data, create a Set of warnings
+        //using "deprecated.field.update" and throw a ValidationException with those warnings from here
     }
 
     private void reviewQuarterlyReportToCreate(QuarterlyReportDTO toCreate)

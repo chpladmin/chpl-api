@@ -1,10 +1,7 @@
 package gov.healthit.chpl.scheduler.surveillance.rules;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 import org.springframework.stereotype.Component;
 
@@ -23,17 +20,12 @@ public class NonconformityOpenCapCompleteComplianceChecker implements RuleCompli
     }
 
     @Override
-    public Date check(CertifiedProductSearchDetails cp, Surveillance surv, SurveillanceNonconformity nc) {
-        Date result = null;
+    public LocalDate check(CertifiedProductSearchDetails cp, Surveillance surv, SurveillanceNonconformity nc) {
+        LocalDate result = null;
         if (nc.getNonconformityCloseDay() == null && nc.getCapEndDay() != null) {
-            LocalDateTime capCompleteDate = null;
-            capCompleteDate = nc.getCapEndDay().atTime(LocalTime.MAX);
-
-            Duration timeBetween = Duration.between(capCompleteDate, LocalDateTime.now());
-            long numDays = timeBetween.toDays();
+            long numDays = ChronoUnit.DAYS.between(nc.getCapEndDay(), LocalDate.now());
             if (numDays > getNumDaysAllowed()) {
-                LocalDateTime dateBroken = capCompleteDate.plusDays(getNumDaysAllowed() + 1);
-                result = Date.from(dateBroken.atZone(ZoneId.systemDefault()).toInstant());
+                result = nc.getCapEndDay().plusDays(getNumDaysAllowed() + 1);
             }
         }
 

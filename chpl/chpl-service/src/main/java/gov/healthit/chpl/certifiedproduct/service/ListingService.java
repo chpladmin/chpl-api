@@ -146,7 +146,6 @@ public class ListingService {
                 .product(dto.getProduct())
                 .version(new ProductVersion(dto.getVersion()))
                 .productAdditionalSoftware(dto.getProductAdditionalSoftware())
-                .transparencyAttestationUrl(dto.getMandatoryDisclosures())
                 .mandatoryDisclosures(dto.getMandatoryDisclosures())
                 .lastModifiedDate(dto.getLastModifiedDate().getTime())
                 .countCerts(dto.getCountCertifications())

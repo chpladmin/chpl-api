@@ -239,23 +239,6 @@ public class AuthenticationController {
         return "{\"passwordResetEmailSent\" : true }";
     }
 
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Impersonate another user.", description = "",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/impersonate", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public String impersonateUser(@RequestHeader(value = "Authorization", required = true) String userJwt,
-            @RequestParam(value = "username", required = true) String username)
-            throws UserRetrievalException, JWTCreationException, UserManagementException, JWTValidationException {
-
-        String jwt = authenticationManager.impersonateUserByUsername(username);
-        String jwtJSON = "{\"token\": \"" + jwt + "\"}";
-        return jwtJSON;
-    }
-
     @Operation(summary = "Impersonate another user.", description = "",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
