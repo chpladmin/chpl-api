@@ -54,6 +54,7 @@ public class ChplProductNumberChangedActivityExplorer extends ListingActivityExp
         }
         LOGGER.info("There are " + listingActivities.size() + " activities for listing ID " + query.getListingId());
 
+        sortOldestActivityFirst(listingActivities);
         List<ActivityDTO> activitiesWhereChplProductNumberChanged = new ArrayList<ActivityDTO>();
         listingActivities.stream()
             .filter(activity -> didChplProductNumberChange(activity))
