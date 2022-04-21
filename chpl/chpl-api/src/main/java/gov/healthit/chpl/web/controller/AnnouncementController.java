@@ -94,14 +94,9 @@ public class AnnouncementController {
     @DeprecatedResponseFields(responseClass = Announcement.class)
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public Announcement create(@RequestBody Announcement announcementInfo) throws InvalidArgumentsException,
+    public Announcement create(@RequestBody Announcement announcement) throws InvalidArgumentsException,
             UserRetrievalException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
-        return createAnnouncement(announcementInfo);
-    }
-
-    private Announcement createAnnouncement(Announcement announcement) throws InvalidArgumentsException,
-            UserRetrievalException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
         if (!StringUtils.hasText(announcement.getTitle())) {
             throw new InvalidArgumentsException("A title is required for a new announcement");
         }
@@ -132,17 +127,21 @@ public class AnnouncementController {
     @DeprecatedResponseFields(responseClass = Announcement.class)
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public Announcement updateAnnouncement(@RequestBody Announcement announcementInfo)
+    public Announcement updateAnnouncement(@PathVariable("announcementId") Long announcementId, @RequestBody Announcement announcement)
             throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateCertifiedBodyException {
 
-        return update(announcementInfo);
-    }
-
-    private Announcement update(Announcement announcement) throws InvalidArgumentsException,
-            EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
+        if (!StringUtils.hasText(announcement.getTitle())) {
+            throw new InvalidArgumentsException("A title is required when editing an announcement");
+        }
+        if (announcement.getStartDateTime() == null) {
+            throw new InvalidArgumentsException("A start date is required when editing an announcement");
+        }
+        if (announcement.getEndDateTime() == null) {
+            throw new InvalidArgumentsException("An end date is required when editing an announcement");
+        }
         Announcement toUpdate = Announcement.builder()
-                .id(announcement.getId())
+                .id(announcementId)
                 .title(announcement.getTitle())
                 .text(announcement.getText())
                 .startDateTime(announcement.getStartDateTime())
@@ -162,12 +161,6 @@ public class AnnouncementController {
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
     public String deleteAnnouncement(@PathVariable("announcementId") Long announcementId)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
-
-        return delete(announcementId);
-    }
-
-    private String delete(Long announcementId)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
 
         Announcement toDelete = announcementManager.getById(announcementId, false);
