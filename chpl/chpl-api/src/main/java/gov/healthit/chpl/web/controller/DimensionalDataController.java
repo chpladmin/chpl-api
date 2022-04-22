@@ -1,11 +1,8 @@
 package gov.healthit.chpl.web.controller;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,7 +20,6 @@ import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
-import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DimensionalData;
 import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.domain.KeyValueModel;
@@ -31,19 +27,16 @@ import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.domain.SearchOption;
-import gov.healthit.chpl.domain.SearchableDimensionalData;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
-import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptionsDeprecated;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.ComplaintManager;
-import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.manager.FilterManager;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
@@ -55,7 +48,6 @@ import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.results.CertificationCriterionResults;
-import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 import gov.healthit.chpl.web.controller.results.SvapResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -67,33 +59,27 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class DimensionalDataController {
     private DimensionalDataManager dimensionalDataManager;
     private FuzzyChoicesManager fuzzyChoicesManager;
-    private DeveloperManager developerManager;
     private FilterManager filterManager;
     private ComplaintManager complaintManager;
     private SurveillanceReportManager survReportManager;
     private ChangeRequestManager changeRequestManager;
     private SvapManager svapManager;
-    private FF4j ff4j;
 
     @Autowired
-    @SuppressWarnings("checkstyle:parameternumber")
     public DimensionalDataController(DimensionalDataManager dimensionalDataManager,
             FuzzyChoicesManager fuzzyChoicesManager,
-            DeveloperManager developerManager,
             FilterManager filterManager,
             ComplaintManager complaintManager,
             SurveillanceReportManager survReportManager,
             ChangeRequestManager changeRequestManager,
-            SvapManager svapManager, FF4j ff4j) {
+            SvapManager svapManager) {
         this.dimensionalDataManager = dimensionalDataManager;
         this.fuzzyChoicesManager = fuzzyChoicesManager;
-        this.developerManager = developerManager;
         this.filterManager = filterManager;
         this.complaintManager = complaintManager;
         this.survReportManager = survReportManager;
         this.changeRequestManager = changeRequestManager;
         this.svapManager = svapManager;
-        this.ff4j = ff4j;
     }
 
     @Operation(summary = "Get all fuzzy matching choices for the items that be fuzzy matched.",
@@ -323,24 +309,6 @@ public class DimensionalDataController {
         return result;
     }
 
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Get all possible test tool options in the CHPL",
-            description = "This is useful for knowing what values one might possibly search for.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/test_tools", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchOption getTestTools() {
-        Set<KeyValueModel> data = dimensionalDataManager.getTestTools();
-        SearchOption result = new SearchOption();
-        result.setExpandable(false);
-        result.setData(data);
-        return result;
-    }
-
     @Operation(summary = "Get all possible test procedure options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {
@@ -545,20 +513,6 @@ public class DimensionalDataController {
         return result;
     }
 
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Get all possible surveillance requirement options in the CHPL",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/surveillance_requirements", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SurveillanceRequirementOptionsDeprecated getSurveillanceRequirementOptionsDeprecated() {
-        SurveillanceRequirementOptionsDeprecated data = dimensionalDataManager.getSurveillanceRequirementOptionsDeprecated();
-        return data;
-    }
-
     @Operation(summary = "Get all possible surveillance requirement options in the CHPL",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
@@ -569,40 +523,6 @@ public class DimensionalDataController {
     public @ResponseBody SurveillanceRequirementOptions getSurveillanceRequirementOptions() {
         SurveillanceRequirementOptions data = dimensionalDataManager.getSurveillanceRequirementOptions();
         return data;
-    }
-
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Get all possible nonconformity status type options in the CHPL",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/nonconformity_status_types", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchOption getNonconformityStatusTypes() {
-        Set<KeyValueModel> data = new HashSet<KeyValueModel>();
-        SearchOption result = new SearchOption();
-        result.setExpandable(false);
-        result.setData(data);
-        return result;
-    }
-
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Get all possible nonconformity type options in the CHPL",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/nonconformity_types", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchOption getNonconformityTypeOptionsDeprecated() {
-        Set<KeyValueModel> data = dimensionalDataManager.getNonconformityTypeOptionsDeprecated();
-        SearchOption result = new SearchOption();
-        result.setExpandable(false);
-        result.setData(data);
-        return result;
     }
 
     @Operation(summary = "Get all possible nonconformity type options in the CHPL",
@@ -635,23 +555,6 @@ public class DimensionalDataController {
         return result;
     }
 
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Use /data/search-options instead. Get all search options in the CHPL",
-            description = "This returns all of the other /data/{something} results in one single response.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/search_options", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchableDimensionalData getSearchOptionsDeprecated(
-            @RequestParam(value = "simple", required = false, defaultValue = "false") Boolean simple)
-            throws EntityRetrievalException {
-
-        return dimensionalDataManager.getSearchableDimensionalData(simple);
-    }
-
     @Operation(summary = "Get all search options in the CHPL",
             description = "This returns all of the other /data/{something} results in one single response.",
             security = {
@@ -664,24 +567,6 @@ public class DimensionalDataController {
             @RequestParam(value = "simple", required = false, defaultValue = "false") Boolean simple)
             throws EntityRetrievalException {
         return dimensionalDataManager.getDimensionalData(simple);
-    }
-
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Use /collections/decertified-developers instead. "
-            + "Get all developer decertifications in the CHPL",
-            description = "This returns all decertified developers.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/decertifications/developers", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException {
-        DecertifiedDeveloperResults ddr = new DecertifiedDeveloperResults();
-        List<DecertifiedDeveloperResult> results = developerManager.getDecertifiedDevelopers();
-        ddr.setDecertifiedDeveloperResults(results);
-        return ddr;
     }
 
     @Operation(summary = "Get all available filter type.",

@@ -25,7 +25,6 @@ public class AnnouncementManager extends ApplicationObjectSupport {
     private AnnouncementDAO announcementDAO;
     private ActivityManager activityManager;
 
-
     @Autowired
     public AnnouncementManager(AnnouncementDAO announcementDAO, ActivityManager activityManager) {
         this.announcementDAO = announcementDAO;
