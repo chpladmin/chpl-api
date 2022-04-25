@@ -1,8 +1,8 @@
 package gov.healthit.chpl.entity;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,132 +10,67 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.domain.Announcement;
+import gov.healthit.chpl.util.DateUtil;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 @Table(name = "announcement")
 public class AnnouncementEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "announcement_id", nullable = false)
     private Long id;
 
-    @Basic(optional = false)
     @Column(name = "announcement_title", nullable = false)
     private String title;
 
-    @Basic(optional = true)
     @Column(name = "announcement_text", nullable = false)
     private String text;
 
-    @Basic(optional = false)
     @Column(name = "start_date", nullable = false)
-    private Date startDate;
+    private LocalDateTime startDate;
 
-    @Basic(optional = false)
     @Column(name = "end_date", nullable = false)
-    private Date endDate;
+    private LocalDateTime endDate;
 
-    @Basic(optional = false)
     @Column(name = "ispublic", nullable = false)
     private Boolean isPublic;
 
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
+    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
     private Date creationDate;
 
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
+    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
     private Date lastModifiedDate;
 
-    @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-    @Basic(optional = false)
-    @Column(nullable = false, name = "deleted")
+    @Column(nullable = false, name = "deleted", insertable = false)
     private Boolean deleted;
 
-    public String getTitle() {
-        return title;
+    public Announcement toDomain() {
+        return Announcement.builder()
+                .id(this.getId())
+                .title(this.getTitle())
+                .text(this.getText())
+                .startDateTime(this.getStartDate())
+                .endDateTime(this.getEndDate())
+                .startDate(new Date(DateUtil.toEpochMillis(this.getStartDate())))
+                .endDate(new Date(DateUtil.toEpochMillis(this.getEndDate())))
+                .isPublic(this.getIsPublic())
+                .creationDate(this.getCreationDate())
+                .lastModifiedDate(this.getLastModifiedDate())
+                .lastModifiedUser(this.getLastModifiedUser())
+                .deleted(this.getDeleted())
+                .build();
     }
-
-    public void setTitle(final String title) {
-        this.title = title;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long long1) {
-        this.id = long1;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(final String text) {
-        this.text = text;
-    }
-
-    public Date getStartDate() {
-        return Util.getNewDate(startDate);
-    }
-
-    public void setStartDate(final Date startDate) {
-        this.startDate = Util.getNewDate(startDate);
-    }
-
-    public Date getEndDate() {
-        return Util.getNewDate(endDate);
-    }
-
-    public void setEndDate(final Date endDate) {
-        this.endDate = Util.getNewDate(endDate);
-    }
-
-    public Boolean getIsPublic() {
-        return isPublic;
-    }
-
-    public void setIsPublic(final Boolean isPublic) {
-        this.isPublic = isPublic;
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
 }
