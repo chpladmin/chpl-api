@@ -19,7 +19,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.shareddata.ListingSharedDataProvider;
+import gov.healthit.chpl.sharedstore.SharedListingStoreProvider;
 import lombok.extern.log4j.Log4j2;
 
 @Component("certifiedProductDetailsManager")
@@ -31,7 +31,7 @@ public class CertifiedProductDetailsManager {
     private CertificationResultService certificationResultService;
     private ListingMeasuresService listingMeasuresService;
     private CertificationStatusEventsService certificationStatusEventsService;
-    private ListingSharedDataProvider listingSharedDataProvider;
+    private SharedListingStoreProvider sharedListingStoreProvider;
 
     @Autowired
     public CertifiedProductDetailsManager(
@@ -41,7 +41,7 @@ public class CertifiedProductDetailsManager {
             CertificationResultService certificationResultService,
             ListingMeasuresService listingMeasuresService,
             CertificationStatusEventsService certificationStatusEventsService,
-            ListingSharedDataProvider listingSharedDataProvider) {
+            SharedListingStoreProvider sharedListingStoreProvider) {
 
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.listingService = listingService;
@@ -49,7 +49,7 @@ public class CertifiedProductDetailsManager {
         this.certificationResultService = certificationResultService;
         this.listingMeasuresService = listingMeasuresService;
         this.certificationStatusEventsService = certificationStatusEventsService;
-        this.listingSharedDataProvider = listingSharedDataProvider;
+        this.sharedListingStoreProvider = sharedListingStoreProvider;
     }
 
     @Transactional(readOnly = true)
@@ -65,7 +65,7 @@ public class CertifiedProductDetailsManager {
 
     @Transactional(readOnly = true)
     public CertifiedProductSearchDetails getCertifiedProductDetailsUsingCache(Long certifiedProductId) throws EntityRetrievalException {
-        return listingSharedDataProvider.get(certifiedProductId, () -> {
+        return sharedListingStoreProvider.get(certifiedProductId, () -> {
             try {
                 return listingService.createCertifiedSearchDetails(certifiedProductId);
             } catch (EntityRetrievalException e) {

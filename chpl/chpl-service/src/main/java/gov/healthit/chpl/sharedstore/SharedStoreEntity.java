@@ -1,4 +1,4 @@
-package gov.healthit.chpl.shareddata;
+package gov.healthit.chpl.sharedstore;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -20,12 +20,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "shared_data", schema = "shared_data")
-public class SharedDataEntity implements Serializable {
+@Table(name = "shared_store", schema = "shared_store")
+public class SharedStoreEntity implements Serializable {
     private static final long serialVersionUID = -9211908180405673195L;
 
     @EmbeddedId
-    private SharedDataPrimaryKey primaryKey;
+    private SharedStorePrimaryKey primaryKey;
 
     @Column(name = "value")
     private String value;
@@ -33,8 +33,8 @@ public class SharedDataEntity implements Serializable {
     @Column(name = "put_date")
     private LocalDateTime putDate;
 
-    public SharedData toDomain() {
-        return SharedData.builder()
+    public SharedStore toDomain() {
+        return SharedStore.builder()
                 .domain(this.getPrimaryKey().getDomain())
                 .key(this.getPrimaryKey().getKey())
                 .value(this.getValue())

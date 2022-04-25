@@ -1,4 +1,4 @@
-package gov.healthit.chpl.shareddata;
+package gov.healthit.chpl.sharedstore;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,12 +12,12 @@ import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2
-public class ListingSharedDataProvider extends SharedDataProvider<Long, CertifiedProductSearchDetails> {
+public class SharedListingStoreProvider extends SharedStoreProvider<Long, CertifiedProductSearchDetails> {
     private ObjectMapper mapper = new ObjectMapper();
     private Integer timeToLiveInHours;
 
     @Autowired
-    public ListingSharedDataProvider(SharedDataDAO sharedDataDAO,
+    public SharedListingStoreProvider(SharedStoreDAO sharedDataDAO,
           @Value("${sharedData.timeToLive.listings}") Integer timeToLiveInHours) {
         super(sharedDataDAO);
 

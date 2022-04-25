@@ -1,4 +1,4 @@
-package gov.healthit.chpl.shareddata;
+package gov.healthit.chpl.sharedstore;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 
 @Component
-public class SharedDataDAO extends BaseDAOImpl {
+public class SharedStoreDAO extends BaseDAOImpl {
 
-    public void add(SharedData data) {
-        SharedDataEntity entity = SharedDataEntity.builder()
-                .primaryKey(SharedDataPrimaryKey.builder()
+    public void add(SharedStore data) {
+        SharedStoreEntity entity = SharedStoreEntity.builder()
+                .primaryKey(SharedStorePrimaryKey.builder()
                         .domain(data.getDomain())
                         .key(data.getKey())
                         .build())
@@ -23,15 +23,15 @@ public class SharedDataDAO extends BaseDAOImpl {
         create(entity);
     }
 
-    public SharedData get(String type, String key) {
+    public SharedStore get(String type, String key) {
         try {
-            SharedDataEntity entity = getEntity(type, key);
+            SharedStoreEntity entity = getEntity(type, key);
             if (entity != null) {
                 return entity.toDomain();
             } else {
                 return null;
             }
-        } catch (SharedDataNotFoundException e) {
+        } catch (SharedStoreNotFoundException e) {
             return null;
         }
 
@@ -39,27 +39,27 @@ public class SharedDataDAO extends BaseDAOImpl {
 
     public void remove(String type, String key) {
         try {
-            SharedDataEntity entity = getEntity(type, key);
+            SharedStoreEntity entity = getEntity(type, key);
             if (entity != null) {
                 getEntityManager().remove(entity);
             }
-        } catch (SharedDataNotFoundException e) {
+        } catch (SharedStoreNotFoundException e) {
             return;
         }
     }
 
-    private SharedDataEntity getEntity(String domain, String key) throws SharedDataNotFoundException {
-        List<SharedDataEntity> result = entityManager.createQuery(
-                "FROM SharedDataEntity sde "
-                + "WHERE sde.primaryKey.domain = :domain "
-                + "AND sde.primaryKey.key = :key ", SharedDataEntity.class)
+    private SharedStoreEntity getEntity(String domain, String key) throws SharedStoreNotFoundException {
+        List<SharedStoreEntity> result = entityManager.createQuery(
+                "FROM SharedStoreEntity sse "
+                + "WHERE sse.primaryKey.domain = :domain "
+                + "AND sse.primaryKey.key = :key ", SharedStoreEntity.class)
                 .setParameter("domain", domain)
                 .setParameter("key", key)
                 .getResultList();
 
         if (result == null || result.size() == 0) {
-            throw new SharedDataNotFoundException(
-                    "Data error. SharedData not found in database.");
+            throw new SharedStoreNotFoundException(
+                    "Data error. Shared Store not found in database.");
         }
 
         if (result.size() == 0) {

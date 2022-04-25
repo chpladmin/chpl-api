@@ -1,4 +1,4 @@
-package gov.healthit.chpl.shareddata;
+package gov.healthit.chpl.sharedstore;
 
 import java.time.LocalDateTime;
 import java.util.function.Supplier;
@@ -11,15 +11,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-public abstract class SharedDataProvider<K, V> {
+public abstract class SharedStoreProvider<K, V> {
     public static final Integer UNLIMITED = -1;
 
-    private SharedDataDAO sharedDataDAO;
+    private SharedStoreDAO sharedStoreDAO;
     private ObjectMapper mapper;
 
     @Autowired
-    public SharedDataProvider(SharedDataDAO sharedDataDAO) {
-        this.sharedDataDAO = sharedDataDAO;
+    public SharedStoreProvider(SharedStoreDAO sharedDataDAO) {
+        this.sharedStoreDAO = sharedDataDAO;
         this.mapper = new ObjectMapper();
     }
 
@@ -29,11 +29,11 @@ public abstract class SharedDataProvider<K, V> {
     protected abstract Integer getTimeToLive();
 
     public boolean containsKey(K key) {
-        return sharedDataDAO.get(getDomain(), key.toString()) != null;
+        return sharedStoreDAO.get(getDomain(), key.toString()) != null;
     }
 
     public V get(K key, Supplier<V> s) {
-        SharedData data = sharedDataDAO.get(getDomain(), key.toString());
+        SharedStore data = sharedStoreDAO.get(getDomain(), key.toString());
         V obj = null;
         if (data != null && !isExpired(data)) {
             try {
@@ -56,7 +56,7 @@ public abstract class SharedDataProvider<K, V> {
             remove(key);
         }
         try {
-            sharedDataDAO.add(SharedData.builder()
+            sharedStoreDAO.add(SharedStore.builder()
                     .domain(getDomain())
                     .key(key.toString())
                     .value(mapper.writeValueAsString(value))
@@ -67,10 +67,10 @@ public abstract class SharedDataProvider<K, V> {
     }
 
     private void remove(K key) {
-        sharedDataDAO.remove(getDomain(), key.toString());
+        sharedStoreDAO.remove(getDomain(), key.toString());
     }
 
-    private boolean isExpired(SharedData sharedData) {
+    private boolean isExpired(SharedStore sharedData) {
         return getTimeToLive() == UNLIMITED
                 || sharedData.getPutDate().plusHours(getTimeToLive()).isBefore(LocalDateTime.now());
     }

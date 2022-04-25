@@ -1,4 +1,4 @@
-package gov.healthit.chpl.shareddata;
+package gov.healthit.chpl.sharedstore;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -18,7 +18,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SharedDataPrimaryKey implements Serializable {
+public class SharedStorePrimaryKey implements Serializable {
     private static final long serialVersionUID = 8887068260992258871L;
 
     @Column(name = "domain")
@@ -46,7 +46,7 @@ public class SharedDataPrimaryKey implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        SharedDataPrimaryKey other = (SharedDataPrimaryKey) obj;
+        SharedStorePrimaryKey other = (SharedStorePrimaryKey) obj;
         return Objects.equals(key, other.key) && Objects.equals(domain, other.domain);
     }
 
