@@ -18,8 +18,8 @@ public abstract class SharedStoreProvider<K, V> {
     private ObjectMapper mapper;
 
     @Autowired
-    public SharedStoreProvider(SharedStoreDAO sharedDataDAO) {
-        this.sharedStoreDAO = sharedDataDAO;
+    public SharedStoreProvider(SharedStoreDAO sharedStoreDAO) {
+        this.sharedStoreDAO = sharedStoreDAO;
         this.mapper = new ObjectMapper();
     }
 
