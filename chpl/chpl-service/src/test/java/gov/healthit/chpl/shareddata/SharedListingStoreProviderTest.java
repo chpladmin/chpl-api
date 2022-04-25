@@ -14,8 +14,8 @@ import gov.healthit.chpl.sharedstore.SharedListingStoreProvider;
 import gov.healthit.chpl.sharedstore.SharedStore;
 import gov.healthit.chpl.sharedstore.SharedStoreDAO;
 
-public class ListingSharedDataProviderTest {
-    private static final Long ALT_ID = 5l;
+public class SharedListingStoreProviderTest {
+    private static final Long ALT_ID = 5L;
 
     private SharedStoreDAO sharedStoreDAO;
     private SharedListingStoreProvider sharedListingStoreProvider;

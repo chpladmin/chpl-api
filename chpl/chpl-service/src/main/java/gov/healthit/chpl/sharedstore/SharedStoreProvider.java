@@ -13,6 +13,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public abstract class SharedStoreProvider<K, V> {
     public static final Integer UNLIMITED = -1;
+    public static final Integer MAX_JSON_LENGTH = 200;
 
     private SharedStoreDAO sharedStoreDAO;
     private ObjectMapper mapper;
@@ -71,7 +72,7 @@ public abstract class SharedStoreProvider<K, V> {
     }
 
     private boolean isExpired(SharedStore sharedData) {
-        return getTimeToLive() == UNLIMITED
+        return getTimeToLive().equals(UNLIMITED)
                 || sharedData.getPutDate().plusHours(getTimeToLive()).isBefore(LocalDateTime.now());
     }
 }
