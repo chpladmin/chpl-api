@@ -24,31 +24,22 @@ public class SharedStoreDAO extends BaseDAOImpl {
     }
 
     public SharedStore get(String type, String key) {
-        try {
-            SharedStoreEntity entity = getEntity(type, key);
-            if (entity != null) {
-                return entity.toDomain();
-            } else {
-                return null;
-            }
-        } catch (SharedStoreNotFoundException e) {
+        SharedStoreEntity entity = getEntity(type, key);
+        if (entity != null) {
+            return entity.toDomain();
+        } else {
             return null;
         }
-
     }
 
     public void remove(String type, String key) {
-        try {
-            SharedStoreEntity entity = getEntity(type, key);
-            if (entity != null) {
-                getEntityManager().remove(entity);
-            }
-        } catch (SharedStoreNotFoundException e) {
-            return;
+        SharedStoreEntity entity = getEntity(type, key);
+        if (entity != null) {
+            getEntityManager().remove(entity);
         }
     }
 
-    private SharedStoreEntity getEntity(String domain, String key) throws SharedStoreNotFoundException {
+    private SharedStoreEntity getEntity(String domain, String key) {
         List<SharedStoreEntity> result = entityManager.createQuery(
                 "FROM SharedStoreEntity sse "
                 + "WHERE sse.primaryKey.domain = :domain "
@@ -56,11 +47,6 @@ public class SharedStoreDAO extends BaseDAOImpl {
                 .setParameter("domain", domain)
                 .setParameter("key", key)
                 .getResultList();
-
-        if (result == null || result.size() == 0) {
-            throw new SharedStoreNotFoundException(
-                    "Data error. Shared Store not found in database.");
-        }
 
         if (result.size() == 0) {
             return null;
