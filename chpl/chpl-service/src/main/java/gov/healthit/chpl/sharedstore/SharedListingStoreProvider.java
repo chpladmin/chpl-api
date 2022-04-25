@@ -18,7 +18,7 @@ public class SharedListingStoreProvider extends SharedStoreProvider<Long, Certif
 
     @Autowired
     public SharedListingStoreProvider(SharedStoreDAO sharedDataDAO,
-          @Value("${sharedData.timeToLive.listings}") Integer timeToLiveInHours) {
+          @Value("${sharedStore.timeToLive.listings}") Integer timeToLiveInHours) {
         super(sharedDataDAO);
 
         this.timeToLiveInHours = timeToLiveInHours;
