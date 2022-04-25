@@ -2,7 +2,7 @@ package gov.healthit.chpl.permissions.domains.announcement;
 
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dto.AnnouncementDTO;
+import gov.healthit.chpl.domain.Announcement;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
 @Component("announcementGetAllActionPermissions")
@@ -22,8 +22,8 @@ public class GetAllActionPermissions extends ActionPermissions {
      * Other logged-in users can see all public/private announcements.
      */
     @Override
-    public boolean hasAccess(final Object obj) {
-        if (!(obj instanceof AnnouncementDTO)) {
+    public boolean hasAccess(Object obj) {
+        if (!(obj instanceof Announcement)) {
             return false;
         }
         if (getResourcePermissions().isUserRoleAdmin()
@@ -33,7 +33,7 @@ public class GetAllActionPermissions extends ActionPermissions {
                 || getResourcePermissions().isUserRoleCmsStaff()) {
             return true;
         } else {
-            AnnouncementDTO announcement = (AnnouncementDTO) obj;
+            Announcement announcement = (Announcement) obj;
             if (announcement.getIsPublic()) {
                 return true;
             }
