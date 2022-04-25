@@ -2,10 +2,10 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.TestDataDAO;
@@ -67,7 +67,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 // check for full set of UCD data
                 for (CertificationResult cert : listing.getCertificationResults()) {
                     if (cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE)
-                            && cert.getNumber().equals(UCD_RELATED_CERTS[i])) {
+                            && cert.getCriterion().getNumber().equals(UCD_RELATED_CERTS[i])) {
                         // make sure at least one UCD process has this criteria number
                         if (cert.isSed()) {
                             if (listing.getSed() == null || listing.getSed().getUcdProcesses() == null
@@ -234,7 +234,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         for (CertificationResult cert : listing.getCertificationResults()) {
             if (cert.isSuccess() != null && cert.isSuccess()) {
                 boolean gapEligibleAndTrue = false;
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
+                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.GAP)
                         && cert.isGap() != null && cert.isGap()) {
                     gapEligibleAndTrue = true;
                 }
@@ -245,28 +245,28 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             "listing.criteria.missingAttestationAnswer", Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.PRIVACY_SECURITY)
+                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.PRIVACY_SECURITY)
                         && StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
                     addCriterionErrorOrWarningByPermission(listing, cert,
                             "listing.criteria.missingPrivacySecurityFramework", Util.formatCriteriaNumber(cert.getCriterion()));
                 }
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.API_DOCUMENTATION)
+                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.API_DOCUMENTATION)
                         && StringUtils.isEmpty(cert.getApiDocumentation())) {
                     addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingApiDocumentation",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)
+                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)
                         && StringUtils.isEmpty(cert.getExportDocumentation())) {
                     addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingExportDocumentation",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.USE_CASES)
+                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.USE_CASES)
                         && StringUtils.isEmpty(cert.getUseCases())
                         && cert.getAttestationAnswer() != null && cert.getAttestationAnswer().equals(Boolean.TRUE)) {
                     addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingUseCases",
                             Util.formatCriteriaNumber(cert.getCriterion()));
-                } else if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.USE_CASES)
+                } else if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.USE_CASES)
                         && !StringUtils.isEmpty(cert.getUseCases())
                         && (cert.getAttestationAnswer() == null || cert.getAttestationAnswer().equals(Boolean.FALSE))) {
                     listing.getWarningMessages().add(
@@ -274,7 +274,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     Util.formatCriteriaNumber(cert.getCriterion())));
                 }
 
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)
+                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)
                         && StringUtils.isEmpty(cert.getServiceBaseUrlList())) {
                     addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingServiceBaseUrlList",
                             Util.formatCriteriaNumber(cert.getCriterion()));
@@ -283,20 +283,20 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 // require at least one test procedure where gap does not exist
                 // or is false, and criteria cannot have Conformance Methods
                 if (!gapEligibleAndTrue
-                        && (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE) && (!ff4j.check(FeatureList.CONFORMANCE_METHOD) || !certRules.hasCertOption(cert.getNumber(), CertificationResultRules.CONFORMANCE_METHOD)))
+                        && (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.TEST_PROCEDURE) && (!ff4j.check(FeatureList.CONFORMANCE_METHOD) || !certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.CONFORMANCE_METHOD)))
                         && (cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
                     addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestProcedure",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
                 if (ff4j.check(FeatureList.CONFORMANCE_METHOD)
-                        && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.CONFORMANCE_METHOD)
+                        && certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.CONFORMANCE_METHOD)
                         && (cert.getConformanceMethods() == null || cert.getConformanceMethods().size() == 0)) {
                     addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.conformanceMethod.missingConformanceMethod",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_DATA)
+                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.TEST_DATA)
                         && cert.getTestDataUsed() != null && cert.getTestDataUsed().size() > 0) {
                     for (CertificationResultTestData crTestData : cert.getTestDataUsed()) {
                         if (crTestData.getTestData() == null
@@ -343,7 +343,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 }
 
                 if (!gapEligibleAndTrue
-                        && (cert.getNumber().equals(G1_CRITERIA_NUMBER) || cert.getNumber().equals(G2_CRITERIA_NUMBER))
+                        && (cert.getCriterion().getNumber().equals(G1_CRITERIA_NUMBER) || cert.getCriterion().getNumber().equals(G2_CRITERIA_NUMBER))
                         && (cert.getTestDataUsed() == null || cert.getTestDataUsed().size() == 0)) {
                     listing.getErrorMessages().add("Test Data is required for certification "
                         +  Util.formatCriteriaNumber(cert.getCriterion()) + ".");

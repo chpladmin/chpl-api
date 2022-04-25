@@ -8,6 +8,9 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
 public final class DateUtil {
     private static final String UTC_ZONE_ID = "UTC";
     private static final String ET_ZONE_ID = "America/New_York";
@@ -81,5 +84,17 @@ public final class DateUtil {
 
     public static LocalDateTime toLocalDateTime(long epochMillis) {
         return Instant.ofEpochMilli(epochMillis).atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    public static LocalDateTime fromEasternToUtc(LocalDateTime input) {
+        ZonedDateTime easternZoned = ZonedDateTime.of(input, ZoneId.of(ET_ZONE_ID));
+        ZonedDateTime utc = easternZoned.withZoneSameInstant(ZoneId.of(UTC_ZONE_ID));
+        return utc.toLocalDateTime();
+    }
+
+    public static LocalDateTime fromUtcToEastern(LocalDateTime input) {
+        ZonedDateTime utcZoned = ZonedDateTime.of(input, ZoneId.of(UTC_ZONE_ID));
+        ZonedDateTime eastern = utcZoned.withZoneSameInstant(ZoneId.of(ET_ZONE_ID));
+        return eastern.toLocalDateTime();
     }
 }

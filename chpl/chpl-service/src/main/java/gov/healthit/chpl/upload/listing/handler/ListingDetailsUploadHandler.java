@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.validation.ValidationException;
 
@@ -15,7 +14,6 @@ import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
@@ -82,7 +80,6 @@ public class ListingDetailsUploadHandler {
                 .product(parseProduct(headingRecord, listingRecords))
                 .version(parseVersion(headingRecord, listingRecords))
                 .certificationEdition(editionHandler.handle(headingRecord, listingRecords))
-                .transparencyAttestationUrl(parseMandatoryDisclosures(headingRecord, listingRecords))
                 .mandatoryDisclosures(parseMandatoryDisclosures(headingRecord, listingRecords))
                 .targetedUsers(targetedUserUploadHandler.handle(headingRecord, listingRecords))
                 .accessibilityStandards(accessibilityStandardsHandler.handle(headingRecord, listingRecords))
@@ -241,14 +238,5 @@ public class ListingDetailsUploadHandler {
 
     private String parseSedTestingDateStr(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         return uploadUtil.parseSingleRowField(Headings.SED_TESTING_DATE, headingRecord, listingRecords);
-    }
-
-    private boolean containsCriterion(Set<CertificationCriterion> criteriaList, CertificationCriterion criterion) {
-        if (criteriaList == null || criteriaList.size() == 0) {
-            return false;
-        }
-        return criteriaList.stream()
-            .filter(criterionFromList -> criterionFromList.getId().equals(criterion.getId()))
-            .findAny().isPresent();
     }
 }

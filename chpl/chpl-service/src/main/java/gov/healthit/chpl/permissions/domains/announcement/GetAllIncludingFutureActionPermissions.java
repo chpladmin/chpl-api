@@ -2,7 +2,7 @@ package gov.healthit.chpl.permissions.domains.announcement;
 
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dto.AnnouncementDTO;
+import gov.healthit.chpl.domain.Announcement;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
 @Component("announcementGetAllIncludingFutureActionPermissions")
@@ -15,8 +15,8 @@ public class GetAllIncludingFutureActionPermissions extends ActionPermissions {
     }
 
     @Override
-    public boolean hasAccess(final Object obj) {
-        if (!(obj instanceof AnnouncementDTO)) {
+    public boolean hasAccess(Object obj) {
+        if (!(obj instanceof Announcement)) {
             return false;
         }
         return getResourcePermissions().isUserRoleAdmin()

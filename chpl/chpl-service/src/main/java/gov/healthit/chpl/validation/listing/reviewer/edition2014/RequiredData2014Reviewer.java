@@ -51,29 +51,29 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
         boolean isCqmRequired = false;
         for (CertificationResult cert : listing.getCertificationResults()) {
             for (int i = 0; i < CQM_REQUIRED_CERTS.length; i++) {
-                if (cert.getNumber().equals(CQM_REQUIRED_CERTS[i]) && cert.isSuccess()) {
+                if (cert.getCriterion().getNumber().equals(CQM_REQUIRED_CERTS[i]) && cert.isSuccess()) {
                     isCqmRequired = true;
                 }
             }
             if (cert.isSuccess() != null && cert.isSuccess()) {
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SED)) {
+                if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.SED)) {
                     if (cert.isSed() == null) {
                         listing.getErrorMessages().add(
-                                msgUtil.getMessage("listing.criteria.SEDRequired", cert.getNumber()));
+                                msgUtil.getMessage("listing.criteria.SEDRequired", cert.getCriterion().getNumber()));
                     } else if (cert.isSed() != null && cert.isSed().booleanValue()
                             && !certHasUcdProcess(cert, listing.getSed().getUcdProcesses())) {
                         if (listing.getIcs() != null && listing.getIcs().getInherits() != null
                                 && listing.getIcs().getInherits().booleanValue()) {
                             listing.getWarningMessages().add(
-                                    msgUtil.getMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
+                                    msgUtil.getMessage("listing.criteria.missingUcdProccesses", cert.getCriterion().getNumber()));
                         } else {
                             listing.getErrorMessages().add(
-                                    msgUtil.getMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
+                                    msgUtil.getMessage("listing.criteria.missingUcdProccesses", cert.getCriterion().getNumber()));
                         }
                     } else if (cert.isSed() != null && !cert.isSed().booleanValue()
                             && certHasUcdProcess(cert, listing.getSed().getUcdProcesses())) {
                         listing.getWarningMessages().add(
-                                msgUtil.getMessage("listing.criteria.sedUcdMismatch", cert.getNumber()));
+                                msgUtil.getMessage("listing.criteria.sedUcdMismatch", cert.getCriterion().getNumber()));
                     }
                 }
             }
@@ -93,7 +93,7 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
         // g4 check
         boolean hasG4 = false;
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.getNumber().equals("170.314 (g)(4)") && cert.isSuccess()) {
+            if (cert.getCriterion().getNumber().equals("170.314 (g)(4)") && cert.isSuccess()) {
                 hasG4 = true;
             }
         }
@@ -104,14 +104,14 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
         // g3 check
         boolean hasG3 = false;
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.getNumber().equals("170.314 (g)(3)") && cert.isSuccess()) {
+            if (cert.getCriterion().getNumber().equals("170.314 (g)(3)") && cert.isSuccess()) {
                 hasG3 = true;
             }
         }
         boolean hasG3Complement = false;
         for (CertificationResult cert : listing.getCertificationResults()) {
             for (int i = 0; i < G3_COMPLEMENTARY_CERTS.length; i++) {
-                if (cert.getNumber().equals(G3_COMPLEMENTARY_CERTS[i]) && cert.isSuccess()) {
+                if (cert.getCriterion().getNumber().equals(G3_COMPLEMENTARY_CERTS[i]) && cert.isSuccess()) {
                     hasG3Complement = true;
                 }
             }
