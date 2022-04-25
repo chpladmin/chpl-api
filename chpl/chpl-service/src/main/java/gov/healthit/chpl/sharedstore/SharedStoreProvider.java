@@ -41,7 +41,7 @@ public abstract class SharedStoreProvider<K, V> {
                 LOGGER.info("Retreived from shared data: {} {}", getDomain(), key.toString());
                 obj = getFromJson(data.getValue());
             } catch (JsonProcessingException e) {
-                LOGGER.error("Could not create object from JSON: {} {}", getDomain(), data.getValue().substring(0, Math.min(data.getValue().length(), 200)), e);
+                LOGGER.error("Could not create object from JSON: {} {}", getDomain(), data.getValue().substring(0, Math.min(data.getValue().length(), MAX_JSON_LENGTH)), e);
             }
 
         } else {
