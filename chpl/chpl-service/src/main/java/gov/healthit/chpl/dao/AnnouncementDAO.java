@@ -1,193 +1,89 @@
 package gov.healthit.chpl.dao;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.AnnouncementDTO;
+import gov.healthit.chpl.domain.Announcement;
 import gov.healthit.chpl.entity.AnnouncementEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
+import lombok.extern.log4j.Log4j2;
 
 @Repository(value = "announcementDAO")
+@Log4j2
 public class AnnouncementDAO extends BaseDAOImpl {
 
-    @Transactional
-    public AnnouncementDTO create(AnnouncementDTO dto) throws EntityRetrievalException, EntityCreationException {
-        AnnouncementEntity entity = null;
-        try {
-            if (dto.getId() != null) {
-                entity = this.getEntityById(dto.getId(), false);
-            }
-        } catch (final EntityRetrievalException e) {
-            throw new EntityCreationException(e);
-        }
+    public Announcement create(Announcement announcement) throws EntityRetrievalException, EntityCreationException {
+        AnnouncementEntity entity = new AnnouncementEntity();
+        entity.setTitle(announcement.getTitle());
+        entity.setText(announcement.getText());
+        entity.setStartDate(announcement.getStartDateTime());
+        entity.setEndDate(announcement.getEndDateTime());
+        entity.setIsPublic(announcement.getIsPublic());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
 
-        if (entity != null) {
-            throw new EntityCreationException("An entity with this ID already exists.");
-        } else {
-            entity = new AnnouncementEntity();
-
-            if (dto.getTitle() != null) {
-                entity.setTitle(dto.getTitle());
-            }
-
-            if (dto.getText() != null) {
-                entity.setText(dto.getText());
-            }
-
-            if (dto.getStartDate() != null) {
-                entity.setStartDate(dto.getStartDate());
-            }
-
-            if (dto.getEndDate() != null) {
-                entity.setEndDate(dto.getEndDate());
-            }
-
-            if (dto.getIsPublic() != null) {
-                entity.setIsPublic(dto.getIsPublic());
-            } else {
-                entity.setIsPublic(false);
-            }
-
-            if (dto.getDeleted() != null) {
-                entity.setDeleted(dto.getDeleted());
-            } else {
-                entity.setDeleted(false);
-            }
-
-            if (dto.getLastModifiedUser() != null) {
-                entity.setLastModifiedUser(dto.getLastModifiedUser());
-            } else {
-                entity.setLastModifiedUser(AuthUtil.getAuditId());
-            }
-
-            if (dto.getLastModifiedDate() != null) {
-                entity.setLastModifiedDate(dto.getLastModifiedDate());
-            } else {
-                entity.setLastModifiedDate(new Date());
-            }
-
-            if (dto.getCreationDate() != null) {
-                entity.setCreationDate(dto.getCreationDate());
-            } else {
-                entity.setCreationDate(new Date());
-            }
-
-            create(entity);
-            return new AnnouncementDTO(entity);
-        }
+        create(entity);
+        return entity.toDomain();
     }
 
-    @Transactional
-    public AnnouncementDTO update(AnnouncementDTO dto, boolean includeDeleted) throws EntityRetrievalException {
-
-        AnnouncementEntity entity = getEntityById(dto.getId(), includeDeleted);
+    public Announcement update(Announcement announcement, boolean includeDeleted) throws EntityRetrievalException {
+        AnnouncementEntity entity = getEntityById(announcement.getId(), includeDeleted);
         if (entity == null) {
             throw new EntityRetrievalException(
-                    "Cannot update entity with id " + dto.getId() + ". Entity does not exist.");
+                    "Cannot update entity with id " + announcement.getId() + ". Entity does not exist.");
         }
 
-        if (dto.getText() != null) {
-            entity.setText(dto.getText());
-        }
-
-        if (dto.getTitle() != null) {
-            entity.setTitle(dto.getTitle());
-        }
-
-        if (dto.getStartDate() != null) {
-            entity.setStartDate(dto.getStartDate());
-        }
-
-        if (dto.getEndDate() != null) {
-            entity.setEndDate(dto.getEndDate());
-        }
-
-        if (dto.getIsPublic() != null) {
-            entity.setIsPublic(dto.getIsPublic());
-        } else {
-            entity.setIsPublic(false);
-        }
-
-        if (dto.getDeleted() != null) {
-            entity.setDeleted(dto.getDeleted());
-        }
-        if (dto.getLastModifiedUser() != null) {
-            entity.setLastModifiedUser(dto.getLastModifiedUser());
-        } else {
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
-        }
-
-        if (dto.getLastModifiedDate() != null) {
-            entity.setLastModifiedDate(dto.getLastModifiedDate());
-        } else {
-            entity.setLastModifiedDate(new Date());
-        }
-
+        entity.setText(announcement.getText());
+        entity.setTitle(announcement.getTitle());
+        entity.setStartDate(announcement.getStartDateTime());
+        entity.setEndDate(announcement.getEndDateTime());
+        entity.setIsPublic(announcement.getIsPublic());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
-        return new AnnouncementDTO(entity);
+        return entity.toDomain();
     }
 
-    @Transactional
-    public void delete(Long aId) {
-
-        // TODO: How to delete this without leaving orphans
-
-        Query query = entityManager
-                .createQuery("UPDATE AnnouncementEntity SET deleted = true WHERE announcement_id = :aid");
-        query.setParameter("aid", aId);
-        query.executeUpdate();
-
+    public void delete(Long id) {
+        AnnouncementEntity announcementToDelete = null;
+        try {
+            announcementToDelete = getEntityById(id, false);
+        } catch (EntityRetrievalException ex) {
+            LOGGER.warn("Attempted to delete announcement with ID " + id + " that does not exist.");
+        }
+        if (announcementToDelete != null) {
+            announcementToDelete.setDeleted(true);
+            update(announcementToDelete);
+        }
     }
 
-    public List<AnnouncementDTO> findCurrent() {
-
+    public List<Announcement> findCurrent() {
         List<AnnouncementEntity> entities = getAllCurrentEntities();
-        List<AnnouncementDTO> announcements = new ArrayList<>();
-
-        for (AnnouncementEntity entity : entities) {
-            AnnouncementDTO announcement = new AnnouncementDTO(entity);
-            announcements.add(announcement);
-        }
-        return announcements;
-
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    public List<AnnouncementDTO> findAllCurrentAndFuture() {
-
+    public List<Announcement> findAllCurrentAndFuture() {
         List<AnnouncementEntity> entities = getAllEntitiesCurrentAndFuture();
-        List<AnnouncementDTO> announcements = new ArrayList<>();
-
-        for (AnnouncementEntity entity : entities) {
-            AnnouncementDTO announcement = new AnnouncementDTO(entity);
-            announcements.add(announcement);
-        }
-        return announcements;
-
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    public List<AnnouncementDTO> findAllFuture() {
-
+    public List<Announcement> findAllFuture() {
         List<AnnouncementEntity> entities = getAllEntitiesFuture();
-        List<AnnouncementDTO> announcements = new ArrayList<>();
-
-        for (AnnouncementEntity entity : entities) {
-            AnnouncementDTO announcement = new AnnouncementDTO(entity);
-            announcements.add(announcement);
-        }
-        return announcements;
-
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    public List<AnnouncementDTO> findAll(boolean includeDeleted, boolean includePrivate) {
+    public List<Announcement> findAll(boolean includeDeleted, boolean includePrivate) {
         String hql = "SELECT a "
                 + "FROM AnnouncementEntity a ";
         if (!includePrivate) {
@@ -204,60 +100,46 @@ public class AnnouncementDAO extends BaseDAOImpl {
 
         Query query = entityManager.createQuery(hql);
         List<AnnouncementEntity> entities = query.getResultList();
-        List<AnnouncementDTO> announcements = new ArrayList<>();
-        entities.stream().forEach(entity -> announcements.add(new AnnouncementDTO(entity)));
-        return announcements;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    public AnnouncementDTO getById(Long announcementId, boolean includeDeleted) throws EntityRetrievalException {
+    public Announcement getById(Long announcementId, boolean includeDeleted) throws EntityRetrievalException {
         AnnouncementEntity entity = getEntityById(announcementId, includeDeleted);
-
-        AnnouncementDTO dto = null;
+        Announcement announcement = null;
         if (entity != null) {
-            dto = new AnnouncementDTO(entity);
+            announcement = entity.toDomain();
         }
-        return dto;
-
-    }
-
-    public AnnouncementDTO getByIdToUpdate(Long announcementId, boolean includeDeleted)
-            throws EntityRetrievalException {
-        AnnouncementEntity entity = getEntityById(announcementId, includeDeleted);
-
-        AnnouncementDTO dto = null;
-        if (entity != null) {
-            dto = new AnnouncementDTO(entity);
-        }
-        return dto;
-
-    }
-
-    private void create(AnnouncementEntity announcement) {
-
-        entityManager.persist(announcement);
-        entityManager.flush();
-    }
-
-    private void update(AnnouncementEntity announcement) {
-
-        entityManager.merge(announcement);
-        entityManager.flush();
-
+        return announcement;
     }
 
     private List<AnnouncementEntity> getAllCurrentEntities() {
-
-        List<AnnouncementEntity> result = entityManager.createQuery(
-                "from AnnouncementEntity"
-                        + " where deleted = false"
-                        + " AND start_date <= now() AND end_date > now()",
-                AnnouncementEntity.class).getResultList();
-        return result;
+        Query query = entityManager.createQuery(
+                "FROM AnnouncementEntity "
+                        + "WHERE deleted = false "
+                        + "AND startDate <= NOW() "
+                        + "AND endDate > NOW() ",
+                AnnouncementEntity.class);
+        return query.getResultList();
     }
 
-    private AnnouncementEntity getEntityById(final Long entityId, final boolean includeDeleted)
-            throws EntityRetrievalException {
+    private List<AnnouncementEntity> getAllEntitiesFuture() {
+        Query query = entityManager.createQuery("FROM AnnouncementEntity "
+                        + "WHERE deleted = false "
+                        + "AND startDate > NOW()");
+        return query.getResultList();
+    }
 
+    private List<AnnouncementEntity> getAllEntitiesCurrentAndFuture() {
+        Query query = entityManager.createQuery("FROM AnnouncementEntity "
+                        + "WHERE deleted = false "
+                        + "AND endDate > NOW()");
+        return query.getResultList();
+    }
+
+    private AnnouncementEntity getEntityById(Long entityId, boolean includeDeleted)
+            throws EntityRetrievalException {
         List<AnnouncementEntity> results = null;
         AnnouncementEntity entity = null;
         String hql = "SELECT a "
@@ -275,31 +157,6 @@ public class AnnouncementDAO extends BaseDAOImpl {
         } else {
             entity = results.get(0);
         }
-
         return entity;
-    }
-
-    public List<AnnouncementEntity> getAllEntitiesFuture() {
-        List<AnnouncementEntity> result = null;
-        result = entityManager
-                .createQuery("from AnnouncementEntity"
-                        + " where deleted = false"
-                        + " AND (start_date > now())",
-                        AnnouncementEntity.class)
-                .getResultList();
-
-        return result;
-    }
-
-    private List<AnnouncementEntity> getAllEntitiesCurrentAndFuture() {
-        List<AnnouncementEntity> result = null;
-        result = entityManager
-                .createQuery("from AnnouncementEntity"
-                        + " where deleted = false"
-                        + " AND (end_date > now())",
-                        AnnouncementEntity.class)
-                .getResultList();
-
-        return result;
     }
 }
