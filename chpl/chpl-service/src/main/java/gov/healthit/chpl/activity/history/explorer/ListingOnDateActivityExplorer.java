@@ -1,10 +1,8 @@
 package gov.healthit.chpl.activity.history.explorer;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Stream;
 
 import javax.transaction.Transactional;
 
@@ -32,8 +30,13 @@ public class ListingOnDateActivityExplorer extends ListingActivityExplorer {
     }
 
     @Override
-    @Transactional
     public List<ActivityDTO> getActivities(ListingActivityQuery query) {
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public ActivityDTO getActivity(ListingActivityQuery query) {
         if (query == null || !(query instanceof ListingOnDateActivityQuery)) {
             LOGGER.error("listing activity query was null or of the wrong type");
             return null;
@@ -50,7 +53,7 @@ public class ListingOnDateActivityExplorer extends ListingActivityExplorer {
         List<ActivityDTO> listingActivities = activityDao.findByObjectId(listingQuery.getListingId(), ActivityConcept.CERTIFIED_PRODUCT, EPOCH, new Date());
         if (listingActivities == null || listingActivities.size() == 0) {
             LOGGER.warn("No listing activities were found for listing ID " + listingQuery.getListingId() + ". Is the ID valid?");
-            return Collections.emptyList();
+            return null;
         }
         LOGGER.info("There are " + listingActivities.size() + " activities for listing ID " + listingQuery.getListingId());
         sortOldestActivityFirst(listingActivities);
@@ -60,10 +63,7 @@ public class ListingOnDateActivityExplorer extends ListingActivityExplorer {
             //the "after" part of that activity will have the listing details as the listing looked on the day
             activityNearestDay = getActivityNearestAndBeforeDay(listingActivities, listingQuery.getListingId(), listingQuery.getDay());
         }
-        if (activityNearestDay == null) {
-            return Collections.emptyList();
-        }
-        return Stream.of(activityNearestDay).toList();
+        return activityNearestDay;
     }
 
     private boolean listingExistedBeforeDay(List<ActivityDTO> listingActivities, Long listingId, LocalDate day) {

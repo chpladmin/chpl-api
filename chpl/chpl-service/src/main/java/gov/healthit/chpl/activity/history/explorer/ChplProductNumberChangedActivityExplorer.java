@@ -34,6 +34,11 @@ public class ChplProductNumberChangedActivityExplorer extends ListingActivityExp
     }
 
     @Override
+    public ActivityDTO getActivity(ListingActivityQuery query) {
+        return null;
+    }
+
+    @Override
     @Transactional
     public List<ActivityDTO> getActivities(ListingActivityQuery query) {
         if (query == null || !(query instanceof ListingActivityQuery)) {

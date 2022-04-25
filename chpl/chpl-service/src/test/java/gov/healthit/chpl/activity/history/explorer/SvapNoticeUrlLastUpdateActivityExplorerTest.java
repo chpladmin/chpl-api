@@ -1,13 +1,13 @@
 package gov.healthit.chpl.activity.history.explorer;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
@@ -43,37 +43,35 @@ public class SvapNoticeUrlLastUpdateActivityExplorerTest {
     }
 
     @Test
-    public void getActivityForLastUpdateToSvapNoticeUrl_nullActivityForListing_returnsEmptyList() {
+    public void getActivityForLastUpdateToSvapNoticeUrl_nullActivityForListing_returnsNull() {
         Mockito.when(activityDao.findByObjectId(ArgumentMatchers.anyLong(),
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(null);
         SvapNoticeUrlLastUpdateActivityQuery query = SvapNoticeUrlLastUpdateActivityQuery.builder()
                 .listingId(1L)
-                .svapNoticeUrl("test")
+                .svapNoticeUrl(null)
                 .build();
-        List<ActivityDTO> foundActivities = explorer.getActivities(query);
-        assertNotNull(foundActivities);
-        assertEquals(0, foundActivities.size());
+        ActivityDTO foundActivity = explorer.getActivity(query);
+        assertNull(foundActivity);
     }
 
     @Test
-    public void getActivityForLastUpdateToSvapNoticeUrl_emptyActivityForListing_returnsEmptyList() {
+    public void getActivityForLastUpdateToSvapNoticeUrl_emptyActivityForListing_returnsNull() {
         Mockito.when(activityDao.findByObjectId(ArgumentMatchers.anyLong(),
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
         .thenReturn(new ArrayList<ActivityDTO>());
         SvapNoticeUrlLastUpdateActivityQuery query = SvapNoticeUrlLastUpdateActivityQuery.builder()
                 .listingId(1L)
-                .svapNoticeUrl("test")
+                .svapNoticeUrl(null)
                 .build();
-        List<ActivityDTO> foundActivities = explorer.getActivities(query);
-        assertNotNull(foundActivities);
-        assertEquals(0, foundActivities.size());
+        ActivityDTO foundActivity = explorer.getActivity(query);
+        assertNull(foundActivity);
     }
 
     @Test
-    public void getActivityForLastUpdateToSvapNoticeUrl_nullCurrentSvapNoticeUrl_returnsEmptyList() throws ParseException, JsonProcessingException {
+    public void getActivityForLastUpdateToSvapNoticeUrl_nullCurrentSvapNoticeUrl_returnsNull() throws ParseException, JsonProcessingException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .svapNoticeUrl(null)
@@ -90,11 +88,10 @@ public class SvapNoticeUrlLastUpdateActivityExplorerTest {
         .thenReturn(Stream.of(activity).collect(Collectors.toList()));
         SvapNoticeUrlLastUpdateActivityQuery query = SvapNoticeUrlLastUpdateActivityQuery.builder()
                 .listingId(1L)
-                .svapNoticeUrl("test")
+                .svapNoticeUrl(null)
                 .build();
-        List<ActivityDTO> foundActivities = explorer.getActivities(query);
-        assertNotNull(foundActivities);
-        assertEquals(0, foundActivities.size());
+        ActivityDTO foundActivity = explorer.getActivity(query);
+        assertNull(foundActivity);
     }
 
     @Test
@@ -115,15 +112,14 @@ public class SvapNoticeUrlLastUpdateActivityExplorerTest {
         .thenReturn(Stream.of(activity).collect(Collectors.toList()));
         SvapNoticeUrlLastUpdateActivityQuery query = SvapNoticeUrlLastUpdateActivityQuery.builder()
                 .listingId(1L)
-                .svapNoticeUrl("test")
+                .svapNoticeUrl("")
                 .build();
-        List<ActivityDTO> foundActivities = explorer.getActivities(query);
-        assertNotNull(foundActivities);
-        assertEquals(0, foundActivities.size());
+        ActivityDTO foundActivity = explorer.getActivity(query);
+        assertNull(foundActivity);
     }
 
     @Test
-    public void getActivityForLastUpdateToSvapNoticeUrl_noActivityWithMatchingSvapNoticeUrl_returnsEmptyList() throws ParseException, JsonProcessingException {
+    public void getActivityForLastUpdateToSvapNoticeUrl_noActivityWithMatchingSvapNoticeUrl_returnsNull() throws ParseException, JsonProcessingException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
                 .svapNoticeUrl("url1")
@@ -142,9 +138,8 @@ public class SvapNoticeUrlLastUpdateActivityExplorerTest {
                 .listingId(1L)
                 .svapNoticeUrl("url2")
                 .build();
-        List<ActivityDTO> foundActivities = explorer.getActivities(query);
-        assertNotNull(foundActivities);
-        assertEquals(0, foundActivities.size());
+        ActivityDTO foundActivity = explorer.getActivity(query);
+        assertNull(foundActivity);
     }
 
     @Test
@@ -167,10 +162,9 @@ public class SvapNoticeUrlLastUpdateActivityExplorerTest {
                 .listingId(1L)
                 .svapNoticeUrl("url1")
                 .build();
-        List<ActivityDTO> foundActivities = explorer.getActivities(query);
-        assertNotNull(foundActivities);
-        assertEquals(1, foundActivities.size());
-        assertEquals(1L, foundActivities.get(0).getId());
+        ActivityDTO foundActivity = explorer.getActivity(query);
+        assertNotNull(foundActivity);
+        assertEquals(1L, foundActivity.getId());
     }
 
     @Test
@@ -203,10 +197,9 @@ public class SvapNoticeUrlLastUpdateActivityExplorerTest {
                 .listingId(1L)
                 .svapNoticeUrl("url2")
                 .build();
-        List<ActivityDTO> foundActivities = explorer.getActivities(query);
-        assertNotNull(foundActivities);
-        assertEquals(1, foundActivities.size());
-        assertEquals(2L, foundActivities.get(0).getId());
+        ActivityDTO foundActivity = explorer.getActivity(query);
+        assertNotNull(foundActivity);
+        assertEquals(2L, foundActivity.getId());
     }
 
     @Test
@@ -250,9 +243,8 @@ public class SvapNoticeUrlLastUpdateActivityExplorerTest {
                 .listingId(1L)
                 .svapNoticeUrl("url2")
                 .build();
-        List<ActivityDTO> foundActivities = explorer.getActivities(query);
-        assertNotNull(foundActivities);
-        assertEquals(1, foundActivities.size());
-        assertEquals(2L, foundActivities.get(0).getId());
+        ActivityDTO foundActivity = explorer.getActivity(query);
+        assertNotNull(foundActivity);
+        assertEquals(2L, foundActivity.getId());
     }
 }

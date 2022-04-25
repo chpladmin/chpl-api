@@ -14,7 +14,6 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -127,12 +126,12 @@ public class ListingsSnapshotCsvCreatorJob extends DownloadableResourceCreatorJo
                 .day(snapshotDate)
                 .listingId(listingId)
                 .build();
-        List<ActivityDTO> activitiesWithListingOnDay = activityExplorer.getActivities(query);
-        if (CollectionUtils.isEmpty(activitiesWithListingOnDay)) {
+        ActivityDTO activityWithListingOnDay = activityExplorer.getActivity(query);
+        if (activityWithListingOnDay == null) {
             return Optional.empty();
         }
 
-        return getDetailsFromJson(activitiesWithListingOnDay.get(0).getNewData());
+        return getDetailsFromJson(activityWithListingOnDay.getNewData());
     }
 
     private Optional<CertifiedProductSearchDetails> getDetailsFromJson(String json) {

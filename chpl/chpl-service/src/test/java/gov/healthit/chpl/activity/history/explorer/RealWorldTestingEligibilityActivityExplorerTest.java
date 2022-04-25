@@ -1,6 +1,7 @@
 package gov.healthit.chpl.activity.history.explorer;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.ParseException;
@@ -8,7 +9,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
@@ -21,7 +21,6 @@ import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.activity.history.ListingActivityUtil;
 import gov.healthit.chpl.activity.history.query.RealWorldTestingEligibilityQuery;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -31,7 +30,6 @@ import gov.healthit.chpl.util.JSONUtils;
 
 public class RealWorldTestingEligibilityActivityExplorerTest {
     private ActivityDAO activityDao;
-    private ListingActivityUtil listingActivityUtil = new ListingActivityUtil(null, null);
     private RealWorldTestingEligibilityActivityExplorer explorer;
     private SimpleDateFormat formatter;
     @Before
@@ -44,7 +42,7 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
     }
 
     @Test
-    public void getActivityForRwtEligibility_nullAsOfDateAndNullActivityForListing_returnsEmptyList() {
+    public void getActivityForRwtEligibility_nullAsOfDateAndNullActivityForListing_returnsNull() {
         Mockito.when(activityDao.findByObjectId(ArgumentMatchers.anyLong(),
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
@@ -53,13 +51,12 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
                 .listingId(1L)
                 .asOfDate(null)
                 .build();
-        List<ActivityDTO> foundActivities = explorer.getActivities(query);
-        assertNotNull(foundActivities);
-        assertEquals(0, foundActivities.size());
+        ActivityDTO foundActivity = explorer.getActivity(query);
+        assertNull(foundActivity);
     }
 
     @Test
-    public void getActivityForRwtEligibility_nullAsOfDateAndEmptyActivityForListing_returnsEmptyList() {
+    public void getActivityForRwtEligibility_nullAsOfDateAndEmptyActivityForListing_returnsNull() {
         Mockito.when(activityDao.findByObjectId(ArgumentMatchers.anyLong(),
                 ArgumentMatchers.eq(ActivityConcept.CERTIFIED_PRODUCT),
                 ArgumentMatchers.any(Date.class), ArgumentMatchers.any(Date.class)))
@@ -68,9 +65,8 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
                 .listingId(1L)
                 .asOfDate(null)
                 .build();
-        List<ActivityDTO> foundActivities = explorer.getActivities(query);
-        assertNotNull(foundActivities);
-        assertEquals(0, foundActivities.size());
+        ActivityDTO foundActivity = explorer.getActivity(query);
+        assertNull(foundActivity);
     }
 
     @Test
@@ -93,10 +89,9 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
                 .listingId(1L)
                 .asOfDate(null)
                 .build();
-        List<ActivityDTO> foundActivities = explorer.getActivities(query);
-        assertNotNull(foundActivities);
-        assertEquals(1, foundActivities.size());
-        assertEquals(1L, foundActivities.get(0).getId());
+        ActivityDTO foundActivity = explorer.getActivity(query);
+        assertNotNull(foundActivity);
+        assertEquals(1L, foundActivity.getId());
     }
 
     @Test
@@ -129,14 +124,13 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
                 .listingId(1L)
                 .asOfDate(null)
                 .build();
-        List<ActivityDTO> foundActivities = explorer.getActivities(query);
-        assertNotNull(foundActivities);
-        assertEquals(1, foundActivities.size());
-        assertEquals(1L, foundActivities.get(0).getId());
+        ActivityDTO foundActivity = explorer.getActivity(query);
+        assertNotNull(foundActivity);
+        assertEquals(1L, foundActivity.getId());
     }
 
     @Test
-    public void getActivityForRwtEligibility_AsOfDateBeforeOneActivityForListing_returnsEmptyList()
+    public void getActivityForRwtEligibility_AsOfDateBeforeOneActivityForListing_returnsNull()
             throws ParseException, JsonProcessingException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
@@ -155,13 +149,12 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
                 .listingId(1L)
                 .asOfDate(LocalDate.parse("2020-01-31"))
                 .build();
-        List<ActivityDTO> foundActivities = explorer.getActivities(query);
-        assertNotNull(foundActivities);
-        assertEquals(0, foundActivities.size());
+        ActivityDTO foundActivity = explorer.getActivity(query);
+        assertNull(foundActivity);
     }
 
     @Test
-    public void getActivityForRwtEligibility_AsOfDateBeforeTwoActivitiesForListing_returnsEmptyList()
+    public void getActivityForRwtEligibility_AsOfDateBeforeTwoActivitiesForListing_returnsNull()
             throws ParseException, JsonProcessingException {
         String listingConfirmActivity = JSONUtils.toJSON(CertifiedProductSearchDetails.builder()
                 .id(2L)
@@ -190,9 +183,8 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
                 .listingId(1L)
                 .asOfDate(LocalDate.parse("2020-01-31"))
                 .build();
-        List<ActivityDTO> foundActivities = explorer.getActivities(query);
-        assertNotNull(foundActivities);
-        assertEquals(0, foundActivities.size());
+        ActivityDTO foundActivity = explorer.getActivity(query);
+        assertNull(foundActivity);
     }
 
     @Test
@@ -215,10 +207,9 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
                 .listingId(1L)
                 .asOfDate(LocalDate.parse("2020-02-05"))
                 .build();
-        List<ActivityDTO> foundActivities = explorer.getActivities(query);
-        assertNotNull(foundActivities);
-        assertEquals(1, foundActivities.size());
-        assertEquals(1L, foundActivities.get(0).getId());
+        ActivityDTO foundActivity = explorer.getActivity(query);
+        assertNotNull(foundActivity);
+        assertEquals(1L, foundActivity.getId());
     }
 
     @Test
@@ -251,10 +242,9 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
                 .listingId(1L)
                 .asOfDate(LocalDate.parse("2020-02-02"))
                 .build();
-        List<ActivityDTO> foundActivities = explorer.getActivities(query);
-        assertNotNull(foundActivities);
-        assertEquals(1, foundActivities.size());
-        assertEquals(1L, foundActivities.get(0).getId());
+        ActivityDTO foundActivity = explorer.getActivity(query);
+        assertNotNull(foundActivity);
+        assertEquals(1L, foundActivity.getId());
     }
 
     @Test
@@ -287,9 +277,8 @@ public class RealWorldTestingEligibilityActivityExplorerTest {
                 .listingId(1L)
                 .asOfDate(LocalDate.parse("2020-02-04"))
                 .build();
-        List<ActivityDTO> foundActivities = explorer.getActivities(query);
-        assertNotNull(foundActivities);
-        assertEquals(1, foundActivities.size());
-        assertEquals(2L, foundActivities.get(0).getId());
+        ActivityDTO foundActivity = explorer.getActivity(query);
+        assertNotNull(foundActivity);
+        assertEquals(2L, foundActivity.getId());
     }
 }

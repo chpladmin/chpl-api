@@ -1,10 +1,8 @@
 package gov.healthit.chpl.activity.history.explorer;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Stream;
 
 import javax.transaction.Transactional;
 
@@ -32,37 +30,40 @@ public class RealWorldTestingEligibilityActivityExplorer extends ListingActivity
     }
 
     @Override
-    @Transactional
     public List<ActivityDTO> getActivities(ListingActivityQuery query) {
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public ActivityDTO getActivity(ListingActivityQuery query) {
         ActivityDTO activityReturn = null;
         RealWorldTestingEligibilityQuery realWorldTestingEligibilityQuery = (RealWorldTestingEligibilityQuery) query;
         List<ActivityDTO> listingActivities = getAllActivityforListing(realWorldTestingEligibilityQuery.getListingId());
+        if (CollectionUtils.isEmpty(listingActivities)) {
+            return null;
+        }
 
         if (realWorldTestingEligibilityQuery.getAsOfDate() == null) {
-            if (!CollectionUtils.isEmpty(listingActivities)) {
+            if (listingActivities.size() > 0) {
                 activityReturn = listingActivities.get(0);
             }
         } else {
             Iterator<ActivityDTO> listingActivityIter = listingActivities.iterator();
             while (listingActivityIter.hasNext()) {
                 ActivityDTO currActivity = listingActivityIter.next();
+
                 if (currActivity.getActivityDate().before(new Date(DateUtil.toEpochMillis(realWorldTestingEligibilityQuery.getAsOfDate())))) {
                     activityReturn = currActivity;
                 }
             }
         }
-
-        if (activityReturn == null) {
-            return Collections.emptyList();
-        }
-        return Stream.of(activityReturn).toList();
+        return activityReturn;
     }
 
     private List<ActivityDTO> getAllActivityforListing(Long listingId) {
         List<ActivityDTO> activities = activityDao.findByObjectId(listingId, ActivityConcept.CERTIFIED_PRODUCT, EPOCH, new Date());
-        if (!CollectionUtils.isEmpty(activities)) {
-            sortOldestActivityFirst(activities);
-        }
+        sortOldestActivityFirst(activities);
         return activities;
     }
 }

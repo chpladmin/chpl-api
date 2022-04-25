@@ -1,12 +1,10 @@
 package gov.healthit.chpl.activity.history.explorer;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.transaction.Transactional;
 
@@ -42,8 +40,13 @@ public class CertificationResultContainsSvapActivityExplorer extends ListingActi
     }
 
     @Override
-    @Transactional
     public List<ActivityDTO> getActivities(ListingActivityQuery query) {
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public ActivityDTO getActivity(ListingActivityQuery query) {
         if (query == null || !(query instanceof CertificationResultContainsSvapActivityQuery)) {
             LOGGER.error("listing activity query was null or of the wrong type");
             return null;
@@ -57,9 +60,9 @@ public class CertificationResultContainsSvapActivityExplorer extends ListingActi
 
         LOGGER.info("Finding activity when " + Util.formatCriteriaNumber(svapQuery.getCriterion()) + " SVAP " + svapQuery.getSvap().getRegulatoryTextCitation() + " for listing ID " + svapQuery.getListingId() + ".");
         List<ActivityDTO> listingActivities = activityDao.findByObjectId(svapQuery.getListingId(), ActivityConcept.CERTIFIED_PRODUCT, EPOCH, new Date());
-        if (CollectionUtils.isEmpty(listingActivities)) {
+        if (listingActivities == null || listingActivities.size() == 0) {
             LOGGER.warn("No listing activities were found for listing ID " + svapQuery.getListingId() + ". Is the ID valid?");
-            return Collections.emptyList();
+            return null;
         }
         LOGGER.info("There are " + listingActivities.size() + " activities for listing ID " + svapQuery.getListingId());
         sortNewestActivityFirst(listingActivities);
@@ -100,9 +103,8 @@ public class CertificationResultContainsSvapActivityExplorer extends ListingActi
 
         if (activityThatAddedSvap == null) {
             LOGGER.info("Unable to determine when " + Util.formatCriteriaNumber(svapQuery.getCriterion()) + " SVAP " + svapQuery.getSvap().getRegulatoryTextCitation() + " for listing ID " + svapQuery.getListingId() + ".");
-            return Collections.emptyList();
         }
-        return Stream.of(activityThatAddedSvap).toList();
+        return activityThatAddedSvap;
     }
 
     private boolean wasSvapAddedWithCertificationResult(CertificationResult orig, CertificationResult updated, Svap svap) {

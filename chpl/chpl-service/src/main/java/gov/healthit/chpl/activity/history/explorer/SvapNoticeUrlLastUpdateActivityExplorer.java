@@ -1,14 +1,11 @@
 package gov.healthit.chpl.activity.history.explorer;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Stream;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,8 +33,13 @@ public class SvapNoticeUrlLastUpdateActivityExplorer extends ListingActivityExpl
     }
 
     @Override
-    @Transactional
     public List<ActivityDTO> getActivities(ListingActivityQuery query) {
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public ActivityDTO getActivity(ListingActivityQuery query) {
         if (query == null || !(query instanceof SvapNoticeUrlLastUpdateActivityQuery)) {
             LOGGER.error("listing activity query was null or of the wrong type");
             return null;
@@ -51,9 +53,9 @@ public class SvapNoticeUrlLastUpdateActivityExplorer extends ListingActivityExpl
 
         LOGGER.info("Getting last update date for SVAP Notice URL for listing ID " + svapQuery.getListingId() + ".");
         List<ActivityDTO> listingActivities = activityDao.findByObjectId(svapQuery.getListingId(), ActivityConcept.CERTIFIED_PRODUCT, EPOCH, new Date());
-        if (CollectionUtils.isEmpty(listingActivities)) {
+        if (listingActivities == null || listingActivities.size() == 0) {
             LOGGER.warn("No listing activities were found for listing ID " + svapQuery.getListingId() + ". Is the ID valid?");
-            return Collections.emptyList();
+            return null;
         }
         LOGGER.info("There are " + listingActivities.size() + " activities for listing ID " + svapQuery.getListingId());
         sortNewestActivityFirst(listingActivities);
@@ -78,9 +80,8 @@ public class SvapNoticeUrlLastUpdateActivityExplorer extends ListingActivityExpl
 
         if (svapNoticeLastUpdateActivity == null) {
             LOGGER.warn("Unable to determine when listing " + svapQuery.getListingId() + " set SVAP Notice URL to " + svapQuery.getSvapNoticeUrl());
-            return Collections.emptyList();
         }
-        return Stream.of(svapNoticeLastUpdateActivity).toList();
+        return svapNoticeLastUpdateActivity;
     }
 
     private boolean wasSvapNoticeUrlSetToCurrent(CertifiedProductSearchDetails orig, CertifiedProductSearchDetails updated,
