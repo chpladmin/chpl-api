@@ -201,7 +201,7 @@ public class ConformanceMethodConversionJob extends CertifiedProduct2015Gatherer
                 new ConversionRule(certificationCriterionService.get(CertificationCriterionService.Criteria2015.E_2), WILDCARD, "Attestation", null),
                 new ConversionRule(certificationCriterionService.get(CertificationCriterionService.Criteria2015.E_3), WILDCARD, "Attestation", null),
                 new ConversionRule(certificationCriterionService.get(CertificationCriterionService.Criteria2015.F_1), "ONC Test Method", "ONC Test Procedure", null),
-                new ConversionRule(certificationCriterionService.get(CertificationCriterionService.Criteria2015.F_1), "HIMSS-IIP Test Method", "HIMSS-IIP Test Method ", null),
+                new ConversionRule(certificationCriterionService.get(CertificationCriterionService.Criteria2015.F_1), "HIMSS-IIP Test Method", "HIMSS-IIP Test Method", null),
                 new ConversionRule(certificationCriterionService.get(CertificationCriterionService.Criteria2015.F_2), WILDCARD, "ONC Test Procedure", null),
                 new ConversionRule(certificationCriterionService.get(CertificationCriterionService.Criteria2015.F_3), "ONC Test Method", "Attestation", true),
                 new ConversionRule(certificationCriterionService.get(CertificationCriterionService.Criteria2015.F_3), "ONC Test Method", "ONC Test Procedure", false),
