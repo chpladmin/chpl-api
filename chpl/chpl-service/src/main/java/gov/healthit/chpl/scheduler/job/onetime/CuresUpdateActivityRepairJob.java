@@ -3,6 +3,7 @@ package gov.healthit.chpl.scheduler.job.onetime;
 import java.util.List;
 
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -35,12 +36,13 @@ public class CuresUpdateActivityRepairJob implements Job {
         LOGGER.info("********* Starting the Cures Update Activity Repair job *********");
 
         //********************************************************
-        //Listing 10850 should had an update that removed it's Cures Update
-        //designation. The update should have left cures update = true.
+        // Listing 10850 had an update that removed it's Cures Update designation.
+        // The update should have left cures update = true.
         //********************************************************/
         try {
             //activity ID 84258 "new data" should have cures update = true and original data unchanged
             Long activityId = 84258L;
+            LOGGER.info("Updating activity ID 84258 to have cures update = true");
             ActivityEntity activity = updatableActivityDao.getEntityById(activityId);
             CertifiedProductSearchDetails newData = activityUtil.getListing(activity.getNewData());
             newData.setCuresUpdate(true);
@@ -52,17 +54,19 @@ public class CuresUpdateActivityRepairJob implements Job {
 
         try {
             //activity ID 84398 should not exist (Jim's edit to make the listing appear as cures update)
+            LOGGER.info("Deleting activity 84398");
             updatableActivityDao.deleteActivity(84398L);
         } catch (Exception ex) {
             LOGGER.error("Could not delete activity with ID 84398", ex);
         }
 
         //********************************************************
-        //Listing 10861 should have been uploaded as cures = true
+        // Listing 10861 should have been uploaded as cures = true
         //********************************************************/
         try {
             //activity ID 84263 "new data" should have cures update = true
             Long activityId = 84263L;
+            LOGGER.info("Updating activity ID 84263 to have cures update = true");
             ActivityEntity activity = updatableActivityDao.getEntityById(activityId);
             CertifiedProductSearchDetails newData = activityUtil.getListing(activity.getNewData());
             newData.setCuresUpdate(true);
@@ -73,17 +77,19 @@ public class CuresUpdateActivityRepairJob implements Job {
 
         try {
             //activity ID 84399 should not exist (Jim's edit to make the listing appear as cures update)
+            LOGGER.info("Deleting activity 84399");
             updatableActivityDao.deleteActivity(84399L);
         } catch (Exception ex) {
             LOGGER.error("Could not delete activity with ID 84399", ex);
         }
 
         //********************************************************
-        //Listing 10869 should have been uploaded as cures = true
+        // Listing 10869 should have been uploaded as cures = true
         //********************************************************/
         try {
             //activity ID 84346 "new data" should have cures update = true
             Long activityId = 84346L;
+            LOGGER.info("Updating activity ID 84346 to have cures update = true");
             ActivityEntity activity = updatableActivityDao.getEntityById(activityId);
             CertifiedProductSearchDetails newData = activityUtil.getListing(activity.getNewData());
             newData.setCuresUpdate(true);
@@ -94,6 +100,7 @@ public class CuresUpdateActivityRepairJob implements Job {
 
         try {
             //activity ID 84412 should not exist (Jim's edit to make the listing appear as cures update)
+            LOGGER.info("Deleting activity 84412");
             updatableActivityDao.deleteActivity(84412L);
         } catch (Exception ex) {
             LOGGER.error("Could not delete activity with ID 84412", ex);
@@ -107,6 +114,7 @@ public class CuresUpdateActivityRepairJob implements Job {
     @NoArgsConstructor
     private static class UpdatableActivityDAO extends BaseDAOImpl {
 
+        @Transactional
         public void updateActivity(Long activityId, String updatedOriginalJson,
                 String updatedNewJson) {
             ActivityEntity entity = getEntityById(activityId);
@@ -115,6 +123,7 @@ public class CuresUpdateActivityRepairJob implements Job {
             update(entity);
         }
 
+        @Transactional
         public void deleteActivity(Long activityId) {
             ActivityEntity entity = getEntityById(activityId);
             entityManager.remove(entity);
@@ -122,6 +131,7 @@ public class CuresUpdateActivityRepairJob implements Job {
             entityManager.clear();
         }
 
+        @Transactional
         public ActivityEntity getEntityById(Long id) {
             ActivityEntity entity = null;
             String queryStr = "SELECT ae "
