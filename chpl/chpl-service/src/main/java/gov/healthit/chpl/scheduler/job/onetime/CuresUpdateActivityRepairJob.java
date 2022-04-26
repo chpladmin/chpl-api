@@ -8,27 +8,19 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.activity.history.ListingActivityUtil;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.ActivityEntity;
-import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.util.JSONUtils;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "curesUpdateActivityRepairJobLogger")
 public class CuresUpdateActivityRepairJob implements Job {
-
-    @Autowired
-    private ActivityManager activityManager;
 
     @Autowired
     private UpdatableActivityDAO updatableActivityDao;
@@ -41,11 +33,50 @@ public class CuresUpdateActivityRepairJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Cures Update Activity Repair job *********");
-        setSecurityContext();
 
-        //Listing 10838
+        //********************************************************
+        //Listing 10850 should had an update that removed it's Cures Update
+        //designation. The update should have left cures update = true.
+        //********************************************************/
+        try {
+            //activity ID 84258 "new data" should have cures update = true and original data unchanged
+            Long activityId = 84258L;
+            ActivityEntity activity = updatableActivityDao.getEntityById(activityId);
+            CertifiedProductSearchDetails newData = activityUtil.getListing(activity.getNewData());
+            newData.setCuresUpdate(true);
+            updatableActivityDao.updateActivity(activityId, activity.getOriginalData(),
+                    JSONUtils.toJSON(newData));
+        } catch (Exception ex) {
+            LOGGER.error("Could not get/update activity with ID 84258", ex);
+        }
 
-        //Listing 9582
+        try {
+            //activity ID 84398 should not exist (Jim's edit to make the listing appear as cures update)
+            updatableActivityDao.deleteActivity(84398L);
+        } catch (Exception ex) {
+            LOGGER.error("Could not delete activity with ID 84398", ex);
+        }
+
+        //********************************************************
+        //Listing 10861 should have been uploaded as cures = true
+        //********************************************************/
+        try {
+            //activity ID 84263 "new data" should have cures update = true
+            Long activityId = 84263L;
+            ActivityEntity activity = updatableActivityDao.getEntityById(activityId);
+            CertifiedProductSearchDetails newData = activityUtil.getListing(activity.getNewData());
+            newData.setCuresUpdate(true);
+            updatableActivityDao.updateActivity(activityId, null, JSONUtils.toJSON(newData));
+        } catch (Exception ex) {
+            LOGGER.error("Could not get/update activity with ID 84263", ex);
+        }
+
+        try {
+            //activity ID 84399 should not exist (Jim's edit to make the listing appear as cures update)
+            updatableActivityDao.deleteActivity(84399L);
+        } catch (Exception ex) {
+            LOGGER.error("Could not delete activity with ID 84399", ex);
+        }
 
         //********************************************************
         //Listing 10869 should have been uploaded as cures = true
@@ -54,34 +85,22 @@ public class CuresUpdateActivityRepairJob implements Job {
             //activity ID 84346 "new data" should have cures update = true
             Long activityId = 84346L;
             ActivityEntity activity = updatableActivityDao.getEntityById(activityId);
-            CertifiedProductSearchDetails data = activityUtil.getListing(activity.getNewData());
-            data.setCuresUpdate(true);
-            updatableActivityDao.updateActivity(activityId, null, JSONUtils.toJSON(data));
+            CertifiedProductSearchDetails newData = activityUtil.getListing(activity.getNewData());
+            newData.setCuresUpdate(true);
+            updatableActivityDao.updateActivity(activityId, null, JSONUtils.toJSON(newData));
         } catch (Exception ex) {
             LOGGER.error("Could not get/update activity with ID 84346", ex);
         }
+
         try {
             //activity ID 84412 should not exist (Jim's edit to make the listing appear as cures update)
             updatableActivityDao.deleteActivity(84412L);
         } catch (Exception ex) {
             LOGGER.error("Could not delete activity with ID 84412", ex);
         }
-        //TODO: check cures_update_event table (db PR)
 
         LOGGER.info("********* Completed the Cures Update Activity Repair job *********");
 
-    }
-
-    private void setSecurityContext() {
-        JWTAuthenticatedUser adminUser = new JWTAuthenticatedUser();
-        adminUser.setFullName("Administrator");
-        adminUser.setId(User.ADMIN_USER_ID);
-        adminUser.setFriendlyName("Admin");
-        adminUser.setSubjectName("admin");
-        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
     @Component("updatableActivityDao")
@@ -93,15 +112,14 @@ public class CuresUpdateActivityRepairJob implements Job {
             ActivityEntity entity = getEntityById(activityId);
             entity.setOriginalData(updatedOriginalJson);
             entity.setNewData(updatedNewJson);
-            //TODO: do we want to set the last modified user as the system? Or pretend it never happened?
             update(entity);
         }
 
         public void deleteActivity(Long activityId) {
             ActivityEntity entity = getEntityById(activityId);
-            entity.setDeleted(true);
-            //TODO: do we want to set the last modified user as the system? Or pretend it never happened?
-            update(entity);
+            entityManager.remove(entity);
+            entityManager.flush();
+            entityManager.clear();
         }
 
         public ActivityEntity getEntityById(Long id) {
