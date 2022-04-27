@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,24 +68,9 @@ public class ConformanceMethodNormalizer {
     }
 
     private void fillInDefaultConformanceMethods(CertificationResult certResult) {
-        if (CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
-            if (certResult.getConformanceMethods() == null) {
-                certResult.setConformanceMethods(new ArrayList<CertificationResultConformanceMethod>());
-            }
-
-            if (BooleanUtils.isTrue(certResult.isSuccess())) {
-                ConformanceMethod defaultConformanceMethod = getDefaultConformanceMethodForCriteria(certResult.getCriterion());
-                if (defaultConformanceMethod != null) {
-                    certResult.getConformanceMethods().add(CertificationResultConformanceMethod.builder()
-                            .conformanceMethod(defaultConformanceMethod)
-                            .build());
-                }
-            }
-        } else {
-            certResult.getConformanceMethods().stream()
-                .filter(conformanceMethod -> isConformanceMethodNameMissing(conformanceMethod))
-                .forEach(conformanceMethod -> fillInDefaultConformanceMethod(certResult.getCriterion(), conformanceMethod));
-        }
+        certResult.getConformanceMethods().stream()
+            .filter(conformanceMethod -> isConformanceMethodNameMissing(conformanceMethod))
+            .forEach(conformanceMethod -> fillInDefaultConformanceMethod(certResult.getCriterion(), conformanceMethod));
     }
 
     private ConformanceMethod getDefaultConformanceMethodForCriteria(CertificationCriterion criterion) {
@@ -107,13 +91,9 @@ public class ConformanceMethodNormalizer {
     }
 
     private void fillInDefaultConformanceMethod(CertificationCriterion criterion, CertificationResultConformanceMethod conformanceMethod) {
-        List<ConformanceMethod> allowedConformanceMethodsForCriterion = this.conformanceMethodCriteriaMap.stream()
-                .filter(cmcMap -> cmcMap.getCriterion().getId().equals(criterion.getId()))
-                .map(cmcMap -> cmcMap.getConformanceMethod())
-                .collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(allowedConformanceMethodsForCriterion)
-                && allowedConformanceMethodsForCriterion.size() == 1) {
-            conformanceMethod.setConformanceMethod(allowedConformanceMethodsForCriterion.get(0));
+        ConformanceMethod defaultConformanceMethodsForCriterion = getDefaultConformanceMethodForCriteria(criterion);
+        if (defaultConformanceMethodsForCriterion != null) {
+            conformanceMethod.setConformanceMethod(defaultConformanceMethodsForCriterion);
         }
     }
 

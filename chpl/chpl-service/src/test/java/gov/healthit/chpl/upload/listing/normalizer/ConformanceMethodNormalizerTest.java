@@ -76,40 +76,6 @@ public class ConformanceMethodNormalizerTest {
     }
 
     @Test
-    public void normalize_nullConformanceMethodAndCriteriaHasMultipleAllowed_DefaultNotPopulated() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationResult(CertificationResult.builder()
-                        .success(true)
-                        .criterion(CertificationCriterion.builder()
-                                .id(1L)
-                                .number("170.315 (a)(1)")
-                                .build())
-                        .build())
-                .build();
-        listing.getCertificationResults().get(0).setConformanceMethods(null);
-        normalizer.normalize(listing);
-        assertNotNull(listing.getCertificationResults().get(0).getConformanceMethods());
-        assertEquals(0, listing.getCertificationResults().get(0).getConformanceMethods().size());
-    }
-
-    @Test
-    public void normalize_nullConformanceMethodAndCriteriaHasOneAllowed_DefaultPopulated() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationResult(CertificationResult.builder()
-                        .success(true)
-                        .criterion(CertificationCriterion.builder()
-                                .id(2L)
-                                .number("170.315 (b)(1)")
-                                .build())
-                        .build())
-                .build();
-        listing.getCertificationResults().get(0).setConformanceMethods(null);
-        normalizer.normalize(listing);
-        assertNotNull(listing.getCertificationResults().get(0).getConformanceMethods());
-        assertEquals(1, listing.getCertificationResults().get(0).getConformanceMethods().size());
-    }
-
-    @Test
     public void normalize_emptyConformanceMethodAndCriteriaHasMultipleAllowed_DefaultNotPopulated() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -127,7 +93,7 @@ public class ConformanceMethodNormalizerTest {
     }
 
     @Test
-    public void normalize_emptyConformanceMethodAndCriteriaHasOneAllowed_DefaultPopulated() {
+    public void normalize_emptyConformanceMethodAndCriteriaHasOneAllowed_DefaultNotPopulated() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .success(true)
@@ -140,7 +106,7 @@ public class ConformanceMethodNormalizerTest {
                 .build();
         normalizer.normalize(listing);
         assertNotNull(listing.getCertificationResults().get(0).getConformanceMethods());
-        assertEquals(1, listing.getCertificationResults().get(0).getConformanceMethods().size());
+        assertEquals(0, listing.getCertificationResults().get(0).getConformanceMethods().size());
     }
 
     @Test
