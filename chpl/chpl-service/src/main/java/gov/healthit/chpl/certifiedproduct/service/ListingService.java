@@ -30,7 +30,6 @@ import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
-import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.domain.compliance.DirectReview;
@@ -41,7 +40,6 @@ import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.service.DirectReviewSearchService;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
-import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -170,7 +168,6 @@ public class ListingService {
                 .build();
 
         List<PromotingInteroperabilityUser> promotingInteroperabilityUserHistory = piuService.getPromotingInteroperabilityUserHistory(dto.getId());
-        listing.setMeaningfulUseUserHistory(convertToMeaningfulUse(promotingInteroperabilityUserHistory));
         listing.setPromotingInteroperabilityUserHistory(promotingInteroperabilityUserHistory);
 
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
@@ -301,19 +298,5 @@ public class ListingService {
         return certifiedProductAsDao.getAccessibilityStandardsByCertifiedProductId(id).stream()
                 .map(dto -> new CertifiedProductAccessibilityStandard(dto))
                 .collect(Collectors.toList());
-    }
-
-    private List<MeaningfulUseUser> convertToMeaningfulUse(List<PromotingInteroperabilityUser> promotingInteroperailityUserHistory) {
-        return promotingInteroperailityUserHistory.stream()
-                .map(piu -> buildMeaningfulUseUser(piu))
-                .collect(Collectors.toList());
-    }
-
-    private MeaningfulUseUser buildMeaningfulUseUser(PromotingInteroperabilityUser piu) {
-        return MeaningfulUseUser.builder()
-            .id(piu.getId())
-            .muuCount(piu.getUserCount())
-            .muuDate(DateUtil.toEpochMillis(piu.getUserCountDate()))
-            .build();
     }
 }
