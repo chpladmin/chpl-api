@@ -14,18 +14,18 @@ import gov.healthit.chpl.manager.rules.ValidationRule;
 public class ChangeRequestValidationService {
 
     private Long websiteChangeRequestTypeId;
-    private Long developerDetailsChangeRequestTypeId;
+    private Long developerDemographicsChangeRequestTypeId;
     private Long attestationChangeRequestTypeId;
 
 
     @Autowired
     public ChangeRequestValidationService(
             @Value("${changerequest.website}") Long websiteChangeRequestTypeId,
-            @Value("${changerequest.developerDetails}") Long developerDetailsChangeRequestTypeId,
+            @Value("${changerequest.developerDemographics}") Long developerDemographicsChangeRequestTypeId,
             @Value("${changerequest.attestation}") Long attestationChangeRequestTypeId) {
 
         this.websiteChangeRequestTypeId = websiteChangeRequestTypeId;
-        this.developerDetailsChangeRequestTypeId = developerDetailsChangeRequestTypeId;
+        this.developerDemographicsChangeRequestTypeId = developerDemographicsChangeRequestTypeId;
         this.attestationChangeRequestTypeId = attestationChangeRequestTypeId;
     }
 
@@ -44,7 +44,7 @@ public class ChangeRequestValidationService {
 
         if (context.getNewChangeRequest().getChangeRequestType().getId().equals(websiteChangeRequestTypeId)) {
             rules.addAll(getWebsiteValidations());
-        } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(developerDetailsChangeRequestTypeId)) {
+        } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(developerDemographicsChangeRequestTypeId)) {
             rules.addAll(getDeveloperDetailsValidations());
         } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(attestationChangeRequestTypeId)) {
             rules.addAll(getAttestationValidations());

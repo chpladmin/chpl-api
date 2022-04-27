@@ -7,35 +7,36 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestConverter;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDetails;
-import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDetailsEntity;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
+import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDemographicsEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 
-@Repository("changeRequestDeveloperDetailsDAO")
-public class ChangeRequestDeveloperDetailsDAO extends BaseDAOImpl {
+@Repository("changeRequestDeveloperDemographicsDAO")
+public class ChangeRequestDeveloperDemographicsDAO extends BaseDAOImpl {
 
 
-    public ChangeRequestDeveloperDetails create(ChangeRequest cr, ChangeRequestDeveloperDetails crDev)
+    public ChangeRequestDeveloperDemographics create(ChangeRequest cr, ChangeRequestDeveloperDemographics crDev)
             throws EntityRetrievalException {
-        ChangeRequestDeveloperDetailsEntity entity = getNewEntity(cr, crDev);
+        ChangeRequestDeveloperDemographicsEntity entity = getNewEntity(cr, crDev);
         create(entity);
         return ChangeRequestConverter.convert(getEntity(entity.getId()));
     }
 
 
-    public ChangeRequestDeveloperDetails getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
+    public ChangeRequestDeveloperDemographics getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
         return ChangeRequestConverter.convert(getEntityByChangeRequestId(changeRequestId));
     }
 
 
-    public ChangeRequestDeveloperDetails update(ChangeRequestDeveloperDetails crDev) throws EntityRetrievalException {
-        ChangeRequestDeveloperDetailsEntity entity = getEntity(crDev.getId());
+    public ChangeRequestDeveloperDemographics update(ChangeRequestDeveloperDemographics crDev) throws EntityRetrievalException {
+        ChangeRequestDeveloperDemographicsEntity entity = getEntity(crDev.getId());
         if (crDev.getSelfDeveloper() != null) {
             entity.setSelfDeveloper(crDev.getSelfDeveloper());
         }
+        entity.setWebsite(crDev.getWebsite());
         if (crDev.getAddress() != null) {
             entity.setStreetLine1(crDev.getAddress().getLine1());
             entity.setStreetLine2(crDev.getAddress().getLine2());
@@ -55,8 +56,8 @@ public class ChangeRequestDeveloperDetailsDAO extends BaseDAOImpl {
         return ChangeRequestConverter.convert(getEntity(entity.getId()));
     }
 
-    private ChangeRequestDeveloperDetailsEntity getNewEntity(ChangeRequest cr, ChangeRequestDeveloperDetails crDev) {
-        ChangeRequestDeveloperDetailsEntity entity = new ChangeRequestDeveloperDetailsEntity();
+    private ChangeRequestDeveloperDemographicsEntity getNewEntity(ChangeRequest cr, ChangeRequestDeveloperDemographics crDev) {
+        ChangeRequestDeveloperDemographicsEntity entity = new ChangeRequestDeveloperDemographicsEntity();
         entity.setChangeRequest(getSession().load(ChangeRequestEntity.class, cr.getId()));
         if (crDev.getSelfDeveloper() != null) {
             entity.setSelfDeveloper(crDev.getSelfDeveloper());
@@ -82,15 +83,15 @@ public class ChangeRequestDeveloperDetailsDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private ChangeRequestDeveloperDetailsEntity getEntity(Long changeRequestDevId)
+    private ChangeRequestDeveloperDemographicsEntity getEntity(Long changeRequestDevId)
             throws EntityRetrievalException {
         String hql = "FROM ChangeRequestDeveloperDetailsEntity crDev "
                 + "JOIN FETCH crDev.changeRequest "
                 + "WHERE (NOT crDev.deleted = true) "
                 + "AND (crDev.id = :changeRequestDevId) ";
 
-        List<ChangeRequestDeveloperDetailsEntity> result = entityManager
-                .createQuery(hql, ChangeRequestDeveloperDetailsEntity.class)
+        List<ChangeRequestDeveloperDemographicsEntity> result = entityManager
+                .createQuery(hql, ChangeRequestDeveloperDemographicsEntity.class)
                 .setParameter("changeRequestDevId", changeRequestDevId)
                 .getResultList();
 
@@ -108,15 +109,15 @@ public class ChangeRequestDeveloperDetailsDAO extends BaseDAOImpl {
         return result.get(0);
     }
 
-    private ChangeRequestDeveloperDetailsEntity getEntityByChangeRequestId(Long changeRequestId)
+    private ChangeRequestDeveloperDemographicsEntity getEntityByChangeRequestId(Long changeRequestId)
             throws EntityRetrievalException {
         String hql = "FROM ChangeRequestDeveloperDetailsEntity crDev "
                 + "JOIN FETCH crDev.changeRequest "
                 + "WHERE (NOT crDev.deleted = true) "
                 + "AND (crDev.changeRequest.id = :changeRequestId) ";
 
-        List<ChangeRequestDeveloperDetailsEntity> result = entityManager
-                .createQuery(hql, ChangeRequestDeveloperDetailsEntity.class)
+        List<ChangeRequestDeveloperDemographicsEntity> result = entityManager
+                .createQuery(hql, ChangeRequestDeveloperDemographicsEntity.class)
                 .setParameter("changeRequestId", changeRequestId)
                 .getResultList();
 

@@ -5,18 +5,18 @@ import java.text.DateFormat;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
-import gov.healthit.chpl.changerequest.dao.ChangeRequestDeveloperDetailsDAO;
+import gov.healthit.chpl.changerequest.dao.ChangeRequestDeveloperDemographicsDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDetails;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Developer;
@@ -32,35 +32,36 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 
 @Component
-public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsService<ChangeRequestDeveloperDetails> {
+public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDetailsService<ChangeRequestDeveloperDemographics> {
 
     private ChangeRequestDAO crDAO;
-    private ChangeRequestDeveloperDetailsDAO crDeveloperDetailsDao;
+    private ChangeRequestDeveloperDemographicsDAO crDeveloperDetailsDao;
     private DeveloperManager developerManager;
     private ActivityManager activityManager;
     private ChplEmailFactory chplEmailFactory;
 
+    private ObjectMapper mapper = new ObjectMapper();
 
-    @Value("${changeRequest.developerDetails.approval.subject}")
+    @Value("${changeRequest.developerDemographics.approval.subject}")
     private String approvalEmailSubject;
 
-    @Value("${changeRequest.developerDetails.approval.body}")
+    @Value("${changeRequest.developerDemographics.approval.body}")
     private String approvalEmailBody;
 
-    @Value("${changeRequest.developerDetails.rejected.subject}")
+    @Value("${changeRequest.developerDemographics.rejected.subject}")
     private String rejectedEmailSubject;
 
-    @Value("${changeRequest.developerDetails.rejected.body}")
+    @Value("${changeRequest.developerDemographics.rejected.body}")
     private String rejectedEmailBody;
 
-    @Value("${changeRequest.developerDetails.pendingDeveloperAction.subject}")
+    @Value("${changeRequest.developerDemographics.pendingDeveloperAction.subject}")
     private String pendingDeveloperActionEmailSubject;
 
-    @Value("${changeRequest.developerDetails.pendingDeveloperAction.body}")
+    @Value("${changeRequest.developerDemographics.pendingDeveloperAction.body}")
     private String pendingDeveloperActionEmailBody;
 
     @Autowired
-    public ChangeRequestDeveloperDetailsService(ChangeRequestDAO crDAO, ChangeRequestDeveloperDetailsDAO crDeveloperDetailsDao,
+    public ChangeRequestDeveloperDemographicsService(ChangeRequestDAO crDAO, ChangeRequestDeveloperDemographicsDAO crDeveloperDetailsDao,
             DeveloperManager developerManager, UserDeveloperMapDAO userDeveloperMapDAO,
             ActivityManager activityManager, ChplEmailFactory chplEmailFactory) {
         super(userDeveloperMapDAO);
@@ -72,7 +73,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
     }
 
     @Override
-    public ChangeRequestDeveloperDetails getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
+    public ChangeRequestDeveloperDemographics getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
         return crDeveloperDetailsDao.getByChangeRequestId(changeRequestId);
     }
 
@@ -93,15 +94,15 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
             ChangeRequest crFromDb = crDAO.get(cr.getId());
             // Convert the map of key/value pairs to a ChangeRequestDeveloperDetails
             // object
-            ChangeRequestDeveloperDetails crDevDetails = getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails());
+            ChangeRequestDeveloperDemographics crDevDetails = getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails());
             // Use the id from the DB, not the object. Client could have changed
             // the id.
-            crDevDetails.setId(((ChangeRequestDeveloperDetails) crFromDb.getDetails()).getId());
+            crDevDetails.setId(((ChangeRequestDeveloperDemographics) crFromDb.getDetails()).getId());
             cr.setDetails(crDevDetails);
 
-            if (!((ChangeRequestDeveloperDetails) cr.getDetails())
+            if (!((ChangeRequestDeveloperDemographics) cr.getDetails())
                     .equals((crFromDb.getDetails()))) {
-                cr.setDetails(crDeveloperDetailsDao.update((ChangeRequestDeveloperDetails) cr.getDetails()));
+                cr.setDetails(crDeveloperDetailsDao.update((ChangeRequestDeveloperDemographics) cr.getDetails()));
 
                 activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
                         "Change request details updated",
@@ -118,11 +119,12 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
     @Override
     protected ChangeRequest execute(ChangeRequest cr)
             throws EntityRetrievalException, EntityCreationException {
-        ChangeRequestDeveloperDetails crDevDetails = (ChangeRequestDeveloperDetails) cr.getDetails();
+        ChangeRequestDeveloperDemographics crDevDetails = (ChangeRequestDeveloperDemographics) cr.getDetails();
         Developer developer = developerManager.getById(cr.getDeveloper().getDeveloperId());
         if (crDevDetails.getSelfDeveloper() != null) {
             developer.setSelfDeveloper(crDevDetails.getSelfDeveloper());
         }
+        developer.setWebsite(crDevDetails.getWebsite());
         if (crDevDetails.getAddress() != null) {
             Address address = developer.getAddress() != null ? developer.getAddress() : new Address();
             address.setLine1(crDevDetails.getAddress().getLine1());
@@ -175,7 +177,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
                 .subject(pendingDeveloperActionEmailSubject)
                 .htmlMessage(String.format(pendingDeveloperActionEmailBody,
                         df.format(cr.getSubmittedDate()),
-                        formatDetailsHtml((ChangeRequestDeveloperDetails) cr.getDetails()),
+                        formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails()),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
                 .sendEmail();
@@ -191,30 +193,14 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
                 .subject(rejectedEmailSubject)
                 .htmlMessage(String.format(rejectedEmailBody,
                         df.format(cr.getSubmittedDate()),
-                        formatDetailsHtml((ChangeRequestDeveloperDetails) cr.getDetails()),
+                        formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails()),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
                 .sendEmail();
     }
 
-    private ChangeRequestDeveloperDetails getDetailsFromHashMap(HashMap<String, Object> map)
-        throws IOException {
-        ChangeRequestDeveloperDetails crDevDetails = new ChangeRequestDeveloperDetails();
-        if (map.containsKey("id") && StringUtils.isNumeric(map.get("id").toString())) {
-            crDevDetails.setId(new Long(map.get("id").toString()));
-        }
-        if (map.containsKey("selfDeveloper") && map.get("selfDeveloper") != null) {
-            crDevDetails.setSelfDeveloper(BooleanUtils.toBooleanObject(map.get("selfDeveloper").toString()));
-        }
-        if (map.containsKey("address") && map.get("address") != null) {
-            Address address = new Address((HashMap<String, Object>) map.get("address"));
-            crDevDetails.setAddress(address);
-        }
-        if (map.containsKey("contact") && map.get("contact") != null) {
-            PointOfContact contact = new PointOfContact((HashMap<String, Object>) map.get("contact"));
-            crDevDetails.setContact(contact);
-        }
-        return crDevDetails;
+    private ChangeRequestDeveloperDemographics getDetailsFromHashMap(HashMap<String, Object> map) throws IOException {
+        return mapper.convertValue(map, ChangeRequestDeveloperDemographics.class);
     }
 
     private String formatDeveloperHtml(Developer dev) {
@@ -273,7 +259,7 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
         return contactHtml;
     }
 
-    private String formatDetailsHtml(ChangeRequestDeveloperDetails details) {
+    private String formatDetailsHtml(ChangeRequestDeveloperDemographics details) {
         String detailsHtml = "";
         if (details.getSelfDeveloper() != null) {
             detailsHtml += "<p>Self-Developer: " + formatSelfDeveloperHtml(details.getSelfDeveloper()) + "</p>";

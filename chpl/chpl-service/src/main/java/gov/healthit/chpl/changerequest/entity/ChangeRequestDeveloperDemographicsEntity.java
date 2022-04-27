@@ -23,8 +23,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Data
-@Table(name = "change_request_developer_details")
-public class ChangeRequestDeveloperDetailsEntity {
+@Table(name = "change_request_developer_demogrpahics")
+public class ChangeRequestDeveloperDemographicsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

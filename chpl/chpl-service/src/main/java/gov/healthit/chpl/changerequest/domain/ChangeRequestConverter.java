@@ -9,12 +9,11 @@ import gov.healthit.chpl.attestation.domain.AttestationValidResponse;
 import gov.healthit.chpl.attestation.domain.Condition;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationResponseEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionEntity;
-import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDetailsEntity;
+import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDemographicsEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusTypeEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestTypeEntity;
-import gov.healthit.chpl.changerequest.entity.ChangeRequestWebsiteEntity;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.contact.PointOfContact;
@@ -62,17 +61,11 @@ public final class ChangeRequestConverter {
         return status;
     }
 
-    public static ChangeRequestWebsite convert(ChangeRequestWebsiteEntity entity) {
-        ChangeRequestWebsite crWebsite = new ChangeRequestWebsite();
-        crWebsite.setId(entity.getId());
-        crWebsite.setWebsite(entity.getWebsite());
-        return crWebsite;
-    }
-
-    public static ChangeRequestDeveloperDetails convert(ChangeRequestDeveloperDetailsEntity entity) {
-        ChangeRequestDeveloperDetails crDev = new ChangeRequestDeveloperDetails();
+    public static ChangeRequestDeveloperDemographics convert(ChangeRequestDeveloperDemographicsEntity entity) {
+        ChangeRequestDeveloperDemographics crDev = new ChangeRequestDeveloperDemographics();
         crDev.setId(entity.getId());
         crDev.setSelfDeveloper(entity.getSelfDeveloper());
+        crDev.setWebsite(entity.getWebsite());
         Address address = null;
         if (entity.getStreetLine1() != null || entity.getStreetLine2() != null
                 || entity.getCity() != null || entity.getState() != null
