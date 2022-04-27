@@ -37,8 +37,6 @@ public class ListingValidationReportDAO extends BaseDAOImpl {
     }
 
     public void deleteAll() {
-        //getAllEntities().stream()
-        //        .forEach(entity -> deleteEntity(entity));
         entityManager.createQuery("UPDATE ListingValidationReportEntity lvr SET lvr.deleted = true WHERE lvr.deleted = false")
                 .executeUpdate();
     }
