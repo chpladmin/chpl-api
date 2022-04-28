@@ -39,7 +39,7 @@ public class PendingCertifiedProductMetadata implements Serializable {
         }
         if (dto.getProductVersionId() != null || !StringUtils.isEmpty(dto.getProductVersion())) {
             ProductVersion ver = new ProductVersion();
-            ver.setVersionId(dto.getProductVersionId());
+            ver.setId(dto.getProductVersionId());
             ver.setVersion(dto.getProductVersion());
             this.version = ver;
         }

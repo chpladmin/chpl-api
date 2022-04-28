@@ -158,7 +158,7 @@ public class DeveloperManager extends SecuredManager {
         developerTree.getProducts().stream().forEach(product -> {
             product.getVersions().stream().forEach(version -> {
                 List<SimpleListing> listingsForVersion = listings.stream()
-                        .filter(listing -> listing.getVersion().getId().equals(version.getVersionId()))
+                        .filter(listing -> listing.getVersion().getId().equals(version.getId()))
                         .map(listing -> convertToSimpleListing(listing, acbs))
                         .collect(Collectors.toList());
                     version.getListings().addAll(listingsForVersion);

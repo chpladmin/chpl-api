@@ -1,9 +1,8 @@
 package gov.healthit.chpl.domain.developer.hierarchy;
 
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
-
-import org.apache.commons.lang3.ObjectUtils;
 
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.dto.ProductVersionDTO;
@@ -31,14 +30,14 @@ public class VersionTree extends ProductVersion {
             return false;
         }
         VersionTree otherVersion = (VersionTree) obj;
-        return ObjectUtils.equals(this.getVersionId(), otherVersion.getVersionId());
+        return Objects.equals(this.getId(), otherVersion.getId());
     }
 
     public int hashCode() {
-        if (this.getVersionId() == null) {
+        if (this.getId() == null) {
             return -1;
         }
 
-        return this.getVersionId().hashCode();
+        return this.getId().hashCode();
     }
 }

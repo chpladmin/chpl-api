@@ -60,7 +60,7 @@ public class ProductAndVersionNormalizerTest {
         assertNull(listing.getProduct().getProductId());
         assertEquals("prod 1", listing.getProduct().getName());
         assertNotNull(listing.getVersion());
-        assertNull(listing.getVersion().getVersionId());
+        assertNull(listing.getVersion().getId());
         assertEquals("1.0", listing.getVersion().getVersion());
     }
 
@@ -86,7 +86,7 @@ public class ProductAndVersionNormalizerTest {
         assertNull(listing.getProduct().getProductId());
         assertEquals("prod 1", listing.getProduct().getName());
         assertNotNull(listing.getVersion());
-        assertNull(listing.getVersion().getVersionId());
+        assertNull(listing.getVersion().getId());
         assertEquals("1.0", listing.getVersion().getVersion());
     }
 
@@ -132,7 +132,7 @@ public class ProductAndVersionNormalizerTest {
         assertNull(listing.getProduct().getProductId());
         assertEquals("", listing.getProduct().getName());
         assertNotNull(listing.getVersion());
-        assertNull(listing.getVersion().getVersionId());
+        assertNull(listing.getVersion().getId());
         assertEquals("", listing.getVersion().getVersion());
     }
 
@@ -246,7 +246,7 @@ public class ProductAndVersionNormalizerTest {
         assertEquals(1L, listing.getProduct().getProductId());
         assertEquals("Test 1", listing.getProduct().getName());
         assertNotNull(listing.getVersion());
-        assertEquals(2L, listing.getVersion().getVersionId());
+        assertEquals(2L, listing.getVersion().getId());
         assertEquals("1.0", listing.getVersion().getVersion());
     }
 
@@ -275,7 +275,7 @@ public class ProductAndVersionNormalizerTest {
         assertNull(listing.getProduct().getProductId());
         assertEquals("Test 1", listing.getProduct().getName());
         assertNotNull(listing.getVersion());
-        assertNull(listing.getVersion().getVersionId());
+        assertNull(listing.getVersion().getId());
         assertEquals("1.0", listing.getVersion().getVersion());
     }
 
@@ -310,7 +310,7 @@ public class ProductAndVersionNormalizerTest {
         assertEquals(1L, listing.getProduct().getProductId());
         assertEquals("Test 1", listing.getProduct().getName());
         assertNotNull(listing.getVersion());
-        assertNull(listing.getVersion().getVersionId());
+        assertNull(listing.getVersion().getId());
         assertEquals("1.0", listing.getVersion().getVersion());
     }
 }

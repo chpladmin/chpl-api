@@ -436,7 +436,7 @@ public class ListingDetailsUploadHandlerTest {
         assertNotNull(listing);
         assertNotNull(listing.getVersion());
         assertEquals("v1", listing.getVersion().getVersion());
-        assertNull(listing.getVersion().getVersionId());
+        assertNull(listing.getVersion().getId());
     }
 
     @Test
@@ -454,7 +454,7 @@ public class ListingDetailsUploadHandlerTest {
         assertNotNull(listing.getProduct());
         assertNotNull(listing.getVersion());
         assertEquals("v1", listing.getVersion().getVersion());
-        assertNull(listing.getVersion().getVersionId());
+        assertNull(listing.getVersion().getId());
     }
 
     @Test

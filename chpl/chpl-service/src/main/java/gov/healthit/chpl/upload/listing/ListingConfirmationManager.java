@@ -136,10 +136,10 @@ public class ListingConfirmationManager {
             Long productId = productManager.create(listing.getDeveloper().getDeveloperId(), listing.getProduct());
             listing.getProduct().setProductId(productId);
         }
-        if (listing.getVersion().getVersionId() == null) {
+        if (listing.getVersion().getId() == null) {
             //create version, set version ID in listing
             Long versionId = versionManager.create(listing.getProduct().getProductId(), listing.getVersion());
-            listing.getVersion().setVersionId(versionId);
+            listing.getVersion().setId(versionId);
         }
         Long createdListingId = cpDao.create(listing);
         listing.setId(createdListingId);

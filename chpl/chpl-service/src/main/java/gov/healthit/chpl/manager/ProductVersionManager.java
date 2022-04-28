@@ -137,7 +137,7 @@ public class ProductVersionManager extends SecuredManager {
         }
 
         Long versionId = versionDao.create(productId, version);
-        version.setVersionId(versionId);
+        version.setId(versionId);
         ProductVersionDTO createdVersionDto = versionDao.getById(versionId);
         activityManager.addActivity(ActivityConcept.VERSION, versionId,
                 "Product Version " + version.getVersion() + " added for product " + productId, null, createdVersionDto);

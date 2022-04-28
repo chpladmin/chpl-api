@@ -70,7 +70,7 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
         result.add(listing.getProduct().getName());
         result.add(listing.getProduct().getProductId().toString());
         result.add(listing.getVersion().getVersion());
-        result.add(listing.getVersion().getVersionId().toString());
+        result.add(listing.getVersion().getId().toString());
         result.add(listing.getPracticeType().get("name").toString());
         result.add(listing.getCountSurveillance().toString());
         result.add((listing.getCountOpenNonconformities() + listing.getCountClosedNonconformities()) + "");

@@ -1223,7 +1223,7 @@ public class CertifiedProductManager extends SecuredManager {
             CertifiedProductSearchDetails updatedListing, String reason)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
         Long listingId = updatedListing.getId();
-        Long productVersionId = updatedListing.getVersion().getVersionId();
+        Long productVersionId = updatedListing.getVersion().getId();
         CertificationStatus updatedStatus = updatedListing.getCurrentStatus().getStatus();
         CertificationStatus existingStatus = existingListing.getCurrentStatus().getStatus();
         // if listing status has changed that may trigger other changes

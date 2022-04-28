@@ -345,7 +345,7 @@ public class ProductController {
         List<ProductVersionDTO> newProductVersions = new ArrayList<ProductVersionDTO>();
         for (ProductVersion requestVersion : splitRequest.getNewVersions()) {
             ProductVersionDTO newVersion = new ProductVersionDTO();
-            newVersion.setId(requestVersion.getVersionId());
+            newVersion.setId(requestVersion.getId());
             newVersion.setVersion(requestVersion.getVersion());
             newProductVersions.add(newVersion);
         }

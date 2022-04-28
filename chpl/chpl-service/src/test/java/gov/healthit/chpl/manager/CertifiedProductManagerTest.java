@@ -333,7 +333,7 @@ public class CertifiedProductManagerTest {
                         .testingLabName("Drummond Group")
                         .build())
                 .version(ProductVersion.builder()
-                        .versionId(1L)
+                        .id(1L)
                         .version("11.3")
                         .build())
                 .build();

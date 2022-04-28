@@ -146,8 +146,8 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add(ObjectUtils.allNotNull(listing.getProduct(), listing.getProduct().getProductId())
                 ? listing.getProduct().getProductId().toString() : UNKNOWN_VALUE);
         result.add(listing.getVersion() != null ? listing.getVersion().getVersion() : UNKNOWN_VALUE);
-        result.add(ObjectUtils.allNotNull(listing.getVersion(), listing.getVersion().getVersionId())
-                ? listing.getVersion().getVersionId().toString() : UNKNOWN_VALUE);
+        result.add(ObjectUtils.allNotNull(listing.getVersion(), listing.getVersion().getId())
+                ? listing.getVersion().getId().toString() : UNKNOWN_VALUE);
         result.add(listing.getRwtPlansUrl());
         result.add(listing.getRwtResultsUrl());
         result.add(listing.getCountSurveillance() != null ? listing.getCountSurveillance().toString() : UNKNOWN_VALUE);

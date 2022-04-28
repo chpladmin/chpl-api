@@ -18,6 +18,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
@@ -171,8 +172,8 @@ public class ListingsWithCriterionCSVPresenter {
         result.add(ObjectUtils.allNotNull(listing.getProduct(), listing.getProduct().getProductId())
                 ? listing.getProduct().getProductId().toString() : UNKNOWN_VALUE);
         result.add(listing.getVersion() != null ? listing.getVersion().getVersion() : UNKNOWN_VALUE);
-        result.add(ObjectUtils.allNotNull(listing.getVersion(), listing.getVersion().getVersionId())
-                ? listing.getVersion().getVersionId().toString() : UNKNOWN_VALUE);
+        result.add(ObjectUtils.allNotNull(listing.getVersion(), listing.getVersion().getId())
+                ? listing.getVersion().getId().toString() : UNKNOWN_VALUE);
         result.add(formatDate(listing.getCertificationDate()));
         result.add(listing.getCurrentStatus().getStatus().getName());
         result.add(certResult.isSuccess() ? "Yes" : "No");

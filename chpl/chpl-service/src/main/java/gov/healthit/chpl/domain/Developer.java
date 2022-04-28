@@ -2,8 +2,8 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Comparator;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -16,8 +16,6 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import lombok.AllArgsConstructor;
@@ -33,20 +31,18 @@ public class Developer implements Serializable {
     private static final long serialVersionUID = 7341544844577617247L;
 
     /**
-     * The internal ID of the developer.
+     * This property exists solely to be able to deserialize developer activity events.
+     * When deserializing the activity we sometimes care about the developer ID.
+     * This property should not be visible in the generated XSD (and eventually gone from the JSON).
      */
-    @XmlElement(required = true)
     @Deprecated
+    @XmlTransient
     private Long developerId;
 
     /**
-     * This property exists solely to be able to deserialize developer activity events. When deserializing
-     * the activity we sometimes care about the developer ID. This property
-     * should not be visible in the generated XSD or any response from an API call. The eventual plan is to deprecate
-     * the above "developerId" field in favor of this "id" anyway.
+     * The internal ID of the developer.
      */
-    @JsonProperty(access = Access.WRITE_ONLY)
-    @XmlTransient
+    @XmlElement(required = true)
     private Long id;
 
     /**

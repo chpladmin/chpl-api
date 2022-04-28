@@ -201,19 +201,19 @@ public class ProductVersionController {
         if (splitRequest.getNewListings() == null || splitRequest.getNewListings().size() == 0) {
             throw new InvalidArgumentsException(msgUtil.getMessage("version.split.missingNewListing"));
         }
-        if (splitRequest.getOldVersion() == null || splitRequest.getOldVersion().getVersionId() == null) {
+        if (splitRequest.getOldVersion() == null || splitRequest.getOldVersion().getId() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("version.split.missingOldVersion"));
         }
         if (splitRequest.getOldListings() == null || splitRequest.getOldListings().size() == 0) {
             throw new InvalidArgumentsException(msgUtil.getMessage("version.split.missingOldVersionListings"));
         }
-        if (versionId.longValue() != splitRequest.getOldVersion().getVersionId().longValue()) {
+        if (versionId.longValue() != splitRequest.getOldVersion().getId().longValue()) {
             throw new InvalidArgumentsException(msgUtil.getMessage("version.split.argumentMismatch",
-                    versionId, splitRequest.getOldVersion().getVersionId()));
+                    versionId, splitRequest.getOldVersion().getId()));
         }
 
         HttpHeaders responseHeaders = new HttpHeaders();
-        ProductVersionDTO oldVersion = pvManager.getById(splitRequest.getOldVersion().getVersionId());
+        ProductVersionDTO oldVersion = pvManager.getById(splitRequest.getOldVersion().getId());
         ProductVersionDTO newVersion = new ProductVersionDTO();
         newVersion.setVersion(splitRequest.getNewVersionVersion());
         newVersion.setProductId(oldVersion.getProductId());

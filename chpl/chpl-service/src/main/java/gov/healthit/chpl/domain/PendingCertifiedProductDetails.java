@@ -110,7 +110,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
         this.setProduct(product);
 
         ProductVersion version = new ProductVersion();
-        version.setVersionId(dto.getProductVersionId());
+        version.setId(dto.getProductVersionId());
         version.setVersion(dto.getProductVersion());
         this.setVersion(version);
 
