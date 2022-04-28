@@ -27,9 +27,9 @@ public class ProductVersion implements Serializable {
      * When deserializing the activity we sometimes care about the version ID.
      * This property should not be visible in the generated XSD (and eventually gone from the JSON).
      */
-//    @XmlTransient
-//    @Deprecated
-//    private Long versionId;
+    @XmlTransient
+    @Deprecated
+    private Long versionId;
 
     /**
      * Product version internal ID
@@ -64,13 +64,13 @@ public class ProductVersion implements Serializable {
         }
     }
 
-//    public Long getVersionId() {
-//        return versionId;
-//    }
-//
-//    public void setVersionId(final Long versionId) {
-//        this.versionId = versionId;
-//    }
+    public Long getVersionId() {
+        return versionId;
+    }
+
+    public void setVersionId(final Long versionId) {
+        this.versionId = versionId;
+    }
 
     public Long getId() {
         return id;
