@@ -1,8 +1,6 @@
 package gov.healthit.chpl.changerequest.domain.service;
 
-import java.io.IOException;
 import java.text.DateFormat;
-import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -80,9 +78,9 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     @Override
     public ChangeRequest create(ChangeRequest cr) {
         try {
-            crDeveloperDetailsDao.create(cr, getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails()));
+            crDeveloperDetailsDao.create(cr, (ChangeRequestDeveloperDemographics) cr.getDetails());
             return crDAO.get(cr.getId());
-        } catch (IOException | EntityRetrievalException e) {
+        } catch (EntityRetrievalException e) {
             throw new RuntimeException(e);
         }
     }
@@ -92,11 +90,9 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
         try {
             // Get the current cr to determine if the developer details changed
             ChangeRequest crFromDb = crDAO.get(cr.getId());
-            // Convert the map of key/value pairs to a ChangeRequestDeveloperDetails
-            // object
-            ChangeRequestDeveloperDemographics crDevDetails = getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails());
-            // Use the id from the DB, not the object. Client could have changed
-            // the id.
+            // Convert the map of key/value pairs to a ChangeRequestDeveloperDetails object
+            ChangeRequestDeveloperDemographics crDevDetails = (ChangeRequestDeveloperDemographics) cr.getDetails();
+            // Use the id from the DB, not the object. Client could have changed the id.
             crDevDetails.setId(((ChangeRequestDeveloperDemographics) crFromDb.getDetails()).getId());
             cr.setDetails(crDevDetails);
 
@@ -197,10 +193,6 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
                 .sendEmail();
-    }
-
-    private ChangeRequestDeveloperDemographics getDetailsFromHashMap(HashMap<String, Object> map) throws IOException {
-        return mapper.convertValue(map, ChangeRequestDeveloperDemographics.class);
     }
 
     private String formatDeveloperHtml(Developer dev) {

@@ -1,9 +1,8 @@
 package gov.healthit.chpl.changerequest.validation;
 
-import java.util.HashMap;
+import org.apache.commons.lang3.StringUtils;
 
-import org.springframework.util.StringUtils;
-
+import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
@@ -12,23 +11,22 @@ public class AddressValidation extends ValidationRule<ChangeRequestValidationCon
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
         if (context.getResourcePermissions().isUserRoleDeveloperAdmin()) {
-            HashMap<String, Object> details = (HashMap) context.getNewChangeRequest().getDetails();
-            if (details.containsKey("address")) {
-                Address crAddress = new Address((HashMap<String, Object>) details.get("address"));
+            ChangeRequestDeveloperDemographics details = (ChangeRequestDeveloperDemographics) context.getNewChangeRequest().getDetails();
+            if (details.getAddress() != null) {
                 boolean addressComponentsValid = true;
-                if (!isStreetValid(crAddress)) {
+                if (!isStreetValid(details.getAddress())) {
                     getMessages().add(getErrorMessage("developer.address.streetRequired"));
                     addressComponentsValid = false;
                 }
-                if (!isCityValid(crAddress)) {
+                if (!isCityValid(details.getAddress())) {
                     getMessages().add(getErrorMessage("developer.address.cityRequired"));
                     addressComponentsValid = false;
                 }
-                if (!isStateValid(crAddress)) {
+                if (!isStateValid(details.getAddress())) {
                     getMessages().add(getErrorMessage("developer.address.stateRequired"));
                     addressComponentsValid = false;
                 }
-                if (!isZipValid(crAddress)) {
+                if (!isZipValid(details.getAddress())) {
                     getMessages().add(getErrorMessage("developer.address.zipRequired"));
                     addressComponentsValid = false;
                 }
@@ -39,18 +37,18 @@ public class AddressValidation extends ValidationRule<ChangeRequestValidationCon
     }
 
     private boolean isStreetValid(Address address) {
-        return !StringUtils.isEmpty(address.getLine1());
+        return StringUtils.isNotEmpty(address.getLine1());
     }
 
     private boolean isCityValid(Address address) {
-        return !StringUtils.isEmpty(address.getCity());
+        return StringUtils.isNotEmpty(address.getCity());
     }
 
     private boolean isStateValid(Address address) {
-        return !StringUtils.isEmpty(address.getState());
+        return StringUtils.isNotEmpty(address.getState());
     }
 
     private boolean isZipValid(Address address) {
-        return !StringUtils.isEmpty(address.getZipcode());
+        return StringUtils.isNotEmpty(address.getZipcode());
     }
 }

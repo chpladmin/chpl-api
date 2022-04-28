@@ -2,6 +2,8 @@ package gov.healthit.chpl.changerequest.domain;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import lombok.AllArgsConstructor;
@@ -15,6 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @EqualsAndHashCode
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ChangeRequestDeveloperDemographics implements Serializable, ChangeRequestDetails {
     private static final long serialVersionUID = -5572794875421124955L;
 

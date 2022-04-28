@@ -90,7 +90,7 @@ public class ChangeRequestManager extends SecurityManager {
     private ValidationUtils validationUtils;
     private FF4j ff4j;
 
-    private ObjectMapper mapper;
+    private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     public ChangeRequestManager(ChangeRequestDAO changeRequestDAO,
@@ -143,7 +143,7 @@ public class ChangeRequestManager extends SecurityManager {
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
-            + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).CREATE, #parentChangeRequest)")
+            + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).CREATE, #changeRequest)")
     public ChangeRequest createChangeRequest(ChangeRequest changeRequest)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException, InvalidArgumentsException, NotImplementedException {
 
