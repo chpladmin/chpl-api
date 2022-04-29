@@ -160,7 +160,7 @@ public class ConformanceMethodConversionJob extends CertifiedProduct2015Gatherer
                 new ConversionRule(certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_2_OLD), WILDCARD, "ONC Test Procedure", null),
                 new ConversionRule(certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_2_CURES), WILDCARD, "ONC Test Procedure", null),
                 new ConversionRule(certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_3_OLD), "ONC Test Method", "ONC Test Procedure", null),
-                new ConversionRule(certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_3_OLD), "ONC Test Method - Surescripts(Alternative)", "Surescripts", null),
+                new ConversionRule(certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_3_OLD), "ONC Test Method - Surescripts(Alternative)", "ONC Test Method - Surescripts(Alternative)", null),
                 new ConversionRule(certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_3_CURES), WILDCARD, "ONC Test Procedure", null),
                 new ConversionRule(certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_4), WILDCARD, "ONC Test Procedure", null),
                 new ConversionRule(certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_5), WILDCARD, "ONC Test Procedure", null),
