@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.ObjectUtils;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -177,6 +178,8 @@ public class ChangeRequestManager extends SecurityManager {
             throws EntityRetrievalException, ValidationException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
 
+        cr = updateChangeRequestWithCastedDetails(cr);
+
         ChangeRequest crFromDb = getChangeRequest(cr.getId());
 
         ChangeRequestValidationContext crValidationContext = getNewValidationContext(cr, crFromDb);
@@ -223,7 +226,9 @@ public class ChangeRequestManager extends SecurityManager {
 
     private boolean isDeveloperDemogrpahicChangeRequest(ChangeRequest cr) {
         HashMap<String, Object> crMap = (HashMap) cr.getDetails();
-        return crMap.containsKey("developerId");
+        return crMap.containsKey("developerId") ||
+                (ObjectUtils.allNotNull(cr, cr.getChangeRequestType())
+                && cr.getChangeRequestType().isDemographic());
     }
 
     private boolean isDeveloperAttestationChangeRequest(ChangeRequest cr) {
