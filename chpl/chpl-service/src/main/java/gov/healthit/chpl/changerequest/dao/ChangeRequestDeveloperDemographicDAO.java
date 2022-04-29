@@ -7,32 +7,32 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestConverter;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
-import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDemographicsEntity;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographic;
+import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDemographicEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 
-@Repository("changeRequestDeveloperDemographicsDAO")
-public class ChangeRequestDeveloperDemographicsDAO extends BaseDAOImpl {
+@Repository("changeRequestDeveloperDemographicDAO")
+public class ChangeRequestDeveloperDemographicDAO extends BaseDAOImpl {
 
 
-    public ChangeRequestDeveloperDemographics create(ChangeRequest cr, ChangeRequestDeveloperDemographics crDev)
+    public ChangeRequestDeveloperDemographic create(ChangeRequest cr, ChangeRequestDeveloperDemographic crDev)
             throws EntityRetrievalException {
-        ChangeRequestDeveloperDemographicsEntity entity = getNewEntity(cr, crDev);
+        ChangeRequestDeveloperDemographicEntity entity = getNewEntity(cr, crDev);
         create(entity);
         return ChangeRequestConverter.convert(getEntity(entity.getId()));
     }
 
 
-    public ChangeRequestDeveloperDemographics getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
+    public ChangeRequestDeveloperDemographic getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
         return ChangeRequestConverter.convert(getEntityByChangeRequestId(changeRequestId));
     }
 
 
-    public ChangeRequestDeveloperDemographics update(ChangeRequestDeveloperDemographics crDev) throws EntityRetrievalException {
-        ChangeRequestDeveloperDemographicsEntity entity = getEntity(crDev.getId());
+    public ChangeRequestDeveloperDemographic update(ChangeRequestDeveloperDemographic crDev) throws EntityRetrievalException {
+        ChangeRequestDeveloperDemographicEntity entity = getEntity(crDev.getId());
         if (crDev.getSelfDeveloper() != null) {
             entity.setSelfDeveloper(crDev.getSelfDeveloper());
         }
@@ -56,8 +56,8 @@ public class ChangeRequestDeveloperDemographicsDAO extends BaseDAOImpl {
         return ChangeRequestConverter.convert(getEntity(entity.getId()));
     }
 
-    private ChangeRequestDeveloperDemographicsEntity getNewEntity(ChangeRequest cr, ChangeRequestDeveloperDemographics crDev) {
-        ChangeRequestDeveloperDemographicsEntity entity = new ChangeRequestDeveloperDemographicsEntity();
+    private ChangeRequestDeveloperDemographicEntity getNewEntity(ChangeRequest cr, ChangeRequestDeveloperDemographic crDev) {
+        ChangeRequestDeveloperDemographicEntity entity = new ChangeRequestDeveloperDemographicEntity();
         entity.setChangeRequest(getSession().load(ChangeRequestEntity.class, cr.getId()));
         if (crDev.getSelfDeveloper() != null) {
             entity.setSelfDeveloper(crDev.getSelfDeveloper());
@@ -83,24 +83,24 @@ public class ChangeRequestDeveloperDemographicsDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private ChangeRequestDeveloperDemographicsEntity getEntity(Long changeRequestDevId)
+    private ChangeRequestDeveloperDemographicEntity getEntity(Long changeRequestDevId)
             throws EntityRetrievalException {
-        String hql = "FROM ChangeRequestDeveloperDetailsEntity crDev "
+        String hql = "FROM ChangeRequestDeveloperDemographicEntity crDev "
                 + "JOIN FETCH crDev.changeRequest "
                 + "WHERE (NOT crDev.deleted = true) "
                 + "AND (crDev.id = :changeRequestDevId) ";
 
-        List<ChangeRequestDeveloperDemographicsEntity> result = entityManager
-                .createQuery(hql, ChangeRequestDeveloperDemographicsEntity.class)
+        List<ChangeRequestDeveloperDemographicEntity> result = entityManager
+                .createQuery(hql, ChangeRequestDeveloperDemographicEntity.class)
                 .setParameter("changeRequestDevId", changeRequestDevId)
                 .getResultList();
 
         if (result == null || result.size() == 0) {
             throw new EntityRetrievalException(
-                    "Data error. Change request developer details not found in database.");
+                    "Data error. Change request developer demographic not found in database.");
         } else if (result.size() > 1) {
             throw new EntityRetrievalException(
-                    "Data error. Duplicate change request developer details in database.");
+                    "Data error. Duplicate change request developer demographic in database.");
         }
 
         if (result.size() == 0) {
@@ -109,24 +109,24 @@ public class ChangeRequestDeveloperDemographicsDAO extends BaseDAOImpl {
         return result.get(0);
     }
 
-    private ChangeRequestDeveloperDemographicsEntity getEntityByChangeRequestId(Long changeRequestId)
+    private ChangeRequestDeveloperDemographicEntity getEntityByChangeRequestId(Long changeRequestId)
             throws EntityRetrievalException {
-        String hql = "FROM ChangeRequestDeveloperDetailsEntity crDev "
+        String hql = "FROM ChangeRequestDeveloperDemographicEntity crDev "
                 + "JOIN FETCH crDev.changeRequest "
                 + "WHERE (NOT crDev.deleted = true) "
                 + "AND (crDev.changeRequest.id = :changeRequestId) ";
 
-        List<ChangeRequestDeveloperDemographicsEntity> result = entityManager
-                .createQuery(hql, ChangeRequestDeveloperDemographicsEntity.class)
+        List<ChangeRequestDeveloperDemographicEntity> result = entityManager
+                .createQuery(hql, ChangeRequestDeveloperDemographicEntity.class)
                 .setParameter("changeRequestId", changeRequestId)
                 .getResultList();
 
         if (result == null || result.size() == 0) {
             throw new EntityRetrievalException(
-                    "Data error. Change request developer details not found in database.");
+                    "Data error. Change request developer demographic not found in database.");
         } else if (result.size() > 1) {
             throw new EntityRetrievalException(
-                    "Data error. Duplicate change request developer details in database.");
+                    "Data error. Duplicate change request developer demographic in database.");
         }
 
         if (result.size() == 0) {

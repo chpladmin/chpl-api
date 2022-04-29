@@ -9,7 +9,7 @@ import gov.healthit.chpl.attestation.domain.AttestationValidResponse;
 import gov.healthit.chpl.attestation.domain.Condition;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationResponseEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionEntity;
-import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDemographicsEntity;
+import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDemographicEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusTypeEntity;
@@ -61,8 +61,8 @@ public final class ChangeRequestConverter {
         return status;
     }
 
-    public static ChangeRequestDeveloperDemographics convert(ChangeRequestDeveloperDemographicsEntity entity) {
-        ChangeRequestDeveloperDemographics crDev = new ChangeRequestDeveloperDemographics();
+    public static ChangeRequestDeveloperDemographic convert(ChangeRequestDeveloperDemographicEntity entity) {
+        ChangeRequestDeveloperDemographic crDev = new ChangeRequestDeveloperDemographic();
         crDev.setId(entity.getId());
         crDev.setSelfDeveloper(entity.getSelfDeveloper());
         crDev.setWebsite(entity.getWebsite());

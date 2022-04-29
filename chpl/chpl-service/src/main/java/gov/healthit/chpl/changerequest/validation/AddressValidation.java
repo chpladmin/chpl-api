@@ -2,7 +2,7 @@ package gov.healthit.chpl.changerequest.validation;
 
 import org.apache.commons.lang3.StringUtils;
 
-import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographic;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
@@ -11,7 +11,7 @@ public class AddressValidation extends ValidationRule<ChangeRequestValidationCon
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
         if (context.getResourcePermissions().isUserRoleDeveloperAdmin()) {
-            ChangeRequestDeveloperDemographics details = (ChangeRequestDeveloperDemographics) context.getNewChangeRequest().getDetails();
+            ChangeRequestDeveloperDemographic details = (ChangeRequestDeveloperDemographic) context.getNewChangeRequest().getDetails();
             if (details.getAddress() != null) {
                 boolean addressComponentsValid = true;
                 if (!isStreetValid(details.getAddress())) {
