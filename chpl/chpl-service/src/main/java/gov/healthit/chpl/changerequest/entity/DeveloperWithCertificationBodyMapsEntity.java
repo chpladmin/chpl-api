@@ -22,7 +22,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.attestation.entity.DeveloperAttestationSubmissionEntity;
@@ -40,7 +39,6 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "vendor")
-@Immutable
 @Getter
 @Setter
 @ToString

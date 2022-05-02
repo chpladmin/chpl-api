@@ -105,11 +105,17 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "LEFT JOIN FETCH dev.certificationBodyMaps devAcbMaps "
                 + "LEFT JOIN FETCH devAcbMaps.certificationBody devAcb "
                 + "LEFT JOIN FETCH devAcb.address "
-                + "JOIN FETCH cr.statuses crStatus "
-                + "JOIN FETCH crStatus.changeRequestStatusType "
+                //Some of the below fields related to crStatus should not be left joined...
+                //a change request always has a status. However, during creation of a change request
+                //the change request object tries to be populated before the status is created
+                //so it can't be found without the LEFT JOIN here. To change that behavior is a bigger
+                //update that would affect all types of change requests and require all of them to be
+                //regression tested.
+                + "LEFT JOIN FETCH cr.statuses crStatus "
+                + "LEFT JOIN FETCH crStatus.changeRequestStatusType "
                 + "LEFT JOIN FETCH crStatus.certificationBody acb "
                 + "LEFT JOIN FETCH acb.address "
-                + "JOIN FETCH crStatus.userPermission "
+                + "LEFT JOIN FETCH crStatus.userPermission "
                 + "WHERE cr.deleted = false "
                 + "AND cr.id = :changeRequestId";
 
@@ -220,31 +226,6 @@ public class ChangeRequestDAO extends BaseDAOImpl {
 
         return results;
     }
-
-//    private ChangeRequestStatus getCurrentStatus(Long changeRequestId) {
-//        String hql = "SELECT crStatus "
-//                + "FROM ChangeRequestStatusEntity crStatus "
-//                + "JOIN FETCH crStatus.changeRequestStatusType "
-//                + "LEFT JOIN FETCH crStatus.certificationBody acb "
-//                + "LEFT JOIN FETCH acb.address "
-//                + "JOIN FETCH crStatus.userPermission "
-//                + "WHERE crStatus.deleted = false "
-//                + "AND crStatus.changeRequest.id = :changeRequestId "
-//                + "ORDER BY crStatus.statusChangeDate DESC";
-//
-//        List<ChangeRequestStatus> statuses = entityManager
-//                .createQuery(hql, ChangeRequestStatusEntity.class)
-//                .setParameter("changeRequestId", changeRequestId)
-//                .getResultList().stream()
-//                .map(ChangeRequestConverter::convert)
-//                .collect(Collectors.<ChangeRequestStatus>toList());
-//
-//        if (statuses.size() > 0) {
-//            return statuses.get(0);
-//        } else {
-//            return null;
-//        }
-//    }
 
     private ChangeRequestEntity getNewEntity(ChangeRequest cr) {
         ChangeRequestEntity entity = new ChangeRequestEntity();
