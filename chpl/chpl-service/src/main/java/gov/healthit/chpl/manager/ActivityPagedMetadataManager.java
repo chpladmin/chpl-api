@@ -23,11 +23,11 @@ import gov.healthit.chpl.activity.ActivityMetadataBuilder;
 import gov.healthit.chpl.activity.ActivityMetadataBuilderFactory;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.AnnouncementDAO;
+import gov.healthit.chpl.domain.Announcement;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.ActivityMetadataPage;
 import gov.healthit.chpl.dto.ActivityDTO;
-import gov.healthit.chpl.dto.AnnouncementDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
@@ -153,7 +153,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
             throw new ValidationException(errors);
         }
         if (resourcePermissions.isUserAnonymous()) {
-            List<AnnouncementDTO> publicAnnouncements = announcementDao.findAll(true, false);
+            List<Announcement> publicAnnouncements = announcementDao.findAll(true, false);
             List<Long> publicAnnouncementIds = publicAnnouncements.stream()
                 .map(publicAnnouncement -> publicAnnouncement.getId())
                 .collect(Collectors.toList());

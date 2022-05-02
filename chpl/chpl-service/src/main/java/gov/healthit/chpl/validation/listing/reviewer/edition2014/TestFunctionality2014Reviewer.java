@@ -109,7 +109,7 @@ public class TestFunctionality2014Reviewer implements Reviewer {
         TestFunctionalityDTO tf = getTestFunctionality(crtf.getName(), edition.getCertificationEditionId());
 
         return getTestFunctionalityPracticeTypeErrorMessage(
-                cr.getNumber(),
+                cr.getCriterion().getNumber(),
                 crtf.getName(),
                 tf.getPracticeType().getName(),
                 cp.getPracticeType().get("name").toString());
@@ -129,10 +129,10 @@ public class TestFunctionality2014Reviewer implements Reviewer {
 
         TestFunctionalityDTO tf = getTestFunctionality(crtf.getName(), edition.getCertificationEditionId());
         return getTestFunctionalityCriterionErrorMessage(
-                cr.getNumber(),
+                cr.getCriterion().getNumber(),
                 crtf.getName(),
                 getDelimitedListOfValidCriteriaNumbers(tf, edition),
-                cr.getNumber());
+                cr.getCriterion().getNumber());
     }
 
     private String getTestFunctionalityCriterionErrorMessage(String criteriaNumber,

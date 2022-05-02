@@ -71,8 +71,6 @@ public class CertificationCriterionNormalizer {
     private CertificationResult buildCertificationResult(CertificationCriterion criterion) {
         return CertificationResult.builder()
             .criterion(criterion)
-            .number(criterion.getNumber())
-            .title(criterion.getTitle())
             .success(Boolean.FALSE)
         .build();
     }

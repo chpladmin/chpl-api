@@ -464,7 +464,6 @@ public class PendingCertifiedProductDAO extends BaseDAOImpl {
         update(entity);
     }
 
-
     public List<PendingCertifiedProductMetadataDTO> getAllMetadata() {
         List<PendingCertifiedProductMetadataEntity> entities = entityManager
                 .createQuery("SELECT pcp "
@@ -486,17 +485,6 @@ public class PendingCertifiedProductDAO extends BaseDAOImpl {
         return entity.isProcessing() || entity.getDeleted();
     }
 
-    public List<PendingCertifiedProductDTO> findAll() {
-        List<PendingCertifiedProductEntity> entities = getAllEntities();
-        List<PendingCertifiedProductDTO> dtos = new ArrayList<>();
-
-        for (PendingCertifiedProductEntity entity : entities) {
-            PendingCertifiedProductDTO dto = new PendingCertifiedProductDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
-    }
-
     public PendingCertifiedProductDTO findById(Long pcpId, final boolean includeDeleted)
             throws EntityRetrievalException {
         PendingCertifiedProductEntity entity = getEntityById(pcpId, includeDeleted);
@@ -515,33 +503,12 @@ public class PendingCertifiedProductDAO extends BaseDAOImpl {
         return entity.getCertificationBodyId();
     }
 
-    public List<PendingCertifiedProductDTO> findByAcbId(Long acbId) {
-        List<PendingCertifiedProductEntity> entities = getEntityByAcbId(acbId);
-        List<PendingCertifiedProductDTO> dtos = new ArrayList<>();
-
-        for (PendingCertifiedProductEntity entity : entities) {
-            PendingCertifiedProductDTO dto = new PendingCertifiedProductDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
-    }
-
     public Long findIdByOncId(String id) throws EntityRetrievalException {
         PendingCertifiedProductEntity entity = getEntityByOncId(id);
         if (entity == null) {
             return null;
         }
         return entity.getId();
-    }
-
-    private List<PendingCertifiedProductEntity> getAllEntities() {
-        List<PendingCertifiedProductEntity> result = entityManager
-                .createQuery("SELECT pcp from PendingCertifiedProductEntity pcp "
-                        + "WHERE (not pcp.deleted = true)",
-                        PendingCertifiedProductEntity.class)
-                .getResultList();
-        return result;
-
     }
 
     private PendingCertifiedProductEntity getEntityById(Long entityId, boolean includeDeleted)
@@ -582,17 +549,5 @@ public class PendingCertifiedProductDAO extends BaseDAOImpl {
             entity = result.get(0);
         }
         return entity;
-    }
-
-    private List<PendingCertifiedProductEntity> getEntityByAcbId(Long acbId) {
-        Query query = entityManager
-                .createQuery(
-                        "SELECT pcp from PendingCertifiedProductEntity pcp "
-                                + " where (certification_body_id = :acbId) "
-                                + " and not (pcp.deleted = true)",
-                                PendingCertifiedProductEntity.class);
-        query.setParameter("acbId", acbId);
-        List<PendingCertifiedProductEntity> result = query.getResultList();
-        return result;
     }
 }
