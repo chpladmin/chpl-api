@@ -14,12 +14,11 @@ import gov.healthit.chpl.domain.Developer;
 public class DeveloperCertificationBodyMapDAO extends BaseDAOImpl {
 
     public List<CertificationBody> getCertificationBodiesForDeveloper(Long developerId) {
-        String hql = "FROM DeveloperCertificationBodyMapEntity main "
+        String hql = "SELECT main "
+                + "FROM DeveloperCertificationBodyMapEntity main "
                 + "JOIN FETCH main.developer dev "
                 + "JOIN FETCH main.certificationBody cb "
-                + "JOIN FETCH dev.address "
-                + "JOIN FETCH dev.contact "
-                + "JOIN FETCH cb.address "
+                + "LEFT JOIN FETCH cb.address "
                 + "WHERE dev.id = :developerId";
         return entityManager
                 .createQuery(hql, DeveloperCertificationBodyMapEntity.class)
@@ -29,11 +28,17 @@ public class DeveloperCertificationBodyMapDAO extends BaseDAOImpl {
                 .collect(Collectors.<CertificationBody>toList());
     }
 
-
+    //TODO this is not used but.. maybe still useful? Leave it?
     public List<Developer> getDevelopersForCertificationBody(Long certificationBodyId) {
         String hql = "FROM DeveloperCertificationBodyMapEntity main"
                 + "JOIN FETCH main.developer dev "
                 + "JOIN FETCH main.certificationBody cb "
+                + "LEFT JOIN FETCH dev.address "
+                + "LEFT JOIN FETCH dev.contact "
+                + "LEFT JOIN FETCH dev.statusEvents statusEvents "
+                + "LEFT JOIN FETCH statusEvents.developerStatus "
+                + "LEFT JOIN FETCH dev.publicAttestations devAtt "
+                + "LEFT JOIN FETCH devAtt.period per "
                 + "WHERE cb.id = :certificationBodyId";
 
         return entityManager

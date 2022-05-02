@@ -1,6 +1,9 @@
 package gov.healthit.chpl.changerequest.domain;
 
+import java.util.List;
 import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import gov.healthit.chpl.attestation.domain.Attestation;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
@@ -46,7 +49,27 @@ public final class ChangeRequestConverter {
         cr.setChangeRequestType(convert(entity.getChangeRequestType()));
         cr.setDeveloper(entity.getDeveloper().toDomain());
         cr.setSubmittedDate(entity.getCreationDate());
+        entity.getStatuses().stream()
+            .map(statusEntity -> convert(statusEntity))
+            .forEach(status -> cr.getStatuses().add(status));
+        cr.setCurrentStatus(getLatestStatus(cr.getStatuses()));
+        cr.setCertificationBodies(entity.getDeveloper().getCertificationBodyMaps().stream()
+                .map(acbMapEntity -> acbMapEntity.getCertificationBody().buildCertificationBody())
+                .toList());
         return cr;
+    }
+
+    private static ChangeRequestStatus getLatestStatus(List<ChangeRequestStatus> statuses) {
+        if (CollectionUtils.isEmpty(statuses)) {
+            return null;
+        }
+        ChangeRequestStatus newest = statuses.get(0);
+        for (ChangeRequestStatus event : statuses) {
+            if (event.getStatusChangeDate().after(newest.getStatusChangeDate())) {
+                newest = event;
+            }
+        }
+        return newest;
     }
 
     public static ChangeRequestStatus convert(ChangeRequestStatusEntity entity) {

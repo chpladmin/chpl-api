@@ -25,9 +25,14 @@ public class ChangeRequest implements Serializable {
     private Developer developer;
     @Singular
     private List<CertificationBody> certificationBodies = new ArrayList<CertificationBody>();
+
+    //TODO: Should this be here? Should it be a derived field?
     private ChangeRequestStatus currentStatus;
+
     @Singular
     private List<ChangeRequestStatus> statuses = new ArrayList<ChangeRequestStatus>();
+
+    //TODO: Could we have a metadata-type object w/o the details? Anything else that could be left out?
     private Object details;
     private Date submittedDate;
 

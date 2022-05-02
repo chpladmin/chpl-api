@@ -67,6 +67,21 @@ public class ChangeRequestController {
         return changeRequestManager.getAllChangeRequestsForUser();
     }
 
+    @Operation(summary = "Get details about all change requests for a specific developer.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC can get all change requests.  ROLE_ACB can get change requests "
+                    + "for developers where they manage at least one certified product for the developer.  ROLE_DEVELOPER can get "
+                    + "change requests where they have administrative authority based on the developer.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/developer/{developerId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @DeprecatedResponseFields(responseClass = ChangeRequest.class)
+    public @ResponseBody List<ChangeRequest> getAllChangeRequestsForDeveloper(
+            @PathVariable("developerId") Long developerId) throws EntityRetrievalException {
+        return changeRequestManager.getAllChangeRequestsForDeveloper(developerId);
+    }
+
     @Operation(summary = "Create a new change request.",
             description = "Security Restrictions: ROLE_DEVELOPER can create change requests where they have administrative authority based on the developer.",
             security = {
