@@ -28,7 +28,6 @@ public class DeveloperCertificationBodyMapDAO extends BaseDAOImpl {
                 .collect(Collectors.<CertificationBody>toList());
     }
 
-    //TODO this is not used but.. maybe still useful? Leave it?
     public List<Developer> getDevelopersForCertificationBody(Long certificationBodyId) {
         String hql = "FROM DeveloperCertificationBodyMapEntity main"
                 + "JOIN FETCH main.developer dev "

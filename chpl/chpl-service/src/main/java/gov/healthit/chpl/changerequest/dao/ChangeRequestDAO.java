@@ -105,7 +105,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "LEFT JOIN FETCH dev.certificationBodyMaps devAcbMaps "
                 + "LEFT JOIN FETCH devAcbMaps.certificationBody devAcb "
                 + "LEFT JOIN FETCH devAcb.address "
-                //Some of the below fields related to crStatus should not be left joined...
+                //Some of the below fields related to crStatus should not be LEFT JOINed...
                 //a change request always has a status. However, during creation of a change request
                 //the change request object tries to be populated before the status is created
                 //so it can't be found without the LEFT JOIN here. To change that behavior is a bigger
@@ -248,20 +248,9 @@ public class ChangeRequestDAO extends BaseDAOImpl {
 
     private ChangeRequest populateDependentObjects(ChangeRequest cr) {
         try {
-            //Without getting either of these dependent objects it's about 1-2 seconds to get all CRs
-
-            //getting these for all CRs = 18 seconds, 10 seconds for drummond, < 1 second for a developer
-//            cr.setCertificationBodies(
-//                    developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(cr.getDeveloper().getDeveloperId()));
-
-
-            //getting these for all CRs = 9 seconds, 5 seconds for drummond, < 1 sec for a developer
             cr.setDetails(
                     changeRequestDetailsFactory.get(cr.getChangeRequestType().getId())
                             .getByChangeRequestId(cr.getId()));
-
-
-            //getting both of the above fields for all CRS = 42 seconds, 30 seconds for drummond , 1.3 seconds for a developer
             return cr;
         } catch (Exception e) {
             throw new RuntimeException(e);
