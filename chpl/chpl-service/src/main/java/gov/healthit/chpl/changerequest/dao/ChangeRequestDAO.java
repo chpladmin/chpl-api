@@ -16,8 +16,8 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequestConverter;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestTypeEntity;
-import gov.healthit.chpl.changerequest.entity.DeveloperWithCertificationBodyMapsEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 
@@ -231,7 +231,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
         ChangeRequestEntity entity = new ChangeRequestEntity();
         entity.setChangeRequestType(
                 getSession().load(ChangeRequestTypeEntity.class, cr.getChangeRequestType().getId()));
-        entity.setDeveloper(getSession().load(DeveloperWithCertificationBodyMapsEntity.class, cr.getDeveloper().getDeveloperId()));
+        entity.setDeveloper(getSession().load(DeveloperEntity.class, cr.getDeveloper().getDeveloperId()));
         entity.setDeleted(false);
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setCreationDate(new Date());

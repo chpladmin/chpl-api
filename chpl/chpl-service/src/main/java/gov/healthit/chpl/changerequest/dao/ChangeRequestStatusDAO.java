@@ -26,24 +26,6 @@ public class ChangeRequestStatusDAO extends BaseDAOImpl {
         return ChangeRequestConverter.convert(getEntityById(entity.getId()));
     }
 
-//    public List<ChangeRequestStatus> getByChangeRequestId(Long changeRequestId) {
-//        String hql = "SELECT crStatus "
-//                + "FROM ChangeRequestStatusEntity crStatus "
-//                + "JOIN FETCH crStatus.changeRequestStatusType "
-//                + "JOIN FETCH crStatus.userPermission "
-//                + "LEFT JOIN FETCH crStatus.certificationBody acb "
-//                + "LEFT JOIN FETCH acb.address "
-//                + "WHERE crStatus.deleted = false "
-//                + "AND crStatus.changeRequest.id = :changeRequestId";
-//
-//        return entityManager
-//                .createQuery(hql, ChangeRequestStatusEntity.class)
-//                .setParameter("changeRequestId", changeRequestId)
-//                .getResultList().stream()
-//                .map(ChangeRequestConverter::convert)
-//                .collect(Collectors.<ChangeRequestStatus> toList());
-//    }
-
     private ChangeRequestStatusEntity getEntityById(Long id) throws EntityRetrievalException {
         String hql = "FROM ChangeRequestStatusEntity crStatus "
                 + "JOIN FETCH crStatus.userPermission "

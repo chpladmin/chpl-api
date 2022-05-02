@@ -18,6 +18,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -45,7 +46,7 @@ public class ChangeRequestEntity {
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "developer_id", nullable = false, insertable = true,
             updatable = false)
-    private DeveloperWithCertificationBodyMapsEntity developer;
+    private DeveloperEntity developer;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "changeRequestId")
     @Basic(optional = false)
