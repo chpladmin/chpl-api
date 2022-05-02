@@ -20,7 +20,7 @@ public class ChangeRequestValidationServiceTest {
     private RoleAcbHasMultipleCertificationBodiesValidation roleAcbHasMultipleCertificationBodiesValidation;
     private WebsiteValidation websiteValidation;
     private SelfDeveloperValidation selfDeveloperValidation;
-    private AddressValidation addressValidation;
+    private DemographicValidation addressValidation;
     private ContactValidation contactValidation;
 
     private Long websiteChangeRequestTypeId = 1L;
@@ -79,7 +79,7 @@ public class ChangeRequestValidationServiceTest {
         Mockito.when(selfDeveloperValidation.isValid(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(false);
         Mockito.when(selfDeveloperValidation.getMessages()).thenReturn(Arrays.asList("Error message"));
 
-        addressValidation = Mockito.mock(AddressValidation.class);
+        addressValidation = Mockito.mock(DemographicValidation.class);
         Mockito.when(addressValidation.isValid(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(false);
         Mockito.when(addressValidation.getMessages()).thenReturn(Arrays.asList("Error message"));
 

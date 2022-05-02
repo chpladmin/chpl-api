@@ -13,18 +13,15 @@ import gov.healthit.chpl.manager.rules.ValidationRule;
 @Component
 public class ChangeRequestValidationService {
 
-    private Long websiteChangeRequestTypeId;
     private Long developerDemographicChangeRequestTypeId;
     private Long attestationChangeRequestTypeId;
 
 
     @Autowired
     public ChangeRequestValidationService(
-            @Value("${changerequest.website}") Long websiteChangeRequestTypeId,
             @Value("${changerequest.developerDemographic}") Long developerDemographicChangeRequestTypeId,
             @Value("${changerequest.attestation}") Long attestationChangeRequestTypeId) {
 
-        this.websiteChangeRequestTypeId = websiteChangeRequestTypeId;
         this.developerDemographicChangeRequestTypeId = developerDemographicChangeRequestTypeId;
         this.attestationChangeRequestTypeId = attestationChangeRequestTypeId;
     }
@@ -42,9 +39,7 @@ public class ChangeRequestValidationService {
             rules.addAll(getUpdateValidations());
         }
 
-        if (context.getNewChangeRequest().getChangeRequestType().getId().equals(websiteChangeRequestTypeId)) {
-            rules.addAll(getWebsiteValidations());
-        } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(developerDemographicChangeRequestTypeId)) {
+        if (context.getNewChangeRequest().getChangeRequestType().getId().equals(developerDemographicChangeRequestTypeId)) {
             rules.addAll(getDeveloperDetailsValidations());
         } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(attestationChangeRequestTypeId)) {
             rules.addAll(getAttestationValidations());
@@ -56,15 +51,10 @@ public class ChangeRequestValidationService {
         return rules;
     }
 
-    private List<ValidationRule<ChangeRequestValidationContext>> getWebsiteValidations() {
-        return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
-                new WebsiteValidation()));
-    }
-
     private List<ValidationRule<ChangeRequestValidationContext>> getDeveloperDetailsValidations() {
         return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
                 new SelfDeveloperValidation(),
-                new AddressValidation(),
+                new DemographicValidation(),
                 new ContactValidation()));
     }
 
