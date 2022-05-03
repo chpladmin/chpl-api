@@ -59,7 +59,7 @@ public class AttestationManager {
             + "T(gov.healthit.chpl.permissions.domains.AttestationDomainPermissions).CREATE, #developerAttestationSubmission)")
     public DeveloperAttestationSubmission saveDeveloperAttestation(DeveloperAttestationSubmission developerAttestationSubmission) throws EntityRetrievalException {
         attestationDAO.getDeveloperAttestationSubmissionsByDeveloperAndPeriod(
-                developerAttestationSubmission.getDeveloper().getDeveloperId(),
+                developerAttestationSubmission.getDeveloper().getId(),
                 developerAttestationSubmission.getPeriod().getId())
                 .stream()
                         .forEach(da -> {
@@ -125,7 +125,7 @@ public class AttestationManager {
 
         return attestationDAO.createAttestationPeriodDeveloperException(AttestationPeriodDeveloperException.builder()
                 .developer(Developer.builder()
-                        .developerId(developerId)
+                        .id(developerId)
                         .build())
                 .period(getMostRecentPastAttestationPeriod())
                 .exceptionEnd(getNewExceptionDate())
@@ -144,7 +144,7 @@ public class AttestationManager {
 
     private boolean doesPendingAttestationChangeRequestForDeveloperExist(Long developerId) throws EntityRetrievalException {
         return changeRequestDAO.getByDeveloper(developerId).stream()
-                .filter(cr -> cr.getDeveloper().getDeveloperId().equals(developerId)
+                .filter(cr -> cr.getDeveloper().getId().equals(developerId)
                         && cr.getChangeRequestType().isAttestation()
                         && (cr.getCurrentStatus().getChangeRequestStatusType().getName().equals("Pending Developer Action")
                                 || cr.getCurrentStatus().getChangeRequestStatusType().getName().equals("Pending ONC-ACB Action")))

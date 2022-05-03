@@ -72,7 +72,7 @@ public abstract class ChangeRequestDetailsService<T> {
         if (cr.getCurrentStatus().getCertificationBody() != null) {
             return cr.getCurrentStatus().getCertificationBody().getName();
         } else if (cr.getCurrentStatus().getUserPermission().getId().equals(adminPermission)) {
-            return "the CHPL Admin";
+            return "CHPL Admin";
         } else if (cr.getCurrentStatus().getUserPermission().getId().equals(oncPermission)) {
             return "ONC";
         } else {

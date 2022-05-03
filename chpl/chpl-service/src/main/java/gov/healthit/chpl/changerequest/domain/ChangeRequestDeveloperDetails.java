@@ -32,9 +32,4 @@ public class ChangeRequestDeveloperDetails implements Serializable, ChangeReques
             throw new RuntimeException("Could not cast object as type ChangeRequestDeveloperDetails");
         }
     }
-
-    @Override
-    public boolean matches(Object obj) {
-        return equals(obj);
-    }
 }
