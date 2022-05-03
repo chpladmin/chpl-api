@@ -200,8 +200,14 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
     private void reviewF3ConformanceMethodsForGapRequirement(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
             certResult.getConformanceMethods().stream()
-                .forEach(conformanceMethod -> reviewF3ConformanceMethodForGapRequirement(listing, certResult, conformanceMethod));
+                .forEach(conformanceMethod -> reviewF3(listing, certResult, conformanceMethod));
         }
+    }
+
+    private void reviewF3(CertifiedProductSearchDetails listing,
+            CertificationResult certResult, CertificationResultConformanceMethod conformanceMethod) {
+        reviewF3ConformanceMethodForGapRequirement(listing, certResult, conformanceMethod);
+        removeF3TestDataAndTestToolsIfNotApplicable(listing, certResult, conformanceMethod);
     }
 
     private void reviewF3ConformanceMethodForGapRequirement(CertifiedProductSearchDetails listing,
@@ -218,6 +224,26 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
                     Util.formatCriteriaNumber(certResult.getCriterion()),
                     conformanceMethod.getConformanceMethod().getName(),
                     "true"));
+        }
+    }
+
+    private void removeF3TestDataAndTestToolsIfNotApplicable(CertifiedProductSearchDetails listing,
+            CertificationResult certResult, CertificationResultConformanceMethod conformanceMethod) {
+        if (BooleanUtils.isTrue(certResult.isGap()) && conformanceMethod.getConformanceMethod() != null
+                && StringUtils.equals(conformanceMethod.getConformanceMethod().getName(), CM_F3_MUST_HAVE_GAP)) {
+            if (!CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
+                certResult.getTestToolsUsed().clear();
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.conformanceMethod.f3RemovedTestTools",
+                        Util.formatCriteriaNumber(certResult.getCriterion()),
+                        conformanceMethod.getConformanceMethod().getName()));
+            }
+
+            if (!CollectionUtils.isEmpty(certResult.getTestDataUsed())) {
+                certResult.getTestDataUsed().clear();
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.conformanceMethod.f3RemovedTestData",
+                        Util.formatCriteriaNumber(certResult.getCriterion()),
+                        conformanceMethod.getConformanceMethod().getName()));
+            }
         }
     }
 }

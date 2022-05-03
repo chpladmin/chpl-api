@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.ff4j.FF4j;
@@ -23,7 +24,10 @@ import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultConformanceMethod;
+import gov.healthit.chpl.domain.CertificationResultTestData;
+import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -40,6 +44,8 @@ public class ConformanceMethodReviewerTest {
     private static final String UNALLOWED_CM_VERSION_REMOVED_MSG = "Conformance Method Version is not allowed for certification %s with Conformance Method \"%s\". The version \"%s\" was removed.";
     private static final String INVALID_CRITERIA_MSG = "Conformance Method \"%s\" is not valid for criteria %s.";
     private static final String F3_GAP_MISMATCH_MSG = "Certification %s cannot use Conformance Method \"%s\" since GAP is %s.";
+    private static final String F3_TEST_TOOLS_NOT_ALLOWED_MSG = "Certification %s cannot specify test tools when using Conformance Method %s. The test tools have been removed.";
+    private static final String F3_TEST_DATA_NOT_ALLOWED_MSG = "Certification %s cannot specify test data when using Conformance Method %s. The test data has been removed.";
 
     private ErrorMessageUtil msgUtil;
     private CertificationResultRules certResultRules;
@@ -117,6 +123,12 @@ public class ConformanceMethodReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.f3GapMismatch"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(F3_GAP_MISMATCH_MSG, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.f3RemovedTestTools"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(F3_TEST_TOOLS_NOT_ALLOWED_MSG, i.getArgument(1), i.getArgument(2)));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.f3RemovedTestData"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(F3_TEST_DATA_NOT_ALLOWED_MSG, i.getArgument(1), i.getArgument(2)));
 
         certResultRules = Mockito.mock(CertificationResultRules.class);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(),
@@ -483,6 +495,204 @@ public class ConformanceMethodReviewerTest {
         conformanceMethodReviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_conformanceMethodF3HasGapAndGapConformanceMethodAndTestTools_hasWarningAndTestToolsRemoved() {
+        CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
+                .conformanceMethod(ConformanceMethod.builder()
+                        .id(1L)
+                        .name("Attestation")
+                        .build())
+                .build();
+
+        List<CertificationResultConformanceMethod> crcms = new ArrayList<CertificationResultConformanceMethod>();
+        crcms.add(crcm);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .gap(true)
+                        .criterion(getF3())
+                        .conformanceMethods(crcms)
+                        .testToolsUsed(Stream.of(CertificationResultTestTool.builder()
+                                .retired(false)
+                                .testToolId(1L)
+                                .testToolName("name")
+                                .testToolVersion("1")
+                                .build()).collect(Collectors.toList()))
+                        .build())
+                .certificationEdition(get2015CertificationEdition())
+                .build();
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(F3_TEST_TOOLS_NOT_ALLOWED_MSG, "170.315 (f)(3)", "Attestation")));
+        assertEquals(0, listing.getCertificationResults().get(0).getTestToolsUsed().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_conformanceMethodF3HasGapAndGapConformanceMethodNoTestTools_noWarning() {
+        CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
+                .conformanceMethod(ConformanceMethod.builder()
+                        .id(1L)
+                        .name("Attestation")
+                        .build())
+                .build();
+
+        List<CertificationResultConformanceMethod> crcms = new ArrayList<CertificationResultConformanceMethod>();
+        crcms.add(crcm);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .gap(true)
+                        .criterion(getF3())
+                        .conformanceMethods(crcms)
+                        .build())
+                .certificationEdition(get2015CertificationEdition())
+                .build();
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_conformanceMethodF3NotGapAndNotGapConformanceMethodAndTestTools_noWarning() {
+        CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
+                .conformanceMethod(ConformanceMethod.builder()
+                        .id(2L)
+                        .name("ONC Test Procedure")
+                        .build())
+                .conformanceMethodVersion("1")
+                .build();
+
+        List<CertificationResultConformanceMethod> crcms = new ArrayList<CertificationResultConformanceMethod>();
+        crcms.add(crcm);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .gap(false)
+                        .criterion(getF3())
+                        .conformanceMethods(crcms)
+                        .testToolsUsed(Stream.of(CertificationResultTestTool.builder()
+                                .retired(false)
+                                .testToolId(1L)
+                                .testToolName("name")
+                                .testToolVersion("1")
+                                .build()).collect(Collectors.toList()))
+                        .build())
+                .certificationEdition(get2015CertificationEdition())
+                .build();
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getCertificationResults().get(0).getTestToolsUsed().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_conformanceMethodF3HasGapAndGapConformanceMethodAndTestData_hasWarningAndTestDataRemoved() {
+        CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
+                .conformanceMethod(ConformanceMethod.builder()
+                        .id(1L)
+                        .name("Attestation")
+                        .build())
+                .build();
+
+        List<CertificationResultConformanceMethod> crcms = new ArrayList<CertificationResultConformanceMethod>();
+        crcms.add(crcm);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .gap(true)
+                        .criterion(getF3())
+                        .conformanceMethods(crcms)
+                        .testDataUsed(Stream.of(CertificationResultTestData.builder()
+                                .alteration("test")
+                                .version("1")
+                                .testData(TestData.builder()
+                                        .id(1L)
+                                        .name("td")
+                                        .build())
+                                .build()).collect(Collectors.toList()))
+                        .build())
+                .certificationEdition(get2015CertificationEdition())
+                .build();
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(F3_TEST_DATA_NOT_ALLOWED_MSG, "170.315 (f)(3)", "Attestation")));
+        assertEquals(0, listing.getCertificationResults().get(0).getTestDataUsed().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_conformanceMethodF3HasGapAndGapConformanceMethodNoTestData_noWarning() {
+        CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
+                .conformanceMethod(ConformanceMethod.builder()
+                        .id(1L)
+                        .name("Attestation")
+                        .build())
+                .build();
+
+        List<CertificationResultConformanceMethod> crcms = new ArrayList<CertificationResultConformanceMethod>();
+        crcms.add(crcm);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .gap(true)
+                        .criterion(getF3())
+                        .conformanceMethods(crcms)
+                        .build())
+                .certificationEdition(get2015CertificationEdition())
+                .build();
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_conformanceMethodF3NotGapAndNotGapConformanceMethodAndTestData_noWarning() {
+        CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
+                .conformanceMethod(ConformanceMethod.builder()
+                        .id(2L)
+                        .name("ONC Test Procedure")
+                        .build())
+                .conformanceMethodVersion("1")
+                .build();
+
+        List<CertificationResultConformanceMethod> crcms = new ArrayList<CertificationResultConformanceMethod>();
+        crcms.add(crcm);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .gap(false)
+                        .criterion(getF3())
+                        .conformanceMethods(crcms)
+                        .testDataUsed(Stream.of(CertificationResultTestData.builder()
+                                .alteration("test")
+                                .version("2")
+                                .testData(TestData.builder()
+                                        .id(2L)
+                                        .name("td2")
+                                        .build())
+                                .build()).collect(Collectors.toList()))
+                        .build())
+                .certificationEdition(get2015CertificationEdition())
+                .build();
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getCertificationResults().get(0).getTestDataUsed().size());
         assertEquals(0, listing.getErrorMessages().size());
     }
 
