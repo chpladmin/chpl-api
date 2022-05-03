@@ -14,7 +14,8 @@
     <name>chpl-service library</name>
 
     <properties>
-      <jackson.version>2.13.1</jackson.version>
+      <jackson.version>2.13.2</jackson.version>
+      <jackson.databind.version>2.13.2.1</jackson.databind.version>
       <poi.version>5.2.0</poi.version>
     </properties>
 
@@ -111,7 +112,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
+            <version>${jackson.databind.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -399,6 +400,7 @@
                         <source>src/main/java/gov/healthit/chpl/domain/UcdProcess.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertifiedProduct.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertifiedProductAccessibilityStandard.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/CertifiedProductChplProductNumberHistory.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertifiedProductDownloadResponse.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertifiedProductQmsStandard.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertifiedProductSearchDetails.java</source>

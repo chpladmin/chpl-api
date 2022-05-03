@@ -2,7 +2,6 @@ package gov.healthit.chpl.listener;
 
 import java.util.Date;
 
-import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
@@ -21,7 +20,6 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-@Aspect
 public class QuestionableActivityListener implements EnvironmentAware {
     private Environment env;
     private CertifiedProductDAO listingDao;
@@ -104,7 +102,7 @@ public class QuestionableActivityListener implements EnvironmentAware {
                 // original and new criteria number fields
                 for (CertificationResult origCertResult : originalData.getCertificationResults()) {
                     for (CertificationResult newCertResult : newData.getCertificationResults()) {
-                        if (origCertResult.getNumber().equals(newCertResult.getNumber())) {
+                        if (origCertResult.getCriterion().getId().equals(newCertResult.getCriterion().getId())) {
                             questionableActivityManager.checkCertificationResultQuestionableActivity(origCertResult,
                                     newCertResult,
                                     activityDate, activityUser, reason);

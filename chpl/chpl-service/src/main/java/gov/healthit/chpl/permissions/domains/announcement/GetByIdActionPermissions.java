@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.AnnouncementDAO;
-import gov.healthit.chpl.dto.AnnouncementDTO;
+import gov.healthit.chpl.domain.Announcement;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
@@ -32,7 +32,7 @@ public class GetByIdActionPermissions extends ActionPermissions {
      * Other logged-in users can see all public/private announcements.
      */
     @Override
-    public boolean hasAccess(final Object obj) {
+    public boolean hasAccess(Object obj) {
         if (!(obj instanceof Long)) {
             return false;
         }
@@ -44,7 +44,7 @@ public class GetByIdActionPermissions extends ActionPermissions {
             return true;
         } else {
             try {
-                AnnouncementDTO announcement = announcementDao.getById((Long) obj, true);
+                Announcement announcement = announcementDao.getById((Long) obj, true);
                 if (announcement.getIsPublic()) {
                     return true;
                 }

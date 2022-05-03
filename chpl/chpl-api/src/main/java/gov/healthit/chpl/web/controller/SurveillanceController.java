@@ -425,9 +425,7 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = {
-            ChplOneTimeTrigger.class, SurveillanceResults.class
-    })
+    @DeprecatedResponseFields(responseClass = { SurveillanceResults.class })
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ResponseEntity<?> upload(@RequestParam("file") MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException, EntityRetrievalException,
@@ -449,7 +447,6 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = ChplOneTimeTrigger.class)
     @RequestMapping(value = "/reports/activity", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ChplOneTimeTrigger getActivityReport(@RequestParam("start") String start, @RequestParam("end") String end) throws ValidationException, UserRetrievalException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");

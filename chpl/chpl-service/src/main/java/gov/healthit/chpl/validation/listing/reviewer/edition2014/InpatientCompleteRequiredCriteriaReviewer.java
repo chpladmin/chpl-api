@@ -29,7 +29,7 @@ public class InpatientCompleteRequiredCriteriaReviewer implements Reviewer {
         for (int i = 0; i < REQUIRED_CRITERIA.length; i++) {
             boolean hasCert = false;
             for (CertificationResult certCriteria : certificationCriterion) {
-                if (certCriteria.getNumber().equals(REQUIRED_CRITERIA[i]) && certCriteria.isSuccess()) {
+                if (certCriteria.getCriterion().getNumber().equals(REQUIRED_CRITERIA[i]) && certCriteria.isSuccess()) {
                     hasCert = true;
                 }
             }
@@ -46,16 +46,16 @@ public class InpatientCompleteRequiredCriteriaReviewer implements Reviewer {
         boolean hasA19 = false;
         boolean hasA20 = false;
         for (CertificationResult certCriteria : listing.getCertificationResults()) {
-            if (certCriteria.getNumber().equals("170.314 (a)(1)") && certCriteria.isSuccess()) {
+            if (certCriteria.getCriterion().getNumber().equals("170.314 (a)(1)") && certCriteria.isSuccess()) {
                 hasA1 = true;
             }
-            if (certCriteria.getNumber().equals("170.314 (a)(18)") && certCriteria.isSuccess()) {
+            if (certCriteria.getCriterion().getNumber().equals("170.314 (a)(18)") && certCriteria.isSuccess()) {
                 hasA18 = true;
             }
-            if (certCriteria.getNumber().equals("170.314 (a)(19)") && certCriteria.isSuccess()) {
+            if (certCriteria.getCriterion().getNumber().equals("170.314 (a)(19)") && certCriteria.isSuccess()) {
                 hasA19 = true;
             }
-            if (certCriteria.getNumber().equals("170.314 (a)(20)") && certCriteria.isSuccess()) {
+            if (certCriteria.getCriterion().getNumber().equals("170.314 (a)(20)") && certCriteria.isSuccess()) {
                 hasA20 = true;
             }
         } if (!hasA1) {
@@ -81,16 +81,16 @@ public class InpatientCompleteRequiredCriteriaReviewer implements Reviewer {
         boolean hasB8 = false;
         boolean hasH1 = false;
         for (CertificationResult certCriteria : listing.getCertificationResults()) {
-            if (certCriteria.getNumber().equals("170.314 (b)(1)") && certCriteria.isSuccess()) {
+            if (certCriteria.getCriterion().getNumber().equals("170.314 (b)(1)") && certCriteria.isSuccess()) {
                 hasB1 = true;
             }
-            if (certCriteria.getNumber().equals("170.314 (b)(2)") && certCriteria.isSuccess()) {
+            if (certCriteria.getCriterion().getNumber().equals("170.314 (b)(2)") && certCriteria.isSuccess()) {
                 hasB2 = true;
             }
-            if (certCriteria.getNumber().equals("170.314 (b)(8)") && certCriteria.isSuccess()) {
+            if (certCriteria.getCriterion().getNumber().equals("170.314 (b)(8)") && certCriteria.isSuccess()) {
                 hasB8 = true;
             }
-            if (certCriteria.getNumber().equals("170.314 (h)(1)") && certCriteria.isSuccess()) {
+            if (certCriteria.getCriterion().getNumber().equals("170.314 (h)(1)") && certCriteria.isSuccess()) {
                 hasH1 = true;
             }
         }
