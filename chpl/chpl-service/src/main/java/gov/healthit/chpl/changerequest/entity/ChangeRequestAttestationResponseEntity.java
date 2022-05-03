@@ -43,7 +43,7 @@ public class ChangeRequestAttestationResponseEntity {
     private AttestationEntity attestation;
 
     @OneToOne()
-    @JoinColumn(name = "attestation_valid_response_id", insertable = true, updatable = false)
+    @JoinColumn(name = "attestation_valid_response_id", insertable = true, updatable = true)
     private AttestationValidResponseEntity validResponse;
 
     @Column(name = "last_modified_user", nullable = false)

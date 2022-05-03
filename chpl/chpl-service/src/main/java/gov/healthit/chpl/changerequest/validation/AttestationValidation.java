@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.functors.DefaultEquator;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -29,9 +32,12 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
 
         ChangeRequestAttestationSubmission attestationSubmission = getChangeRequestAttestationFromMap((HashMap) context.getNewChangeRequest().getDetails());
 
+
         if (isChangeRequestNew(context)) {
-            getMessages().addAll(validateSignature(context, attestationSubmission));
             getMessages().addAll(canDeveloperSubmitChangeRequest(context));
+            getMessages().addAll(validateSignature(context, attestationSubmission));
+        } else if (hasAttestationInformationChanged(context)) {
+                getMessages().addAll(validateSignature(context, attestationSubmission));
         }
 
         getMessages().addAll(getMissingAttestations(attestationSubmission, attestationForm).stream()
@@ -44,13 +50,14 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
                         getAttestationText(resp.getAttestation().getId(), attestationForm)))
                 .collect(Collectors.toList()));
 
+
         return getMessages().size() == 0;
     }
 
     private List<String> canDeveloperSubmitChangeRequest(ChangeRequestValidationContext context) {
         List<String> errors = new ArrayList<String>();
         try {
-            if (!context.getDomainManagers().getAttestationManager().canDeveloperSubmitChangeRequest(context.getNewChangeRequest().getDeveloper().getDeveloperId())) {
+            if (!context.getDomainManagers().getAttestationManager().canDeveloperSubmitChangeRequest(context.getNewChangeRequest().getDeveloper().getId())) {
                 errors.add(getErrorMessage("changeRequest.attestation.submissionWindow"));
             }
         } catch (EntityRetrievalException e) {
@@ -124,5 +131,21 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
 
     private boolean isChangeRequestNew(ChangeRequestValidationContext context) {
         return context.getOrigChangeRequest() == null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private boolean hasAttestationInformationChanged(ChangeRequestValidationContext context) {
+        ChangeRequestAttestationSubmission attestationSubmission = getChangeRequestAttestationFromMap((HashMap) context.getNewChangeRequest().getDetails());
+
+        if (!isChangeRequestNew(context)) {
+            ChangeRequestAttestationSubmission attestationOriginal = (ChangeRequestAttestationSubmission) context.getOrigChangeRequest().getDetails();
+            return !CollectionUtils.isEqualCollection(
+                    attestationSubmission.getAttestationResponses(),
+                    attestationOriginal.getAttestationResponses(),
+                    DefaultEquator.INSTANCE)
+                    || !attestationOriginal.getSignature().equals(attestationSubmission.getSignature());
+        } else {
+            return false;
+        }
     }
 }
