@@ -46,7 +46,6 @@ import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.PendingCertifiedProductMetadata;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMetadataDTO;
@@ -585,13 +584,10 @@ public class CertifiedProductController {
     })
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/certification_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = CertificationResults.class)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
-
         CertificationResults results = new CertificationResults(cpdManager.getCertifiedProductCertificationResults(certifiedProductId));
-
         return results;
     }
 
@@ -622,7 +618,6 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}"
             + ".{certDateCode}/certification_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = CertificationResults.class)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
             @PathVariable("year") String year,
@@ -634,12 +629,9 @@ public class CertifiedProductController {
             @PathVariable("icsCode") String icsCode,
             @PathVariable("addlSoftwareCode") String addlSoftwareCode,
             @PathVariable("certDateCode") String certDateCode) throws EntityRetrievalException {
-
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode,
                 versionCode, icsCode, addlSoftwareCode, certDateCode);
-
         CertificationResults results = new CertificationResults(cpdManager.getCertifiedProductCertificationResults(chplProductNumber));
-
         return results;
     }
 
@@ -664,16 +656,13 @@ public class CertifiedProductController {
     })
     @RequestMapping(value = "/{chplPrefix}-{identifier}/certification_results", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = CertificationResults.class)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationResults getCertificationResultsByCertifiedProductId(
             @PathVariable("chplPrefix") String chplPrefix,
             @PathVariable("identifier") String identifier) throws EntityRetrievalException {
 
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
-
         CertificationResults results = new CertificationResults(cpdManager.getCertifiedProductCertificationResults(chplProductNumber));
-
         return results;
     }
 
@@ -789,7 +778,6 @@ public class CertifiedProductController {
                     "Changed ACB ownership.",
                     existingListing,
                     changedProduct);
-            existingListing = changedProduct;
         }
 
         cpManager.update(updateRequest);
@@ -822,46 +810,6 @@ public class CertifiedProductController {
             result.add(new PendingCertifiedProductMetadata(metadataDto));
         }
         return result;
-    }
-
-    @Deprecated
-    @Operation(summary = "DEPRECATED. List pending certified products.",
-            description = "Pending certified products are created via CSV file upload and are left in the 'pending' state "
-                    + " until validated and approved.  Security Restrictions: ROLE_ADMIN, ROLE_ACB and have "
-                    + "administrative authority on the ACB that uploaded the product.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts()
-            throws EntityRetrievalException, AccessDeniedException {
-
-        List<PendingCertifiedProductDTO> pcps = new ArrayList<PendingCertifiedProductDTO>();
-        if (resourcePermissions.isUserRoleAdmin()) {
-            pcps = pcpManager.getAllPendingCertifiedProducts();
-        } else if (resourcePermissions.isUserRoleAcbAdmin()) {
-            List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-            for (CertificationBodyDTO acb : allowedAcbs) {
-                pcps.addAll(pcpManager.getPendingCertifiedProducts(acb.getId()));
-            }
-        } else {
-            throw new AccessDeniedException(msgUtil.getMessage("access.denied"));
-        }
-
-        List<PendingCertifiedProductDetails> result = new ArrayList<PendingCertifiedProductDetails>();
-        for (PendingCertifiedProductDTO product : pcps) {
-            PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(product);
-            pcpManager.addAllVersionsToCmsCriterion(pcpDetails);
-            pcpManager.addAvailableConformanceMethods(pcpDetails);
-            pcpManager.addAvailableTestFunctionalities(pcpDetails);
-            pcpManager.addAvailableOptionalStandards(pcpDetails);
-            result.add(pcpDetails);
-        }
-        PendingCertifiedProductResults results = new PendingCertifiedProductResults();
-        results.getPendingCertifiedProducts().addAll(result);
-        return results;
     }
 
     @Operation(summary = "List a specific pending certified product.",
@@ -936,36 +884,6 @@ public class CertifiedProductController {
         return "{\"success\" : true}";
     }
 
-    // TODO - We might want to take a look at reworking this. Maybe should be a
-    // PUT and the parameters
-    // should be re-evaluated
-    @Deprecated
-    @Operation(summary = "DEPRECATED. Confirm a pending certified product.",
-            description = "Creates a new certified product in the system based on all of the information "
-                    + "passed in on the request. This information may differ from what was previously "
-                    + "entered for the pending certified product during upload. It will first be validated "
-                    + "to check for errors, then a new certified product is created, and the old pending certified"
-                    + "product will be removed. Security Restrictions:  ROLE_ADMIN or have ROLE_ACB and "
-                    + "administrative authority on the ACB for each pending certified product is required.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}/confirm", method = RequestMethod.POST,
-            produces = "application/json; charset=utf-8")
-    public ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProduct(
-            @RequestBody(required = true) PendingCertifiedProductDetails pendingCp)
-            throws InvalidArgumentsException, ValidationException,
-            EntityCreationException, EntityRetrievalException,
-            ObjectMissingValidationException, IOException {
-
-        ConfirmCertifiedProductRequest request = new ConfirmCertifiedProductRequest();
-        request.setPendingListing(pendingCp);
-        request.setAcknowledgeWarnings(false);
-        return addPendingCertifiedProduct(request);
-    }
-
     @Operation(summary = "Confirm a pending certified product.",
             description = "Creates a new certified product in the system based on all of the information "
                     + "passed in on the request. This information may differ from what was previously "
@@ -984,16 +902,6 @@ public class CertifiedProductController {
             throws InvalidArgumentsException, ValidationException,
             EntityCreationException, EntityRetrievalException,
             ObjectMissingValidationException, IOException {
-
-        return addPendingCertifiedProduct(request);
-    }
-
-    @SuppressWarnings({
-            "checkstyle:linelength"
-    })
-    private ResponseEntity<CertifiedProductSearchDetails> addPendingCertifiedProduct(ConfirmCertifiedProductRequest request)
-            throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, ObjectMissingValidationException,
-            IOException {
         Long acbId = getAcbIdFromPendingListing(request.getPendingListing());
         if (acbId == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("pendlingListing.missingAcb"));
@@ -1203,7 +1111,6 @@ public class CertifiedProductController {
                 .surveillance(e.getSurveillance())
                 .targetedUsers(e.getTargetedUsers())
                 .testingLabs(e.getTestingLabs())
-                .transparencyAttestationUrl(e.getTransparencyAttestationUrl())
                 .version(e.getVersion())
                 .build();
     };

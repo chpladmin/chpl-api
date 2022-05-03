@@ -2,11 +2,11 @@ package gov.healthit.chpl.validation.listing.reviewer;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -73,8 +73,8 @@ public class FieldLengthReviewer implements Reviewer {
         if (!StringUtils.isEmpty(listing.getAcbCertificationId())) {
             checkFieldLength(listing, listing.getAcbCertificationId(), "acbCertificationId");
         }
-        if (!StringUtils.isEmpty(listing.getTransparencyAttestationUrl())) {
-            checkFieldLength(listing, listing.getTransparencyAttestationUrl(), "170523k1Url");
+        if (!StringUtils.isEmpty(listing.getMandatoryDisclosures())) {
+            checkFieldLength(listing, listing.getMandatoryDisclosures(), "170523k1Url");
         }
         checkQmsStandardsFieldLength(listing);
         checkAccessibilityStandardsFieldLength(listing);

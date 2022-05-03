@@ -46,14 +46,11 @@ import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.Product;
-import gov.healthit.chpl.domain.SearchableDimensionalData;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
-import gov.healthit.chpl.domain.TestTool;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
 import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
-import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptionsDeprecated;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
@@ -70,7 +67,6 @@ import gov.healthit.chpl.dto.TestDataCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestProcedureCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
-import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -231,21 +227,6 @@ public class DimensionalDataManager {
     }
 
     @Transactional
-    public Set<KeyValueModel> getTestTools() {
-        LOGGER.debug("Getting all test tools from the database (not cached).");
-        List<TestToolDTO> dtos = this.testToolDao.findAll();
-        Set<KeyValueModel> testTools = new HashSet<KeyValueModel>();
-
-        for (TestToolDTO dto : dtos) {
-            TestTool tt = new TestTool(dto.getId(), dto.getName(), dto.getDescription());
-            tt.setRetired(dto.isRetired());
-            testTools.add(tt);
-        }
-
-        return testTools;
-    }
-
-    @Transactional
     public Set<KeyValueModel> getDeveloperStatuses() {
         LOGGER.debug("Getting all developer statuses from the database (not cached).");
         List<DeveloperStatus> devStatuses = this.devStatusDao.findAll();
@@ -328,56 +309,6 @@ public class DimensionalDataManager {
             results.add(new KeyValueModel(result.getId(), result.getName()));
         }
         return results;
-    }
-
-    @Deprecated
-    public SurveillanceRequirementOptionsDeprecated getSurveillanceRequirementOptionsDeprecated() {
-        LOGGER.debug("Getting all surveillance requirements from the database (not cached).");
-
-        SurveillanceRequirementOptionsDeprecated result = new SurveillanceRequirementOptionsDeprecated();
-
-        List<CertificationCriterionDTO> criteria2014 = certificationCriterionDao.findByCertificationEditionYear("2014");
-        for (CertificationCriterionDTO crit : criteria2014) {
-            result.getCriteriaOptions2014()
-                    .add(new CriteriaSpecificDescriptiveModel(crit.getId(), crit.getNumber(), crit.getDescription(),
-                            new CertificationCriterion(crit)));
-        }
-        List<CertificationCriterionDTO> criteria2015 = certificationCriterionDao.findByCertificationEditionYear("2015");
-        for (CertificationCriterionDTO crit : criteria2015) {
-            result.getCriteriaOptions2015()
-                    .add(new CriteriaSpecificDescriptiveModel(crit.getId(), crit.getNumber(), crit.getDescription(),
-                            new CertificationCriterion(crit)));
-        }
-
-        result.getTransparencyOptions().add(RequirementTypeEnum.K1.getName());
-        result.getTransparencyOptions().add(RequirementTypeEnum.K2.getName());
-        return result;
-    }
-
-    @Deprecated
-    public Set<KeyValueModel> getNonconformityTypeOptionsDeprecated() {
-        LOGGER.debug("Getting all nonconformity types from the database (not cached).");
-
-        Set<KeyValueModel> result = new HashSet<KeyValueModel>();
-
-        List<CertificationCriterionDTO> criteria2014 = certificationCriterionDao.findByCertificationEditionYear("2014");
-        for (CertificationCriterionDTO crit : criteria2014) {
-            result.add(new CriteriaSpecificDescriptiveModel(crit.getId(), crit.getNumber(), crit.getDescription(),
-                    new CertificationCriterion(crit)));
-        }
-        List<CertificationCriterionDTO> criteria2015 = certificationCriterionDao.findByCertificationEditionYear("2015");
-        for (CertificationCriterionDTO crit : criteria2015) {
-            result.add(new CriteriaSpecificDescriptiveModel(crit.getId(), crit.getNumber(), crit.getDescription(),
-                    new CertificationCriterion(crit)));
-        }
-
-        result.add(new KeyValueModel(null, NonconformityType.K1.getName()));
-        result.add(new KeyValueModel(null, NonconformityType.K2.getName()));
-        result.add(new KeyValueModel(null, NonconformityType.L.getName()));
-        result.add(new KeyValueModel(null, NonconformityType.ANNUAL_RWT_PLAN.getName()));
-        result.add(new KeyValueModel(null, NonconformityType.ANNUAL_RWT_RESULTS.getName()));
-        result.add(new KeyValueModel(null, NonconformityType.OTHER.getName()));
-        return result;
     }
 
     public SurveillanceRequirementOptions getSurveillanceRequirementOptions() {
@@ -657,28 +588,5 @@ public class DimensionalDataManager {
 
     public Set<DescriptiveModel> getCQMCriterionNumbers(final Boolean simple) {
         return cacheableDimensionalDataManager.getCQMCriterionNumbers(simple);
-    }
-
-    @Deprecated
-    public SearchableDimensionalData getSearchableDimensionalData(final Boolean simple) throws EntityRetrievalException {
-        SearchableDimensionalData searchOptions = new SearchableDimensionalData();
-        //the following calls contain data that could possibly change
-        //without the system rebooting so we need to make sure to
-        //keep their cached data up-to-date
-        searchOptions.setProductNames(getProducts());
-        searchOptions.setDeveloperNames(getDevelopers());
-        //acb names can change but there are so few that it's fine to not cache them
-        searchOptions.setCertBodyNames(getCertBodyNames());
-
-        //the following calls will be cached and their data
-        //will never change without the system being rebooted
-        //so we do not need to worry about re-getting the data
-        searchOptions.setEditions(getEditionNames(simple));
-        searchOptions.setCertificationStatuses(getCertificationStatuses());
-        searchOptions.setPracticeTypeNames(getPracticeTypeNames());
-        searchOptions.setProductClassifications(getClassificationNames());
-        searchOptions.setCqmCriterionNumbers(getCQMCriterionNumbers(simple));
-        searchOptions.setCertificationCriterionNumbers(getCertificationCriterionNumbers());
-        return searchOptions;
     }
 }

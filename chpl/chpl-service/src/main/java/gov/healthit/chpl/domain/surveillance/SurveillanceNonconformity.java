@@ -67,23 +67,8 @@ public class SurveillanceNonconformity implements Serializable {
      * The status of a non-conformity found as a result of a surveillance
      * activity. Allowable values are "Open" or "Closed".
      */
-    @XmlTransient
-    @Deprecated
-    private SurveillanceNonconformityStatus status;
-
-    /**
-     * The status of a non-conformity found as a result of a surveillance
-     * activity. Allowable values are "Open" or "Closed".
-     */
     @XmlElement(required = true)
     private String nonconformityStatus;
-
-    /**
-     * DEPRECATED. Date of determination of non-conformity
-     */
-    @Deprecated
-    @XmlTransient
-    private Date dateOfDetermination;
 
     /**
      * Date of determination of non-conformity
@@ -95,13 +80,6 @@ public class SurveillanceNonconformity implements Serializable {
     private LocalDate dateOfDeterminationDay;
 
     /**
-     * DEPRECATED. Corrective action plan approval date
-     */
-    @Deprecated
-    @XmlTransient
-    private Date capApprovalDate;
-
-    /**
      * Corrective action plan approval day
      */
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -109,13 +87,6 @@ public class SurveillanceNonconformity implements Serializable {
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     @XmlElement(required = false, nillable = true)
     private LocalDate capApprovalDay;
-
-    /**
-     * DEPRECATED. Corrective action plan start date
-     */
-    @Deprecated
-    @XmlTransient
-    private Date capStartDate;
 
     /**
      * Corrective action plan start day
@@ -127,13 +98,6 @@ public class SurveillanceNonconformity implements Serializable {
     private LocalDate capStartDay;
 
     /**
-     * DEPRECATED. Corrective action plan end date
-     */
-    @Deprecated
-    @XmlTransient
-    private Date capEndDate;
-
-    /**
      * Corrective action plan end day
      */
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -143,13 +107,6 @@ public class SurveillanceNonconformity implements Serializable {
     private LocalDate capEndDay;
 
     /**
-     * DEPRECATED. Corrective action plan must complete date
-     */
-    @Deprecated
-    @XmlTransient
-    private Date capMustCompleteDate;
-
-    /**
      * Corrective action plan must complete date
      */
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -157,12 +114,6 @@ public class SurveillanceNonconformity implements Serializable {
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     @XmlElement(required = false, nillable = true)
     private LocalDate capMustCompleteDay;
-
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonSerialize(using = LocalDateSerializer.class)
-    @Deprecated
-    @XmlTransient
-    private LocalDate nonconformityCloseDate;
 
     /**
      * Date non-conformity was closed
@@ -422,32 +373,12 @@ public class SurveillanceNonconformity implements Serializable {
         this.criterion = criterion;
     }
 
-    @Deprecated
-    public SurveillanceNonconformityStatus getStatus() {
-        return status;
-    }
-
-    @Deprecated
-    public void setStatus(SurveillanceNonconformityStatus status) {
-        this.status = status;
-    }
-
     public String getNonconformityStatus() {
         return nonconformityStatus;
     }
 
     public void setNonconformityStatus(String nonconformityStatus) {
         this.nonconformityStatus = nonconformityStatus;
-    }
-
-    @Deprecated
-    public Date getDateOfDetermination() {
-        return Util.getNewDate(dateOfDetermination);
-    }
-
-    @Deprecated
-    public void setDateOfDetermination(Date dateOfDetermination) {
-        this.dateOfDetermination = Util.getNewDate(dateOfDetermination);
     }
 
     public LocalDate getDateOfDeterminationDay() {
@@ -458,32 +389,12 @@ public class SurveillanceNonconformity implements Serializable {
         this.dateOfDeterminationDay = dateOfDeterminationDay;
     }
 
-    @Deprecated
-    public Date getCapApprovalDate() {
-        return Util.getNewDate(capApprovalDate);
-    }
-
-    @Deprecated
-    public void setCapApprovalDate(Date capApprovalDate) {
-        this.capApprovalDate = Util.getNewDate(capApprovalDate);
-    }
-
     public LocalDate getCapApprovalDay() {
         return this.capApprovalDay;
     }
 
     public void setCapApprovalDay(LocalDate capApprovalDay) {
         this.capApprovalDay = capApprovalDay;
-    }
-
-    @Deprecated
-    public Date getCapStartDate() {
-        return Util.getNewDate(capStartDate);
-    }
-
-    @Deprecated
-    public void setCapStartDate(Date capStartDate) {
-        this.capStartDate = Util.getNewDate(capStartDate);
     }
 
     public LocalDate getCapStartDay() {
@@ -494,16 +405,6 @@ public class SurveillanceNonconformity implements Serializable {
         this.capStartDay = capStartDay;
     }
 
-    @Deprecated
-    public Date getCapEndDate() {
-        return Util.getNewDate(capEndDate);
-    }
-
-    @Deprecated
-    public void setCapEndDate(Date capEndDate) {
-        this.capEndDate = Util.getNewDate(capEndDate);
-    }
-
     public LocalDate getCapEndDay() {
         return this.capEndDay;
     }
@@ -512,32 +413,12 @@ public class SurveillanceNonconformity implements Serializable {
         this.capEndDay = capEndDay;
     }
 
-    @Deprecated
-    public Date getCapMustCompleteDate() {
-        return Util.getNewDate(capMustCompleteDate);
-    }
-
-    @Deprecated
-    public void setCapMustCompleteDate(Date capMustCompleteDate) {
-        this.capMustCompleteDate = Util.getNewDate(capMustCompleteDate);
-    }
-
     public LocalDate getCapMustCompleteDay() {
         return this.capMustCompleteDay;
     }
 
     public void setCapMustCompleteDay(LocalDate capMustCompleteDay) {
         this.capMustCompleteDay = capMustCompleteDay;
-    }
-
-    @Deprecated
-    public LocalDate getNonconformityCloseDate() {
-        return nonconformityCloseDate;
-    }
-
-    @Deprecated
-    public void setNonconformityCloseDate(LocalDate nonconformityCloseDate) {
-        this.nonconformityCloseDate = nonconformityCloseDate;
     }
 
     public LocalDate getNonconformityCloseDay() {

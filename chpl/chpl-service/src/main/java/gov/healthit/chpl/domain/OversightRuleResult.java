@@ -1,25 +1,21 @@
 package gov.healthit.chpl.domain;
 
 import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
+import java.time.LocalDate;
 
 import gov.healthit.chpl.domain.surveillance.SurveillanceOversightRule;
-import gov.healthit.chpl.util.Util;
 
 public class OversightRuleResult {
     private SurveillanceOversightRule rule;
-    private Date dateBroken;
+    private LocalDate dateBroken;
     private long numDaysBroken = -1;
 
     public OversightRuleResult() {
     }
 
-    public OversightRuleResult(SurveillanceOversightRule rule, Date dateBroken, long numDaysBroken) {
+    public OversightRuleResult(SurveillanceOversightRule rule, LocalDate dateBroken, long numDaysBroken) {
         this.rule = rule;
-        this.dateBroken = Util.getNewDate(dateBroken);
+        this.dateBroken = dateBroken;
         this.numDaysBroken = numDaysBroken;
     }
 
@@ -27,30 +23,27 @@ public class OversightRuleResult {
         return rule;
     }
 
-    public void setRule(final SurveillanceOversightRule rule) {
+    public void setRule(SurveillanceOversightRule rule) {
         this.rule = rule;
     }
 
-    public Date getDateBroken() {
-        return Util.getNewDate(dateBroken);
+    public LocalDate getDateBroken() {
+        return dateBroken;
     }
 
-    public void setDateBroken(final Date dateBroken) {
-        this.dateBroken = Util.getNewDate(dateBroken);
+    public void setDateBroken(LocalDate dateBroken) {
+        this.dateBroken = dateBroken;
     }
 
     public long getNumDaysBroken() {
         if (this.dateBroken != null && this.numDaysBroken < 0) {
-            LocalDateTime statusDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(this.dateBroken.getTime()),
-                    ZoneId.systemDefault());
-            Duration timeBetween = Duration.between(statusDate, LocalDateTime.now());
+            Duration timeBetween = Duration.between(this.dateBroken, LocalDate.now());
             this.numDaysBroken = timeBetween.toDays();
         }
-
         return numDaysBroken;
     }
 
-    public void setNumDaysBroken(final long numDaysBroken) {
+    public void setNumDaysBroken(long numDaysBroken) {
         this.numDaysBroken = numDaysBroken;
     }
 }

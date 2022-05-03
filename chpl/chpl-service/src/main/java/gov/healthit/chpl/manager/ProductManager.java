@@ -170,7 +170,7 @@ public class ProductManager extends SecuredManager {
 
         Product currentProduct = productDao.getById(product.getProductId());
         Developer currentProductOwner = devDao.getById(currentProduct.getOwner().getDeveloperId());
-        List<CertifiedProductDetailsDTO> affectedListings = cpDao.findByProductId(currentProduct.getOwner().getDeveloperId());
+        List<CertifiedProductDetailsDTO> affectedListings = cpDao.findByProductId(currentProduct.getProductId());
         LOGGER.info("Getting details for " + affectedListings.size() + " listings with affected CHPL Product Numbers");
         for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
             CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(affectedListing.getId());

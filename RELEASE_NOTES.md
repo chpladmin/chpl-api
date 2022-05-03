@@ -1,5 +1,43 @@
 # Release Notes
 
+## Version 35.0.0
+_2 May 2022_
+
+### Breaking Changes
+* Remove deprecated endpoints and response fields eligible for removal as of 4/15/22.
+
+### Features
+* Default to ET when managing Announcements
+
+---
+
+## Version 34.3.0
+_13 April 2022_
+
+### Features
+* Modify Cures Reporting for ONC-ACB changes to remove ONC-ACB "UL, LLC"
+* Calculate and save CHPL Product Number history when Listings are updated
+
+### Bug Fixes
+* Record listing activity on Developer split
+* Record listing activity on Developer merge
+
+---
+
+## Version 34.2.0
+_1 April 2022_
+
+### Features
+* Add Attestations Requirement and Non-conformity Type values for Surveillance
+* Deprecate DELETE /listings/pending for multiple pending listing IDs
+* Add parsing, validation, tests for conformance methods on flexible upload
+* Add ICS column to RWT Report and add ICS as part of the reason for errors or warnings in the report.
+
+### Bug Fixes
+* Update Spring to 5.3.18 to address CVE-2022-22965
+
+---
+
 ## Version 34.1.0
 _22 March 2022_
 
