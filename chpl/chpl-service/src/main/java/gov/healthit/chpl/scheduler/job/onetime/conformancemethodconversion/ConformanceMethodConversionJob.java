@@ -127,16 +127,22 @@ public class ConformanceMethodConversionJob extends CertifiedProduct2015Gatherer
 
             if (rule.getConformanceMethodName().equals(ATTESTATION)) {
                 deleteTestDataUsed(listing, cr);
-                conformanceMethodConversionDAO.deleteAllTestToolForCertificationResult(listing.getChplProductNumber(), cr);
+                deleteTestToolsUsed(listing, cr);
             }
         }
     }
 
     private void deleteTestDataUsed(CertifiedProductSearchDetails listing, CertificationResult cr) {
-        conformanceMethodConversionDAO.deleteAllTestDataForCertificationResult(listing.getChplProductNumber(), cr);
+        if (cr.getTestDataUsed() != null && cr.getTestDataUsed().size() > 0) {
+            conformanceMethodConversionDAO.deleteAllTestDataForCertificationResult(listing.getChplProductNumber(), cr);
+        }
     }
 
-
+    private void deleteTestToolsUsed(CertifiedProductSearchDetails listing, CertificationResult cr) {
+        if (cr.getTestToolsUsed() != null && cr.getTestToolsUsed().size() > 0) {
+            conformanceMethodConversionDAO.deleteAllTestToolForCertificationResult(listing.getChplProductNumber(), cr);
+        }
+    }
 
     private void deleteCertificationResultTestProcedure(CertificationResultTestProcedure crtp) {
         conformanceMethodConversionDAO.deleteCertificationResultTestProcedure(crtp.getId());
@@ -279,6 +285,8 @@ public class ConformanceMethodConversionJob extends CertifiedProduct2015Gatherer
                 Query query = entityManager.createQuery(
                         "SELECT crtde "
                         + "FROM CertificationResultTestDataEntity crtde "
+                        + "JOIN FETCH crtde.testData tde "
+                        //+ "JOIN FETCH crtde.certificationCriterion cce "
                         + "WHERE crtde.deleted = false "
                         + "AND crtde.id = :id ",
                         CertificationResultTestDataEntity.class);
@@ -300,6 +308,7 @@ public class ConformanceMethodConversionJob extends CertifiedProduct2015Gatherer
                 Query query = entityManager.createQuery(
                         "SELECT crtte "
                         + "FROM CertificationResultTestToolEntity crtte "
+                        + "JOIN FETCH crtte.testTool tte "
                         + "WHERE crtte.deleted = false "
                         + "AND crtte.id = :id ",
                         CertificationResultTestToolEntity.class);
