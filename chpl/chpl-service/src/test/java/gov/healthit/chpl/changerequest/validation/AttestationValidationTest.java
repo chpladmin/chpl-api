@@ -38,7 +38,6 @@ public class AttestationValidationTest {
         Mockito.when(attestationManager.getAttestationForm()).thenReturn(getAttestationForm());
         Mockito.when(attestationManager.canDeveloperSubmitChangeRequest(ArgumentMatchers.anyLong())).thenReturn(true);
 
-
         validator = new AttestationValidation();
     }
 
@@ -46,7 +45,7 @@ public class AttestationValidationTest {
     public void isValid_AttestationSubmissionIsValid_ReturnsTrue() {
         ChangeRequest cr = ChangeRequest.builder()
                 .developer(Developer.builder()
-                        .developerId(1l)
+                        .id(1l)
                         .build())
                 .details(convertToMap(createChangeRequestAttestationSubmission()))
                 .build();
@@ -63,17 +62,16 @@ public class AttestationValidationTest {
     }
 
     @Test
-    public void isValid_AttestationSubmissionIsMissingSignaute_ReturnsFalse() {
+    public void isValid_AttestationSubmissionIsMissingSignature_ReturnsFalse() {
         ChangeRequestAttestationSubmission details = createChangeRequestAttestationSubmission();
         details.setSignature(null);
 
         ChangeRequest cr = ChangeRequest.builder()
                 .developer(Developer.builder()
-                        .developerId(1l)
+                        .id(1l)
                         .build())
                 .details(convertToMap(details))
                 .build();
-
 
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
                 .currentUser(new CurrentUser())
@@ -87,13 +85,13 @@ public class AttestationValidationTest {
     }
 
     @Test
-    public void isValid_AttestationSubmissionIsSignatureDoeNotMatch_ReturnsFalse() {
+    public void isValid_AttestationSubmissionIsSignatureDoesNotMatch_ReturnsFalse() {
         ChangeRequestAttestationSubmission details = createChangeRequestAttestationSubmission();
         details.setSignature("Another User");
 
         ChangeRequest cr = ChangeRequest.builder()
                 .developer(Developer.builder()
-                        .developerId(1l)
+                        .id(1l)
                         .build())
                 .details(convertToMap(details))
                 .build();
@@ -118,7 +116,7 @@ public class AttestationValidationTest {
 
         ChangeRequest cr = ChangeRequest.builder()
                 .developer(Developer.builder()
-                        .developerId(1l)
+                        .id(1l)
                         .build())
                 .details(convertToMap(details))
                 .build();
@@ -143,7 +141,7 @@ public class AttestationValidationTest {
 
         ChangeRequest cr = ChangeRequest.builder()
                 .developer(Developer.builder()
-                        .developerId(1l)
+                        .id(1l)
                         .build())
                 .details(convertToMap(details))
                 .build();

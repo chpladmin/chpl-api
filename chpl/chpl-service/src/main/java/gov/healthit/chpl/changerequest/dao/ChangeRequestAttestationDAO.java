@@ -43,6 +43,34 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
         return ChangeRequestConverter.convert(getEntity(parent.getId()));
     }
 
+    public ChangeRequestAttestationSubmission update(ChangeRequestAttestationSubmission changeRequestAttestationSubmission) throws EntityRetrievalException {
+        ChangeRequestAttestationSubmissionEntity entity = getEntity(changeRequestAttestationSubmission.getId());
+        entity.setSignature(changeRequestAttestationSubmission.getSignature());
+        entity.setSignatureEmail(changeRequestAttestationSubmission.getSignatureEmail());
+        entity.getPeriod().setId(changeRequestAttestationSubmission.getAttestationPeriod().getId());
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
+
+        entity.getResponses().stream()
+                .forEach(response -> {
+                    AttestationSubmittedResponse submittedResponse = changeRequestAttestationSubmission.getAttestationResponses().stream()
+                            .filter(inResponse -> inResponse.getId().equals(response.getId()))
+                            .findAny()
+                            .get();
+
+                    AttestationValidResponseEntity avre = null;
+                    try {
+                        avre = getAttestationValidResponseEntity(submittedResponse.getResponse().getId());
+                    } catch (EntityRetrievalException e) {
+                        LOGGER.error("Could not retreive AttestationValidResponseEntity with id " + submittedResponse.getResponse().getId());
+                    }
+                    response.setValidResponse(avre);
+                });
+
+        update(entity);
+
+        return ChangeRequestConverter.convert(getEntity(entity.getId()));
+    }
+
 
     private ChangeRequestAttestationResponseEntity createAttestationResponse(AttestationSubmittedResponse response, Long changeRequestAttestationSubmissionId) {
         try {
