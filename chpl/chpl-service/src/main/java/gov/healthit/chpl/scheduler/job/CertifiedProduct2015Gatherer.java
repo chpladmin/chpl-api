@@ -43,9 +43,7 @@ public class CertifiedProduct2015Gatherer {
                 CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
         logger.info("Completed retreiving all 2015 listings");
 
-        return listings
-                .subList(0, 99)
-                .parallelStream()
+        return listings.parallelStream()
                 .map(dto -> getCertifiedProductSearchDetails(dto.getId(), logger, useListingCache))
                 .collect(Collectors.toList());
     }
