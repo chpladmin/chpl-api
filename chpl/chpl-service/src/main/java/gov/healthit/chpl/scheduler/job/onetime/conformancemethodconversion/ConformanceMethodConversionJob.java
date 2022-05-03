@@ -26,10 +26,14 @@ import gov.healthit.chpl.conformanceMethod.entity.ConformanceMethodEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
+import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultTestDataEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultTestProcedureEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultTestToolEntity;
 import gov.healthit.chpl.scheduler.job.CertifiedProduct2015Gatherer;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.AllArgsConstructor;
@@ -39,7 +43,9 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "conformanceMethodConversionJobLogger")
 public class ConformanceMethodConversionJob extends CertifiedProduct2015Gatherer implements Job {
+    public static final String ATTESTATION = "Attestation";
     private static final String WILDCARD = "*";
+
 
     @Autowired
     private CertificationCriterionService certificationCriterionService;
@@ -118,8 +124,18 @@ public class ConformanceMethodConversionJob extends CertifiedProduct2015Gatherer
                             CertificationCriterionService.formatCriteriaNumber(cr.getCriterion()),
                             crtp.getTestProcedure().getName(),
                             rule.getConformanceMethodName()));
+
+            if (rule.getConformanceMethodName().equals(ATTESTATION)) {
+                deleteTestDataUsed(listing, cr);
+                conformanceMethodConversionDAO.deleteAllTestToolForCertificationResult(listing.getChplProductNumber(), cr);
+            }
         }
     }
+
+    private void deleteTestDataUsed(CertifiedProductSearchDetails listing, CertificationResult cr) {
+        conformanceMethodConversionDAO.deleteAllTestDataForCertificationResult(listing.getChplProductNumber(), cr);
+    }
+
 
 
     private void deleteCertificationResultTestProcedure(CertificationResultTestProcedure crtp) {
@@ -255,6 +271,48 @@ public class ConformanceMethodConversionJob extends CertifiedProduct2015Gatherer
             if (result != null && result.size() == 1) {
                 result.get(0).setDeleted(true);
                 update(result.get(0));
+            }
+        }
+
+        public void deleteAllTestDataForCertificationResult(String chplProductNumber, CertificationResult certificationResult) {
+            for (CertificationResultTestData crtd : certificationResult.getTestDataUsed()) {
+                Query query = entityManager.createQuery(
+                        "SELECT crtde "
+                        + "FROM CertificationResultTestDataEntity crtde "
+                        + "WHERE crtde.deleted = false "
+                        + "AND crtde.id = :id ",
+                        CertificationResultTestDataEntity.class);
+                query.setParameter("id", crtd.getId());
+                List<CertificationResultTestDataEntity> result = query.getResultList();
+                if (result != null && result.size() == 1) {
+                    result.get(0).setDeleted(true);
+                    update(result.get(0));
+                    LOGGER.warn("Deleting Test Data {} for Criteria {} for Listing {}",
+                            result.get(0).getTestData().getName(),
+                            CertificationCriterionService.formatCriteriaNumber(certificationResult.getCriterion()),
+                            chplProductNumber);
+                }
+            }
+        }
+
+        public void deleteAllTestToolForCertificationResult(String chplProductNumber, CertificationResult certificationResult) {
+            for (CertificationResultTestTool crtt : certificationResult.getTestToolsUsed()) {
+                Query query = entityManager.createQuery(
+                        "SELECT crtte "
+                        + "FROM CertificationResultTestToolEntity crtte "
+                        + "WHERE crtte.deleted = false "
+                        + "AND crtte.id = :id ",
+                        CertificationResultTestToolEntity.class);
+                query.setParameter("id", crtt.getId());
+                List<CertificationResultTestToolEntity> result = query.getResultList();
+                if (result != null && result.size() == 1) {
+                    result.get(0).setDeleted(true);
+                    update(result.get(0));
+                    LOGGER.warn("Deleting Test Tool {} for Criteria {} for Listing {}",
+                            result.get(0).getTestTool().getName(),
+                            CertificationCriterionService.formatCriteriaNumber(certificationResult.getCriterion()),
+                            chplProductNumber);
+                }
             }
         }
 
