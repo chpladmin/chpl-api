@@ -1,5 +1,16 @@
 # Release Notes
 
+## Version 35.0.0
+_2 May 2022_
+
+### Breaking Changes
+* Remove deprecated endpoints and response fields eligible for removal as of 4/15/22.
+
+### Features
+* Default to ET when managing Announcements
+
+---
+
 ## Version 34.3.0
 _13 April 2022_
 
