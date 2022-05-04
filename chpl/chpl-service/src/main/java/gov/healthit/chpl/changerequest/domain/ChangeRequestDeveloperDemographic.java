@@ -36,9 +36,4 @@ public class ChangeRequestDeveloperDemographic implements Serializable, ChangeRe
             throw new RuntimeException("Could not cast object as type ChangeRequestDeveloperDemographic");
         }
     }
-
-    @Override
-    public boolean matches(Object obj) {
-        return equals(obj);
-    }
 }
