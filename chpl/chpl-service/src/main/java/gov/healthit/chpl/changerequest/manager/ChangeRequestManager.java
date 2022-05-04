@@ -191,7 +191,9 @@ public class ChangeRequestManager {
 
         ChangeRequest updatedDetails = null, updatedStatus = null;
         // Update the details, if the user is of role developer
-        if (resourcePermissions.isUserRoleDeveloperAdmin() && cr.getDetails() != null) {
+        if (resourcePermissions.isUserRoleDeveloperAdmin()
+                && cr.getDetails() != null
+                && !cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(cancelledStatus)) {
             updatedDetails = crDetailsFactory.get(crFromDb.getChangeRequestType().getId()).update(cr);
         }
 
