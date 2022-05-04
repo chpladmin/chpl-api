@@ -62,6 +62,7 @@ public class ChangeRequestDeveloperDemographicDAO extends BaseDAOImpl {
         if (crDev.getSelfDeveloper() != null) {
             entity.setSelfDeveloper(crDev.getSelfDeveloper());
         }
+        entity.setWebsite(crDev.getWebsite());
         if (crDev.getAddress() != null) {
             entity.setStreetLine1(crDev.getAddress().getLine1());
             entity.setStreetLine2(crDev.getAddress().getLine2());
