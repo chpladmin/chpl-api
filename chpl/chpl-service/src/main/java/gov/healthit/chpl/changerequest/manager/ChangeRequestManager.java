@@ -53,7 +53,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-public class ChangeRequestManager extends SecurityManager {
+public class ChangeRequestManager {
 
     @Value("${changerequest.status.pendingacbaction}")
     private Long pendingAcbActionStatus;
