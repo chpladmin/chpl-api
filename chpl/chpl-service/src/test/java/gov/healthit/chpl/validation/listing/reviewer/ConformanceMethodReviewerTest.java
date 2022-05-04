@@ -37,11 +37,12 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
 public class ConformanceMethodReviewerTest {
-    private static final String CM_NOT_APPLICABLE_MSG = "Conformance Methods are not applicable for the criterion %s. They has been removed.";
+    private static final String CM_NOT_APPLICABLE_MSG = "Conformance Methods are not applicable for the criterion %s. They have been removed.";
     private static final String CM_REQUIRED_MSG = "Conformance Methods are required for certification criteria %s.";
     private static final String MISSING_CM_VERSION_MSG = "Conformance Method Version is required for certification %s with Conformance Method \"%s\".";
     private static final String UNALLOWED_CM_VERSION_MSG = "Conformance Method Version is not allowed for certification %s with Conformance Method \"%s\".";
     private static final String UNALLOWED_CM_VERSION_REMOVED_MSG = "Conformance Method Version is not allowed for certification %s with Conformance Method \"%s\". The version \"%s\" was removed.";
+    private static final String DEFAULT_CM_ADDED_MSG = "Criterion %s requires a Conformance Method but none was found. \"%s\" was added.";
     private static final String INVALID_CRITERIA_MSG = "Conformance Method \"%s\" is not valid for criteria %s.";
     private static final String F3_GAP_MISMATCH_MSG = "Certification %s cannot use Conformance Method \"%s\" since GAP is %s.";
     private static final String F3_TEST_TOOLS_NOT_ALLOWED_MSG = "Certification %s cannot specify test tools when using Conformance Method %s. The test tools have been removed.";
@@ -117,6 +118,9 @@ public class ConformanceMethodReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.unallowedConformanceMethodVersionRemoved"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(UNALLOWED_CM_VERSION_REMOVED_MSG, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.addedDefaultForCriterion"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(DEFAULT_CM_ADDED_MSG, i.getArgument(1), i.getArgument(2)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.invalidCriteria"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_CRITERIA_MSG, i.getArgument(1), i.getArgument(2)));
@@ -260,7 +264,7 @@ public class ConformanceMethodReviewerTest {
     }
 
     @Test
-    public void review_invalidConformanceMethodForCriterion_hasWarningAndRemovesConformanceMethod() {
+    public void review_invalidConformanceMethodForCriterionNoDefault_hasWarningAndRemovesConformanceMethod() {
         CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
                 .conformanceMethod(ConformanceMethod.builder()
                         .id(3L)
@@ -291,6 +295,41 @@ public class ConformanceMethodReviewerTest {
         assertEquals(0, listing.getCertificationResults().get(0).getConformanceMethods().size());
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(CM_REQUIRED_MSG, "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_invalidConformanceMethodForCriterionHasDefault_hasWarningAndRemovesConformanceMethodAndAddsDefault() {
+        CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
+                .conformanceMethod(ConformanceMethod.builder()
+                        .id(3L)
+                        .name("bad CM")
+                        .build())
+                .conformanceMethodVersion("version")
+                .build();
+
+        List<CertificationResultConformanceMethod> crcms = new ArrayList<CertificationResultConformanceMethod>();
+        crcms.add(crcm);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (a)(2)")
+                                .id(2L)
+                                .build())
+                        .conformanceMethods(crcms)
+                        .build())
+                .certificationEdition(get2015CertificationEdition())
+                .build();
+
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(2, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(INVALID_CRITERIA_MSG, "bad CM", "170.315 (a)(2)")));
+        assertTrue(listing.getWarningMessages().contains(String.format(DEFAULT_CM_ADDED_MSG, "170.315 (a)(2)", "Attestation")));
+        assertEquals(1, listing.getCertificationResults().get(0).getConformanceMethods().size());
+        assertEquals("Attestation", listing.getCertificationResults().get(0).getConformanceMethods().get(0).getConformanceMethod().getName());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
