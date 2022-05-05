@@ -13,7 +13,6 @@ import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -180,10 +179,20 @@ public class ChangeRequestManager extends SecurityManager {
     @Transactional(readOnly = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
             + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).GET_ALL)")
-    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
-            + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).GET_ALL, filterObject)")
     public List<ChangeRequest> getAllChangeRequestsForUser() throws EntityRetrievalException {
-        return changeRequestDAO.getAll();
+        List<ChangeRequest> results = new ArrayList<ChangeRequest>();
+        if (resourcePermissions.isUserRoleAcbAdmin()) {
+            results = changeRequestDAO.getAllForAcbs(resourcePermissions.getAllAcbsForCurrentUser().stream()
+                    .map(acb -> acb.getId())
+                    .toList());
+        } else if (resourcePermissions.isUserRoleDeveloperAdmin()) {
+            results = changeRequestDAO.getAllForDevelopers(resourcePermissions.getAllDevelopersForCurrentUser().stream()
+                    .map(dev -> dev.getId())
+                    .toList());
+        } else if (resourcePermissions.isUserRoleOnc() || resourcePermissions.isUserRoleAdmin()) {
+            results = changeRequestDAO.getAll();
+        }
+        return results;
     }
 
     @Transactional
