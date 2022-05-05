@@ -10,12 +10,14 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -26,18 +28,18 @@ import lombok.NoArgsConstructor;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
-@Data
 @NoArgsConstructor
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DirectReviewNonConformity implements Serializable {
     private static final long serialVersionUID = 7018071377961783691L;
     public static final String STATUS_OPEN = "OPEN";
     public static final String STATUS_CLOSED = "CLOSED";
 
-    @JsonProperty(value = "requirement")
+    @JsonProperty(value = "requirement", access = Access.WRITE_ONLY)
     @JsonAlias("customfield_11018")
     @JsonDeserialize(using = SimpleValueDeserializer.class)
-    @XmlElement(required = false, nillable = true)
+    @XmlTransient
     private String requirement;
 
     @JsonProperty(value = "developerAssociatedListings")
@@ -52,32 +54,30 @@ public class DirectReviewNonConformity implements Serializable {
     @XmlElement(required = false, nillable = true)
     private String nonConformityType;
 
-    @JsonProperty(value = "dateOfDetermination")
+    @JsonProperty(value = "dateOfDetermination", access = Access.WRITE_ONLY)
     @JsonAlias("customfield_11021")
     @JsonDeserialize(using = DateDeserializer.class)
-    @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlElement(required = false, nillable = true)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    @XmlTransient
     private LocalDate dateOfDetermination;
 
-    @JsonProperty(value = "nonConformitySummary")
+    @JsonProperty(value = "nonConformitySummary", access = Access.WRITE_ONLY)
     @JsonAlias("customfield_11026")
-    @XmlElement(required = false, nillable = true)
+    @XmlTransient
     private String nonConformitySummary;
 
-    @JsonProperty(value = "nonConformityFindings")
+    @JsonProperty(value = "nonConformityFindings", access = Access.WRITE_ONLY)
     @JsonAlias("customfield_11027")
-    @XmlElement(required = false, nillable = true)
+    @XmlTransient
     private String nonConformityFindings;
 
-    @JsonProperty(value = "nonConformityStatus")
+    @JsonProperty(value = "nonConformityStatus", access = Access.WRITE_ONLY)
     @JsonAlias("customfield_11035")
-    @XmlElement(required = false, nillable = true)
+    @XmlTransient
     private String nonConformityStatus;
 
-    @JsonProperty(value = "resolution")
+    @JsonProperty(value = "resolution", access = Access.WRITE_ONLY)
     @JsonAlias("customfield_11029")
-    @XmlElement(required = false, nillable = true)
+    @XmlTransient
     private String resolution;
 
     @JsonProperty(value = "capApprovalDate")
@@ -88,12 +88,10 @@ public class DirectReviewNonConformity implements Serializable {
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate capApprovalDate;
 
-    @JsonProperty(value = "capStartDate")
+    @JsonProperty(value = "capStartDate", access = Access.WRITE_ONLY)
     @JsonAlias("customfield_11023")
     @JsonDeserialize(using = DateDeserializer.class)
-    @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlElement(required = false, nillable = true)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    @XmlTransient
     private LocalDate capStartDate;
 
     @JsonProperty(value = "capMustCompleteDate")

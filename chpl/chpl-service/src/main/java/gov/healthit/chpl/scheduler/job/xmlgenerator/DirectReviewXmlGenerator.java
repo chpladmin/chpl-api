@@ -20,17 +20,10 @@ public class DirectReviewXmlGenerator extends XmlGenerator {
 
     public static void add(DirectReview directReview, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         sw.writeStartElement(rootNodeName);
-        sw.writeStartElement("circumstances");
-        for (String circumstance : directReview.getCircumstances()) {
-            createSimpleElement(circumstance, "circumstance", sw);
-        }
-        sw.writeEndElement();
         createSimpleElement(directReview.getCreated(), "created", sw);
         createSimpleElement(directReview.getDeveloperId(), "developerId", sw);
-        createSimpleElement(directReview.getEndDate(), "endDate", sw);
         createSimpleElement(directReview.getLastUpdated(), "lastUpdated", sw);
         DirectReviewNonConformityXmlGenerator.add(directReview.getNonConformities(), "nonConformities", sw);
-        createSimpleElement(directReview.getStartDate(), "startDate", sw);
         sw.writeEndElement();
     }
 }

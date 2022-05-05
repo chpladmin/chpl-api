@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import lombok.Data;
@@ -36,23 +37,22 @@ public class DirectReview implements Serializable {
     @XmlElement(required = false, nillable = true)
     private Long developerId;
 
-    @JsonProperty(value = "startDate")
+    @JsonProperty(value = "startDate", access = Access.WRITE_ONLY)
     @JsonAlias("customfield_11016")
     @JsonDeserialize(using = TimestampDeserializer.class)
-    @XmlElement(required = false, nillable = true)
+    @XmlTransient
     private Date startDate;
 
-    @JsonProperty(value = "endDate")
+    @JsonProperty(value = "endDate", access = Access.WRITE_ONLY)
     @JsonAlias("customfield_11017")
     @JsonDeserialize(using = TimestampDeserializer.class)
-    @XmlElement(required = false, nillable = true)
+    @XmlTransient
     private Date endDate;
 
-    @JsonProperty(value = "circumstances")
+    @JsonProperty(value = "circumstances", access = Access.WRITE_ONLY)
     @JsonAlias("customfield_11015")
     @JsonDeserialize(using = CircumstancesDeserializer.class)
-    @XmlElementWrapper(name = "circumstances", nillable = true, required = false)
-    @XmlElement(name = "circumstance")
+    @XmlTransient
     private List<String> circumstances = new ArrayList<String>();
 
     @JsonProperty(value = "lastUpdated")
