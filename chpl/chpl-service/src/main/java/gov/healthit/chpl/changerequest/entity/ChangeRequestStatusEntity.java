@@ -15,9 +15,15 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.auth.UserPermissionEntity;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "change_request_status")
+@Getter
+@Setter
+@ToString
 public class ChangeRequestStatusEntity {
 
     @Id
@@ -27,10 +33,8 @@ public class ChangeRequestStatusEntity {
     private Long id;
 
     @Basic(optional = false)
-    @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "change_request_id", nullable = false, insertable = true,
-            updatable = false)
-    private ChangeRequestEntity changeRequest;
+    @Column(name = "change_request_id")
+    private Long changeRequestId;
 
     @Basic(optional = false)
     @OneToOne(optional = false, fetch = FetchType.LAZY)
@@ -68,101 +72,4 @@ public class ChangeRequestStatusEntity {
 
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public ChangeRequestEntity getChangeRequest() {
-        return changeRequest;
-    }
-
-    public void setChangeRequest(final ChangeRequestEntity changeRequest) {
-        this.changeRequest = changeRequest;
-    }
-
-    public ChangeRequestStatusTypeEntity getChangeRequestStatusType() {
-        return changeRequestStatusType;
-    }
-
-    public void setChangeRequestStatusType(final ChangeRequestStatusTypeEntity changeRequestStatusType) {
-        this.changeRequestStatusType = changeRequestStatusType;
-    }
-
-    public CertificationBodyEntity getCertificationBody() {
-        return certificationBody;
-    }
-
-    public void setCertificationBody(final CertificationBodyEntity certificationBody) {
-        this.certificationBody = certificationBody;
-    }
-
-    public UserPermissionEntity getUserPermission() {
-        return userPermission;
-    }
-
-    public void setUserPermission(final UserPermissionEntity userPermission) {
-        this.userPermission = userPermission;
-    }
-
-    public Date getStatusChangeDate() {
-        return statusChangeDate;
-    }
-
-    public void setStatusChangeDate(final Date statusChangeDate) {
-        this.statusChangeDate = statusChangeDate;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(final String comment) {
-        this.comment = comment;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public Date getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    @Override
-    public String toString() {
-        return "ChangeRequestStatusEntity [id=" + id + ", changeRequest=" + changeRequest + ", changeRequestStatusType="
-                + changeRequestStatusType + ", certificationBody=" + certificationBody + ", userPermission="
-                + userPermission + ", statusChangeDate=" + statusChangeDate + ", comment=" + comment + ", creationDate="
-                + creationDate + ", lastModifiedDate=" + lastModifiedDate + ", lastModifiedUser=" + lastModifiedUser
-                + ", deleted=" + deleted + "]";
-    }
 }
