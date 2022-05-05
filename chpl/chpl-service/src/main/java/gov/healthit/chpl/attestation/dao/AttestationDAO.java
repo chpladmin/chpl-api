@@ -110,7 +110,7 @@ public class AttestationDAO extends BaseDAOImpl{
     public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(AttestationPeriodDeveloperException adpe) throws EntityRetrievalException {
         AttestationPeriodDeveloperExceptionEntity entity = AttestationPeriodDeveloperExceptionEntity.builder()
                 .developer(DeveloperEntity.builder()
-                        .id(adpe.getDeveloper().getDeveloperId())
+                        .id(adpe.getDeveloper().getId())
                         .build())
                 .period(AttestationPeriodEntity.builder()
                         .id(adpe.getPeriod().getId())
