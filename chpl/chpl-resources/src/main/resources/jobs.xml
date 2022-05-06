@@ -767,6 +767,15 @@
         </job>
 
         <job>
+            <name>curesUpdateActivityRepairJob</name>
+            <group>systemJobs</group>
+            <description>Repairs the activity of three listings that previously had their Cures Update status incorrectly removed.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.CuresUpdateActivityRepairJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
+        <job>
             <name>Listings Snapshot</name>
             <group>chplJobs</group>
             <description>Generate a CSV snapshot of listings in the system on January 1, 2020.</description>
