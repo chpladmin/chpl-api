@@ -152,6 +152,7 @@ public class DirectReviewCachingService {
         } catch (JiraRequestFailedException ex) {
             logger.error("Could not fetch DRs from Jira.", ex);
         }
+        logger.info("Found " + developerDrs.size() + " direct reviews for developer ID " + developerId);
         return developerDrs;
     }
 

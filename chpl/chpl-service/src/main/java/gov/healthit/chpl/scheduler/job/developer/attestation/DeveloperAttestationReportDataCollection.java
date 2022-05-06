@@ -283,13 +283,13 @@ public class DeveloperAttestationReportDataCollection {
     }
 
     private Long getTotalDirectReviewNonconformities(Developer developer) {
-        return directReviewService.getDeveloperDirectReviews(developer.getDeveloperId()).stream()
+        return directReviewService.getDeveloperDirectReviews(developer.getDeveloperId(), LOGGER).stream()
                 .flatMap(dr -> dr.getNonConformities().stream())
                 .count();
     }
 
     private Long getOpenDirectReviewNonconformities(Developer developer) {
-        return directReviewService.getDeveloperDirectReviews(developer.getDeveloperId()).stream()
+        return directReviewService.getDeveloperDirectReviews(developer.getDeveloperId(), LOGGER).stream()
                 .flatMap(dr -> dr.getNonConformities().stream())
                 .filter(nc -> nc.getNonConformityStatus().equalsIgnoreCase(DirectReviewNonConformity.STATUS_OPEN))
                 .count();

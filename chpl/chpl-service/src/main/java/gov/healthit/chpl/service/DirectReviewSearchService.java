@@ -8,6 +8,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Logger;
 import org.jfree.data.time.DateRange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,14 +22,12 @@ import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import one.util.streamex.StreamEx;
 
 @Component("directReviewSearchService")
 @NoArgsConstructor
-@Log4j2
 public class DirectReviewSearchService {
     private DirectReviewCachingService drCacheService;
 
@@ -64,8 +63,8 @@ public class DirectReviewSearchService {
         return drs;
     }
 
-    public List<DirectReview> getDeveloperDirectReviews(Long developerId) {
-        return drCacheService.getDeveloperDirectReviewsFromCache(developerId, LOGGER);
+    public List<DirectReview> getDeveloperDirectReviews(Long developerId, Logger logger) {
+        return drCacheService.getDeveloperDirectReviewsFromCache(developerId, logger);
     }
 
     /**
@@ -75,12 +74,12 @@ public class DirectReviewSearchService {
      * but do not have any developer-associated listings.
      */
     public List<DirectReview> getDirectReviewsRelatedToListing(Long listingId, Long developerId, String editionYear,
-            List<CertificationStatusEvent> statusEvents) {
+            List<CertificationStatusEvent> statusEvents, Logger logger) {
         List<DirectReview> drs = new ArrayList<DirectReview>();
         drs.addAll(getDirectReviewsWithDeveloperAssociatedListingId(listingId));
 
         if (!StringUtils.isEmpty(editionYear) && editionYear.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())) {
-            drs.addAll(getDeveloperDirectReviewsWithoutAssociatedListings(developerId, statusEvents));
+            drs.addAll(getDeveloperDirectReviewsWithoutAssociatedListings(developerId, statusEvents, logger));
         }
 
         drs = StreamEx.of(drs)
@@ -90,8 +89,9 @@ public class DirectReviewSearchService {
         return drs;
     }
 
-    private List<DirectReview> getDeveloperDirectReviewsWithoutAssociatedListings(Long developerId, List<CertificationStatusEvent> statusEvents) {
-        List<DirectReview> allDeveloperDirectReviews = getDeveloperDirectReviews(developerId);
+    private List<DirectReview> getDeveloperDirectReviewsWithoutAssociatedListings(Long developerId,
+            List<CertificationStatusEvent> statusEvents, Logger logger) {
+        List<DirectReview> allDeveloperDirectReviews = getDeveloperDirectReviews(developerId, logger);
         List<DirectReview> drsWithoutAssociatedListings = Stream.of(
                 allDeveloperDirectReviews.stream()
                 .filter(dr -> dr.getNonConformities() == null || dr.getNonConformities().size() == 0)

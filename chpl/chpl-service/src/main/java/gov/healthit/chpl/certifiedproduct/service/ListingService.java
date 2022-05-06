@@ -194,7 +194,7 @@ public class ListingService {
             drs = drService.getDirectReviewsRelatedToListing(listing.getId(),
                     listing.getDeveloper().getDeveloperId(),
                     MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY),
-                    listing.getCertificationEvents());
+                    listing.getCertificationEvents(), LOGGER);
         }
         listing.setDirectReviews(drs);
         listing.setDirectReviewsAvailable(drService.getDirectReviewsAvailable());
