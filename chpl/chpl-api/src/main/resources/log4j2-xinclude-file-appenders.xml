@@ -564,6 +564,18 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
+    <RollingFile name="curesUpdateActivityRepairJob"
+        fileName="${logDir}/scheduler/curesUpdateActivityRepairJob.log"
+        filePattern="${logDir}/scheduler/history/curesUpdateActivityRepairJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
+        <PatternLayout>
+            <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+        </PatternLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+    </RollingFile>
     <RollingFile name="listingsSnapshotCsvCreatorJob"
         fileName="${logDir}/scheduler/listingsSnapshotCsvCreatorJob.log"
         filePattern="${logDir}/scheduler/history/listingsSnapshotCsvCreatorJob-%d{yyyy-MM-dd}.log"
