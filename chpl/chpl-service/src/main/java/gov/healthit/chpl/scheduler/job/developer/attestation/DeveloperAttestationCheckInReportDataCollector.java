@@ -12,30 +12,40 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Component
 public class DeveloperAttestationCheckInReportDataCollector {
 
+    private static final Long INFO_BLOCKING_CONDITION = 1L;
+    private static final Long ASSURANCES_CONDITION = 2L;
+    private static final Long COMMUNICATIONS_CONDITION = 3L;
+    private static final Long RWT_CONDITION = 4L;
+    private static final Long API_CONDITION = 5L;
+
     private AttestationManager attestationManager;
     private ChangeRequestDAO changeRequestDAO;
     private DeveloperAttestationReportDataCollection developerAttestationReportDataCollection;
     private CertificationBodyDAO certificationBodyDAO;
     private DeveloperDAO developerDAO;
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
 
     public DeveloperAttestationCheckInReportDataCollector(AttestationManager attestationManager, ChangeRequestDAO changeRequestDAO,
             DeveloperAttestationReportDataCollection developerAttestationReportDataCollection, CertificationBodyDAO certificationBodyDAO,
-            DeveloperDAO developerDAO) {
+            DeveloperDAO developerDAO, DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO) {
         this.attestationManager = attestationManager;
         this.changeRequestDAO = changeRequestDAO;
         this.developerAttestationReportDataCollection = developerAttestationReportDataCollection;
         this.certificationBodyDAO = certificationBodyDAO;
         this.developerDAO = developerDAO;
+        this.developerCertificationBodyMapDAO = developerCertificationBodyMapDAO;
     }
 
     public List<DeveloperAttestationCheckInReport> collect() throws EntityRetrievalException {
@@ -55,8 +65,13 @@ public class DeveloperAttestationCheckInReportDataCollector {
     private DeveloperAttestationCheckInReport convert(Long developerId) {
         try {
             Developer developer = developerDAO.getById(developerId);
+            List<CertificationBody> acbs = developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(developerId);
             return DeveloperAttestationCheckInReport.builder()
                     .developerName(developer.getName())
+                    .published(false)
+                    .relevantAcbs(acbs.stream()
+                            .map(acb -> acb.getName())
+                            .collect(Collectors.joining("; ")))
                     .build();
         } catch (EntityRetrievalException e) {
             return null;
@@ -68,11 +83,20 @@ public class DeveloperAttestationCheckInReportDataCollector {
         return DeveloperAttestationCheckInReport.builder()
                 .developerName(cr.getDeveloper().getName())
                 .submittedDate(cr.getSubmittedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
+                .published(cr.getDeveloper().getAttestations().stream()
+                        .filter(pa -> pa.getAttestationPeriod().getId().equals(((ChangeRequestAttestationSubmission) cr.getDetails()).getAttestationPeriod().getId()))
+                        .findAny()
+                        .isPresent())
                 .currentStatusName(cr.getCurrentStatus().getChangeRequestStatusType().getName())
                 .lastStatusChangeDate(cr.getCurrentStatus().getStatusChangeDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
                 .relevantAcbs(cr.getCertificationBodies().stream()
                         .map(acb -> acb.getName())
                         .collect(Collectors.joining("; ")))
+                .informationBlockingResponse(getAttestationResponse(cr, INFO_BLOCKING_CONDITION))
+                .assurancesResponse(getAttestationResponse(cr, ASSURANCES_CONDITION))
+                .communicationsResponse(getAttestationResponse(cr, COMMUNICATIONS_CONDITION))
+                .rwtResponse(getAttestationResponse(cr, RWT_CONDITION))
+                .apiResponse(getAttestationResponse(cr, API_CONDITION))
                 .build();
     }
 
@@ -116,4 +140,13 @@ public class DeveloperAttestationCheckInReportDataCollector {
                 .toList();
     }
 
+
+    private String getAttestationResponse(ChangeRequest cr, Long attestationConditionId) {
+       ChangeRequestAttestationSubmission details = (ChangeRequestAttestationSubmission) cr.getDetails();
+       return details.getAttestationResponses().stream()
+               .filter(resp -> resp.getAttestation().getCondition().getId().equals(attestationConditionId))
+               .map(resp -> resp.getResponse().getResponse())
+               .findAny()
+               .orElse("");
+    }
 }

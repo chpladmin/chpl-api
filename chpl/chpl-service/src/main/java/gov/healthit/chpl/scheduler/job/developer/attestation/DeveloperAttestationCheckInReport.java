@@ -11,15 +11,41 @@ import lombok.Data;
 public class DeveloperAttestationCheckInReport {
     private String developerName;
     private LocalDateTime submittedDate;
+    private Boolean published;
     private String currentStatusName;
     private LocalDateTime lastStatusChangeDate;
     private String relevantAcbs;
+    private String informationBlockingResponse;
+    private String assurancesResponse;
+    private String communicationsResponse;
+    private String rwtResponse;
+    private String apiResponse;
 
     public List<String> toListOfStrings() {
         return List.of(developerName,
                 submittedDate != null ? submittedDate.toString() : "",
+                published ? "Yes" : "No",
                 currentStatusName != null ? currentStatusName : "",
                 lastStatusChangeDate != null ? lastStatusChangeDate.toString() : "",
-                relevantAcbs != null ? relevantAcbs : "");
+                relevantAcbs != null ? relevantAcbs : "",
+                informationBlockingResponse != null ? informationBlockingResponse : "",
+                assurancesResponse != null ? assurancesResponse : "",
+                communicationsResponse != null ? communicationsResponse : "",
+                rwtResponse != null ? rwtResponse : "",
+                apiResponse != null ? apiResponse : "");
+    }
+
+    public static List<String> getHeaders() {
+        return List.of("Developer Name",
+                "Change Request Submitted Date",
+                "Attestations Published?",
+                "Change Request Current Status",
+                "Change Request Last Status Change Date",
+                "ONC-ACBs",
+                "Information Blocking Response",
+                "Assurances Response",
+                "Communications Response",
+                "Real World Testing Response",
+                "Application Programming Interfaces Response");
     }
 }

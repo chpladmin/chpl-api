@@ -35,7 +35,7 @@ public class DeveloperAttestationCheckInReportCsvWriter {
                 Charset.forName("UTF-8").newEncoder());
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
             writer.write('\ufeff');
-            //csvPrinter.printRecord(rows.get(0).getHeaders());
+            csvPrinter.printRecord(DeveloperAttestationCheckInReport.getHeaders());
             rows.stream()
                     .forEach(row -> {
                         try {
@@ -43,7 +43,6 @@ public class DeveloperAttestationCheckInReportCsvWriter {
                         } catch (Exception e) {
                             LOGGER.error(e);
                         }
-
                     });
         } catch (Exception e) {
             LOGGER.error(e);
