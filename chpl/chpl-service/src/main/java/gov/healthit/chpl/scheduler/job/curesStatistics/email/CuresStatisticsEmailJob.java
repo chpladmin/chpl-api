@@ -23,18 +23,6 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2(topic = "curesStatisticsEmailJobLogger")
 public class CuresStatisticsEmailJob  extends QuartzJob {
     @Autowired
-    private CriterionListingStatisticsCsvCreator criterionListingStatisticsCsvCreator;
-
-    @Autowired
-    private OriginalCriterionUpgradedStatisticsCsvCreator originalCriterionUpgradedStatisticsCsvCreator;
-
-    @Autowired
-    private CuresCriterionUpgradedWithoutOriginalStatisticsCsvCreator curesCriterionUpgradedWithoutOriginalStatisticsCsvCreator;
-
-    @Autowired
-    private ListingCriterionForCuresAchievementStatisticsCsvCreator listingCriterionForCuresAchievementStatisticsCsvCreator;
-
-    @Autowired
     private ListingCuresStatusStatisticsHtmlCreator listingCuresStatusStatisticsHtmlCreator;
 
     @Autowired
@@ -64,53 +52,12 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         List<File> attachments = new ArrayList<File>();
         try {
-            File statisticsCsv = criterionListingStatisticsCsvCreator.createCsvFile();
-            if (statisticsCsv != null) {
-                attachments.add(statisticsCsv);
-            }
-        } catch (IOException ex) {
-            LOGGER.error("Error creating statistics", ex);
-        }
-        try {
-            File statisticsCsv = originalCriterionUpgradedStatisticsCsvCreator.createCsvFile();
-            if (statisticsCsv != null) {
-                attachments.add(statisticsCsv);
-            }
-        } catch (IOException ex) {
-            LOGGER.error("Error creating statistics", ex);
-        }
-        try {
-            File statisticsCsv = curesCriterionUpgradedWithoutOriginalStatisticsCsvCreator.createCsvFile();
-            if (statisticsCsv != null) {
-                attachments.add(statisticsCsv);
-            }
-        } catch (IOException ex) {
-            LOGGER.error("Error creating statistics", ex);
-        }
-        try {
-            File statisticsCsv = listingCriterionForCuresAchievementStatisticsCsvCreator.createCsvFile();
-            if (statisticsCsv != null) {
-                attachments.add(statisticsCsv);
-            }
-        } catch (IOException ex) {
-            LOGGER.error("Error creating statistics", ex);
-        }
-
-        try {
             LocalDate reportDate = curesStatisticsChartData.getReportDate();
             attachments.add(curesStatisticsChartSpreadsheet.generateSpreadsheet(reportDate));
+            attachments.add(curesChartsOverTimeSpreadsheet.generateSpreadsheet());
+            sendEmail(context, attachments);
         } catch (IOException ex) {
             LOGGER.error("Error creating charts spreadhseet", ex);
-        }
-
-        try {
-            attachments.add(curesChartsOverTimeSpreadsheet.generateSpreadsheet());
-        } catch (IOException ex) {
-            LOGGER.error("Error creating statistics", ex);
-        }
-
-        try {
-            sendEmail(context, attachments);
         } catch (EmailNotSentException ex) {
             LOGGER.error("Error sending email!", ex);
         }
