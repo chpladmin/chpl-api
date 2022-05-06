@@ -1,5 +1,16 @@
 # Release Notes
 
+## Version 35.1.0
+_5 May 2022_
+
+### Feature
+* Improve performance of /change-requests network call
+
+### Flagged Feature
+* Allow editing of Attestation change requests
+
+---
+
 ## Version 35.0.0
 _2 May 2022_
 
