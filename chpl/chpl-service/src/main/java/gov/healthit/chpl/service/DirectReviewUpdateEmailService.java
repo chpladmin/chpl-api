@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -17,10 +18,8 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
-import lombok.extern.log4j.Log4j2;
 
 @Component("directReviewUpdateEmailService")
-@Log4j2
 public class DirectReviewUpdateEmailService {
 
     @Value("${directReview.chplChanges.email}")
@@ -57,13 +56,14 @@ public class DirectReviewUpdateEmailService {
      */
     public void sendEmail(List<Developer> originalDevelopers, List<Developer> changedDevelopers,
             Map<Long, CertifiedProductSearchDetails> originalListings,
-            Map<Long, CertifiedProductSearchDetails> changedListings) {
+            Map<Long, CertifiedProductSearchDetails> changedListings,
+            Logger logger) {
         List<DirectReview> originalDeveloperDrs = new ArrayList<DirectReview>();
         for (Developer originalDeveloper : originalDevelopers) {
             try {
-                originalDeveloperDrs.addAll(directReviewService.getDirectReviews(originalDeveloper.getDeveloperId(), LOGGER));
+                originalDeveloperDrs.addAll(directReviewService.getDirectReviews(originalDeveloper.getDeveloperId(), logger));
             } catch (Exception ex) {
-                LOGGER.error("Error querying Jira for direct reviews related to developer ID " + originalDeveloper.getDeveloperId());
+                logger.error("Error querying Jira for direct reviews related to developer ID " + originalDeveloper.getDeveloperId());
                 originalDeveloperDrs = null;
             }
         }
@@ -71,28 +71,29 @@ public class DirectReviewUpdateEmailService {
         if (originalDeveloperDrs == null) {
             try {
                 sendUnknownDirectReviewEmails(originalDevelopers, changedDevelopers, originalListings,
-                        changedListings);
+                        changedListings, logger);
             } catch (Exception ex) {
-                LOGGER.error("Could not send email to Jira team: " + ex.getMessage());
+                logger.error("Could not send email to Jira team: " + ex.getMessage());
             }
         } else if (originalDeveloperDrs != null && originalDeveloperDrs.size() > 0) {
             try {
                 sendDirectReviewEmails(originalDeveloperDrs, originalDevelopers, changedDevelopers, originalListings,
-                        changedListings);
+                        changedListings, logger);
             } catch (Exception ex) {
-                LOGGER.error("Could not send email to Jira team: " + ex.getMessage());
+                logger.error("Could not send email to Jira team: " + ex.getMessage());
             }
         } else {
-            LOGGER.info("No direct reviews were found for the affected developer(s). Not notifying the Jira team.");
+            logger.info("No direct reviews were found for the affected developer(s). Not notifying the Jira team.");
         }
     }
 
     private void sendDirectReviewEmails(List<DirectReview> drs,
             List<Developer> originalDevelopers, List<Developer> changedDevelopers,
             Map<Long, CertifiedProductSearchDetails> originalListings,
-            Map<Long, CertifiedProductSearchDetails> changedListings)
+            Map<Long, CertifiedProductSearchDetails> changedListings,
+            Logger logger)
         throws EmailNotSentException {
-        LOGGER.info("Sending email about direct reviews potentially needing changes.");
+        logger.info("Sending email about direct reviews potentially needing changes.");
 
         String[] recipients = new String[] {};
         if (!StringUtils.isEmpty(chplChangesEmailAddress)) {
@@ -125,8 +126,9 @@ public class DirectReviewUpdateEmailService {
     private void sendUnknownDirectReviewEmails(List<Developer> originalDevelopers,
             List<Developer> changedDevelopers,
             Map<Long, CertifiedProductSearchDetails> originalListings,
-            Map<Long, CertifiedProductSearchDetails> changedListings) throws EmailNotSentException {
-        LOGGER.info("Sending email about unknown direct reviews.");
+            Map<Long, CertifiedProductSearchDetails> changedListings,
+            Logger logger) throws EmailNotSentException {
+        logger.info("Sending email about unknown direct reviews.");
 
         String[] recipients = new String[] {};
         String emailAddressProperty = env.getProperty("directReview.unknownChanges.email");
