@@ -21,12 +21,14 @@ import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import one.util.streamex.StreamEx;
 
 @Component("directReviewSearchService")
 @NoArgsConstructor
+@Log4j2
 public class DirectReviewSearchService {
     private DirectReviewCachingService drCacheService;
 
@@ -63,7 +65,7 @@ public class DirectReviewSearchService {
     }
 
     public List<DirectReview> getDeveloperDirectReviews(Long developerId) {
-        return drCacheService.getDeveloperDirectReviewsFromCache(developerId);
+        return drCacheService.getDeveloperDirectReviewsFromCache(developerId, LOGGER);
     }
 
     /**

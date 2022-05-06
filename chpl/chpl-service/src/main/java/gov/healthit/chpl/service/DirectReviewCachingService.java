@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
@@ -25,13 +26,11 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.exception.JiraRequestFailedException;
-import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
 @Component("directReviewCachingService")
-@Log4j2
 public class DirectReviewCachingService {
     private static final int JIRA_DIRECT_REVIEWS_PAGE_SIZE = 50;
     private static final String JIRA_TOTAL_FIELD = "total";
@@ -66,17 +65,17 @@ public class DirectReviewCachingService {
     }
 
     @CacheEvict(value = { CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH }, allEntries = true)
-    public void populateDirectReviewsCache() {
-        LOGGER.info("Fetching all direct review data.");
+    public void populateDirectReviewsCache(Logger logger) {
+        logger.info("Fetching all direct review data.");
         List<DirectReview> allDirectReviews = new ArrayList<DirectReview>();
         try {
             int nextPageStart = 0;
             while (nextPageStart >= 0) {
-                JsonNode pageOfDirectReviewsJson = fetchDirectReviewsPage(nextPageStart, JIRA_DIRECT_REVIEWS_PAGE_SIZE);
-                List<DirectReview> pageOfDirectReviews = convertDirectReviewsFromJira(pageOfDirectReviewsJson);
+                JsonNode pageOfDirectReviewsJson = fetchDirectReviewsPage(nextPageStart, JIRA_DIRECT_REVIEWS_PAGE_SIZE, logger);
+                List<DirectReview> pageOfDirectReviews = convertDirectReviewsFromJira(pageOfDirectReviewsJson, logger);
                 for (DirectReview dr : pageOfDirectReviews) {
-                    JsonNode nonConformitiesJson = fetchNonConformities(dr.getJiraKey());
-                    List<DirectReviewNonConformity> ncs = convertNonConformitiesFromJira(nonConformitiesJson);
+                    JsonNode nonConformitiesJson = fetchNonConformities(dr.getJiraKey(), logger);
+                    List<DirectReviewNonConformity> ncs = convertNonConformitiesFromJira(nonConformitiesJson, logger);
                     if (ncs != null && ncs.size() > 0) {
                         dr.getNonConformities().addAll(ncs);
                     }
@@ -90,17 +89,17 @@ public class DirectReviewCachingService {
         }
 
         Ehcache drCache = getDirectReviewsCache();
-        LOGGER.info("Clearing the Direct Review cache.");
+        logger.info("Clearing the Direct Review cache.");
         drCache.removeAll();
 
         //insert an entry in the cache for every developer ID
         List<Developer> allDeveloperIds = developerDao.findAllIdsAndNames();
-        LOGGER.info("Adding " + allDeveloperIds.size() + " keys to the Direct Review cache.");
+        logger.info("Adding " + allDeveloperIds.size() + " keys to the Direct Review cache.");
         allDeveloperIds.stream()
             .forEach(dev -> drCache.put(new Element(dev.getDeveloperId(), new ArrayList<DirectReview>())));
 
         //insert each direct review into the right place in our cache
-        LOGGER.info("Inserting " + allDirectReviews.size() + " values into the Direct Review cache.");
+        logger.info("Inserting " + allDirectReviews.size() + " values into the Direct Review cache.");
         for (DirectReview dr : allDirectReviews) {
             if (dr.getDeveloperId() != null) {
                 if (drCache.get(dr.getDeveloperId()) != null) {
@@ -122,22 +121,22 @@ public class DirectReviewCachingService {
 
     //this will replace the direct reviews for the supplied developerId in the DR cache
     @CachePut(CacheNames.DIRECT_REVIEWS)
-    public List<DirectReview> getDirectReviews(Long developerId) throws JiraRequestFailedException {
+    public List<DirectReview> getDirectReviews(Long developerId, Logger logger) throws JiraRequestFailedException {
         Element devDirectReviewElement = getDirectReviewsCache().get(developerId);
         if (devDirectReviewElement != null) {
             Object devDirectReviewsObj = devDirectReviewElement.getObjectValue();
             if (devDirectReviewsObj instanceof List<?>) {
                 List<DirectReview> devDirectReviews = (List<DirectReview>) devDirectReviewsObj;
-                LOGGER.info("# DRs in cache for developer ID " + developerId + ": " + devDirectReviews.size());
+                logger.info("# DRs in cache for developer ID " + developerId + ": " + devDirectReviews.size());
             }
         }
-        LOGGER.info("Fetching direct review data for developer " + developerId);
+        logger.info("Fetching direct review data for developer " + developerId);
 
-        JsonNode directReviewsJson = fetchDirectReviews(developerId);
-        List<DirectReview> drs = convertDirectReviewsFromJira(directReviewsJson);
+        JsonNode directReviewsJson = fetchDirectReviews(developerId, logger);
+        List<DirectReview> drs = convertDirectReviewsFromJira(directReviewsJson, logger);
         for (DirectReview dr : drs) {
-            JsonNode nonConformitiesJson = fetchNonConformities(dr.getJiraKey());
-            List<DirectReviewNonConformity> ncs = convertNonConformitiesFromJira(nonConformitiesJson);
+            JsonNode nonConformitiesJson = fetchNonConformities(dr.getJiraKey(), logger);
+            List<DirectReviewNonConformity> ncs = convertNonConformitiesFromJira(nonConformitiesJson, logger);
             if (ncs != null && ncs.size() > 0) {
                 dr.getNonConformities().addAll(ncs);
             }
@@ -146,12 +145,12 @@ public class DirectReviewCachingService {
     }
 
     @Cacheable(CacheNames.DIRECT_REVIEWS)
-    public List<DirectReview> getDeveloperDirectReviewsFromCache(Long developerId) {
+    public List<DirectReview> getDeveloperDirectReviewsFromCache(Long developerId, Logger logger) {
         List<DirectReview> developerDrs = new ArrayList<DirectReview>();
         try {
-            developerDrs = getDirectReviews(developerId);
+            developerDrs = getDirectReviews(developerId, logger);
         } catch (JiraRequestFailedException ex) {
-            LOGGER.error("Could not fetch DRs from Jira.", ex);
+            logger.error("Could not fetch DRs from Jira.", ex);
         }
         return developerDrs;
     }
@@ -170,16 +169,16 @@ public class DirectReviewCachingService {
         }
     }
 
-    private JsonNode fetchDirectReviewsPage(int startAt, int maxResults) throws JiraRequestFailedException {
+    private JsonNode fetchDirectReviewsPage(int startAt, int maxResults, Logger logger) throws JiraRequestFailedException {
         String url = String.format(jiraBaseUrl + jiraAllDirectReviewsUrl, startAt, maxResults);
-        LOGGER.info("Making request to " + url);
+        logger.info("Making request to " + url);
         ResponseEntity<String> response = null;
         try {
             response = jiraAuthenticatedRestTemplate.getForEntity(url, String.class);
-            LOGGER.debug("Response: " + response.getBody());
+            logger.debug("Response: " + response.getBody());
         } catch (Exception ex) {
             HttpStatus statusCode =  (response != null ? response.getStatusCode() : null);
-            LOGGER.error("Unable to connect to Jira with the URL " + url + ". Message: " + ex.getMessage() + "; response status code " + statusCode);
+            logger.error("Unable to connect to Jira with the URL " + url + ". Message: " + ex.getMessage() + "; response status code " + statusCode);
             throw new JiraRequestFailedException(ex.getMessage(), ex, statusCode);
         }
         String responseBody = response == null ? "" : response.getBody();
@@ -187,21 +186,21 @@ public class DirectReviewCachingService {
         try {
             root = mapper.readTree(responseBody);
         } catch (IOException ex) {
-            LOGGER.error("Could not convert " + responseBody + " to JsonNode object.", ex);
+            logger.error("Could not convert " + responseBody + " to JsonNode object.", ex);
         }
         return root;
     }
 
-    private JsonNode fetchDirectReviews(Long developerId) throws JiraRequestFailedException {
+    private JsonNode fetchDirectReviews(Long developerId, Logger logger) throws JiraRequestFailedException {
         String url = String.format(jiraBaseUrl + jiraDirectReviewsForDeveloperUrl, developerId + "");
-        LOGGER.info("Making request to " + url);
+        logger.info("Making request to " + url);
         ResponseEntity<String> response = null;
         try {
             response = jiraAuthenticatedRestTemplate.getForEntity(url, String.class);
-            LOGGER.debug("Response: " + response.getBody());
+            logger.debug("Response: " + response.getBody());
         } catch (Exception ex) {
             HttpStatus statusCode =  (response != null ? response.getStatusCode() : null);
-            LOGGER.error("Unable to connect to Jira with the URL " + url + ". Got response status code " + statusCode);
+            logger.error("Unable to connect to Jira with the URL " + url + ". Got response status code " + statusCode);
             throw new JiraRequestFailedException(ex.getMessage(), ex, statusCode);
         }
         String responseBody = response == null ? "" : response.getBody();
@@ -209,21 +208,21 @@ public class DirectReviewCachingService {
         try {
             root = mapper.readTree(responseBody);
         } catch (IOException ex) {
-            LOGGER.error("Could not convert " + responseBody + " to JsonNode object.", ex);
+            logger.error("Could not convert " + responseBody + " to JsonNode object.", ex);
         }
         return root;
     }
 
-    private JsonNode fetchNonConformities(String directReviewKey) throws JiraRequestFailedException {
+    private JsonNode fetchNonConformities(String directReviewKey, Logger logger) throws JiraRequestFailedException {
         String url = String.format(jiraBaseUrl + jiraNonconformityUrl, directReviewKey + "");
-        LOGGER.info("Making request to " + url);
+        logger.info("Making request to " + url);
         ResponseEntity<String> response = null;
         try {
             response = jiraAuthenticatedRestTemplate.getForEntity(url, String.class);
-            LOGGER.debug("Response: " + response.getBody());
+            logger.debug("Response: " + response.getBody());
         } catch (Exception ex) {
             HttpStatus statusCode =  (response != null ? response.getStatusCode() : null);
-            LOGGER.error("Unable to connect to Jira with the URL " + url + ". Got response status code " + statusCode);
+            logger.error("Unable to connect to Jira with the URL " + url + ". Got response status code " + statusCode);
             throw new JiraRequestFailedException(ex.getMessage(), ex, statusCode);
         }
         String responseBody = response == null ? "" : response.getBody();
@@ -231,12 +230,12 @@ public class DirectReviewCachingService {
         try {
             root = mapper.readTree(responseBody);
         } catch (IOException ex) {
-            LOGGER.error("Could not convert " + responseBody + " to JsonNode object.", ex);
+            logger.error("Could not convert " + responseBody + " to JsonNode object.", ex);
         }
         return root;
     }
 
-    private List<DirectReview> convertDirectReviewsFromJira(JsonNode rootNode) {
+    private List<DirectReview> convertDirectReviewsFromJira(JsonNode rootNode, Logger logger) {
         List<DirectReview> drs = new ArrayList<DirectReview>();
         if (rootNode != null) {
             JsonNode issuesNode = rootNode.get(JIRA_ISSUES_FIELD);
@@ -252,7 +251,7 @@ public class DirectReviewCachingService {
                             drs.add(dr);
                         }
                     } catch (IOException ex) {
-                        LOGGER.error("Cannot map issue JSON to DirectReview class", ex);
+                        logger.error("Cannot map issue JSON to DirectReview class", ex);
                     }
                 }
             }
@@ -260,7 +259,7 @@ public class DirectReviewCachingService {
         return drs;
     }
 
-    private List<DirectReviewNonConformity> convertNonConformitiesFromJira(JsonNode rootNode) {
+    private List<DirectReviewNonConformity> convertNonConformitiesFromJira(JsonNode rootNode, Logger logger) {
         List<DirectReviewNonConformity> ncs = new ArrayList<DirectReviewNonConformity>();
         if (rootNode != null) {
             JsonNode issuesNode = rootNode.get(JIRA_ISSUES_FIELD);
@@ -271,7 +270,7 @@ public class DirectReviewCachingService {
                         DirectReviewNonConformity nc = mapper.readValue(fieldsJson, DirectReviewNonConformity.class);
                         ncs.add(nc);
                     } catch (IOException ex) {
-                        LOGGER.error("Cannot map issue JSON to DirectReviewNonconformity class", ex);
+                        logger.error("Cannot map issue JSON to DirectReviewNonconformity class", ex);
                     }
                 }
             }
@@ -291,5 +290,9 @@ public class DirectReviewCachingService {
             return currentPageStartIndex + maxResultsReturned;
         }
         return -1;
+    }
+
+    public void setLogger(Logger logger) {
+
     }
 }

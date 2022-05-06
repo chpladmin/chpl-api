@@ -43,7 +43,7 @@ public class DirectReviewDownloadableResourceCreatorJob extends DownloadableReso
         try {
             try {
                 LOGGER.info("Repopulating the direct reviews cache.");
-                drCachingService.populateDirectReviewsCache();
+                drCachingService.populateDirectReviewsCache(LOGGER);
                 LOGGER.info("Completed repopulating the direct reviews cache.");
             } catch (Exception ex) {
                 LOGGER.error("Repopulating direct reviews cache failed. Not writing out a file.", ex);
