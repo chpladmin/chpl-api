@@ -3,8 +3,11 @@ package gov.healthit.chpl.service;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,11 +29,14 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.exception.JiraRequestFailedException;
+import gov.healthit.chpl.validation.compliance.DirectReviewValidator;
+import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
 @Component("directReviewCachingService")
+@Log4j2
 public class DirectReviewCachingService {
     private static final int JIRA_DIRECT_REVIEWS_PAGE_SIZE = 50;
     private static final String JIRA_TOTAL_FIELD = "total";
@@ -52,16 +58,24 @@ public class DirectReviewCachingService {
     @Value("${jira.nonconformityUrl}")
     private String jiraNonconformityUrl;
 
+    private DirectReviewValidator drValidator;
     private DeveloperDAO developerDao;
     private RestTemplate jiraAuthenticatedRestTemplate;
     private DirectReviewDeserializingObjectMapper mapper;
 
     @Autowired
-    public DirectReviewCachingService(DeveloperDAO developerDao, RestTemplate jiraAuthenticatedRestTemplate,
+    public DirectReviewCachingService(DirectReviewValidator drValidator,
+            DeveloperDAO developerDao, RestTemplate jiraAuthenticatedRestTemplate,
             DirectReviewDeserializingObjectMapper mapper) {
+        this.drValidator = drValidator;
         this.developerDao = developerDao;
         this.jiraAuthenticatedRestTemplate = jiraAuthenticatedRestTemplate;
         this.mapper = mapper;
+    }
+
+    @CacheEvict(value = { CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH }, allEntries = true)
+    public void populateDirectReviewsCache() {
+        populateDirectReviewsCache(LOGGER);
     }
 
     @CacheEvict(value = { CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH }, allEntries = true)
@@ -101,7 +115,8 @@ public class DirectReviewCachingService {
         //insert each direct review into the right place in our cache
         logger.info("Inserting " + allDirectReviews.size() + " values into the Direct Review cache.");
         for (DirectReview dr : allDirectReviews) {
-            if (dr.getDeveloperId() != null) {
+            drValidator.review(dr);
+            if (CollectionUtils.isEmpty(dr.getErrorMessages())) {
                 if (drCache.get(dr.getDeveloperId()) != null) {
                     Element devDirectReviewElement = drCache.get(dr.getDeveloperId());
                     Object devDirectReviewsObj = devDirectReviewElement.getObjectValue();
@@ -115,23 +130,33 @@ public class DirectReviewCachingService {
                     Element devDirectReviewElement = new Element(dr.getDeveloperId(), devDirectReviews);
                     drCache.put(devDirectReviewElement);
                 }
+            } else {
+                logger.warn("Not adding Direct Review " + dr.getJiraKey() + " to the cache. "
+                        + "The following error(s) were found: " + System.lineSeparator()
+                        + dr.getErrorMessages().stream()
+                            .map(errMsg -> "\t" + errMsg)
+                            .collect(Collectors.joining(System.lineSeparator())));
             }
         }
     }
 
+    @CachePut(value = CacheNames.DIRECT_REVIEWS, key = "#developerId")
+    public List<DirectReview> getDirectReviews(Long developerId)  throws JiraRequestFailedException {
+        return getDirectReviews(developerId, LOGGER);
+    }
+
     //this will replace the direct reviews for the supplied developerId in the DR cache
-    @CachePut(CacheNames.DIRECT_REVIEWS)
+    @CachePut(value = CacheNames.DIRECT_REVIEWS, key = "#developerId")
     public List<DirectReview> getDirectReviews(Long developerId, Logger logger) throws JiraRequestFailedException {
         Element devDirectReviewElement = getDirectReviewsCache().get(developerId);
         if (devDirectReviewElement != null) {
             Object devDirectReviewsObj = devDirectReviewElement.getObjectValue();
             if (devDirectReviewsObj instanceof List<?>) {
                 List<DirectReview> devDirectReviews = (List<DirectReview>) devDirectReviewsObj;
-                logger.info("# DRs in cache for developer ID " + developerId + ": " + devDirectReviews.size());
+                logger.debug("# DRs in cache for developer ID " + developerId + ": " + devDirectReviews.size());
             }
         }
         logger.info("Fetching direct review data for developer " + developerId);
-
         JsonNode directReviewsJson = fetchDirectReviews(developerId, logger);
         List<DirectReview> drs = convertDirectReviewsFromJira(directReviewsJson, logger);
         for (DirectReview dr : drs) {
@@ -141,10 +166,24 @@ public class DirectReviewCachingService {
                 dr.getNonConformities().addAll(ncs);
             }
         }
+
+        Iterator<DirectReview> drIter = drs.iterator();
+        while (drIter.hasNext()) {
+            DirectReview dr = drIter.next();
+            drValidator.review(dr);
+            if (!CollectionUtils.isEmpty(dr.getErrorMessages())) {
+                logger.warn("Not adding Direct Review " + dr.getJiraKey() + " to the cache. "
+                        + "The following error(s) were found: " + System.lineSeparator()
+                        + dr.getErrorMessages().stream()
+                            .map(errMsg -> "\t" + errMsg)
+                            .collect(Collectors.joining(System.lineSeparator())));
+                drIter.remove();
+            }
+        }
         return drs;
     }
 
-    @Cacheable(CacheNames.DIRECT_REVIEWS)
+    @Cacheable(value = CacheNames.DIRECT_REVIEWS, key = "#developerId")
     public List<DirectReview> getDeveloperDirectReviewsFromCache(Long developerId, Logger logger) {
         List<DirectReview> developerDrs = new ArrayList<DirectReview>();
         try {

@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -78,4 +80,8 @@ public class DirectReview implements Serializable {
     @JsonIgnore
     @XmlTransient
     private LocalDateTime fetched;
+
+    @XmlTransient
+    @JsonIgnore
+    private Set<String> errorMessages = new HashSet<String>();
 }

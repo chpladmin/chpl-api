@@ -50,7 +50,7 @@ public class AsynchronousCacheInitialization {
     @Async
     public void initializeBasicSearchAndDirectReviews() throws IOException, EntityRetrievalException, InterruptedException {
         LOGGER.info("Starting cache initialization for Direct Reviews");
-        drService.populateDirectReviewsCache(LOGGER);
+        drService.populateDirectReviewsCache();
         LOGGER.info("Finished cache initialization for Direct Reviews");
         LOGGER.info("Starting cache initialization for searchable listing collection");
         listingSearchManager.getAllListings();
