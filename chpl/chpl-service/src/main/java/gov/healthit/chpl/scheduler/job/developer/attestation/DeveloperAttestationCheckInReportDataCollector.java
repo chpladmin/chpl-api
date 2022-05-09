@@ -97,6 +97,8 @@ public class DeveloperAttestationCheckInReportDataCollector {
                 .communicationsResponse(getAttestationResponse(cr, COMMUNICATIONS_CONDITION))
                 .rwtResponse(getAttestationResponse(cr, RWT_CONDITION))
                 .apiResponse(getAttestationResponse(cr, API_CONDITION))
+                .signature(((ChangeRequestAttestationSubmission) cr.getDetails()).getSignature())
+                .signatureEmail(((ChangeRequestAttestationSubmission) cr.getDetails()).getSignatureEmail())
                 .build();
     }
 

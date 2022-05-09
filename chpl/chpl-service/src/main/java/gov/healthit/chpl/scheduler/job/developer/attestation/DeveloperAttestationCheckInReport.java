@@ -20,6 +20,8 @@ public class DeveloperAttestationCheckInReport {
     private String communicationsResponse;
     private String rwtResponse;
     private String apiResponse;
+    private String signature;
+    private String signatureEmail;
 
     public List<String> toListOfStrings() {
         return List.of(developerName,
@@ -32,7 +34,9 @@ public class DeveloperAttestationCheckInReport {
                 assurancesResponse != null ? assurancesResponse : "",
                 communicationsResponse != null ? communicationsResponse : "",
                 rwtResponse != null ? rwtResponse : "",
-                apiResponse != null ? apiResponse : "");
+                apiResponse != null ? apiResponse : "",
+                signature != null ? signature : "",
+                signatureEmail != null ? signatureEmail : "");
     }
 
     public static List<String> getHeaders() {
@@ -46,6 +50,8 @@ public class DeveloperAttestationCheckInReport {
                 "Assurances Response",
                 "Communications Response",
                 "Real World Testing Response",
-                "Application Programming Interfaces Response");
+                "Application Programming Interfaces Response",
+                "Signature",
+                "Signature Email");
     }
 }
