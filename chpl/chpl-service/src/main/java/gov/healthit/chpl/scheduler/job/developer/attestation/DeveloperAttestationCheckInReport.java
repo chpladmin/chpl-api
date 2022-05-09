@@ -51,7 +51,7 @@ public class DeveloperAttestationCheckInReport {
                 "Communications Response",
                 "Real World Testing Response",
                 "Application Programming Interfaces Response",
-                "Signature",
-                "Signature Email");
+                "Submitted by Name",
+                "Submitted by Email");
     }
 }

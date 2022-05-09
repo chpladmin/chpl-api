@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.commons.csv.CSVFormat;
@@ -53,7 +54,7 @@ public class DeveloperAttestationCheckInReportCsvWriter {
     private File getOutputFile() {
         File temp = null;
         try {
-            temp = File.createTempFile(reportFileName, ".csv");
+            temp = File.createTempFile(reportFileName + " " + LocalDate.now().toString() + " ", ".csv");
             temp.deleteOnExit();
         } catch (IOException ex) {
             LOGGER.error("Could not create temporary file " + ex.getMessage(), ex);
