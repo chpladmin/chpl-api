@@ -149,7 +149,7 @@
         <job>
             <name>Cures Statistics Email</name>
             <group>chplJobs</group>
-            <description>Send the Cures Update statistics as a Excel reports.</description>
+            <description>Send the Cures Update statistics Excel reports.</description>
             <job-class>gov.healthit.chpl.scheduler.job.curesStatistics.email.CuresStatisticsEmailJob</job-class>
             <durability>true</durability>
             <recover>false</recover>

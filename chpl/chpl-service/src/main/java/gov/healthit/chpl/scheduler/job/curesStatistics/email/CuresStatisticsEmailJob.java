@@ -80,6 +80,7 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
     private String createHtmlMessage() {
         return chplHtmlEmailBuilder.initialize()
                 .heading("Cures Upgrade Statistics")
+                .paragraph("", env.getProperty("curesStatisticsReport.listingCuresStatusStatistics.body"))
                 .paragraph(listingCuresStatusStatisticsHtmlCreator.getSectionHeader(), listingCuresStatusStatisticsHtmlCreator.getSection())
                 .paragraph(privacyAndSecurityListingStatisticsHtmlCreator.getSectionHeader(), privacyAndSecurityListingStatisticsHtmlCreator.getSection())
                 .footer(true)
