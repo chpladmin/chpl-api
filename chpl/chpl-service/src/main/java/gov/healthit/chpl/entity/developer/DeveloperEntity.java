@@ -26,6 +26,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.attestation.entity.DeveloperAttestationSubmissionEntity;
+import gov.healthit.chpl.changerequest.entity.DeveloperCertificationBodyMapEntity;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.PublicAttestation;
@@ -121,6 +122,11 @@ public class DeveloperEntity implements Serializable {
     @Column(name = "developer_id", nullable = false)
     @Where(clause = "deleted <> 'true'")
     private Set<DeveloperAttestationSubmissionEntity> publicAttestations = new LinkedHashSet<DeveloperAttestationSubmissionEntity>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "developerId")
+    @Basic(optional = false)
+    @Column(name = "vendor_id", nullable = false)
+    private Set<DeveloperCertificationBodyMapEntity> certificationBodyMaps = new LinkedHashSet<DeveloperCertificationBodyMapEntity>();
 
     public Developer toDomain() {
         return Developer.builder()
