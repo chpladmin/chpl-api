@@ -22,7 +22,7 @@ public class DeveloperAttestationCheckInReportCsvWriter {
     private String reportFileName;
 
     @Autowired
-    public DeveloperAttestationCheckInReportCsvWriter(@Value("${developer.attestation.report.filename}") String reportFileName) {
+    public DeveloperAttestationCheckInReportCsvWriter(@Value("${developer.attestation.checkin.report.filename}") String reportFileName) {
         this.reportFileName = reportFileName;
     }
 
