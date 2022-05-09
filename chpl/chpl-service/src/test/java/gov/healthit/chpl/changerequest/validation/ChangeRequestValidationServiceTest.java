@@ -18,7 +18,6 @@ public class ChangeRequestValidationServiceTest {
     private ChangeRequestTypeInProcessValidation changeRequestTypeInProcessValidation;
     private CommentRequiredValidation commentRequiredValidation;
     private RoleAcbHasMultipleCertificationBodiesValidation roleAcbHasMultipleCertificationBodiesValidation;
-    private WebsiteValidation websiteValidation;
     private SelfDeveloperValidation selfDeveloperValidation;
     private DemographicValidation addressValidation;
     private ContactValidation contactValidation;
@@ -71,10 +70,6 @@ public class ChangeRequestValidationServiceTest {
         Mockito.when(roleAcbHasMultipleCertificationBodiesValidation.isValid(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(false);
         Mockito.when(roleAcbHasMultipleCertificationBodiesValidation.getMessages()).thenReturn(Arrays.asList("Error message"));
 
-        websiteValidation = Mockito.mock(WebsiteValidation.class);
-        Mockito.when(websiteValidation.isValid(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(false);
-        Mockito.when(websiteValidation.getMessages()).thenReturn(Arrays.asList("Error message"));
-
         selfDeveloperValidation = Mockito.mock(SelfDeveloperValidation.class);
         Mockito.when(selfDeveloperValidation.isValid(ArgumentMatchers.any(ChangeRequestValidationContext.class))).thenReturn(false);
         Mockito.when(selfDeveloperValidation.getMessages()).thenReturn(Arrays.asList("Error message"));
@@ -88,7 +83,6 @@ public class ChangeRequestValidationServiceTest {
         Mockito.when(contactValidation.getMessages()).thenReturn(Arrays.asList("Error message"));
 
         changeRequestValidationService = new ChangeRequestValidationService(
-                websiteChangeRequestTypeId,
                 developerDetailsChangeRequestTypeId,
                 attestationChangeRequestTypeId);
     }

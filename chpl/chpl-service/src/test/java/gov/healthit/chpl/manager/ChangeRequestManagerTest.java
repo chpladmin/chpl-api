@@ -21,7 +21,6 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestWebsite;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsService;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
@@ -345,10 +344,10 @@ public class ChangeRequestManagerTest {
                         .acbCode("1234")
                         .name("ACB 1234")
                         .build())
-                .details(ChangeRequestWebsite.builder()
-                        .id(2l)
-                        .website("http://www.abc.com")
-                        .build())
+//                .details(ChangeRequestWebsite.builder()
+//                        .id(2l)
+//                        .website("http://www.abc.com")
+//                        .build())
                 .build();
     }
 
