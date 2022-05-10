@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -60,7 +59,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
         try {
             this.conformanceMethodCriteriaMap = conformanceMethodDao.getAllConformanceMethodCriteriaMap();
         } catch (EntityRetrievalException ex) {
-            LOGGER.error("Could not initialize conformance method criteria map for flexible upload.", ex);
+            LOGGER.error("Could not initialize conformance method criteria map.", ex);
         }
     }
 
@@ -136,40 +135,11 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
         if (ff4j.check(FeatureList.CONFORMANCE_METHOD)
                 && certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.CONFORMANCE_METHOD)
                 && CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
-            addDefaultConformanceMethod(listing, certResult);
             if (CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
                 addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.conformanceMethod.missingConformanceMethod",
                         Util.formatCriteriaNumber(certResult.getCriterion()));
             }
         }
-    }
-
-    private void addDefaultConformanceMethod(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (certResult.getConformanceMethods() == null) {
-            certResult.setConformanceMethods(new ArrayList<CertificationResultConformanceMethod>());
-        }
-
-        ConformanceMethod defaultConformanceMethod = getDefaultConformanceMethodForCriteria(certResult.getCriterion());
-        if (defaultConformanceMethod != null) {
-            certResult.getConformanceMethods().add(CertificationResultConformanceMethod.builder()
-                    .conformanceMethod(defaultConformanceMethod)
-                    .build());
-            listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.conformanceMethod.addedDefaultForCriterion",
-                    Util.formatCriteriaNumber(certResult.getCriterion()),
-                    defaultConformanceMethod.getName()));
-        }
-    }
-
-    private ConformanceMethod getDefaultConformanceMethodForCriteria(CertificationCriterion criterion) {
-        List<ConformanceMethod> allowedConformanceMethodsForCriterion = this.conformanceMethodCriteriaMap.stream()
-                .filter(cmcMap -> cmcMap.getCriterion().getId().equals(criterion.getId()))
-                .map(cmcMap -> cmcMap.getConformanceMethod())
-                .collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(allowedConformanceMethodsForCriterion)
-                && allowedConformanceMethodsForCriterion.size() == 1) {
-            return allowedConformanceMethodsForCriterion.get(0);
-        }
-        return null;
     }
 
     private void removeConformanceMethodsIfNotApplicable(CertificationResult certResult) {

@@ -3,6 +3,7 @@ package gov.healthit.chpl.upload.listing.normalizer;
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,8 +25,11 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class ConformanceMethodNormalizerTest {
+    private static final String DEFAULT_CM_ADDED_MSG = "Criterion %s requires a Conformance Method but none was found. \"%s\" was added.";
+
     private ConformanceMethodDAO cmDao;
     private ConformanceMethodNormalizer normalizer;
 
@@ -69,10 +73,15 @@ public class ConformanceMethodNormalizerTest {
         } catch (EntityRetrievalException e) {
         }
 
+        ErrorMessageUtil msgUtil = Mockito.mock(ErrorMessageUtil.class);
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.addedDefaultForCriterion"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(DEFAULT_CM_ADDED_MSG, i.getArgument(1), i.getArgument(2)));
+
         FF4j ff4j = Mockito.mock(FF4j.class);
         Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.CONFORMANCE_METHOD)))
             .thenReturn(true);
-        normalizer = new ConformanceMethodNormalizer(cmDao, ff4j);
+        normalizer = new ConformanceMethodNormalizer(cmDao, msgUtil, ff4j);
     }
 
     @Test
@@ -93,7 +102,7 @@ public class ConformanceMethodNormalizerTest {
     }
 
     @Test
-    public void normalize_emptyConformanceMethodAndCriteriaHasOneAllowed_DefaultNotPopulated() {
+    public void normalize_emptyConformanceMethodAndCriteriaHasOneAllowed_DefaultPopulatedWithWarning() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .success(true)
@@ -106,7 +115,9 @@ public class ConformanceMethodNormalizerTest {
                 .build();
         normalizer.normalize(listing);
         assertNotNull(listing.getCertificationResults().get(0).getConformanceMethods());
-        assertEquals(0, listing.getCertificationResults().get(0).getConformanceMethods().size());
+        assertEquals(1, listing.getCertificationResults().get(0).getConformanceMethods().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(DEFAULT_CM_ADDED_MSG, "170.315 (b)(1)", "CM 1")));
     }
 
     @Test
