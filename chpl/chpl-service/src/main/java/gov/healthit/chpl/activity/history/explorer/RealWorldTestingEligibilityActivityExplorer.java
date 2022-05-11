@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,11 +30,19 @@ public class RealWorldTestingEligibilityActivityExplorer extends ListingActivity
     }
 
     @Override
+    public List<ActivityDTO> getActivities(ListingActivityQuery query) {
+        return null;
+    }
+
+    @Override
     @Transactional
     public ActivityDTO getActivity(ListingActivityQuery query) {
         ActivityDTO activityReturn = null;
         RealWorldTestingEligibilityQuery realWorldTestingEligibilityQuery = (RealWorldTestingEligibilityQuery) query;
-        List<ActivityDTO> listingActivities = getAllActivityforListing(realWorldTestingEligibilityQuery.getCertifiedProductId());
+        List<ActivityDTO> listingActivities = getAllActivityforListing(realWorldTestingEligibilityQuery.getListingId());
+        if (CollectionUtils.isEmpty(listingActivities)) {
+            return null;
+        }
 
         if (realWorldTestingEligibilityQuery.getAsOfDate() == null) {
             if (listingActivities.size() > 0) {
