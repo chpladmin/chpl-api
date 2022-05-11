@@ -20,7 +20,7 @@ import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "developerAttestationCheckinReportJobLogger")
 public class DeveloperAttestationCheckInReportJob implements Job {
 
     @Autowired

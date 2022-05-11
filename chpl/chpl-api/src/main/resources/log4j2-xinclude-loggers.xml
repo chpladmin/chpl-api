@@ -221,4 +221,8 @@
         <AppenderRef ref="developerAttestationReportJob" />
         <AppenderRef ref="developerAttestationReportJobJson" />
     </Logger>
+    <Logger name="developerAttestationCheckinReportJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="developerAttestationCheckinReportJob" />
+        <AppenderRef ref="developerAttestationCheckinReportJobJson" />
+    </Logger>
 </Loggers>

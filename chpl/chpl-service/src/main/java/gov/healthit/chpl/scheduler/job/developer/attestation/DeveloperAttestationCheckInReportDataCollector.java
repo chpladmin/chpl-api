@@ -20,8 +20,10 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import lombok.extern.log4j.Log4j2;
 
 @Component
+@Log4j2(topic = "developerAttestationCheckinReportJobLogger")
 public class DeveloperAttestationCheckInReportDataCollector {
 
     private static final Long INFO_BLOCKING_CONDITION = 1L;
@@ -121,19 +123,24 @@ public class DeveloperAttestationCheckInReportDataCollector {
         List<ChangeRequest> changeRequests = getAllAttestationChangeRequestsForMostRecentPastAttestationPeriod();
 
         for (Long developerId : developerIds) {
-            map.put(developerId, changeRequests.stream()
+            var x = changeRequests.stream()
                     .filter(cr -> cr.getDeveloper().getDeveloperId().equals(developerId))
-                    .toList());
+                    .toList();
+            LOGGER.info("Developer Id: {}, found CRs {}", developerId, x.size());
+            map.put(developerId, x);
         }
         return map;
     }
 
     private List<ChangeRequest> getAllAttestationChangeRequestsForMostRecentPastAttestationPeriod() throws EntityRetrievalException {
         AttestationPeriod period = attestationManager.getMostRecentPastAttestationPeriod();
-        return changeRequestDAO.getAll().stream()
+        LOGGER.info("Most recent past att period: {}", period.toString());
+        var x = changeRequestDAO.getAll().stream()
                 .filter(cr -> cr.getChangeRequestType().isAttestation()
                         && ((ChangeRequestAttestationSubmission) cr.getDetails()).getAttestationPeriod().equals(period))
                 .toList();
+        LOGGER.info("Found {} total attestation change requests", x.size());
+        return x;
     }
 
     private List<Long> getDeveloperIdsFromDeveloperAttestationReport() {
