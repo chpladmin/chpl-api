@@ -135,7 +135,10 @@ public class DeveloperAttestationCheckInReportDataCollector {
     private List<ChangeRequest> getAllAttestationChangeRequestsForMostRecentPastAttestationPeriod() throws EntityRetrievalException {
         AttestationPeriod period = attestationManager.getMostRecentPastAttestationPeriod();
         LOGGER.info("Most recent past att period: {}", period.toString());
-        var x = changeRequestDAO.getAll().stream()
+
+        var x = changeRequestDAO.getAll();
+        LOGGER.info("Found {} total attestation change requests", x.size());
+        x.stream()
                 .filter(cr -> cr.getChangeRequestType().isAttestation()
                         && ((ChangeRequestAttestationSubmission) cr.getDetails()).getAttestationPeriod().equals(period))
                 .toList();
