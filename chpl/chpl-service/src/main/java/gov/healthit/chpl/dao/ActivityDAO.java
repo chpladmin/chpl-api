@@ -2,7 +2,10 @@ package gov.healthit.chpl.dao;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
@@ -32,7 +35,7 @@ public class ActivityDAO extends BaseDAOImpl {
         this.userMapper = userMapper;
     }
 
-    public ActivityDTO create(final ActivityDTO dto) throws EntityCreationException, EntityRetrievalException {
+    public void create(ActivityDTO dto) throws EntityCreationException, EntityRetrievalException {
 
         // find the activity concept id for this concept
         Query conceptIdQuery = entityManager.createQuery("SELECT ac "
@@ -59,21 +62,10 @@ public class ActivityDAO extends BaseDAOImpl {
         // user may be null because when they get an API Key they do not
         // have to be logged in
         entity.setLastModifiedUser(dto.getLastModifiedUser());
-        entity.setDeleted(false);
-        entityManager.persist(entity);
-        entityManager.flush();
-        entityManager.clear();
-
-        ActivityDTO result = null;
-        if (entity != null) {
-            result = mapEntityToDto(entity);
-        }
-        return result;
+        create(entity);
     }
 
-
-    public ActivityDTO getById(final Long id) throws EntityRetrievalException {
-
+    public ActivityDTO getById(Long id) throws EntityRetrievalException {
         ActivityEntity entity = getEntityById(id);
         ActivityDTO dto = null;
         if (entity != null) {
@@ -82,14 +74,11 @@ public class ActivityDAO extends BaseDAOImpl {
         return dto;
     }
 
-
     public List<ActivityDTO> findByObjectId(Long objectId, ActivityConcept concept, Date startDate, Date endDate) {
         List<ActivityEntity> entities = this.getEntitiesByObjectId(objectId, concept, startDate, endDate);
-        List<ActivityDTO> activities = new ArrayList<ActivityDTO>();
-        for (ActivityEntity entity : entities) {
-            ActivityDTO result = mapEntityToDto(entity);
-            activities.add(result);
-        }
+        List<ActivityDTO> activities = entities.stream()
+                .map(entity -> mapEntityToDto(entity))
+                .collect(Collectors.toList());
 
         //Added during OCD-3759 so that curesStatisticsCreator does not run out of memory.
         //Related to the Java 17 upgrade, the ActivityEntity objects fill up available memory.
@@ -108,13 +97,9 @@ public class ActivityDAO extends BaseDAOImpl {
         query.setParameter("firstRecord", firstRecord);
         query.setParameter("lastRecord", lastRecord);
         List<ActivityEntity> entities = query.getResultList();
-
-        List<ActivityDTO> activities = new ArrayList<>();
-        for (ActivityEntity entity : entities) {
-            ActivityDTO result = mapEntityToDto(entity);
-            activities.add(result);
-        }
-        return activities;
+        return entities.stream()
+                .map(entity -> mapEntityToDto(entity))
+                .collect(Collectors.toList());
     }
 
     public List<ActivityDTO> findPageByConceptAndObject(ActivityConcept concept,
@@ -129,13 +114,9 @@ public class ActivityDAO extends BaseDAOImpl {
         query.setParameter("firstRecord", firstRecord);
         query.setParameter("lastRecord", lastRecord);
         List<ActivityEntity> entities = query.getResultList();
-
-        List<ActivityDTO> activities = new ArrayList<>();
-        for (ActivityEntity entity : entities) {
-            ActivityDTO result = mapEntityToDto(entity);
-            activities.add(result);
-        }
-        return activities;
+        return entities.stream()
+                .map(entity -> mapEntityToDto(entity))
+                .collect(Collectors.toList());
     }
 
     public Long findResultSetSizeByConcept(ActivityConcept concept, Date startDate, Date endDate) {
@@ -191,19 +172,40 @@ public class ActivityDAO extends BaseDAOImpl {
         return (Long) query.getSingleResult();
     }
 
-    public List<ActivityDTO> findByConcept(final ActivityConcept concept, final Date startDate, final Date endDate) {
+    public List<ActivityDTO> findByConcept(ActivityConcept concept, Date startDate, Date endDate) {
         List<ActivityEntity> entities = this.getEntitiesByConcept(concept, startDate, endDate);
-        List<ActivityDTO> activities = new ArrayList<>();
-
-        for (ActivityEntity entity : entities) {
-            ActivityDTO result = mapEntityToDto(entity);
-            activities.add(result);
-        }
-        return activities;
+        return entities.stream()
+                .map(entity -> mapEntityToDto(entity))
+                .collect(Collectors.toList());
     }
 
-    public List<ActivityDTO> findAcbActivity(final List<CertificationBodyDTO> acbs,
-            final Date startDate, final Date endDate) {
+    public List<ActivityDTO> findPublicAnnouncementActivity(Date startDate, Date endDate) {
+        Query query = entityManager.createNamedQuery("getPublicAnnouncementActivityByDate",
+                ActivityEntity.class);
+        query.setParameter("conceptName", ActivityConcept.ANNOUNCEMENT.name());
+        query.setParameter("startDate", startDate);
+        query.setParameter("endDate", endDate);
+        List<ActivityEntity> entities = query.getResultList();
+        return entities.stream()
+            .map(entity -> mapEntityToDto(entity))
+            .collect(Collectors.toList());
+    }
+
+    public List<ActivityDTO> findPublicAnnouncementActivityById(Long announcementId,
+            Date startDate, Date endDate) {
+        Query query = entityManager.createNamedQuery("getPublicAnnouncementActivityByIdAndDate",
+                ActivityEntity.class);
+        query.setParameter("announcementId", announcementId);
+        query.setParameter("conceptName", ActivityConcept.ANNOUNCEMENT.name());
+        query.setParameter("startDate", startDate);
+        query.setParameter("endDate", endDate);
+        List<ActivityEntity> entities = query.getResultList();
+        return entities.stream()
+            .map(entity -> mapEntityToDto(entity))
+            .collect(Collectors.toList());
+    }
+
+    public List<ActivityDTO> findAcbActivity(List<CertificationBodyDTO> acbs, Date startDate, Date endDate) {
         List<Long> acbIds = new ArrayList<Long>();
         for (CertificationBodyDTO acb : acbs) {
             acbIds.add(acb.getId());
@@ -212,17 +214,13 @@ public class ActivityDAO extends BaseDAOImpl {
         List<ActivityEntity> entities = getEntitiesByObjectIds(acbIds,
                 ActivityConcept.CERTIFICATION_BODY, startDate, endDate);
 
-        List<ActivityDTO> results = new ArrayList<ActivityDTO>();
-        for (ActivityEntity entity : entities) {
-            ActivityDTO result = mapEntityToDto(entity);
-            results.add(result);
-        }
-        return results;
+        return entities.stream()
+                .map(entity -> mapEntityToDto(entity))
+                .collect(Collectors.toList());
     }
 
-
-    public List<ActivityDTO> findAtlActivity(final List<TestingLabDTO> atls, final Date startDate,
-            final Date endDate) {
+    public List<ActivityDTO> findAtlActivity(List<TestingLabDTO> atls, Date startDate,
+            Date endDate) {
         List<Long> atlIds = new ArrayList<Long>();
         for (TestingLabDTO atl : atls) {
             atlIds.add(atl.getId());
@@ -231,17 +229,13 @@ public class ActivityDAO extends BaseDAOImpl {
         List<ActivityEntity> entities = getEntitiesByObjectIds(atlIds,
                 ActivityConcept.TESTING_LAB, startDate, endDate);
 
-        List<ActivityDTO> results = new ArrayList<ActivityDTO>();
-        for (ActivityEntity entity : entities) {
-            ActivityDTO result = mapEntityToDto(entity);
-            results.add(result);
-        }
-        return results;
+        return entities.stream()
+                .map(entity -> mapEntityToDto(entity))
+                .collect(Collectors.toList());
     }
 
-
-    public List<ActivityDTO> findPendingListingActivity(final List<CertificationBodyDTO> pendingListingAcbs,
-            final Date startDate, final Date endDate) {
+    public List<ActivityDTO> findPendingListingActivity(List<CertificationBodyDTO> pendingListingAcbs,
+            Date startDate, Date endDate) {
         Query query = entityManager.createNamedQuery("getPendingListingActivityByAcbIdsAndDate",
                 ActivityEntity.class);
         query.setParameter("conceptName", ActivityConcept.PENDING_CERTIFIED_PRODUCT.name());
@@ -253,41 +247,58 @@ public class ActivityDAO extends BaseDAOImpl {
         query.setParameter("acbIds", acbIdParams);
         query.setParameter("startDate", startDate);
         query.setParameter("endDate", endDate);
-
-        List<ActivityDTO> results = new ArrayList<ActivityDTO>();
         List<ActivityEntity> entities = query.getResultList();
-        for (ActivityEntity entity : entities) {
-            ActivityDTO result = mapEntityToDto(entity);
-            results.add(result);
-        }
-        return results;
+        return entities.stream()
+            .map(entity -> mapEntityToDto(entity))
+            .collect(Collectors.toList());
     }
 
-    public List<ActivityDTO> findUserActivity(final List<Long> userIds, final Date startDate, final Date endDate) {
+    public List<ActivityDTO> findPendingListingActivity(Long pendingListingId,
+            Date startDate, Date endDate) {
+        List<ActivityEntity> entities = getEntitiesByObjectId(pendingListingId,
+                ActivityConcept.PENDING_CERTIFIED_PRODUCT, startDate, endDate);
+
+        return entities.stream()
+                .map(entity -> mapEntityToDto(entity))
+                .collect(Collectors.toList());
+    }
+
+    public List<ActivityDTO> findUserActivity(List<Long> userIds, Date startDate, Date endDate) {
         List<ActivityEntity> entities = getEntitiesByObjectIds(userIds,
                 ActivityConcept.USER, startDate, endDate);
 
-        List<ActivityDTO> results = new ArrayList<ActivityDTO>();
-        for (ActivityEntity entity : entities) {
-            ActivityDTO result = mapEntityToDto(entity);
-            results.add(result);
-        }
-        return results;
+        return entities.stream()
+                .map(entity -> mapEntityToDto(entity))
+                .collect(Collectors.toList());
     }
 
-
-    public List<ActivityDTO> findByUserId(final Long userId, final Date startDate, final Date endDate) {
+    public List<ActivityDTO> findByUserId(Long userId, Date startDate, Date endDate) {
         List<ActivityEntity> entities = this.getEntitiesByUserId(userId, startDate, endDate);
-        List<ActivityDTO> activities = new ArrayList<>();
-
-        for (ActivityEntity entity : entities) {
-            ActivityDTO result = mapEntityToDto(entity);
-            activities.add(result);
-        }
-        return activities;
+        return entities.stream()
+                .map(entity -> mapEntityToDto(entity))
+                .collect(Collectors.toList());
     }
 
-    private ActivityEntity getEntityById(final Long id) throws EntityRetrievalException {
+    public Map<Long, List<ActivityDTO>> findAllByUserInDateRange(Date startDate, Date endDate) {
+        Map<Long, List<ActivityDTO>> activityByUser = new HashMap<Long, List<ActivityDTO>>();
+        List<ActivityEntity> entities = this.getAllEntitiesInDateRange(startDate, endDate);
+        for (ActivityEntity entity : entities) {
+            ActivityDTO result = mapEntityToDto(entity);
+            Long userId = result.getLastModifiedUser();
+            if (userId != null) {
+                if (activityByUser.containsKey(userId)) {
+                    activityByUser.get(userId).add(result);
+                } else {
+                    List<ActivityDTO> activity = new ArrayList<ActivityDTO>();
+                    activity.add(result);
+                    activityByUser.put(userId, activity);
+                }
+            }
+        }
+        return activityByUser;
+    }
+
+    private ActivityEntity getEntityById(Long id) throws EntityRetrievalException {
         ActivityEntity entity = null;
         String queryStr = "SELECT ae "
                 + "FROM ActivityEntity ae "
@@ -308,8 +319,8 @@ public class ActivityDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private List<ActivityEntity> getEntitiesByObjectIds(final List<Long> objectIds,
-            final ActivityConcept concept, final Date startDate, final Date endDate) {
+    private List<ActivityEntity> getEntitiesByObjectIds(List<Long> objectIds,
+            ActivityConcept concept, Date startDate, Date endDate) {
         String queryStr = "SELECT ae "
                 + "FROM ActivityEntity ae "
                 + "JOIN FETCH ae.concept ac "
@@ -336,8 +347,8 @@ public class ActivityDAO extends BaseDAOImpl {
         return result;
     }
 
-    private List<ActivityEntity> getEntitiesByObjectId(final Long objectId, final ActivityConcept concept,
-            final Date startDate, final Date endDate) {
+    private List<ActivityEntity> getEntitiesByObjectId(Long objectId, ActivityConcept concept,
+            Date startDate, Date endDate) {
         String queryStr = "SELECT ae "
                 + "FROM ActivityEntity ae "
                 + "JOIN FETCH ae.concept ac "
@@ -363,8 +374,8 @@ public class ActivityDAO extends BaseDAOImpl {
         return result;
     }
 
-    private List<ActivityEntity> getEntitiesByConcept(final ActivityConcept concept, final Date startDate,
-            final Date endDate) {
+    private List<ActivityEntity> getEntitiesByConcept(ActivityConcept concept, Date startDate,
+            Date endDate) {
         String queryStr = "SELECT ae "
                 + "FROM ActivityEntity ae "
                 + "JOIN FETCH ae.concept ac "
@@ -388,7 +399,37 @@ public class ActivityDAO extends BaseDAOImpl {
         return result;
     }
 
-    private List<ActivityEntity> getEntitiesByUserId(final Long userId, final Date startDate, final Date endDate) {
+    private List<ActivityEntity> getAllEntitiesInDateRange(Date startDate, Date endDate) {
+        String queryStr = "SELECT ae "
+                + "FROM ActivityEntity ae "
+                + "JOIN FETCH ae.concept "
+                + "LEFT OUTER JOIN FETCH ae.user "
+                + "WHERE ";
+        if (startDate != null) {
+            if (!queryStr.endsWith("WHERE ")) {
+                queryStr += "AND ";
+            }
+            queryStr += "(ae.activityDate >= :startDate) ";
+        }
+        if (endDate != null) {
+            if (!queryStr.endsWith("WHERE ")) {
+                queryStr += "AND ";
+            }
+            queryStr += "(ae.activityDate <= :endDate)";
+        }
+
+        Query query = entityManager.createQuery(queryStr, ActivityEntity.class);
+        if (startDate != null) {
+            query.setParameter("startDate", startDate);
+        }
+        if (endDate != null) {
+            query.setParameter("endDate", endDate);
+        }
+        List<ActivityEntity> result = query.getResultList();
+        return result;
+    }
+
+    private List<ActivityEntity> getEntitiesByUserId(Long userId, Date startDate, Date endDate) {
         String queryStr = "SELECT ae "
                 + "FROM ActivityEntity ae "
                 + "JOIN FETCH ae.concept "
