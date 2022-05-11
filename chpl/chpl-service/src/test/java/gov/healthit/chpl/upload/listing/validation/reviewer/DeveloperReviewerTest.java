@@ -1116,7 +1116,7 @@ public class DeveloperReviewerTest {
 
     private Developer buildDeveloper(Long id, String code) {
         return Developer.builder()
-                .developerId(id)
+                .id(id)
                 .developerCode(code)
                 .name("Test Name")
                 .selfDeveloper(true)

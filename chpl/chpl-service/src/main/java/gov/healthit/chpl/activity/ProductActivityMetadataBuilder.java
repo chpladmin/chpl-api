@@ -124,7 +124,15 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
                 Developer developer = developerDao.getSimpleDeveloperById(product.getOwner().getDeveloperId(), true);
                 productMetadata.setDeveloperName(developer.getName());
             } catch (Exception ex) {
-                LOGGER.error("Unable to find developer with ID " + product.getDeveloperId() + " referenced "
+                LOGGER.error("Unable to find developer with ID " + product.getOwner().getDeveloperId() + " referenced "
+                        + "in activity for product " + (product.getId() != null ? product.getId() : product.getProductId()));
+            }
+        } else if (product.getOwner() != null && product.getOwner().getId() != null) {
+            try {
+                Developer developer = developerDao.getSimpleDeveloperById(product.getOwner().getId(), true);
+                productMetadata.setDeveloperName(developer.getName());
+            } catch (Exception ex) {
+                LOGGER.error("Unable to find developer with ID " + product.getOwner().getId() + " referenced "
                         + "in activity for product " + (product.getId() != null ? product.getId() : product.getProductId()));
             }
         } else if (!StringUtils.isEmpty(product.getDeveloperName())) {

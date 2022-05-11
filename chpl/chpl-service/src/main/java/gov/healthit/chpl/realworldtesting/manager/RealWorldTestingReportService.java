@@ -111,7 +111,7 @@ public class RealWorldTestingReportService {
                 .productName(listing.getProduct().getName())
                 .productId(listing.getProduct().getId())
                 .developerName(listing.getDeveloper().getName())
-                .developerId(listing.getDeveloper().getDeveloperId())
+                .developerId(listing.getDeveloper().getId())
                 .rwtEligibilityYear(rwtElig.getEligibilityYear() != null ? rwtElig.getEligibilityYear() : null)
                 .ics(rwtElig.getReason().equals(RealWorldTestingEligiblityReason.ICS)
                         || rwtElig.getReason().equals(RealWorldTestingEligiblityReason.SELF_AND_ICS))

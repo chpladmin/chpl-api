@@ -61,9 +61,9 @@ public class DirectReviewUpdateEmailService {
         List<DirectReview> originalDeveloperDrs = new ArrayList<DirectReview>();
         for (Developer originalDeveloper : originalDevelopers) {
             try {
-                originalDeveloperDrs.addAll(directReviewService.getDirectReviews(originalDeveloper.getDeveloperId()));
+                originalDeveloperDrs.addAll(directReviewService.getDirectReviews(originalDeveloper.getId()));
             } catch (Exception ex) {
-                LOGGER.error("Error querying Jira for direct reviews related to developer ID " + originalDeveloper.getDeveloperId());
+                LOGGER.error("Error querying Jira for direct reviews related to developer ID " + originalDeveloper.getId());
                 originalDeveloperDrs = null;
             }
         }
@@ -159,36 +159,36 @@ public class DirectReviewUpdateEmailService {
         } else if (originalDevelopers.size() == 1 && changedDevelopers.size() > 1) {
             Developer newDeveloper = null;
             for (Developer changedDeveloper : changedDevelopers) {
-                if (!(changedDeveloper.getDeveloperId().equals(originalDevelopers.get(0).getDeveloperId()))) {
+                if (!(changedDeveloper.getId().equals(originalDevelopers.get(0).getId()))) {
                     newDeveloper = changedDeveloper;
                 }
             }
             html = String.format("<p>The developer %s (ID: %s) was split. "
                     + "The new developer is %s (ID: %s).</p>",
                     originalDevelopers.get(0).getName(),
-                    originalDevelopers.get(0).getDeveloperId(),
+                    originalDevelopers.get(0).getId(),
                     newDeveloper.getName(),
-                    newDeveloper.getDeveloperId());
+                    newDeveloper.getId());
         }  else if (originalDevelopers.size() > 1 && changedDevelopers.size() == 1) {
             List<String> originalDeveloperNames = originalDevelopers.stream()
                     .map(dev -> dev.getName())
                     .collect(Collectors.toList());
             List<String> originalDeveloperIds = originalDevelopers.stream()
-                    .map(dev -> dev.getDeveloperId().toString())
+                    .map(dev -> dev.getId().toString())
                     .collect(Collectors.toList());
             html = String.format("<p>The developers %s (IDs: %s) were merged into a single new developer. "
                     + "The newly created developer is %s (ID: %s).</p>",
                     String.join(",", originalDeveloperNames),
                     String.join(",", originalDeveloperIds),
                     changedDevelopers.get(0).getName(),
-                    changedDevelopers.get(0).getDeveloperId());
+                    changedDevelopers.get(0).getId());
         } else if (originalDevelopers.size() == 1 && changedDevelopers.size() == 1) {
             html = String.format("<p>A product changed ownership from developer %s (IDs: %s) "
                     + "to developer %s (ID: %s).</p>",
                     originalDevelopers.get(0).getName(),
-                    originalDevelopers.get(0).getDeveloperId(),
+                    originalDevelopers.get(0).getId(),
                     changedDevelopers.get(0).getName(),
-                    changedDevelopers.get(0).getDeveloperId());
+                    changedDevelopers.get(0).getId());
         } else {
             html += "<p>A change to developers occurred.</p>";
         }

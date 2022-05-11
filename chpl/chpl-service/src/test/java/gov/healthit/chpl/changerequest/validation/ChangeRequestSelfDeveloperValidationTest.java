@@ -75,7 +75,7 @@ public class ChangeRequestSelfDeveloperValidationTest {
         return ChangeRequest.builder()
                 .id(1L)
                 .developer(Developer.builder()
-                        .developerId(Long.valueOf(20L))
+                        .id(Long.valueOf(20L))
                         .developerCode("1234")
                         .name("Dev 1")
                         .build())

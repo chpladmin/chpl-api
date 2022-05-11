@@ -54,7 +54,7 @@ public class DeveloperDetailsUploadHandlerTest {
 
         Developer developer = handler.handle(headingRecord, listingRecords);
         assertNotNull(developer);
-        assertNull(developer.getDeveloperId());
+        assertNull(developer.getId());
         assertEquals(developerName, developer.getUserEnteredName());
     }
 

@@ -73,7 +73,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
         this.setOtherAcb(null);
 
         Developer developer = new Developer();
-        developer.setDeveloperId(dto.getDeveloperId());
+        developer.setId(dto.getDeveloperId());
         developer.setName(dto.getDeveloperName());
         developer.setWebsite(dto.getDeveloperWebsite());
         developer.setSelfDeveloper(dto.getSelfDeveloper());

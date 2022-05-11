@@ -102,7 +102,7 @@ public class AttestationManagerTest {
 
         manager.saveDeveloperAttestation(DeveloperAttestationSubmission.builder()
                 .developer(Developer.builder()
-                        .developerId(1L)
+                        .id(1L)
                         .build())
                 .period(AttestationPeriod.builder()
                         .id(1L)

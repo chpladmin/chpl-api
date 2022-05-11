@@ -4,10 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
-import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.QuestionableActivityDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -17,7 +15,6 @@ import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityCertificationResultDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDeveloperDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO;
@@ -32,9 +29,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Service("questionableActivityManager")
 public class QuestionableActivityManager {
-    private static final long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
     private List<QuestionableActivityTriggerDTO> triggerTypes;
-    private Environment env;
     private DeveloperQuestionableActivityProvider developerQuestionableActivityProvider;
     private ProductQuestionableActivityProvider productQuestionableActivityProvider;
     private VersionQuestionableActivityProvider versionQuestionableActivityProvider;
@@ -42,7 +37,6 @@ public class QuestionableActivityManager {
     private CertificationResultQuestionableActivityProvider certResultQuestionableActivityProvider;
     private CertificationResultRules certResultRules;
     private QuestionableActivityDAO questionableActivityDao;
-    private CertifiedProductDAO listingDao;
 
     @Autowired
     @SuppressWarnings({"checkstyle:parameternumber"})
@@ -53,9 +47,7 @@ public class QuestionableActivityManager {
             ListingQuestionableActivityService listingQuestionableActivityService,
             CertificationResultQuestionableActivityProvider certResultQuestionableActivityProvider,
             CertificationResultRules certResultRules,
-            QuestionableActivityDAO questionableActivityDao,
-            CertifiedProductDAO listingDao,
-            Environment env) {
+            QuestionableActivityDAO questionableActivityDao) {
 
         this.developerQuestionableActivityProvider = developerQuestionableActivityProvider;
         this.productQuestionableActivityProvider = productQuestionableActivityProvider;
@@ -64,8 +56,6 @@ public class QuestionableActivityManager {
         this.certResultQuestionableActivityProvider = certResultQuestionableActivityProvider;
         this.certResultRules = certResultRules;
         this.questionableActivityDao = questionableActivityDao;
-        this.listingDao = listingDao;
-        this.env = env;
         triggerTypes = questionableActivityDao.getAllTriggers();
     }
 
@@ -76,20 +66,20 @@ public class QuestionableActivityManager {
 
         devActivity = developerQuestionableActivityProvider.checkNameUpdated(origDeveloper, newDeveloper);
         if (devActivity != null) {
-            createDeveloperActivity(devActivity, newDeveloper.getDeveloperId(), activityDate,
+            createDeveloperActivity(devActivity, newDeveloper.getId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.DEVELOPER_NAME_EDITED);
         }
 
         devActivity = developerQuestionableActivityProvider.checkCurrentStatusChanged(origDeveloper, newDeveloper);
         if (devActivity != null) {
-            createDeveloperActivity(devActivity, newDeveloper.getDeveloperId(), activityDate,
+            createDeveloperActivity(devActivity, newDeveloper.getId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_EDITED);
         }
 
         devActivities = developerQuestionableActivityProvider.checkStatusHistoryAdded(
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
         for (QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
-            createDeveloperActivity(currDevActivity, newDeveloper.getDeveloperId(), activityDate,
+            createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_ADDED,
                     currDevActivity.getReason());
         }
@@ -97,7 +87,7 @@ public class QuestionableActivityManager {
         devActivities = developerQuestionableActivityProvider.checkStatusHistoryRemoved(
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
         for (QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
-            createDeveloperActivity(currDevActivity, newDeveloper.getDeveloperId(), activityDate,
+            createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_REMOVED,
                     currDevActivity.getReason());
         }
@@ -105,7 +95,7 @@ public class QuestionableActivityManager {
         devActivities = developerQuestionableActivityProvider.checkStatusHistoryItemEdited(
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
         for (QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
-            createDeveloperActivity(currDevActivity, newDeveloper.getDeveloperId(), activityDate,
+            createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_EDITED,
                     currDevActivity.getReason());
         }
@@ -167,7 +157,6 @@ public class QuestionableActivityManager {
     public void checkCertificationResultQuestionableActivity(CertificationResult origCertResult,
             CertificationResult newCertResult, Date activityDate, Long activityUser, String activityReason) {
         QuestionableActivityCertificationResultDTO certActivity = null;
-        List<QuestionableActivityCertificationResultDTO> certActivities = null;
 
         if (certResultRules.hasCertOption(origCertResult.getCriterion().getNumber(), CertificationResultRules.G1_SUCCESS)) {
             certActivity = certResultQuestionableActivityProvider.checkG1SuccessUpdated(origCertResult, newCertResult);
@@ -200,17 +189,6 @@ public class QuestionableActivityManager {
 
     private boolean isSvapAllowedForCriteria(CertificationResult certResult) {
         return certResult.getAllowedSvaps() != null && certResult.getAllowedSvaps().size() > 0;
-    }
-
-    private void createListingActivity(QuestionableActivityListingDTO activity, Long listingId, Date activityDate,
-            Long activityUser, QuestionableActivityTriggerConcept trigger, String activityReason) {
-        activity.setListingId(listingId);
-        activity.setActivityDate(activityDate);
-        activity.setUserId(activityUser);
-        activity.setReason(activityReason);
-        QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
-        activity.setTriggerId(triggerDto.getId());
-        questionableActivityDao.create(activity);
     }
 
     private void createCertificationActivity(QuestionableActivityCertificationResultDTO activity,

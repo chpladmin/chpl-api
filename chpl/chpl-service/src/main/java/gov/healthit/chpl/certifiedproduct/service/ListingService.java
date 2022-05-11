@@ -192,9 +192,9 @@ public class ListingService {
 
     private void populateDirectReviews(CertifiedProductSearchDetails listing) {
         List<DirectReview> drs = new ArrayList<DirectReview>();
-        if (listing.getDeveloper() != null && listing.getDeveloper().getDeveloperId() != null) {
+        if (listing.getDeveloper() != null && listing.getDeveloper().getId() != null) {
             drs = drService.getDirectReviewsRelatedToListing(listing.getId(),
-                    listing.getDeveloper().getDeveloperId(),
+                    listing.getDeveloper().getId(),
                     MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY),
                     listing.getCertificationEvents());
         }

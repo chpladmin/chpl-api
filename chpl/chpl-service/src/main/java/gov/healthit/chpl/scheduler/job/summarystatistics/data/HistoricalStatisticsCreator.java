@@ -130,7 +130,7 @@ public class HistoricalStatisticsCreator {
                 .collect(Collectors.toList());
 
         return StreamEx.of(developers)
-                .distinct(Developer::getDeveloperId)
+                .distinct(Developer::getId)
                 .count();
     }
 
@@ -144,7 +144,7 @@ public class HistoricalStatisticsCreator {
                 .collect(Collectors.toList());
 
         return StreamEx.of(developers)
-                .distinct(Developer::getDeveloperId)
+                .distinct(Developer::getId)
                 .count();
     }
 
@@ -158,7 +158,7 @@ public class HistoricalStatisticsCreator {
                 .collect(Collectors.toList());
 
         return StreamEx.of(developers)
-                .distinct(Developer::getDeveloperId)
+                .distinct(Developer::getId)
                 .count();
 
     }

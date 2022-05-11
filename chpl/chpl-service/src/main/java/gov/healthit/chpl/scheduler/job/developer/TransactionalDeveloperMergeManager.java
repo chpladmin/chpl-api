@@ -63,7 +63,7 @@ public class TransactionalDeveloperMergeManager {
     public Developer merge(List<Developer> beforeDevelopers, Developer developerToCreate)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, Exception {
         List<Long> developerIdsToMerge = beforeDevelopers.stream()
-                .map(Developer::getDeveloperId)
+                .map(Developer::getId)
                 .collect(Collectors.toList());
         LOGGER.info("Creating new developer " + developerToCreate.getName());
         Long createdDeveloperId = devManager.create(developerToCreate);
@@ -88,15 +88,13 @@ public class TransactionalDeveloperMergeManager {
             // add an item to the ownership history of each product
             ProductOwner historyToAdd = new ProductOwner();
             Developer prevOwner = new Developer();
-            prevOwner.setId(product.getOwner().getDeveloperId());
-            prevOwner.setDeveloperId(product.getOwner().getDeveloperId());
+            prevOwner.setId(product.getOwner().getId());
             historyToAdd.setDeveloper(prevOwner);
             historyToAdd.setTransferDate(System.currentTimeMillis());
             product.getOwnerHistory().add(historyToAdd);
             // reassign those products to the new developer
             product.setOwner(Developer.builder()
                     .id(createdDeveloperId)
-                    .developerId(createdDeveloperId)
                     .build());
             productManager.update(product);
 
@@ -132,7 +130,7 @@ public class TransactionalDeveloperMergeManager {
         Developer afterDeveloper = devManager.getById(createdDeveloperId);
         String beforeDevNames = String.join(",",
                 beforeDevelopers.stream().map(Developer::getName).collect(Collectors.toList()));
-        activityManager.addActivity(ActivityConcept.DEVELOPER, afterDeveloper.getDeveloperId(),
+        activityManager.addActivity(ActivityConcept.DEVELOPER, afterDeveloper.getId(),
                 "Merged developers " + beforeDevNames + " into " + afterDeveloper.getName(),
                 beforeDevelopers, afterDeveloper);
 

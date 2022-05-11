@@ -93,10 +93,10 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
 
         Developer foundDeveloper = developerDao.getByName(developer);
         if (foundDeveloper != null) {
-            pendingCertifiedProduct.setDeveloperId(foundDeveloper.getDeveloperId());
+            pendingCertifiedProduct.setDeveloperId(foundDeveloper.getId());
 
             // product
-            Product foundProduct = productDao.getByDeveloperAndName(foundDeveloper.getDeveloperId(), product);
+            Product foundProduct = productDao.getByDeveloperAndName(foundDeveloper.getId(), product);
             if (foundProduct != null) {
                 pendingCertifiedProduct.setProductId(foundProduct.getId());
 

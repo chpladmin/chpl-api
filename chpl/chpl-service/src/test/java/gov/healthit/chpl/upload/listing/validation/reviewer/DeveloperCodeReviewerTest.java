@@ -55,7 +55,7 @@ public class DeveloperCodeReviewerTest {
             .thenReturn(CODE_MISSING);
 
         Developer dev = Developer.builder()
-                .developerId(1L)
+                .id(1L)
                 .developerCode("")
                 .build();
 
@@ -76,7 +76,7 @@ public class DeveloperCodeReviewerTest {
             .thenReturn(CODE_MISSING);
 
         Developer dev = Developer.builder()
-                .developerId(1L)
+                .id(1L)
                 .developerCode(null)
                 .build();
 
@@ -122,7 +122,7 @@ public class DeveloperCodeReviewerTest {
             .thenReturn(CODE_XXXX);
 
         Developer dev = Developer.builder()
-                .developerId(1L)
+                .id(1L)
                 .name("Test")
                 .developerCode("1234")
                 .build();
@@ -164,7 +164,7 @@ public class DeveloperCodeReviewerTest {
             .thenAnswer(i -> String.format(CODE_MISMATCH, i.getArgument(1), i.getArgument(2)));
 
         Developer dev = Developer.builder()
-                .developerId(1L)
+                .id(1L)
                 .developerCode("1234")
                 .name("Test")
                 .build();
@@ -183,7 +183,7 @@ public class DeveloperCodeReviewerTest {
     @Test
     public void review_mismatchedDeveloperCodeInvalidChplProductNumber_noError() {
         Developer dev = Developer.builder()
-                .developerId(1L)
+                .id(1L)
                 .developerCode("1234")
                 .name("Test")
                 .build();
@@ -216,7 +216,7 @@ public class DeveloperCodeReviewerTest {
     @Test
     public void review_matchingDeveloperCode_noError() {
         Developer dev = Developer.builder()
-                .developerId(1L)
+                .id(1L)
                 .developerCode("1234")
                 .name("Test")
                 .build();

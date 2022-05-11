@@ -176,12 +176,11 @@ public class SplitDeveloperJob implements Job {
 
             // move the product to be owned by the new developer
             Product productToMove = productManager.getById(productIdToMove);
-            if (productToMove.getOwner().getDeveloperId().longValue() != preSplitDeveloper.getDeveloperId().longValue()) {
+            if (productToMove.getOwner().getId().longValue() != preSplitDeveloper.getId().longValue()) {
                 throw new AccessDeniedException("The product " + productToMove.getName()
                     + " is not owned by " + preSplitDeveloper.getName());
             }
             productToMove.getOwner().setId(createdDeveloperId);
-            productToMove.getOwner().setDeveloperId(createdDeveloperId);
             ProductOwner newOwner = new ProductOwner();
             newOwner.setDeveloper(preSplitDeveloper);
             newOwner.setTransferDate(splitDate.getTime());
@@ -209,12 +208,12 @@ public class SplitDeveloperJob implements Job {
         }
 
         LOGGER.info("Logging developer split activity.");
-        Developer origDeveloper = devManager.getById(preSplitDeveloper.getDeveloperId());
+        Developer origDeveloper = devManager.getById(preSplitDeveloper.getId());
         Developer afterDeveloper = devManager.getById(createdDeveloperId);
         List<Developer> splitDevelopers = new ArrayList<Developer>();
         splitDevelopers.add(origDeveloper);
         splitDevelopers.add(afterDeveloper);
-        activityManager.addActivity(ActivityConcept.DEVELOPER, afterDeveloper.getDeveloperId(),
+        activityManager.addActivity(ActivityConcept.DEVELOPER, afterDeveloper.getId(),
                 "Split developer " + origDeveloper.getName() + " into " + origDeveloper.getName()
                         + " and " + afterDeveloper.getName(),
                 origDeveloper, splitDevelopers);
@@ -308,10 +307,10 @@ public class SplitDeveloperJob implements Job {
                 + "products assigned to it: "
                 + "<ul>",
                 env.getProperty("chplUrlBegin"), // root of URL
-                createdDeveloper.getDeveloperId(),
+                createdDeveloper.getId(),
                 createdDeveloper.getName(),
                 env.getProperty("chplUrlBegin"),
-                preSplitDeveloper.getDeveloperId(),
+                preSplitDeveloper.getId(),
                 preSplitDeveloper.getName());
         for (Product product : products) {
             htmlMessage += String.format("<li>%s</li>", product.getName());
@@ -326,7 +325,7 @@ public class SplitDeveloperJob implements Job {
                 + "be split into a new developer \"%s\".</p>"
                 + "<p>The error was: %s</p>",
                 env.getProperty("chplUrlBegin"), // root of URL
-                preSplitDeveloper.getDeveloperId(),
+                preSplitDeveloper.getId(),
                 preSplitDeveloper.getName(),
                 newDeveloper.getName(),
                 ex.getMessage());

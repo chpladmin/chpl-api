@@ -293,7 +293,7 @@ public class CertifiedProductManagerTest {
                 .chplProductNumber("15.04.04.3046.Acel.11.01.0.190517")
                 .cqmResults(new ArrayList<CQMResultDetails>())
                 .developer(Developer.builder()
-                        .developerId(1L)
+                        .id(1L)
                         .address(Address.builder()
                                 .addressId(1L)
                                 .city("Westport")

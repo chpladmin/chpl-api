@@ -66,7 +66,7 @@ public class ProductDAO extends BaseDAOImpl {
         entityToAdd.setDeleted(false);
         entityToAdd.setLastModifiedUser(AuthUtil.getAuditId());
         if (owner.getDeveloper() != null) {
-            entityToAdd.setDeveloperId(owner.getDeveloper().getDeveloperId());
+            entityToAdd.setDeveloperId(owner.getDeveloper().getId());
         }
         entityToAdd.setTransferDate(new Date(owner.getTransferDate()));
         create(entityToAdd);
@@ -77,7 +77,7 @@ public class ProductDAO extends BaseDAOImpl {
         // update product data
         entity.setReportFileLocation(product.getReportFileLocation());
         entity.setName(product.getName());
-        entity.setDeveloperId(product.getOwner().getDeveloperId());
+        entity.setDeveloperId(product.getOwner().getId());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         if (product.getContact() != null) {
             if (product.getContact().getContactId() == null) {
@@ -124,7 +124,7 @@ public class ProductDAO extends BaseDAOImpl {
                     if (existingProductPreviousOwner.getDeveloper() != null
                             && updatedProductPrevOwner.getDeveloper() != null
                             && existingProductPreviousOwner.getDeveloper().getId()
-                            .longValue() == updatedProductPrevOwner.getDeveloper().getDeveloperId().longValue()) {
+                            .longValue() == updatedProductPrevOwner.getDeveloper().getId().longValue()) {
                         alreadyExists = true;
                     }
                 }
@@ -142,7 +142,7 @@ public class ProductDAO extends BaseDAOImpl {
                     ProductOwner updatedProductPreviousOwner = product.getOwnerHistory().get(i);
                     if (existingPrevOwner.getDeveloper() != null && updatedProductPreviousOwner.getDeveloper() != null
                             && existingPrevOwner.getDeveloper().getId().longValue() == updatedProductPreviousOwner
-                            .getDeveloper().getDeveloperId().longValue()) {
+                            .getDeveloper().getId().longValue()) {
                         isInUpdate = true;
                     }
                 }
@@ -162,7 +162,7 @@ public class ProductDAO extends BaseDAOImpl {
                     ProductOwner updatedProductPreviousOwner = product.getOwnerHistory().get(i);
                     if (existingPrevOwner.getDeveloper() != null && updatedProductPreviousOwner.getDeveloper() != null
                             && existingPrevOwner.getDeveloper().getId().longValue() == updatedProductPreviousOwner
-                            .getDeveloper().getDeveloperId().longValue()) {
+                            .getDeveloper().getId().longValue()) {
 
                         if (existingPrevOwner.getTransferDate().getTime()
                                 != updatedProductPreviousOwner.getTransferDate().longValue()) {

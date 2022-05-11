@@ -115,7 +115,7 @@ public class ChangeRequestWebsiteService extends ChangeRequestDetailsService<Cha
     protected ChangeRequest execute(ChangeRequest cr)
             throws EntityRetrievalException, EntityCreationException {
         ChangeRequestWebsite crWebsite = (ChangeRequestWebsite) cr.getDetails();
-        Developer developer = developerManager.getById(cr.getDeveloper().getDeveloperId());
+        Developer developer = developerManager.getById(cr.getDeveloper().getId());
         developer.setWebsite(crWebsite.getWebsite());
         try {
             Developer updatedDeveloper = developerManager.update(developer, false);
@@ -130,7 +130,7 @@ public class ChangeRequestWebsiteService extends ChangeRequestDetailsService<Cha
     protected void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
+                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String> toList()))
                 .subject(approvalEmailSubject)
@@ -145,7 +145,7 @@ public class ChangeRequestWebsiteService extends ChangeRequestDetailsService<Cha
     protected void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
+                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String> toList()))
                 .subject(pendingDeveloperActionEmailSubject)
@@ -161,7 +161,7 @@ public class ChangeRequestWebsiteService extends ChangeRequestDetailsService<Cha
     protected void sendRejectedEmail(ChangeRequest cr) throws EmailNotSentException {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
+                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String> toList()))
                 .subject(rejectedEmailSubject)

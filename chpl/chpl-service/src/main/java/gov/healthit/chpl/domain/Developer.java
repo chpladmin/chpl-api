@@ -296,7 +296,7 @@ public class Developer implements Serializable {
         result = prime * result + ((address == null) ? 0 : address.hashCode());
         result = prime * result + ((contact == null) ? 0 : contact.hashCode());
         result = prime * result + ((developerCode == null) ? 0 : developerCode.hashCode());
-        result = prime * result + ((developerId == null) ? 0 : developerId.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((selfDeveloper == null) ? 0 : selfDeveloper.hashCode());
         result = prime * result + ((statusEvents == null) ? 0 : statusEvents.hashCode());
@@ -339,11 +339,11 @@ public class Developer implements Serializable {
         } else if (!developerCode.equals(other.developerCode)) {
             return false;
         }
-        if (developerId == null) {
-            if (other.developerId != null) {
+        if (id == null) {
+            if (other.id != null) {
                 return false;
             }
-        } else if (!developerId.equals(other.developerId)) {
+        } else if (!id.equals(other.id)) {
             return false;
         }
         if (name == null) {

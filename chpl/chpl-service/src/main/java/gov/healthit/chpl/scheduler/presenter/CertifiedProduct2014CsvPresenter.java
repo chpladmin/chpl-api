@@ -61,7 +61,7 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
         result.add(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
         result.add(listing.getOtherAcb());
         result.add(listing.getDeveloper().getName());
-        result.add(listing.getDeveloper().getDeveloperId().toString());
+        result.add(listing.getDeveloper().getId().toString());
         result.addAll(getDeveloperAddressCells(listing));
         result.add(listing.getDeveloper().getWebsite() == null
                 ? "" : listing.getDeveloper().getWebsite());

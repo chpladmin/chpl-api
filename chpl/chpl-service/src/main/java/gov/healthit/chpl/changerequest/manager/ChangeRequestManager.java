@@ -150,10 +150,10 @@ public class ChangeRequestManager extends SecurityManager {
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException, NotImplementedException {
         //get developer from db in case passed-in data is not correct
-        if (parentChangeRequest.getDeveloper() == null || parentChangeRequest.getDeveloper().getDeveloperId() == null) {
+        if (parentChangeRequest.getDeveloper() == null || parentChangeRequest.getDeveloper().getId() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.developer.required"));
         }
-        Developer existingDeveloper = devManager.getById(parentChangeRequest.getDeveloper().getDeveloperId());
+        Developer existingDeveloper = devManager.getById(parentChangeRequest.getDeveloper().getId());
         parentChangeRequest.setDeveloper(existingDeveloper);
 
         //make change requests for each type detected - throw error if no changes were made

@@ -60,12 +60,12 @@ public class DeveloperNormalizer {
     }
 
     private boolean hasUserEnteredDeveloperName(CertifiedProductSearchDetails listing) {
-        return listing.getDeveloper() != null && listing.getDeveloper().getDeveloperId() == null
+        return listing.getDeveloper() != null && listing.getDeveloper().getId() == null
                 && !StringUtils.isEmpty(listing.getDeveloper().getUserEnteredName());
     }
 
     private void copySystemDeveloperValues(Developer userEnteredDev, Developer systemDev) {
-        userEnteredDev.setDeveloperId(systemDev.getDeveloperId());
+        userEnteredDev.setId(systemDev.getId());
         userEnteredDev.setDeveloperCode(systemDev.getDeveloperCode());
         userEnteredDev.setAttestations(systemDev.getAttestations());
         userEnteredDev.setName(systemDev.getName());

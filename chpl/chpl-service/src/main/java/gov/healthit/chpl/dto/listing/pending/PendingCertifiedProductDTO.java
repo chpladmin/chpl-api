@@ -150,7 +150,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         if (details.getPracticeType().get("name") != null) {
             this.practiceType = details.getPracticeType().get("name").toString();
         }
-        this.developerId = details.getDeveloper().getDeveloperId();
+        this.developerId = details.getDeveloper().getId();
         this.developerName = details.getDeveloper().getName();
         this.developerWebsite = details.getDeveloper().getWebsite();
         this.selfDeveloper = details.getDeveloper().getSelfDeveloper();

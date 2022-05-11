@@ -324,7 +324,7 @@ public class ChangeRequestManagerTest {
         return ChangeRequest.builder()
                 .id(1l)
                 .developer(Developer.builder()
-                        .developerId(Long.valueOf(20l))
+                        .id(Long.valueOf(20l))
                         .developerCode("1234")
                         .name("Dev 1")
                         .build())

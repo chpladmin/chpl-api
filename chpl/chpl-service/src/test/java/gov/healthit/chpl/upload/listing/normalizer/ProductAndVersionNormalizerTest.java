@@ -80,7 +80,7 @@ public class ProductAndVersionNormalizerTest {
         normalizer.normalize(listing);
 
         assertNotNull(listing.getDeveloper());
-        assertNull(listing.getDeveloper().getDeveloperId());
+        assertNull(listing.getDeveloper().getId());
         assertEquals("New Developer 1", listing.getDeveloper().getName());
         assertNotNull(listing.getProduct());
         assertNull(listing.getProduct().getId());
@@ -94,7 +94,7 @@ public class ProductAndVersionNormalizerTest {
     public void normalize_nullProductAndVersion_noChanges() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(Developer.builder()
-                        .developerId(1L)
+                        .id(1L)
                         .name("New Developer 1")
                         .build())
                 .product(null)
@@ -103,7 +103,7 @@ public class ProductAndVersionNormalizerTest {
         normalizer.normalize(listing);
 
         assertNotNull(listing.getDeveloper());
-        assertEquals(1L, listing.getDeveloper().getDeveloperId());
+        assertEquals(1L, listing.getDeveloper().getId());
         assertEquals("New Developer 1", listing.getDeveloper().getName());
         assertNull(listing.getProduct());
         assertNull(listing.getVersion());
@@ -113,7 +113,7 @@ public class ProductAndVersionNormalizerTest {
     public void normalize_emptyProductNameAndVersionName_noChanges() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(Developer.builder()
-                        .developerId(1L)
+                        .id(1L)
                         .name("New Developer 1")
                         .build())
                 .product(Product.builder()
@@ -126,7 +126,7 @@ public class ProductAndVersionNormalizerTest {
         normalizer.normalize(listing);
 
         assertNotNull(listing.getDeveloper());
-        assertEquals(1L, listing.getDeveloper().getDeveloperId());
+        assertEquals(1L, listing.getDeveloper().getId());
         assertEquals("New Developer 1", listing.getDeveloper().getName());
         assertNotNull(listing.getProduct());
         assertNull(listing.getProduct().getId());
@@ -140,7 +140,7 @@ public class ProductAndVersionNormalizerTest {
     public void normalize_hasProductNameNullVersion_findsProduct() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(Developer.builder()
-                        .developerId(1L)
+                        .id(1L)
                         .name("New Developer 1")
                         .build())
                 .product(Product.builder()
@@ -156,7 +156,7 @@ public class ProductAndVersionNormalizerTest {
         normalizer.normalize(listing);
 
         assertNotNull(listing.getDeveloper());
-        assertEquals(1L, listing.getDeveloper().getDeveloperId());
+        assertEquals(1L, listing.getDeveloper().getId());
         assertEquals("New Developer 1", listing.getDeveloper().getName());
         assertNotNull(listing.getProduct());
         assertEquals(1L, listing.getProduct().getId());
@@ -168,7 +168,7 @@ public class ProductAndVersionNormalizerTest {
     public void normalize_hasProductNameNullVersion_noProductFound() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(Developer.builder()
-                        .developerId(1L)
+                        .id(1L)
                         .name("New Developer 1")
                         .build())
                 .product(Product.builder()
@@ -181,7 +181,7 @@ public class ProductAndVersionNormalizerTest {
         normalizer.normalize(listing);
 
         assertNotNull(listing.getDeveloper());
-        assertEquals(1L, listing.getDeveloper().getDeveloperId());
+        assertEquals(1L, listing.getDeveloper().getId());
         assertEquals("New Developer 1", listing.getDeveloper().getName());
         assertNotNull(listing.getProduct());
         assertNull(listing.getProduct().getId());
@@ -193,7 +193,7 @@ public class ProductAndVersionNormalizerTest {
     public void normalize_nullProductHasVersion_noChanges() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(Developer.builder()
-                        .developerId(1L)
+                        .id(1L)
                         .name("New Developer 1")
                         .build())
                 .product(null)
@@ -204,7 +204,7 @@ public class ProductAndVersionNormalizerTest {
         normalizer.normalize(listing);
 
         assertNotNull(listing.getDeveloper());
-        assertEquals(1L, listing.getDeveloper().getDeveloperId());
+        assertEquals(1L, listing.getDeveloper().getId());
         assertEquals("New Developer 1", listing.getDeveloper().getName());
         assertNull(listing.getProduct());
         assertNotNull(listing.getVersion());
@@ -215,7 +215,7 @@ public class ProductAndVersionNormalizerTest {
     public void normalize_hasProductNameHasVersion_findsProductAndVersion() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(Developer.builder()
-                        .developerId(1L)
+                        .id(1L)
                         .name("New Developer 1")
                         .build())
                 .product(Product.builder()
@@ -238,7 +238,7 @@ public class ProductAndVersionNormalizerTest {
         normalizer.normalize(listing);
 
         assertNotNull(listing.getDeveloper());
-        assertEquals(1L, listing.getDeveloper().getDeveloperId());
+        assertEquals(1L, listing.getDeveloper().getId());
         assertEquals("New Developer 1", listing.getDeveloper().getName());
         assertNotNull(listing.getProduct());
         assertEquals(1L, listing.getProduct().getId());
@@ -252,7 +252,7 @@ public class ProductAndVersionNormalizerTest {
     public void normalize_hasProductNameHasVersion_productNotFound() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(Developer.builder()
-                        .developerId(1L)
+                        .id(1L)
                         .name("New Developer 1")
                         .build())
                 .product(Product.builder()
@@ -267,7 +267,7 @@ public class ProductAndVersionNormalizerTest {
         normalizer.normalize(listing);
 
         assertNotNull(listing.getDeveloper());
-        assertEquals(1L, listing.getDeveloper().getDeveloperId());
+        assertEquals(1L, listing.getDeveloper().getId());
         assertEquals("New Developer 1", listing.getDeveloper().getName());
         assertNotNull(listing.getProduct());
         assertNull(listing.getProduct().getId());
@@ -281,7 +281,7 @@ public class ProductAndVersionNormalizerTest {
     public void normalize_hasProductNameHasVersion_versionNotFound() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(Developer.builder()
-                        .developerId(1L)
+                        .id(1L)
                         .name("New Developer 1")
                         .build())
                 .product(Product.builder()
@@ -301,7 +301,7 @@ public class ProductAndVersionNormalizerTest {
         normalizer.normalize(listing);
 
         assertNotNull(listing.getDeveloper());
-        assertEquals(1L, listing.getDeveloper().getDeveloperId());
+        assertEquals(1L, listing.getDeveloper().getId());
         assertEquals("New Developer 1", listing.getDeveloper().getName());
         assertNotNull(listing.getProduct());
         assertEquals(1L, listing.getProduct().getId());

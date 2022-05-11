@@ -161,7 +161,7 @@ public class ListingsWithCriterionCSVPresenter {
         result.add(listing.getChplProductNumber());
         result.add(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
         result.add(listing.getDeveloper().getName());
-        result.add(listing.getDeveloper().getDeveloperId().toString());
+        result.add(listing.getDeveloper().getId().toString());
         result.addAll(getDeveloperAddressCells(listing));
         result.add(listing.getDeveloper().getWebsite() == null
                 ? ""

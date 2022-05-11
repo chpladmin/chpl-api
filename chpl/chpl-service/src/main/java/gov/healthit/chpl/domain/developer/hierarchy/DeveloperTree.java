@@ -26,7 +26,6 @@ public class DeveloperTree extends Developer {
         this.setContact(developer.getContact());
         this.setDeleted(developer.getDeleted());
         this.setDeveloperCode(developer.getDeveloperCode());
-        this.setDeveloperId(developer.getDeveloperId());
         this.setLastModifiedDate(developer.getLastModifiedDate());
         this.setName(developer.getName());
         this.setSelfDeveloper(developer.getSelfDeveloper());
@@ -42,14 +41,14 @@ public class DeveloperTree extends Developer {
             return false;
         }
         DeveloperTree otherDev = (DeveloperTree) obj;
-        return Objects.equals(this.getDeveloperId(), otherDev.getDeveloperId());
+        return Objects.equals(this.getId(), otherDev.getId());
     }
 
     public int hashCode() {
-        if (this.getDeveloperId() == null) {
+        if (this.getId() == null) {
             return -1;
         }
 
-        return this.getDeveloperId().hashCode();
+        return this.getId().hashCode();
     }
 }

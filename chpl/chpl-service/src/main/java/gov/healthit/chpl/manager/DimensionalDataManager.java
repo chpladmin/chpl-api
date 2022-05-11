@@ -530,7 +530,7 @@ public class DimensionalDataManager {
         List<Developer> developers = devDao.findAllIdsAndNames();
         Set<KeyValueModel> developerNames = new HashSet<KeyValueModel>();
         for (Developer dev : developers) {
-            developerNames.add(new KeyValueModel(dev.getDeveloperId(), dev.getName()));
+            developerNames.add(new KeyValueModel(dev.getId(), dev.getName()));
         }
         result.setDevelopers(developerNames);
 

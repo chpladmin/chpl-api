@@ -211,12 +211,12 @@ public class DeveloperController {
         }
         // make sure the developer id in the split request matches the developer
         // id on the url path
-        if (splitRequest.getOldDeveloper().getDeveloperId() != null
-                && developerId.longValue() != splitRequest.getOldDeveloper().getDeveloperId().longValue()) {
+        if (splitRequest.getOldDeveloper().getId() != null
+                && developerId.longValue() != splitRequest.getOldDeveloper().getId().longValue()) {
             throw new InvalidArgumentsException(msgUtil.getMessage("developer.split.requestMismatch"));
         }
 
-        Developer oldDeveloper = developerManager.getById(splitRequest.getOldDeveloper().getDeveloperId());
+        Developer oldDeveloper = developerManager.getById(splitRequest.getOldDeveloper().getId());
         List<Long> newDeveloperProductIds = new ArrayList<Long>(splitRequest.getNewProducts().size());
         for (Product newDeveloperProduct : splitRequest.getNewProducts()) {
             newDeveloperProductIds.add(newDeveloperProduct.getId());

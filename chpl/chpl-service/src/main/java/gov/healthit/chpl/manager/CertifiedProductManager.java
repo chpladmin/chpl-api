@@ -489,7 +489,6 @@ public class CertifiedProductManager extends SecuredManager {
             newProduct.setName(pendingCp.getProductName());
             newProduct.setOwner(Developer.builder()
                     .id(pendingCp.getDeveloperId())
-                    .developerId(pendingCp.getDeveloperId())
                     .build());
             newProduct.setReportFileLocation(pendingCp.getReportFileLocation());
             newProduct = productManager.create(newProduct);
@@ -1274,7 +1273,7 @@ public class CertifiedProductManager extends SecuredManager {
             }
             if (newDevStatus != null) {
                 DeveloperStatusEvent statusHistoryToAdd = new DeveloperStatusEvent();
-                statusHistoryToAdd.setDeveloperId(cpDeveloper.getDeveloperId());
+                statusHistoryToAdd.setDeveloperId(cpDeveloper.getId());
                 statusHistoryToAdd.setStatus(newDevStatus);
                 statusHistoryToAdd.setStatusDate(new Date());
                 statusHistoryToAdd.setReason(msgUtil.getMessage("developer.statusAutomaticallyChanged"));

@@ -102,12 +102,12 @@ public class DeveloperAttestationReportDataCollection {
         List<DeveloperAttestationReport> reportRows = developers.stream()
                 .filter(dev -> isDeveloperManagedBySelectedAcbs(dev, selectedAcbIds))
                 .map(dev -> {
-                    DeveloperAttestationSubmission attestation = getDeveloperAttestation(dev.getDeveloperId(), mostRecentPastPeriod.getId());
+                    DeveloperAttestationSubmission attestation = getDeveloperAttestation(dev.getId(), mostRecentPastPeriod.getId());
 
                     return DeveloperAttestationReport.builder()
                         .developerName(dev.getName())
                         .developerCode(dev.getDeveloperCode())
-                        .developerId(dev.getDeveloperId())
+                        .developerId(dev.getId())
                         .pointOfContactName(getPointOfContactFullName(dev))
                         .pointOfContactEmail(getPointOfContactEmail(dev))
                         .attestationStatus(attestation != null ? "Published" : "")
@@ -162,7 +162,7 @@ public class DeveloperAttestationReportDataCollection {
     }
 
     private List<CertifiedProductBasicSearchResult> getListingDataForDeveloper(Developer developer) {
-        if (!developerListings.containsKey(developer.getDeveloperId())) {
+        if (!developerListings.containsKey(developer.getId())) {
             SearchRequest request = SearchRequest.builder()
                     .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
                     .developer(developer.getName())
@@ -171,14 +171,14 @@ public class DeveloperAttestationReportDataCollection {
 
             try {
                 SearchResponse response = listingSearchService.search(request);
-                developerListings.put(developer.getDeveloperId(), response.getResults());
+                developerListings.put(developer.getId(), response.getResults());
             } catch (ValidationException e) {
                 LOGGER.error("Could not retrieve listings for developer {}.", developer.getName());
                 LOGGER.error(e);
-                developerListings.put(developer.getDeveloperId(), new ArrayList<CertifiedProductBasicSearchResult>());
+                developerListings.put(developer.getId(), new ArrayList<CertifiedProductBasicSearchResult>());
             }
         }
-        return developerListings.get(developer.getDeveloperId());
+        return developerListings.get(developer.getId());
     }
 
     private List<Developer> getAllDevelopers() {
@@ -283,13 +283,13 @@ public class DeveloperAttestationReportDataCollection {
     }
 
     private Long getTotalDirectReviewNonconformities(Developer developer) {
-        return directReviewService.getDeveloperDirectReviews(developer.getDeveloperId()).stream()
+        return directReviewService.getDeveloperDirectReviews(developer.getId()).stream()
                 .flatMap(dr -> dr.getNonConformities().stream())
                 .count();
     }
 
     private Long getOpenDirectReviewNonconformities(Developer developer) {
-        return directReviewService.getDeveloperDirectReviews(developer.getDeveloperId()).stream()
+        return directReviewService.getDeveloperDirectReviews(developer.getId()).stream()
                 .flatMap(dr -> dr.getNonConformities().stream())
                 .filter(nc -> nc.getNonConformityStatus().equalsIgnoreCase(DirectReviewNonConformity.STATUS_OPEN))
                 .count();
@@ -325,13 +325,13 @@ public class DeveloperAttestationReportDataCollection {
 
         getListingDataForDeveloper(developer).stream()
                 .filter(listing -> isListingActiveDuringPeriod(listing, attestationPeriodService.getMostRecentPastAttestationPeriod()))
-                .forEach(listing -> developerAcbMap.put(Pair.of(developer.getDeveloperId(), getAcbByName(listing.getAcb()).getId()), true));
+                .forEach(listing -> developerAcbMap.put(Pair.of(developer.getId(), getAcbByName(listing.getAcb()).getId()), true));
 
         return developerAcbMap;
     }
 
     private Boolean isDeveloperManagedBySelectedAcbs(Developer developer, List<Long> acbIds) {
-        return developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(developer.getDeveloperId()).stream()
+        return developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(developer.getId()).stream()
                 .filter(acb -> acbIds.contains(acb.getId()))
                 .findAny()
                 .isPresent();

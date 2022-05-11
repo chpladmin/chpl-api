@@ -91,7 +91,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
 
         assertTrue(permissions.hasAccess(DeveloperAttestationSubmission.builder()
                 .developer(Developer.builder()
-                        .developerId(1L)
+                        .id(1L)
                         .build())
                 .build()));
 
@@ -100,7 +100,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
 
         assertFalse(permissions.hasAccess(DeveloperAttestationSubmission.builder()
                 .developer(Developer.builder()
-                        .developerId(2L)
+                        .id(2L)
                         .build())
                 .build()));
     }

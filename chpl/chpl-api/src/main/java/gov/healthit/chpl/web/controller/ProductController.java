@@ -339,8 +339,7 @@ public class ProductController {
         Product newProduct = new Product();
         newProduct.setName(splitRequest.getNewProductName());
         newProduct.setOwner(Developer.builder()
-                .id(oldProduct.getOwner().getDeveloperId())
-                .developerId(oldProduct.getOwner().getDeveloperId())
+                .id(oldProduct.getOwner().getId())
                 .build());
         List<ProductVersionDTO> newProductVersions = new ArrayList<ProductVersionDTO>();
         for (ProductVersion requestVersion : splitRequest.getNewVersions()) {

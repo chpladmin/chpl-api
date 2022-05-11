@@ -27,7 +27,7 @@ public class PendingCertifiedProductMetadata implements Serializable {
         this.chplProductNumber = dto.getUniqueId();
         if (dto.getDeveloperId() != null || !StringUtils.isEmpty(dto.getDeveloperName())) {
             Developer dev = new Developer();
-            dev.setDeveloperId(dto.getDeveloperId());
+            dev.setId(dto.getDeveloperId());
             dev.setName(dto.getDeveloperName());
             this.developer = dev;
         }

@@ -122,7 +122,7 @@ public class ProductManager extends SecuredManager {
     public Product create(Product product)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // check that the developer of this product is Active
-        if (product.getOwner() == null || product.getOwner().getDeveloperId() == null) {
+        if (product.getOwner() == null || product.getOwner().getId() == null) {
             throw new EntityCreationException("Cannot create a product without a developer ID.");
         }
 
@@ -169,7 +169,7 @@ public class ProductManager extends SecuredManager {
         Map<Long, CertifiedProductSearchDetails> postUpdateListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
 
         Product currentProduct = productDao.getById(product.getId());
-        Developer currentProductOwner = devDao.getById(currentProduct.getOwner().getDeveloperId());
+        Developer currentProductOwner = devDao.getById(currentProduct.getOwner().getId());
         List<CertifiedProductDetailsDTO> affectedListings = cpDao.findByProductId(currentProduct.getId());
         LOGGER.info("Getting details for " + affectedListings.size() + " listings with affected CHPL Product Numbers");
         for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
@@ -179,7 +179,7 @@ public class ProductManager extends SecuredManager {
         }
 
         Product updatedProduct = updateProduct(product);
-        Developer updatedProductOwner = devDao.getById(updatedProduct.getOwner().getDeveloperId());
+        Developer updatedProductOwner = devDao.getById(updatedProduct.getOwner().getId());
         LOGGER.info("Getting details for " + affectedListings.size() + " listings with affected CHPL Product Numbers");
         for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
             CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(affectedListing.getId());
@@ -223,7 +223,7 @@ public class ProductManager extends SecuredManager {
             beforeProducts.add(productDao.getById(productId));
         }
 
-        Long createdProductId = productDao.create(toCreate.getOwner().getDeveloperId(), toCreate);
+        Long createdProductId = productDao.create(toCreate.getOwner().getId(), toCreate);
 
         // search for any versions assigned to the list of products passed in
         List<ProductVersionDTO> assignedVersions = versionDao.getByProductIds(productIdsToMerge);
@@ -337,13 +337,13 @@ public class ProductManager extends SecuredManager {
 
         Product productBefore = productDao.getById(product.getId());
         // check that the developer of this product is Active
-        if (productBefore.getOwner() == null || productBefore.getOwner().getDeveloperId() == null) {
+        if (productBefore.getOwner() == null || productBefore.getOwner().getId() == null) {
             throw new EntityCreationException("Cannot update a product without a developer ID.");
         }
 
-        Developer currentProductOwner = devDao.getById(productBefore.getOwner().getDeveloperId());
+        Developer currentProductOwner = devDao.getById(productBefore.getOwner().getId());
         if (currentProductOwner == null) {
-            throw new EntityRetrievalException("Cannot find developer with id " + productBefore.getOwner().getDeveloperId());
+            throw new EntityRetrievalException("Cannot find developer with id " + productBefore.getOwner().getId());
         }
         DeveloperStatus currDevStatus = currentProductOwner.getStatus();
         if (currDevStatus == null || currDevStatus.getStatus() == null) {
@@ -368,9 +368,9 @@ public class ProductManager extends SecuredManager {
 
     private Product createProduct(Product product)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-        Developer dev = devDao.getById(product.getOwner().getDeveloperId());
+        Developer dev = devDao.getById(product.getOwner().getId());
         if (dev == null) {
-            throw new EntityRetrievalException("Cannot find developer with id " + product.getOwner().getDeveloperId());
+            throw new EntityRetrievalException("Cannot find developer with id " + product.getOwner().getId());
         }
         DeveloperStatus currDevStatus = dev.getStatus();
         if (currDevStatus == null || currDevStatus.getStatus() == null) {
@@ -380,7 +380,7 @@ public class ProductManager extends SecuredManager {
             throw new EntityCreationException(msg);
         }
 
-        Long productId = productDao.create(product.getOwner().getDeveloperId(), product);
+        Long productId = productDao.create(product.getOwner().getId(), product);
         Product createdProduct = productDao.getById(productId);
         String activityMsg = "Product " + product.getName() + " was created.";
         activityManager.addActivity(ActivityConcept.PRODUCT, createdProduct.getId(), activityMsg, null, createdProduct);

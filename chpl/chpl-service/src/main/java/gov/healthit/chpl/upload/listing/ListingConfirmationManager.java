@@ -126,14 +126,14 @@ public class ListingConfirmationManager {
     }, allEntries = true)
     public CertifiedProductSearchDetails create(CertifiedProductSearchDetails listing)
         throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-        if (listing.getDeveloper().getDeveloperId() == null) {
+        if (listing.getDeveloper().getId() == null) {
             //create developer, set developer ID in listing
             Long developerId = developerManager.create(listing.getDeveloper());
-            listing.getDeveloper().setDeveloperId(developerId);
+            listing.getDeveloper().setId(developerId);
         }
         if (listing.getProduct().getId() == null) {
             //create product, set product ID in listing
-            Long productId = productManager.create(listing.getDeveloper().getDeveloperId(), listing.getProduct());
+            Long productId = productManager.create(listing.getDeveloper().getId(), listing.getProduct());
             listing.getProduct().setId(productId);
         }
         if (listing.getVersion().getId() == null) {
