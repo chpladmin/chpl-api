@@ -221,8 +221,4 @@
         <AppenderRef ref="developerAttestationReportJob" />
         <AppenderRef ref="developerAttestationReportJobJson" />
     </Logger>
-    <Logger name="populateChplProductNumberHistoryJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="populateChplProductNumberHistoryJob" />
-        <AppenderRef ref="populateChplProductNumberHistoryJobJson" />
-    </Logger>
 </Loggers>

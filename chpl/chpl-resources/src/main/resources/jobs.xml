@@ -858,14 +858,5 @@
                 </entry>
             </job-data-map>
         </job>
-
-        <job>
-            <name>populateChplProductNumberHistoryJob</name>
-            <group>systemJobs</group>
-            <description>Fill in missing previous CHPL product numbers for all listings.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.onetime.PopulateChplProductNumberHistoryJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-        </job>
     </schedule>
 </job-scheduling-data>
