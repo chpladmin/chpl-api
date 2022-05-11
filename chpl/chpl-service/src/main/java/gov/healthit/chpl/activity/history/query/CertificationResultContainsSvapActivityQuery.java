@@ -4,15 +4,25 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.svap.domain.Svap;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@Data
-public class CertificationResultContainsSvapActivityQuery implements ListingActivityQuery {
-    private Long listingId;
+@Getter
+@Setter
+@ToString
+public class CertificationResultContainsSvapActivityQuery extends ListingActivityQuery {
     private CertificationCriterion criterion;
     private Svap svap;
+
+    @Builder
+    public CertificationResultContainsSvapActivityQuery(Long listingId, Svap svap,
+            CertificationCriterion criterion) {
+        super(listingId);
+        this.svap = svap;
+        this.criterion = criterion;
+    }
 }
