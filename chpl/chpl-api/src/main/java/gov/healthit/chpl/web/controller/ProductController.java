@@ -181,13 +181,13 @@ public class ProductController {
 
         // get the updated product since all transactions should be complete by
         // this point
-        Product updatedProduct = productManager.getById(result.getProductId());
+        Product updatedProduct = productManager.getById(result.getId());
         return new ResponseEntity<Product>(updatedProduct, responseHeaders, HttpStatus.OK);
     }
 
     private Boolean didOwnerHistoryChange(UpdateProductsRequest request) {
         try {
-            Product origProduct = productManager.getById(request.getProduct().getProductId());
+            Product origProduct = productManager.getById(request.getProduct().getId());
             if (origProduct != null) {
                 return !isProductOwnerListEqual(origProduct.getOwnerHistory(), request.getProduct().getOwnerHistory());
             }
@@ -321,21 +321,21 @@ public class ProductController {
         if (splitRequest.getNewVersions() == null || splitRequest.getNewVersions().size() == 0) {
             throw new InvalidArgumentsException("At least one version to assign to the new product is required.");
         }
-        if (splitRequest.getOldProduct() == null || splitRequest.getOldProduct().getProductId() == null) {
+        if (splitRequest.getOldProduct() == null || splitRequest.getOldProduct().getId() == null) {
             throw new InvalidArgumentsException("An 'oldProduct' ID is required.");
         }
         if (splitRequest.getOldVersions() == null || splitRequest.getOldVersions().size() == 0) {
             throw new InvalidArgumentsException(
                     "At least one version must remain with the original product. No 'oldVersion's were found.");
         }
-        if (productId.longValue() != splitRequest.getOldProduct().getProductId().longValue()) {
+        if (productId.longValue() != splitRequest.getOldProduct().getId().longValue()) {
             throw new InvalidArgumentsException("The productId passed into the URL (" + productId
                     + ") does not match the product id specified in the request body ("
-                    + splitRequest.getOldProduct().getProductId() + ").");
+                    + splitRequest.getOldProduct().getId() + ").");
         }
 
         HttpHeaders responseHeaders = new HttpHeaders();
-        Product oldProduct = productManager.getById(splitRequest.getOldProduct().getProductId());
+        Product oldProduct = productManager.getById(splitRequest.getOldProduct().getId());
         Product newProduct = new Product();
         newProduct.setName(splitRequest.getNewProductName());
         newProduct.setOwner(Developer.builder()
@@ -352,7 +352,7 @@ public class ProductController {
         Product splitProductNew = productManager.split(oldProduct, newProduct, splitRequest.getNewProductCode(),
                 newProductVersions);
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-        Product splitProductOld = productManager.getById(oldProduct.getProductId());
+        Product splitProductOld = productManager.getById(oldProduct.getId());
         SplitProductResponse response = new SplitProductResponse();
         response.setNewProduct(splitProductNew);
         response.setOldProduct(splitProductOld);
@@ -360,7 +360,7 @@ public class ProductController {
         // find out which CHPL product numbers would have changed (only
         // new-style ones)
         // and add them to the response header
-        List<CertifiedProductDetailsDTO> possibleChangedChplIds = cpManager.getByProduct(splitProductNew.getProductId());
+        List<CertifiedProductDetailsDTO> possibleChangedChplIds = cpManager.getByProduct(splitProductNew.getId());
         if (possibleChangedChplIds != null && possibleChangedChplIds.size() > 0) {
             StringBuffer buf = new StringBuffer();
             for (CertifiedProductDetailsDTO possibleChanged : possibleChangedChplIds) {

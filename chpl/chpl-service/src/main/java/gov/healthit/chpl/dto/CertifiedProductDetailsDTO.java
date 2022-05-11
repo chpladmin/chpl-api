@@ -258,7 +258,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
 
         if (entity.getProductId() != null) {
             this.product = new Product();
-            this.product.setProductId(entity.getProductId());
             this.product.setId(entity.getProductId());
             this.product.setName(entity.getProductName());
         }

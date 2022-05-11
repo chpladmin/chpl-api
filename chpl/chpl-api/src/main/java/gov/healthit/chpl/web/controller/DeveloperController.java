@@ -219,7 +219,7 @@ public class DeveloperController {
         Developer oldDeveloper = developerManager.getById(splitRequest.getOldDeveloper().getDeveloperId());
         List<Long> newDeveloperProductIds = new ArrayList<Long>(splitRequest.getNewProducts().size());
         for (Product newDeveloperProduct : splitRequest.getNewProducts()) {
-            newDeveloperProductIds.add(newDeveloperProduct.getProductId());
+            newDeveloperProductIds.add(newDeveloperProduct.getId());
         }
 
         ChplOneTimeTrigger splitTrigger = developerManager.split(oldDeveloper, splitRequest.getNewDeveloper(), newDeveloperProductIds);
