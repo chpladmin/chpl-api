@@ -2,6 +2,7 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -51,6 +52,20 @@ public class CertifiedProductChplProductNumberHistory implements Serializable {
 
     public CertifiedProductChplProductNumberHistory() {
         super();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof CertifiedProductChplProductNumberHistory)) {
+            return false;
+        }
+
+        CertifiedProductChplProductNumberHistory other = (CertifiedProductChplProductNumberHistory) obj;
+        return Objects.equals(this.getChplProductNumber(), other.getChplProductNumber())
+                && Objects.equals(this.endDateTime, other.getEndDateTime());
     }
 
     public Long getId() {
