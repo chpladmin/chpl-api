@@ -32,11 +32,16 @@ public class CertificationResultDetailsDAO extends BaseDAOImpl {
             + "LEFT OUTER JOIN FETCH crtf.testFunctionality tf "
             + "LEFT OUTER JOIN FETCH crd.certificationResultTestProcedures crtp "
             + "LEFT OUTER JOIN FETCH crtp.testProcedure tp "
+            + "LEFT OUTER JOIN FETCH crd.certificationResultConformanceMethods crConfMeth "
+            + "LEFT OUTER JOIN FETCH crConfMeth.conformanceMethod confMeth "
             + "LEFT OUTER JOIN FETCH crd.certificationResultTestTools crtt "
             + "LEFT OUTER JOIN FETCH crtt.testTool tt "
             + "LEFT OUTER JOIN FETCH crd.certificationResultTestStandards crts "
             + "LEFT OUTER JOIN FETCH crd.certificationResultAdditionalSoftware cras "
+            + "LEFT OUTER JOIN FETCH crd.certificationResultOptionalStandards crOptStds "
+            + "LEFT OUTER JOIN FETCH crOptStds.optionalStandard optStd "
             + "LEFT OUTER JOIN FETCH crd.certificationResultSvaps crsv "
+            + "LEFT OUTER JOIN FETCH crsv.svap svap "
             + "WHERE crd.deleted = false ";
 
     @Transactional
