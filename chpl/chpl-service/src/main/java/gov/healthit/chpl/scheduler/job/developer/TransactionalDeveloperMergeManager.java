@@ -73,7 +73,7 @@ public class TransactionalDeveloperMergeManager {
         // search for any products assigned to the list of developers passed in
         List<Product> developerProducts = productManager.getByDevelopers(developerIdsToMerge);
         for (Product product : developerProducts) {
-            List<CertifiedProductDetailsDTO> affectedListings = cpManager.getByProduct(product.getProductId());
+            List<CertifiedProductDetailsDTO> affectedListings = cpManager.getByProduct(product.getId());
             LOGGER.info("Found " + affectedListings.size() + " affected listings under product " + product.getName());
             // need to get details for affected listings now before the product is re-assigned
             // so that any listings with a generated new-style CHPL ID have the old developer code

@@ -525,7 +525,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             dev.setName(listingDetails.getDeveloper().getName());
             completeListingDetails.setDeveloper(dev);
             Product prod = new Product();
-            prod.setProductId(listingDetails.getProduct().getProductId());
+            prod.setId(listingDetails.getProduct().getId());
             prod.setName(listingDetails.getProduct().getName());
             completeListingDetails.setProduct(prod);
             ProductVersion ver = new ProductVersion();

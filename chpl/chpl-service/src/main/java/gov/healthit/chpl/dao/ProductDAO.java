@@ -73,7 +73,7 @@ public class ProductDAO extends BaseDAOImpl {
     }
 
     public void update(Product product) throws EntityRetrievalException, EntityCreationException {
-        ProductEntity entity = this.getEntityById(product.getProductId());
+        ProductEntity entity = this.getEntityById(product.getId());
         // update product data
         entity.setReportFileLocation(product.getReportFileLocation());
         entity.setName(product.getName());
@@ -130,7 +130,7 @@ public class ProductDAO extends BaseDAOImpl {
                 }
 
                 if (!alreadyExists) {
-                    createOwnerHistory(product.getProductId(), updatedProductPrevOwner);
+                    createOwnerHistory(product.getId(), updatedProductPrevOwner);
                 }
             }
 

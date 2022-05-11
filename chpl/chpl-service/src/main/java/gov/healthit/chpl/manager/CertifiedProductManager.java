@@ -493,7 +493,7 @@ public class CertifiedProductManager extends SecuredManager {
                     .build());
             newProduct.setReportFileLocation(pendingCp.getReportFileLocation());
             newProduct = productManager.create(newProduct);
-            pendingCp.setProductId(newProduct.getProductId());
+            pendingCp.setProductId(newProduct.getId());
         }
 
         if (pendingCp.getProductVersionId() == null) {

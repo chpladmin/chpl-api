@@ -161,8 +161,8 @@ public class PendingCertifiedProductDTO implements Serializable {
         }
         this.developerAddress = details.getDeveloper().getAddress();
 
-        if (details.getProduct() != null && details.getProduct().getProductId() != null) {
-            this.productId = Long.valueOf(details.getProduct().getProductId().toString());
+        if (details.getProduct() != null && details.getProduct().getId() != null) {
+            this.productId = Long.valueOf(details.getProduct().getId().toString());
         }
         if (details.getProduct() != null && !StringUtils.isEmpty(details.getProduct().getName())) {
             this.productName = details.getProduct().getName();

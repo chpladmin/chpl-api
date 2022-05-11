@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
@@ -32,9 +31,8 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service("questionableActivityManager")
-public class QuestionableActivityManager implements EnvironmentAware {
+public class QuestionableActivityManager {
     private static final long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
-    private long listingActivityThresholdMillis = -1;
     private List<QuestionableActivityTriggerDTO> triggerTypes;
     private Environment env;
     private DeveloperQuestionableActivityProvider developerQuestionableActivityProvider;
@@ -69,14 +67,6 @@ public class QuestionableActivityManager implements EnvironmentAware {
         this.listingDao = listingDao;
         this.env = env;
         triggerTypes = questionableActivityDao.getAllTriggers();
-    }
-
-    @Override
-    public void setEnvironment(final Environment e) {
-        this.env = e;
-        String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
-        int activityThresholdDays = Integer.parseInt(activityThresholdDaysStr);
-        listingActivityThresholdMillis = activityThresholdDays * MILLIS_PER_DAY;
     }
 
     public void checkDeveloperQuestionableActivity(Developer origDeveloper, Developer newDeveloper,
@@ -128,34 +118,34 @@ public class QuestionableActivityManager implements EnvironmentAware {
 
         productActivity = productQuestionableActivityProvider.checkNameUpdated(origProduct, newProduct);
         if (productActivity != null) {
-            createProductActivity(productActivity, newProduct.getProductId(), activityDate,
+            createProductActivity(productActivity, newProduct.getId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.PRODUCT_NAME_EDITED);
         }
 
         productActivity = productQuestionableActivityProvider.checkCurrentOwnerChanged(origProduct, newProduct);
         if (productActivity != null) {
-            createProductActivity(productActivity, newProduct.getProductId(), activityDate,
+            createProductActivity(productActivity, newProduct.getId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.PRODUCT_OWNER_EDITED);
         }
 
         productActivities = productQuestionableActivityProvider.checkOwnerHistoryAdded(origProduct.getOwnerHistory(),
                 newProduct.getOwnerHistory());
         for (QuestionableActivityProductDTO currProductActivity : productActivities) {
-            createProductActivity(currProductActivity, newProduct.getProductId(), activityDate,
+            createProductActivity(currProductActivity, newProduct.getId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_ADDED);
         }
 
         productActivities = productQuestionableActivityProvider.checkOwnerHistoryRemoved(origProduct.getOwnerHistory(),
                 newProduct.getOwnerHistory());
         for (QuestionableActivityProductDTO currProductActivity : productActivities) {
-            createProductActivity(currProductActivity, newProduct.getProductId(), activityDate,
+            createProductActivity(currProductActivity, newProduct.getId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_REMOVED);
         }
 
         productActivities = productQuestionableActivityProvider.checkOwnerHistoryItemEdited(
                 origProduct.getOwnerHistory(), newProduct.getOwnerHistory());
         for (QuestionableActivityProductDTO currProductActivity : productActivities) {
-            createProductActivity(currProductActivity, newProduct.getProductId(), activityDate,
+            createProductActivity(currProductActivity, newProduct.getId(), activityDate,
                     activityUser, QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_EDITED);
         }
     }

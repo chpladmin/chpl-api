@@ -394,7 +394,7 @@ public class ListingDetailsUploadHandlerTest {
         assertNotNull(listing);
         assertNotNull(listing.getProduct());
         assertEquals("Test Product", listing.getProduct().getName());
-        assertNull(listing.getProduct().getProductId());
+        assertNull(listing.getProduct().getId());
     }
 
     @Test
@@ -410,7 +410,7 @@ public class ListingDetailsUploadHandlerTest {
         assertNotNull(listing.getDeveloper());
         assertNotNull(listing.getProduct());
         assertEquals("Test Product", listing.getProduct().getName());
-        assertNull(listing.getProduct().getProductId());
+        assertNull(listing.getProduct().getId());
     }
 
     @Test

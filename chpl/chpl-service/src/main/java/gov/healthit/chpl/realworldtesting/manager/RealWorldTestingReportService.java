@@ -109,7 +109,7 @@ public class RealWorldTestingReportService {
                 .chplProductNumber(listing.getChplProductNumber())
                 .currentStatus(currentStatus != null ? currentStatus.getStatus().getName() : "")
                 .productName(listing.getProduct().getName())
-                .productId(listing.getProduct().getProductId())
+                .productId(listing.getProduct().getId())
                 .developerName(listing.getDeveloper().getName())
                 .developerId(listing.getDeveloper().getDeveloperId())
                 .rwtEligibilityYear(rwtElig.getEligibilityYear() != null ? rwtElig.getEligibilityYear() : null)

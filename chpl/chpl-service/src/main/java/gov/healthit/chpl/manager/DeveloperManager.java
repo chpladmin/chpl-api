@@ -148,7 +148,7 @@ public class DeveloperManager extends SecuredManager {
         developerTree.getProducts().stream().forEach(product -> {
             List<ProductVersionDTO> productVersions =
                     versions.stream()
-                    .filter(version -> version.getProductId().equals(product.getProductId()))
+                    .filter(version -> version.getProductId().equals(product.getId()))
                     .collect(Collectors.toList());
             productVersions.stream().forEach(version -> {
                 product.getVersions().add(new VersionTree(version));

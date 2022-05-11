@@ -98,10 +98,10 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
             // product
             Product foundProduct = productDao.getByDeveloperAndName(foundDeveloper.getDeveloperId(), product);
             if (foundProduct != null) {
-                pendingCertifiedProduct.setProductId(foundProduct.getProductId());
+                pendingCertifiedProduct.setProductId(foundProduct.getId());
 
                 // version
-                ProductVersionDTO foundVersion = versionDao.getByProductAndVersion(foundProduct.getProductId(),
+                ProductVersionDTO foundVersion = versionDao.getByProductAndVersion(foundProduct.getId(),
                         productVersion);
                 if (foundVersion != null) {
                     pendingCertifiedProduct.setProductVersionId(foundVersion.getId());

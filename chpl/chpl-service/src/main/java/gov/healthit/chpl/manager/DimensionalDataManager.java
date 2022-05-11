@@ -27,7 +27,6 @@ import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
-import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.dao.UploadTemplateVersionDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
@@ -91,7 +90,6 @@ public class DimensionalDataManager {
     private OptionalStandardDAO optionalStandardDao;
     private TestFunctionalityDAO testFuncDao;
     private TestStandardDAO testStandardDao;
-    private TestToolDAO testToolDao;
     private TestProcedureDAO testProcedureDao;
     private TestDataDAO testDataDao;
     private AccessibilityStandardDAO asDao;
@@ -114,7 +112,7 @@ public class DimensionalDataManager {
     public DimensionalDataManager(CacheableDimensionalDataManager cacheableDimensionalDataManager,
                                   CertificationBodyDAO certificationBodyDao, CertificationCriterionDAO certificationCriterionDao,
                                   EducationTypeDAO educationTypeDao, AgeRangeDAO ageRangeDao, TestFunctionalityDAO testFuncDao,
-                                  TestStandardDAO testStandardDao, TestToolDAO testToolDao, TestProcedureDAO testProcedureDao,
+                                  TestStandardDAO testStandardDao, TestProcedureDAO testProcedureDao,
                                   TestDataDAO testDataDao, AccessibilityStandardDAO asDao, UcdProcessDAO ucdDao,
                                   QmsStandardDAO qmsDao, TargetedUserDAO tuDao, DeveloperStatusDAO devStatusDao,
                                   SurveillanceDAO survDao, UploadTemplateVersionDAO uploadTemplateDao, QuarterDAO quarterDao,
@@ -129,7 +127,6 @@ public class DimensionalDataManager {
         this.optionalStandardDao = optionalStandardDao;
         this.testFuncDao = testFuncDao;
         this.testStandardDao = testStandardDao;
-        this.testToolDao = testToolDao;
         this.testProcedureDao = testProcedureDao;
         this.testDataDao = testDataDao;
         this.asDao = asDao;
@@ -526,7 +523,7 @@ public class DimensionalDataManager {
         List<Product> products = productDao.findAllIdsAndNames();
         Set<KeyValueModel> productNames = new HashSet<KeyValueModel>();
         for (Product product : products) {
-            productNames.add(new KeyValueModel(product.getProductId(), product.getName()));
+            productNames.add(new KeyValueModel(product.getId(), product.getName()));
         }
         result.setProducts(productNames);
 

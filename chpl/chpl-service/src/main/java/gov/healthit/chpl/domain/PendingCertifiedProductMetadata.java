@@ -2,7 +2,7 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMetadataDTO;
 import lombok.Data;
@@ -33,7 +33,7 @@ public class PendingCertifiedProductMetadata implements Serializable {
         }
         if (dto.getProductId() != null || !StringUtils.isEmpty(dto.getProductName())) {
             Product prod = new Product();
-            prod.setProductId(dto.getProductId());
+            prod.setId(dto.getProductId());
             prod.setName(dto.getProductName());
             this.product = prod;
         }

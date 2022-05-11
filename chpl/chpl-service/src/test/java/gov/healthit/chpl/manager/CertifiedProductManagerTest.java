@@ -321,7 +321,7 @@ public class CertifiedProductManagerTest {
                                 .build())
                         .build())
                 .product(Product.builder()
-                        .productId(1L)
+                        .id(1L)
                         .name("Acelis Connected Health eSuite")
                         .owner(Developer.builder()
                                 .build())

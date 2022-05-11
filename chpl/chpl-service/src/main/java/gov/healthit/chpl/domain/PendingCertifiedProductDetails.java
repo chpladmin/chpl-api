@@ -105,7 +105,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
         this.setDeveloper(developer);
 
         Product product = new Product();
-        product.setProductId(dto.getProductId());
+        product.setId(dto.getProductId());
         product.setName(dto.getProductName());
         this.setProduct(product);
 

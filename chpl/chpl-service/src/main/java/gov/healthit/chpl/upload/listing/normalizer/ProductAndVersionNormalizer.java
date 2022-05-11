@@ -27,7 +27,7 @@ public class ProductAndVersionNormalizer {
             return;
         }
 
-        if (listing.getProduct() != null && listing.getProduct().getProductId() == null
+        if (listing.getProduct() != null && listing.getProduct().getId() == null
                 && !StringUtils.isEmpty(listing.getProduct().getName())) {
             Product foundProduct = productDao.getByDeveloperAndName(listing.getDeveloper().getDeveloperId(),
                     listing.getProduct().getName());
@@ -36,10 +36,10 @@ public class ProductAndVersionNormalizer {
             }
         }
 
-        if (listing.getProduct() != null && listing.getProduct().getProductId() != null
+        if (listing.getProduct() != null && listing.getProduct().getId() != null
                 && listing.getVersion() != null && listing.getVersion().getId() == null
                 && !StringUtils.isEmpty(listing.getVersion().getVersion())) {
-            ProductVersionDTO foundVersion = versionDao.getByProductAndVersion(listing.getProduct().getProductId(),
+            ProductVersionDTO foundVersion = versionDao.getByProductAndVersion(listing.getProduct().getId(),
                     listing.getVersion().getVersion());
             if (foundVersion != null) {
                 listing.setVersion(new ProductVersion(foundVersion));

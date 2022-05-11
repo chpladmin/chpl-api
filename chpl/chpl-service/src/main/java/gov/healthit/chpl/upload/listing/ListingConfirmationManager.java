@@ -131,14 +131,14 @@ public class ListingConfirmationManager {
             Long developerId = developerManager.create(listing.getDeveloper());
             listing.getDeveloper().setDeveloperId(developerId);
         }
-        if (listing.getProduct().getProductId() == null) {
+        if (listing.getProduct().getId() == null) {
             //create product, set product ID in listing
             Long productId = productManager.create(listing.getDeveloper().getDeveloperId(), listing.getProduct());
-            listing.getProduct().setProductId(productId);
+            listing.getProduct().setId(productId);
         }
         if (listing.getVersion().getId() == null) {
             //create version, set version ID in listing
-            Long versionId = versionManager.create(listing.getProduct().getProductId(), listing.getVersion());
+            Long versionId = versionManager.create(listing.getProduct().getId(), listing.getVersion());
             listing.getVersion().setId(versionId);
         }
         Long createdListingId = cpDao.create(listing);

@@ -57,7 +57,7 @@ public class ProductAndVersionNormalizerTest {
 
         assertNull(listing.getDeveloper());
         assertNotNull(listing.getProduct());
-        assertNull(listing.getProduct().getProductId());
+        assertNull(listing.getProduct().getId());
         assertEquals("prod 1", listing.getProduct().getName());
         assertNotNull(listing.getVersion());
         assertNull(listing.getVersion().getId());
@@ -83,7 +83,7 @@ public class ProductAndVersionNormalizerTest {
         assertNull(listing.getDeveloper().getDeveloperId());
         assertEquals("New Developer 1", listing.getDeveloper().getName());
         assertNotNull(listing.getProduct());
-        assertNull(listing.getProduct().getProductId());
+        assertNull(listing.getProduct().getId());
         assertEquals("prod 1", listing.getProduct().getName());
         assertNotNull(listing.getVersion());
         assertNull(listing.getVersion().getId());
@@ -129,7 +129,7 @@ public class ProductAndVersionNormalizerTest {
         assertEquals(1L, listing.getDeveloper().getDeveloperId());
         assertEquals("New Developer 1", listing.getDeveloper().getName());
         assertNotNull(listing.getProduct());
-        assertNull(listing.getProduct().getProductId());
+        assertNull(listing.getProduct().getId());
         assertEquals("", listing.getProduct().getName());
         assertNotNull(listing.getVersion());
         assertNull(listing.getVersion().getId());
@@ -151,7 +151,6 @@ public class ProductAndVersionNormalizerTest {
         Mockito.when(productDao.getByDeveloperAndName(ArgumentMatchers.anyLong(), ArgumentMatchers.anyString()))
         .thenReturn(Product.builder()
                 .id(1L)
-                .productId(1L)
                 .name("Test 1")
                 .build());
         normalizer.normalize(listing);
@@ -160,7 +159,7 @@ public class ProductAndVersionNormalizerTest {
         assertEquals(1L, listing.getDeveloper().getDeveloperId());
         assertEquals("New Developer 1", listing.getDeveloper().getName());
         assertNotNull(listing.getProduct());
-        assertEquals(1L, listing.getProduct().getProductId());
+        assertEquals(1L, listing.getProduct().getId());
         assertEquals("Test 1", listing.getProduct().getName());
         assertNull(listing.getVersion());
     }
@@ -185,7 +184,7 @@ public class ProductAndVersionNormalizerTest {
         assertEquals(1L, listing.getDeveloper().getDeveloperId());
         assertEquals("New Developer 1", listing.getDeveloper().getName());
         assertNotNull(listing.getProduct());
-        assertNull(listing.getProduct().getProductId());
+        assertNull(listing.getProduct().getId());
         assertEquals("Test 1", listing.getProduct().getName());
         assertNull(listing.getVersion());
     }
@@ -229,7 +228,6 @@ public class ProductAndVersionNormalizerTest {
         Mockito.when(productDao.getByDeveloperAndName(ArgumentMatchers.anyLong(), ArgumentMatchers.anyString()))
         .thenReturn(Product.builder()
                 .id(1L)
-                .productId(1L)
                 .name("Test 1")
                 .build());
         Mockito.when(versionDao.getByProductAndVersion(ArgumentMatchers.anyLong(), ArgumentMatchers.anyString()))
@@ -243,7 +241,7 @@ public class ProductAndVersionNormalizerTest {
         assertEquals(1L, listing.getDeveloper().getDeveloperId());
         assertEquals("New Developer 1", listing.getDeveloper().getName());
         assertNotNull(listing.getProduct());
-        assertEquals(1L, listing.getProduct().getProductId());
+        assertEquals(1L, listing.getProduct().getId());
         assertEquals("Test 1", listing.getProduct().getName());
         assertNotNull(listing.getVersion());
         assertEquals(2L, listing.getVersion().getId());
@@ -272,7 +270,7 @@ public class ProductAndVersionNormalizerTest {
         assertEquals(1L, listing.getDeveloper().getDeveloperId());
         assertEquals("New Developer 1", listing.getDeveloper().getName());
         assertNotNull(listing.getProduct());
-        assertNull(listing.getProduct().getProductId());
+        assertNull(listing.getProduct().getId());
         assertEquals("Test 1", listing.getProduct().getName());
         assertNotNull(listing.getVersion());
         assertNull(listing.getVersion().getId());
@@ -296,7 +294,6 @@ public class ProductAndVersionNormalizerTest {
         Mockito.when(productDao.getByDeveloperAndName(ArgumentMatchers.anyLong(), ArgumentMatchers.anyString()))
         .thenReturn(Product.builder()
                 .id(1L)
-                .productId(1L)
                 .name("Test 1")
                 .build());
         Mockito.when(versionDao.getByProductAndVersion(ArgumentMatchers.anyLong(), ArgumentMatchers.anyString()))
@@ -307,7 +304,7 @@ public class ProductAndVersionNormalizerTest {
         assertEquals(1L, listing.getDeveloper().getDeveloperId());
         assertEquals("New Developer 1", listing.getDeveloper().getName());
         assertNotNull(listing.getProduct());
-        assertEquals(1L, listing.getProduct().getProductId());
+        assertEquals(1L, listing.getProduct().getId());
         assertEquals("Test 1", listing.getProduct().getName());
         assertNotNull(listing.getVersion());
         assertNull(listing.getVersion().getId());
