@@ -286,7 +286,6 @@ public class ConformanceMethodConversionJob extends CertifiedProduct2015Gatherer
                         "SELECT crtde "
                         + "FROM CertificationResultTestDataEntity crtde "
                         + "JOIN FETCH crtde.testData tde "
-                        //+ "JOIN FETCH crtde.certificationCriterion cce "
                         + "WHERE crtde.deleted = false "
                         + "AND crtde.id = :id ",
                         CertificationResultTestDataEntity.class);
