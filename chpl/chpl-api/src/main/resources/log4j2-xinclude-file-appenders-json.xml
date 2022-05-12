@@ -899,6 +899,26 @@
             </Delete>
         </DefaultRolloverStrategy>
     </RollingFile>
+    <RollingFile name="curesUpdateActivityRepairJobJson"
+        fileName="${logDir}/scheduler/curesUpdateActivityRepairJob.json"
+        filePattern="${logDir}/scheduler/history/curesUpdateActivityRepairJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="curesUpdateActivityRepairJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="curesUpdateActivityRepairJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
     <RollingFile name="listingsSnapshotCsvCreatorJobJson"
         fileName="${logDir}/scheduler/listingsSnapshotCsvCreatorJob.json"
         filePattern="${logDir}/scheduler/history/listingsSnapshotCsvCreatorJob-%d{yyyy-MM-dd}.json"
@@ -1019,12 +1039,21 @@
             </Delete>
         </DefaultRolloverStrategy>
     </RollingFile>
+<<<<<<< HEAD
     <RollingFile name="conformanceMethodConversionJobJson"
         fileName="${logDir}/scheduler/conformanceMethodConversionJob.json"
         filePattern="${logDir}/scheduler/history/conformanceMethodConversionJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="conformanceMethodConversionJob" />
+=======
+    <RollingFile name="populateChplProductNumberHistoryJobJson"
+        fileName="${logDir}/scheduler/populateChplProductNumberHistoryJob.json"
+        filePattern="${logDir}/scheduler/history/populateChplProductNumberHistoryJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="populateChplProductNumberHistoryJob" />
+>>>>>>> staging
             <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
             <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
         </JsonLayout>
@@ -1034,7 +1063,11 @@
         </Policies>
         <DefaultRolloverStrategy>
             <Delete basePath="${logDir}/scheduler/history" >
+<<<<<<< HEAD
                 <IfFileName glob="conformanceMethodConversionJob-*.json" />
+=======
+                <IfFileName glob="populateChplProductNumberHistoryJob-*.json" />
+>>>>>>> staging
                 <IfLastModified age="1d" />
             </Delete>
         </DefaultRolloverStrategy>

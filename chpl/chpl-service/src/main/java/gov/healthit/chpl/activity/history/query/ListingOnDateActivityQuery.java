@@ -4,14 +4,22 @@ import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@Data
-public class ListingOnDateActivityQuery implements ListingActivityQuery {
-    private Long listingId;
+@Getter
+@Setter
+@ToString
+public class ListingOnDateActivityQuery extends ListingActivityQuery {
     private LocalDate day;
+
+    @Builder
+    public ListingOnDateActivityQuery(Long listingId, LocalDate day) {
+        super(listingId);
+        this.day = day;
+    }
 }

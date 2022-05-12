@@ -90,10 +90,11 @@ public class ChangeRequestManagerTest {
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
         Mockito.when(changeRequestDAO.getAll())
                 .thenReturn(Arrays.asList(getBasicChangeRequest(), getBasicChangeRequest(), getBasicChangeRequest()));
-
+        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
                 null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, ff4j);
+                resourcePermissions, null, null, ff4j);
 
         // Run
         List<ChangeRequest> crs = changeRequestManager.getAllChangeRequestsForUser();

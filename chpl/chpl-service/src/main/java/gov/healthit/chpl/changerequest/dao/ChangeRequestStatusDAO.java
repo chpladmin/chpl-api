@@ -2,14 +2,12 @@ package gov.healthit.chpl.changerequest.dao;
 
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestConverter;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
-import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusTypeEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -26,24 +24,6 @@ public class ChangeRequestStatusDAO extends BaseDAOImpl {
         ChangeRequestStatusEntity entity = getNewEntity(cr, crStatus);
         create(entity);
         return ChangeRequestConverter.convert(getEntityById(entity.getId()));
-    }
-
-    public List<ChangeRequestStatus> getByChangeRequestId(Long changeRequestId) {
-        String hql = "SELECT crStatus "
-                + "FROM ChangeRequestStatusEntity crStatus "
-                + "JOIN FETCH crStatus.changeRequestStatusType "
-                + "JOIN FETCH crStatus.userPermission "
-                + "LEFT JOIN FETCH crStatus.certificationBody acb "
-                + "LEFT JOIN FETCH acb.address "
-                + "WHERE crStatus.deleted = false "
-                + "AND crStatus.changeRequest.id = :changeRequestId";
-
-        return entityManager
-                .createQuery(hql, ChangeRequestStatusEntity.class)
-                .setParameter("changeRequestId", changeRequestId)
-                .getResultList().stream()
-                .map(ChangeRequestConverter::convert)
-                .collect(Collectors.<ChangeRequestStatus> toList());
     }
 
     private ChangeRequestStatusEntity getEntityById(Long id) throws EntityRetrievalException {
@@ -70,7 +50,7 @@ public class ChangeRequestStatusDAO extends BaseDAOImpl {
     private ChangeRequestStatusEntity getNewEntity(ChangeRequest cr, ChangeRequestStatus crStatus) {
         ChangeRequestStatusEntity entity = new ChangeRequestStatusEntity();
 
-        entity.setChangeRequest(getSession().load(ChangeRequestEntity.class, cr.getId()));
+        entity.setChangeRequestId(cr.getId());
         entity.setChangeRequestStatusType(
                 getSession().load(ChangeRequestStatusTypeEntity.class, crStatus.getChangeRequestStatusType().getId()));
         if (crStatus.getCertificationBody() != null && crStatus.getCertificationBody().getId() != null) {

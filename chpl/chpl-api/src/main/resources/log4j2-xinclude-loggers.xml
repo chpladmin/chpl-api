@@ -194,6 +194,11 @@
         <AppenderRef ref="addCuresUpdateToListingsJob" />
         <AppenderRef ref="addCuresUpdateToListingsJobJson" />
     </Logger>
+    <Logger name="curesUpdateActivityRepairJobLogger" level="INFO"
+        additivity="false">
+        <AppenderRef ref="curesUpdateActivityRepairJob" />
+        <AppenderRef ref="curesUpdateActivityRepairJobJson" />
+    </Logger>
     <Logger name="listingsSnapshotCsvCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="listingsSnapshotCsvCreatorJob" />
         <AppenderRef ref="listingsSnapshotCsvCreatorJobJson" />
@@ -219,5 +224,9 @@
     <Logger name="conformanceMethodConversionJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="conformanceMethodConversionJob" />
         <AppenderRef ref="conformanceMethodConversionJobJson" />
+    </Logger>
+    <Logger name="populateChplProductNumberHistoryJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="populateChplProductNumberHistoryJob" />
+        <AppenderRef ref="populateChplProductNumberHistoryJobJson" />
     </Logger>
 </Loggers>
