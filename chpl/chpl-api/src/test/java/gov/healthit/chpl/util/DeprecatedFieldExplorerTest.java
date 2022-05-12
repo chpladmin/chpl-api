@@ -114,11 +114,12 @@ public class DeprecatedFieldExplorerTest {
     public void findDeprecatedFields_CertifiedProductSearchDetails() {
         Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(CertifiedProductSearchDetails.class);
         assertNotNull(deprecatedFieldNames);
-        assertEquals(6, deprecatedFieldNames.size());
+        assertEquals(7, deprecatedFieldNames.size());
         assertTrue(deprecatedFieldNames.contains("developer" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedFieldNames.contains("product" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "productId"));
         assertTrue(deprecatedFieldNames.contains("product" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "owner" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedFieldNames.contains("product" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "ownerHistory" + DeprecatedFieldExplorer.FIELD_SEPARATOR  + "developer" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
+        assertTrue(deprecatedFieldNames.contains("version" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "versionId"));
         assertTrue(deprecatedFieldNames.contains("meaningfulUseUserHistory"));
         assertTrue(deprecatedFieldNames.contains("surveillance" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "authority"));
     }
@@ -128,11 +129,12 @@ public class DeprecatedFieldExplorerTest {
         Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(CertifiedProductSearchBasicDetails.class);
 
         assertNotNull(deprecatedFieldNames);
-        assertEquals(6, deprecatedFieldNames.size());
+        assertEquals(7, deprecatedFieldNames.size());
         assertTrue(deprecatedFieldNames.contains("developer" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedFieldNames.contains("product" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "productId"));
         assertTrue(deprecatedFieldNames.contains("product" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "owner" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedFieldNames.contains("product" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "ownerHistory" + DeprecatedFieldExplorer.FIELD_SEPARATOR  + "developer" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
+        assertTrue(deprecatedFieldNames.contains("version" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "versionId"));
         assertTrue(deprecatedFieldNames.contains("meaningfulUseUserHistory"));
         assertTrue(deprecatedFieldNames.contains("surveillance" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "authority"));
     }
@@ -150,11 +152,12 @@ public class DeprecatedFieldExplorerTest {
         Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(PendingCertifiedProductDetails.class);
 
         assertNotNull(deprecatedFieldNames);
-        assertEquals(6, deprecatedFieldNames.size());
+        assertEquals(7, deprecatedFieldNames.size());
         assertTrue(deprecatedFieldNames.contains("developer" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedFieldNames.contains("product" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "productId"));
         assertTrue(deprecatedFieldNames.contains("product" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "owner" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedFieldNames.contains("product" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "ownerHistory" + DeprecatedFieldExplorer.FIELD_SEPARATOR  + "developer" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
+        assertTrue(deprecatedFieldNames.contains("version" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "versionId"));
         assertTrue(deprecatedFieldNames.contains("meaningfulUseUserHistory"));
         assertTrue(deprecatedFieldNames.contains("surveillance" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "authority"));
     }
@@ -164,11 +167,12 @@ public class DeprecatedFieldExplorerTest {
         Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(PendingCertifiedProductResults.class);
 
         assertNotNull(deprecatedFieldNames);
-        assertEquals(6, deprecatedFieldNames.size());
+        assertEquals(7, deprecatedFieldNames.size());
         assertTrue(deprecatedFieldNames.contains("pendingCertifiedProducts" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developer" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedFieldNames.contains("pendingCertifiedProducts" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "product" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "productId"));
         assertTrue(deprecatedFieldNames.contains("pendingCertifiedProducts" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "product" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "owner" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedFieldNames.contains("pendingCertifiedProducts" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "product" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "ownerHistory" + DeprecatedFieldExplorer.FIELD_SEPARATOR  + "developer" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
+        assertTrue(deprecatedFieldNames.contains("pendingCertifiedProducts" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "version" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "versionId"));
         assertTrue(deprecatedFieldNames.contains("pendingCertifiedProducts" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "meaningfulUseUserHistory"));
         assertTrue(deprecatedFieldNames.contains("pendingCertifiedProducts" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "surveillance" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "authority"));
     }
@@ -333,11 +337,12 @@ public class DeprecatedFieldExplorerTest {
     public void findDeprecatedFields_IcsFamilyTreeNode() {
         Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(IcsFamilyTreeNode.class);
         assertNotNull(deprecatedFieldNames);
-        assertEquals(4, deprecatedFieldNames.size());
+        assertEquals(5, deprecatedFieldNames.size());
         assertTrue(deprecatedFieldNames.contains("developer" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedFieldNames.contains("product" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "productId"));
         assertTrue(deprecatedFieldNames.contains("product" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "owner" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedFieldNames.contains("product" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "ownerHistory" + DeprecatedFieldExplorer.FIELD_SEPARATOR  + "developer" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
+        assertTrue(deprecatedFieldNames.contains("version" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "versionId"));
     }
 
     @Test
@@ -345,11 +350,12 @@ public class DeprecatedFieldExplorerTest {
         Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(PendingCertifiedProductMetadata.class);
 
         assertNotNull(deprecatedFieldNames);
-        assertEquals(4, deprecatedFieldNames.size());
+        assertEquals(5, deprecatedFieldNames.size());
         assertTrue(deprecatedFieldNames.contains("developer" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedFieldNames.contains("product" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "productId"));
         assertTrue(deprecatedFieldNames.contains("product" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "owner" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedFieldNames.contains("product" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "ownerHistory" + DeprecatedFieldExplorer.FIELD_SEPARATOR  + "developer" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
+        assertTrue(deprecatedFieldNames.contains("version" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "versionId"));
     }
 
     @Test
@@ -513,11 +519,12 @@ public class DeprecatedFieldExplorerTest {
     public void findDeprecatedFields_DeveloperTree() {
         Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(DeveloperTree.class);
         assertNotNull(deprecatedFieldNames);
-        assertEquals(4, deprecatedFieldNames.size());
+        assertEquals(5, deprecatedFieldNames.size());
         assertTrue(deprecatedFieldNames.contains("developerId"));
         assertTrue(deprecatedFieldNames.contains("products" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "productId"));
         assertTrue(deprecatedFieldNames.contains("products" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "owner" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedFieldNames.contains("products" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "ownerHistory" + DeprecatedFieldExplorer.FIELD_SEPARATOR  + "developer" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
+        assertTrue(deprecatedFieldNames.contains("products" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "versions" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "versionId"));
     }
 
     @Test
@@ -707,14 +714,17 @@ public class DeprecatedFieldExplorerTest {
     public void findDeprecatedFields_ProductVersion() {
         Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ProductVersion.class);
         assertNotNull(deprecatedFieldNames);
-        assertEquals(0, deprecatedFieldNames.size());
+        assertEquals(1, deprecatedFieldNames.size());
+        assertTrue(deprecatedFieldNames.contains("versionId"));
     }
 
     @Test
     public void findDeprecatedFields_SplitVersionResponse() {
         Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(SplitVersionResponse.class);
         assertNotNull(deprecatedFieldNames);
-        assertEquals(0, deprecatedFieldNames.size());
+        assertEquals(2, deprecatedFieldNames.size());
+        assertTrue(deprecatedFieldNames.contains("oldVersion" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "versionId"));
+        assertTrue(deprecatedFieldNames.contains("newVersion" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "versionId"));
     }
 
     @Test
