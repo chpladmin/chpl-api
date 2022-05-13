@@ -133,9 +133,10 @@ public class DeveloperAttestationCheckInReportDataCollector {
 
     private List<ChangeRequest> getAllAttestationChangeRequestsForMostRecentPastAttestationPeriod() throws EntityRetrievalException {
         AttestationPeriod period = attestationManager.getMostRecentPastAttestationPeriod();
+        LOGGER.info("Most recent past att period: {}", period.toString());
 
         var x = changeRequestDAO.getAll();
-        LOGGER.info("Found {} total attestation change requests", x.size());
+        //LOGGER.info("Found {} total attestation change requests", x.size());
         x.stream()
                 .filter(cr -> cr.getChangeRequestType().isAttestation()
                         && ((ChangeRequestAttestationSubmission) cr.getDetails()).getAttestationPeriod().equals(period))
@@ -148,6 +149,7 @@ public class DeveloperAttestationCheckInReportDataCollector {
         return developerAttestationReportDataCollection.collect(certificationBodyDAO.findAll().stream().map(acb -> acb.getId()).toList()).stream()
                 .map(developerAttestationReport -> developerAttestationReport.getDeveloperId())
                 .toList();
+    }
 
 
     private String getAttestationResponse(ChangeRequest cr, Long attestationConditionId) {
