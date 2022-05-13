@@ -5,7 +5,6 @@
     <Properties>
         <Property name="logDir">${sys:chpl.logging.root}</Property>
     </Properties>
-    <xi:include href="log4j2-file.xml" />
     <xi:include href="log4j2-xinclude-file-appenders.xml" />
     <xi:include href="log4j2-xinclude-file-appenders-console.xml" />
     <xi:include href="log4j2-xinclude-loggers.xml" />
