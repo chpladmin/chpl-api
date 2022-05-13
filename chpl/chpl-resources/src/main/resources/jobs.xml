@@ -858,7 +858,16 @@
                 </entry>
             </job-data-map>
         </job>
-
+        
+        <job>
+            <name>conformanceMethodConversionJob</name>
+            <group>systemJobs</group>
+            <description>One time job to Convert Test Procedures to Conformance Methods</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.conformancemethodconversion.ConformanceMethodConversionJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        
         <job>
             <name>populateChplProductNumberHistoryJob</name>
             <group>systemJobs</group>
