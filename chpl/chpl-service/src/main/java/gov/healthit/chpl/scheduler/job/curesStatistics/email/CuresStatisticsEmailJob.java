@@ -23,6 +23,12 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2(topic = "curesStatisticsEmailJobLogger")
 public class CuresStatisticsEmailJob  extends QuartzJob {
     @Autowired
+    private ListingCuresStatusStatisticsHtmlCreator listingCuresStatusStatisticsHtmlCreator;
+
+    @Autowired
+    private PrivacyAndSecurityListingStatisticsHtmlCreator privacyAndSecurityListingStatisticsHtmlCreator;
+
+    @Autowired
     private CuresStatisticsChartSpreadsheet curesStatisticsChartSpreadsheet;
 
     @Autowired
@@ -75,6 +81,8 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
         return chplHtmlEmailBuilder.initialize()
                 .heading("Cures Upgrade Statistics")
                 .paragraph("", env.getProperty("curesStatisticsReport.listingCuresStatusStatistics.body"))
+                .paragraph(listingCuresStatusStatisticsHtmlCreator.getSectionHeader(), listingCuresStatusStatisticsHtmlCreator.getSection())
+                .paragraph(privacyAndSecurityListingStatisticsHtmlCreator.getSectionHeader(), privacyAndSecurityListingStatisticsHtmlCreator.getSection())
                 .footer(true)
                 .build();
     }
