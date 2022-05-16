@@ -122,12 +122,13 @@ public class DeveloperAttestationCheckInReportDataCollector {
         List<Long> developerIds = getDeveloperIdsFromDeveloperAttestationReport();
         List<ChangeRequest> changeRequests = getAllAttestationChangeRequestsForMostRecentPastAttestationPeriod();
 
-        for (Long developerId : developerIds) {
-            var x = changeRequests.stream()
+        developerIds.forEach(developerId -> {
+            List<ChangeRequest> crs = changeRequests.stream()
                     .filter(cr -> cr.getDeveloper().getDeveloperId().equals(developerId))
                     .toList();
-            map.put(developerId, x);
-        }
+            map.put(developerId, crs);
+            LOGGER.info("Found {} total attestation change requests for developer {}", crs.size(), developerId);
+        });
         return map;
     }
 
@@ -135,14 +136,12 @@ public class DeveloperAttestationCheckInReportDataCollector {
         AttestationPeriod period = attestationManager.getMostRecentPastAttestationPeriod();
         LOGGER.info("Most recent past att period: {}", period.toString());
 
-        var x = changeRequestDAO.getAll();
-        //LOGGER.info("Found {} total attestation change requests", x.size());
-        x.stream()
-                .filter(cr -> cr.getChangeRequestType().isAttestation()
+        List<ChangeRequest> crs = changeRequestDAO.getAll();
+        crs = crs.stream().filter(cr -> cr.getChangeRequestType().isAttestation()
                         && ((ChangeRequestAttestationSubmission) cr.getDetails()).getAttestationPeriod().equals(period))
                 .toList();
-        LOGGER.info("Found {} total attestation change requests", x.size());
-        return x;
+        LOGGER.info("Found {} total attestation change requests", crs.size());
+        return crs;
     }
 
     private List<Long> getDeveloperIdsFromDeveloperAttestationReport() {
