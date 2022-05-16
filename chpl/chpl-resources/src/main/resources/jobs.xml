@@ -830,6 +830,7 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
+
         <job>
             <name>sendEmailJob</name>
             <group>chplBackgroundJobs</group>
@@ -838,7 +839,7 @@
             <durability>true</durability>
             <recover>true</recover>
         </job>
-        
+
         <job>
             <name>Developer Attestations Report Email</name>
             <group>chplJobs</group>
@@ -875,6 +876,24 @@
                     <value>false</value>
                 </entry>
             </job-data-map>
+        </job>
+        
+        <job>
+            <name>conformanceMethodConversionJob</name>
+            <group>systemJobs</group>
+            <description>One time job to Convert Test Procedures to Conformance Methods</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.conformancemethodconversion.ConformanceMethodConversionJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        
+        <job>
+            <name>populateChplProductNumberHistoryJob</name>
+            <group>systemJobs</group>
+            <description>Fill in missing previous CHPL product numbers for all listings.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.PopulateChplProductNumberHistoryJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
         </job>
     </schedule>
 </job-scheduling-data>

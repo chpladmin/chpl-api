@@ -648,4 +648,28 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
+    <RollingFile name="conformanceMethodConversionJob"
+        fileName="${logDir}/scheduler/conformanceMethodConversionJob.log"
+        filePattern="${logDir}/scheduler/history/conformanceMethodConversionJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
+        <PatternLayout>
+            <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+        </PatternLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+    </RollingFile>
+    <RollingFile name="populateChplProductNumberHistoryJob"
+        fileName="${logDir}/scheduler/populateChplProductNumberHistoryJob.log"
+        filePattern="${logDir}/scheduler/history/populateChplProductNumberHistoryJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
+        <PatternLayout>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>
+        </PatternLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+    </RollingFile>
 </Appenders>

@@ -2,7 +2,6 @@ package gov.healthit.chpl.entity;
 
 import java.util.Date;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -22,7 +21,10 @@ import org.hibernate.annotations.FetchMode;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.auth.UserEntity;
-import gov.healthit.chpl.util.Util;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "activity")
@@ -82,167 +84,54 @@ import gov.healthit.chpl.util.Util;
                     resultClass = ActivityEntity.class
             )
 })
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 public class ActivityEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "activity_id", nullable = false)
     private Long id;
 
-    @Basic(optional = true)
     @Column(name = "description", nullable = true)
     private String description;
 
-    @Basic(optional = true)
     @Column(name = "original_data", nullable = true)
     private String originalData;
 
-    @Basic(optional = true)
     @Column(name = "new_data", nullable = true)
     private String newData;
 
-    @Basic(optional = false)
     @Column(name = "activity_date", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date activityDate;
 
-    @Basic(optional = false)
     @Column(name = "activity_object_id", nullable = false)
     private Long activityObjectId;
 
-    @Basic(optional = false)
     @Column(name = "activity_object_concept_id", nullable = false)
     private Long activityObjectConceptId;
 
-    @Basic(optional = false)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "activity_object_concept_id", unique = true, nullable = true, insertable = false, updatable = false)
     private ActivityConceptEntity concept;
 
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
+    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
     private Date creationDate;
 
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
+    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
     private Date lastModifiedDate;
 
-    @Basic(optional = false)
+    @Column(name = "deleted", nullable = false, insertable = false)
+    private Boolean deleted;
+
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
-
-    @Basic(optional = false)
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "last_modified_user", unique = true, nullable = true, insertable = false, updatable = false)
     private UserEntity user;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(final String description) {
-        this.description = description;
-    }
-
-    public Date getActivityDate() {
-        return Util.getNewDate(activityDate);
-    }
-
-    public void setActivityDate(final Date activityDate) {
-        this.activityDate = Util.getNewDate(activityDate);
-    }
-
-    public Long getActivityObjectId() {
-        return activityObjectId;
-    }
-
-    public void setActivityObjectId(final Long activityObjectId) {
-        this.activityObjectId = activityObjectId;
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public String getOriginalData() {
-        return originalData;
-    }
-
-    public void setOriginalData(final String originalData) {
-        this.originalData = originalData;
-    }
-
-    public String getNewData() {
-        return newData;
-    }
-
-    public void setNewData(final String newData) {
-        this.newData = newData;
-    }
-
-    public UserEntity getUser() {
-        return user;
-    }
-
-    public void setUser(final UserEntity user) {
-        this.user = user;
-    }
-
-    public Long getActivityObjectConceptId() {
-        return activityObjectConceptId;
-    }
-
-    public void setActivityObjectConceptId(Long activityObjectConceptId) {
-        this.activityObjectConceptId = activityObjectConceptId;
-    }
-
-    public ActivityConceptEntity getConcept() {
-        return concept;
-    }
-
-    public void setConcept(ActivityConceptEntity concept) {
-        this.concept = concept;
-    }
-
 }

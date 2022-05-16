@@ -40,6 +40,11 @@ public class CertificationResultContainsSvapActivityExplorer extends ListingActi
     }
 
     @Override
+    public List<ActivityDTO> getActivities(ListingActivityQuery query) {
+        return null;
+    }
+
+    @Override
     @Transactional
     public ActivityDTO getActivity(ListingActivityQuery query) {
         if (query == null || !(query instanceof CertificationResultContainsSvapActivityQuery)) {

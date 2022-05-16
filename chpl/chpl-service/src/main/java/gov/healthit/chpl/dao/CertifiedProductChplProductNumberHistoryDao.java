@@ -7,7 +7,7 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertifiedProductChplProductNumberHistory;
@@ -15,16 +15,17 @@ import gov.healthit.chpl.entity.listing.CertifiedProductChplProductNumberHistory
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.DateUtil;
 
-@Repository(value = "certifiedProductChplProductNumberHistoryDao")
+@Component("certifiedProductChplProductNumberHistoryDao")
 public class CertifiedProductChplProductNumberHistoryDao extends BaseDAOImpl {
 
-    public Long createChplProductNumberHistoryMapping(Long listingId, String chplProductNumber) throws EntityCreationException {
+    public Long createChplProductNumberHistoryMapping(Long listingId, CertifiedProductChplProductNumberHistory historyItem) throws EntityCreationException {
         try {
             CertifiedProductChplProductNumberHistoryEntity entity = new CertifiedProductChplProductNumberHistoryEntity();
             entity.setCertifiedProductId(listingId);
-            entity.setChplProductNumber(chplProductNumber);
-            entity.setEndDate(new Date());
+            entity.setChplProductNumber(historyItem.getChplProductNumber());
+            entity.setEndDate(new Date(DateUtil.toEpochMillis(historyItem.getEndDateTime())));
             entity.setLastModifiedUser(AuthUtil.getAuditId());
             create(entity);
             return entity.getId();

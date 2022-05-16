@@ -65,9 +65,10 @@ public class ActivityManager extends SecuredManager {
             asUser = AuthUtil.getAuditId();
         }
 
-        addActivity(concept, objectId, activityDescription, originalData, newData, new Date(), asUser);
+        Date activityDate = new Date();
+        addActivity(concept, objectId, activityDescription, originalData, newData, activityDate, asUser);
         questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, originalData, newData);
-        chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData);
+        chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
     }
 
     @Transactional
@@ -79,18 +80,20 @@ public class ActivityManager extends SecuredManager {
             asUser = AuthUtil.getAuditId();
         }
 
-        addActivity(concept, objectId, activityDescription, originalData, newData, new Date(), asUser);
+        Date activityDate = new Date();
+        addActivity(concept, objectId, activityDescription, originalData, newData, activityDate, asUser);
         questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, originalData, newData, reason);
-        chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData);
+        chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
     }
 
     @Transactional
     public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
             Object newData, Long asUser) throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
-        addActivity(concept, objectId, activityDescription, originalData, newData, new Date(), asUser);
+        Date activityDate = new Date();
+        addActivity(concept, objectId, activityDescription, originalData, newData, activityDate, asUser);
         questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, originalData, newData);
-        chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData);
+        chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
     }
 
     private void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
