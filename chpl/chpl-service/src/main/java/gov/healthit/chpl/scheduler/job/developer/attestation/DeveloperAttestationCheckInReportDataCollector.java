@@ -145,7 +145,7 @@ public class DeveloperAttestationCheckInReportDataCollector {
     }
 
     private List<Long> getDeveloperIdsFromDeveloperAttestationReport() {
-        return developerAttestationReportDataCollection.collect(certificationBodyDAO.findAll().stream().map(acb -> acb.getId()).toList()).stream()
+        return developerAttestationReportDataCollection.collect(certificationBodyDAO.findAll().stream().map(acb -> acb.getId()).toList(), LOGGER).stream()
                 .map(developerAttestationReport -> developerAttestationReport.getDeveloperId())
                 .toList();
     }

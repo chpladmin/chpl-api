@@ -73,7 +73,7 @@ public class DeveloperAttestationReportJob implements Job {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
-                    List<DeveloperAttestationReport> reportRows = developerAttestationReportDataCollection.collect(getAcbIds(context));
+                    List<DeveloperAttestationReport> reportRows = developerAttestationReportDataCollection.collect(getAcbIds(context), LOGGER);
                     File csv = developerAttestationReportCsvWriter.generateFile(reportRows);
                     chplEmailFactory.emailBuilder()
                             .recipient(context.getMergedJobDataMap().getString("email"))
