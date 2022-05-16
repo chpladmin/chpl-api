@@ -543,7 +543,7 @@ public class FieldLengthReviewerTest {
     @Test
     public void review_nullTransparencyAttestationUrl_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .transparencyAttestationUrl(null)
+                .mandatoryDisclosures(null)
                 .build();
 
         reviewer.review(listing);
@@ -553,7 +553,7 @@ public class FieldLengthReviewerTest {
     @Test
     public void review_emptyTransparencyAttestationUrl_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .transparencyAttestationUrl("")
+                .mandatoryDisclosures("")
                 .build();
 
         reviewer.review(listing);
@@ -563,7 +563,7 @@ public class FieldLengthReviewerTest {
     @Test
     public void review_shortTransparencyAttestationUrl_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .transparencyAttestationUrl("short name")
+                .mandatoryDisclosures("short name")
                 .build();
 
         reviewer.review(listing);
@@ -573,7 +573,7 @@ public class FieldLengthReviewerTest {
     @Test
     public void review_longTransparencyAttestationUrl_hasError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .transparencyAttestationUrl(createStringLongerThan(1024, "h"))
+                .mandatoryDisclosures(createStringLongerThan(1024, "h"))
                 .build();
 
         reviewer.review(listing);

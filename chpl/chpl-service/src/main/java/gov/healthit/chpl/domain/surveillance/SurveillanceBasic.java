@@ -2,8 +2,6 @@ package gov.healthit.chpl.domain.surveillance;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 
 import org.springframework.beans.BeanUtils;
 
@@ -29,10 +27,6 @@ public class SurveillanceBasic implements Serializable {
     private Long id;
     private String friendlyId;
     private Long certifiedProductId;
-    @Deprecated
-    private Date startDate;
-    @Deprecated
-    private Date endDate;
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate startDay;
@@ -53,10 +47,6 @@ public class SurveillanceBasic implements Serializable {
         BeanUtils.copyProperties(dto, this);
         this.startDay = dto.getStartDate();
         this.endDay = dto.getEndDate();
-        this.startDate = Date.from(dto.getStartDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
-        if (dto.getEndDate() != null) {
-            this.endDate = Date.from(dto.getEndDate().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-        }
         this.surveillanceType = new SurveillanceType(dto.getSurveillanceType());
     }
 }

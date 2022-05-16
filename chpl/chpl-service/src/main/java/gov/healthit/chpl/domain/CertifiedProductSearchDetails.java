@@ -254,13 +254,6 @@ public class CertifiedProductSearchDetails implements Serializable {
      * A hyperlink to the mandatory disclosures required by 170.523(k)(1) for the Health IT Module
      */
     @XmlElement(required = false, nillable = true)
-    @Deprecated
-    private String transparencyAttestationUrl;
-
-    /**
-     * A hyperlink to the mandatory disclosures required by 170.523(k)(1) for the Health IT Module
-     */
-    @XmlElement(required = false, nillable = true)
     private String mandatoryDisclosures;
 
     /**
@@ -287,6 +280,14 @@ public class CertifiedProductSearchDetails implements Serializable {
     private boolean directReviewsAvailable;
 
     /**
+     * A record of CHPL Product Numbers which have been used at some time in the past to
+     * reference the listing.
+     */
+    @XmlElementWrapper(name = "chplProductNumberHistory", nillable = true, required = false)
+    @XmlElement(name = "chplProductNumberHistoryItem")
+    private List<CertifiedProductChplProductNumberHistory> chplProductNumberHistory = new ArrayList<CertifiedProductChplProductNumberHistory>();
+
+    /**
      * This variable indicates that if there is the standard(s) or lack thereof used to meet the accessibility-centered
      * design certification criterion for 2015 Certification Edtion. It is a string variable that does not have any
      * restrictions on formatting or values.
@@ -294,7 +295,6 @@ public class CertifiedProductSearchDetails implements Serializable {
     @XmlElementWrapper(name = "accessibilityStandards", nillable = true, required = false)
     @XmlElement(name = "accessibilityStandard")
     @Singular
-    @SuppressWarnings({"checkstyle:linelength"})
     private List<CertifiedProductAccessibilityStandard> accessibilityStandards = new ArrayList<CertifiedProductAccessibilityStandard>();
 
     /**
@@ -626,16 +626,6 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.productAdditionalSoftware = productAdditionalSoftware;
     }
 
-    @Deprecated
-    public String getTransparencyAttestationUrl() {
-        return transparencyAttestationUrl;
-    }
-
-    @Deprecated
-    public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
-        this.transparencyAttestationUrl = transparencyAttestationUrl;
-    }
-
     public String getMandatoryDisclosures() {
         return mandatoryDisclosures;
     }
@@ -682,6 +672,14 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setAccessibilityCertifiedStr(String accessibilityCertifiedStr) {
         this.accessibilityCertifiedStr = accessibilityCertifiedStr;
+    }
+
+    public List<CertifiedProductChplProductNumberHistory> getChplProductNumberHistory() {
+        return chplProductNumberHistory;
+    }
+
+    public void setChplProductNumberHistory(List<CertifiedProductChplProductNumberHistory> chplProductNumberHistory) {
+        this.chplProductNumberHistory = chplProductNumberHistory;
     }
 
     public List<CertifiedProductAccessibilityStandard> getAccessibilityStandards() {
@@ -915,22 +913,6 @@ public class CertifiedProductSearchDetails implements Serializable {
             }
         }
         return result;
-    }
-
-    @Deprecated
-    public MeaningfulUseUser getCurrentMeaningfulUseUsers() {
-        if (this.getMeaningfulUseUserHistory() == null
-                || this.getMeaningfulUseUserHistory().size() == 0) {
-            return null;
-        }
-
-        MeaningfulUseUser newest = this.getMeaningfulUseUserHistory().get(0);
-        for (MeaningfulUseUser muuItem : this.getMeaningfulUseUserHistory()) {
-            if (muuItem.getMuuDate() > newest.getMuuDate()) {
-                newest = muuItem;
-            }
-        }
-        return newest;
     }
 
     public LegacyCertificationStatus getCertificationStatus() {

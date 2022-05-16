@@ -28,7 +28,6 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.DecertifiedDeveloper;
-import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.Product;
@@ -470,12 +469,6 @@ public class DeveloperManager extends SecuredManager {
         } else {
             LOGGER.info("Skipping system validation due to new developer code '" + getNewDeveloperCode() + "'");
         }
-    }
-
-    @Deprecated
-    @Transactional(readOnly = true)
-    public List<DecertifiedDeveloperResult> getDecertifiedDevelopers() throws EntityRetrievalException {
-        return developerDao.getDecertifiedDevelopers();
     }
 
     @Transactional(readOnly = true)

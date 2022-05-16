@@ -332,7 +332,7 @@ public class InviteDevelopersJob implements Job {
                 }
                 return queryResults.stream()
                         .map(entity -> entity.toDomain())
-                        .toList();
+                        .collect(Collectors.toList());
         }
     }
 }

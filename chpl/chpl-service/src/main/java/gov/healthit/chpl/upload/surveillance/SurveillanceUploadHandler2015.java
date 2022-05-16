@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -22,7 +22,6 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
-import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
@@ -275,9 +274,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         // nonconformity status
         String ncStatusStr = record.get(colIndex++).trim();
         if (!StringUtils.isEmpty(ncStatusStr)) {
-            SurveillanceNonconformityStatus ncStatus = new SurveillanceNonconformityStatus();
-            ncStatus.setName(ncStatusStr);
-            nc.setStatus(ncStatus);
+            nc.setNonconformityStatus(ncStatusStr);
         }
 
         // date of determination

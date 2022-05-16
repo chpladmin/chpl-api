@@ -16,7 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -343,26 +342,6 @@ public class UserManagementController {
         UsersResponse response = new UsersResponse();
         response.setUsers(users);
         return response;
-    }
-
-    @Deprecated
-    @Operation(summary = "DEPRECATED. View a specific user's details.",
-            description = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
-                    + "have ROLE_ACB.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/{userName}/details", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public @ResponseBody User getUserByUsername(@PathVariable("userName") String userName)
-            throws UserRetrievalException, MultipleUserAccountsException {
-        UserDTO user = userManager.getByNameOrEmail(userName);
-        if (user != null && user.getId() != null) {
-            return userManager.getUserInfo(user.getId());
-        }
-        throw new UsernameNotFoundException("The user " + userName + " was not found.");
     }
 
     @Operation(summary = "View a specific user's details.",

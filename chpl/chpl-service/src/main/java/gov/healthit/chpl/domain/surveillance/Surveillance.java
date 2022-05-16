@@ -66,13 +66,6 @@ public class Surveillance implements Serializable {
     private CertifiedProduct certifiedProduct;
 
     /**
-     * DEPRECATED. Date surveillance began
-     */
-    @Deprecated
-    @XmlTransient
-    private Date startDate;
-
-    /**
      * Day surveillance began
      */
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -80,13 +73,6 @@ public class Surveillance implements Serializable {
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     @XmlElement(required = true)
     private LocalDate startDay;
-
-    /**
-     * DEPRECATED. Date surveillance ended
-     */
-    @Deprecated
-    @XmlTransient
-    private Date endDate;
 
     /**
      * Day surveillance ended
@@ -292,32 +278,12 @@ public class Surveillance implements Serializable {
         this.certifiedProduct = certifiedProduct;
     }
 
-    @Deprecated
-    public Date getStartDate() {
-        return Util.getNewDate(startDate);
-    }
-
-    @Deprecated
-    public void setStartDate(Date startDate) {
-        this.startDate = Util.getNewDate(startDate);
-    }
-
     public LocalDate getStartDay() {
         return this.startDay;
     }
 
     public void setStartDay(LocalDate startDay) {
         this.startDay = startDay;
-    }
-
-    @Deprecated
-    public Date getEndDate() {
-        return Util.getNewDate(endDate);
-    }
-
-    @Deprecated
-    public void setEndDate(Date endDate) {
-        this.endDate = Util.getNewDate(endDate);
     }
 
     public LocalDate getEndDay() {

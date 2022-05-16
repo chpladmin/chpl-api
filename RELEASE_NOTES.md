@@ -1,5 +1,51 @@
 # Release Notes
 
+## Version 35.2.0
+_16 May 2022_
+
+### Features
+* Add new job to convert Test Procedures to Conformance Methods
+* Make Listing Cache persistent across Tomcat reboots
+* Create one-time job to repair erroneous Cures update Listing Activity
+* Add job to populate CHPL Product Number History
+
+---
+
+## Version 35.1.0
+_5 May 2022_
+
+### Feature
+* Improve performance of /change-requests network call
+
+### Flagged Feature
+* Allow editing of Attestation change requests
+
+---
+
+## Version 35.0.0
+_2 May 2022_
+
+### Breaking Changes
+* Remove deprecated endpoints and response fields eligible for removal as of 4/15/22.
+
+### Features
+* Default to ET when managing Announcements
+
+---
+
+## Version 34.3.0
+_13 April 2022_
+
+### Features
+* Modify Cures Reporting for ONC-ACB changes to remove ONC-ACB "UL, LLC"
+* Calculate and save CHPL Product Number history when Listings are updated
+
+### Bug Fixes
+* Record listing activity on Developer split
+* Record listing activity on Developer merge
+
+---
+
 ## Version 34.2.0
 _1 April 2022_
 
