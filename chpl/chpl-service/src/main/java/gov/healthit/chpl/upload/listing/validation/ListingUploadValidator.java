@@ -159,11 +159,15 @@ public class ListingUploadValidator {
         qmsReviewer.review(listing);
         accStdReviewer.review(listing);
         measureReviewer.review(listing);
-        urlReviewer.review(listing);
-        fieldLengthReviewer.review(listing);
-        unsupportedCharacterReviewer.review(listing);
         certResultReviewer.review(listing);
         cqmResultReviewer.review(listing);
         sedReviewer.review(listing);
+
+        //leaving these three at the end because it's possible some other reviewers
+        //will remove data and we shouldn't review all the url/strings/fieldlengths
+        //on data that is just going to be removed
+        urlReviewer.review(listing);
+        fieldLengthReviewer.review(listing);
+        unsupportedCharacterReviewer.review(listing);
     }
 }
