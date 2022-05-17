@@ -2,7 +2,9 @@ package gov.healthit.chpl.validation.listing.reviewer;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -81,7 +83,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
 
     private void reviewCertificationResult(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewCriteriaCanHaveConformanceMethods(listing, certResult);
-        removeConformanceMethodsInvalidForCriterion(listing, certResult);
+        removeOrReplaceConformanceMethodsInvalidForCriterion(listing, certResult);
         reviewConformanceMethodsRequired(listing, certResult);
         if (!CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
             certResult.getConformanceMethods().stream()
@@ -101,20 +103,50 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
         }
     }
 
-    private void removeConformanceMethodsInvalidForCriterion(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void removeOrReplaceConformanceMethodsInvalidForCriterion(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
             return;
         }
+        Map<String, CertificationResultConformanceMethod> conformanceMethodsToReplace = new LinkedHashMap<String, CertificationResultConformanceMethod>();
         Iterator<CertificationResultConformanceMethod> conformanceMethodIter = certResult.getConformanceMethods().iterator();
         while (conformanceMethodIter.hasNext()) {
             CertificationResultConformanceMethod conformanceMethod = conformanceMethodIter.next();
             if (!isConformanceMethodAllowed(certResult, conformanceMethod)) {
-                conformanceMethodIter.remove();
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.conformanceMethod.invalidCriteria",
-                        conformanceMethod.getConformanceMethod().getName(),
-                        Util.formatCriteriaNumber(certResult.getCriterion())));
+                ConformanceMethod defaultConformanceMethodForCriterion = getDefaultConformanceMethodForCriteria(certResult.getCriterion());
+                if (defaultConformanceMethodForCriterion != null) {
+                    CertificationResultConformanceMethod toAdd = CertificationResultConformanceMethod.builder()
+                            .conformanceMethod(defaultConformanceMethodForCriterion)
+                            .conformanceMethodVersion(conformanceMethod.getConformanceMethodVersion())
+                            .build();
+                    conformanceMethodsToReplace.put(conformanceMethod.getConformanceMethod().getName(), toAdd);
+                    conformanceMethodIter.remove();
+                } else {
+                    conformanceMethodIter.remove();
+                    listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.conformanceMethod.invalidCriteriaRemoved",
+                            conformanceMethod.getConformanceMethod().getName(),
+                            Util.formatCriteriaNumber(certResult.getCriterion())));
+                }
             }
         }
+
+        conformanceMethodsToReplace.keySet().stream()
+            .forEach(replacedConformanceMethodName -> {
+                CertificationResultConformanceMethod cmToAdd = conformanceMethodsToReplace.get(replacedConformanceMethodName);
+                certResult.getConformanceMethods().add(cmToAdd);
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.conformanceMethod.invalidCriteriaReplaced",
+                        replacedConformanceMethodName,
+                        Util.formatCriteriaNumber(certResult.getCriterion()),
+                        cmToAdd.getConformanceMethod().getName()));
+            });
+    }
+
+    private ConformanceMethod getDefaultConformanceMethodForCriteria(CertificationCriterion criterion) {
+        List<ConformanceMethod> allowedConformanceMethodsForCriterion = getConformanceMethodsForCriterion(criterion);
+        if (!CollectionUtils.isEmpty(allowedConformanceMethodsForCriterion)
+                && allowedConformanceMethodsForCriterion.size() == 1) {
+            return allowedConformanceMethodsForCriterion.get(0);
+        }
+        return null;
     }
 
     private boolean isConformanceMethodAllowed(CertificationResult certResult, CertificationResultConformanceMethod conformanceMethod) {

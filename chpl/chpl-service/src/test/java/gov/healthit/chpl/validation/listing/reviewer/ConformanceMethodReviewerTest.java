@@ -42,7 +42,8 @@ public class ConformanceMethodReviewerTest {
     private static final String MISSING_CM_VERSION_MSG = "Conformance Method Version is required for certification %s with Conformance Method \"%s\".";
     private static final String UNALLOWED_CM_VERSION_MSG = "Conformance Method Version is not allowed for certification %s with Conformance Method \"%s\".";
     private static final String UNALLOWED_CM_VERSION_REMOVED_MSG = "Conformance Method Version is not allowed for certification %s with Conformance Method \"%s\". The version \"%s\" was removed.";
-    private static final String INVALID_CRITERIA_MSG = "Conformance Method \"%s\" is not valid for criteria %s.";
+    private static final String INVALID_FOR_CRITERIA_REMOVED_MSG = "Conformance Method \"%s\" is not valid for criteria %s. It has been removed.";
+    private static final String INVALID_FOR_CRITERIA_REPLACED_MSG = "Conformance Method \"%s\" is not valid for criteria %s. It has been replaced with \"%s\".";
     private static final String F3_GAP_MISMATCH_MSG = "Certification %s cannot use Conformance Method \"%s\" since GAP is %s.";
     private static final String F3_TEST_TOOLS_NOT_ALLOWED_MSG = "Certification %s cannot specify test tools when using Conformance Method %s. The test tools have been removed.";
     private static final String F3_TEST_DATA_NOT_ALLOWED_MSG = "Certification %s cannot specify test data when using Conformance Method %s. The test data has been removed.";
@@ -117,9 +118,12 @@ public class ConformanceMethodReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.unallowedConformanceMethodVersionRemoved"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(UNALLOWED_CM_VERSION_REMOVED_MSG, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.invalidCriteria"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.invalidCriteriaRemoved"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-            .thenAnswer(i -> String.format(INVALID_CRITERIA_MSG, i.getArgument(1), i.getArgument(2)));
+            .thenAnswer(i -> String.format(INVALID_FOR_CRITERIA_REMOVED_MSG, i.getArgument(1), i.getArgument(2)));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.invalidCriteriaReplaced"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(INVALID_FOR_CRITERIA_REPLACED_MSG, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.f3GapMismatch"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(F3_GAP_MISMATCH_MSG, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
@@ -287,14 +291,14 @@ public class ConformanceMethodReviewerTest {
         conformanceMethodReviewer.review(listing);
 
         assertEquals(1, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(INVALID_CRITERIA_MSG, "bad CM", "170.315 (a)(1)")));
+        assertTrue(listing.getWarningMessages().contains(String.format(INVALID_FOR_CRITERIA_REMOVED_MSG, "bad CM", "170.315 (a)(1)")));
         assertEquals(0, listing.getCertificationResults().get(0).getConformanceMethods().size());
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(CM_REQUIRED_MSG, "170.315 (a)(1)")));
     }
 
     @Test
-    public void review_invalidConformanceMethodForCriterionHasDefault_hasWarningAndRemovesConformanceMethodAndHasError() {
+    public void review_invalidConformanceMethodForCriterionHasDefault_hasWarningAndReplacesConformanceMethodKeepingVersion() {
         CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
                 .conformanceMethod(ConformanceMethod.builder()
                         .id(3L)
@@ -320,11 +324,15 @@ public class ConformanceMethodReviewerTest {
 
         conformanceMethodReviewer.review(listing);
 
-        assertEquals(1, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(INVALID_CRITERIA_MSG, "bad CM", "170.315 (a)(2)")));
-        assertEquals(0, listing.getCertificationResults().get(0).getConformanceMethods().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(CM_REQUIRED_MSG, "170.315 (a)(2)")));
+        listing.getWarningMessages().stream()
+            .forEach(msg -> System.out.println(msg));
+        assertEquals(2, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(INVALID_FOR_CRITERIA_REPLACED_MSG, "bad CM", "170.315 (a)(2)", "Attestation")));
+        assertTrue(listing.getWarningMessages().contains(String.format(UNALLOWED_CM_VERSION_REMOVED_MSG, "170.315 (a)(2)", "Attestation", "version")));
+        assertEquals(1, listing.getCertificationResults().get(0).getConformanceMethods().size());
+        assertEquals("Attestation", listing.getCertificationResults().get(0).getConformanceMethods().get(0).getConformanceMethod().getName());
+        assertNull(listing.getCertificationResults().get(0).getConformanceMethods().get(0).getConformanceMethodVersion());
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
