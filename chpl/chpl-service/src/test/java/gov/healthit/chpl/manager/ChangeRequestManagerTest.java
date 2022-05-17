@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.ff4j.FF4j;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -35,6 +36,7 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
+@Ignore
 public class ChangeRequestManagerTest {
     private FF4j ff4j;
 

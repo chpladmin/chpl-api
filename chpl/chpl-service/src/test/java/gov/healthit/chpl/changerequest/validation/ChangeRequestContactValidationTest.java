@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -19,6 +20,7 @@ import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
+@Ignore
 public class ChangeRequestContactValidationTest {
     @Test
     public void validateContact_AllData_ReturnsTrue() throws EntityRetrievalException {
