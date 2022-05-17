@@ -139,7 +139,7 @@ public class DeveloperAttestationCheckInReportDataCollector {
         List<ChangeRequest> crs = changeRequestDAO.getAll();
         LOGGER.info("Found {} total change requests", crs.size());
         crs = crs.stream().filter(cr -> cr.getChangeRequestType().isAttestation()
-                        && ((ChangeRequestAttestationSubmission) cr.getDetails()).getAttestationPeriod().equals(period))
+                        && ((ChangeRequestAttestationSubmission) cr.getDetails()).getAttestationPeriod().getId().equals(period.getId()))
                 .toList();
         LOGGER.info("Found {} total attestation change requests", crs.size());
         return crs;
