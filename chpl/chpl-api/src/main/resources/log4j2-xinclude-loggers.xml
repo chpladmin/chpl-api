@@ -225,8 +225,4 @@
         <AppenderRef ref="conformanceMethodConversionJob" />
         <AppenderRef ref="conformanceMethodConversionJobJson" />
     </Logger>
-    <Logger name="populateChplProductNumberHistoryJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="populateChplProductNumberHistoryJob" />
-        <AppenderRef ref="populateChplProductNumberHistoryJobJson" />
-    </Logger>
 </Loggers>
