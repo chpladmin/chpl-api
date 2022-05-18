@@ -20,10 +20,8 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
-import lombok.extern.log4j.Log4j2;
 
 @Repository("changeRequestDAO")
-@Log4j2
 public class ChangeRequestDAO extends BaseDAOImpl {
 
     private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
@@ -226,7 +224,6 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 .createQuery(hql, ChangeRequestEntity.class)
                 .getResultList();
 
-        LOGGER.info("Total # found in DAO: {}", results.size());
         return results;
     }
 
