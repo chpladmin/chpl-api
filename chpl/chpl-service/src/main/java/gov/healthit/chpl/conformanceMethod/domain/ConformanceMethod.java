@@ -6,16 +6,12 @@ import java.time.LocalDate;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.domain.compliance.DateDeserializer;
-import gov.healthit.chpl.util.LocalDateAdapter;
-import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -41,14 +37,15 @@ public class ConformanceMethod implements Serializable {
     @XmlElement(required = true)
     private String name;
 
-    /**
-     * Conformance method removal date.
-     */
-    @XmlElement(required = false, nillable = true)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
-    @JsonDeserialize(using = DateDeserializer.class)
-    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlTransient
+    @JsonIgnore
     private LocalDate removalDate;
+
+    /**
+     * Whether the Conformance Method has been marked as removed.
+     */
+    @XmlElement(required = true)
+    private Boolean removed;
 
     public Long getId() {
         return id;
@@ -72,5 +69,9 @@ public class ConformanceMethod implements Serializable {
 
     public void setRemovalDate(LocalDate removalDate) {
         this.removalDate = removalDate;
+    }
+
+    public Boolean getRemoved() {
+        return this.removalDate != null;
     }
 }
