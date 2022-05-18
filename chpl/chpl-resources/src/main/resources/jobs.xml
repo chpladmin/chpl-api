@@ -9,8 +9,8 @@
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
         <delete-job>
-          <group>systemJobs</group>
           <name>curesUpdateActivityRepairJob</name>
+          <group>systemJobs</group>
         </delete-job>
         <delete-job>
           <name>populateChplProductNumberHistoryJob</name>
