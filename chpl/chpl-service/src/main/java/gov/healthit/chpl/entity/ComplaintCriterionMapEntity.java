@@ -52,7 +52,7 @@ public class ComplaintCriterionMapEntity {
     public ComplaintCriterionMap buildComplaintCriterionMap() {
         return ComplaintCriterionMap.builder()
         .certificationCriterionId(this.getCertificationCriterionId())
-        .certificationCriterion(this.getCertificationCriterion() != null ? this.getCertificationCriterion().buildCertificationCriterion() : null)
+        .certificationCriterion(this.getCertificationCriterion() != null ? this.getCertificationCriterion().toDomain() : null)
         .complaintId(this.getComplaintId())
         .id(this.getId())
         .build();
