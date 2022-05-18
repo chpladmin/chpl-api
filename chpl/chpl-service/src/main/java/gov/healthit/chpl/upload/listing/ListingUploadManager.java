@@ -201,6 +201,40 @@ public class ListingUploadManager {
         return listing;
     }
 
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
+            + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).GET_BY_ID, #id)")
+    public CertifiedProductSearchDetails getSubmittedListing(Long id) throws ValidationException, EntityRetrievalException {
+        ListingUpload listingUpload = listingUploadDao.getByIdIncludingRecords(id);
+        LOGGER.debug("Got listing upload with ID " + id);
+        List<CSVRecord> allCsvRecords = listingUpload.getRecords();
+        if (allCsvRecords == null) {
+            LOGGER.debug("Listing upload with ID " + id + " has no CSV records associated with it.");
+            return null;
+        }
+        LOGGER.debug("Listing upload with ID " + id + " has " + allCsvRecords.size() + " CSV records associated with it.");
+        int headingRowIndex = uploadUtil.getHeadingRecordIndex(allCsvRecords);
+        CSVRecord headingRecord = uploadUtil.getHeadingRecord(allCsvRecords);
+        List<CSVRecord> allListingRecords = allCsvRecords.subList(headingRowIndex + 1, allCsvRecords.size());
+        LOGGER.debug("Converting listing upload with ID " + id + " into CertifiedProductSearchDetails object");
+        CertifiedProductSearchDetails listing =
+                listingDetailsHandler.parseAsListing(headingRecord, allListingRecords);
+        copyUserEnteredDeveloperDataToRegularDeveloperData(listing);
+        return listing;
+    }
+
+    private void copyUserEnteredDeveloperDataToRegularDeveloperData(CertifiedProductSearchDetails listing) {
+        listing.getDeveloper().setName(listing.getDeveloper().getUserEnteredName());
+        listing.getDeveloper().setAddress(listing.getDeveloper().getUserEnteredAddress());
+        listing.getDeveloper().setContact(listing.getDeveloper().getUserEnteredPointOfContact());
+        Boolean selfDeveloper = null;
+        try {
+            selfDeveloper = uploadUtil.parseBoolean(listing.getDeveloper().getUserEnteredSelfDeveloper());
+        } catch (Exception ex) { }
+        listing.getDeveloper().setSelfDeveloper(selfDeveloper);
+        listing.getDeveloper().setWebsite(listing.getDeveloper().getUserEnteredWebsite());
+    }
+
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
             + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).VALIDATE_BY_IDS)")
     public void calculateErrorAndWarningCounts(List<Long> listingUploadIds)
