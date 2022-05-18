@@ -16,16 +16,15 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,7 +40,6 @@ import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ConfirmListingRequest;
-import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -49,7 +47,6 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
-import gov.healthit.chpl.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.upload.listing.ListingUploadManager;
 import gov.healthit.chpl.util.AuthUtil;
@@ -77,17 +74,15 @@ public class ListingUploadController {
     private ListingUploadManager listingUploadManager;
     private ErrorMessageUtil msgUtil;
     private FF4j ff4j;
-    private Environment env;
     private ChplEmailFactory chplEmailFactory;
 
 
     @Autowired
     public ListingUploadController(ListingUploadManager listingUploadManager, ErrorMessageUtil msgUtil, FF4j ff4j,
-            Environment env, ChplEmailFactory chplEmailFactory) {
+            ChplEmailFactory chplEmailFactory) {
         this.listingUploadManager = listingUploadManager;
         this.msgUtil = msgUtil;
         this.ff4j = ff4j;
-        this.env = env;
         this.chplEmailFactory = chplEmailFactory;
     }
 
@@ -117,6 +112,21 @@ public class ListingUploadController {
             throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
         }
         return listingUploadManager.getDetailsById(id);
+    }
+
+    @Operation(summary = "Get the listing with only the data the user put in the upload file.",
+            description = "Security Restrictions: User must be authorized to view the uploaded listing "
+                    + "according to ONC-ACB(s) and CHPL permissions.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @DeprecatedResponseFields(responseClass = CertifiedProductSearchDetails.class)
+    @RequestMapping(value = "/pending/{id:^-?\\d+$}/submitted", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public CertifiedProductSearchDetails geUserEnteredDeveloper(@PathVariable("id") Long id)
+            throws ValidationException, EntityRetrievalException {
+        if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
+            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
+        }
+        return listingUploadManager.getSubmittedListing(id);
     }
 
     @Operation(summary = "Upload a file with certified products",
@@ -253,43 +263,6 @@ public class ListingUploadController {
         listingUploadManager.getById(id);
         //perform delete
         listingUploadManager.reject(id);
-    }
-
-    @Deprecated
-    @Operation(summary = "Reject several uploaded listings.",
-            description = "Marks a list of uploaded listings as deleted. ROLE_ADMIN or ROLE_ACB "
-                    + " and administrative authority on the ONC-ACB for each uploaded listing is required.",
-            deprecated = true,
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
-    @RequestMapping(value = "/pending", method = RequestMethod.DELETE,
-    produces = "application/json; charset=utf-8")
-    public void rejectListingUploads(@RequestBody IdListContainer idList)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
-            AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
-        if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
-            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
-        }
-
-        if (idList == null || idList.getIds() == null || idList.getIds().size() == 0) {
-            throw new InvalidArgumentsException("At least one id must be provided for rejection.");
-        }
-
-        ObjectsMissingValidationException possibleExceptions = new ObjectsMissingValidationException();
-        for (Long id : idList.getIds()) {
-            try {
-                //call the GET to return bad request if the id is not something that can be deleted
-                listingUploadManager.getById(id);
-                //perform delete
-                listingUploadManager.reject(id);
-            } catch (ObjectMissingValidationException ex) {
-                possibleExceptions.getExceptions().add(ex);
-            }
-        }
-
-        if (possibleExceptions.getExceptions() != null && possibleExceptions.getExceptions().size() > 0) {
-            throw possibleExceptions;
-        }
     }
 
     private void sendUploadError(MultipartFile file, Exception ex) {
