@@ -3,6 +3,7 @@ package gov.healthit.chpl.activity.history.explorer;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,11 @@ public class ListingOnDateActivityExplorer extends ListingActivityExplorer {
     @Autowired
     public ListingOnDateActivityExplorer(ActivityDAO activityDao) {
         this.activityDao = activityDao;
+    }
+
+    @Override
+    public List<ActivityDTO> getActivities(ListingActivityQuery query) {
+        return null;
     }
 
     @Override

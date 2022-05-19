@@ -8,6 +8,14 @@
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
+        <delete-job>
+          <name>curesUpdateActivityRepairJob</name>
+          <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+          <name>populateChplProductNumberHistoryJob</name>
+          <group>systemJobs</group>
+        </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
@@ -821,6 +829,7 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
+
         <job>
             <name>sendEmailJob</name>
             <group>chplBackgroundJobs</group>
@@ -829,7 +838,7 @@
             <durability>true</durability>
             <recover>true</recover>
         </job>
-        
+
         <job>
             <name>Developer Attestations Report Email</name>
             <group>chplJobs</group>
@@ -848,6 +857,14 @@
                 </entry>
             </job-data-map>
         </job>
-        
+
+        <job>
+            <name>conformanceMethodConversionJob</name>
+            <group>systemJobs</group>
+            <description>One time job to Convert Test Procedures to Conformance Methods</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.conformancemethodconversion.ConformanceMethodConversionJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
     </schedule>
 </job-scheduling-data>
