@@ -4,13 +4,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.HashMap;
-
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographic;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
@@ -20,8 +18,8 @@ import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
-@Ignore
 public class ChangeRequestContactValidationTest {
+
     @Test
     public void validateContact_AllData_ReturnsTrue() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
@@ -196,20 +194,14 @@ public class ChangeRequestContactValidationTest {
                         .acbCode("1234")
                         .name("ACB 1234")
                         .build())
-                .details(buildChangeRequestDetailsMap(contact))
+                .details(buildChangeRequestDetails(contact))
                 .build();
     }
 
-    private HashMap<String, Object> buildChangeRequestDetailsMap(PointOfContact contact) {
-        HashMap<String, Object> details = new HashMap<String, Object>();
-        HashMap<String, Object> contactMap = new HashMap<String, Object>();
-        contactMap.put("contactId", contact.getContactId());
-        contactMap.put("fullName", contact.getFullName());
-        contactMap.put("title", contact.getTitle());
-        contactMap.put("phoneNumber", contact.getPhoneNumber());
-        contactMap.put("email", contact.getEmail());
-        details.put("contact", contactMap);
-        return details;
+    private ChangeRequestDeveloperDemographic buildChangeRequestDetails(PointOfContact contact) {
+        return ChangeRequestDeveloperDemographic.builder()
+                .contact(contact)
+                .build();
     }
 
     private PointOfContact buildContact(Long id, String fullName, String title, String phoneNumber, String email) {

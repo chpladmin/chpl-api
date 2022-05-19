@@ -55,7 +55,8 @@ public class ChangeRequestValidationService {
         return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
                 new SelfDeveloperValidation(),
                 new DemographicValidation(),
-                new ContactValidation()));
+                new ContactValidation(),
+                new WebsiteValidation()));
     }
 
     private List<ValidationRule<ChangeRequestValidationContext>> getAttestationValidations() {

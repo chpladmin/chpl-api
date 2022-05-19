@@ -4,13 +4,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.HashMap;
-
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographic;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
@@ -20,8 +18,8 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
-@Ignore
 public class ChangeRequestAddressValidationTest {
+
     @Test
     public void validateAddress_AllData_ReturnsTrue() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
@@ -253,22 +251,14 @@ public class ChangeRequestAddressValidationTest {
                         .acbCode("1234")
                         .name("ACB 1234")
                         .build())
-                .details(buildChangeRequestDetailsMap(address))
+                .details(buildChangeRequestDetails(address))
                 .build();
     }
 
-    private HashMap<String, Object> buildChangeRequestDetailsMap(Address address) {
-        HashMap<String, Object> details = new HashMap<String, Object>();
-        HashMap<String, Object> addressMap = new HashMap<String, Object>();
-        addressMap.put("addressId", address.getAddressId());
-        addressMap.put("line1", address.getLine1());
-        addressMap.put("line2", address.getLine2());
-        addressMap.put("city", address.getCity());
-        addressMap.put("state", address.getState());
-        addressMap.put("zipcode", address.getZipcode());
-        addressMap.put("country", address.getCountry());
-        details.put("address", addressMap);
-        return details;
+    private ChangeRequestDeveloperDemographic buildChangeRequestDetails(Address address) {
+        return ChangeRequestDeveloperDemographic.builder()
+                .address(address)
+                .build();
     }
 
     private Address buildAddress(Long id, String line1, String line2, String city, String state, String zipcode, String country) {
@@ -280,6 +270,7 @@ public class ChangeRequestAddressValidationTest {
         address.setState(state);
         address.setZipcode(zipcode);
         address.setCountry(country);
+
         return address;
     }
 

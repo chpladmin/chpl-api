@@ -5,11 +5,11 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.ff4j.FF4j;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -35,16 +35,22 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@Ignore
 public class ChangeRequestManagerTest {
     private FF4j ff4j;
+    private ErrorMessageUtil errorMessageUtil;
+
 
     @Before
     public void before() throws EntityRetrievalException {
         ff4j = Mockito.mock(FF4j.class);
         Mockito.when(ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST))
         .thenReturn(true);
+
+        errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString()))
+                .thenReturn("Error message");
     }
 
     @Test
@@ -238,8 +244,8 @@ public class ChangeRequestManagerTest {
         Mockito.verify(crStatusService, Mockito.times(1)).updateChangeRequestStatus(ArgumentMatchers.any());
     }
 
-    @Test
-    public void updateChangeRequest_CrStatusIsNull_CrStatusIsNotUpdated()
+    @Test(expected = InvalidArgumentsException.class)
+    public void updateChangeRequest_CrCurrentStatusIsNull_InvalidArgumentsException()
             throws EntityRetrievalException, ValidationException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
         // Setup
@@ -275,7 +281,7 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 resourcePermissions,
-                null,
+                errorMessageUtil,
                 null,
                 ff4j);
 
@@ -285,43 +291,9 @@ public class ChangeRequestManagerTest {
         changeRequestManager.updateChangeRequest(cr);
 
         // Check
-        Mockito.verify(detailsService, Mockito.times(1)).update(ArgumentMatchers.any());
-        Mockito.verify(crStatusService, Mockito.times(0)).updateChangeRequestStatus(ArgumentMatchers.any());
     }
 
     private ChangeRequest getBasicChangeRequest() {
-        // return new ChangeRequestBuilder()
-        // .withId(1l)
-        // .withDeveloper(new DeveloperBuilder().withId(20l).withCode("1234").withName("Dev 1").build())
-        // .withChangeRequestType(
-        // new ChangeRequestTypeBuilder().withId(1l).withName("Website Change Request").build())
-        // .withCurrentStatus(new ChangeRequestStatusBuilder()
-        // .withId(8l)
-        // .withComment("Comment")
-        // .withChangeRequestStatusType(new ChangeRequestStatusTypeBuilder()
-        // .withId(1l)
-        // .withName("Pending ONC-ACB Action")
-        // .build())
-        // .build())
-        // .addChangeRequestStatus(new ChangeRequestStatusBuilder()
-        // .withId(8l)
-        // .withComment("Comment")
-        // .withChangeRequestStatusType(new ChangeRequestStatusTypeBuilder()
-        // .withId(1l)
-        // .withName("Pending ONC-ACB Action")
-        // .build())
-        // .build())
-        // .addCertificationBody(new CertificationBodyBuilder()
-        // .withId(1l)
-        // .withCode("1234")
-        // .withName("ACB 1234")
-        // .build())
-        // .withDetails(new ChangeRequestWebsiteBuilder()
-        // .withId(2l)
-        // .withWebsite("http://www.abc.com")
-        // .build())
-        // .build();
-
         return ChangeRequest.builder()
                 .id(1l)
                 .developer(Developer.builder()
@@ -346,10 +318,7 @@ public class ChangeRequestManagerTest {
                         .acbCode("1234")
                         .name("ACB 1234")
                         .build())
-//                .details(ChangeRequestWebsite.builder()
-//                        .id(2l)
-//                        .website("http://www.abc.com")
-//                        .build())
+                .details(new HashMap<String, Object>() )
                 .build();
     }
 

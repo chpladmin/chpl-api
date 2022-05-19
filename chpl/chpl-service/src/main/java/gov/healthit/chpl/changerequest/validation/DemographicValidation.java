@@ -5,7 +5,6 @@ import org.apache.commons.lang3.StringUtils;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographic;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.manager.rules.ValidationRule;
-import gov.healthit.chpl.util.ValidationUtils;
 
 public class DemographicValidation extends ValidationRule<ChangeRequestValidationContext> {
 
@@ -31,14 +30,6 @@ public class DemographicValidation extends ValidationRule<ChangeRequestValidatio
                     getMessages().add(getErrorMessage("developer.address.zipRequired"));
                     addressComponentsValid = false;
                 }
-                if (!isWebsitePopulated(details.getWebsite())) {
-                    getMessages().add(getErrorMessage("developer.websiteRequired"));
-                    addressComponentsValid = false;
-                } else if (!isWebsiteFormatValid(context.getValidationUtils(), details.getWebsite())) {
-                    getMessages().add(getErrorMessage("developer.websiteIsInvalid"));
-                    addressComponentsValid = false;
-                }
-
                 return addressComponentsValid;
             }
         }
@@ -59,13 +50,5 @@ public class DemographicValidation extends ValidationRule<ChangeRequestValidatio
 
     private boolean isZipPopulated(Address address) {
         return StringUtils.isNotEmpty(address.getZipcode());
-    }
-
-    private boolean isWebsitePopulated(String website) {
-        return StringUtils.isNotEmpty(website);
-    }
-
-    private boolean isWebsiteFormatValid(ValidationUtils utils, String website) {
-        return utils.isWellFormedUrl(website);
     }
 }

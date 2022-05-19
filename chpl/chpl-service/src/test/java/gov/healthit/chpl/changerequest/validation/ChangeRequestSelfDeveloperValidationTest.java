@@ -4,13 +4,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.HashMap;
-
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographic;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
@@ -19,8 +17,8 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
-@Ignore
 public class ChangeRequestSelfDeveloperValidationTest {
+
     @Test
     public void validateSelfDeveloper_ValidData_ReturnsTrue() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
@@ -48,19 +46,6 @@ public class ChangeRequestSelfDeveloperValidationTest {
     }
 
     @Test
-    public void validateSelfDeveloper_BadData_ReturnsFalse() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
-        Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
-
-        ChangeRequestValidationContext context = getValidationContext("JUNK", resourcePermissions);
-        SelfDeveloperValidation crSelfDevValidator = new SelfDeveloperValidation();
-
-        boolean result = crSelfDevValidator.isValid(context);
-        assertFalse(result);
-        assertEquals(1, crSelfDevValidator.getMessages().size());
-    }
-
-    @Test
     public void validateSelfDeveloper_MissingData_ReturnsFalse() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
@@ -73,7 +58,7 @@ public class ChangeRequestSelfDeveloperValidationTest {
         assertEquals(1, crSelfDevValidator.getMessages().size());
     }
 
-    private ChangeRequest getChangeRequestSelfDeveloper(Object selfDeveloper) {
+    private ChangeRequest getChangeRequestSelfDeveloper(Boolean selfDeveloper) {
         return ChangeRequest.builder()
                 .id(1L)
                 .developer(Developer.builder()
@@ -98,17 +83,17 @@ public class ChangeRequestSelfDeveloperValidationTest {
                         .acbCode("1234")
                         .name("ACB 1234")
                         .build())
-                .details(buildChangeRequestDetailsMap(selfDeveloper))
+                .details(buildChangeRequestDetails(selfDeveloper))
                 .build();
     }
 
-    private HashMap<String, Object> buildChangeRequestDetailsMap(Object selfDeveloper) {
-        HashMap<String, Object> details = new HashMap<String, Object>();
-        details.put("selfDeveloper", selfDeveloper);
-        return details;
+    private ChangeRequestDeveloperDemographic buildChangeRequestDetails(Boolean selfDeveloper) {
+        return ChangeRequestDeveloperDemographic.builder()
+                .selfDeveloper(selfDeveloper)
+                .build();
     }
 
-    private ChangeRequestValidationContext getValidationContext(Object selfDeveloperValue, ResourcePermissions resourcePermissions) {
+    private ChangeRequestValidationContext getValidationContext(Boolean  selfDeveloperValue, ResourcePermissions resourcePermissions) {
         return new ChangeRequestValidationContext(null,
                         getChangeRequestSelfDeveloper(selfDeveloperValue),
                         null,
