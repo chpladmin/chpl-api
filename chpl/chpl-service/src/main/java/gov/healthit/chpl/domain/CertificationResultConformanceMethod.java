@@ -63,6 +63,7 @@ public class CertificationResultConformanceMethod implements Serializable {
         } else {
             cm.setId(entity.getConformanceMethod().getId());
             cm.setName(entity.getConformanceMethod().getName());
+            cm.setRemovalDate(entity.getConformanceMethod().getRemovalDate());
         }
         this.conformanceMethod = cm;
         this.conformanceMethodVersion = entity.getVersion();
