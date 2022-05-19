@@ -1,12 +1,7 @@
 package gov.healthit.chpl.scheduler.job.curesStatistics.email.spreadsheet;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -23,7 +18,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFChart;
 import org.apache.poi.xssf.usermodel.XSSFDrawing;
 import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -32,7 +26,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2(topic = "curesStatisticsEmailJobLogger")
-public class CuresStatisticsChartSpreadsheet {
+public class CuresStatisticsChartSpreadsheet extends CuresSpreadsheet {
 
     private static final Integer USCDI_CRITERIA_SHEET_IDX = 2;
     private static final Integer CURES_UPDATE_CRITERIA_VERT_SHEET_IDX = 3;
@@ -59,7 +53,7 @@ public class CuresStatisticsChartSpreadsheet {
     }
 
     public File generateSpreadsheet(LocalDate reportDataDate) throws IOException {
-        File newFile = copyTemplateFileToTemporaryFile();
+        File newFile = copyTemplateFileToTemporaryFile(template, "CuresStatisticsCharts");
         Workbook workbook = getWorkbook(newFile);
 
         criteriaDataWorksheet.populate(workbook);
@@ -76,14 +70,6 @@ public class CuresStatisticsChartSpreadsheet {
         return writeFileToDisk(workbook, newFile);
     }
 
-    private File writeFileToDisk(Workbook workbook, File saveFile) throws IOException {
-        try (FileOutputStream outputStream = new FileOutputStream(saveFile)) {
-            workbook.write(outputStream);
-            workbook.close();
-        }
-        return saveFile;
-    }
-
     private void updateChartTitles(Workbook workbook, LocalDate reportDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy");
 
@@ -96,23 +82,6 @@ public class CuresStatisticsChartSpreadsheet {
                 chart.getCTChart().getTitle().getTx().getRich().getPArray(1).getRArray(0).setT(reportDate.format(formatter));
             }
         }
-    }
-
-    private Workbook getWorkbook(File newFile) throws IOException {
-        FileInputStream fis = new FileInputStream(newFile);
-        return new XSSFWorkbook(fis);
-    }
-
-    private File copyTemplateFileToTemporaryFile() throws IOException {
-        try (InputStream srcInputStream = getTemplateAsStream()) {
-            File tempFile = File.createTempFile("CuresStatisticsCharts_", ".xlsx");
-            Files.copy(srcInputStream, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            return tempFile;
-        }
-    }
-
-    private InputStream getTemplateAsStream() {
-        return getClass().getClassLoader().getResourceAsStream(template);
     }
 
     static class CopyAndSortWorksheet {
