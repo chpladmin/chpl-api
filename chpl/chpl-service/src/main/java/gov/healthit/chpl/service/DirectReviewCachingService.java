@@ -113,10 +113,11 @@ public class DirectReviewCachingService {
             .forEach(dev -> drCache.put(new Element(dev.getDeveloperId(), new ArrayList<DirectReview>())));
 
         //insert each direct review into the right place in our cache
-        logger.info("Inserting " + allDirectReviews.size() + " values into the Direct Review cache.");
+        logger.info("Validating " + allDirectReviews.size() + " values into the Direct Review cache.");
         for (DirectReview dr : allDirectReviews) {
             drValidator.review(dr);
             if (CollectionUtils.isEmpty(dr.getErrorMessages())) {
+                logger.info("Adding " + dr.getJiraKey() + " to Direct Review Cache");
                 if (drCache.get(dr.getDeveloperId()) != null) {
                     Element devDirectReviewElement = drCache.get(dr.getDeveloperId());
                     Object devDirectReviewsObj = devDirectReviewElement.getObjectValue();
