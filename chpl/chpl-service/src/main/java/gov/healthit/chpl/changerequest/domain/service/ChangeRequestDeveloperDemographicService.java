@@ -150,7 +150,6 @@ public class ChangeRequestDeveloperDemographicService extends ChangeRequestDetai
 
     @Override
     protected void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         chplEmailFactory.emailBuilder()
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
@@ -163,7 +162,7 @@ public class ChangeRequestDeveloperDemographicService extends ChangeRequestDetai
     private String createApprovalHtmlMessage(ChangeRequest cr) {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         return chplHtmlEmailBuilder.initialize()
-                .heading("Developer Demographic Change Request Submitted")
+                .heading("Developer Demographic Change Request Approved")
                 .paragraph("", String.format(approvalEmailBody,
                         df.format(cr.getSubmittedDate()),
                         formatDeveloperHtml(cr.getDeveloper()),
@@ -174,18 +173,26 @@ public class ChangeRequestDeveloperDemographicService extends ChangeRequestDetai
 
     @Override
     protected void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         chplEmailFactory.emailBuilder()
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String>toList()))
                 .subject(pendingDeveloperActionEmailSubject)
-                .htmlMessage(String.format(pendingDeveloperActionEmailBody,
+                .htmlMessage(createPendingDeveloperActionHtmlMessage(cr))
+                .sendEmail();
+    }
+
+    private String createPendingDeveloperActionHtmlMessage(ChangeRequest cr) {
+        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+        return chplHtmlEmailBuilder.initialize()
+                .heading("Developer Demographic Change Request Pending Developer Action")
+                .paragraph("", String.format(pendingDeveloperActionEmailBody,
                         df.format(cr.getSubmittedDate()),
                         formatDetailsHtml((ChangeRequestDeveloperDemographic) cr.getDetails()),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
-                .sendEmail();
+                .footer(true)
+                .build();
     }
 
     @Override
@@ -262,16 +269,19 @@ public class ChangeRequestDeveloperDemographicService extends ChangeRequestDetai
     }
 
     private String formatDetailsHtml(ChangeRequestDeveloperDemographic details) {
-        String detailsHtml = "";
+        StringBuilder detailsHtml = new StringBuilder("");
         if (details.getSelfDeveloper() != null) {
-            detailsHtml += "<p>Self-Developer: " + formatSelfDeveloperHtml(details.getSelfDeveloper()) + "</p>";
+            detailsHtml.append(formatSelfDeveloperHtml(details.getSelfDeveloper()) + "</p>");
         }
         if (details.getAddress() != null) {
-            detailsHtml += "<p>Address:<br/>" + formatAddressHtml(details.getAddress()) + "</p>";
+            detailsHtml.append("<p>Address:<br/>" + formatAddressHtml(details.getAddress()) + "</p>");
         }
         if (details.getContact() != null) {
-            detailsHtml += "<p>Contact:<br/>" + formatContactHtml(details.getContact()) + "</p>";
+            detailsHtml.append("<p>Contact:<br/>" + formatContactHtml(details.getContact()) + "</p>");
         }
-        return detailsHtml;
+        if (details.getWebsite() != null) {
+            detailsHtml.append("<p>Website:<br/>" + details.getWebsite() + "</p>");
+        }
+        return detailsHtml.toString();
     }
 }
