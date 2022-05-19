@@ -203,12 +203,21 @@ public class ChangeRequestDeveloperDemographicService extends ChangeRequestDetai
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String>toList()))
                 .subject(rejectedEmailSubject)
-                .htmlMessage(String.format(rejectedEmailBody,
+                .htmlMessage(createRejectedHtmlMessage(cr))
+                .sendEmail();
+    }
+
+    private String createRejectedHtmlMessage(ChangeRequest cr) {
+        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+        return chplHtmlEmailBuilder.initialize()
+                .heading("Developer Demographic Change Request Rejected")
+                .paragraph("", String.format(rejectedEmailBody,
                         df.format(cr.getSubmittedDate()),
                         formatDetailsHtml((ChangeRequestDeveloperDemographic) cr.getDetails()),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
-                .sendEmail();
+                .footer(true)
+                .build();
     }
 
     private String formatDeveloperHtml(Developer dev) {
@@ -271,7 +280,7 @@ public class ChangeRequestDeveloperDemographicService extends ChangeRequestDetai
     private String formatDetailsHtml(ChangeRequestDeveloperDemographic details) {
         StringBuilder detailsHtml = new StringBuilder("");
         if (details.getSelfDeveloper() != null) {
-            detailsHtml.append(formatSelfDeveloperHtml(details.getSelfDeveloper()) + "</p>");
+            detailsHtml.append("<p>Self Developer:<br/>" + formatSelfDeveloperHtml(details.getSelfDeveloper()) + "</p>");
         }
         if (details.getAddress() != null) {
             detailsHtml.append("<p>Address:<br/>" + formatAddressHtml(details.getAddress()) + "</p>");
