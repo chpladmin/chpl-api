@@ -20,6 +20,7 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.email.ChplEmailFactory;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -36,6 +37,7 @@ public class ChangeRequestDeveloperDemographicService extends ChangeRequestDetai
     private DeveloperManager developerManager;
     private ActivityManager activityManager;
     private ChplEmailFactory chplEmailFactory;
+    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
     @Value("${changeRequest.developerDemographic.approval.subject}")
     private String approvalEmailSubject;
@@ -58,13 +60,14 @@ public class ChangeRequestDeveloperDemographicService extends ChangeRequestDetai
     @Autowired
     public ChangeRequestDeveloperDemographicService(ChangeRequestDAO crDAO, ChangeRequestDeveloperDemographicDAO crDeveloperDetailsDao,
             DeveloperManager developerManager, UserDeveloperMapDAO userDeveloperMapDAO,
-            ActivityManager activityManager, ChplEmailFactory chplEmailFactory) {
+            ActivityManager activityManager, ChplEmailFactory chplEmailFactory, ChplHtmlEmailBuilder chplHtmlEmailBuilder) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crDeveloperDemographicDAO = crDeveloperDetailsDao;
         this.developerManager = developerManager;
         this.activityManager = activityManager;
         this.chplEmailFactory = chplEmailFactory;
+        this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
     }
 
     @Override
@@ -153,11 +156,20 @@ public class ChangeRequestDeveloperDemographicService extends ChangeRequestDetai
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String>toList()))
                 .subject(approvalEmailSubject)
-                .htmlMessage(String.format(approvalEmailBody,
+                .htmlMessage(createApprovalHtmlMessage(cr))
+                .sendEmail();
+    }
+
+    private String createApprovalHtmlMessage(ChangeRequest cr) {
+        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+        return chplHtmlEmailBuilder.initialize()
+                .heading("Developer Demographic Change Request Submitted")
+                .paragraph("", String.format(approvalEmailBody,
                         df.format(cr.getSubmittedDate()),
                         formatDeveloperHtml(cr.getDeveloper()),
                         getApprovalBody(cr)))
-                .sendEmail();
+                .footer(true)
+                .build();
     }
 
     @Override
@@ -193,14 +205,15 @@ public class ChangeRequestDeveloperDemographicService extends ChangeRequestDetai
     }
 
     private String formatDeveloperHtml(Developer dev) {
-        String devHtml = "<p>Self-Developer: " + formatSelfDeveloperHtml(dev.getSelfDeveloper()) + "</p>";
+        StringBuilder devHtml = new StringBuilder("<p>Self-Developer: " + formatSelfDeveloperHtml(dev.getSelfDeveloper()) + "</p>");
         if (dev.getAddress() != null) {
-            devHtml += "<p>Address:<br/>" + formatAddressHtml(dev.getAddress()) + "</p>";
+            devHtml.append("<p>Address:<br/>" + formatAddressHtml(dev.getAddress()) + "</p>");
         }
         if (dev.getContact() != null) {
-            devHtml += "<p>Contact:<br/>" + formatContactHtml(dev.getContact()) + "</p>";
+            devHtml.append("<p>Contact:<br/>" + formatContactHtml(dev.getContact()) + "</p>");
         }
-        return devHtml;
+        devHtml.append("<p>Website: " + dev.getWebsite() + "</p>");
+        return devHtml.toString();
     }
 
     private String formatSelfDeveloperHtml(Boolean selfDeveloper) {
