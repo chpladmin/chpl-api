@@ -2,6 +2,8 @@ package gov.healthit.chpl.upload.listing.normalizer;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,8 +25,11 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class ConformanceMethodNormalizerTest {
+    private static final String DEFAULT_CM_ADDED_MSG = "Criterion %s requires a Conformance Method but none was found. \"%s\" was added.";
+
     private ConformanceMethodDAO cmDao;
     private ConformanceMethodNormalizer normalizer;
 
@@ -52,37 +57,35 @@ public class ConformanceMethodNormalizerTest {
                         .name("CM 2")
                         .build())
                 .build());
+        allowedCms.add(ConformanceMethodCriteriaMap.builder()
+                .criterion(CertificationCriterion.builder()
+                        .id(2L)
+                        .number("170.315 (b)(1)")
+                        .build())
+                .conformanceMethod(ConformanceMethod.builder()
+                        .id(1L)
+                        .name("CM 1")
+                        .build())
+                .build());
 
         try {
             Mockito.when(cmDao.getAllConformanceMethodCriteriaMap()).thenReturn(allowedCms);
         } catch (EntityRetrievalException e) {
         }
 
+        ErrorMessageUtil msgUtil = Mockito.mock(ErrorMessageUtil.class);
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.addedDefaultForCriterion"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(DEFAULT_CM_ADDED_MSG, i.getArgument(1), i.getArgument(2)));
+
         FF4j ff4j = Mockito.mock(FF4j.class);
         Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.CONFORMANCE_METHOD)))
             .thenReturn(true);
-
-        normalizer = new ConformanceMethodNormalizer(ff4j, cmDao);
+        normalizer = new ConformanceMethodNormalizer(cmDao, msgUtil, ff4j);
     }
 
     @Test
-    public void normalize_nullConformanceMethod_noChanges() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationResult(CertificationResult.builder()
-                        .success(true)
-                        .criterion(CertificationCriterion.builder()
-                                .id(1L)
-                                .number("170.315 (a)(1)")
-                                .build())
-                        .build())
-                .build();
-        listing.getCertificationResults().get(0).setConformanceMethods(null);
-        normalizer.normalize(listing);
-        assertNull(listing.getCertificationResults().get(0).getConformanceMethods());
-    }
-
-    @Test
-    public void normalize_emptyConformanceMethod_noChanges() {
+    public void normalize_emptyConformanceMethodAndCriteriaHasMultipleAllowed_DefaultNotPopulated() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .success(true)
@@ -94,11 +97,48 @@ public class ConformanceMethodNormalizerTest {
                         .build())
                 .build();
         normalizer.normalize(listing);
+        assertNotNull(listing.getCertificationResults().get(0).getConformanceMethods());
         assertEquals(0, listing.getCertificationResults().get(0).getConformanceMethods().size());
     }
 
     @Test
-    public void normalize_conformanceMethodNotInDatabase_idIsNull() {
+    public void normalize_emptyConformanceMethodAndCriteriaHasOneAllowed_DefaultPopulatedWithWarning() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .id(2L)
+                                .number("170.315 (b)(1)")
+                                .build())
+                        .conformanceMethods(new ArrayList<CertificationResultConformanceMethod>())
+                        .build())
+                .build();
+        normalizer.normalize(listing);
+        assertNotNull(listing.getCertificationResults().get(0).getConformanceMethods());
+        assertEquals(1, listing.getCertificationResults().get(0).getConformanceMethods().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(DEFAULT_CM_ADDED_MSG, "170.315 (b)(1)", "CM 1")));
+    }
+
+    @Test
+    public void normalize_emptyConformanceMethodAndUnattestedCriteriaHasOneAllowed_NoDefaultPopulated() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(false)
+                        .criterion(CertificationCriterion.builder()
+                                .id(2L)
+                                .number("170.315 (b)(1)")
+                                .build())
+                        .conformanceMethods(new ArrayList<CertificationResultConformanceMethod>())
+                        .build())
+                .build();
+        normalizer.normalize(listing);
+        assertNotNull(listing.getCertificationResults().get(0).getConformanceMethods());
+        assertEquals(0, listing.getCertificationResults().get(0).getConformanceMethods().size());
+    }
+
+    @Test
+    public void normalize_conformanceMethodNotAllowedForCriterion_idIsNull() {
         List<CertificationResultConformanceMethod> cms = new ArrayList<CertificationResultConformanceMethod>();
         cms.add(CertificationResultConformanceMethod.builder()
                 .id(null)
@@ -127,7 +167,7 @@ public class ConformanceMethodNormalizerTest {
     }
 
     @Test
-    public void normalize_conformanceMethodInDatabase_setsAllFields() {
+    public void normalize_conformanceMethodAllowedForCriterion_setsAllFields() {
         List<CertificationResultConformanceMethod> cms = new ArrayList<CertificationResultConformanceMethod>();
         cms.add(CertificationResultConformanceMethod.builder()
                 .id(null)
@@ -176,8 +216,8 @@ public class ConformanceMethodNormalizerTest {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
-                                    .id(2L)
-                                    .number("170.315 (a)(2)")
+                                    .id(4L)
+                                    .number("170.315 (c)(2)")
                                     .build())
                         .conformanceMethods(new ArrayList<CertificationResultConformanceMethod>())
                         .build())
