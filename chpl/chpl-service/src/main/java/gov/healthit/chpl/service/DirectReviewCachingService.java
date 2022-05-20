@@ -117,7 +117,7 @@ public class DirectReviewCachingService {
         for (DirectReview dr : allDirectReviews) {
             drValidator.review(dr);
             if (CollectionUtils.isEmpty(dr.getErrorMessages())) {
-                logger.info("Adding " + dr.getJiraKey() + " to Direct Review Cache");
+                logger.info("Adding " + dr.getJiraKey() + " for Developer " + dr.getDeveloperId() + " to Direct Review Cache");
                 if (drCache.get(dr.getDeveloperId()) != null) {
                     Element devDirectReviewElement = drCache.get(dr.getDeveloperId());
                     Object devDirectReviewsObj = devDirectReviewElement.getObjectValue();
