@@ -371,10 +371,6 @@ public class CertifiedProductSearchDetails implements Serializable {
     @XmlElement(required = false, nillable = true)
     private Boolean curesUpdate;
 
-    @XmlTransient
-    @Deprecated
-    private List<MeaningfulUseUser> meaningfulUseUserHistory = new ArrayList<MeaningfulUseUser>();
-
     /**
      * All current and historical values of promoting interoperability for this listing along with the dates each
      * user count was valid.
@@ -753,16 +749,6 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setDirectReviewsAvailable(boolean directReviewsAvailable) {
         this.directReviewsAvailable = directReviewsAvailable;
-    }
-
-    @Deprecated
-    public List<MeaningfulUseUser> getMeaningfulUseUserHistory() {
-        return meaningfulUseUserHistory;
-    }
-
-    @Deprecated
-    public void setMeaningfulUseUserHistory(List<MeaningfulUseUser> meaningfulUseUserHistory) {
-        this.meaningfulUseUserHistory = meaningfulUseUserHistory;
     }
 
     public List<PromotingInteroperabilityUser> getPromotingInteroperabilityUserHistory() {

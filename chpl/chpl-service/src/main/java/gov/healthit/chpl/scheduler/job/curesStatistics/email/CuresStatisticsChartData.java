@@ -128,7 +128,7 @@ public class CuresStatisticsChartData {
         if (existingCertificationCounts.containsKey(criterionFromMap)) {
             return existingCertificationCounts.get(criterionFromMap);
         } else {
-            return 0L;
+            return null;
         }
     }
 
@@ -137,7 +137,7 @@ public class CuresStatisticsChartData {
         if (newCertificationCounts.containsKey(criterionFromMap)) {
             return newCertificationCounts.get(criterionFromMap);
         } else {
-            return 0L;
+            return null;
         }
     }
 
@@ -146,7 +146,7 @@ public class CuresStatisticsChartData {
         if (listingCounts.containsKey(criterionFromMap)) {
             return listingCounts.get(criterionFromMap);
         } else {
-            return 0L;
+            return null;
         }
     }
 
@@ -157,7 +157,7 @@ public class CuresStatisticsChartData {
         if (privacyAndSecurityListingStatistic != null && privacyAndSecurityListingStatistic.size() > 0) {
             return privacyAndSecurityListingStatistic.get(0).getListingsRequiringPrivacyAndSecurityCount();
         } else {
-            return 0L;
+            return null;
         }
     }
 
@@ -168,7 +168,7 @@ public class CuresStatisticsChartData {
         if (privacyAndSecurityListingStatistic != null && privacyAndSecurityListingStatistic.size() > 0) {
             return privacyAndSecurityListingStatistic.get(0).getListingsWithPrivacyAndSecurityCount();
         } else {
-            return 0L;
+            return null;
         }
     }
 
@@ -179,7 +179,6 @@ public class CuresStatisticsChartData {
                     .findAny()
                     .get();
         } catch (Exception e) {
-            LOGGER.info(criterion.toString());
             return null;
         }
     }

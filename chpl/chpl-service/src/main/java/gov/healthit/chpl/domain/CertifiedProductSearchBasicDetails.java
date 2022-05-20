@@ -245,15 +245,8 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
     private Boolean curesUpdate;
 
     /**
-     * All current and historical values of meaningful use users for this listing along with the dates each meaningful
-     * use user count was valid. Dates are given in milliseconds since epoch.
-     */
-    @Deprecated
-    private List<MeaningfulUseUser> meaningfulUseUserHistory = new ArrayList<MeaningfulUseUser>();
-
-    /**
-     * All current and historical values of promoting interoperability user counts for this listing along with the dates each meaningful
-     * use user count was valid. Dates are given in milliseconds since epoch.
+     * All current and historical values of promoting interoperability for this listing along with the dates each
+     * user count was valid.
      */
     private List<PromotingInteroperabilityUser> promotingInteroperabilityUserHistory = new ArrayList<PromotingInteroperabilityUser>();
 

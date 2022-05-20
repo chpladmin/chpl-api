@@ -127,7 +127,7 @@
 					"response": []
 				},
 				{
-					"name": "GET /details end point returns 200 status and response should have meaningfulUseUser and promotingInteroperability fields ",
+					"name": "GET /details end point returns 200 status and response should have promotingInteroperability fields ",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -143,14 +143,10 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"/details end point response should have meaningfulUseUserHistory and promotingInteroperabilityUserHistory fields and returns 200 status\", function () {\r",
+									"pm.test(\"/details end point response should have promotingInteroperabilityUserHistory data and returns 200 status\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.response.to.have.status(200);\r",
-									"    pm.expect(jsonData).to.have.property(\"meaningfulUseUserHistory\");\r",
 									"    pm.expect(jsonData).to.have.property(\"promotingInteroperabilityUserHistory\");\r",
-									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('id');\r",
-									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('muuCount');\r",
-									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('muuDate');\r",
 									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('id');\r",
 									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('userCount');\r",
 									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('userCountDate');\r",
@@ -186,7 +182,7 @@
 								"details"
 							]
 						},
-						"description": "GET /details end point returns 200 status and response should have meaningful use user and promoting Interoperability fields "
+						"description": "GET /details end point returns 200 status and response should have promotingInteroperability data"
 					},
 					"response": []
 				},
@@ -255,7 +251,7 @@
 					"response": []
 				},
 				{
-					"name": "GET /certified_products/{{certifiedProductId}} response should have meaningfuluseuser and promotinginteroperability fields",
+					"name": "GET /certified_products/{{certifiedProductId}} response should have the promotingInteroperability data",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -271,14 +267,10 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"/certified_products/{{certifiedProductId}} end point response should have meaningfulUseUserHistory and promotingInteroperabilityUserHistory fields\", function () {\r",
+									"pm.test(\"/certified_products/{{certifiedProductId}} end point response should have promotingInteroperabilityUserHistory data\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.response.to.have.status(200);\r",
-									"    pm.expect(jsonData).to.have.property(\"meaningfulUseUserHistory\");\r",
 									"    pm.expect(jsonData).to.have.property(\"promotingInteroperabilityUserHistory\");\r",
-									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('id');\r",
-									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('muuCount');\r",
-									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('muuDate');\r",
 									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('id');\r",
 									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('userCount');\r",
 									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('userCountDate');\r",
@@ -313,12 +305,12 @@
 								"{{certifiedProductId}}"
 							]
 						},
-						"description": "GET /certified_products/{{certifiedProductId}} response should have meaningfuluseuser and promotinginteroperability fields"
+						"description": "GET /certified_products/{{certifiedProductId}} response should have promotingInteroperability data"
 					},
 					"response": []
 				},
 				{
-					"name": "GET /certified_products/{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode} end point response should have meaningfulUseUserHistory and promotingInteroperabilityUserHistory fields",
+					"name": "GET /certified_products/{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode} end point response should have promotingInteroperabilityUserHistory data",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -334,14 +326,10 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"/certified_products/{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode} end point response should have meaningfulUseUserHistory and promotingInteroperabilityUserHistory fields\", function () {\r",
+									"pm.test(\"/certified_products/{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode} end point response should have promotingInteroperabilityUserHistory data\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.response.to.have.status(200);\r",
-									"    pm.expect(jsonData).to.have.property(\"meaningfulUseUserHistory\");\r",
 									"    pm.expect(jsonData).to.have.property(\"promotingInteroperabilityUserHistory\");\r",
-									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('id');\r",
-									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('muuCount');\r",
-									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('muuDate');\r",
 									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('id');\r",
 									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('userCount');\r",
 									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('userCountDate');\r",
@@ -376,7 +364,7 @@
 								"{{newChplProductNumber}}"
 							]
 						},
-						"description": "GET /certified_products/{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode} end point response should have meaningfulUseUserHistory and promotingInteroperabilityUserHistory fields"
+						"description": "GET /certified_products/{year.testingLab.certBody.vendorCode.productCode.versionCode.icsCode.addlSoftwareCode.certDateCode} end point response should have promotingInteroperabilityUserHistory data"
 					},
 					"response": []
 				},
@@ -423,12 +411,12 @@
 								"beta"
 							]
 						},
-						"description": "GET /search/beta end point response should have meaningfulUseUserHistory and promotingInteroperabilityUserHistory fields"
+						"description": "GET /search/beta end point response should have promotingInteroperabilityUserHistory data"
 					},
 					"response": []
 				},
 				{
-					"name": "GET /certified_products/{chplPrefix-identifier} end point response should have meaningfulUseUserHistory and promotingInteroperabilityUserHistory fields",
+					"name": "GET /certified_products/{chplPrefix-identifier} end point response should have promotingInteroperabilityUserHistory data",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -444,14 +432,10 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"/certified_products/{chplPrefix-identifier} end point response should have meaningfulUseUserHistory and promotingInteroperabilityUserHistory fields\", function () {\r",
+									"pm.test(\"/certified_products/{chplPrefix-identifier} end point response should have promotingInteroperabilityUserHistory data\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.response.to.have.status(200);\r",
-									"    pm.expect(jsonData).to.have.property(\"meaningfulUseUserHistory\");\r",
 									"    pm.expect(jsonData).to.have.property(\"promotingInteroperabilityUserHistory\");\r",
-									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('id');\r",
-									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('muuCount');\r",
-									"    pm.expect(jsonData.meaningfulUseUserHistory[0]).to.have.property('muuDate');\r",
 									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('id');\r",
 									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('userCount');\r",
 									"    pm.expect(jsonData.promotingInteroperabilityUserHistory[0]).to.have.property('userCountDate');\r",
@@ -486,7 +470,7 @@
 								"{{oldChplProductNumber}}"
 							]
 						},
-						"description": "GET /certified_products/{chplPrefix-identifier} end point response should have meaningfulUseUserHistory and promotingInteroperabilityUserHistory fields"
+						"description": "GET /certified_products/{chplPrefix-identifier} end point response should have promotingInteroperabilityUserHistory data"
 					},
 					"response": []
 				},
