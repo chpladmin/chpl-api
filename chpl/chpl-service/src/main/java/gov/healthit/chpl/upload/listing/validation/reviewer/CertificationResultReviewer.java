@@ -102,10 +102,10 @@ public class CertificationResultReviewer {
         privacyAndSecurityFrameworkReviewer.review(listing);
         additionalSoftwareReviewer.review(listing);
         gapAllowedReviewer.review(listing);
-        testToolReviewer.review(listing);
-        testDataReviewer.review(listing);
         testProcedureReviewer.review(listing);
         conformanceMethodReviewer.review(listing);
+        testToolReviewer.review(listing);
+        testDataReviewer.review(listing);
         testFunctionalityReviewer.review(listing);
         testStandardReviewer.review(listing);
         optionalStandardReviewer.review(listing);

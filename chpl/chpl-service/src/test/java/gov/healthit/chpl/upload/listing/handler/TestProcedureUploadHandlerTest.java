@@ -9,10 +9,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.List;
 
 import org.apache.commons.csv.CSVRecord;
+import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
@@ -28,7 +31,10 @@ public class TestProcedureUploadHandlerTest {
     public void setup() {
         ErrorMessageUtil msgUtil = Mockito.mock(ErrorMessageUtil.class);
         ListingUploadHandlerUtil handlerUtil = new ListingUploadHandlerUtil(msgUtil);
-        handler = new TestProcedureUploadHandler(handlerUtil);
+        FF4j ff4j = Mockito.mock(FF4j.class);
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.CONFORMANCE_METHOD)))
+            .thenReturn(false);
+        handler = new TestProcedureUploadHandler(handlerUtil, ff4j);
     }
 
     @Test

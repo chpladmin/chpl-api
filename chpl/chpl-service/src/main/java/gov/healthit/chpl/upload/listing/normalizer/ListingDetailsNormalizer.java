@@ -53,6 +53,13 @@ public class ListingDetailsNormalizer {
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
+        if (CollectionUtils.isNotEmpty(listing.getErrorMessages())) {
+            listing.getErrorMessages().clear();
+        }
+        if (CollectionUtils.isNotEmpty(listing.getWarningMessages())) {
+            listing.getWarningMessages().clear();
+        }
+
         this.editionNormalizer.normalize(listing);
         this.acbNormalizer.normalize(listing);
         this.atlNormalizer.normalize(listing);
@@ -66,12 +73,6 @@ public class ListingDetailsNormalizer {
         this.cqmNormalizer.normalize(listing);
         this.measureNormalizer.normalize(listing);
         this.sedNormalizer.normalize(listing);
-        if (CollectionUtils.isNotEmpty(listing.getErrorMessages())) {
-            listing.getErrorMessages().clear();
-        }
-        if (CollectionUtils.isNotEmpty(listing.getWarningMessages())) {
-            listing.getWarningMessages().clear();
-        }
     }
 
 }
