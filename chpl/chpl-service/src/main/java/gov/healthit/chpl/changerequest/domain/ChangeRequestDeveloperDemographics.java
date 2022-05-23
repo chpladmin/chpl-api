@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Data
 @EqualsAndHashCode
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ChangeRequestDeveloperDemographic implements Serializable, ChangeRequestDetails {
+public class ChangeRequestDeveloperDemographics implements Serializable, ChangeRequestDetails {
     private static final long serialVersionUID = -5572794875421124955L;
 
     @EqualsAndHashCode.Exclude
@@ -29,11 +29,11 @@ public class ChangeRequestDeveloperDemographic implements Serializable, ChangeRe
     private PointOfContact contact;
     private String website;
 
-    public static ChangeRequestDeveloperDemographic cast(Object obj) {
-        if (obj instanceof ChangeRequestDeveloperDemographic) {
-            return (ChangeRequestDeveloperDemographic) obj;
+    public static ChangeRequestDeveloperDemographics cast(Object obj) {
+        if (obj instanceof ChangeRequestDeveloperDemographics) {
+            return (ChangeRequestDeveloperDemographics) obj;
         } else {
-            throw new RuntimeException("Could not cast object as type ChangeRequestDeveloperDemographic");
+            throw new RuntimeException("Could not cast object as type ChangeRequestDeveloperDemographics");
         }
     }
 }

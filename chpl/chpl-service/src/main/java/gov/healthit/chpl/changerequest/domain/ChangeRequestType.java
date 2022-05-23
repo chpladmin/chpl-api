@@ -18,7 +18,7 @@ public class ChangeRequestType implements Serializable {
     private String name;
 
     //TODO - This needs to be changed
-    public Boolean isDemographic() {
+    public Boolean isDemographics() {
         return !this.name.equalsIgnoreCase("Developer Attestation Change Request");
     }
 

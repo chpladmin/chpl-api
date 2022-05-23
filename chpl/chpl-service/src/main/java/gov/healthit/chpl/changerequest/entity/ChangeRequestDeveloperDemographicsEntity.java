@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 @Table(name = "change_request_developer_demographic")
-public class ChangeRequestDeveloperDemographicEntity {
+public class ChangeRequestDeveloperDemographicsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

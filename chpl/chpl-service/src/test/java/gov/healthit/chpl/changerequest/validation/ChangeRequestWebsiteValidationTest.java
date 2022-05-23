@@ -9,7 +9,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographic;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
@@ -98,8 +98,8 @@ public class ChangeRequestWebsiteValidationTest {
                 .build();
     }
 
-    private ChangeRequestDeveloperDemographic buildChangeRequestDetails(String website) {
-        return ChangeRequestDeveloperDemographic.builder()
+    private ChangeRequestDeveloperDemographics buildChangeRequestDetails(String website) {
+        return ChangeRequestDeveloperDemographics.builder()
                 .website(website)
                 .build();
     }

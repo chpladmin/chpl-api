@@ -26,7 +26,7 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographic;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
@@ -70,8 +70,8 @@ public class ChangeRequestManager {
     @Value("${changerequest.status.rejected}")
     private Long rejectedStatus;
 
-    @Value("${changerequest.developerDemographic}")
-    private Long developerDemographicChangeRequestTypeId;
+    @Value("${changerequest.developerDemographics}")
+    private Long developerDemographicsChangeRequestTypeId;
 
     @Value("${changerequest.attestation}")
     private Long attestationChangeRequestTypeId;
@@ -230,7 +230,7 @@ public class ChangeRequestManager {
 
     private ChangeRequestType getChangeRequestType(ChangeRequest parentChangeRequest) throws EntityRetrievalException {
         if (isDeveloperDemogrpahicChangeRequest(parentChangeRequest)) {
-            return changeRequestTypeDAO.getChangeRequestTypeById(developerDemographicChangeRequestTypeId);
+            return changeRequestTypeDAO.getChangeRequestTypeById(developerDemographicsChangeRequestTypeId);
         } else if (isDeveloperAttestationChangeRequest(parentChangeRequest)) {
             return changeRequestTypeDAO.getChangeRequestTypeById(attestationChangeRequestTypeId);
         }
@@ -241,7 +241,7 @@ public class ChangeRequestManager {
         HashMap<String, Object> crMap = (HashMap) cr.getDetails();
         return crMap.containsKey("developerId") ||
                 (ObjectUtils.allNotNull(cr, cr.getChangeRequestType())
-                && cr.getChangeRequestType().isDemographic());
+                && cr.getChangeRequestType().isDemographics());
     }
 
     private boolean isDeveloperAttestationChangeRequest(ChangeRequest cr) {
@@ -276,7 +276,7 @@ public class ChangeRequestManager {
 
     private ChangeRequest updateChangeRequestWithCastedDetails(ChangeRequest cr) {
         if (isDeveloperDemogrpahicChangeRequest(cr)) {
-            cr.setDetails(mapper.convertValue(cr.getDetails(), ChangeRequestDeveloperDemographic.class));
+            cr.setDetails(mapper.convertValue(cr.getDetails(), ChangeRequestDeveloperDemographics.class));
         } else if (isDeveloperAttestationChangeRequest(cr)) {
             cr.setDetails(mapper.convertValue(cr.getDetails(), ChangeRequestAttestationSubmission.class));
         }
@@ -295,7 +295,7 @@ public class ChangeRequestManager {
                 changeRequestStatusTypeDAO,
                 changeRequestTypeDAO,
                 attestationManager,
-                developerDemographicChangeRequestTypeId,
+                developerDemographicsChangeRequestTypeId,
                 attestationChangeRequestTypeId,
                 cancelledStatus,
                 acceptedStatus,

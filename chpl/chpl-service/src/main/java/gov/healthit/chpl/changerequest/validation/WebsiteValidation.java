@@ -2,7 +2,7 @@ package gov.healthit.chpl.changerequest.validation;
 
 import org.apache.commons.lang3.StringUtils;
 
-import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographic;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.util.ValidationUtils;
 
@@ -10,7 +10,7 @@ public class WebsiteValidation extends ValidationRule<ChangeRequestValidationCon
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
         if (context.getResourcePermissions().isUserRoleDeveloperAdmin()) {
-            ChangeRequestDeveloperDemographic details = (ChangeRequestDeveloperDemographic) context.getNewChangeRequest().getDetails();
+            ChangeRequestDeveloperDemographics details = (ChangeRequestDeveloperDemographics) context.getNewChangeRequest().getDetails();
             boolean websiteComponentsValid = true;
             if (!isWebsitePopulated(details.getWebsite())) {
                 getMessages().add(getErrorMessage("developer.websiteRequired"));

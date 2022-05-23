@@ -2,16 +2,16 @@ package gov.healthit.chpl.changerequest.validation;
 
 import org.apache.commons.lang3.StringUtils;
 
-import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographic;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
-public class DemographicValidation extends ValidationRule<ChangeRequestValidationContext> {
+public class DemographicsValidation extends ValidationRule<ChangeRequestValidationContext> {
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
         if (context.getResourcePermissions().isUserRoleDeveloperAdmin()) {
-            ChangeRequestDeveloperDemographic details = (ChangeRequestDeveloperDemographic) context.getNewChangeRequest().getDetails();
+            ChangeRequestDeveloperDemographics details = (ChangeRequestDeveloperDemographics) context.getNewChangeRequest().getDetails();
             if (details.getAddress() != null) {
                 boolean addressComponentsValid = true;
                 if (!isStreetPopulated(details.getAddress())) {

@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographic;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
@@ -87,8 +87,8 @@ public class ChangeRequestSelfDeveloperValidationTest {
                 .build();
     }
 
-    private ChangeRequestDeveloperDemographic buildChangeRequestDetails(Boolean selfDeveloper) {
-        return ChangeRequestDeveloperDemographic.builder()
+    private ChangeRequestDeveloperDemographics buildChangeRequestDetails(Boolean selfDeveloper) {
+        return ChangeRequestDeveloperDemographics.builder()
                 .selfDeveloper(selfDeveloper)
                 .build();
     }

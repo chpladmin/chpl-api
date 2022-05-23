@@ -11,9 +11,9 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
-import gov.healthit.chpl.changerequest.dao.ChangeRequestDeveloperDemographicDAO;
+import gov.healthit.chpl.changerequest.dao.ChangeRequestDeveloperDemographicsDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographic;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Developer;
@@ -30,40 +30,40 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 
 @Component
-public class ChangeRequestDeveloperDemographicService extends ChangeRequestDetailsService<ChangeRequestDeveloperDemographic> {
+public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDetailsService<ChangeRequestDeveloperDemographics> {
 
     private ChangeRequestDAO crDAO;
-    private ChangeRequestDeveloperDemographicDAO crDeveloperDemographicDAO;
+    private ChangeRequestDeveloperDemographicsDAO crDeveloperDemographicsDAO;
     private DeveloperManager developerManager;
     private ActivityManager activityManager;
     private ChplEmailFactory chplEmailFactory;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
-    @Value("${changeRequest.developerDemographic.approval.subject}")
+    @Value("${changeRequest.developerDemographics.approval.subject}")
     private String approvalEmailSubject;
 
-    @Value("${changeRequest.developerDemographic.approval.body}")
+    @Value("${changeRequest.developerDemographics.approval.body}")
     private String approvalEmailBody;
 
-    @Value("${changeRequest.developerDemographic.rejected.subject}")
+    @Value("${changeRequest.developerDemographics.rejected.subject}")
     private String rejectedEmailSubject;
 
-    @Value("${changeRequest.developerDemographic.rejected.body}")
+    @Value("${changeRequest.developerDemographics.rejected.body}")
     private String rejectedEmailBody;
 
-    @Value("${changeRequest.developerDemographic.pendingDeveloperAction.subject}")
+    @Value("${changeRequest.developerDemographics.pendingDeveloperAction.subject}")
     private String pendingDeveloperActionEmailSubject;
 
-    @Value("${changeRequest.developerDemographic.pendingDeveloperAction.body}")
+    @Value("${changeRequest.developerDemographics.pendingDeveloperAction.body}")
     private String pendingDeveloperActionEmailBody;
 
     @Autowired
-    public ChangeRequestDeveloperDemographicService(ChangeRequestDAO crDAO, ChangeRequestDeveloperDemographicDAO crDeveloperDetailsDao,
+    public ChangeRequestDeveloperDemographicsService(ChangeRequestDAO crDAO, ChangeRequestDeveloperDemographicsDAO crDeveloperDemographicsDAO,
             DeveloperManager developerManager, UserDeveloperMapDAO userDeveloperMapDAO,
             ActivityManager activityManager, ChplEmailFactory chplEmailFactory, ChplHtmlEmailBuilder chplHtmlEmailBuilder) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
-        this.crDeveloperDemographicDAO = crDeveloperDetailsDao;
+        this.crDeveloperDemographicsDAO = crDeveloperDemographicsDAO;
         this.developerManager = developerManager;
         this.activityManager = activityManager;
         this.chplEmailFactory = chplEmailFactory;
@@ -71,14 +71,14 @@ public class ChangeRequestDeveloperDemographicService extends ChangeRequestDetai
     }
 
     @Override
-    public ChangeRequestDeveloperDemographic getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
-        return crDeveloperDemographicDAO.getByChangeRequestId(changeRequestId);
+    public ChangeRequestDeveloperDemographics getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
+        return crDeveloperDemographicsDAO.getByChangeRequestId(changeRequestId);
     }
 
     @Override
     public ChangeRequest create(ChangeRequest cr) {
         try {
-            crDeveloperDemographicDAO.create(cr, (ChangeRequestDeveloperDemographic) cr.getDetails());
+            crDeveloperDemographicsDAO.create(cr, (ChangeRequestDeveloperDemographics) cr.getDetails());
             return crDAO.get(cr.getId());
         } catch (EntityRetrievalException e) {
             throw new RuntimeException(e);
@@ -91,14 +91,14 @@ public class ChangeRequestDeveloperDemographicService extends ChangeRequestDetai
             // Get the current cr to determine if the developer details changed
             ChangeRequest crFromDb = crDAO.get(cr.getId());
             // Convert the map of key/value pairs to a ChangeRequestDeveloperDetails object
-            ChangeRequestDeveloperDemographic crDevDetails = (ChangeRequestDeveloperDemographic) cr.getDetails();
+            ChangeRequestDeveloperDemographics crDevDetails = (ChangeRequestDeveloperDemographics) cr.getDetails();
             // Use the id from the DB, not the object. Client could have changed the id.
-            crDevDetails.setId(((ChangeRequestDeveloperDemographic) crFromDb.getDetails()).getId());
+            crDevDetails.setId(((ChangeRequestDeveloperDemographics) crFromDb.getDetails()).getId());
             cr.setDetails(crDevDetails);
 
-            if (!((ChangeRequestDeveloperDemographic) cr.getDetails())
+            if (!((ChangeRequestDeveloperDemographics) cr.getDetails())
                     .equals((crFromDb.getDetails()))) {
-                cr.setDetails(crDeveloperDemographicDAO.update((ChangeRequestDeveloperDemographic) cr.getDetails()));
+                cr.setDetails(crDeveloperDemographicsDAO.update((ChangeRequestDeveloperDemographics) cr.getDetails()));
 
                 activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
                         "Change request details updated",
@@ -115,7 +115,7 @@ public class ChangeRequestDeveloperDemographicService extends ChangeRequestDetai
     @Override
     protected ChangeRequest execute(ChangeRequest cr)
             throws EntityRetrievalException, EntityCreationException {
-        ChangeRequestDeveloperDemographic crDevDetails = (ChangeRequestDeveloperDemographic) cr.getDetails();
+        ChangeRequestDeveloperDemographics crDevDetails = (ChangeRequestDeveloperDemographics) cr.getDetails();
         Developer developer = developerManager.getById(cr.getDeveloper().getDeveloperId());
         if (crDevDetails.getSelfDeveloper() != null) {
             developer.setSelfDeveloper(crDevDetails.getSelfDeveloper());
@@ -162,7 +162,7 @@ public class ChangeRequestDeveloperDemographicService extends ChangeRequestDetai
     private String createApprovalHtmlMessage(ChangeRequest cr) {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         return chplHtmlEmailBuilder.initialize()
-                .heading("Developer Demographic Change Request Approved")
+                .heading("Developer Demographics Change Request Approved")
                 .paragraph("", String.format(approvalEmailBody,
                         df.format(cr.getSubmittedDate()),
                         formatDeveloperHtml(cr.getDeveloper()),
@@ -185,10 +185,10 @@ public class ChangeRequestDeveloperDemographicService extends ChangeRequestDetai
     private String createPendingDeveloperActionHtmlMessage(ChangeRequest cr) {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         return chplHtmlEmailBuilder.initialize()
-                .heading("Developer Demographic Change Request Pending Developer Action")
+                .heading("Developer Demographics Change Request Pending Developer Action")
                 .paragraph("", String.format(pendingDeveloperActionEmailBody,
                         df.format(cr.getSubmittedDate()),
-                        formatDetailsHtml((ChangeRequestDeveloperDemographic) cr.getDetails()),
+                        formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails()),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
                 .footer(true)
@@ -210,10 +210,10 @@ public class ChangeRequestDeveloperDemographicService extends ChangeRequestDetai
     private String createRejectedHtmlMessage(ChangeRequest cr) {
         DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         return chplHtmlEmailBuilder.initialize()
-                .heading("Developer Demographic Change Request Rejected")
+                .heading("Developer Demographics Change Request Rejected")
                 .paragraph("", String.format(rejectedEmailBody,
                         df.format(cr.getSubmittedDate()),
-                        formatDetailsHtml((ChangeRequestDeveloperDemographic) cr.getDetails()),
+                        formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails()),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
                 .footer(true)
@@ -277,7 +277,7 @@ public class ChangeRequestDeveloperDemographicService extends ChangeRequestDetai
         return contactHtml;
     }
 
-    private String formatDetailsHtml(ChangeRequestDeveloperDemographic details) {
+    private String formatDetailsHtml(ChangeRequestDeveloperDemographics details) {
         StringBuilder detailsHtml = new StringBuilder("");
         if (details.getSelfDeveloper() != null) {
             detailsHtml.append("<p>Self Developer:<br/>" + formatSelfDeveloperHtml(details.getSelfDeveloper()) + "</p>");

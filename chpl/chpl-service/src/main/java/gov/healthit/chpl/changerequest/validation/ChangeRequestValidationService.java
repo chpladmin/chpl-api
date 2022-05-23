@@ -13,16 +13,16 @@ import gov.healthit.chpl.manager.rules.ValidationRule;
 @Component
 public class ChangeRequestValidationService {
 
-    private Long developerDemographicChangeRequestTypeId;
+    private Long developerDemographicsChangeRequestTypeId;
     private Long attestationChangeRequestTypeId;
 
 
     @Autowired
     public ChangeRequestValidationService(
-            @Value("${changerequest.developerDemographic}") Long developerDemographicChangeRequestTypeId,
+            @Value("${changerequest.developerDemographics}") Long developerDemographicsChangeRequestTypeId,
             @Value("${changerequest.attestation}") Long attestationChangeRequestTypeId) {
 
-        this.developerDemographicChangeRequestTypeId = developerDemographicChangeRequestTypeId;
+        this.developerDemographicsChangeRequestTypeId = developerDemographicsChangeRequestTypeId;
         this.attestationChangeRequestTypeId = attestationChangeRequestTypeId;
     }
 
@@ -39,7 +39,7 @@ public class ChangeRequestValidationService {
             rules.addAll(getUpdateValidations());
         }
 
-        if (context.getNewChangeRequest().getChangeRequestType().getId().equals(developerDemographicChangeRequestTypeId)) {
+        if (context.getNewChangeRequest().getChangeRequestType().getId().equals(developerDemographicsChangeRequestTypeId)) {
             rules.addAll(getDeveloperDetailsValidations());
         } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(attestationChangeRequestTypeId)) {
             rules.addAll(getAttestationValidations());
@@ -54,7 +54,7 @@ public class ChangeRequestValidationService {
     private List<ValidationRule<ChangeRequestValidationContext>> getDeveloperDetailsValidations() {
         return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
                 new SelfDeveloperValidation(),
-                new DemographicValidation(),
+                new DemographicsValidation(),
                 new ContactValidation(),
                 new WebsiteValidation()));
     }

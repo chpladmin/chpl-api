@@ -39,7 +39,7 @@ public class ChangeRequestValidationContext {
             ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO,
             ChangeRequestTypeDAO changeRequestTypeDAO,
             AttestationManager attestationManager,
-            Long developerDemographicChangeRequestTypeId,
+            Long developerDemographicsChangeRequestTypeId,
             Long attestationChangeRequestTypeId,
             Long cancelledStatus,
             Long acceptedStatus,
@@ -55,7 +55,7 @@ public class ChangeRequestValidationContext {
         this.validationDAOs = new ValidationDAOs(developerDAO, changeRequestDAO, changeRequestStatusTypeDAO, changeRequestTypeDAO);
         this.domainManagers = new DomainManagers(attestationManager);
         this.changeRequestStatusIds = new ChangeRequestStatusIds(cancelledStatus, acceptedStatus, rejectedStatus, pendingAcbActionStatus, pendingDeveloperActionStatus);
-        this.changeRequestTypeIds = new ChangeRequestTypeIds(developerDemographicChangeRequestTypeId, attestationChangeRequestTypeId);
+        this.changeRequestTypeIds = new ChangeRequestTypeIds(developerDemographicsChangeRequestTypeId, attestationChangeRequestTypeId);
     }
 
     @Data
@@ -87,11 +87,11 @@ public class ChangeRequestValidationContext {
 
     @Data
     public static class ChangeRequestTypeIds {
-        private Long developerDemographicChangeRequestTypeId;
+        private Long developerDemographicsChangeRequestTypeId;
         private Long attestationChangeRequestTypeId;
 
-        public ChangeRequestTypeIds(Long developerDemographicChangeRequestTypeId, Long attestationChangeRequestTypeId) {
-            this.developerDemographicChangeRequestTypeId = developerDemographicChangeRequestTypeId;
+        public ChangeRequestTypeIds(Long developerDemographicsChangeRequestTypeId, Long attestationChangeRequestTypeId) {
+            this.developerDemographicsChangeRequestTypeId = developerDemographicsChangeRequestTypeId;
             this.attestationChangeRequestTypeId = attestationChangeRequestTypeId;
         }
     }
