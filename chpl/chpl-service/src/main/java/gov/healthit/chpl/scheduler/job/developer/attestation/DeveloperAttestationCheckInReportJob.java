@@ -44,6 +44,9 @@ public class DeveloperAttestationCheckInReportJob implements Job {
     @Value("${developer.attestation.checkin.report.body}")
     private String emailBody;
 
+    @Value("${developer.attestation.checkin.report.sectionHeading}")
+    private String sectionHeading;
+
     @Value("${chpl.email.greeting}")
     private String chplEmailGreeting;
 
@@ -72,7 +75,7 @@ public class DeveloperAttestationCheckInReportJob implements Job {
                             .subject(emailSubject)
                             .fileAttachments(Arrays.asList(csv))
                             .htmlMessage(chplHtmlEmailBuilder.initialize()
-                                    .heading("Developer Attestation Check-in Report")
+                                    .heading(sectionHeading)
                                     .paragraph("", emailBody)
                                     .footer(true)
                                     .build())
