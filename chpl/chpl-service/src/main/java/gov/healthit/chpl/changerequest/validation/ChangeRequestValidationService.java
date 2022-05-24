@@ -84,7 +84,6 @@ public class ChangeRequestValidationService {
 
     private List<ValidationRule<ChangeRequestValidationContext>> getUpdateValidations() {
         return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
-                new ChangeRequestDetailsUpdateValidation(),
                 new RoleAcbHasMultipleCertificationBodiesValidation(),
                 new DeveloperActiveValidation(),
                 new CurrentStatusValidation(),
