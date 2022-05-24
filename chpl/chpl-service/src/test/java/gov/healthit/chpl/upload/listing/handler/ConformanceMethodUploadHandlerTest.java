@@ -22,8 +22,8 @@ import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class ConformanceMethodUploadHandlerTest {
-    private static final String HEADER_ROW_ALL_CM_FIELDS = "CRITERIA_170_315_A_1__C,Conformance Method,Conformance Method Version";
-    private static final String HEADER_ROW_CM_VERSION_ONLY = "CRITERIA_170_315_A_1__C,Conformance Method Version";
+    private static final String HEADER_ROW_ALL_CM_FIELDS = "CRITERIA_170_315_A_1__C,Test Procedure,Test procedure version";
+    private static final String HEADER_ROW_CM_VERSION_ONLY = "CRITERIA_170_315_A_1__C,Test procedure version";
 
     private ConformanceMethodUploadHandler handler;
 
@@ -148,7 +148,7 @@ public class ConformanceMethodUploadHandlerTest {
     @Test
     public void parseConformanceMethod_SingleConformanceMethodUnexpectedHeaderOrder_ParsesCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
-                "CRITERIA_170_315_A_1__C,Conformance Method Version,Conformance Method").get(0);
+                "CRITERIA_170_315_A_1__C,Test procedure version,Test procedure").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,1.0,ONC Test Method");
         assertNotNull(certResultRecords);

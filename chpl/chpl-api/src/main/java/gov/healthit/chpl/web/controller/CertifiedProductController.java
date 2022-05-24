@@ -1091,7 +1091,6 @@ public class CertifiedProductController {
                 .id(e.getId())
                 .lastModifiedDate(e.getLastModifiedDate())
                 .mandatoryDisclosures(e.getMandatoryDisclosures())
-                .meaningfulUseUserHistory(e.getMeaningfulUseUserHistory())
                 .promotingInteroperabilityUserHistory(e.getPromotingInteroperabilityUserHistory())
                 .otherAcb(e.getOtherAcb())
                 .practiceType(e.getPracticeType())
