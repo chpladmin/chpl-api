@@ -23,9 +23,6 @@ public class ChangeRequestCreateValidation extends ValidationRule<ChangeRequestV
                 } else if (!isChangeRequestContactValid(details)) {
                     getMessages().add(getErrorMessage("changeRequest.demographics.contact.missing"));
                     areDetailsValid = false;
-                } else if (!isChangeRequestContactValid(details)) {
-                    getMessages().add(getErrorMessage("changeRequest.demographics..missing"));
-                    areDetailsValid = false;
                 }
                 return areDetailsValid;
             }
