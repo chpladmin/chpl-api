@@ -136,7 +136,6 @@ public class ApiKeyManager {
     }
 
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public void deleteKey(Long keyId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         ApiKey toDelete = apiKeyDAO.getById(keyId);
         String activityMsg = "API Key " + toDelete.getKey() + " was revoked.";
