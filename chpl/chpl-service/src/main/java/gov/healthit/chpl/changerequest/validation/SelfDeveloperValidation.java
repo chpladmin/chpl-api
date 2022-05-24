@@ -10,7 +10,7 @@ public class SelfDeveloperValidation extends ValidationRule<ChangeRequestValidat
         if (context.getResourcePermissions().isUserRoleDeveloperAdmin()) {
             ChangeRequestDeveloperDemographics details = (ChangeRequestDeveloperDemographics) context.getNewChangeRequest().getDetails();
             if (details.getSelfDeveloper() == null) {
-                getMessages().add(getErrorMessage("changeRequest.details.selfDeveloper.invalid"));
+                getMessages().add(getErrorMessage("changeRequest.demographics.selfDeveloper.invalid"));
                 return false;
             }
         }
