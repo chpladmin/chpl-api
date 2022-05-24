@@ -131,20 +131,6 @@ public class ApiKeyManager {
     }
 
     @Transactional
-    public ApiKey updateApiKey(ApiKey toUpdate) throws EntityRetrievalException {
-        return apiKeyDAO.update(toUpdate);
-    }
-
-    @Transactional
-    public void deleteKey(Long keyId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-        ApiKey toDelete = apiKeyDAO.getById(keyId);
-        String activityMsg = "API Key " + toDelete.getKey() + " was revoked.";
-        apiKeyDAO.delete(keyId);
-        activityManager.addActivity(ActivityConcept.API_KEY, toDelete.getId(), activityMsg, toDelete,
-                null);
-    }
-
-    @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     public void deleteKey(String keyString) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
         ApiKey toDelete = apiKeyDAO.getByKey(keyString);
