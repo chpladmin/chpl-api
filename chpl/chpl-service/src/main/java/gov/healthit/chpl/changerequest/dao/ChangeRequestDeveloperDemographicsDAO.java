@@ -101,7 +101,7 @@ public class ChangeRequestDeveloperDemographicsDAO extends BaseDAOImpl {
                     "Data error. Change request developer demographics not found in database.");
         } else if (result.size() > 1) {
             throw new EntityRetrievalException(
-                    "Data error. Duplicate change request developer demographic in database.");
+                    "Data error. Duplicate change request developer demographics in database.");
         }
 
         if (result.size() == 0) {
