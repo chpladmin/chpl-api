@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Data
-@Table(name = "change_request_developer_demographic")
+@Table(name = "change_request_developer_demographics")
 public class ChangeRequestDeveloperDemographicsEntity {
 
     @Id
