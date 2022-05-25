@@ -21,7 +21,7 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
     EDITION_2011_EDITED("2011 Listing Edited"),
     EDITION_2014_EDITED("2014 Listing Edited"),
     CERTIFICATION_STATUS_EDITED_CURRENT("Current Certification Status Edited"),
-    CERTIFICATION_STATUS_DATE_EDITED_CURRENT("Current Certification Date Edited"),
+    CERTIFICATION_STATUS_DATE_EDITED_CURRENT("Current Certification Status Date Edited"),
     CERTIFICATION_STATUS_EDITED_HISTORY("Historical Certification Status Edited"),
     DEVELOPER_NAME_EDITED("Developer Name Edited"),
     DEVELOPER_STATUS_EDITED("Developer Status Edited"),
