@@ -82,7 +82,7 @@ public class DownloadableResourceController {
         String edition = editionInput;
         String format = formatInput;
         String responseType = "text/csv";
-        String filenameToStream = "";
+        String filenameToStream = null;
 
         if (!StringUtils.isEmpty(edition)) {
             // make sure it's a 4 character year
