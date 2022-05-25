@@ -53,7 +53,7 @@ public class CertifiedProduct2015Gatherer {
             long start = (new Date()).getTime();
             CertifiedProductSearchDetails listing = null;
             if (useListingCache) {
-                listing = certifiedProductDetailsManager.getCertifiedProductDetailsUsingCache(certifiedProductId);
+                listing = certifiedProductDetailsManager.getCertifiedProductDetails(certifiedProductId);
             } else {
                 listing = certifiedProductDetailsManager.getCertifiedProductDetails(certifiedProductId);
             }

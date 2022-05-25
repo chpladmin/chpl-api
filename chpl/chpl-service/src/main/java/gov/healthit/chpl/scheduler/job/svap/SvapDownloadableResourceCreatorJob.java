@@ -128,7 +128,7 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
     protected Optional<List<ListingSvapActivity>> getListingSvapActivities(Long listingId) {
         CertifiedProductSearchDetails listing = null;
         try {
-            listing = getCertifiedProductDetailsManager().getCertifiedProductDetailsUsingCache(listingId);
+            listing = getCertifiedProductDetailsManager().getCertifiedProductDetails(listingId);
         } catch (EntityRetrievalException e) {
             LOGGER.error(String.format("Could not retrieve listing: %s", listingId), e);
             return Optional.empty();
