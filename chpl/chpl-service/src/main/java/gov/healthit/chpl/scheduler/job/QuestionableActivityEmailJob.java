@@ -510,7 +510,15 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             currRow.set(ACTIVITY_CERT_STATUS_CHANGE_REASON_COL, activity.getCertificationStatusChangeReason());
         } else if (activity.getTrigger().getName()
                 .equals(QuestionableActivityTriggerConcept.TESTING_LAB_CHANGED.getName())) {
-            currRow.set(ACTIVITY_DESCRIPTION_COL, "From " + activity.getBefore() + " to " + activity.getAfter());
+            if (!StringUtils.isEmpty(activity.getBefore()) && !StringUtils.isEmpty(activity.getAfter())) {
+                currRow.set(ACTIVITY_DESCRIPTION_COL, "From " + activity.getBefore() + " to " + activity.getAfter());
+            } else if (!StringUtils.isEmpty(activity.getBefore())) {
+                currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getBefore());
+            } else if (!StringUtils.isEmpty(activity.getAfter())) {
+                currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getAfter());
+            } else {
+                currRow.set(ACTIVITY_DESCRIPTION_COL, "Unknown change");
+            }
             currRow.set(ACTIVITY_CERT_STATUS_CHANGE_REASON_COL, activity.getCertificationStatusChangeReason());
         } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.MEASURE_ADDED
                 .getName())) {
