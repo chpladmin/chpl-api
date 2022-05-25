@@ -45,6 +45,7 @@ import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.service.DirectReviewCachingService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
 import gov.healthit.chpl.web.controller.results.DeveloperAttestationSubmissionResults;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
 import io.swagger.v3.oas.annotations.Operation;
@@ -84,6 +85,7 @@ public class DeveloperController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @DeprecatedResponseFields(responseClass = DeveloperResults.class)
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody DeveloperResults getDevelopers(
             @RequestParam(value = "showDeleted", required = false, defaultValue = "false") boolean showDeleted) {
@@ -103,6 +105,7 @@ public class DeveloperController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @DeprecatedResponseFields(responseClass = Developer.class)
     @RequestMapping(value = "/{developerId}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody Developer getDeveloperById(@PathVariable("developerId") Long developerId)
@@ -115,6 +118,7 @@ public class DeveloperController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @DeprecatedResponseFields(responseClass = DeveloperTree.class)
     @RequestMapping(value = "/{developerId}/hierarchy", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody DeveloperTree getDeveloperHierarchyById(@PathVariable("developerId") Long developerId)
@@ -140,6 +144,7 @@ public class DeveloperController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
+    @DeprecatedResponseFields(responseClass = Developer.class)
     @RequestMapping(value = "/{developerId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public ResponseEntity<Developer> update(@PathVariable("developerId") Long developerId,
