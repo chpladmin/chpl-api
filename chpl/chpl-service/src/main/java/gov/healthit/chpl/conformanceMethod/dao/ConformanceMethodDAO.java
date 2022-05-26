@@ -19,6 +19,16 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 @Repository("conformanceMethodDAO")
 public class ConformanceMethodDAO extends BaseDAOImpl {
 
+    public List<ConformanceMethod> getAll() {
+        Query query = entityManager.createQuery("SELECT cm "
+                + "FROM ConformanceMethodEntity cm "
+                + "WHERE cm.deleted = false", ConformanceMethodEntity.class);
+        List<ConformanceMethodEntity> results = query.getResultList();
+        return results.stream()
+                .map(result -> result.toDomain())
+                .collect(Collectors.toList());
+    }
+
     public List<ConformanceMethod> getByCriterionId(Long criterionId) {
         Set<ConformanceMethodEntity> entities = getConformanceMethodByCertificationCriteria(criterionId);
         return entities.stream()

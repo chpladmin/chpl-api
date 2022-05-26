@@ -574,8 +574,9 @@ public class CertificationResultDAO extends BaseDAOImpl {
     public List<CertificationResultConformanceMethod> getConformanceMethodsByListingAndCriterionId(Long listingId, Long criterionId) {
         Query query = entityManager.createQuery("SELECT crcm "
                 + "FROM CertifiedProductSummaryEntity cp "
-                + "JOIN FETCH cp.certificationResults certResults "
-                + "JOIN FETCH certResults.certificationResultConformanceMethods crcm "
+                + "JOIN cp.certificationResults certResults "
+                + "JOIN certResults.certificationResultConformanceMethods crcm "
+                + "JOIN crcm.conformanceMethod cm "
                 + "WHERE certResults.certificationCriterionId = :criterionId "
                 + "AND cp.id = :listingId "
                 + "AND crcm.deleted = false ",
