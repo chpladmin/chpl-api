@@ -26,7 +26,7 @@ public class DirectReviewCacheRefreshJob extends DownloadableResourceCreatorJob 
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Direct Review Cache Refresh job. *********");
         try {
-            directReviewService.populateDirectReviewsCache();
+            directReviewService.populateDirectReviewsCache(LOGGER);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         } finally {
