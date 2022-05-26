@@ -95,7 +95,7 @@ public class CertifiedProductSearchManager {
         List<DirectReview> listingDrs = drService.getDirectReviewsRelatedToListing(searchResult.getId(),
                 searchResult.getDeveloperId(),
                 searchResult.getEdition(),
-                statusEvents);
+                statusEvents, LOGGER);
         searchResult.setDirectReviewCount(listingDrs.size());
         searchResult.setOpenDirectReviewNonConformityCount(
                 calculateNonConformitiesWithStatusForListing(listingDrs, searchResult.getId(), DirectReviewNonConformity.STATUS_OPEN));
