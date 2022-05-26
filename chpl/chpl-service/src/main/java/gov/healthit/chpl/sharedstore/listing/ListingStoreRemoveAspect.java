@@ -47,6 +47,9 @@ public class ListingStoreRemoveAspect {
             case ACB_ID:
                 removeListingsFromStoreByAcbId(id);
                 break;
+            case PRODUCT_ID:
+                removeListingsFromStoreByAcbId(id);
+                break;
             default:
         }
     }
@@ -67,12 +70,21 @@ public class ListingStoreRemoveAspect {
             .forEach(details -> removeListingFromStoreByListingId(details.getId()));
     }
 
+    private void removeListingsFromStoreByProductId(Long productId) {
+        getCertifiedProductsForProduct(productId).stream()
+            .forEach(details -> removeListingFromStoreByListingId(details.getId()));
+    }
+
     private List<CertifiedProductDetailsDTO> getCertifiedProductsForDeveloper(Long developerId) {
         return certifiedProductDAO.findByDeveloperId(developerId);
     }
 
     private List<CertifiedProductDetailsDTO> getCertifiedProductsForAcb(Long acbId) {
         return certifiedProductDAO.getDetailsByAcbIds(List.of(acbId));
+    }
+
+    private List<CertifiedProductDetailsDTO> getCertifiedProductsForProduct(Long productId) {
+        return certifiedProductDAO.getDetailsByProductId(productId);
     }
 
     private Long getValue(JoinPoint joinPoint, String condition) {

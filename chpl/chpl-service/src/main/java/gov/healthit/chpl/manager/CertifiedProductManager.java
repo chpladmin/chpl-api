@@ -1073,6 +1073,7 @@ public class CertifiedProductManager extends SecuredManager {
     // listings collection is not evicted here because it's pre-fetched and
     // handled in a listener
     // no other caches have ACB data so we do not need to clear all
+    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#certifiedProductId")
     public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         CertifiedProductDTO toUpdate = cpDao.getById(certifiedProductId);
