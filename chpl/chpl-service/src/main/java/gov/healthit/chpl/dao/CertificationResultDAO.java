@@ -571,6 +571,22 @@ public class CertificationResultDAO extends BaseDAOImpl {
      * Conformance Method methods.
      *
      *******************************************************/
+    public List<CertificationResultConformanceMethod> getConformanceMethodsByListingAndCriterionId(Long listingId, Long criterionId) {
+        Query query = entityManager.createQuery("SELECT crcm "
+                + "FROM CertifiedProductSummaryEntity cp "
+                + "JOIN FETCH cp.certificationResults certResults "
+                + "JOIN FETCH certResults.certificationResultConformanceMethods crcm "
+                + "WHERE certResults.certificationCriterionId = :criterionId "
+                + "AND cp.id = :listingId "
+                + "AND crcm.deleted = false ",
+                CertificationResultConformanceMethodEntity.class);
+        query.setParameter("criterionId", criterionId);
+        query.setParameter("listingId", listingId);
+        List<CertificationResultConformanceMethodEntity> results = query.getResultList();
+        return results.stream()
+                .map(result -> result.toDomain())
+                .collect(Collectors.toList());
+    }
 
     public Long createConformanceMethodMapping(Long certResultId, CertificationResultConformanceMethod conformanceMethod)
             throws EntityCreationException {
