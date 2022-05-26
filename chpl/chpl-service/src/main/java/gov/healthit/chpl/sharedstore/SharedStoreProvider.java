@@ -67,7 +67,7 @@ public abstract class SharedStoreProvider<K, V> {
         }
     }
 
-    private void remove(K key) {
+    public void remove(K key) {
         sharedStoreDAO.remove(getDomain(), key.toString());
     }
 

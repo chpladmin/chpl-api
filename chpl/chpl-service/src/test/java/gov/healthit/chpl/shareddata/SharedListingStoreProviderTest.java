@@ -10,9 +10,9 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.sharedstore.SharedListingStoreProvider;
 import gov.healthit.chpl.sharedstore.SharedStore;
 import gov.healthit.chpl.sharedstore.SharedStoreDAO;
+import gov.healthit.chpl.sharedstore.listing.SharedListingStoreProvider;
 
 public class SharedListingStoreProviderTest {
     private static final Long ALT_ID = 5L;
