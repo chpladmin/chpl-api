@@ -13,6 +13,7 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import lombok.extern.log4j.Log4j2;
 
@@ -48,7 +49,10 @@ public class ListingStoreRemoveAspect {
                 removeListingsFromStoreByAcbId(id);
                 break;
             case PRODUCT_ID:
-                removeListingsFromStoreByAcbId(id);
+                removeListingsFromStoreByProductId(id);
+                break;
+            case VERSION_ID:
+                removeListingsFromStoreByVersionId(id);
                 break;
             default:
         }
@@ -75,6 +79,11 @@ public class ListingStoreRemoveAspect {
             .forEach(details -> removeListingFromStoreByListingId(details.getId()));
     }
 
+    private void removeListingsFromStoreByVersionId(Long versionId) {
+        getCertifiedProductsForVersion(versionId).stream()
+            .forEach(details -> removeListingFromStoreByListingId(details.getId()));
+    }
+
     private List<CertifiedProductDetailsDTO> getCertifiedProductsForDeveloper(Long developerId) {
         return certifiedProductDAO.findByDeveloperId(developerId);
     }
@@ -85,6 +94,10 @@ public class ListingStoreRemoveAspect {
 
     private List<CertifiedProductDetailsDTO> getCertifiedProductsForProduct(Long productId) {
         return certifiedProductDAO.getDetailsByProductId(productId);
+    }
+
+    private List<CertifiedProduct> getCertifiedProductsForVersion(Long versionId) {
+        return certifiedProductDAO.getDetailsByVersionId(versionId);
     }
 
     private Long getValue(JoinPoint joinPoint, String condition) {
