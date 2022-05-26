@@ -122,8 +122,8 @@ public class DeveloperAttestationReportDataCollection {
                         .submitterEmail(getSubmitterEmail(attestation))
                         .totalSurveillanceNonconformities(getTotalSurveillanceNonconformities(dev, logger))
                         .openSurveillanceNonconformities(getOpenSurveillanceNonconformities(dev, logger))
-                        .totalDirectReviewNonconformities(getTotalDirectReviewNonconformities(dev))
-                        .openDirectReviewNonconformities(getOpenDirectReviewNonconformities(dev))
+                        .totalDirectReviewNonconformities(getTotalDirectReviewNonconformities(dev, logger))
+                        .openDirectReviewNonconformities(getOpenDirectReviewNonconformities(dev, logger))
                         .assurancesValidation(getAssurancesValidation(dev, logger))
                         .realWorldTestingValidation(getRealWorldTestingValidation(dev, logger))
                         .apiValidation(getApiValidation(dev, logger))
@@ -281,14 +281,14 @@ public class DeveloperAttestationReportDataCollection {
                 .collect(Collectors.summingLong(Long::longValue));
     }
 
-    private Long getTotalDirectReviewNonconformities(Developer developer) {
-        return directReviewService.getDeveloperDirectReviews(developer.getDeveloperId(), LOGGER).stream()
+    private Long getTotalDirectReviewNonconformities(Developer developer, Logger logger) {
+        return directReviewService.getDeveloperDirectReviews(developer.getDeveloperId(), logger).stream()
                 .flatMap(dr -> dr.getNonConformities().stream())
                 .count();
     }
 
-    private Long getOpenDirectReviewNonconformities(Developer developer) {
-        return directReviewService.getDeveloperDirectReviews(developer.getDeveloperId(), LOGGER).stream()
+    private Long getOpenDirectReviewNonconformities(Developer developer, Logger logger) {
+        return directReviewService.getDeveloperDirectReviews(developer.getDeveloperId(), logger).stream()
                 .flatMap(dr -> dr.getNonConformities().stream())
                 .filter(nc -> nc.getNonConformityStatus().equalsIgnoreCase(DirectReviewNonConformity.STATUS_OPEN))
                 .count();
