@@ -3,8 +3,6 @@ package gov.healthit.chpl.scheduler.job.developer.attestation;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -18,27 +16,21 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
-import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.SchedulerManager;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "developerAttestationReportJobLogger")
-public class DeveloperAttestationReportJob implements Job {
+@Log4j2(topic = "developerAttestationCheckinReportJobLogger")
+public class DeveloperAttestationCheckInReportJob implements Job {
 
     @Autowired
     private JpaTransactionManager txManager;
 
     @Autowired
-    private DeveloperAttestationReportDataCollection developerAttestationReportDataCollection;
+    private DeveloperAttestationCheckInReportDataCollector developerAttestationCheckInReportDataCollection;
 
     @Autowired
-    private DeveloperAttestationReportCsvWriter developerAttestationReportCsvWriter;
-
-    @Autowired
-    private CertificationBodyDAO certificationBodyDAO;
+    private DeveloperAttestationCheckInReportCsvWriter developerAttestationCheckInReportCsvWriter;
 
     @Autowired
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
@@ -46,11 +38,14 @@ public class DeveloperAttestationReportJob implements Job {
     @Autowired
     private ChplEmailFactory chplEmailFactory;
 
-    @Value("${developer.attestation.report.subject}")
+    @Value("${developer.attestation.checkin.report.subject}")
     private String emailSubject;
 
-    @Value("${developer.attestation.report.body}")
+    @Value("${developer.attestation.checkin.report.body}")
     private String emailBody;
+
+    @Value("${developer.attestation.checkin.report.sectionHeading}")
+    private String sectionHeading;
 
     @Value("${chpl.email.greeting}")
     private String chplEmailGreeting;
@@ -59,7 +54,7 @@ public class DeveloperAttestationReportJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
-        LOGGER.info("********* Starting Developer Attestation Report job. *********");
+        LOGGER.info("********* Starting Developer Attestation Check-in Report job. *********");
 
         // We need to manually create a transaction in this case because of how AOP works. When a method is
         // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
@@ -73,15 +68,15 @@ public class DeveloperAttestationReportJob implements Job {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
-                    List<DeveloperAttestationReport> reportRows = developerAttestationReportDataCollection.collect(getAcbIds(context), LOGGER);
-                    File csv = developerAttestationReportCsvWriter.generateFile(reportRows);
+                    List<DeveloperAttestationCheckInReport> reportRows = developerAttestationCheckInReportDataCollection.collect();
+                    File csv = developerAttestationCheckInReportCsvWriter.generateFile(reportRows);
                     chplEmailFactory.emailBuilder()
                             .recipient(context.getMergedJobDataMap().getString("email"))
                             .subject(emailSubject)
                             .fileAttachments(Arrays.asList(csv))
                             .htmlMessage(chplHtmlEmailBuilder.initialize()
-                                    .heading(emailSubject)
-                                    .paragraph(String.format(emailBody), getAcbNamesAsBrSeparatedList(context))
+                                    .heading(sectionHeading)
+                                    .paragraph("", emailBody)
                                     .footer(true)
                                     .build())
                             .sendEmail();
@@ -91,33 +86,6 @@ public class DeveloperAttestationReportJob implements Job {
                 }
             }
         });
-        LOGGER.info("********* Completed Developer Attestation Report job. *********");
+        LOGGER.info("********* Completed Developer Attestation Check-in Report job. *********");
     }
-
-    private List<Long> getAcbIds(JobExecutionContext context) {
-        return Arrays.asList(context.getMergedJobDataMap().getString("acb").split(SchedulerManager.DATA_DELIMITER)).stream()
-                .map(acb -> Long.parseLong(acb))
-                .collect(Collectors.toList());
-    }
-
-    private String getAcbNamesAsBrSeparatedList(JobExecutionContext jobContext) {
-        if (Objects.nonNull(jobContext.getMergedJobDataMap().getString("acb"))) {
-            return Arrays.asList(
-                    jobContext.getMergedJobDataMap().getString("acb").split(SchedulerManager.DATA_DELIMITER)).stream()
-                    .map(acbId -> getAcbName(Long.valueOf(acbId)))
-                    .collect(Collectors.joining("<br />"));
-        } else {
-            return "";
-        }
-    }
-
-    private String getAcbName(Long acbId) {
-        try {
-            return certificationBodyDAO.getById(acbId).getName();
-        } catch (NumberFormatException | EntityRetrievalException e) {
-            LOGGER.error("Could not retreive ACB name based on value: " + acbId, e);
-            return "";
-        }
-    }
-
 }
