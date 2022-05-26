@@ -1,7 +1,6 @@
 package gov.healthit.chpl.sharedstore.listing;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,14 +15,10 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class SharedListingStoreProvider extends SharedStoreProvider<Long, CertifiedProductSearchDetails> {
     private ObjectMapper mapper = new ObjectMapper();
-    private Integer timeToLiveInHours;
 
     @Autowired
-    public SharedListingStoreProvider(SharedStoreDAO sharedStoreDAO,
-          @Value("${sharedStore.timeToLive.listings}") Integer timeToLiveInHours) {
+    public SharedListingStoreProvider(SharedStoreDAO sharedStoreDAO) {
         super(sharedStoreDAO);
-
-        this.timeToLiveInHours = timeToLiveInHours;
     }
 
     @Override
@@ -43,6 +38,6 @@ public class SharedListingStoreProvider extends SharedStoreProvider<Long, Certif
 
     @Override
     protected Integer getTimeToLive() {
-        return timeToLiveInHours;
+        return SharedListingStoreProvider.UNLIMITED;
     }
 }
