@@ -58,6 +58,7 @@ public class ProductVersion implements Serializable {
 
     public ProductVersion(ProductVersionDTO dto) {
         this.id = dto.getId();
+        this.versionId = dto.getId();
         this.version = dto.getVersion();
         if (dto.getLastModifiedDate() != null) {
             this.lastModifiedDate = dto.getLastModifiedDate().getTime() + "";
