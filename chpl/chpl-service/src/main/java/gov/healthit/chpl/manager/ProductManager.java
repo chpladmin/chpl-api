@@ -260,7 +260,7 @@ public class ProductManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
-    @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#oldProduct.id")
+    @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#productToCreate.id")
     public Product split(Product oldProduct, Product productToCreate, String newProductCode,
             List<ProductVersionDTO> newProductVersions)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {

@@ -32,6 +32,8 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
+import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil.ChplProductNumberParts;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -184,6 +186,7 @@ public class ProductVersionManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
+    @ListingStoreRemove(removeBy = RemoveBy.VERSION_ID, id = "#dto.id")
     public ProductVersionDTO update(ProductVersionDTO dto)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 
@@ -260,6 +263,7 @@ public class ProductVersionManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
+    @ListingStoreRemove(removeBy = RemoveBy.VERSION_ID, id = "#newVersion.id")
     public ProductVersionDTO split(ProductVersionDTO oldVersion, ProductVersionDTO newVersion,
             String newVersionCode, List<Long> newVersionListingIds)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
