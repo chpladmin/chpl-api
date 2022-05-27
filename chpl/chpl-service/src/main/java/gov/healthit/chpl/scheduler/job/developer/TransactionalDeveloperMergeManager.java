@@ -30,6 +30,8 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.service.DirectReviewUpdateEmailService;
+import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
+import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -60,6 +62,7 @@ public class TransactionalDeveloperMergeManager {
     private DirectReviewUpdateEmailService directReviewEmailService;
 
     @Transactional
+    @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#developerToCreate.id")
     public Developer merge(List<Developer> beforeDevelopers, Developer developerToCreate)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, Exception {
         List<Long> developerIdsToMerge = beforeDevelopers.stream()
