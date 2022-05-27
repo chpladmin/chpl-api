@@ -24,7 +24,7 @@ public class SharedListingStoreProviderTest {
     public void setup() {
         sharedStoreDAO = Mockito.mock(SharedStoreDAO.class);
 
-        sharedListingStoreProvider = new SharedListingStoreProvider(sharedStoreDAO, 1);
+        sharedListingStoreProvider = new SharedListingStoreProvider(sharedStoreDAO);
     }
 
     @Test
