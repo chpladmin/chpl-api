@@ -26,19 +26,11 @@ public class DirectReviewNonConformityXmlGenerator extends XmlGenerator {
                 ? nonconformity.getCapEndDate().toString() : null, "capEndDate", sw);
         createSimpleElement(nonconformity.getCapMustCompleteDate() != null
                 ? nonconformity.getCapMustCompleteDate().toString() : null, "capMustCompleteDate", sw);
-        createSimpleElement(nonconformity.getCapStartDate() != null
-                ? nonconformity.getCapStartDate().toString() : null, "capStartDate", sw);
         createSimpleElement(nonconformity.getCreated(), "created", sw);
-        createSimpleElement(nonconformity.getDateOfDetermination() != null
-                ? nonconformity.getDateOfDetermination().toString() : null, "dateOfDetermination", sw);
         DeveloperAssociatedListingXmlGenerator.add(nonconformity.getDeveloperAssociatedListings(), "developerAssociatedListings", sw);
         createSimpleElement(nonconformity.getLastUpdated(), "lastUpdated", sw);
-        createSimpleElement(nonconformity.getNonConformityFindings(), "nonConformityFindings", sw);
         createSimpleElement(nonconformity.getNonConformityStatus(), "nonConformityStatus", sw);
-        createSimpleElement(nonconformity.getNonConformitySummary(), "nonConformitySummary", sw);
         createSimpleElement(nonconformity.getNonConformityType(), "nonConformityType", sw);
-        createSimpleElement(nonconformity.getRequirement(), "requirement", sw);
-        createSimpleElement(nonconformity.getResolution(), "resolution", sw);
         sw.writeEndElement();
     }
 }

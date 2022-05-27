@@ -129,7 +129,7 @@ public class TransactionalDeveloperMergeManager {
 
         Developer createdDeveloper = devManager.getById(createdDeveloperId);
         directReviewEmailService.sendEmail(beforeDevelopers, Arrays.asList(createdDeveloper),
-                preMergeListingDetails, postMergeListingDetails);
+                preMergeListingDetails, postMergeListingDetails, LOGGER);
 
         LOGGER.info("Logging developer merge activity.");
         Developer afterDeveloper = devManager.getById(createdDeveloperId);

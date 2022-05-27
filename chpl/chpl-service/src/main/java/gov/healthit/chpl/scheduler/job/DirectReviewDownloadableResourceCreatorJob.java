@@ -43,7 +43,7 @@ public class DirectReviewDownloadableResourceCreatorJob extends DownloadableReso
         try {
             try {
                 LOGGER.info("Repopulating the direct reviews cache.");
-                drCachingService.populateDirectReviewsCache();
+                drCachingService.populateDirectReviewsCache(LOGGER);
                 LOGGER.info("Completed repopulating the direct reviews cache.");
             } catch (Exception ex) {
                 LOGGER.error("Repopulating direct reviews cache failed. Not writing out a file.", ex);
@@ -65,7 +65,9 @@ public class DirectReviewDownloadableResourceCreatorJob extends DownloadableReso
                     + ".csv";
             File csvFile = getFile(csvFilename);
             DirectReviewCsvPresenter csvPresenter = new DirectReviewCsvPresenter(env, devManager, drSearchService);
+            LOGGER.info("Writing Direct Review data to CSV file.");
             csvPresenter.presentAsFile(csvFile);
+            LOGGER.info("Completed writing Direct Review data to CSV file.");
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         } finally {
@@ -83,6 +85,7 @@ public class DirectReviewDownloadableResourceCreatorJob extends DownloadableReso
         if (!file.createNewFile()) {
             throw new IOException("File can not be created");
         }
+        LOGGER.info("Created file " + file.getAbsolutePath());
         return file;
     }
 }
