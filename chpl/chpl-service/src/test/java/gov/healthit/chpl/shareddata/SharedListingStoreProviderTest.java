@@ -47,9 +47,9 @@ public class SharedListingStoreProviderTest {
                         .putDate(LocalDateTime.now().minusMinutes(1))
                         .build());
 
-        CertifiedProductSearchDetails listing = sharedListingStoreProvider.get(1L, () -> getNullListing());
+        CertifiedProductSearchDetails listing = sharedListingStoreProvider.get(1L, () -> getListing(ALT_ID));
 
-        assertEquals(1L, listing.getId());
+        assertEquals(ALT_ID, listing.getId());
     }
 
     @Test
