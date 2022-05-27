@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.Logger;
 import org.jfree.data.time.DateRange;
 import org.springframework.stereotype.Component;
 
@@ -39,9 +40,7 @@ import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchResponse;
 import gov.healthit.chpl.service.DirectReviewSearchService;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "developerAttestationReportJobLogger")
 @Component
 public class DeveloperAttestationReportDataCollection {
     private static final Integer MAX_PAGE_SIZE = 100;
@@ -88,15 +87,15 @@ public class DeveloperAttestationReportDataCollection {
             CertificationStatusType.SuspendedByOnc.getName())
             .collect(Collectors.toList());
 
-    public List<DeveloperAttestationReport> collect(List<Long> selectedAcbIds) {
+    public List<DeveloperAttestationReport> collect(List<Long> selectedAcbIds, Logger logger) {
         AttestationPeriod mostRecentPastPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
-        LOGGER.info("Most recent past attestation period: {} - {} ", mostRecentPastPeriod.getPeriodStart().toString(), mostRecentPastPeriod.getPeriodEnd().toString());
-        LOGGER.info("Selected AcbsId: {}", selectedAcbIds.stream()
+        logger.info("Most recent past attestation period: {} - {} ", mostRecentPastPeriod.getPeriodStart().toString(), mostRecentPastPeriod.getPeriodEnd().toString());
+        logger.info("Selected AcbsId: {}", selectedAcbIds.stream()
                 .map(id -> id.toString())
                 .collect(Collectors.joining(", ")));
 
         List<Developer> developers = getAllDevelopers().stream()
-                .filter(dev -> doesActiveListingExistDuringAttestationPeriod(getListingDataForDeveloper(dev), mostRecentPastPeriod))
+                .filter(dev -> doesActiveListingExistDuringAttestationPeriod(getListingDataForDeveloper(dev, logger), mostRecentPastPeriod))
                 .toList();
 
         List<DeveloperAttestationReport> reportRows = developers.stream()
@@ -121,21 +120,21 @@ public class DeveloperAttestationReportDataCollection {
                         .realWorldTesting(getAttestationResponse(attestation, RWT_ATTESTATION_ID))
                         .submitterName(getSubmitterName(attestation))
                         .submitterEmail(getSubmitterEmail(attestation))
-                        .totalSurveillanceNonconformities(getTotalSurveillanceNonconformities(dev))
-                        .openSurveillanceNonconformities(getOpenSurveillanceNonconformities(dev))
-                        .totalDirectReviewNonconformities(getTotalDirectReviewNonconformities(dev))
-                        .openDirectReviewNonconformities(getOpenDirectReviewNonconformities(dev))
-                        .assurancesValidation(getAssurancesValidation(dev))
-                        .realWorldTestingValidation(getRealWorldTestingValidation(dev))
-                        .apiValidation(getApiValidation(dev))
+                        .totalSurveillanceNonconformities(getTotalSurveillanceNonconformities(dev, logger))
+                        .openSurveillanceNonconformities(getOpenSurveillanceNonconformities(dev, logger))
+                        .totalDirectReviewNonconformities(getTotalDirectReviewNonconformities(dev, logger))
+                        .openDirectReviewNonconformities(getOpenDirectReviewNonconformities(dev, logger))
+                        .assurancesValidation(getAssurancesValidation(dev, logger))
+                        .realWorldTestingValidation(getRealWorldTestingValidation(dev, logger))
+                        .apiValidation(getApiValidation(dev, logger))
                         .activeAcbs(getActiveAcbs())
-                        .developerAcbMap(getDeveloperAcbMapping(dev))
+                        .developerAcbMap(getDeveloperAcbMapping(dev, logger))
                         .build();
                 })
                 .sorted(Comparator.comparing(DeveloperAttestationReport::getDeveloperName))
                 .toList();
 
-        LOGGER.info("Total Report Rows found: {}", reportRows.size());
+        logger.info("Total Report Rows found: {}", reportRows.size());
 
         return reportRows;
     }
@@ -161,7 +160,7 @@ public class DeveloperAttestationReportDataCollection {
         return isListingActiveDuringAttestationPeriod(statusEvents, period);
     }
 
-    private List<CertifiedProductBasicSearchResult> getListingDataForDeveloper(Developer developer) {
+    private List<CertifiedProductBasicSearchResult> getListingDataForDeveloper(Developer developer, Logger logger) {
         if (!developerListings.containsKey(developer.getId())) {
             SearchRequest request = SearchRequest.builder()
                     .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
@@ -173,8 +172,8 @@ public class DeveloperAttestationReportDataCollection {
                 SearchResponse response = listingSearchService.search(request);
                 developerListings.put(developer.getId(), response.getResults());
             } catch (ValidationException e) {
-                LOGGER.error("Could not retrieve listings for developer {}.", developer.getName());
-                LOGGER.error(e);
+                logger.error("Could not retrieve listings for developer {}.", developer.getName());
+                logger.error(e);
                 developerListings.put(developer.getId(), new ArrayList<CertifiedProductBasicSearchResult>());
             }
         }
@@ -262,8 +261,8 @@ public class DeveloperAttestationReportDataCollection {
         return attestation != null ? attestation.getSignatureEmail() : "";
     }
 
-    private Long getTotalSurveillanceNonconformities(Developer developer) {
-        return getListingDataForDeveloper(developer).stream()
+    private Long getTotalSurveillanceNonconformities(Developer developer, Logger logger) {
+        return getListingDataForDeveloper(developer, logger).stream()
                 .filter(listing -> activeStatuses.contains(listing.getCertificationStatus()))
                 .map(listing -> addOpenAndClosedNonconformityCount(listing))
                 .collect(Collectors.summingLong(Long::longValue));
@@ -275,55 +274,54 @@ public class DeveloperAttestationReportDataCollection {
         return closed + open;
     }
 
-    private Long getOpenSurveillanceNonconformities(Developer developer) {
-        return getListingDataForDeveloper(developer).stream()
+    private Long getOpenSurveillanceNonconformities(Developer developer, Logger logger) {
+        return getListingDataForDeveloper(developer, logger).stream()
                 .filter(listing -> activeStatuses.contains(listing.getCertificationStatus()))
                 .map(listing -> listing.getOpenSurveillanceNonConformityCount())
                 .collect(Collectors.summingLong(Long::longValue));
     }
 
-    private Long getTotalDirectReviewNonconformities(Developer developer) {
-        return directReviewService.getDeveloperDirectReviews(developer.getId()).stream()
+    private Long getTotalDirectReviewNonconformities(Developer developer, Logger logger) {
+        return directReviewService.getDeveloperDirectReviews(developer.getId(), logger).stream()
                 .flatMap(dr -> dr.getNonConformities().stream())
                 .count();
     }
 
-    private Long getOpenDirectReviewNonconformities(Developer developer) {
-        return directReviewService.getDeveloperDirectReviews(developer.getId()).stream()
+private Long getOpenDirectReviewNonconformities(Developer developer, Logger logger) {
+        return directReviewService.getDeveloperDirectReviews(developer.getId(), logger).stream()
                 .flatMap(dr -> dr.getNonConformities().stream())
                 .filter(nc -> nc.getNonConformityStatus().equalsIgnoreCase(DirectReviewNonConformity.STATUS_OPEN))
                 .count();
     }
 
-    private String getRealWorldTestingValidation(Developer developer) {
-        if (attestationValidationService.validateRealWorldTesting(developer, getListingDataForDeveloper(developer))) {
+    private String getRealWorldTestingValidation(Developer developer, Logger logger) {
+        if (attestationValidationService.validateRealWorldTesting(developer, getListingDataForDeveloper(developer, logger))) {
             return RWT_VALIDATION_TRUE;
         } else {
             return RWT_VALIDATION_FALSE;
         }
     }
 
-    private String getAssurancesValidation(Developer developer) {
-        if (attestationValidationService.validateAssurances(developer, getListingDataForDeveloper(developer))) {
+    private String getAssurancesValidation(Developer developer, Logger logger) {
+        if (attestationValidationService.validateAssurances(developer, getListingDataForDeveloper(developer, logger))) {
             return ASSURANCES_VALIDATION_TRUE;
         } else {
             return ASSURANCES_VALIDATION_FALSE;
         }
     }
 
-    private String getApiValidation(Developer developer) {
-        if (attestationValidationService.validateApi(developer, getListingDataForDeveloper(developer))) {
+    private String getApiValidation(Developer developer, Logger logger) {
+        if (attestationValidationService.validateApi(developer, getListingDataForDeveloper(developer, logger))) {
             return API_VALIDATION_TRUE;
         } else {
             return API_VALIDATION_FALSE;
         }
     }
 
-    private Map<Pair<Long, Long>, Boolean> getDeveloperAcbMapping(Developer developer) {
+    private Map<Pair<Long, Long>, Boolean> getDeveloperAcbMapping(Developer developer, Logger logger) {
         Map<Pair<Long, Long>, Boolean> developerAcbMap = new HashMap<Pair<Long, Long>, Boolean>();
 
-
-        getListingDataForDeveloper(developer).stream()
+        getListingDataForDeveloper(developer, logger).stream()
                 .filter(listing -> isListingActiveDuringPeriod(listing, attestationPeriodService.getMostRecentPastAttestationPeriod()))
                 .forEach(listing -> developerAcbMap.put(Pair.of(developer.getId(), getAcbByName(listing.getAcb()).getId()), true));
 

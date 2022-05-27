@@ -194,7 +194,7 @@ public class ProductManager extends SecuredManager {
         }
 
         drEmailService.sendEmail(Arrays.asList(currentProductOwner), Arrays.asList(updatedProductOwner),
-                preUpdateListingDetails, postUpdateListingDetails);
+                preUpdateListingDetails, postUpdateListingDetails, LOGGER);
         return updatedProduct;
     }
 

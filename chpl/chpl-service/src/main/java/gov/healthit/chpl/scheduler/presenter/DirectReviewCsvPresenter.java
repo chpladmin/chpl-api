@@ -72,21 +72,11 @@ public class DirectReviewCsvPresenter {
         result.add("Developer Name");
         result.add("Developer Link");
         result.add("Developer Status");
-        result.add("Direct Review Began");
-        result.add("Direct Review Ended");
-        result.add("Circumstances");
-        result.add("Direct Review Requirements");
-        result.add("Direct Review Result");
         result.add("Non-Conformity Type");
         result.add("Non-Conformity Status");
-        result.add("Date of Determination");
         result.add("CAP Approval Date");
-        result.add("Action Began Date");
         result.add("Must Complete Date");
         result.add("Was Complete Date");
-        result.add("Non-Conformity Summary");
-        result.add("Non-Conformity Findings");
-        result.add("Resolution Description");
         result.add("Developer-Associated Listings");
         result.add("Non-conformity Last Updated Date");
         result.add("Retrieved from Jira Time");
@@ -99,7 +89,6 @@ public class DirectReviewCsvPresenter {
             for (DirectReviewNonConformity nc : directReview.getNonConformities()) {
                 List<String> csvRow = new ArrayList<String>();
                 addDeveloperFields(csvRow, developer);
-                addBasicDirectReviewFields(csvRow, directReview);
                 addNonconformityDirectReviewFields(csvRow, nc);
                 csvRow.add(dateTimeFormatter.format(directReview.getFetched()));
                 csvRows.add(csvRow);
@@ -107,7 +96,6 @@ public class DirectReviewCsvPresenter {
         } else {
             List<String> csvRow = new ArrayList<String>();
             addDeveloperFields(csvRow, developer);
-            addBasicDirectReviewFields(csvRow, directReview);
             addNonconformityDirectReviewFields(csvRow, null);
             csvRow.add(dateTimeFormatter.format(directReview.getFetched()));
             csvRows.add(csvRow);
@@ -123,46 +111,12 @@ public class DirectReviewCsvPresenter {
                 ? "Unknown" : developer.getStatus().getStatus());
     }
 
-    private void addBasicDirectReviewFields(List<String> csvRow, DirectReview dr) {
-        if (dr.getStartDate() != null) {
-            LocalDateTime drStartDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(dr.getStartDate().getTime()),
-                    ZoneId.systemDefault());
-            csvRow.add(dateFormatter.format(drStartDate));
-        } else {
-            csvRow.add("");
-        }
-        if (dr.getEndDate() != null) {
-            LocalDateTime drEndDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(dr.getEndDate().getTime()),
-                    ZoneId.systemDefault());
-            csvRow.add(dateFormatter.format(drEndDate));
-        } else {
-            csvRow.add("");
-        }
-        if (dr.getCircumstances() != null && dr.getCircumstances().size() > 0) {
-            csvRow.add(String.join(";", dr.getCircumstances()));
-        } else {
-            csvRow.add("");
-        }
-    }
-
     private void addNonconformityDirectReviewFields(List<String> csvRow, DirectReviewNonConformity nc) {
-        csvRow.add(nc != null && nc.getRequirement() != null ? nc.getRequirement() : "");
-        csvRow.add(nc == null ? "No Non-Conformity" : "Non-Conformity");
         csvRow.add(nc != null && nc.getNonConformityType() != null ? nc.getNonConformityType() : "");
         csvRow.add(nc != null && nc.getNonConformityStatus() != null ? nc.getNonConformityStatus() : "");
 
-        if (nc != null && nc.getDateOfDetermination() != null) {
-            csvRow.add(dateFormatter.format(nc.getDateOfDetermination()));
-        } else {
-            csvRow.add("");
-        }
         if (nc != null && nc.getCapApprovalDate() != null) {
             csvRow.add(dateFormatter.format(nc.getCapApprovalDate()));
-        } else {
-            csvRow.add("");
-        }
-        if (nc != null && nc.getCapStartDate() != null) {
-            csvRow.add(dateFormatter.format(nc.getCapStartDate()));
         } else {
             csvRow.add("");
         }
@@ -176,9 +130,6 @@ public class DirectReviewCsvPresenter {
         } else {
             csvRow.add("");
         }
-        csvRow.add(nc != null && nc.getNonConformitySummary() != null ? nc.getNonConformitySummary() : "");
-        csvRow.add(nc != null && nc.getNonConformityFindings() != null ? nc.getNonConformityFindings() : "");
-        csvRow.add(nc != null && nc.getResolution() != null ? nc.getResolution() : "");
         if (nc != null && nc.getDeveloperAssociatedListings() != null && nc.getDeveloperAssociatedListings().size() > 0) {
             List<String> dalChplIds = nc.getDeveloperAssociatedListings().stream()
                     .map(dal -> dal.getChplProductNumber())

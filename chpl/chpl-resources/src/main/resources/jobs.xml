@@ -863,6 +863,21 @@
         </job>
 
         <job>
+            <name>Developer Attestations Check-in Report Email</name>
+            <group>chplJobs</group>
+            <description>Sends the Developer Attestations Check-in Report</description>
+            <job-class>gov.healthit.chpl.scheduler.job.developer.attestation.DeveloperAttestationCheckInReportJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value>
+                </entry>
+            </job-data-map>
+        </job>
+        
+        <job>
             <name>conformanceMethodConversionJob</name>
             <group>systemJobs</group>
             <description>One time job to Convert Test Procedures to Conformance Methods</description>
