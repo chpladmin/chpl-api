@@ -219,6 +219,7 @@ public class ProductManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
+    @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#toCreate.id")
     public Product merge(List<Long> productIdsToMerge, Product toCreate)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 

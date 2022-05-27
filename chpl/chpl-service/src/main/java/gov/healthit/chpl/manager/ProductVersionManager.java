@@ -221,6 +221,7 @@ public class ProductVersionManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
+    @ListingStoreRemove(removeBy = RemoveBy.VERSION_ID, id = "#toCreate.id")
     public ProductVersionDTO merge(List<Long> versionIdsToMerge, ProductVersionDTO toCreate)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 
