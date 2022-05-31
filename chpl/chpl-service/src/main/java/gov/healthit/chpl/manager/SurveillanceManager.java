@@ -143,7 +143,7 @@ public class SurveillanceManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
-    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#surveToInsert.certified_product.id")
+    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#survToInsert.certifiedProduct.id")
     public Long createSurveillance(Surveillance survToInsert)
             throws UserPermissionRetrievalException, EntityRetrievalException, JsonProcessingException, EntityCreationException,
             ValidationException {
@@ -182,7 +182,7 @@ public class SurveillanceManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
-    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#surveToUpdate.certified_product.id")
+    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#survToUpdate.certifiedProduct.id")
     public void updateSurveillance(final Surveillance survToUpdate) throws EntityRetrievalException,
             EntityCreationException, JsonProcessingException, ValidationException {
         CertifiedProductSearchDetails beforeListing = cpDetailsManager
@@ -208,7 +208,7 @@ public class SurveillanceManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
-    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#surveToDelete.certified_product.id")
+    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#survToDelete.certifiedProduct.id")
     public void deleteSurveillance(Surveillance survToDelete, String reason)
             throws InvalidArgumentsException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
         if (survToDelete == null) {
