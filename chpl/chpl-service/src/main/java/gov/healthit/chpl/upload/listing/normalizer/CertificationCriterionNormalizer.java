@@ -132,25 +132,16 @@ public class CertificationCriterionNormalizer {
         if (BooleanUtils.isFalse(certResult.isSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.G1_SUCCESS)) {
             certResult.setG1Success(null);
-        } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.G1_SUCCESS)
-                && certResult.isG1Success() == null) {
-            certResult.setG1Success(false);
         }
 
         if (BooleanUtils.isFalse(certResult.isSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.G2_SUCCESS)) {
             certResult.setG2Success(null);
-        } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.G2_SUCCESS)
-                && certResult.isG2Success() == null) {
-            certResult.setG2Success(false);
         }
 
         if (BooleanUtils.isFalse(certResult.isSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.GAP)) {
             certResult.setGap(null);
-        } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.GAP)
-                && certResult.isGap() == null) {
-            certResult.setGap(false);
         }
 
         if (BooleanUtils.isFalse(certResult.isSuccess())
@@ -172,9 +163,6 @@ public class CertificationCriterionNormalizer {
         if (BooleanUtils.isFalse(certResult.isSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.SED)) {
             certResult.setSed(null);
-        } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.SED)
-                && certResult.isSed() == null) {
-            certResult.setSed(false);
         }
 
         if (BooleanUtils.isFalse(certResult.isSuccess())
