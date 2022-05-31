@@ -576,7 +576,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
                 + "FROM CertifiedProductSummaryEntity cp "
                 + "JOIN cp.certificationResults certResults "
                 + "JOIN certResults.certificationResultConformanceMethods crcm "
-                + "JOIN crcm.conformanceMethod cm "
+                + "JOIN FETCH crcm.conformanceMethod cm "
                 + "WHERE certResults.certificationCriterionId = :criterionId "
                 + "AND cp.id = :listingId "
                 + "AND crcm.deleted = false ",
