@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.expression.AnnotatedElementKey;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -32,6 +33,7 @@ public class ListingStoreRemoveAspect {
     }
 
     @AfterReturning("execution(* *.*(..)) && @annotation(listingStoreRemove)")
+    @Transactional
     public void listingStoreRemove(JoinPoint joinPoint, ListingStoreRemove listingStoreRemove) {
       Long id = getValue(joinPoint, listingStoreRemove.id());
       removeListingsFromStore(listingStoreRemove.removeBy(), id);
