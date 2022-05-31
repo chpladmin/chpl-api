@@ -3,10 +3,10 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import java.util.Iterator;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationResult;

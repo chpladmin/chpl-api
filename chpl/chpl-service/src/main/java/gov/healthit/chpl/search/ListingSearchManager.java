@@ -69,7 +69,7 @@ public class ListingSearchManager {
         List<DirectReview> listingDrs = drService.getDirectReviewsRelatedToListing(searchResult.getId(),
                 searchResult.getDeveloper().getId(),
                 searchResult.getEdition().getName(),
-                statusEvents);
+                statusEvents, LOGGER);
         searchResult.setDirectReviewCount(listingDrs.size());
         searchResult.setOpenDirectReviewNonConformityCount(
                 calculateNonConformitiesWithStatusForListing(listingDrs, searchResult.getId(), DirectReviewNonConformity.STATUS_OPEN));

@@ -84,8 +84,8 @@ public enum Headings {
     TEST_DATA_VERSION("Test data version"),
     TEST_DATA_ALTERATION("Test data alteration"),
     TEST_DATA_ALTERATION_DESC("Test data alteration description"),
-    TEST_PROCEDURE("Test procedure"),
-    TEST_PROCEDURE_VERSION("Test procedure version"),
+    CONFORMANCE_METHOD("Test procedure", "Conformance Method"),
+    CONFORMANCE_METHOD_VERSION("Test procedure version", "Conformance Method Version"),
     TEST_TOOL_NAME("Test tool name"),
     TEST_TOOL_VERSION("Test tool version"),
     EXPORT_DOCUMENTATION("Export Documentation"),
@@ -97,8 +97,6 @@ public enum Headings {
     UCD_PROCESS("UCD Process Selected"),
     UCD_PROCESS_DETAILS("UCD Process Details"),
     SVAP_REG_TEXT("SVAP Reg Text Citation", "Regulatory Text Citation", "SVAP_REG_TEXT"),
-    CONFORMANCE_METHOD("Conformance Method"),
-    CONFORMANCE_METHOD_VERSION("Conformance Method Version"),
 
     //all below included so we don't give errors of unrecognized col; should not used anywhere
     CRITERIA_170_315_A_1("CRITERIA_170_315_A_1__C"),

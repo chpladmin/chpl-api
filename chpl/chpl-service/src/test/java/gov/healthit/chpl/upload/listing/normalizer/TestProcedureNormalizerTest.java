@@ -7,11 +7,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -40,7 +42,10 @@ public class TestProcedureNormalizerTest {
                 .build());
         Mockito.when(testProcedureDao.getByCriterionId(ArgumentMatchers.anyLong()))
             .thenReturn(allowedTestProcedures);
-        normalizer = new TestProcedureNormalizer(testProcedureDao);
+        FF4j ff4j = Mockito.mock(FF4j.class);
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.CONFORMANCE_METHOD)))
+            .thenReturn(false);
+        normalizer = new TestProcedureNormalizer(testProcedureDao, ff4j);
     }
 
     @Test

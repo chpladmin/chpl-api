@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
@@ -21,10 +22,8 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -152,23 +151,13 @@ public class PromotingInteroperabilityUploadJob implements Job {
     }
 
     private boolean headingContainsUserCount(String columnHeading) {
-        if (ff4j.check(FeatureList.PROMOTING_INTEROPERABILITY)) {
-            return columnHeading.contains("count");
-        } else {
-            return columnHeading.contains("meaning");
-        }
+        return columnHeading.contains("count");
     }
 
     private String getInvalidUserCountError(PromotingInteroperabilityUserRecord piu, String userCountValue) {
-        if (ff4j.check(FeatureList.PROMOTING_INTEROPERABILITY)) {
-            return "Line " + piu.getCsvLineNumber()
-                + ": Field \"user_count\" with value \"" + userCountValue
-                    + "\" is invalid. " + "Value in field \"user_count\" must be an integer.";
-        } else {
-            return "Line " + piu.getCsvLineNumber()
-            + ": Field \"num_meaningful_use\" with value \"" + userCountValue
+        return "Line " + piu.getCsvLineNumber()
+            + ": Field \"user_count\" with value \"" + userCountValue
                 + "\" is invalid. " + "Value in field \"user_count\" must be an integer.";
-        }
     }
 
     private void processPromotingInteroperabilityUpdates(Set<PromotingInteroperabilityUserRecord> piuRecords, LocalDate accurateAsOfDate) {
@@ -226,11 +215,7 @@ public class PromotingInteroperabilityUploadJob implements Job {
     }
 
     private String getMissingUserCountError(PromotingInteroperabilityUserRecord piu) {
-        if (ff4j.check(FeatureList.PROMOTING_INTEROPERABILITY)) {
-            return "Line " + piu.getCsvLineNumber() + ": Field \"user_count\" is missing.";
-        } else {
-            return "Line " + piu.getCsvLineNumber() + ": Field \"num_meaningful_use\" is missing.";
-        }
+        return "Line " + piu.getCsvLineNumber() + ": Field \"user_count\" is missing.";
     }
 
     private void emailResultsToUser(Set<PromotingInteroperabilityUserRecord> piuRecords, UserDTO user) {

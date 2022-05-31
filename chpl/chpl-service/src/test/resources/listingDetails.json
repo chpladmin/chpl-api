@@ -10940,7 +10940,6 @@
             }
         ],
         "curesUpdate": false,
-        "meaningfulUseUserHistory": [],
         "promotingInteroperabilityUserHistory": [],
         "sed": {
             "ucdProcesses": [{
@@ -19721,6 +19720,5 @@
             "reason": null,
             "lastModifiedUser": null,
             "lastModifiedDate": null
-        },
-        "currentMeaningfulUseUsers": null
+        }
     }
