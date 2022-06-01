@@ -286,6 +286,7 @@ public class DeveloperController {
                 .build();
     }
 
+    @Deprecated
     @Operation(summary = "Create a new attestation submission end date exception for a developer.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ONC_ACB",
             security = {
@@ -295,6 +296,19 @@ public class DeveloperController {
     @RequestMapping(value = "/{developerId}/attestations/exception", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(@PathVariable("developerId") Long developerId)
             throws EntityRetrievalException, ValidationException {
-        return attestationManager.createAttestationPeriodDeveloperException(developerId);
+
+        return createAttestationPeriodDeveloperException(developerId, attestationManager.getMostRecentPastAttestationPeriod().getId());
+    }
+
+    @Operation(summary = "Create a new attestation submission end date exception for a developer.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE+_ONC, or ROLE_ONC_ACB",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/{developerId}/attestations/{attestationPeriodId}/exception", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(@PathVariable("developerId") Long developerId, @PathVariable("attestationPeriodId") Long attestationPeriodId)
+            throws EntityRetrievalException, ValidationException {
+        return attestationManager.createAttestationPeriodDeveloperException(developerId, attestationPeriodId);
     }
 }

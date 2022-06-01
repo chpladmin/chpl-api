@@ -116,18 +116,23 @@ public class AttestationManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ATTESTATION, "
             + "T(gov.healthit.chpl.permissions.domains.AttestationDomainPermissions).CREATE_EXCEPTION, #developerId)")
-    public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(Long developerId)
+    public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(Long developerId, Long attestationPeriodId)
             throws EntityRetrievalException, ValidationException {
 
-        if (!canCreateException(developerId)) {
-            throw new ValidationException(errorMessageUtil.getMessage("attestation.submissionPeriodException.cannotCreate"));
-        }
+        AttestationPeriod attestationPeriod = attestationPeriodService.getAllPeriods().stream()
+                .filter(per -> per.getId().equals(attestationPeriodId))
+                .findAny()
+                .orElseThrow(() -> new ValidationException(errorMessageUtil.getMessage("attestation.submissionPeriodException.cannotCreate")));
+
+        //if (!canCreateException(developerId)) {
+        //    throw new ValidationException(errorMessageUtil.getMessage("attestation.submissionPeriodException.cannotCreate"));
+        //}
 
         return attestationDAO.createAttestationPeriodDeveloperException(AttestationPeriodDeveloperException.builder()
                 .developer(Developer.builder()
                         .id(developerId)
                         .build())
-                .period(getMostRecentPastAttestationPeriod())
+                .period(attestationPeriod)
                 .exceptionEnd(getNewExceptionDate())
                 .build());
     }
