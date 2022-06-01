@@ -39,9 +39,8 @@ public class CertifiedProduct2015Gatherer {
 
     public List<CertifiedProductSearchDetails> getAll2015CertifiedProducts(Logger logger, Boolean useListingCache) {
         logger.info("Retrieving all 2015 listings");
-        //TODO: remove the subList
         List<CertifiedProductDetailsDTO> listings = certifiedProductDAO.findByEdition(
-                CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).subList(0, 100);
+                CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
         logger.info("Completed retreiving all 2015 listings");
 
         return listings.parallelStream()

@@ -28,7 +28,7 @@ import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "addMissingMeasuresToListingJobLogger")
+@Log4j2(topic = "addMissingMeasuresToListingsJobLogger")
 public class AddMissingMeasuresToListingsJob extends CertifiedProduct2015Gatherer implements Job {
 
     @Autowired
@@ -124,11 +124,11 @@ public class AddMissingMeasuresToListingsJob extends CertifiedProduct2015Gathere
                 .findAny();
 
         if (removedMeasureOnListing.isEmpty()) {
-            LOGGER.info("Certified Product " + listing.getId() + " does not have the removed measure '" + removedMeasure.getName() + "' for " + Util.formatCriteriaNumber(criterion));
+            LOGGER.info("Certified Product " + listing.getId() + " does not have the removed measure '" + removedMeasure.getRequiredTest() + "' for " + Util.formatCriteriaNumber(criterion));
         } else if (removedMeasureOnListing.isPresent() && replacedMeasureOnListing.isPresent()) {
-            LOGGER.info("Certified Product " + listing.getId() + " has the removed measure '" + removedMeasure.getName() + "' and the replaced measure '" + replacedMeasure.getName() + "' for " + Util.formatCriteriaNumber(criterion));
+            LOGGER.info("Certified Product " + listing.getId() + " has the removed measure '" + removedMeasure.getRequiredTest() + "' and the replaced measure '" + replacedMeasure.getRequiredTest() + "' for " + Util.formatCriteriaNumber(criterion));
         } else if (removedMeasureOnListing.isPresent() && replacedMeasureOnListing.isEmpty()) {
-            LOGGER.info("Certified Product " + listing.getId() + " needs the replaced measure '" + replacedMeasure.getName() + "' for " + Util.formatCriteriaNumber(criterion));
+            LOGGER.info("Certified Product " + listing.getId() + " needs the replaced measure '" + replacedMeasure.getRequiredTest() + "' for " + Util.formatCriteriaNumber(criterion));
             ListingMeasure replacedListingMeasure = ListingMeasure.builder()
                     .associatedCriteria(removedMeasureOnListing.get().getAssociatedCriteria())
                     .measure(replacedMeasure)
