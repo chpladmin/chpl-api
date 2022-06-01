@@ -25,12 +25,12 @@ public class CertifiedProduct2015Gatherer {
 
     public List<CertifiedProductSearchDetails> getAll2015CertifiedProducts(Logger logger, Integer threadPoolSize) throws InterruptedException, ExecutionException {
         ForkJoinPool pool = new ForkJoinPool(threadPoolSize);
-        return pool.submit(() -> getAll2015CertifiedProducts(logger, true)).get();
+        return pool.submit(() -> getAll2015CertifiedProducts(logger)).get();
     }
 
     public List<CertifiedProductSearchDetails> getAll2015CertifiedProducts(Logger logger, Integer threadPoolSize, Boolean useListingCache) throws InterruptedException, ExecutionException {
         ForkJoinPool pool = new ForkJoinPool(threadPoolSize);
-        return pool.submit(() -> getAll2015CertifiedProducts(logger)).get();
+        return pool.submit(() -> getAll2015CertifiedProducts(logger, useListingCache)).get();
     }
 
     public List<CertifiedProductSearchDetails> getAll2015CertifiedProducts(Logger logger) {
@@ -39,8 +39,9 @@ public class CertifiedProduct2015Gatherer {
 
     public List<CertifiedProductSearchDetails> getAll2015CertifiedProducts(Logger logger, Boolean useListingCache) {
         logger.info("Retrieving all 2015 listings");
+        //TODO: remove the subList
         List<CertifiedProductDetailsDTO> listings = certifiedProductDAO.findByEdition(
-                CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
+                CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).subList(0, 100);
         logger.info("Completed retreiving all 2015 listings");
 
         return listings.parallelStream()
