@@ -54,7 +54,7 @@ public class ListingMeasureDAO extends BaseDAOImpl {
                 mmCriterionEntity.setLastModifiedUser(AuthUtil.getAuditId());
                 create(mmCriterionEntity);
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw new EntityCreationException(ex);
         }
     }
