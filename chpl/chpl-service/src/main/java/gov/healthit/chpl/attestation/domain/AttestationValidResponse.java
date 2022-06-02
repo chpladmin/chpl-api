@@ -1,5 +1,7 @@
 package gov.healthit.chpl.attestation.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.attestation.entity.AttestationValidResponseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AttestationValidResponse {
     private Long id;
     private String response;

@@ -1,16 +1,12 @@
 package gov.healthit.chpl.changerequest.validation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.functors.DefaultEquator;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.attestation.domain.Attestation;
 import gov.healthit.chpl.attestation.domain.AttestationForm;
@@ -20,18 +16,12 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
 public class AttestationValidation extends ValidationRule<ChangeRequestValidationContext> {
-    private ObjectMapper mapper;
-
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
         AttestationForm attestationForm = context.getDomainManagers().getAttestationManager().getAttestationForm();
 
-        this.mapper = new ObjectMapper();
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-
-        ChangeRequestAttestationSubmission attestationSubmission = getChangeRequestAttestationFromMap((HashMap) context.getNewChangeRequest().getDetails());
-
+        ChangeRequestAttestationSubmission attestationSubmission = (ChangeRequestAttestationSubmission) context.getNewChangeRequest().getDetails();
 
         if (isChangeRequestNew(context)) {
             getMessages().addAll(canDeveloperSubmitChangeRequest(context));
@@ -116,10 +106,6 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
                 .orElse("Not Found");
     }
 
-    private ChangeRequestAttestationSubmission getChangeRequestAttestationFromMap(HashMap<String, Object> map) {
-        return  mapper.convertValue(map, ChangeRequestAttestationSubmission.class);
-    }
-
     private List<Attestation> subtractListsOfAttestations(List<Attestation> listA, List<Attestation> listB) {
         Predicate<Attestation> notInListB = attestationFromA -> !listB.stream()
                 .anyMatch(attestation -> attestationFromA.getId().equals(attestation.getId()));
@@ -135,7 +121,7 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
 
     @SuppressWarnings("unchecked")
     private boolean hasAttestationInformationChanged(ChangeRequestValidationContext context) {
-        ChangeRequestAttestationSubmission attestationSubmission = getChangeRequestAttestationFromMap((HashMap) context.getNewChangeRequest().getDetails());
+        ChangeRequestAttestationSubmission attestationSubmission = (ChangeRequestAttestationSubmission) context.getNewChangeRequest().getDetails();
 
         if (!isChangeRequestNew(context)) {
             ChangeRequestAttestationSubmission attestationOriginal = (ChangeRequestAttestationSubmission) context.getOrigChangeRequest().getDetails();
