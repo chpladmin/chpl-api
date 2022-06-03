@@ -1,6 +1,7 @@
 package gov.healthit.chpl.entity.developer;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -165,6 +166,7 @@ public class DeveloperEntity implements Serializable {
             return new ArrayList<PublicAttestation>();
         }
         return getPeriods().stream()
+                .filter(period -> period.getPeriodEnd().isBefore(LocalDate.now()))
                 .map(period -> {
                     DeveloperAttestationSubmissionEntity attestation = getAttestationForPeriod(period.toDomain());
                     return PublicAttestation.builder()
