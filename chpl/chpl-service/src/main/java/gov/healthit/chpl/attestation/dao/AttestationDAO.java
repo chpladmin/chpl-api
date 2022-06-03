@@ -158,7 +158,7 @@ public class AttestationDAO extends BaseDAOImpl{
                 .build();
     }
 
-    private List<AttestationPeriodEntity> getAllPeriodEntities() {
+    public List<AttestationPeriodEntity> getAllPeriodEntities() {
         List<AttestationPeriodEntity> result = entityManager.createQuery(
                 "FROM AttestationPeriodEntity ape "
                 + "WHERE (NOT ape.deleted = true)",
@@ -279,8 +279,8 @@ public class AttestationDAO extends BaseDAOImpl{
     }
 
     private List<DeveloperAttestationSubmissionEntity> getDeveloperAttestationSubmissionEntitiesByDeveloper(Long developerId) {
-        String hql = "SELECT DISTINCT dase "
-                + "FROM DeveloperAttestationSubmissionEntity dase "
+        String hql = "FROM "
+                + "JOIN FETCH DeveloperAttestationSubmissionEntity dase "
                 + "JOIN FETCH dase.developer d "
                 + "JOIN FETCH dase.responses resp "
                 + "JOIN FETCH dase.period per "
