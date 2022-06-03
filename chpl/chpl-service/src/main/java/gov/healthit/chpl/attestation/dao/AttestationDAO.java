@@ -279,8 +279,8 @@ public class AttestationDAO extends BaseDAOImpl{
     }
 
     private List<DeveloperAttestationSubmissionEntity> getDeveloperAttestationSubmissionEntitiesByDeveloper(Long developerId) {
-        String hql = "FROM "
-                + "JOIN FETCH DeveloperAttestationSubmissionEntity dase "
+        String hql = "SELECT DISTINCT dase "
+                + "FROM DeveloperAttestationSubmissionEntity dase "
                 + "JOIN FETCH dase.developer d "
                 + "JOIN FETCH dase.responses resp "
                 + "JOIN FETCH dase.period per "
