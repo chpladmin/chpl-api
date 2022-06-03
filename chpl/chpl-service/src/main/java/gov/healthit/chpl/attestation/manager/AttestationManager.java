@@ -83,34 +83,16 @@ public class AttestationManager {
     @Transactional
     public Boolean canDeveloperSubmitChangeRequest(Long developerId) throws EntityRetrievalException {
         AttestationPeriod mostRecentPastAttestationPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
-        if (doesAttestationForDeveloperExist(developerId, mostRecentPastAttestationPeriod.getId())) {
-            if (doesPendingAttestationChangeRequestForDeveloperExist(developerId)) {
-                return false;
-            } else {
-                return isDateInFuture(attestationPeriodService.getMostRecentPeriodExceptionDateForDeveloper(developerId));
-            }
-        } else {
-            return attestationPeriodService.isDateWithinSubmissionPeriodForDeveloper(developerId, LocalDate.now())
-                    && !doesPendingAttestationChangeRequestForDeveloperExist(developerId);
-        }
+
+        return !(doesPendingAttestationChangeRequestForDeveloperExist(developerId)
+                || doesValidExceptionExistForDeveloper(developerId)
+                || !attestationPeriodService.isDateWithinSubmissionPeriodForDeveloper(developerId, LocalDate.now())
+                || doesAttestationForDeveloperExist(developerId, mostRecentPastAttestationPeriod.getId()));
     }
 
     @Transactional
     public Boolean canCreateException(Long developerId) throws EntityRetrievalException {
-        if (canDeveloperSubmitChangeRequest(developerId)) {
-            return false;
-        } else {
-            AttestationPeriod mostRecentPastAttestationPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
-            if (withinStandardSubmissionPeriod(mostRecentPastAttestationPeriod)) {
-                if (doesAttestationForDeveloperExist(developerId, mostRecentPastAttestationPeriod.getId())) {
-                    return !doesPendingAttestationChangeRequestForDeveloperExist(developerId);
-                } else {
-                    return false;
-                }
-            } else {
-                return !doesPendingAttestationChangeRequestForDeveloperExist(developerId);
-            }
-        }
+        return !canDeveloperSubmitChangeRequest(developerId);
     }
 
     @Transactional
@@ -168,6 +150,10 @@ public class AttestationManager {
     private Boolean doesAttestationForDeveloperExist(Long developerId, Long attestationPeriodId) {
         List<DeveloperAttestationSubmission> submissions = attestationDAO.getDeveloperAttestationSubmissionsByDeveloperAndPeriod(developerId, attestationPeriodId);
         return submissions != null && submissions.size() > 0;
+    }
+
+    private Boolean doesValidExceptionExistForDeveloper(Long developerId) {
+        return isDateInFuture(attestationPeriodService.getMostRecentPeriodExceptionDateForDeveloper(developerId));
     }
 
     private Boolean isDateInFuture(LocalDate dateToCheck) {
