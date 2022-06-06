@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version 35.3.1
+_6 June 2022_
+
+### Bug Fixes
+* Update Developer-Associated Listing Jira field ID
+* Describe change in ONC-ATLs better in Questionable Activity report
+* Allow scheduled job to delete unused API Keys as intended
+
+### Flagged Features
+* Combine Developer Details and Website Change Request to Developer Demographics Change Request
+
+---
+
 ## Version 35.3.0
 _31 May 2022_
 

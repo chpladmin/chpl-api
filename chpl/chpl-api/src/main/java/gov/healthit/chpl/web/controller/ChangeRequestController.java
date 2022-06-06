@@ -79,7 +79,7 @@ public class ChangeRequestController {
     public ChangeRequestResults createChangeRequest(@RequestBody final ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException {
-        List<ChangeRequest> createdCrs = changeRequestManager.createChangeRequests(cr);
+        List<ChangeRequest> createdCrs = List.of(changeRequestManager.createChangeRequest(cr));
         ChangeRequestResults results = new ChangeRequestResults();
         results.getResults().addAll(createdCrs);
         return results;
