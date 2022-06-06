@@ -3,6 +3,8 @@ package gov.healthit.chpl.attestation.domain;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.attestation.entity.AttestationEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +16,7 @@ import lombok.Singular;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Attestation {
     private Long id;
     @Singular

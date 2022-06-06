@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 
 import org.junit.Before;
@@ -12,8 +11,6 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.security.core.GrantedAuthority;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.attestation.domain.Attestation;
 import gov.healthit.chpl.attestation.domain.AttestationForm;
@@ -47,7 +44,7 @@ public class AttestationValidationTest {
                 .developer(Developer.builder()
                         .id(1l)
                         .build())
-                .details(convertToMap(createChangeRequestAttestationSubmission()))
+                .details(createChangeRequestAttestationSubmission())
                 .build();
 
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
@@ -70,7 +67,7 @@ public class AttestationValidationTest {
                 .developer(Developer.builder()
                         .id(1l)
                         .build())
-                .details(convertToMap(details))
+                .details(details)
                 .build();
 
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
@@ -93,7 +90,7 @@ public class AttestationValidationTest {
                 .developer(Developer.builder()
                         .id(1l)
                         .build())
-                .details(convertToMap(details))
+                .details(details)
                 .build();
 
 
@@ -118,7 +115,7 @@ public class AttestationValidationTest {
                 .developer(Developer.builder()
                         .id(1l)
                         .build())
-                .details(convertToMap(details))
+                .details(details)
                 .build();
 
 
@@ -143,7 +140,7 @@ public class AttestationValidationTest {
                 .developer(Developer.builder()
                         .id(1l)
                         .build())
-                .details(convertToMap(details))
+                .details(details)
                 .build();
 
 
@@ -157,12 +154,6 @@ public class AttestationValidationTest {
 
         assertEquals(false, isValid);
     }
-
-    private Map<String, Object> convertToMap(ChangeRequestAttestationSubmission attestationSubmission) {
-        ObjectMapper mapper = new ObjectMapper();
-        return  mapper.convertValue(attestationSubmission, Map.class);
-    }
-
 
     private ChangeRequestAttestationSubmission createChangeRequestAttestationSubmission() {
         return ChangeRequestAttestationSubmission.builder()
