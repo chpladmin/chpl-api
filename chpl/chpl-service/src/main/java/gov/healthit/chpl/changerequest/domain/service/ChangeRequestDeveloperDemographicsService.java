@@ -1,11 +1,8 @@
 package gov.healthit.chpl.changerequest.domain.service;
 
-import java.io.IOException;
 import java.text.DateFormat;
-import java.util.HashMap;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,15 +11,16 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
-import gov.healthit.chpl.changerequest.dao.ChangeRequestDeveloperDetailsDAO;
+import gov.healthit.chpl.changerequest.dao.ChangeRequestDeveloperDemographicsDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDetails;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.email.ChplEmailFactory;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -32,56 +30,57 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 
 @Component
-public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsService<ChangeRequestDeveloperDetails> {
+public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDetailsService<ChangeRequestDeveloperDemographics> {
 
     private ChangeRequestDAO crDAO;
-    private ChangeRequestDeveloperDetailsDAO crDeveloperDetailsDao;
+    private ChangeRequestDeveloperDemographicsDAO crDeveloperDemographicsDAO;
     private DeveloperManager developerManager;
     private ActivityManager activityManager;
     private ChplEmailFactory chplEmailFactory;
+    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
-
-    @Value("${changeRequest.developerDetails.approval.subject}")
+    @Value("${changeRequest.developerDemographics.approval.subject}")
     private String approvalEmailSubject;
 
-    @Value("${changeRequest.developerDetails.approval.body}")
+    @Value("${changeRequest.developerDemographics.approval.body}")
     private String approvalEmailBody;
 
-    @Value("${changeRequest.developerDetails.rejected.subject}")
+    @Value("${changeRequest.developerDemographics.rejected.subject}")
     private String rejectedEmailSubject;
 
-    @Value("${changeRequest.developerDetails.rejected.body}")
+    @Value("${changeRequest.developerDemographics.rejected.body}")
     private String rejectedEmailBody;
 
-    @Value("${changeRequest.developerDetails.pendingDeveloperAction.subject}")
+    @Value("${changeRequest.developerDemographics.pendingDeveloperAction.subject}")
     private String pendingDeveloperActionEmailSubject;
 
-    @Value("${changeRequest.developerDetails.pendingDeveloperAction.body}")
+    @Value("${changeRequest.developerDemographics.pendingDeveloperAction.body}")
     private String pendingDeveloperActionEmailBody;
 
     @Autowired
-    public ChangeRequestDeveloperDetailsService(ChangeRequestDAO crDAO, ChangeRequestDeveloperDetailsDAO crDeveloperDetailsDao,
+    public ChangeRequestDeveloperDemographicsService(ChangeRequestDAO crDAO, ChangeRequestDeveloperDemographicsDAO crDeveloperDemographicsDAO,
             DeveloperManager developerManager, UserDeveloperMapDAO userDeveloperMapDAO,
-            ActivityManager activityManager, ChplEmailFactory chplEmailFactory) {
+            ActivityManager activityManager, ChplEmailFactory chplEmailFactory, ChplHtmlEmailBuilder chplHtmlEmailBuilder) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
-        this.crDeveloperDetailsDao = crDeveloperDetailsDao;
+        this.crDeveloperDemographicsDAO = crDeveloperDemographicsDAO;
         this.developerManager = developerManager;
         this.activityManager = activityManager;
         this.chplEmailFactory = chplEmailFactory;
+        this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
     }
 
     @Override
-    public ChangeRequestDeveloperDetails getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
-        return crDeveloperDetailsDao.getByChangeRequestId(changeRequestId);
+    public ChangeRequestDeveloperDemographics getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
+        return crDeveloperDemographicsDAO.getByChangeRequestId(changeRequestId);
     }
 
     @Override
     public ChangeRequest create(ChangeRequest cr) {
         try {
-            crDeveloperDetailsDao.create(cr, getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails()));
+            crDeveloperDemographicsDAO.create(cr, (ChangeRequestDeveloperDemographics) cr.getDetails());
             return crDAO.get(cr.getId());
-        } catch (IOException | EntityRetrievalException e) {
+        } catch (EntityRetrievalException e) {
             throw new RuntimeException(e);
         }
     }
@@ -92,14 +91,14 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
             // Get the current cr to determine if the developer details changed
             ChangeRequest crFromDb = crDAO.get(cr.getId());
             // Convert the map of key/value pairs to a ChangeRequestDeveloperDetails object
-            ChangeRequestDeveloperDetails crDevDetails = getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails());
+            ChangeRequestDeveloperDemographics crDevDetails = (ChangeRequestDeveloperDemographics) cr.getDetails();
             // Use the id from the DB, not the object. Client could have changed the id.
-            crDevDetails.setId(((ChangeRequestDeveloperDetails) crFromDb.getDetails()).getId());
+            crDevDetails.setId(((ChangeRequestDeveloperDemographics) crFromDb.getDetails()).getId());
             cr.setDetails(crDevDetails);
 
-            if (!((ChangeRequestDeveloperDetails) cr.getDetails())
+            if (!((ChangeRequestDeveloperDemographics) cr.getDetails())
                     .equals((crFromDb.getDetails()))) {
-                cr.setDetails(crDeveloperDetailsDao.update((ChangeRequestDeveloperDetails) cr.getDetails()));
+                cr.setDetails(crDeveloperDemographicsDAO.update((ChangeRequestDeveloperDemographics) cr.getDetails()));
 
                 activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
                         "Change request details updated",
@@ -116,11 +115,12 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
     @Override
     protected ChangeRequest execute(ChangeRequest cr)
             throws EntityRetrievalException, EntityCreationException {
-        ChangeRequestDeveloperDetails crDevDetails = (ChangeRequestDeveloperDetails) cr.getDetails();
+        ChangeRequestDeveloperDemographics crDevDetails = (ChangeRequestDeveloperDemographics) cr.getDetails();
         Developer developer = developerManager.getById(cr.getDeveloper().getId());
         if (crDevDetails.getSelfDeveloper() != null) {
             developer.setSelfDeveloper(crDevDetails.getSelfDeveloper());
         }
+        developer.setWebsite(crDevDetails.getWebsite());
         if (crDevDetails.getAddress() != null) {
             Address address = developer.getAddress() != null ? developer.getAddress() : new Address();
             address.setLine1(crDevDetails.getAddress().getLine1());
@@ -150,33 +150,49 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
 
     @Override
     protected void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         chplEmailFactory.emailBuilder()
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String>toList()))
                 .subject(approvalEmailSubject)
-                .htmlMessage(String.format(approvalEmailBody,
+                .htmlMessage(createApprovalHtmlMessage(cr))
+                .sendEmail();
+    }
+
+    private String createApprovalHtmlMessage(ChangeRequest cr) {
+        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+        return chplHtmlEmailBuilder.initialize()
+                .heading("Developer Demographics Change Request Approved")
+                .paragraph("", String.format(approvalEmailBody,
                         df.format(cr.getSubmittedDate()),
                         formatDeveloperHtml(cr.getDeveloper()),
                         getApprovalBody(cr)))
-                .sendEmail();
+                .footer(true)
+                .build();
     }
 
     @Override
     protected void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         chplEmailFactory.emailBuilder()
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String>toList()))
                 .subject(pendingDeveloperActionEmailSubject)
-                .htmlMessage(String.format(pendingDeveloperActionEmailBody,
+                .htmlMessage(createPendingDeveloperActionHtmlMessage(cr))
+                .sendEmail();
+    }
+
+    private String createPendingDeveloperActionHtmlMessage(ChangeRequest cr) {
+        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+        return chplHtmlEmailBuilder.initialize()
+                .heading("Developer Demographics Change Request Pending Developer Action")
+                .paragraph("", String.format(pendingDeveloperActionEmailBody,
                         df.format(cr.getSubmittedDate()),
-                        formatDetailsHtml((ChangeRequestDeveloperDetails) cr.getDetails()),
+                        formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails()),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
-                .sendEmail();
+                .footer(true)
+                .build();
     }
 
     @Override
@@ -187,43 +203,33 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
                         .map(user -> user.getEmail())
                         .collect(Collectors.<String>toList()))
                 .subject(rejectedEmailSubject)
-                .htmlMessage(String.format(rejectedEmailBody,
-                        df.format(cr.getSubmittedDate()),
-                        formatDetailsHtml((ChangeRequestDeveloperDetails) cr.getDetails()),
-                        getApprovalBody(cr),
-                        cr.getCurrentStatus().getComment()))
+                .htmlMessage(createRejectedHtmlMessage(cr))
                 .sendEmail();
     }
 
-    private ChangeRequestDeveloperDetails getDetailsFromHashMap(HashMap<String, Object> map)
-        throws IOException {
-        ChangeRequestDeveloperDetails crDevDetails = new ChangeRequestDeveloperDetails();
-        if (map.containsKey("id") && StringUtils.isNumeric(map.get("id").toString())) {
-            crDevDetails.setId(new Long(map.get("id").toString()));
-        }
-        if (map.containsKey("selfDeveloper") && map.get("selfDeveloper") != null) {
-            crDevDetails.setSelfDeveloper(BooleanUtils.toBooleanObject(map.get("selfDeveloper").toString()));
-        }
-        if (map.containsKey("address") && map.get("address") != null) {
-            Address address = new Address((HashMap<String, Object>) map.get("address"));
-            crDevDetails.setAddress(address);
-        }
-        if (map.containsKey("contact") && map.get("contact") != null) {
-            PointOfContact contact = new PointOfContact((HashMap<String, Object>) map.get("contact"));
-            crDevDetails.setContact(contact);
-        }
-        return crDevDetails;
+    private String createRejectedHtmlMessage(ChangeRequest cr) {
+        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+        return chplHtmlEmailBuilder.initialize()
+                .heading("Developer Demographics Change Request Rejected")
+                .paragraph("", String.format(rejectedEmailBody,
+                        df.format(cr.getSubmittedDate()),
+                        formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails()),
+                        getApprovalBody(cr),
+                        cr.getCurrentStatus().getComment()))
+                .footer(true)
+                .build();
     }
 
     private String formatDeveloperHtml(Developer dev) {
-        String devHtml = "<p>Self-Developer: " + formatSelfDeveloperHtml(dev.getSelfDeveloper()) + "</p>";
+        StringBuilder devHtml = new StringBuilder("<p>Self-Developer: " + formatSelfDeveloperHtml(dev.getSelfDeveloper()) + "</p>");
         if (dev.getAddress() != null) {
-            devHtml += "<p>Address:<br/>" + formatAddressHtml(dev.getAddress()) + "</p>";
+            devHtml.append("<p>Address:<br/>" + formatAddressHtml(dev.getAddress()) + "</p>");
         }
         if (dev.getContact() != null) {
-            devHtml += "<p>Contact:<br/>" + formatContactHtml(dev.getContact()) + "</p>";
+            devHtml.append("<p>Contact:<br/>" + formatContactHtml(dev.getContact()) + "</p>");
         }
-        return devHtml;
+        devHtml.append("<p>Website: " + dev.getWebsite() + "</p>");
+        return devHtml.toString();
     }
 
     private String formatSelfDeveloperHtml(Boolean selfDeveloper) {
@@ -271,17 +277,20 @@ public class ChangeRequestDeveloperDetailsService extends ChangeRequestDetailsSe
         return contactHtml;
     }
 
-    private String formatDetailsHtml(ChangeRequestDeveloperDetails details) {
-        String detailsHtml = "";
+    private String formatDetailsHtml(ChangeRequestDeveloperDemographics details) {
+        StringBuilder detailsHtml = new StringBuilder("");
         if (details.getSelfDeveloper() != null) {
-            detailsHtml += "<p>Self-Developer: " + formatSelfDeveloperHtml(details.getSelfDeveloper()) + "</p>";
+            detailsHtml.append("<p>Self Developer:<br/>" + formatSelfDeveloperHtml(details.getSelfDeveloper()) + "</p>");
         }
         if (details.getAddress() != null) {
-            detailsHtml += "<p>Address:<br/>" + formatAddressHtml(details.getAddress()) + "</p>";
+            detailsHtml.append("<p>Address:<br/>" + formatAddressHtml(details.getAddress()) + "</p>");
         }
         if (details.getContact() != null) {
-            detailsHtml += "<p>Contact:<br/>" + formatContactHtml(details.getContact()) + "</p>";
+            detailsHtml.append("<p>Contact:<br/>" + formatContactHtml(details.getContact()) + "</p>");
         }
-        return detailsHtml;
+        if (details.getWebsite() != null) {
+            detailsHtml.append("<p>Website:<br/>" + details.getWebsite() + "</p>");
+        }
+        return detailsHtml.toString();
     }
 }

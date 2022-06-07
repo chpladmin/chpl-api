@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
@@ -16,33 +17,43 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.ValidationUtils;
 
-public class ChangeRequestSelfDeveloperValidationTest {
-
+public class ChangeRequestWebsiteValidationTest {
     @Test
     public void validateSelfDeveloper_ValidData_ReturnsTrue() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
 
-        ChangeRequestValidationContext context = getValidationContext(true, resourcePermissions);
-        SelfDeveloperValidation crSelfDevValidator = new SelfDeveloperValidation();
+        ValidationUtils validationUtils = Mockito.mock(ValidationUtils.class);
+        Mockito.when(validationUtils.isWellFormedUrl(ArgumentMatchers.anyString())).thenReturn(true);
 
-        boolean result = crSelfDevValidator.isValid(context);
+        ChangeRequestValidationContext context = getValidationContext("http://www.abc.com", resourcePermissions);
+        context.setValidationUtils(validationUtils);
+
+        WebsiteValidation crWebsiteValidator = new WebsiteValidation();
+
+        boolean result = crWebsiteValidator.isValid(context);
         assertTrue(result);
-        assertEquals(0, crSelfDevValidator.getMessages().size());
+        assertEquals(0, crWebsiteValidator.getMessages().size());
     }
 
     @Test
-    public void validateSelfDeveloper_ValidDataFalse_ReturnsTrue() throws EntityRetrievalException {
+    public void validateSelfDeveloper_InvalidUrl_ReturnsFalse() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
 
-        ChangeRequestValidationContext context = getValidationContext(false, resourcePermissions);
-        SelfDeveloperValidation crSelfDevValidator = new SelfDeveloperValidation();
+        ValidationUtils validationUtils = Mockito.mock(ValidationUtils.class);
+        Mockito.when(validationUtils.isWellFormedUrl(ArgumentMatchers.anyString())).thenReturn(false);
 
-        boolean result = crSelfDevValidator.isValid(context);
-        assertTrue(result);
-        assertEquals(0, crSelfDevValidator.getMessages().size());
+        ChangeRequestValidationContext context = getValidationContext("www.abc", resourcePermissions);
+        context.setValidationUtils(validationUtils);
+
+        WebsiteValidation crWebsiteValidator = new WebsiteValidation();
+
+        boolean result = crWebsiteValidator.isValid(context);
+        assertFalse(result);
+        assertEquals(1, crWebsiteValidator.getMessages().size());
     }
 
     @Test
@@ -51,18 +62,18 @@ public class ChangeRequestSelfDeveloperValidationTest {
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
 
         ChangeRequestValidationContext context = getValidationContext(null, resourcePermissions);
-        SelfDeveloperValidation crSelfDevValidator = new SelfDeveloperValidation();
+        WebsiteValidation crWebsiteValidator = new WebsiteValidation();
 
-        boolean result = crSelfDevValidator.isValid(context);
+        boolean result = crWebsiteValidator.isValid(context);
         assertFalse(result);
-        assertEquals(1, crSelfDevValidator.getMessages().size());
+        assertEquals(1, crWebsiteValidator.getMessages().size());
     }
 
-    private ChangeRequest getChangeRequestSelfDeveloper(Boolean selfDeveloper) {
+    private ChangeRequest getChangeRequest(String website) {
         return ChangeRequest.builder()
                 .id(1L)
                 .developer(Developer.builder()
-                        .id(Long.valueOf(20L))
+                        .developerId(Long.valueOf(20L))
                         .developerCode("1234")
                         .name("Dev 1")
                         .build())
@@ -83,19 +94,19 @@ public class ChangeRequestSelfDeveloperValidationTest {
                         .acbCode("1234")
                         .name("ACB 1234")
                         .build())
-                .details(buildChangeRequestDetails(selfDeveloper))
+                .details(buildChangeRequestDetails(website))
                 .build();
     }
 
-    private ChangeRequestDeveloperDemographics buildChangeRequestDetails(Boolean selfDeveloper) {
+    private ChangeRequestDeveloperDemographics buildChangeRequestDetails(String website) {
         return ChangeRequestDeveloperDemographics.builder()
-                .selfDeveloper(selfDeveloper)
+                .website(website)
                 .build();
     }
 
-    private ChangeRequestValidationContext getValidationContext(Boolean  selfDeveloperValue, ResourcePermissions resourcePermissions) {
+    private ChangeRequestValidationContext getValidationContext(String website, ResourcePermissions resourcePermissions) {
         return new ChangeRequestValidationContext(null,
-                        getChangeRequestSelfDeveloper(selfDeveloperValue),
+                        getChangeRequest(website),
                         null,
                         resourcePermissions,
                         null,
@@ -112,4 +123,5 @@ public class ChangeRequestSelfDeveloperValidationTest {
                         null,
                         null);
     }
+
 }

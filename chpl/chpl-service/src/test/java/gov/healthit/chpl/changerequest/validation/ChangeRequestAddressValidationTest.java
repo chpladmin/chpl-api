@@ -4,12 +4,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.HashMap;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
@@ -20,6 +19,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public class ChangeRequestAddressValidationTest {
+
     @Test
     public void validateAddress_AllData_ReturnsTrue() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
@@ -27,7 +27,7 @@ public class ChangeRequestAddressValidationTest {
         Address address = buildAddress(1L, "Street", "Suite 6", "City", "MD", "11111", "USA");
 
         ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
-        AddressValidation crAddrValidator = new AddressValidation();
+        DemographicsValidation crAddrValidator = new DemographicsValidation();
 
         boolean result = crAddrValidator.isValid(context);
         assertTrue(result);
@@ -41,7 +41,7 @@ public class ChangeRequestAddressValidationTest {
         Address address = buildAddress(1L, "Street", null, "City", "MD", "11111", "USA");
 
         ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
-        AddressValidation crAddrValidator = new AddressValidation();
+        DemographicsValidation crAddrValidator = new DemographicsValidation();
 
         boolean result = crAddrValidator.isValid(context);
         assertTrue(result);
@@ -55,7 +55,7 @@ public class ChangeRequestAddressValidationTest {
         Address address = buildAddress(1L, "Street", "Suite 6", "City", "MD", "11111", null);
 
         ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
-        AddressValidation crAddrValidator = new AddressValidation();
+        DemographicsValidation crAddrValidator = new DemographicsValidation();
 
         boolean result = crAddrValidator.isValid(context);
         assertTrue(result);
@@ -69,7 +69,7 @@ public class ChangeRequestAddressValidationTest {
         Address address = buildAddress(1L, null, null, "City", "MD", "11111", "USA");
 
         ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
-        AddressValidation crAddrValidator = new AddressValidation();
+        DemographicsValidation crAddrValidator = new DemographicsValidation();
 
         boolean result = crAddrValidator.isValid(context);
         assertFalse(result);
@@ -82,7 +82,7 @@ public class ChangeRequestAddressValidationTest {
         Address address = buildAddress(1L, "", null, "City", "MD", "11111", "USA");
 
         ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
-        AddressValidation crAddrValidator = new AddressValidation();
+        DemographicsValidation crAddrValidator = new DemographicsValidation();
 
         boolean result = crAddrValidator.isValid(context);
         assertFalse(result);
@@ -95,7 +95,7 @@ public class ChangeRequestAddressValidationTest {
         Address address = buildAddress(1L, null, null, "City", "MD", "11111", "USA");
 
         ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
-        AddressValidation crAddrValidator = new AddressValidation();
+        DemographicsValidation crAddrValidator = new DemographicsValidation();
 
         crAddrValidator.isValid(context);
 
@@ -110,7 +110,7 @@ public class ChangeRequestAddressValidationTest {
         Address address = buildAddress(1L, "Line 1", null, null, "MD", "11111", "USA");
 
         ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
-        AddressValidation crAddrValidator = new AddressValidation();
+        DemographicsValidation crAddrValidator = new DemographicsValidation();
 
         boolean result = crAddrValidator.isValid(context);
         assertFalse(result);
@@ -123,7 +123,7 @@ public class ChangeRequestAddressValidationTest {
         Address address = buildAddress(1L, "Line 1", null, "", "MD", "11111", "USA");
 
         ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
-        AddressValidation crAddrValidator = new AddressValidation();
+        DemographicsValidation crAddrValidator = new DemographicsValidation();
 
         boolean result = crAddrValidator.isValid(context);
         assertFalse(result);
@@ -136,7 +136,7 @@ public class ChangeRequestAddressValidationTest {
         Address address = buildAddress(1L, "Street", null, null, "MD", "11111", "USA");
 
         ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
-        AddressValidation crAddrValidator = new AddressValidation();
+        DemographicsValidation crAddrValidator = new DemographicsValidation();
 
         crAddrValidator.isValid(context);
 
@@ -151,7 +151,7 @@ public class ChangeRequestAddressValidationTest {
         Address address = buildAddress(1L, "Line 1", null, "City", null, "11111", "USA");
 
         ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
-        AddressValidation crAddrValidator = new AddressValidation();
+        DemographicsValidation crAddrValidator = new DemographicsValidation();
 
         boolean result = crAddrValidator.isValid(context);
         assertFalse(result);
@@ -164,7 +164,7 @@ public class ChangeRequestAddressValidationTest {
         Address address = buildAddress(1L, "Line 1", null, "City", "", "11111", "USA");
 
         ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
-        AddressValidation crAddrValidator = new AddressValidation();
+        DemographicsValidation crAddrValidator = new DemographicsValidation();
 
         boolean result = crAddrValidator.isValid(context);
         assertFalse(result);
@@ -177,7 +177,7 @@ public class ChangeRequestAddressValidationTest {
         Address address = buildAddress(1L, "Street", null, "City", null, "11111", "USA");
 
         ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
-        AddressValidation crAddrValidator = new AddressValidation();
+        DemographicsValidation crAddrValidator = new DemographicsValidation();
 
         crAddrValidator.isValid(context);
 
@@ -192,7 +192,7 @@ public class ChangeRequestAddressValidationTest {
         Address address = buildAddress(1L, "Line 1", null, "City", "MD", null, "USA");
 
         ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
-        AddressValidation crAddrValidator = new AddressValidation();
+        DemographicsValidation crAddrValidator = new DemographicsValidation();
 
         boolean result = crAddrValidator.isValid(context);
         assertFalse(result);
@@ -205,7 +205,7 @@ public class ChangeRequestAddressValidationTest {
         Address address = buildAddress(1L, "Line 1", null, "City", "MD", "", "USA");
 
         ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
-        AddressValidation crAddrValidator = new AddressValidation();
+        DemographicsValidation crAddrValidator = new DemographicsValidation();
 
         boolean result = crAddrValidator.isValid(context);
         assertFalse(result);
@@ -218,7 +218,7 @@ public class ChangeRequestAddressValidationTest {
         Address address = buildAddress(1L, "Street", null, "City", "MD", null, "USA");
 
         ChangeRequestValidationContext context = getValidationContext(address, resourcePermissions);
-        AddressValidation crAddrValidator = new AddressValidation();
+        DemographicsValidation crAddrValidator = new DemographicsValidation();
 
         crAddrValidator.isValid(context);
 
@@ -251,22 +251,14 @@ public class ChangeRequestAddressValidationTest {
                         .acbCode("1234")
                         .name("ACB 1234")
                         .build())
-                .details(buildChangeRequestDetailsMap(address))
+                .details(buildChangeRequestDetails(address))
                 .build();
     }
 
-    private HashMap<String, Object> buildChangeRequestDetailsMap(Address address) {
-        HashMap<String, Object> details = new HashMap<String, Object>();
-        HashMap<String, Object> addressMap = new HashMap<String, Object>();
-        addressMap.put("addressId", address.getAddressId());
-        addressMap.put("line1", address.getLine1());
-        addressMap.put("line2", address.getLine2());
-        addressMap.put("city", address.getCity());
-        addressMap.put("state", address.getState());
-        addressMap.put("zipcode", address.getZipcode());
-        addressMap.put("country", address.getCountry());
-        details.put("address", addressMap);
-        return details;
+    private ChangeRequestDeveloperDemographics buildChangeRequestDetails(Address address) {
+        return ChangeRequestDeveloperDemographics.builder()
+                .address(address)
+                .build();
     }
 
     private Address buildAddress(Long id, String line1, String line2, String city, String state, String zipcode, String country) {
@@ -278,6 +270,7 @@ public class ChangeRequestAddressValidationTest {
         address.setState(state);
         address.setZipcode(zipcode);
         address.setCountry(country);
+
         return address;
     }
 
