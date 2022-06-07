@@ -1,7 +1,9 @@
 package gov.healthit.chpl.scheduler.job.onetime.measures;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -158,7 +160,7 @@ public class AddMissingMeasuresToListingsJob extends CertifiedProduct2015Gathere
             LOGGER.info("Certified Product " + listing.getId() + " has the removed measure '"
                     + removedMeasure.getRequiredTest() + "' (ID " + removedMeasure.getId() + ") and the "
                     + "replacement measure '" + replacementMeasure.getRequiredTest() + "' (ID " + removedMeasure.getId() + ") "
-                    + "but is missing the criterion " + Util.formatCriteriaNumber(criterion) + " one the replacement measure.");
+                    + "but is missing the criterion " + Util.formatCriteriaNumber(criterion) + " on the replacement measure.");
             ListingMeasure replacementMeasureWithUpdatedCriteria = replacementMeasureWithoutCriterionOnListing.get();
             replacementMeasureWithUpdatedCriteria.getAssociatedCriteria().add(criterion);
             try {
@@ -172,7 +174,9 @@ public class AddMissingMeasuresToListingsJob extends CertifiedProduct2015Gathere
                     + replacementMeasure.getRequiredTest() + "'  (ID " + replacementMeasure.getId() + ") for "
                     + Util.formatCriteriaNumber(criterion));
             ListingMeasure replacementListingMeasure = ListingMeasure.builder()
-                    .associatedCriteria(removedMeasureWithCriterionOnListing.get().getAssociatedCriteria())
+                    .associatedCriteria(removedMeasureWithCriterionOnListing.get().getAssociatedCriteria().stream()
+                            .filter(assocCriterion -> BooleanUtils.isFalse(assocCriterion.getRemoved()))
+                            .collect(Collectors.toSet()))
                     .measure(replacementMeasure)
                     .measureType(removedMeasureWithCriterionOnListing.get().getMeasureType())
                     .build();
