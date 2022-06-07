@@ -27,6 +27,7 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
+import gov.healthit.chpl.service.DirectReviewSearchService;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
@@ -42,6 +43,9 @@ public class TriggerDeveloperBanJob implements Job {
     private ListingSearchService searchService;
 
     @Autowired
+    private DirectReviewSearchService drSearchService;
+
+    @Autowired
     private ChplHtmlEmailBuilder htmlEmailBuilder;
 
     @Autowired
@@ -52,6 +56,9 @@ public class TriggerDeveloperBanJob implements Job {
 
     @Value("${triggerDeveloperBan.body}")
     private String emailBody;
+
+    @Value("${triggerDeveloperBan.directReviewsNotAvailable}")
+    private String drsNotAvailableEmailBody;
 
     @Value("${chplUrlBegin}")
     private String chplUrlBegin;
@@ -170,6 +177,10 @@ public class TriggerDeveloperBanJob implements Job {
                 closedSurveillanceNcs, (closedSurveillanceNcs != 1 ? "ies" : "y"), // and closed surveillance nonconformities, with English word endings
                 (openDirectReviewNcs != 1 ? "were" : "was"), openDirectReviewNcs, (openDirectReviewNcs != 1 ? "ies" : "y"), // formatted counts of open
                 closedDirectReviewNcs, (closedDirectReviewNcs != 1 ? "ies" : "y")); // and closed direct review nonconformities, with English word endings
+
+        if (!drSearchService.getDirectReviewsAvailable()) {
+            htmlMessage += drsNotAvailableEmailBody;
+        }
 
         String formattedHtmlEmailContents = htmlEmailBuilder.initialize()
             .heading("Review Activity for Developer Ban")
