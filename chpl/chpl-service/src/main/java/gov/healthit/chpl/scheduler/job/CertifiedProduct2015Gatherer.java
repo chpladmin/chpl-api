@@ -41,13 +41,6 @@ public class CertifiedProduct2015Gatherer {
         logger.info("Retrieving all 2015 listings");
         List<CertifiedProductDetailsDTO> listings = certifiedProductDAO.findByEdition(
                 CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
-
-        //TODO: for debug; remove this
-        listings = listings.stream()
-            .filter(listing -> listing.getId().equals(10872L))
-            .collect(Collectors.toList());
-        //END TODO
-
         logger.info("Completed retreiving all 2015 listings");
 
         return listings.parallelStream()
