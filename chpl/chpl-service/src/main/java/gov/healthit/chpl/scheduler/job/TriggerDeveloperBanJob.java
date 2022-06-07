@@ -150,7 +150,7 @@ public class TriggerDeveloperBanJob implements Job {
             openDirectReviewNcs = listingSearchResult.getOpenDirectReviewNonConformityCount();
             closedDirectReviewNcs = listingSearchResult.getClosedDirectReviewNonConformityCount();
         } catch (InvalidArgumentsException ex) {
-            LOGGER.error("No listing was found with the ID " + updatedListing.getId() + " fro the ListingSearchService. The direct review non-conformity counts are unknown.");
+            LOGGER.error("No listing was found with the ID " + updatedListing.getId() + " from the ListingSearchService. The direct review non-conformity counts are unknown.");
         }
 
         String htmlMessage = String.format(emailBody,
