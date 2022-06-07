@@ -86,6 +86,7 @@ public class AddMissingMeasuresToListingsJob extends CertifiedProduct2015Gathere
     }
 
     private void addMissingMeasures(CertifiedProductSearchDetails listing) {
+        LOGGER.info("Adding missing measures to listing " + listing.getId());
         addMissingMeasure(listing, Criteria2015.B_1_OLD, "RT7 EH/CAH Medicare and Medicaid PI", "RT7 EH/CAH Medicare PI");
         replaceListingMeasuresWithUpdatedMeasures(listing);
         addMissingMeasure(listing, Criteria2015.B_1_CURES, "RT7 EH/CAH Medicare and Medicaid PI", "RT7 EH/CAH Medicare PI");
