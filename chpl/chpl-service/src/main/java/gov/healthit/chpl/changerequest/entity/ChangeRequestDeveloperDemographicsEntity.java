@@ -23,8 +23,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Data
-@Table(name = "change_request_developer_details")
-public class ChangeRequestDeveloperDetailsEntity {
+@Table(name = "change_request_developer_demographics")
+public class ChangeRequestDeveloperDemographicsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,57 +32,44 @@ public class ChangeRequestDeveloperDetailsEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Basic(optional = false)
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "change_request_id", nullable = false, insertable = true,
             updatable = false)
     private ChangeRequestEntity changeRequest;
 
-    @Basic(optional = true)
     @Column(name = "self_developer", nullable = false)
     private Boolean selfDeveloper;
 
-    @Basic(optional = true)
     @Column(name = "website", nullable = false)
     private String website;
 
-    @Basic(optional = true)
     @Column(name = "street_line_1", nullable = false)
     private String streetLine1;
 
-    @Basic(optional = true)
     @Column(name = "street_line_2", nullable = false)
     private String streetLine2;
 
-    @Basic(optional = true)
     @Column(name = "city", nullable = false)
     private String city;
 
-    @Basic(optional = true)
     @Column(name = "state", nullable = false)
     private String state;
 
-    @Basic(optional = true)
     @Column(name = "zipcode", nullable = false)
     private String zipcode;
 
-    @Basic(optional = true)
     @Column(name = "country", nullable = false)
     private String country;
 
-    @Basic(optional = true)
     @Column(name = "full_name", nullable = false)
     private String contactFullName;
 
-    @Basic(optional = true)
     @Column(name = "email", nullable = false)
     private String contactEmail;
 
-    @Basic(optional = true)
     @Column(name = "phone_number", nullable = false)
     private String contactPhoneNumber;
 
-    @Basic(optional = true)
     @Column(name = "title", nullable = false)
     private String contactTitle;
 
