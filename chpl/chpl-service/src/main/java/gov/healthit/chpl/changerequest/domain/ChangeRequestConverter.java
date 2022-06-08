@@ -1,6 +1,7 @@
 package gov.healthit.chpl.changerequest.domain;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -10,6 +11,7 @@ import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
 import gov.healthit.chpl.attestation.domain.AttestationValidResponse;
 import gov.healthit.chpl.attestation.domain.Condition;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestSearchResult.IdNamePairSearchResult;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationResponseEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDemographicsEntity;
@@ -42,6 +44,26 @@ public final class ChangeRequestConverter {
         return status;
     }
 
+    public static ChangeRequestSearchResult convertSearchResult(ChangeRequestEntity entity) {
+        return ChangeRequestSearchResult.builder()
+        .id(entity.getId())
+        .changeRequestType(convert(entity.getChangeRequestType()))
+        .developer(IdNamePairSearchResult.builder()
+                .id(entity.getDeveloper().getId())
+                .name(entity.getDeveloper().getName())
+                .build())
+        .submittedDate(entity.getCreationDate())
+        .currentStatus(convert(getLatestStatus(entity.getStatuses())))
+        .certificationBodies(entity.getDeveloper().getCertificationBodyMaps().stream()
+                .map(acbMapEntity -> acbMapEntity.getCertificationBody())
+                .map(acb -> IdNamePairSearchResult.builder()
+                        .id(acb.getId())
+                        .name(acb.getName())
+                        .build())
+                .toList())
+        .build();
+    }
+
     public static ChangeRequest convert(ChangeRequestEntity entity) {
         ChangeRequest cr = new ChangeRequest();
         cr.setId(entity.getId());
@@ -65,6 +87,21 @@ public final class ChangeRequestConverter {
         ChangeRequestStatus newest = statuses.get(0);
         for (ChangeRequestStatus event : statuses) {
             if (event.getStatusChangeDate().after(newest.getStatusChangeDate())) {
+                newest = event;
+            }
+        }
+        return newest;
+    }
+
+    private static ChangeRequestStatusEntity getLatestStatus(Set<ChangeRequestStatusEntity> statuses) {
+        if (CollectionUtils.isEmpty(statuses)) {
+            return null;
+        }
+        ChangeRequestStatusEntity newest = null;
+        for (ChangeRequestStatusEntity event : statuses) {
+            if (newest == null) {
+                newest = event;
+            } else if (event.getStatusChangeDate().after(newest.getStatusChangeDate())) {
                 newest = event;
             }
         }

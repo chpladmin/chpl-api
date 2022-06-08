@@ -163,20 +163,21 @@ public class ChangeRequestManager {
     }
 
     @Transactional(readOnly = true)
+    @Deprecated
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
             + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).GET_ALL)")
     public List<ChangeRequest> getAllChangeRequestsForUser() throws EntityRetrievalException {
         List<ChangeRequest> results = new ArrayList<ChangeRequest>();
         if (resourcePermissions.isUserRoleAcbAdmin()) {
-            results = changeRequestDAO.getAllForAcbs(resourcePermissions.getAllAcbsForCurrentUser().stream()
+            results = changeRequestDAO.getAllWithDetailsForAcbs(resourcePermissions.getAllAcbsForCurrentUser().stream()
                     .map(acb -> acb.getId())
                     .toList());
         } else if (resourcePermissions.isUserRoleDeveloperAdmin()) {
-            results = changeRequestDAO.getAllForDevelopers(resourcePermissions.getAllDevelopersForCurrentUser().stream()
+            results = changeRequestDAO.getAllWithDetailsForDevelopers(resourcePermissions.getAllDevelopersForCurrentUser().stream()
                     .map(dev -> dev.getId())
                     .toList());
         } else if (resourcePermissions.isUserRoleOnc() || resourcePermissions.isUserRoleAdmin()) {
-            results = changeRequestDAO.getAll();
+            results = changeRequestDAO.getAllWithDetails();
         }
         return results;
     }

@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestSearchResponse;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
+import gov.healthit.chpl.changerequest.manager.ChangeRequestSearchManager;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -33,10 +35,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class ChangeRequestController {
 
     private ChangeRequestManager changeRequestManager;
+    private ChangeRequestSearchManager changeRequestSearchManager;
 
     @Autowired
-    public ChangeRequestController(ChangeRequestManager changeRequestManager) {
+    public ChangeRequestController(ChangeRequestManager changeRequestManager,
+            ChangeRequestSearchManager changeRequestSearchManager) {
         this.changeRequestManager = changeRequestManager;
+        this.changeRequestSearchManager = changeRequestSearchManager;
     }
 
     @Operation(summary = "Get details about a specific change request.",
@@ -53,6 +58,19 @@ public class ChangeRequestController {
         return changeRequestManager.getChangeRequest(changeRequestId);
     }
 
+    @Operation(summary = "Search change requests based on a set of filters.",
+            description = "Security Restrictions: ROLE_ADMIN & ROLE_ONC can get all change requests. ROLE_ACB can get change requests "
+                    + "for developers where they manage at least one certified product for the developer. ROLE_DEVELOPER can get "
+                    + "change requests where they have administrative authority based on the developer.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody ChangeRequestSearchResponse searchChangeRequests() throws EntityRetrievalException {
+        return changeRequestSearchManager.searchChangeRequests();
+    }
+
     @Operation(summary = "Get details about all change requests.",
             description = "Security Restrictions: ROLE_ADMIN & ROLE_ONC can get all change requests.  ROLE_ACB can get change requests "
                     + "for developers where they manage at least one certified product for the developer.  ROLE_DEVELOPER can get "
@@ -62,7 +80,7 @@ public class ChangeRequestController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = ChangeRequest.class)
+    @Deprecated
     public @ResponseBody List<ChangeRequest> getAllChangeRequests() throws EntityRetrievalException {
         return changeRequestManager.getAllChangeRequestsForUser();
     }

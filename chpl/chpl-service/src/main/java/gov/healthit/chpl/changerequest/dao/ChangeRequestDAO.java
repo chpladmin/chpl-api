@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestConverter;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestSearchResult;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestTypeEntity;
@@ -54,21 +55,41 @@ public class ChangeRequestDAO extends BaseDAOImpl {
         return populateDependentObjects(cr);
     }
 
-    public List<ChangeRequest> getAll() throws EntityRetrievalException {
+    public List<ChangeRequestSearchResult> getAll() throws EntityRetrievalException {
+        return getSearchResultEntities().stream()
+                .map(entity -> ChangeRequestConverter.convertSearchResult(entity))
+                .collect(Collectors.<ChangeRequestSearchResult>toList());
+    }
+
+    public List<ChangeRequestSearchResult> getAllForAcbs(List<Long> acbIds) throws EntityRetrievalException {
+        return getEntitiesByAcbs(acbIds).stream()
+                .map(entity -> ChangeRequestConverter.convertSearchResult(entity))
+                .collect(Collectors.<ChangeRequestSearchResult>toList());
+    }
+
+    public List<ChangeRequestSearchResult> getAllForDevelopers(List<Long> developerIds) throws EntityRetrievalException {
+        return getEntitiesByDevelopers(developerIds).stream()
+                .map(entity -> ChangeRequestConverter.convertSearchResult(entity))
+                .collect(Collectors.<ChangeRequestSearchResult>toList());
+    }
+
+    public List<ChangeRequest> getAllWithDetails() throws EntityRetrievalException {
         return getEntities().stream()
                 .map(entity -> ChangeRequestConverter.convert(entity))
                 .map(cr -> populateDependentObjects(cr))
                 .collect(Collectors.<ChangeRequest>toList());
     }
 
-    public List<ChangeRequest> getAllForAcbs(List<Long> acbIds) throws EntityRetrievalException {
+    @Deprecated
+    public List<ChangeRequest> getAllWithDetailsForAcbs(List<Long> acbIds) throws EntityRetrievalException {
         return getEntitiesByAcbs(acbIds).stream()
                 .map(entity -> ChangeRequestConverter.convert(entity))
                 .map(cr -> populateDependentObjects(cr))
                 .collect(Collectors.<ChangeRequest>toList());
     }
 
-    public List<ChangeRequest> getAllForDevelopers(List<Long> developerIds) throws EntityRetrievalException {
+    @Deprecated
+    public List<ChangeRequest> getAllWithDetailsForDevelopers(List<Long> developerIds) throws EntityRetrievalException {
         return getEntitiesByDevelopers(developerIds).stream()
                 .map(entity -> ChangeRequestConverter.convert(entity))
                 .map(cr -> populateDependentObjects(cr))
@@ -76,7 +97,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
     }
 
     public List<ChangeRequest> getAllPending() throws EntityRetrievalException {
-        return getAll().stream()
+        return getAllWithDetails().stream()
                 .filter(cr -> getUpdatableStatuses().contains(cr.getCurrentStatus().getChangeRequestStatusType().getId()))
                 .collect(Collectors.<ChangeRequest>toList());
     }
@@ -217,6 +238,28 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "JOIN FETCH crStatus.changeRequestStatusType "
                 + "LEFT JOIN FETCH crStatus.certificationBody acb "
                 + "LEFT JOIN FETCH acb.address "
+                + "JOIN FETCH crStatus.userPermission "
+                + "WHERE cr.deleted = false ";
+
+        List<ChangeRequestEntity> results = entityManager
+                .createQuery(hql, ChangeRequestEntity.class)
+                .getResultList();
+
+        return results;
+    }
+
+    private List<ChangeRequestEntity> getSearchResultEntities()
+            throws EntityRetrievalException {
+
+        String hql = "SELECT DISTINCT cr "
+                + "FROM ChangeRequestEntity cr  "
+                + "JOIN FETCH cr.changeRequestType crt "
+                + "JOIN FETCH cr.developer dev "
+                + "LEFT JOIN FETCH dev.certificationBodyMaps devAcbMaps "
+                + "LEFT JOIN FETCH devAcbMaps.certificationBody devAcb "
+                + "JOIN FETCH cr.statuses crStatus "
+                + "JOIN FETCH crStatus.changeRequestStatusType "
+                + "LEFT JOIN FETCH crStatus.certificationBody acb "
                 + "JOIN FETCH crStatus.userPermission "
                 + "WHERE cr.deleted = false ";
 
