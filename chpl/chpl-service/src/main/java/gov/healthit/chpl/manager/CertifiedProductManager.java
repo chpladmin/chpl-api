@@ -489,11 +489,10 @@ public class CertifiedProductManager extends SecuredManager {
             newProduct.setName(pendingCp.getProductName());
             newProduct.setOwner(Developer.builder()
                     .id(pendingCp.getDeveloperId())
-                    .developerId(pendingCp.getDeveloperId())
                     .build());
             newProduct.setReportFileLocation(pendingCp.getReportFileLocation());
             newProduct = productManager.create(newProduct);
-            pendingCp.setProductId(newProduct.getProductId());
+            pendingCp.setProductId(newProduct.getId());
         }
 
         if (pendingCp.getProductVersionId() == null) {
@@ -1223,7 +1222,7 @@ public class CertifiedProductManager extends SecuredManager {
             CertifiedProductSearchDetails updatedListing, String reason)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
         Long listingId = updatedListing.getId();
-        Long productVersionId = updatedListing.getVersion().getVersionId();
+        Long productVersionId = updatedListing.getVersion().getId();
         CertificationStatus updatedStatus = updatedListing.getCurrentStatus().getStatus();
         CertificationStatus existingStatus = existingListing.getCurrentStatus().getStatus();
         // if listing status has changed that may trigger other changes
@@ -1274,7 +1273,7 @@ public class CertifiedProductManager extends SecuredManager {
             }
             if (newDevStatus != null) {
                 DeveloperStatusEvent statusHistoryToAdd = new DeveloperStatusEvent();
-                statusHistoryToAdd.setDeveloperId(cpDeveloper.getDeveloperId());
+                statusHistoryToAdd.setDeveloperId(cpDeveloper.getId());
                 statusHistoryToAdd.setStatus(newDevStatus);
                 statusHistoryToAdd.setStatusDate(new Date());
                 statusHistoryToAdd.setReason(msgUtil.getMessage("developer.statusAutomaticallyChanged"));

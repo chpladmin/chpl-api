@@ -110,7 +110,7 @@ public class DirectReviewCachingService {
         List<Developer> allDeveloperIds = developerDao.findAllIdsAndNames();
         logger.info("Adding " + allDeveloperIds.size() + " keys to the Direct Review cache.");
         allDeveloperIds.stream()
-            .forEach(dev -> drCache.put(new Element(dev.getDeveloperId(), new ArrayList<DirectReview>())));
+            .forEach(dev -> drCache.put(new Element(dev.getId(), new ArrayList<DirectReview>())));
 
         //insert each direct review into the right place in our cache
         logger.info("Validating " + allDirectReviews.size() + " values into the Direct Review cache.");

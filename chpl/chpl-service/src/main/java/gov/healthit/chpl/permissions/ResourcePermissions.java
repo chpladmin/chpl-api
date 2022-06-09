@@ -118,7 +118,7 @@ public class ResourcePermissions {
     @Transactional(readOnly = true)
     public List<UserDTO> getAllUsersOnDeveloper(Developer dev) {
         List<UserDTO> userDtos = new ArrayList<UserDTO>();
-        List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByDeveloperId(dev.getDeveloperId());
+        List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByDeveloperId(dev.getId());
 
         for (UserDeveloperMapDTO dto : dtos) {
             userDtos.add(dto.getUser());
@@ -302,7 +302,7 @@ public class ResourcePermissions {
 
         List<Developer> developers = getAllDevelopersForCurrentUser();
         List<Developer> developersWithId = developers.stream()
-            .filter(developer -> developer.getDeveloperId().equals(id))
+            .filter(developer -> developer.getId().equals(id))
             .toList();
 
         if (developersWithId.size() == 0) {
@@ -372,7 +372,7 @@ public class ResourcePermissions {
             List<Developer> otherUserDevs = getAllDevelopersForUser(user.getId());
             for (Developer currUserDev : currUserDevs) {
                 for (Developer otherUserDev : otherUserDevs) {
-                    if (currUserDev.getDeveloperId().equals(otherUserDev.getDeveloperId())) {
+                    if (currUserDev.getId().equals(otherUserDev.getId())) {
                         return true;
                     }
                 }

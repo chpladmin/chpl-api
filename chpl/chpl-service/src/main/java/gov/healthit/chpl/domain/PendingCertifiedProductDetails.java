@@ -73,7 +73,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
         this.setOtherAcb(null);
 
         Developer developer = new Developer();
-        developer.setDeveloperId(dto.getDeveloperId());
+        developer.setId(dto.getDeveloperId());
         developer.setName(dto.getDeveloperName());
         developer.setWebsite(dto.getDeveloperWebsite());
         developer.setSelfDeveloper(dto.getSelfDeveloper());
@@ -105,12 +105,12 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
         this.setDeveloper(developer);
 
         Product product = new Product();
-        product.setProductId(dto.getProductId());
+        product.setId(dto.getProductId());
         product.setName(dto.getProductName());
         this.setProduct(product);
 
         ProductVersion version = new ProductVersion();
-        version.setVersionId(dto.getProductVersionId());
+        version.setId(dto.getProductVersionId());
         version.setVersion(dto.getProductVersion());
         this.setVersion(version);
 

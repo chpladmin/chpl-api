@@ -61,16 +61,16 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
         result.add(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
         result.add(listing.getOtherAcb());
         result.add(listing.getDeveloper().getName());
-        result.add(listing.getDeveloper().getDeveloperId().toString());
+        result.add(listing.getDeveloper().getId().toString());
         result.addAll(getDeveloperAddressCells(listing));
         result.add(listing.getDeveloper().getWebsite() == null
                 ? "" : listing.getDeveloper().getWebsite());
         result.add(formatSelfDeveloper(listing));
         result.addAll(getContactCells(listing));
         result.add(listing.getProduct().getName());
-        result.add(listing.getProduct().getProductId().toString());
+        result.add(listing.getProduct().getId().toString());
         result.add(listing.getVersion().getVersion());
-        result.add(listing.getVersion().getVersionId().toString());
+        result.add(listing.getVersion().getId().toString());
         result.add(listing.getPracticeType().get("name").toString());
         result.add(listing.getCountSurveillance().toString());
         result.add((listing.getCountOpenNonconformities() + listing.getCountClosedNonconformities()) + "");

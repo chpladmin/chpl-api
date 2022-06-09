@@ -44,7 +44,7 @@ public class DeveloperReviewer implements Reviewer {
             return;
         }
 
-        if (developer.getDeveloperId() != null) {
+        if (developer.getId() != null) {
             //it's an existing developer - give the user warnings if any required developer data is
             // 1) missing in the system, or 2) does not match the user-entered data
             reviewRequiredDeveloperData(listing, WARNING);
@@ -187,7 +187,7 @@ public class DeveloperReviewer implements Reviewer {
 
     private void reviewDeveloperStatusIsActive(CertifiedProductSearchDetails listing) {
         Developer developer = listing.getDeveloper();
-        if (developer.getDeveloperId() != null) {
+        if (developer.getId() != null) {
             DeveloperStatus mostRecentStatus = developer.getStatus();
             if (mostRecentStatus == null || StringUtils.isEmpty(mostRecentStatus.getStatus())) {
                 listing.getErrorMessages().add(msgUtil.getMessage("developer.status.noCurrent"));

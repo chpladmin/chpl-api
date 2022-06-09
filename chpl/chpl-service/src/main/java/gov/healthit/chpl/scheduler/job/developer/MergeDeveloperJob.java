@@ -121,7 +121,7 @@ public class MergeDeveloperJob implements Job {
     }
 
     private void confirmDevelopersExistBeforeMerge() throws EntityRetrievalException {
-        List<Long> preMergeDeveloperIds = preMergeDevelopers.stream().map(dev -> dev.getDeveloperId()).collect(Collectors.toList());
+        List<Long> preMergeDeveloperIds = preMergeDevelopers.stream().map(dev -> dev.getId()).collect(Collectors.toList());
         for (Long developerId : preMergeDeveloperIds) {
             devDao.getById(developerId);
         }
@@ -185,12 +185,12 @@ public class MergeDeveloperJob implements Job {
                 + "created. It was merged from the following developers: </p>"
                 + "<ul>",
                 env.getProperty("chplUrlBegin"), // root of URL
-                createdDeveloper.getDeveloperId(),
+                createdDeveloper.getId(),
                 createdDeveloper.getName());
         for (Developer dev : preMergeDevelopers) {
             htmlMessage += String.format("<li><a href=\"%s/#/organizations/developers/%d\">%s</a></li>",
                     env.getProperty("chplUrlBegin"),
-                    dev.getDeveloperId(),
+                    dev.getId(),
                     dev.getName());
         }
         htmlMessage += "</ul>";
@@ -202,7 +202,7 @@ public class MergeDeveloperJob implements Job {
         for (Developer dev : preMergeDevelopers) {
             htmlMessage += String.format("<li><a href=\"%s/#/organizations/developers/%d\">%s</a></li>",
                     env.getProperty("chplUrlBegin"),
-                    dev.getDeveloperId(),
+                    dev.getId(),
                     dev.getName());
         }
         htmlMessage += String.format(

@@ -32,7 +32,7 @@ public class DeveloperActiveValidationTest {
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong())).thenReturn(
                 ChangeRequest.builder()
                     .developer(Developer.builder()
-                            .developerId(1L)
+                            .id(1L)
                             .build())
                     .build());
 
@@ -54,14 +54,14 @@ public class DeveloperActiveValidationTest {
         newChangeRequest = ChangeRequest.builder()
                 .id(1L)
                 .developer(Developer.builder()
-                        .developerId(1L)
+                        .id(1L)
                         .build())
                 .build();
 
         origChangeRequest = ChangeRequest.builder()
                 .id(1L)
                 .developer(Developer.builder()
-                        .developerId(1L)
+                        .id(1L)
                         .build())
                 .build();
     }

@@ -26,7 +26,7 @@ public class DeveloperActiveValidation extends ValidationRule<ChangeRequestValid
 
         Developer dev;
         try {
-            dev = context.getValidationDAOs().getDeveloperDAO().getById(crToTest.getDeveloper().getDeveloperId());
+            dev = context.getValidationDAOs().getDeveloperDAO().getById(crToTest.getDeveloper().getId());
         } catch (Exception e) {
             // This should be caught be DeveloperExistenceValidation
             return true;

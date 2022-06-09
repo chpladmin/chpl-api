@@ -38,11 +38,11 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         assertTrue(permissions.hasAccess(ChangeRequest.builder()
-                .developer(Developer.builder().developerId(2L).build())
+                .developer(Developer.builder().id(2L).build())
                 .build()));
 
         assertFalse(permissions.hasAccess(ChangeRequest.builder()
-                .developer(Developer.builder().developerId(3l).build())
+                .developer(Developer.builder().id(3l).build())
                 .build()));
 
     }
