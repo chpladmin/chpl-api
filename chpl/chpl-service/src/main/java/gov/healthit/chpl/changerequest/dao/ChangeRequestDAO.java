@@ -322,7 +322,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
         ChangeRequestEntity entity = new ChangeRequestEntity();
         entity.setChangeRequestType(
                 getSession().load(ChangeRequestTypeEntity.class, cr.getChangeRequestType().getId()));
-        entity.setDeveloper(getSession().load(DeveloperEntity.class, cr.getDeveloper().getDeveloperId()));
+        entity.setDeveloper(getSession().load(DeveloperEntity.class, cr.getDeveloper().getId()));
         entity.setDeleted(false);
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setCreationDate(new Date());

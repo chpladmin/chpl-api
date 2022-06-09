@@ -100,7 +100,7 @@ public class DeveloperNormalizerTest {
         normalizer.normalize(listing);
 
         assertNotNull(listing.getDeveloper());
-        assertEquals(1L, listing.getDeveloper().getDeveloperId());
+        assertEquals(1L, listing.getDeveloper().getId());
         assertEquals("Test Name", listing.getDeveloper().getName());
     }
 
@@ -115,7 +115,7 @@ public class DeveloperNormalizerTest {
         normalizer.normalize(listing);
 
         assertNotNull(listing.getDeveloper());
-        assertEquals(1L, listing.getDeveloper().getDeveloperId());
+        assertEquals(1L, listing.getDeveloper().getId());
         assertEquals("Test Name", listing.getDeveloper().getName());
     }
 
@@ -134,7 +134,7 @@ public class DeveloperNormalizerTest {
         normalizer.normalize(listing);
 
         assertNotNull(listing.getDeveloper());
-        assertNull(listing.getDeveloper().getDeveloperId());
+        assertNull(listing.getDeveloper().getId());
         assertNull(listing.getDeveloper().getName());
         assertEquals("http://www.website.com", listing.getDeveloper().getWebsite());
         assertTrue(listing.getDeveloper().getSelfDeveloper());
@@ -155,7 +155,7 @@ public class DeveloperNormalizerTest {
         normalizer.normalize(listing);
         assertNotNull(listing.getDeveloper());
         assertEquals("Test Name", listing.getDeveloper().getName());
-        assertEquals(1L, listing.getDeveloper().getDeveloperId());
+        assertEquals(1L, listing.getDeveloper().getId());
     }
 
     @Test
@@ -172,7 +172,7 @@ public class DeveloperNormalizerTest {
                 .build();
         normalizer.normalize(listing);
         assertNotNull(listing.getDeveloper());
-        assertNull(listing.getDeveloper().getDeveloperId());
+        assertNull(listing.getDeveloper().getId());
         assertEquals("Test Name", listing.getDeveloper().getName());
         assertEquals("Test Name", listing.getDeveloper().getUserEnteredName());
     }
@@ -189,7 +189,7 @@ public class DeveloperNormalizerTest {
                 .build();
         normalizer.normalize(listing);
         assertNotNull(listing.getDeveloper());
-        assertNull(listing.getDeveloper().getDeveloperId());
+        assertNull(listing.getDeveloper().getId());
         assertEquals("Test Name", listing.getDeveloper().getName());
         assertEquals("Test Name", listing.getDeveloper().getUserEnteredName());
     }
@@ -201,7 +201,6 @@ public class DeveloperNormalizerTest {
     private Developer buildDeveloper(Long id) {
         return Developer.builder()
                 .id(id)
-                .developerId(id)
                 .name("Test Name")
                 .selfDeveloper(true)
                 .website("http://www.test.com")

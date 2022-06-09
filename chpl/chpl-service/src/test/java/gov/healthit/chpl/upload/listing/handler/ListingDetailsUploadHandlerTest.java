@@ -394,7 +394,7 @@ public class ListingDetailsUploadHandlerTest {
         assertNotNull(listing);
         assertNotNull(listing.getProduct());
         assertEquals("Test Product", listing.getProduct().getName());
-        assertNull(listing.getProduct().getProductId());
+        assertNull(listing.getProduct().getId());
     }
 
     @Test
@@ -410,7 +410,7 @@ public class ListingDetailsUploadHandlerTest {
         assertNotNull(listing.getDeveloper());
         assertNotNull(listing.getProduct());
         assertEquals("Test Product", listing.getProduct().getName());
-        assertNull(listing.getProduct().getProductId());
+        assertNull(listing.getProduct().getId());
     }
 
     @Test
@@ -436,7 +436,7 @@ public class ListingDetailsUploadHandlerTest {
         assertNotNull(listing);
         assertNotNull(listing.getVersion());
         assertEquals("v1", listing.getVersion().getVersion());
-        assertNull(listing.getVersion().getVersionId());
+        assertNull(listing.getVersion().getId());
     }
 
     @Test
@@ -454,7 +454,7 @@ public class ListingDetailsUploadHandlerTest {
         assertNotNull(listing.getProduct());
         assertNotNull(listing.getVersion());
         assertEquals("v1", listing.getVersion().getVersion());
-        assertNull(listing.getVersion().getVersionId());
+        assertNull(listing.getVersion().getId());
     }
 
     @Test

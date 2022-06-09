@@ -21,6 +21,7 @@ import org.springframework.security.access.AccessDeniedException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
@@ -188,6 +189,7 @@ public class CertifiedProductManagerTest {
                 statusEventDao, curesUpdateDao, piuDao,  certResultManager, optionalStandardDao, testToolDao, testStandardDao,
                 testProcDao,  testDataDao, testFuncDao,  ucdDao, testParticipantDao,  testTaskDao, certStatusDao,
                 listingGraphDao, fuzzyChoicesDao,  resourcePermissions, certifiedProductSearchResultDAO,
+                Mockito.mock(ConformanceMethodDAO.class),
                 certifiedProductDetailsManager, Mockito.mock(PendingCertifiedProductManager.class),
                 Mockito.mock(SchedulerManager.class),
                 activityManager, validatorFactory, curesUpdateService, criterionService);
@@ -293,7 +295,7 @@ public class CertifiedProductManagerTest {
                 .chplProductNumber("15.04.04.3046.Acel.11.01.0.190517")
                 .cqmResults(new ArrayList<CQMResultDetails>())
                 .developer(Developer.builder()
-                        .developerId(1L)
+                        .id(1L)
                         .address(Address.builder()
                                 .addressId(1L)
                                 .city("Westport")
@@ -321,7 +323,7 @@ public class CertifiedProductManagerTest {
                                 .build())
                         .build())
                 .product(Product.builder()
-                        .productId(1L)
+                        .id(1L)
                         .name("Acelis Connected Health eSuite")
                         .owner(Developer.builder()
                                 .build())
@@ -333,7 +335,7 @@ public class CertifiedProductManagerTest {
                         .testingLabName("Drummond Group")
                         .build())
                 .version(ProductVersion.builder()
-                        .versionId(1L)
+                        .id(1L)
                         .version("11.3")
                         .build())
                 .build();

@@ -47,10 +47,10 @@ public class DeveloperCodeReviewer implements Reviewer {
         Developer developer = listing.getDeveloper();
         if (developer != null && isValidDeveloperCode(listing.getChplProductNumber())) {
             if (DeveloperManager.NEW_DEVELOPER_CODE.equals(developerCode)
-                    && developer.getDeveloperId() != null) {
+                    && developer.getId() != null) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.shouldNotHaveXXXXCode"));
             } else if (!DeveloperManager.NEW_DEVELOPER_CODE.equals(developerCode)
-                    && developer.getDeveloperId() == null) {
+                    && developer.getId() == null) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.shouldHaveXXXXCode", developerCode));
             } else if (!StringUtils.isEmpty(developer.getDeveloperCode())
                     && !developerCode.equals(developer.getDeveloperCode())) {

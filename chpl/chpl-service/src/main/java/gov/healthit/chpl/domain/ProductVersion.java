@@ -23,10 +23,19 @@ public class ProductVersion implements Serializable {
     private static final long serialVersionUID = -447822739573816090L;
 
     /**
+     * This property exists solely to be able to deserialize version activity events.
+     * When deserializing the activity we sometimes care about the version ID.
+     * This property should not be visible in the generated XSD (and eventually gone from the JSON).
+     */
+    @XmlTransient
+    @Deprecated
+    private Long versionId;
+
+    /**
      * Product version internal ID
      */
     @XmlElement(required = true)
-    private Long versionId;
+    private Long id;
 
     /**
      * Version name (i.e. "1.0")
@@ -40,6 +49,7 @@ public class ProductVersion implements Serializable {
     @XmlElement(required = false, nillable = true)
     private String details;
 
+
     @XmlTransient
     private String lastModifiedDate;
 
@@ -47,6 +57,7 @@ public class ProductVersion implements Serializable {
     }
 
     public ProductVersion(ProductVersionDTO dto) {
+        this.id = dto.getId();
         this.versionId = dto.getId();
         this.version = dto.getVersion();
         if (dto.getLastModifiedDate() != null) {
@@ -60,6 +71,14 @@ public class ProductVersion implements Serializable {
 
     public void setVersionId(final Long versionId) {
         this.versionId = versionId;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getVersion() {

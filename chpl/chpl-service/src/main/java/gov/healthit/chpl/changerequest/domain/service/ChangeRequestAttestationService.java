@@ -180,7 +180,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Override
     protected ChangeRequest execute(ChangeRequest cr) throws EntityRetrievalException, EntityCreationException {
-        Developer beforeDeveloper = developerDao.getById(cr.getDeveloper().getDeveloperId());
+        Developer beforeDeveloper = developerDao.getById(cr.getDeveloper().getId());
 
         ChangeRequestAttestationSubmission attestationSubmission = (ChangeRequestAttestationSubmission) cr.getDetails();
         DeveloperAttestationSubmission developerAttestation = DeveloperAttestationSubmission.builder()
@@ -198,12 +198,12 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
         attestationManager.saveDeveloperAttestation(developerAttestation);
         attestationManager.deleteAttestationPeriodDeveloperExceptions(
-                developerAttestation.getDeveloper().getDeveloperId(),
+                developerAttestation.getDeveloper().getId(),
                 developerAttestation.getPeriod().getId());
 
-        Developer updatedDeveloper = developerDao.getById(cr.getDeveloper().getDeveloperId());
+        Developer updatedDeveloper = developerDao.getById(cr.getDeveloper().getId());
         try {
-            activityManager.addActivity(ActivityConcept.DEVELOPER, updatedDeveloper.getDeveloperId(),
+            activityManager.addActivity(ActivityConcept.DEVELOPER, updatedDeveloper.getId(),
                 "Developer attestation created.", beforeDeveloper, updatedDeveloper);
         } catch (JsonProcessingException ex) {
             LOGGER.error("Error writing activity about attestation submission approval.", ex);
@@ -213,7 +213,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     private void sendWithdrawnDetailsEmail(ChangeRequest cr) throws EmailNotSentException {
         chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
+                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.toList()))
                 .subject(withdrawnEmailSubject)
@@ -223,7 +223,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     private void sendUpdatedDetailsEmail(ChangeRequest cr) throws EmailNotSentException {
         chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
+                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.toList()))
                 .subject(updatedEmailSubject)
@@ -233,7 +233,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     private void sendSubmittedEmail(ChangeRequest cr) throws EmailNotSentException {
         chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
+                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.toList()))
                 .subject(submittedEmailSubject)
@@ -244,7 +244,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Override
     protected void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException {
         chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
+                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.toList()))
                 .subject(approvalEmailSubject)
@@ -255,7 +255,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Override
     protected void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException {
         chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
+                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.toList()))
                 .subject(pendingDeveloperActionEmailSubject)
@@ -266,7 +266,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Override
     protected void sendRejectedEmail(ChangeRequest cr) throws EmailNotSentException {
         chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
+                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.toList()))
                 .subject(rejectedEmailSubject)

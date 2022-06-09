@@ -135,7 +135,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
         result.add(listing.getOtherAcb());
         result.add(listing.getDeveloper().getName());
-        result.add(listing.getDeveloper().getDeveloperId().toString());
+        result.add(listing.getDeveloper().getId().toString());
         result.addAll(getDeveloperAddressCells(listing));
         result.add(listing.getDeveloper().getWebsite() == null
                 ? ""
@@ -143,11 +143,11 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add(formatSelfDeveloper(listing));
         result.addAll(getContactCells(listing));
         result.add(listing.getProduct() != null ? listing.getProduct().getName() : UNKNOWN_VALUE);
-        result.add(ObjectUtils.allNotNull(listing.getProduct(), listing.getProduct().getProductId())
-                ? listing.getProduct().getProductId().toString() : UNKNOWN_VALUE);
+        result.add(ObjectUtils.allNotNull(listing.getProduct(), listing.getProduct().getId())
+                ? listing.getProduct().getId().toString() : UNKNOWN_VALUE);
         result.add(listing.getVersion() != null ? listing.getVersion().getVersion() : UNKNOWN_VALUE);
-        result.add(ObjectUtils.allNotNull(listing.getVersion(), listing.getVersion().getVersionId())
-                ? listing.getVersion().getVersionId().toString() : UNKNOWN_VALUE);
+        result.add(ObjectUtils.allNotNull(listing.getVersion(), listing.getVersion().getId())
+                ? listing.getVersion().getId().toString() : UNKNOWN_VALUE);
         result.add(listing.getRwtPlansUrl());
         result.add(listing.getRwtResultsUrl());
         result.add(listing.getCountSurveillance() != null ? listing.getCountSurveillance().toString() : UNKNOWN_VALUE);

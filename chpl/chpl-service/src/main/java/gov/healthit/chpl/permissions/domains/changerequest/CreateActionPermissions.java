@@ -20,7 +20,7 @@ public class CreateActionPermissions extends ActionPermissions {
                 return false;
             } else if (getResourcePermissions().isUserRoleDeveloperAdmin()) {
                 ChangeRequest cr = (ChangeRequest) obj;
-                return isDeveloperValidForCurrentUser(cr.getDeveloper().getDeveloperId());
+                return isDeveloperValidForCurrentUser(cr.getDeveloper().getId());
             } else {
                 return false;
             }
