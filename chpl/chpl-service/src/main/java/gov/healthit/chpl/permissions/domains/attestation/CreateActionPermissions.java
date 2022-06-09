@@ -21,7 +21,7 @@ public class CreateActionPermissions extends ActionPermissions {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             DeveloperAttestationSubmission das = (DeveloperAttestationSubmission) obj;
-            return isCurrentAcbUserAssociatedWithDeveloper(das.getDeveloper().getDeveloperId());
+            return isCurrentAcbUserAssociatedWithDeveloper(das.getDeveloper().getId());
         } else {
             return false;
         }

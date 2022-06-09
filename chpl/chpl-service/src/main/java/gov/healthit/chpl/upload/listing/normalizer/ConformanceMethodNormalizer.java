@@ -61,6 +61,7 @@ public class ConformanceMethodNormalizer {
             fillInDefaultConformanceMethods(listing, certResult);
         }
         populateConformanceMethodIds(certResult.getCriterion(), certResult.getConformanceMethods());
+        populateConformanceMethodRemovalDates(certResult.getCriterion(), certResult.getConformanceMethods());
     }
 
     private void populateAllowedConformanceMethods(CertificationResult certResult) {
@@ -153,6 +154,38 @@ public class ConformanceMethodNormalizer {
                 .findFirst();
             if (cmWithName.isPresent()) {
                 conformanceMethod.getConformanceMethod().setId(cmWithName.get().getId());
+            }
+        }
+    }
+
+    private void populateConformanceMethodRemovalDates(CertificationCriterion criterion, List<CertificationResultConformanceMethod> conformanceMethods) {
+        if (!CollectionUtils.isEmpty(conformanceMethods)) {
+            conformanceMethods.stream()
+                .filter(conformanceMethod -> isConformanceMethodIdMissing(conformanceMethod))
+                .forEach(conformanceMethod -> populateConformanceMethodId(criterion, conformanceMethod));
+            conformanceMethods.stream()
+                .filter(conformanceMethod -> isConformanceMethodRemovalDateMissing(conformanceMethod))
+                .forEach(conformanceMethod -> populateConformanceMethodRemovalDate(criterion, conformanceMethod));
+        }
+    }
+
+    private boolean isConformanceMethodRemovalDateMissing(CertificationResultConformanceMethod conformanceMethod) {
+        return conformanceMethod.getConformanceMethod() != null
+                && !StringUtils.isEmpty(conformanceMethod.getConformanceMethod().getName())
+                && conformanceMethod.getConformanceMethod().getRemovalDate() == null;
+    }
+
+    private void populateConformanceMethodRemovalDate(CertificationCriterion criterion, CertificationResultConformanceMethod conformanceMethod) {
+        List<ConformanceMethod> allowedConformanceMethodsForCriterion = this.conformanceMethodCriteriaMap.stream()
+            .filter(cmcMap -> cmcMap.getCriterion().getId().equals(criterion.getId()))
+            .map(cmcMap -> cmcMap.getConformanceMethod())
+            .collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(allowedConformanceMethodsForCriterion)) {
+            Optional<ConformanceMethod> cmWithName = allowedConformanceMethodsForCriterion.stream()
+                .filter(cm -> cm.getName().equals(conformanceMethod.getConformanceMethod().getName()))
+                .findFirst();
+            if (cmWithName.isPresent()) {
+                conformanceMethod.getConformanceMethod().setRemovalDate(cmWithName.get().getRemovalDate());
             }
         }
     }

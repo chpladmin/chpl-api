@@ -183,7 +183,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
         }
         if (urlResult.getDeveloper() != null && isActive(urlResult.getDeveloper())) {
             List<CertifiedProductDetailsDTO> filteredListings
-                = cpDao.getListingsByStatusForDeveloperAndAcb(urlResult.getDeveloper().getDeveloperId(), activeStatuses, acbIds);
+                = cpDao.getListingsByStatusForDeveloperAndAcb(urlResult.getDeveloper().getId(), activeStatuses, acbIds);
             return filteredListings != null && filteredListings.size() > 0;
         }
         return false;

@@ -21,7 +21,7 @@ public class UpdateActionPermissions extends ActionPermissions {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             Product dto = (Product) obj;
-            return getResourcePermissions().isDeveloperActive(dto.getOwner().getDeveloperId());
+            return getResourcePermissions().isDeveloperActive(dto.getOwner().getId());
         } else {
             return false;
         }

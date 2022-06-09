@@ -75,7 +75,6 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
         Developer dev = new Developer();
         dev.setId(1L);
-        dev.setDeveloperId(1L);
         DeveloperStatusEvent statusEvent = new DeveloperStatusEvent();
         statusEvent.setDeveloperId(1L);
         statusEvent.setStatusDate(new Date());

@@ -33,8 +33,8 @@ public class DeveloperStatusReviewer implements Reviewer {
 
     public void review(CertifiedProductSearchDetails listing) {
         try {
-            if (listing.getDeveloper() != null && listing.getDeveloper().getDeveloperId() != null) {
-                Developer developer = developerDao.getById(listing.getDeveloper().getDeveloperId());
+            if (listing.getDeveloper() != null && listing.getDeveloper().getId() != null) {
+                Developer developer = developerDao.getById(listing.getDeveloper().getId());
                 if (developer != null) {
                     DeveloperStatus mostRecentStatus = developer.getStatus();
                     if (mostRecentStatus == null || mostRecentStatus.getStatus() == null) {

@@ -22,10 +22,10 @@ public class GetByIdActionPermissions extends ActionPermissions {
                 return true;
             } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
                 ChangeRequest cr = (ChangeRequest) obj;
-                return isCurrentAcbUserAssociatedWithDeveloper(cr.getDeveloper().getDeveloperId());
+                return isCurrentAcbUserAssociatedWithDeveloper(cr.getDeveloper().getId());
             } else if (getResourcePermissions().isUserRoleDeveloperAdmin()) {
                 ChangeRequest cr = (ChangeRequest) obj;
-                return isDeveloperValidForCurrentUser(cr.getDeveloper().getDeveloperId());
+                return isDeveloperValidForCurrentUser(cr.getDeveloper().getId());
             }
             return false;
         } catch (Exception e) {
