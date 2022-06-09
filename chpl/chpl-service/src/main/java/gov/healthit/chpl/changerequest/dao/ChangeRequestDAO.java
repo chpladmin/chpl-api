@@ -13,10 +13,10 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestConverter;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestSearchResult;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestTypeEntity;
+import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -62,13 +62,13 @@ public class ChangeRequestDAO extends BaseDAOImpl {
     }
 
     public List<ChangeRequestSearchResult> getAllForAcbs(List<Long> acbIds) throws EntityRetrievalException {
-        return getEntitiesByAcbs(acbIds).stream()
+        return getSearchResultEntitiesByAcbs(acbIds).stream()
                 .map(entity -> ChangeRequestConverter.convertSearchResult(entity))
                 .collect(Collectors.<ChangeRequestSearchResult>toList());
     }
 
     public List<ChangeRequestSearchResult> getAllForDevelopers(List<Long> developerIds) throws EntityRetrievalException {
-        return getEntitiesByDevelopers(developerIds).stream()
+        return getSearchResultEntitiesByDevelopers(developerIds).stream()
                 .map(entity -> ChangeRequestConverter.convertSearchResult(entity))
                 .collect(Collectors.<ChangeRequestSearchResult>toList());
     }
@@ -265,6 +265,54 @@ public class ChangeRequestDAO extends BaseDAOImpl {
 
         List<ChangeRequestEntity> results = entityManager
                 .createQuery(hql, ChangeRequestEntity.class)
+                .getResultList();
+
+        return results;
+    }
+
+    private List<ChangeRequestEntity> getSearchResultEntitiesByAcbs(List<Long> acbIds)
+            throws EntityRetrievalException {
+
+        String hql = "SELECT DISTINCT cr "
+                + "FROM ChangeRequestEntity cr  "
+                + "JOIN FETCH cr.changeRequestType crt "
+                + "JOIN FETCH cr.developer dev "
+                + "LEFT JOIN FETCH dev.certificationBodyMaps devAcbMaps "
+                + "LEFT JOIN FETCH devAcbMaps.certificationBody devAcb "
+                + "JOIN FETCH cr.statuses crStatus "
+                + "JOIN FETCH crStatus.changeRequestStatusType "
+                + "LEFT JOIN FETCH crStatus.certificationBody acb "
+                + "JOIN FETCH crStatus.userPermission "
+                + "INNER JOIN DeveloperCertificationBodyMapEntity devAcbMap ON devAcbMap.developer.id = dev.id "
+                + "WHERE devAcbMap.certificationBody.id IN (:acbIds) "
+                + "AND cr.deleted = false ";
+
+        List<ChangeRequestEntity> results = entityManager
+                .createQuery(hql, ChangeRequestEntity.class)
+                .setParameter("acbIds", acbIds)
+                .getResultList();
+
+        return results;
+    }
+
+    private List<ChangeRequestEntity> getSearchResultEntitiesByDevelopers(List<Long> developerIds)
+            throws EntityRetrievalException {
+        String hql = "SELECT DISTINCT cr "
+                + "FROM ChangeRequestEntity cr "
+                + "JOIN FETCH cr.changeRequestType "
+                + "JOIN FETCH cr.developer dev "
+                + "LEFT JOIN FETCH dev.certificationBodyMaps devAcbMaps "
+                + "LEFT JOIN FETCH devAcbMaps.certificationBody devAcb "
+                + "JOIN FETCH cr.statuses crStatus "
+                + "JOIN FETCH crStatus.changeRequestStatusType "
+                + "LEFT JOIN FETCH crStatus.certificationBody acb "
+                + "JOIN FETCH crStatus.userPermission "
+                + "WHERE cr.deleted = false "
+                + "AND cr.developer.id IN (:developerIds)";
+
+        List<ChangeRequestEntity> results = entityManager
+                .createQuery(hql, ChangeRequestEntity.class)
+                .setParameter("developerIds", developerIds)
                 .getResultList();
 
         return results;

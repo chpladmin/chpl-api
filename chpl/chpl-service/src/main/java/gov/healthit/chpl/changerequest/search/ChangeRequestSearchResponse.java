@@ -1,4 +1,4 @@
-package gov.healthit.chpl.changerequest.domain;
+package gov.healthit.chpl.changerequest.search;
 
 import java.io.Serializable;
 import java.util.ArrayList;

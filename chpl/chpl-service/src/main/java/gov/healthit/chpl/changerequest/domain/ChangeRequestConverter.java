@@ -11,7 +11,6 @@ import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
 import gov.healthit.chpl.attestation.domain.AttestationValidResponse;
 import gov.healthit.chpl.attestation.domain.Condition;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestSearchResult.IdNamePairSearchResult;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationResponseEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDemographicsEntity;
@@ -19,6 +18,9 @@ import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusTypeEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestTypeEntity;
+import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult;
+import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult.CurrentStatusSearchResult;
+import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult.IdNamePairSearchResult;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.contact.PointOfContact;
@@ -47,13 +49,16 @@ public final class ChangeRequestConverter {
     public static ChangeRequestSearchResult convertSearchResult(ChangeRequestEntity entity) {
         return ChangeRequestSearchResult.builder()
         .id(entity.getId())
-        .changeRequestType(convert(entity.getChangeRequestType()))
+        .changeRequestType(IdNamePairSearchResult.builder()
+                .id(entity.getChangeRequestType().getId())
+                .name(entity.getChangeRequestType().getName())
+                .build())
         .developer(IdNamePairSearchResult.builder()
                 .id(entity.getDeveloper().getId())
                 .name(entity.getDeveloper().getName())
                 .build())
         .submittedDate(entity.getCreationDate())
-        .currentStatus(convert(getLatestStatus(entity.getStatuses())))
+        .currentStatus(convertSearchResult(getLatestStatus(entity.getStatuses())))
         .certificationBodies(entity.getDeveloper().getCertificationBodyMaps().stream()
                 .map(acbMapEntity -> acbMapEntity.getCertificationBody())
                 .map(acb -> IdNamePairSearchResult.builder()
@@ -62,6 +67,14 @@ public final class ChangeRequestConverter {
                         .build())
                 .toList())
         .build();
+    }
+
+    public static CurrentStatusSearchResult convertSearchResult(ChangeRequestStatusEntity entity) {
+        return CurrentStatusSearchResult.builder()
+                .id(entity.getChangeRequestStatusType().getId())
+                .name(entity.getChangeRequestStatusType().getName())
+                .statusChangeDate(entity.getStatusChangeDate())
+                .build();
     }
 
     public static ChangeRequest convert(ChangeRequestEntity entity) {
