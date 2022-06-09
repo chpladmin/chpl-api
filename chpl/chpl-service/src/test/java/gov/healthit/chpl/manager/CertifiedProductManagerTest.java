@@ -21,6 +21,7 @@ import org.springframework.security.access.AccessDeniedException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
@@ -188,6 +189,7 @@ public class CertifiedProductManagerTest {
                 statusEventDao, curesUpdateDao, piuDao,  certResultManager, optionalStandardDao, testToolDao, testStandardDao,
                 testProcDao,  testDataDao, testFuncDao,  ucdDao, testParticipantDao,  testTaskDao, certStatusDao,
                 listingGraphDao, fuzzyChoicesDao,  resourcePermissions, certifiedProductSearchResultDAO,
+                Mockito.mock(ConformanceMethodDAO.class),
                 certifiedProductDetailsManager, Mockito.mock(PendingCertifiedProductManager.class),
                 Mockito.mock(SchedulerManager.class),
                 activityManager, validatorFactory, curesUpdateService, criterionService);

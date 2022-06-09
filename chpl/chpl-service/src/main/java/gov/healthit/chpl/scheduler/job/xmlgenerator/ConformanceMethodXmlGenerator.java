@@ -11,6 +11,7 @@ public class ConformanceMethodXmlGenerator extends XmlGenerator {
             sw.writeStartElement(rootNodeName);
             createSimpleElement(method.getId(), "id", sw);
             createSimpleElement(method.getName(), "name", sw);
+            createSimpleElement(method.getRemoved(), "removed", sw);
             sw.writeEndElement();
         }
     }

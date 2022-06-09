@@ -14,6 +14,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.conformanceMethod.entity.ConformanceMethodEntity;
+import gov.healthit.chpl.domain.CertificationResultConformanceMethod;
 import lombok.Data;
 
 @Entity
@@ -54,4 +55,12 @@ public class CertificationResultConformanceMethodEntity {
 
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
+
+    public CertificationResultConformanceMethod toDomain() {
+        return CertificationResultConformanceMethod.builder()
+                .id(this.getId())
+                .conformanceMethod(this.getConformanceMethod().toDomain())
+                .conformanceMethodVersion(this.getVersion())
+                .build();
+    }
 }
