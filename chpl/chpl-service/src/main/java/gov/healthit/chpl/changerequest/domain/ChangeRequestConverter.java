@@ -25,6 +25,7 @@ import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.util.DateUtil;
 
 public final class ChangeRequestConverter {
 
@@ -57,7 +58,7 @@ public final class ChangeRequestConverter {
                 .id(entity.getDeveloper().getId())
                 .name(entity.getDeveloper().getName())
                 .build())
-        .submittedDate(entity.getCreationDate())
+        .submittedDateTime(DateUtil.toLocalDateTime(entity.getCreationDate().getTime()))
         .currentStatus(convertSearchResult(getLatestStatus(entity.getStatuses())))
         .certificationBodies(entity.getDeveloper().getCertificationBodyMaps().stream()
                 .map(acbMapEntity -> acbMapEntity.getCertificationBody())
@@ -73,7 +74,7 @@ public final class ChangeRequestConverter {
         return CurrentStatusSearchResult.builder()
                 .id(entity.getChangeRequestStatusType().getId())
                 .name(entity.getChangeRequestStatusType().getName())
-                .statusChangeDate(entity.getStatusChangeDate())
+                .statusChangeDateTime(DateUtil.toLocalDateTime(entity.getStatusChangeDate().getTime()))
                 .build();
     }
 

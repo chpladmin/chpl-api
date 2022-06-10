@@ -44,20 +44,20 @@ public class ChangeRequestSearchRequestNormalizer {
     }
 
     private void normalizeCurrentStatusChangeDates(ChangeRequestSearchRequest request) {
-        if (!StringUtils.isEmpty(request.getCurrentStatusChangeDateStart())) {
-            request.setCurrentStatusChangeDateStart(request.getCurrentStatusChangeDateStart().trim());
+        if (!StringUtils.isEmpty(request.getCurrentStatusChangeDateTimeStart())) {
+            request.setCurrentStatusChangeDateTimeStart(request.getCurrentStatusChangeDateTimeStart().trim());
         }
-        if (!StringUtils.isEmpty(request.getCurrentStatusChangeDateEnd())) {
-            request.setCurrentStatusChangeDateEnd(request.getCurrentStatusChangeDateEnd().trim());
+        if (!StringUtils.isEmpty(request.getCurrentStatusChangeDateTimeEnd())) {
+            request.setCurrentStatusChangeDateTimeEnd(request.getCurrentStatusChangeDateTimeEnd().trim());
         }
     }
 
     private void normalizeCreationDates(ChangeRequestSearchRequest request) {
-        if (!StringUtils.isEmpty(request.getCreationDateStart())) {
-            request.setCreationDateStart(request.getCreationDateStart().trim());
+        if (!StringUtils.isEmpty(request.getSubmittedDateTimeStart())) {
+            request.setSubmittedDateTimeStart(request.getSubmittedDateTimeStart().trim());
         }
-        if (!StringUtils.isEmpty(request.getCreationDateEnd())) {
-            request.setCreationDateEnd(request.getCreationDateEnd().trim());
+        if (!StringUtils.isEmpty(request.getSubmittedDateTimeEnd())) {
+            request.setSubmittedDateTimeEnd(request.getSubmittedDateTimeEnd().trim());
         }
     }
 

@@ -1,10 +1,15 @@
 package gov.healthit.chpl.changerequest.search;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import gov.healthit.chpl.util.LocalDateTimeDeserializer;
+import gov.healthit.chpl.util.LocalDateTimeSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,7 +30,9 @@ public class ChangeRequestSearchResult implements Serializable {
     @Singular
     private List<IdNamePairSearchResult> certificationBodies = new ArrayList<IdNamePairSearchResult>();
     private CurrentStatusSearchResult currentStatus;
-    private Date submittedDate;
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    private LocalDateTime submittedDateTime;
 
     @Getter
     @Builder
@@ -45,6 +52,8 @@ public class ChangeRequestSearchResult implements Serializable {
         private static final long serialVersionUID = -2377711036832863130L;
         private Long id;
         private String name;
-        private Date statusChangeDate;
+        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+        @JsonSerialize(using = LocalDateTimeSerializer.class)
+        private LocalDateTime statusChangeDateTime;
     }
 }

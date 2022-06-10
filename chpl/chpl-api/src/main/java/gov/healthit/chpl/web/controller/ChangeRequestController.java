@@ -89,18 +89,18 @@ public class ChangeRequestController {
             @Parameter(description = "A comma-separated list of change request type names (ex: \"Developer Attestaion Change Request,Developer Demographics Change Request\"). Results may match any of the provided types.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "changeRequestTypeNames")
             @RequestParam(value = "changeRequestTypeNames", required = false, defaultValue = "") String changeRequestTypeNamesDelimited,
-            @Parameter(description = "To return only change requests last modified after this date. Required format is " + ChangeRequestSearchRequest.TIMESTAMP_SEARCH_FORMAT,
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "currentStatusChangeDateStart")
-            @RequestParam(value = "currentStatusChangeDateStart", required = false, defaultValue = "") String currentStatusChangeDateStart,
-            @Parameter(description = "To return only change requests last modified before this date. Required format is " + ChangeRequestSearchRequest.TIMESTAMP_SEARCH_FORMAT,
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "currentStatusChangeDateEnd")
-            @RequestParam(value = "currentStatusChangeDateEnd", required = false, defaultValue = "") String currentStatusChangeDateEnd,
-            @Parameter(description = "To return only change requests created after this date. Required format is " + ChangeRequestSearchRequest.TIMESTAMP_SEARCH_FORMAT,
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "creationDateStart")
-            @RequestParam(value = "creationDateStart", required = false, defaultValue = "") String creationDateStart,
-            @Parameter(description = "To return only change requests created before this date. Required format is " + ChangeRequestSearchRequest.TIMESTAMP_SEARCH_FORMAT,
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "creationDateEnd")
-            @RequestParam(value = "creationDateEnd", required = false, defaultValue = "") String creationDateEnd,
+            @Parameter(description = "To return only change requests last modified after this date and time. Required format is " + ChangeRequestSearchRequest.TIMESTAMP_SEARCH_FORMAT,
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "currentStatusChangeDateTimeStart")
+            @RequestParam(value = "currentStatusChangeDateTimeStart", required = false, defaultValue = "") String currentStatusChangeDateTimeStart,
+            @Parameter(description = "To return only change requests last modified before this date and time. Required format is " + ChangeRequestSearchRequest.TIMESTAMP_SEARCH_FORMAT,
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "currentStatusChangeDateTimeEnd")
+            @RequestParam(value = "currentStatusChangeDateTimeEnd", required = false, defaultValue = "") String currentStatusChangeDateTimeEnd,
+            @Parameter(description = "To return only change requests submitted after this date and time. Required format is " + ChangeRequestSearchRequest.TIMESTAMP_SEARCH_FORMAT,
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "submittedDateTimeStart")
+            @RequestParam(value = "submittedDateTimeStart", required = false, defaultValue = "") String submittedDateTimeStart,
+            @Parameter(description = "To return only change requests submitted before this date and time. Required format is " + ChangeRequestSearchRequest.TIMESTAMP_SEARCH_FORMAT,
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "submittedDateTimeEnd")
+            @RequestParam(value = "submittedDateTimeEnd", required = false, defaultValue = "") String submittedDateTimeEnd,
             @Parameter(description = "Zero-based page number used in concert with pageSize. Defaults to 0.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "pageNumber")
             @RequestParam(value = "pageNumber", required = false, defaultValue = "0") String pageNumber,
@@ -109,22 +109,23 @@ public class ChangeRequestController {
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "pageSize")
             @RequestParam(value = "pageSize", required = false, defaultValue = "20") String pageSize,
             @Parameter(description = "What to order by. Options are one of the following: "
-                + "DEVELOPER, CHANGE_REQUEST_TYPE, CHANGE_REQUEST_STATUS, CREATION_DATE, CURRENT_STATUS_CHANGE_DATE, or CERTIFICATION_BODIES."
-                + "Defaults to CURRENT_STATUS_CHANGE_DATE.",
+                + "DEVELOPER, CHANGE_REQUEST_TYPE, CHANGE_REQUEST_STATUS, SUBMITTED_DATE_TIME, CURRENT_STATUS_CHANGE_DATE_TIME, or CERTIFICATION_BODIES."
+                + "Defaults to CURRENT_STATUS_CHANGE_DATE_TIME.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "orderBy")
-            @RequestParam(value = "orderBy", required = false, defaultValue = "CURRENT_STATUS_CHANGE_DATE") String orderBy,
+            @RequestParam(value = "orderBy", required = false, defaultValue = "CURRENT_STATUS_CHANGE_DATE_TIME") String orderBy,
             @Parameter(description = "Use to specify the direction of the sort. Defaults to false (ascending sort).",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "sortDescending")
-            @RequestParam(value = "sortDescending", required = false, defaultValue = "false") Boolean sortDescending) throws EntityRetrievalException {
+            @RequestParam(value = "sortDescending", required = false, defaultValue = "false") Boolean sortDescending)
+                    throws EntityRetrievalException, ValidationException {
         ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
                 .searchTerm(searchTerm.trim())
                 .developerIdString(developerId)
                 .currentStatusNames(convertToSetWithDelimeter(currentStatusNamesDelimited, ","))
                 .typeNames(convertToSetWithDelimeter(changeRequestTypeNamesDelimited, ","))
-                .currentStatusChangeDateStart(currentStatusChangeDateStart.trim())
-                .currentStatusChangeDateEnd(currentStatusChangeDateEnd.trim())
-                .creationDateStart(creationDateStart)
-                .creationDateEnd(creationDateEnd)
+                .currentStatusChangeDateTimeStart(currentStatusChangeDateTimeStart.trim())
+                .currentStatusChangeDateTimeEnd(currentStatusChangeDateTimeEnd.trim())
+                .submittedDateTimeStart(submittedDateTimeStart)
+                .submittedDateTimeEnd(submittedDateTimeEnd)
                 .pageNumberString(pageNumber)
                 .pageSizeString(pageSize)
                 .orderByString(orderBy)

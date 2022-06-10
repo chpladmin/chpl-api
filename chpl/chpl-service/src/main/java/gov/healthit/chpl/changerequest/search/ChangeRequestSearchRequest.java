@@ -21,6 +21,7 @@ public class ChangeRequestSearchRequest implements Serializable {
     private static final long serialVersionUID = 1816207628667101580L;
     public static final String TIMESTAMP_SEARCH_FORMAT = "yyyy-MM-ddTHH:mm";
     public static final int DEFAULT_PAGE_SIZE = 20;
+    public static final int MIN_PAGE_SIZE = 1;
     public static final int MAX_PAGE_SIZE = 250;
 
     private String searchTerm;
@@ -32,10 +33,10 @@ public class ChangeRequestSearchRequest implements Serializable {
     private Set<String> currentStatusNames = new HashSet<String>();
     @Builder.Default
     private Set<String> typeNames = new HashSet<String>();
-    private String currentStatusChangeDateStart;
-    private String currentStatusChangeDateEnd;
-    private String creationDateStart;
-    private String creationDateEnd;
+    private String currentStatusChangeDateTimeStart;
+    private String currentStatusChangeDateTimeEnd;
+    private String submittedDateTimeStart;
+    private String submittedDateTimeEnd;
     @JsonIgnore
     @XmlTransient
     private String orderByString;
