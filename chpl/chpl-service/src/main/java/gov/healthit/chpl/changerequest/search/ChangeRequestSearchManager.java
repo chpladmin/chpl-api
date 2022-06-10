@@ -40,7 +40,7 @@ public class ChangeRequestSearchManager {
         this.resourcePermissions = resourcePermissions;
         this.validator = validator;
         this.normalizer = new ChangeRequestSearchRequestNormalizer();
-        dateFormatter = DateTimeFormatter.ofPattern(ChangeRequestSearchRequest.TIMESTAMP_SEARCH_FORMAT);
+        dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     }
 
     @Transactional(readOnly = true)

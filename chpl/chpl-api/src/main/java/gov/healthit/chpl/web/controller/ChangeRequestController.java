@@ -61,7 +61,7 @@ public class ChangeRequestController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/{changeRequestId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/{changeRequestId:^-?\\d+$}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @DeprecatedResponseFields(responseClass = ChangeRequest.class)
     public @ResponseBody ChangeRequest getChangeRequest(@PathVariable final Long changeRequestId) throws EntityRetrievalException {
         return changeRequestManager.getChangeRequest(changeRequestId);

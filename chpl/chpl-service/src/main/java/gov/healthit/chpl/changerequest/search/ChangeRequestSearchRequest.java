@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ChangeRequestSearchRequest implements Serializable {
     private static final long serialVersionUID = 1816207628667101580L;
-    public static final String TIMESTAMP_SEARCH_FORMAT = "yyyy-MM-ddTHH:mm";
+    public static final String TIMESTAMP_SEARCH_FORMAT = "yyyy-MM-ddTHH:mm:ss";
     public static final int DEFAULT_PAGE_SIZE = 20;
     public static final int MIN_PAGE_SIZE = 1;
     public static final int MAX_PAGE_SIZE = 250;

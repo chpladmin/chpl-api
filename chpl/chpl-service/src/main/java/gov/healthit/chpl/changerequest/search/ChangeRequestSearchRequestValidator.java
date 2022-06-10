@@ -36,7 +36,7 @@ public class ChangeRequestSearchRequestValidator {
         this.changeRequestManager = changeRequestManager;
         this.developerDao = developerDao;
         this.msgUtil = msgUtil;
-        dateFormatter = DateTimeFormatter.ofPattern(ChangeRequestSearchRequest.TIMESTAMP_SEARCH_FORMAT);
+        dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     }
 
     public void validate(ChangeRequestSearchRequest request) throws ValidationException {
