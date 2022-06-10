@@ -79,7 +79,7 @@ public class ChangeRequestController {
     public @ResponseBody ChangeRequestSearchResponse searchChangeRequests(
             @Parameter(description = "Searches all change requests by developer name.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "searchTerm")
-            @RequestParam(value = "searchTerm", required = false) String searchTerm,
+            @RequestParam(value = "searchTerm", defaultValue = "", required = false) String searchTerm,
             @Parameter(description = "To return only change requests associated with the given developer.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "developerId")
             @RequestParam(value = "developerId", required = false) String developerId,

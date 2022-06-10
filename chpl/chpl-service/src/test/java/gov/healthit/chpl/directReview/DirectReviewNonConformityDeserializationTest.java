@@ -160,8 +160,8 @@ public class DirectReviewNonConformityDeserializationTest {
 
         DirectReviewNonConformity nc = parseJsonToNonConformity(json);
         assertNotNull(nc);
-        assertNotNull(nc.getNonConformityResolution());
-        assertEquals(resolution, nc.getNonConformityResolution());
+        assertNotNull(nc.getResolution());
+        assertEquals(resolution, nc.getResolution());
     }
 
     @Test

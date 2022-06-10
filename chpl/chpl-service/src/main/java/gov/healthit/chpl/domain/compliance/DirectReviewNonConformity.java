@@ -74,10 +74,10 @@ public class DirectReviewNonConformity implements Serializable {
     @JsonAlias("customfield_11035")
     private String nonConformityStatus;
 
-    @JsonProperty(value = "nonConformityResolution", access = Access.WRITE_ONLY)
+    @JsonProperty(value = "resolution", access = Access.WRITE_ONLY)
     @JsonAlias("customfield_11029")
     @XmlTransient
-    private String nonConformityResolution;
+    private String resolution;
 
     @JsonProperty(value = "capApprovalDate")
     @JsonAlias("customfield_11022")
