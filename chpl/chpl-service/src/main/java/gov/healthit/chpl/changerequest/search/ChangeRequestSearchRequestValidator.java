@@ -45,7 +45,7 @@ public class ChangeRequestSearchRequestValidator {
         errors.addAll(getStatusNamesErrors(request));
         errors.addAll(getTypeNamesErrors(request));
         errors.addAll(getCurrentStatusChangeDateErrors(request));
-        errors.addAll(getCreationDateErrors(request));
+        errors.addAll(getSubmittedDateErrors(request));
         errors.addAll(getPageSizeErrors(request));
         errors.addAll(getPageNumberErrors(request));
         errors.addAll(getOrderByErrors(request));
@@ -57,7 +57,7 @@ public class ChangeRequestSearchRequestValidator {
     private Set<String> getDeveloperIdErrors(ChangeRequestSearchRequest request) {
         Set<String> errors = new HashSet<String>();
         if (!StringUtils.isEmpty(request.getDeveloperIdString())
-                && !isParseableLong(request.getDeveloperIdString())) {
+                && request.getDeveloperId() == null) {
             errors.add(msgUtil.getMessage("search.changeRequest.developerId.invalidFormat", request.getDeveloperIdString()));
         }
         if (request.getDeveloperId() != null) {
@@ -71,7 +71,7 @@ public class ChangeRequestSearchRequestValidator {
     }
 
     private Set<String> getStatusNamesErrors(ChangeRequestSearchRequest request) {
-        if (!CollectionUtils.isEmpty(request.getCurrentStatusNames())) {
+        if (CollectionUtils.isEmpty(request.getCurrentStatusNames())) {
             return Collections.emptySet();
         }
 
@@ -89,7 +89,7 @@ public class ChangeRequestSearchRequestValidator {
     }
 
     private Set<String> getTypeNamesErrors(ChangeRequestSearchRequest request) {
-        if (!CollectionUtils.isEmpty(request.getTypeNames())) {
+        if (CollectionUtils.isEmpty(request.getTypeNames())) {
             return Collections.emptySet();
         }
 
@@ -108,7 +108,7 @@ public class ChangeRequestSearchRequestValidator {
 
     private Set<String> getCurrentStatusChangeDateErrors(ChangeRequestSearchRequest request) {
         if (StringUtils.isEmpty(request.getCurrentStatusChangeDateTimeStart())
-                && StringUtils.isEmpty(request.getCurrentStatusChangeDateTimeStart())) {
+                && StringUtils.isEmpty(request.getCurrentStatusChangeDateTimeEnd())) {
             return Collections.emptySet();
         }
 
@@ -142,9 +142,9 @@ public class ChangeRequestSearchRequestValidator {
         return errors;
     }
 
-    private Set<String> getCreationDateErrors(ChangeRequestSearchRequest request) {
+    private Set<String> getSubmittedDateErrors(ChangeRequestSearchRequest request) {
         if (StringUtils.isEmpty(request.getSubmittedDateTimeStart())
-                && StringUtils.isEmpty(request.getSubmittedDateTimeStart())) {
+                && StringUtils.isEmpty(request.getSubmittedDateTimeEnd())) {
             return Collections.emptySet();
         }
 
@@ -236,21 +236,12 @@ public class ChangeRequestSearchRequestValidator {
         return true;
     }
 
-    private boolean isParseableLong(String value) {
-        try {
-            Long.parseLong(value);
-        } catch (Exception ex) {
-            return false;
-        }
-        return true;
-    }
-
     private boolean isInSet(String value, Set<String> setToSearch) {
         if (setToSearch == null) {
             return false;
         }
         return setToSearch.stream()
-            .filter(item -> item.equals(value))
+            .filter(item -> item.equalsIgnoreCase(value))
             .count() > 0;
     }
 }

@@ -12,7 +12,7 @@ public class ChangeRequestSearchRequestNormalizer {
         normalizeStatuses(request);
         normalizeTypes(request);
         normalizeCurrentStatusChangeDates(request);
-        normalizeCreationDates(request);
+        normalizeSubmittedDates(request);
         normalizeOrderBy(request);
         normalizePageNumber(request);
         normalizePageSize(request);
@@ -52,7 +52,7 @@ public class ChangeRequestSearchRequestNormalizer {
         }
     }
 
-    private void normalizeCreationDates(ChangeRequestSearchRequest request) {
+    private void normalizeSubmittedDates(ChangeRequestSearchRequest request) {
         if (!StringUtils.isEmpty(request.getSubmittedDateTimeStart())) {
             request.setSubmittedDateTimeStart(request.getSubmittedDateTimeStart().trim());
         }
