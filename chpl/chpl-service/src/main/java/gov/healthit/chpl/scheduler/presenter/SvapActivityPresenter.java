@@ -108,7 +108,7 @@ public class SvapActivityPresenter implements AutoCloseable {
                 svapActivity.getListing().getCurrentStatus().getStatus().getName(),
                 MapUtils.getString(svapActivity.getListing().getCertifyingBody(), CertifiedProductSearchDetails.ACB_NAME_KEY),
                 svapActivity.getListing().getDeveloper().getName(),
-                svapActivity.getListing().getDeveloper().getDeveloperId().toString(),
+                svapActivity.getListing().getDeveloper().getId().toString(),
                 svapActivity.getListing().getSvapNoticeUrl(),
                 formatDate(svapActivity.getSvapNoticeLastUpdated()),
                 svapActivity.getCriterion() != null ? Util.formatCriteriaNumber(svapActivity.getCriterion()) : "",

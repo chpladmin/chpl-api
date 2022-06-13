@@ -126,9 +126,9 @@ public class ProductVersionManager extends SecuredManager {
         if (prod == null) {
             throw new EntityRetrievalException("Cannot find product with id " + productId);
         }
-        Developer dev = devDao.getById(prod.getOwner().getDeveloperId());
+        Developer dev = devDao.getById(prod.getOwner().getId());
         if (dev == null) {
-            throw new EntityRetrievalException("Cannot find developer with id " + prod.getOwner().getDeveloperId());
+            throw new EntityRetrievalException("Cannot find developer with id " + prod.getOwner().getId());
         }
         DeveloperStatus currDevStatus = dev.getStatus();
         if (currDevStatus == null || currDevStatus.getStatus() == null) {
@@ -139,7 +139,7 @@ public class ProductVersionManager extends SecuredManager {
         }
 
         Long versionId = versionDao.create(productId, version);
-        version.setVersionId(versionId);
+        version.setId(versionId);
         ProductVersionDTO createdVersionDto = versionDao.getById(versionId);
         activityManager.addActivity(ActivityConcept.VERSION, versionId,
                 "Product Version " + version.getVersion() + " added for product " + productId, null, createdVersionDto);
@@ -162,9 +162,9 @@ public class ProductVersionManager extends SecuredManager {
         if (prod == null) {
             throw new EntityRetrievalException("Cannot find product with id " + dto.getProductId());
         }
-        Developer dev = devDao.getById(prod.getOwner().getDeveloperId());
+        Developer dev = devDao.getById(prod.getOwner().getId());
         if (dev == null) {
-            throw new EntityRetrievalException("Cannot find developer with id " + prod.getOwner().getDeveloperId());
+            throw new EntityRetrievalException("Cannot find developer with id " + prod.getOwner().getId());
         }
         DeveloperStatus currDevStatus = dev.getStatus();
         if (currDevStatus == null || currDevStatus.getStatus() == null) {

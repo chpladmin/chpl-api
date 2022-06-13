@@ -93,7 +93,7 @@ public class ProductOwner implements Serializable {
             if (other.developer != null) {
                 return false;
             }
-        } else if (!developer.getDeveloperId().equals(other.developer.getDeveloperId())) {
+        } else if (!developer.getId().equals(other.developer.getId())) {
             return false;
         }
         if (id == null) {

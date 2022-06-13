@@ -1,9 +1,8 @@
 package gov.healthit.chpl.domain.developer.hierarchy;
 
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
-
-import org.apache.commons.lang3.ObjectUtils;
 
 import gov.healthit.chpl.domain.Product;
 import lombok.Data;
@@ -21,7 +20,7 @@ public class ProductTree extends Product {
     public ProductTree(Product product) {
         super();
         this.setId(product.getId());
-        this.setProductId(product.getProductId());
+        this.setProductId(product.getId());
         this.setContact(product.getContact());
         this.setLastModifiedDate(product.getLastModifiedDate());
         this.setName(product.getName());
@@ -38,14 +37,14 @@ public class ProductTree extends Product {
             return false;
         }
         ProductTree otherProduct = (ProductTree) obj;
-        return ObjectUtils.equals(this.getProductId(), otherProduct.getProductId());
+        return Objects.equals(this.getId(), otherProduct.getId());
     }
 
     public int hashCode() {
-        if (this.getProductId() == null) {
+        if (this.getId() == null) {
             return -1;
         }
 
-        return this.getProductId().hashCode();
+        return this.getId().hashCode();
     }
 }

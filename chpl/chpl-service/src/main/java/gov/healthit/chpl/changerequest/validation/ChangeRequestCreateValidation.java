@@ -1,35 +1,27 @@
 package gov.healthit.chpl.changerequest.validation;
 
-import java.util.HashMap;
-
-import org.apache.commons.lang3.StringUtils;
-
+import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
 public class ChangeRequestCreateValidation extends ValidationRule<ChangeRequestValidationContext> {
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
-        if (context.getNewChangeRequest().getChangeRequestType().getId().equals(context.getChangeRequestTypeIds().getWebsiteChangeRequestType())
-                && (context.getNewChangeRequest().getDetails() == null
-                        || !isChangeRequestWebsiteValid((HashMap) context.getNewChangeRequest().getDetails()))) {
-            getMessages().add(getErrorMessage("changeRequest.details.website.invalid"));
-            return false;
-        } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(context.getChangeRequestTypeIds().getDeveloperDetailsChangeRequestTypeId())) {
+        if (context.getNewChangeRequest().getChangeRequestType().getId().equals(context.getChangeRequestTypeIds().getDeveloperDemographicsChangeRequestTypeId())) {
+            ChangeRequestDeveloperDemographics details = (ChangeRequestDeveloperDemographics) context.getNewChangeRequest().getDetails();
             if (context.getNewChangeRequest().getDetails() == null) {
-                getMessages().add(getErrorMessage("changeRequest.details.invalid"));
+                getMessages().add(getErrorMessage("changeRequest.demographics.invalid"));
                 return false;
             } else {
                 boolean areDetailsValid = true;
-                HashMap<String, Object> crDetails = (HashMap) context.getNewChangeRequest().getDetails();
-                if (!isChangeRequestSelfDevloperValid(crDetails)) {
-                    getMessages().add(getErrorMessage("changeRequest.details.selfDeveloper.missing"));
+                if (!isChangeRequestSelfDevloperValid(details)) {
+                    getMessages().add(getErrorMessage("changeRequest.demographics.selfDeveloper.missing"));
                     areDetailsValid = false;
-                } else if (!isChangeRequestAddressValid(crDetails)) {
-                    getMessages().add(getErrorMessage("changeRequest.details.address.missing"));
+                } else if (!isChangeRequestAddressValid(details)) {
+                    getMessages().add(getErrorMessage("changeRequest.demographics.address.missing"));
                     areDetailsValid = false;
-                } else if (!isChangeRequestContactValid(crDetails)) {
-                    getMessages().add(getErrorMessage("changeRequest.details.contact.missing"));
+                } else if (!isChangeRequestContactValid(details)) {
+                    getMessages().add(getErrorMessage("changeRequest.demographics.contact.missing"));
                     areDetailsValid = false;
                 }
                 return areDetailsValid;
@@ -38,28 +30,15 @@ public class ChangeRequestCreateValidation extends ValidationRule<ChangeRequestV
         return true;
     }
 
-    private boolean isChangeRequestWebsiteValid(HashMap<String, Object> map) {
-        return map.containsKey("website") && !StringUtils.isEmpty(map.get("website").toString());
+    private boolean isChangeRequestSelfDevloperValid(ChangeRequestDeveloperDemographics details) {
+        return details.getSelfDeveloper() != null;
     }
 
-    private boolean isChangeRequestSelfDevloperValid(HashMap<String, Object> map) {
-        if (map.containsKey("selfDeveloper")) {
-            return !StringUtils.isEmpty(map.get("selfDeveloper").toString());
-        }
-        return true;
+    private boolean isChangeRequestAddressValid(ChangeRequestDeveloperDemographics details) {
+        return details.getAddress() != null;
     }
 
-    private boolean isChangeRequestAddressValid(HashMap<String, Object> map) {
-        if (map.containsKey("address")) {
-            return map.get("address") != null;
-        }
-        return true;
-    }
-
-    private boolean isChangeRequestContactValid(HashMap<String, Object> map) {
-        if (map.containsKey("contact")) {
-            return map.get("contact") != null;
-        }
-        return true;
+    private boolean isChangeRequestContactValid(ChangeRequestDeveloperDemographics details) {
+        return details.getContact() != null;
     }
 }

@@ -1,5 +1,39 @@
 # Release Notes
 
+## Version 35.3.1
+_6 June 2022_
+
+### Bug Fixes
+* Update Developer-Associated Listing Jira field ID
+* Describe change in ONC-ATLs better in Questionable Activity report
+* Allow scheduled job to delete unused API Keys as intended
+
+### Flagged Features
+* Combine Developer Details and Website Change Request to Developer Demographics Change Request
+
+---
+
+## Version 35.3.0
+_31 May 2022_
+
+### Features
+* Create Attestations Check-in Report
+* Add Cures Reports to show statistics over time and remove CSV files from email
+* Validate direct reviews before loading them into cache
+* Remove some fields from Direct Review data
+* Remove promoting-interoperability flag usage. Remove deprecated meaningfulUseUserHistory field from responses.
+* Add /listings/pending/{id}/submitted endpoint to return listing data as it was entered by a user during upload
+* Update conformance method parsing to use "Test procedure" and "Test procedure version" columns
+
+### Flagged Features
+* Update the CSV Definition file to not include removed criteria as of ERD-Phase-2
+* Add validation for f3 conformance methods with and without GAP.
+
+### Flagged Bug Fixes
+* Set allowable fields to non-null for all attested criteria
+
+---
+
 ## Version 35.2.0
 _16 May 2022_
 

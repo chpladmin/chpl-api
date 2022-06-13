@@ -7,6 +7,8 @@ import java.util.Objects;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.functors.DefaultEquator;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
 import lombok.AllArgsConstructor;
@@ -19,6 +21,7 @@ import lombok.Singular;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ChangeRequestAttestationSubmission implements Serializable, ChangeRequestDetails {
     private static final long serialVersionUID = 2150025150434933303L;
 

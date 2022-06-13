@@ -43,7 +43,7 @@ public class DirectReviewNonConformity implements Serializable {
     private String requirement;
 
     @JsonProperty(value = "developerAssociatedListings")
-    @JsonAlias("customfield_11034")
+    @JsonAlias("customfield_12202")
     @JsonDeserialize(using = ListingDeserializer.class)
     @XmlElementWrapper(name = "developerAssociatedListings", nillable = true, required = false)
     @XmlElement(name = "listing")

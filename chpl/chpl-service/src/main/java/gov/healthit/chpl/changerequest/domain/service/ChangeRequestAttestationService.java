@@ -3,7 +3,6 @@ package gov.healthit.chpl.changerequest.domain.service;
 import java.text.DateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,8 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
@@ -56,8 +53,6 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private UserDAO userDAO;
     private DeveloperDAO developerDao;
     private ActivityManager activityManager;
-
-    private ObjectMapper mapper;
 
     @Value("${changeRequest.attestation.submitted.subject}")
     private String submittedEmailSubject;
@@ -112,9 +107,6 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         this.userDAO = userDAO;
         this.developerDao = developerDao;
         this.activityManager = activityManager;
-
-        this.mapper = new ObjectMapper();
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
 
     @Override
@@ -127,7 +119,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Transactional
     public ChangeRequest create(ChangeRequest cr) {
         try {
-            ChangeRequestAttestationSubmission attestation = getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails());
+            ChangeRequestAttestationSubmission attestation = (ChangeRequestAttestationSubmission) cr.getDetails();
             attestation.setSignatureEmail(getUserById(AuthUtil.getCurrentUser().getId()).getEmail());
             attestation.setAttestationPeriod(getAttestationPeriod(cr));
 
@@ -150,7 +142,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     public ChangeRequest update(ChangeRequest cr) throws InvalidArgumentsException {
         try {
             ChangeRequest crFromDb = crDAO.get(cr.getId());
-            ChangeRequestAttestationSubmission attestation = getDetailsFromHashMap((HashMap<String, Object>) cr.getDetails());
+            ChangeRequestAttestationSubmission attestation = (ChangeRequestAttestationSubmission) cr.getDetails();
 
             // Use the id from the DB, not the object. Client could have changed the id.
             attestation.setId(((ChangeRequestAttestationSubmission) crFromDb.getDetails()).getId());
@@ -188,7 +180,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Override
     protected ChangeRequest execute(ChangeRequest cr) throws EntityRetrievalException, EntityCreationException {
-        Developer beforeDeveloper = developerDao.getById(cr.getDeveloper().getDeveloperId());
+        Developer beforeDeveloper = developerDao.getById(cr.getDeveloper().getId());
 
         ChangeRequestAttestationSubmission attestationSubmission = (ChangeRequestAttestationSubmission) cr.getDetails();
         DeveloperAttestationSubmission developerAttestation = DeveloperAttestationSubmission.builder()
@@ -206,12 +198,12 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
         attestationManager.saveDeveloperAttestation(developerAttestation);
         attestationManager.deleteAttestationPeriodDeveloperExceptions(
-                developerAttestation.getDeveloper().getDeveloperId(),
+                developerAttestation.getDeveloper().getId(),
                 developerAttestation.getPeriod().getId());
 
-        Developer updatedDeveloper = developerDao.getById(cr.getDeveloper().getDeveloperId());
+        Developer updatedDeveloper = developerDao.getById(cr.getDeveloper().getId());
         try {
-            activityManager.addActivity(ActivityConcept.DEVELOPER, updatedDeveloper.getDeveloperId(),
+            activityManager.addActivity(ActivityConcept.DEVELOPER, updatedDeveloper.getId(),
                 "Developer attestation created.", beforeDeveloper, updatedDeveloper);
         } catch (JsonProcessingException ex) {
             LOGGER.error("Error writing activity about attestation submission approval.", ex);
@@ -221,7 +213,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     private void sendWithdrawnDetailsEmail(ChangeRequest cr) throws EmailNotSentException {
         chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
+                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.toList()))
                 .subject(withdrawnEmailSubject)
@@ -231,7 +223,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     private void sendUpdatedDetailsEmail(ChangeRequest cr) throws EmailNotSentException {
         chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
+                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.toList()))
                 .subject(updatedEmailSubject)
@@ -241,7 +233,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     private void sendSubmittedEmail(ChangeRequest cr) throws EmailNotSentException {
         chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
+                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.toList()))
                 .subject(submittedEmailSubject)
@@ -252,7 +244,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Override
     protected void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException {
         chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
+                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.toList()))
                 .subject(approvalEmailSubject)
@@ -263,7 +255,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Override
     protected void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException {
         chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
+                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.toList()))
                 .subject(pendingDeveloperActionEmailSubject)
@@ -274,7 +266,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Override
     protected void sendRejectedEmail(ChangeRequest cr) throws EmailNotSentException {
         chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getDeveloperId()).stream()
+                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
                         .map(user -> user.getEmail())
                         .collect(Collectors.toList()))
                 .subject(rejectedEmailSubject)
@@ -375,10 +367,6 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
           converted = toConvert;
         }
         return converted;
-    }
-
-    private ChangeRequestAttestationSubmission getDetailsFromHashMap(HashMap<String, Object> map) {
-        return  mapper.convertValue(map, ChangeRequestAttestationSubmission.class);
     }
 
     private AttestationPeriod getAttestationPeriod(ChangeRequest cr) {

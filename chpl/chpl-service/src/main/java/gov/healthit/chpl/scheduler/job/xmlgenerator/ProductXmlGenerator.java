@@ -10,10 +10,10 @@ public class ProductXmlGenerator extends XmlGenerator {
         if (prod != null) {
             sw.writeStartElement(rootNodeName);
             PointOfContactXmlGenerator.addContact(prod.getContact(), "contact", sw);
+            createSimpleElement(prod.getId(), "id", sw);
             createSimpleElement(prod.getName(), "name", sw);
             DeveloperXmlGenerator.addDeveloper(prod.getOwner(), "owner", sw);
             ProductOwnerXmlGenerator.add(prod.getOwnerHistory(), "ownerHistory", sw);
-            createSimpleElement(prod.getProductId(), "productId", sw);
             createSimpleElement(prod.getReportFileLocation(), "reportFileLocation", sw);
             sw.writeEndElement();
         }

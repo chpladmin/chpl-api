@@ -138,9 +138,9 @@ public class DeveloperManager extends SecuredManager {
     public DeveloperTree getHierarchyById(Long id) throws EntityRetrievalException {
         List<CertificationBodyDTO> acbs = acbManager.getAll();
         Developer developer = getById(id);
-        List<Product> products = productManager.getByDeveloper(developer.getDeveloperId());
-        List<ProductVersionDTO> versions = versionManager.getByDeveloper(developer.getDeveloperId());
-        List<CertifiedProductDetailsDTO> listings = certifiedProductDao.findListingsByDeveloperId(developer.getDeveloperId());
+        List<Product> products = productManager.getByDeveloper(developer.getId());
+        List<ProductVersionDTO> versions = versionManager.getByDeveloper(developer.getId());
+        List<CertifiedProductDetailsDTO> listings = certifiedProductDao.findListingsByDeveloperId(developer.getId());
 
         DeveloperTree developerTree = new DeveloperTree(developer);
         products.stream().forEach(product -> {
@@ -150,7 +150,7 @@ public class DeveloperManager extends SecuredManager {
         developerTree.getProducts().stream().forEach(product -> {
             List<ProductVersionDTO> productVersions =
                     versions.stream()
-                    .filter(version -> version.getProductId().equals(product.getProductId()))
+                    .filter(version -> version.getProductId().equals(product.getId()))
                     .collect(Collectors.toList());
             productVersions.stream().forEach(version -> {
                 product.getVersions().add(new VersionTree(version));
@@ -160,7 +160,7 @@ public class DeveloperManager extends SecuredManager {
         developerTree.getProducts().stream().forEach(product -> {
             product.getVersions().stream().forEach(version -> {
                 List<SimpleListing> listingsForVersion = listings.stream()
-                        .filter(listing -> listing.getVersion().getId().equals(version.getVersionId()))
+                        .filter(listing -> listing.getVersion().getId().equals(version.getId()))
                         .map(listing -> convertToSimpleListing(listing, acbs))
                         .collect(Collectors.toList());
                     version.getListings().addAll(listingsForVersion);
@@ -209,7 +209,7 @@ public class DeveloperManager extends SecuredManager {
     @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#updatedDev.id")
     public Developer update(Developer updatedDev, boolean doUpdateValidations)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
-        Developer beforeDev = getById(updatedDev.getDeveloperId());
+        Developer beforeDev = getById(updatedDev.getId());
 
         if (updatedDev.equals(beforeDev)) {
             LOGGER.info("Developer did not change - not saving");
@@ -236,8 +236,8 @@ public class DeveloperManager extends SecuredManager {
         }
         developerDao.update(updatedDev);
         updateStatusHistory(beforeDev, updatedDev);
-        Developer after = getById(updatedDev.getDeveloperId());
-        activityManager.addActivity(ActivityConcept.DEVELOPER, after.getDeveloperId(),
+        Developer after = getById(updatedDev.getId());
+        activityManager.addActivity(ActivityConcept.DEVELOPER, after.getId(),
                 "Developer " + updatedDev.getName() + " was updated.", beforeDev, after);
         return after;
     }
@@ -269,13 +269,13 @@ public class DeveloperManager extends SecuredManager {
 
             if (hasChanged) {
                 DeveloperStatusEvent dseToUpdate = toUpdate.getUpdated();
-                dseToUpdate.setDeveloperId(beforeDev.getDeveloperId());
+                dseToUpdate.setDeveloperId(beforeDev.getId());
                 developerDao.updateDeveloperStatusEvent(dseToUpdate);
             }
         }
 
         for (DeveloperStatusEvent toAdd : statusEventsToAdd) {
-            toAdd.setDeveloperId(beforeDev.getDeveloperId());
+            toAdd.setDeveloperId(beforeDev.getId());
             developerDao.createDeveloperStatusEvent(toAdd);
         }
 
@@ -302,7 +302,7 @@ public class DeveloperManager extends SecuredManager {
         }
 
         Long developerId = developerDao.create(developer);
-        developer.setDeveloperId(developerId);
+        developer.setId(developerId);
 
         Developer createdDevloperDto = developerDao.getById(developerId);
         activityManager.addActivity(ActivityConcept.DEVELOPER, developerId,

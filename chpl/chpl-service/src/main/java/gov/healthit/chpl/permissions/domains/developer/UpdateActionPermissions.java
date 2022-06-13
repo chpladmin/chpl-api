@@ -30,7 +30,7 @@ public class UpdateActionPermissions extends ActionPermissions {
             // Need to get the current status for the developer from the DB...
             Developer originalDeveloper = (Developer) obj;
             try {
-                Developer currentDeveloper = developerDAO.getById(originalDeveloper.getDeveloperId());
+                Developer currentDeveloper = developerDAO.getById(originalDeveloper.getId());
                 return currentDeveloper != null && currentDeveloper.getStatus() != null
                         && currentDeveloper.getStatus().getStatus().equals(DeveloperStatusType.Active.toString());
             } catch (EntityRetrievalException e) {

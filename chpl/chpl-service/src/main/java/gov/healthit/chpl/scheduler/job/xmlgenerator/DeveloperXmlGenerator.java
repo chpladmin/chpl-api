@@ -12,7 +12,7 @@ public class DeveloperXmlGenerator extends XmlGenerator {
         PublicAttestationXmlGenerator.add(dev.getAttestations(), "attestations", sw);
         PointOfContactXmlGenerator.addContact(dev.getContact(), "contact", sw);
         createSimpleElement(dev.getDeveloperCode(), "developerCode", sw);
-        createSimpleElement(dev.getDeveloperId(), "developerId", sw);
+        createSimpleElement(dev.getId(), "id", sw);
         createSimpleElement(dev.getName(), "name", sw);
         createSimpleElement(dev.getSelfDeveloper(), "selfDeveloper", sw);
         DeveloperStatusXmlGenerator.add(dev.getStatus(), "status", sw);
