@@ -61,9 +61,7 @@ public class ListingStoreRemoveAspect {
     }
 
     private void removeListingFromStoreByListingId(Long listingId) {
-        LOGGER.info("We are going to remove Listing Id: {}", listingId);
         sharedListingStoreProvider.remove(listingId);
-        LOGGER.info("Removed Listing Id: {}", listingId);
     }
 
     private void removeListingsFromStoreByDeveloperId(Long developerId) {
