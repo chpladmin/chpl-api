@@ -1,6 +1,7 @@
 package gov.healthit.chpl.scheduler.job.onetime.measures;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -21,6 +22,7 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.Measure;
+import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
@@ -33,6 +35,8 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "addMissingMeasuresToListingsJobLogger")
 public class AddMissingMeasuresToListingsJob extends CertifiedProduct2015Gatherer implements Job {
+    private static final String G1_MEASURE_NAME = "G1";
+    private static final String G2_MEASURE_NAME = "G2";
 
     @Autowired
     private MacraMeasureDAO macraMeasureDao;
@@ -51,6 +55,8 @@ public class AddMissingMeasuresToListingsJob extends CertifiedProduct2015Gathere
 
     @Value("${executorThreadCountForQuartzJobs}")
     private Integer threadCount;
+
+    private Set<MeasureType> measureTypes;
 
     public AddMissingMeasuresToListingsJob() throws Exception {
         super();
@@ -74,6 +80,7 @@ public class AddMissingMeasuresToListingsJob extends CertifiedProduct2015Gathere
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
 
+                    measureTypes = listingMeasureDao.getMeasureTypes();
                     getAll2015CertifiedProducts(LOGGER, threadCount, false).stream()
                         .forEach(listing -> addMissingMeasures(listing));
 
@@ -127,23 +134,43 @@ public class AddMissingMeasuresToListingsJob extends CertifiedProduct2015Gathere
         Measure removedMeasure = measureDao.getMeasureByMacraMeasureId(removedMacraMeasureId);
         Long replacementMacraMeasureId = macraMeasureDao.getMacraMeasureIdByCriterionAndValue(criterion.getId(), replacementMacraMeasureVal);
         Measure replacementMeasure = measureDao.getMeasureByMacraMeasureId(replacementMacraMeasureId);
-        addMissingMeasureIfApplicable(listing, criterion, removedMeasure, replacementMeasure);
+        addMissingG1MeasureIfApplicable(listing, criterion, removedMeasure, replacementMeasure);
+        addMissingG2MeasureIfApplicable(listing, criterion, removedMeasure, replacementMeasure);
+    }
+
+    private void addMissingG1MeasureIfApplicable(CertifiedProductSearchDetails listing, CertificationCriterion criterion,
+            Measure removedMeasure, Measure replacementMeasure) {
+        Optional<MeasureType> g1MeasureTypeOpt = measureTypes.stream()
+            .filter(type -> type.getName().equals(G1_MEASURE_NAME))
+            .findAny();
+        addMissingMeasureIfApplicable(listing, criterion, removedMeasure, replacementMeasure, g1MeasureTypeOpt.get());
+    }
+
+    private void addMissingG2MeasureIfApplicable(CertifiedProductSearchDetails listing, CertificationCriterion criterion,
+            Measure removedMeasure, Measure replacementMeasure) {
+        Optional<MeasureType> g2MeasureTypeOpt = measureTypes.stream()
+                .filter(type -> type.getName().equals(G2_MEASURE_NAME))
+                .findAny();
+            addMissingMeasureIfApplicable(listing, criterion, removedMeasure, replacementMeasure, g2MeasureTypeOpt.get());
     }
 
     private void addMissingMeasureIfApplicable(CertifiedProductSearchDetails listing, CertificationCriterion criterion,
-            Measure removedMeasure, Measure replacementMeasure) {
+            Measure removedMeasure, Measure replacementMeasure, MeasureType measureType) {
         Optional<ListingMeasure> removedMeasureWithCriterionOnListing = listing.getMeasures().stream()
                 .filter(measure -> measure.getMeasure().getId().equals(removedMeasure.getId()))
+                .filter(measure -> measure.getMeasureType().getId().equals(measureType.getId()))
                 .filter(measure -> measure.getAssociatedCriteria().contains(criterion))
                 .findAny();
 
         Optional<ListingMeasure> replacementMeasureWithCriterionOnListing = listing.getMeasures().stream()
                 .filter(measure -> measure.getMeasure().getId().equals(replacementMeasure.getId()))
+                .filter(measure -> measure.getMeasureType().getId().equals(measureType.getId()))
                 .filter(measure -> measure.getAssociatedCriteria().contains(criterion))
                 .findAny();
 
         Optional<ListingMeasure> replacementMeasureWithoutCriterionOnListing = listing.getMeasures().stream()
                 .filter(measure -> measure.getMeasure().getId().equals(replacementMeasure.getId()))
+                .filter(measure -> measure.getMeasureType().getId().equals(measureType.getId()))
                 .filter(measure -> !measure.getAssociatedCriteria().contains(criterion))
                 .findAny();
 
@@ -179,7 +206,7 @@ public class AddMissingMeasuresToListingsJob extends CertifiedProduct2015Gathere
                             .filter(assocCriterion -> BooleanUtils.isFalse(assocCriterion.getRemoved()))
                             .collect(Collectors.toSet()))
                     .measure(replacementMeasure)
-                    .measureType(removedMeasureWithCriterionOnListing.get().getMeasureType())
+                    .measureType(measureType)
                     .build();
             try {
                 listingMeasureDao.createCertifiedProductMeasureMapping(listing.getId(), replacementListingMeasure);
