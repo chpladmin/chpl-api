@@ -110,7 +110,7 @@ public class CertifiedProductDTO implements Serializable {
         if (from.getClassificationType() != null && from.getClassificationType().get("id") != null) {
             this.setProductClassificationTypeId(Long.valueOf(from.getClassificationType().get("id").toString()));
         }
-        this.setProductVersionId(from.getVersion().getVersionId());
+        this.setProductVersionId(from.getVersion().getId());
         this.certificationStatus = from.getCurrentStatus().getStatus();
         this.setCertificationEditionId(
                 Long.valueOf(from.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString()));

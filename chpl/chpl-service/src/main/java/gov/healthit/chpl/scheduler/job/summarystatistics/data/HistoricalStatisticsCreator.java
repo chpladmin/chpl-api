@@ -130,7 +130,7 @@ public class HistoricalStatisticsCreator {
                 .collect(Collectors.toList());
 
         return StreamEx.of(developers)
-                .distinct(Developer::getDeveloperId)
+                .distinct(Developer::getId)
                 .count();
     }
 
@@ -144,7 +144,7 @@ public class HistoricalStatisticsCreator {
                 .collect(Collectors.toList());
 
         return StreamEx.of(developers)
-                .distinct(Developer::getDeveloperId)
+                .distinct(Developer::getId)
                 .count();
     }
 
@@ -158,7 +158,7 @@ public class HistoricalStatisticsCreator {
                 .collect(Collectors.toList());
 
         return StreamEx.of(developers)
-                .distinct(Developer::getDeveloperId)
+                .distinct(Developer::getId)
                 .count();
 
     }
@@ -172,7 +172,7 @@ public class HistoricalStatisticsCreator {
                 .collect(Collectors.toList());
 
         return StreamEx.of(products)
-                .distinct(Product::getProductId)
+                .distinct(Product::getId)
                 .count();
 
     }
@@ -187,7 +187,7 @@ public class HistoricalStatisticsCreator {
                 .collect(Collectors.toList());
 
         return StreamEx.of(products)
-                .distinct(Product::getProductId)
+                .distinct(Product::getId)
                 .count();
     }
 
@@ -201,7 +201,7 @@ public class HistoricalStatisticsCreator {
                 .collect(Collectors.toList());
 
         return StreamEx.of(products)
-                .distinct(Product::getProductId)
+                .distinct(Product::getId)
                 .count();
     }
 
@@ -214,7 +214,7 @@ public class HistoricalStatisticsCreator {
                 .collect(Collectors.toList());
 
         return StreamEx.of(products)
-                .distinct(Product::getProductId)
+                .distinct(Product::getId)
                 .count();
     }
 

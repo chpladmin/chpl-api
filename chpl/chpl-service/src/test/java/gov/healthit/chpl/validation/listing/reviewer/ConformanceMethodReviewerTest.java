@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,18 +22,22 @@ import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
+import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
@@ -44,10 +49,12 @@ public class ConformanceMethodReviewerTest {
     private static final String UNALLOWED_CM_VERSION_REMOVED_MSG = "Conformance Method Version is not allowed for certification %s with Conformance Method \"%s\". The version \"%s\" was removed.";
     private static final String INVALID_FOR_CRITERIA_REMOVED_MSG = "Conformance Method \"%s\" is not valid for criteria %s. It has been removed.";
     private static final String INVALID_FOR_CRITERIA_REPLACED_MSG = "Conformance Method \"%s\" is not valid for criteria %s. It has been replaced with \"%s\".";
+    private static final String REMOVED_CM_WITHOUT_ICS = "Criterion %s cannot use Conformance Method \"%s\" since the Conformance Method is removed and not inherited with ICS.";
     private static final String F3_GAP_MISMATCH_MSG = "Certification %s cannot use Conformance Method \"%s\" since GAP is %s.";
     private static final String F3_TEST_TOOLS_NOT_ALLOWED_MSG = "Certification %s cannot specify test tools when using Conformance Method %s. The test tools have been removed.";
     private static final String F3_TEST_DATA_NOT_ALLOWED_MSG = "Certification %s cannot specify test data when using Conformance Method %s. The test data has been removed.";
 
+    private CertificationResultDAO certResultDao;
     private ErrorMessageUtil msgUtil;
     private CertificationResultRules certResultRules;
     private ResourcePermissions resourcePermissions;
@@ -66,6 +73,7 @@ public class ConformanceMethodReviewerTest {
                         .conformanceMethod(ConformanceMethod.builder()
                             .id(1L)
                             .name("Attestation")
+                            .removalDate(null)
                             .build())
                         .build(),
                     ConformanceMethodCriteriaMap.builder()
@@ -76,6 +84,7 @@ public class ConformanceMethodReviewerTest {
                         .conformanceMethod(ConformanceMethod.builder()
                             .id(2L)
                             .name("ONC Test Procedure")
+                            .removalDate(null)
                             .build())
                         .build(),
                     ConformanceMethodCriteriaMap.builder()
@@ -83,6 +92,7 @@ public class ConformanceMethodReviewerTest {
                         .conformanceMethod(ConformanceMethod.builder()
                             .id(1L)
                             .name("Attestation")
+                            .removalDate(null)
                             .build())
                         .build(),
                     ConformanceMethodCriteriaMap.builder()
@@ -90,6 +100,7 @@ public class ConformanceMethodReviewerTest {
                         .conformanceMethod(ConformanceMethod.builder()
                             .id(2L)
                             .name("ONC Test Procedure")
+                            .removalDate(null)
                             .build())
                         .build(),
                     ConformanceMethodCriteriaMap.builder()
@@ -100,6 +111,18 @@ public class ConformanceMethodReviewerTest {
                         .conformanceMethod(ConformanceMethod.builder()
                             .id(1L)
                             .name("Attestation")
+                            .removalDate(null)
+                            .build())
+                        .build(),
+                    ConformanceMethodCriteriaMap.builder()
+                        .criterion(CertificationCriterion.builder()
+                            .number("170.315 (c)(2)")
+                            .id(10L)
+                            .build())
+                        .conformanceMethod(ConformanceMethod.builder()
+                            .id(5L)
+                            .name("NCQA eCQM Test Method")
+                            .removalDate(LocalDate.parse("2022-06-01"))
                             .build())
                         .build())
                     .toList());
@@ -124,6 +147,9 @@ public class ConformanceMethodReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.invalidCriteriaReplaced"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_FOR_CRITERIA_REPLACED_MSG, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.conformanceMethod.criteria.conformanceMethodRemovedWithoutIcs"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(REMOVED_CM_WITHOUT_ICS, i.getArgument(1), i.getArgument(2)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.f3GapMismatch"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(F3_GAP_MISMATCH_MSG, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
@@ -143,12 +169,14 @@ public class ConformanceMethodReviewerTest {
         Mockito.when(criterionService.get(ArgumentMatchers.eq(Criteria2015.F_3)))
             .thenReturn(getF3());
 
+        certResultDao = Mockito.mock(CertificationResultDAO.class);
+
         ff4j = Mockito.mock(FF4j.class);
         Mockito.when(ff4j.check(FeatureList.CONFORMANCE_METHOD))
             .thenReturn(true);
 
-        conformanceMethodReviewer = new ConformanceMethodReviewer(conformanceMethodDao, msgUtil,
-                new ValidationUtils(), certResultRules, criterionService,
+        conformanceMethodReviewer = new ConformanceMethodReviewer(conformanceMethodDao, certResultDao,
+                msgUtil, new ValidationUtils(), certResultRules, criterionService,
                 resourcePermissions, ff4j);
     }
 
@@ -395,6 +423,322 @@ public class ConformanceMethodReviewerTest {
         assertEquals(1, listing.getWarningMessages().size());
         assertTrue(listing.getWarningMessages().contains(String.format(UNALLOWED_CM_VERSION_REMOVED_MSG, "170.315 (a)(2)", "Attestation", "bad version")));
         assertNull(listing.getCertificationResults().get(0).getConformanceMethods().get(0).getConformanceMethodVersion());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_removedConformanceMethodCertificationDateBeforeRemovalDate_noErrorsNoWarnings() {
+        CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
+                .conformanceMethod(ConformanceMethod.builder()
+                        .id(5L)
+                        .name("NCQA eCQM Test Method")
+                        .removalDate(LocalDate.parse("2022-06-01"))
+                        .build())
+                .conformanceMethodVersion("1")
+                .build();
+
+        List<CertificationResultConformanceMethod> crcms = new ArrayList<CertificationResultConformanceMethod>();
+        crcms.add(crcm);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (c)(2)")
+                                .id(10L)
+                                .build())
+                        .conformanceMethods(crcms)
+                        .build())
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-05-01")))
+                .certificationEdition(get2015CertificationEdition())
+                .build();
+
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_removedConformanceMethodCertificationDateAfterRemovalDateAndIcsNull_hasErrorsNoWarnings() {
+        CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
+                .conformanceMethod(ConformanceMethod.builder()
+                        .id(5L)
+                        .name("NCQA eCQM Test Method")
+                        .removalDate(LocalDate.parse("2022-06-01"))
+                        .build())
+                .conformanceMethodVersion("1")
+                .build();
+
+        List<CertificationResultConformanceMethod> crcms = new ArrayList<CertificationResultConformanceMethod>();
+        crcms.add(crcm);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (c)(2)")
+                                .id(10L)
+                                .build())
+                        .conformanceMethods(crcms)
+                        .build())
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-06-02")))
+                .certificationEdition(get2015CertificationEdition())
+                .ics(null)
+                .build();
+
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(REMOVED_CM_WITHOUT_ICS, "170.315 (c)(2)", "NCQA eCQM Test Method")));
+    }
+
+    @Test
+    public void review_removedConformanceMethodCertificationDateAfterRemovalDateAndIcsParentsNull_hasErrorsNoWarnings() {
+        CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
+                .conformanceMethod(ConformanceMethod.builder()
+                        .id(5L)
+                        .name("NCQA eCQM Test Method")
+                        .removalDate(LocalDate.parse("2022-06-01"))
+                        .build())
+                .conformanceMethodVersion("1")
+                .build();
+
+        List<CertificationResultConformanceMethod> crcms = new ArrayList<CertificationResultConformanceMethod>();
+        crcms.add(crcm);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (c)(2)")
+                                .id(10L)
+                                .build())
+                        .conformanceMethods(crcms)
+                        .build())
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-06-02")))
+                .certificationEdition(get2015CertificationEdition())
+                .ics(InheritedCertificationStatus.builder()
+                        .build())
+                .build();
+        listing.getIcs().setParents(null);
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(REMOVED_CM_WITHOUT_ICS, "170.315 (c)(2)", "NCQA eCQM Test Method")));
+    }
+
+    @Test
+    public void review_removedConformanceMethodCertificationDateAfterRemovalDateAndIcsParentsEmpty_hasErrorsNoWarnings() {
+        CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
+                .conformanceMethod(ConformanceMethod.builder()
+                        .id(5L)
+                        .name("NCQA eCQM Test Method")
+                        .removalDate(LocalDate.parse("2022-06-01"))
+                        .build())
+                .conformanceMethodVersion("1")
+                .build();
+
+        List<CertificationResultConformanceMethod> crcms = new ArrayList<CertificationResultConformanceMethod>();
+        crcms.add(crcm);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (c)(2)")
+                                .id(10L)
+                                .build())
+                        .conformanceMethods(crcms)
+                        .build())
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-06-02")))
+                .certificationEdition(get2015CertificationEdition())
+                .ics(InheritedCertificationStatus.builder()
+                        .parents(new ArrayList<CertifiedProduct>())
+                        .build())
+                .build();
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(REMOVED_CM_WITHOUT_ICS, "170.315 (c)(2)", "NCQA eCQM Test Method")));
+    }
+
+    @Test
+    public void review_removedConformanceMethodCertificationDateAfterRemovalDateAndIcsParentQueryReturnsNull_hasErrorsNoWarnings() {
+        Mockito.when(certResultDao.getConformanceMethodsByListingAndCriterionId(ArgumentMatchers.eq(1L), ArgumentMatchers.eq(10L)))
+            .thenReturn(null);
+
+        CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
+                .conformanceMethod(ConformanceMethod.builder()
+                        .id(5L)
+                        .name("NCQA eCQM Test Method")
+                        .removalDate(LocalDate.parse("2022-06-01"))
+                        .build())
+                .conformanceMethodVersion("1")
+                .build();
+
+        List<CertificationResultConformanceMethod> crcms = new ArrayList<CertificationResultConformanceMethod>();
+        crcms.add(crcm);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (c)(2)")
+                                .id(10L)
+                                .build())
+                        .conformanceMethods(crcms)
+                        .build())
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-06-02")))
+                .certificationEdition(get2015CertificationEdition())
+                .ics(InheritedCertificationStatus.builder()
+                        .parent(CertifiedProduct.builder()
+                                .id(1L)
+                                .build())
+                        .build())
+                .build();
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(REMOVED_CM_WITHOUT_ICS, "170.315 (c)(2)", "NCQA eCQM Test Method")));
+    }
+
+    @Test
+    public void review_removedConformanceMethodCertificationDateAfterRemovalDateAndIcsParentQueryReturnsEmptyList_hasErrorsNoWarnings() {
+        Mockito.when(certResultDao.getConformanceMethodsByListingAndCriterionId(ArgumentMatchers.eq(1L), ArgumentMatchers.eq(10L)))
+            .thenReturn(new ArrayList<CertificationResultConformanceMethod>());
+
+        CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
+                .conformanceMethod(ConformanceMethod.builder()
+                        .id(5L)
+                        .name("NCQA eCQM Test Method")
+                        .removalDate(LocalDate.parse("2022-06-01"))
+                        .build())
+                .conformanceMethodVersion("1")
+                .build();
+
+        List<CertificationResultConformanceMethod> crcms = new ArrayList<CertificationResultConformanceMethod>();
+        crcms.add(crcm);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (c)(2)")
+                                .id(10L)
+                                .build())
+                        .conformanceMethods(crcms)
+                        .build())
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-06-02")))
+                .certificationEdition(get2015CertificationEdition())
+                .ics(InheritedCertificationStatus.builder()
+                        .parent(CertifiedProduct.builder()
+                                .id(1L)
+                                .build())
+                        .build())
+                .build();
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(REMOVED_CM_WITHOUT_ICS, "170.315 (c)(2)", "NCQA eCQM Test Method")));
+    }
+
+    @Test
+    public void review_removedConformanceMethodCertificationDateAfterRemovalDateAndIcsParentQueryReturnsDifferentConformanceMethod_hasErrorsNoWarnings() {
+        Mockito.when(certResultDao.getConformanceMethodsByListingAndCriterionId(ArgumentMatchers.eq(1L), ArgumentMatchers.eq(10L)))
+            .thenReturn(Stream.of(CertificationResultConformanceMethod.builder()
+                .conformanceMethod(ConformanceMethod.builder()
+                        .id(3L)
+                        .name("ONC Test Method")
+                        .build())
+                .conformanceMethodVersion("1")
+                .build()).toList());
+
+        CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
+                .conformanceMethod(ConformanceMethod.builder()
+                        .id(5L)
+                        .name("NCQA eCQM Test Method")
+                        .removalDate(LocalDate.parse("2022-06-01"))
+                        .build())
+                .conformanceMethodVersion("1")
+                .build();
+
+        List<CertificationResultConformanceMethod> crcms = new ArrayList<CertificationResultConformanceMethod>();
+        crcms.add(crcm);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (c)(2)")
+                                .id(10L)
+                                .build())
+                        .conformanceMethods(crcms)
+                        .build())
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-06-02")))
+                .certificationEdition(get2015CertificationEdition())
+                .ics(InheritedCertificationStatus.builder()
+                        .parent(CertifiedProduct.builder()
+                                .id(1L)
+                                .build())
+                        .build())
+                .build();
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(REMOVED_CM_WITHOUT_ICS, "170.315 (c)(2)", "NCQA eCQM Test Method")));
+    }
+
+    @Test
+    public void review_removedConformanceMethodCertificationDateAfterRemovalDateAndIcsParentQueryReturnsSameConformanceMethod_noErrorsNoWarnings() {
+        Mockito.when(certResultDao.getConformanceMethodsByListingAndCriterionId(ArgumentMatchers.eq(1L), ArgumentMatchers.eq(10L)))
+            .thenReturn(Stream.of(CertificationResultConformanceMethod.builder()
+                    .conformanceMethod(ConformanceMethod.builder()
+                            .id(5L)
+                            .name("NCQA eCQM Test Method")
+                            .removalDate(LocalDate.parse("2022-06-01"))
+                            .build())
+                    .conformanceMethodVersion("1")
+                    .build()).toList());
+
+        CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
+                .conformanceMethod(ConformanceMethod.builder()
+                        .id(5L)
+                        .name("NCQA eCQM Test Method")
+                        .removalDate(LocalDate.parse("2022-06-01"))
+                        .build())
+                .conformanceMethodVersion("1")
+                .build();
+
+        List<CertificationResultConformanceMethod> crcms = new ArrayList<CertificationResultConformanceMethod>();
+        crcms.add(crcm);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (c)(2)")
+                                .id(10L)
+                                .build())
+                        .conformanceMethods(crcms)
+                        .build())
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-06-02")))
+                .certificationEdition(get2015CertificationEdition())
+                .ics(InheritedCertificationStatus.builder()
+                        .parent(CertifiedProduct.builder()
+                                .id(1L)
+                                .build())
+                        .build())
+                .build();
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
         assertEquals(0, listing.getErrorMessages().size());
     }
 

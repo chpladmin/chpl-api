@@ -1,6 +1,5 @@
 package gov.healthit.chpl.conformanceMethod.dao;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,15 +19,21 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 @Repository("conformanceMethodDAO")
 public class ConformanceMethodDAO extends BaseDAOImpl {
 
+    public List<ConformanceMethod> getAll() {
+        Query query = entityManager.createQuery("SELECT cm "
+                + "FROM ConformanceMethodEntity cm "
+                + "WHERE cm.deleted = false", ConformanceMethodEntity.class);
+        List<ConformanceMethodEntity> results = query.getResultList();
+        return results.stream()
+                .map(result -> result.toDomain())
+                .collect(Collectors.toList());
+    }
+
     public List<ConformanceMethod> getByCriterionId(Long criterionId) {
         Set<ConformanceMethodEntity> entities = getConformanceMethodByCertificationCriteria(criterionId);
-        List<ConformanceMethod> domains = new ArrayList<ConformanceMethod>();
-
-        for (ConformanceMethodEntity entity : entities) {
-            ConformanceMethod domain = new ConformanceMethod(entity);
-            domains.add(domain);
-        }
-        return domains;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
     private Set<ConformanceMethodEntity> getConformanceMethodByCertificationCriteria(Long criterionId) {

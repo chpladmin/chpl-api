@@ -1,15 +1,17 @@
 package gov.healthit.chpl.conformanceMethod.domain;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.conformanceMethod.entity.ConformanceMethodEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -35,10 +37,15 @@ public class ConformanceMethod implements Serializable {
     @XmlElement(required = true)
     private String name;
 
-    public ConformanceMethod(ConformanceMethodEntity entity) {
-        this.id = entity.getId();
-        this.name = entity.getName();
-    }
+    @XmlTransient
+    @JsonIgnore
+    private LocalDate removalDate;
+
+    /**
+     * Whether the Conformance Method has been marked as removed.
+     */
+    @XmlElement(required = true)
+    private Boolean removed;
 
     public Long getId() {
         return id;
@@ -54,5 +61,17 @@ public class ConformanceMethod implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public LocalDate getRemovalDate() {
+        return removalDate;
+    }
+
+    public void setRemovalDate(LocalDate removalDate) {
+        this.removalDate = removalDate;
+    }
+
+    public Boolean getRemoved() {
+        return this.removalDate != null;
     }
 }

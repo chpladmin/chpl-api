@@ -147,7 +147,6 @@ public class ChangeRequestManager {
             + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).CREATE, #changeRequest)")
     public ChangeRequest createChangeRequest(ChangeRequest changeRequest)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException, InvalidArgumentsException, NotImplementedException {
-
         changeRequest.setDeveloper(getDeveloperFromDb(changeRequest));
         changeRequest.setChangeRequestType(getChangeRequestType(changeRequest));
         changeRequest = updateChangeRequestWithCastedDetails(changeRequest);
@@ -222,10 +221,10 @@ public class ChangeRequestManager {
     }
 
     private Developer getDeveloperFromDb(ChangeRequest changeRequest) throws InvalidArgumentsException, EntityRetrievalException {
-        if (changeRequest.getDeveloper() == null || changeRequest.getDeveloper().getDeveloperId() == null) {
+        if (changeRequest.getDeveloper() == null || changeRequest.getDeveloper().getId() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.developer.required"));
         }
-        return devManager.getById(changeRequest.getDeveloper().getDeveloperId());
+        return devManager.getById(changeRequest.getDeveloper().getId());
     }
 
     private ChangeRequestType getChangeRequestType(ChangeRequest parentChangeRequest) throws EntityRetrievalException {

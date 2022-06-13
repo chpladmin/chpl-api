@@ -2,7 +2,6 @@ package gov.healthit.chpl.conformanceMethod.domain;
 
 import gov.healthit.chpl.conformanceMethod.entity.ConformanceMethodCriteriaMapEntity;
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,10 +19,10 @@ public class ConformanceMethodCriteriaMap {
     public ConformanceMethodCriteriaMap(ConformanceMethodCriteriaMapEntity entity) {
         this.id = entity.getId();
         if (entity.getConformanceMethod() != null) {
-            this.conformanceMethod = new ConformanceMethod(entity.getConformanceMethod());
+            this.conformanceMethod = entity.getConformanceMethod().toDomain();
         }
         if (entity.getCertificationCriterion() != null) {
-            this.criterion = new CertificationCriterion(new CertificationCriterionDTO(entity.getCertificationCriterion()));
+            this.criterion = entity.getCertificationCriterion().toDomain();
         }
     }
 }

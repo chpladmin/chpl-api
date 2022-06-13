@@ -269,7 +269,7 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(2, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertNotNull(certResult.isG1Success());
+                assertNull(certResult.isG1Success());
             } else if (certResult.getCriterion().getNumber().equals("170.315 (a)(2)")) {
                 assertNull(certResult.isG1Success());
             }
@@ -294,7 +294,7 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(2, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertNotNull(certResult.isG2Success());
+                assertNull(certResult.isG2Success());
             } else if (certResult.getCriterion().getNumber().equals("170.315 (a)(2)")) {
                 assertNull(certResult.isG2Success());
             }
@@ -319,7 +319,7 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(2, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertNotNull(certResult.isGap());
+                assertNull(certResult.isGap());
             } else if (certResult.getCriterion().getNumber().equals("170.315 (a)(2)")) {
                 assertNull(certResult.isGap());
             }
@@ -394,7 +394,7 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(2, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertNotNull(certResult.isSed());
+                assertNull(certResult.isSed());
             } else if (certResult.getCriterion().getNumber().equals("170.315 (a)(2)")) {
                 assertNull(certResult.isSed());
             }
@@ -899,7 +899,7 @@ public class CertificationCriterionNormalizerTest {
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
                 assertTrue(certResult.isSuccess());
-                assertNotNull(certResult.isG1Success());
+                assertNull(certResult.isG1Success());
             } else {
                 assertFalse(certResult.isSuccess());
                 assertNull(certResult.isG1Success());
@@ -935,7 +935,7 @@ public class CertificationCriterionNormalizerTest {
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
                 assertTrue(certResult.isSuccess());
-                assertNotNull(certResult.isG2Success());
+                assertNull(certResult.isG2Success());
             } else {
                 assertFalse(certResult.isSuccess());
                 assertNull(certResult.isG2Success());
@@ -971,7 +971,7 @@ public class CertificationCriterionNormalizerTest {
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
                 assertTrue(certResult.isSuccess());
-                assertNotNull(certResult.isGap());
+                assertNull(certResult.isGap());
             } else {
                 assertFalse(certResult.isSuccess());
                 assertNull(certResult.isGap());
@@ -1079,7 +1079,7 @@ public class CertificationCriterionNormalizerTest {
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
                 assertTrue(certResult.isSuccess());
-                assertNotNull(certResult.isSed());
+                assertNull(certResult.isSed());
             } else {
                 assertFalse(certResult.isSuccess());
                 assertNull(certResult.isSed());

@@ -114,7 +114,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.sedTestingEnd = entity.getSedTestingEnd();
 
         this.developer = new Developer();
-        this.developer.setDeveloperId(entity.getDeveloperId());
         this.developer.setId(entity.getDeveloperId());
         this.developer.setName(entity.getDeveloperName());
         this.developer.setDeveloperCode(entity.getDeveloperCode());
@@ -218,7 +217,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
 
         this.developer = new Developer();
         this.developer.setId(entity.getDeveloperId());
-        this.developer.setDeveloperId(entity.getDeveloperId());
         this.developer.setName(entity.getDeveloperName());
         this.developer.setDeveloperCode(entity.getDeveloperCode());
         this.developer.setWebsite(entity.getDeveloperWebsite());
@@ -258,7 +256,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
 
         if (entity.getProductId() != null) {
             this.product = new Product();
-            this.product.setProductId(entity.getProductId());
             this.product.setId(entity.getProductId());
             this.product.setName(entity.getProductName());
         }

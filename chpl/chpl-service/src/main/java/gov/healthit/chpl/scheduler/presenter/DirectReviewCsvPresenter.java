@@ -104,9 +104,9 @@ public class DirectReviewCsvPresenter {
     }
 
     private void addDeveloperFields(List<String> csvRow, Developer developer) {
-        csvRow.add(developer.getDeveloperId().toString());
+        csvRow.add(developer.getId().toString());
         csvRow.add(developer.getName());
-        csvRow.add(env.getProperty("chplUrlBegin") + "/#/organizations/developers/" + developer.getDeveloperId());
+        csvRow.add(env.getProperty("chplUrlBegin") + "/#/organizations/developers/" + developer.getId());
         csvRow.add(developer.getStatus() == null || developer.getStatus().getStatus() == null
                 ? "Unknown" : developer.getStatus().getStatus());
     }
