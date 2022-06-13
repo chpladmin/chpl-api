@@ -58,11 +58,6 @@ public class CertifiedProductDetailsManager {
         return listingService.createCertifiedSearchDetails(dto.getId());
     }
 
-    //@Transactional(readOnly = true)
-    //public CertifiedProductSearchDetails getCertifiedProductDetails(Long certifiedProductId) throws EntityRetrievalException {
-    //    return listingService.createCertifiedSearchDetails(certifiedProductId);
-    //}
-
     @Transactional(readOnly = true)
     public CertifiedProductSearchDetails getCertifiedProductDetails(Long certifiedProductId) throws EntityRetrievalException {
         return sharedListingStoreProvider.get(certifiedProductId, () -> {

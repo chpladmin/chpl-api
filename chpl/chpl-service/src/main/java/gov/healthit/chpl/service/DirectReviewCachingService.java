@@ -131,7 +131,7 @@ public class DirectReviewCachingService {
         }
     }
 
-  //This is PUBLIC so that AOP/aspectj works correctly.  Aspectj supports weaving for private methods - just need to figure
+    //This is PUBLIC so that AOP/aspectj works correctly.  Aspectj supports weaving for private methods - just need to figure
     //out how to make it work.
     @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#dr.developerId")
     public void addDirectReviewToMap(Ehcache drCache, DirectReview dr) {
