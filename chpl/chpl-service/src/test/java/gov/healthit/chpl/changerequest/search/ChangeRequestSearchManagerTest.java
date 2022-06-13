@@ -525,162 +525,394 @@ public class ChangeRequestSearchManagerTest {
         assertEquals(3, searchResponse.getRecordCount());
         assertEquals(3, searchResponse.getResults().size());
     }
-//
-//    @Test
-//    public void search_certificationStartDateEqualsListingCertificationDate_findsMatchingListings() throws ValidationException {
-//        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
-//        allChangeRequests.get(0).setCertificationDate(LocalDate.parse("2020-06-25"));
-//        allChangeRequests.get(1).setCertificationDate(LocalDate.parse("2020-06-01"));
-//
-//        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
-//        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
-//            .certificationDateStart("2020-06-25")
-//            .pageNumber(0)
-//            .pageSize(10)
-//        .build();
-//        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
-//
-//        assertNotNull(searchResponse);
-//        assertEquals(1, searchResponse.getRecordCount());
-//        assertEquals(1, searchResponse.getResults().size())
-//    }
-//
-//    @Test
-//    public void search_certificationStartDateBeforeListingCertificationDate_findsMatchingListings() throws ValidationException {
-//        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
-//        allChangeRequests.get(0).setCertificationDate(LocalDate.parse("2020-06-25"));
-//        allChangeRequests.get(1).setCertificationDate(LocalDate.parse("2020-06-01"));
-//
-//        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
-//        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
-//            .certificationDateStart("2020-06-24")
-//            .pageNumber(0)
-//            .pageSize(10)
-//        .build();
-//        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
-//
-//        assertNotNull(searchResponse);
-//        assertEquals(1, searchResponse.getRecordCount());
-//        assertEquals(1, searchResponse.getResults().size())
-//    }
-//
-//    @Test
-//    public void search_certificationEndDateEqualsListingCertificationDate_findsMatchingListings() throws ValidationException {
-//        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
-//        allChangeRequests.get(0).setCertificationDate(LocalDate.parse("2020-06-25"));
-//        allChangeRequests.get(1).setCertificationDate(LocalDate.parse("2020-06-27"));
-//
-//        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
-//        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
-//            .certificationDateEnd("2020-06-25")
-//            .pageNumber(0)
-//            .pageSize(10)
-//        .build();
-//        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
-//
-//        assertNotNull(searchResponse);
-//        assertEquals(1, searchResponse.getRecordCount());
-//        assertEquals(1, searchResponse.getResults().size())
-//    }
-//
-//    @Test
-//    public void search_certificationEndDateAfterListingCertificationDate_findsMatchingListings() throws ValidationException {
-//        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
-//        allChangeRequests.get(0).setCertificationDate(LocalDate.parse("2020-06-25"));
-//        allChangeRequests.get(1).setCertificationDate(LocalDate.parse("2020-06-27"));
-//
-//        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
-//        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
-//            .certificationDateEnd("2020-06-26")
-//            .pageNumber(0)
-//            .pageSize(10)
-//        .build();
-//        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
-//
-//        assertNotNull(searchResponse);
-//        assertEquals(1, searchResponse.getRecordCount());
-//        assertEquals(1, searchResponse.getResults().size())
-//    }
-//
-//    @Test
-//    public void search_listingCertificationDateBetweenStartAndEnd_findsMatchingListings() throws ValidationException {
-//        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
-//        allChangeRequests.get(0).setCertificationDate(LocalDate.parse("2020-06-25"));
-//        allChangeRequests.get(1).setCertificationDate(LocalDate.parse("2020-06-27"));
-//
-//        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
-//        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
-//            .certificationDateStart("2020-06-24")
-//            .certificationDateEnd("2020-06-26")
-//            .pageNumber(0)
-//            .pageSize(10)
-//        .build();
-//        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
-//
-//        assertNotNull(searchResponse);
-//        assertEquals(1, searchResponse.getRecordCount());
-//        assertEquals(1, searchResponse.getResults().size())
-//    }
-//
-//    @Test
-//    public void search_listingCertificationDateEqualsStartAndBeforeEnd_findsMatchingListings() throws ValidationException {
-//        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
-//        allChangeRequests.get(0).setCertificationDate(LocalDate.parse("2020-06-25"));
-//        allChangeRequests.get(1).setCertificationDate(LocalDate.parse("2020-06-27"));
-//
-//        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
-//        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
-//            .certificationDateStart("2020-06-25")
-//            .certificationDateEnd("2020-06-26")
-//            .pageNumber(0)
-//            .pageSize(10)
-//        .build();
-//        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
-//
-//        assertNotNull(searchResponse);
-//        assertEquals(1, searchResponse.getRecordCount());
-//        assertEquals(1, searchResponse.getResults().size())
-//    }
-//
-//    @Test
-//    public void search_listingCertificationDateEqualsEndAndAfterStart_findsMatchingListings() throws ValidationException {
-//        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
-//        allChangeRequests.get(0).setCertificationDate(LocalDate.parse("2020-06-25"));
-//        allChangeRequests.get(1).setCertificationDate(LocalDate.parse("2020-06-27"));
-//
-//        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
-//        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
-//            .certificationDateStart("2020-06-24")
-//            .certificationDateEnd("2020-06-25")
-//            .pageNumber(0)
-//            .pageSize(10)
-//        .build();
-//        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
-//
-//        assertNotNull(searchResponse);
-//        assertEquals(1, searchResponse.getRecordCount());
-//        assertEquals(1, searchResponse.getResults().size())
-//    }
-//
-//    @Test
-//    public void search_listingCertificationDateEqualsEndAndStart_findsMatchingListings() throws ValidationException {
-//        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
-//        allChangeRequests.get(0).setCertificationDate(LocalDate.parse("2020-06-25"));
-//        allChangeRequests.get(1).setCertificationDate(LocalDate.parse("2020-06-27"));
-//
-//        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
-//        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
-//            .certificationDateStart("2020-06-25")
-//            .certificationDateEnd("2020-06-25")
-//            .pageNumber(0)
-//            .pageSize(10)
-//        .build();
-//        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
-//
-//        assertNotNull(searchResponse);
-//        assertEquals(1, searchResponse.getRecordCount());
-//        assertEquals(1, searchResponse.getResults().size());
-//    }
+
+    @Test
+    public void search_submittedDateTimeStartEqualsChangeRequestSubmittedDate_findsMatching() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
+        allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("1980-01-01T00:00"));
+
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .submittedDateTimeStart("2020-06-25T00:00")
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_submittedDateTimeStartBeforeChangeRequestSubmittedDate_findsMatching() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
+        allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("1980-01-01T00:00"));
+
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .submittedDateTimeStart("2020-06-24T23:00")
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_submittedDateTimeStartAfterChangeRequestSubmittedDate_findsNothing() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
+        allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("1980-01-01T00:00"));
+
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .submittedDateTimeStart("2021-06-24T23:00")
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_submittedDateTimeEndEqualsChangeRequestSubmittedDate_findsMatching() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
+        allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("2022-01-01T00:00"));
+
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .submittedDateTimeEnd("2020-06-25T00:00")
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_submittedDateTimeEndAfterChangeRequestSubmittedDate_findsMatching() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
+        allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("2022-01-01T00:00"));
+
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .submittedDateTimeEnd("2021-06-24T23:00")
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_submittedDateTimeEndBeforeChangeRequestSubmittedDate_findsNothing() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
+        allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("2020-01-01T00:00"));
+
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .submittedDateTimeEnd("2019-06-24T23:00")
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_submittedDateTimeBetweenStartAndEnd_findsMatching() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
+        allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("2020-01-01T00:00"));
+
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .submittedDateTimeStart("2020-06-24T00:00")
+            .submittedDateTimeEnd("2020-06-26T00:00")
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_submittedDateTimeEqualsStartAndBeforeEnd_findsMatching() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
+        allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("2020-01-01T00:00"));
+
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .submittedDateTimeStart("2020-06-25T00:00")
+            .submittedDateTimeEnd("2020-06-26T00:00")
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_submittedDateTimeEqualsEndAndAfterStart_findsMatching() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
+        allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("2020-01-01T00:00"));
+
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .submittedDateTimeStart("2020-06-24T12:30")
+            .submittedDateTimeEnd("2020-06-25T00:00")
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_submittedDateTimeEqualsEndAndStart_findsMatching() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
+        allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("2020-01-01T00:00"));
+
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .submittedDateTimeStart("2020-06-25T00:00")
+            .submittedDateTimeEnd("2020-06-25T00:00")
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_statusChangeDateTimeStartEqualsChangeRequestStatusChangeDateTime_findsMatching() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setCurrentStatus(status(1L, "Approved", LocalDateTime.parse("2020-06-25T00:00")));
+        allChangeRequests.get(1).setCurrentStatus(status(2L, "Open", LocalDateTime.parse("1980-01-01T00:00")));
+
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .currentStatusChangeDateTimeStart("2020-06-25T00:00")
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_statusChangeDateTimeStartBeforeChangeRequestStatusChangeDateTime_findsMatching() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setCurrentStatus(status(1L, "Active", LocalDateTime.parse("2020-06-25T00:00")));
+        allChangeRequests.get(1).setCurrentStatus(status(2L, "Open", LocalDateTime.parse("1980-01-01T00:00")));
+
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .currentStatusChangeDateTimeStart("2020-06-24T23:00")
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_statusChangeDateTimeStartAfterChangeRequestChangeDateTime_findsNothing() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setCurrentStatus(status(1L, "Active", LocalDateTime.parse("2020-06-25T00:00")));
+        allChangeRequests.get(1).setCurrentStatus(status(2L, "Open", LocalDateTime.parse("1980-01-01T00:00")));
+
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .currentStatusChangeDateTimeStart("2021-06-24T23:00")
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_statusChangeDateTimeEndEqualsChangeRequestStatusChangeDateTime_findsMatching() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setCurrentStatus(status(1L, "Active", LocalDateTime.parse("2020-06-25T00:00")));
+        allChangeRequests.get(1).setCurrentStatus(status(2L, "Rejected", LocalDateTime.parse("2022-01-01T00:00")));
+
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .currentStatusChangeDateTimeEnd("2020-06-25T00:00")
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_statusChangeDateTimeEndAfterChangeRequestStatusChangeDateTime_findsMatching() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setCurrentStatus(status(1L, "Active", LocalDateTime.parse("2020-06-25T00:00")));
+        allChangeRequests.get(1).setCurrentStatus(status(1L, "Active", LocalDateTime.parse("2022-01-01T00:00")));
+
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .currentStatusChangeDateTimeEnd("2021-06-24T23:00")
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_statusChangeDateTimeEndBeforeChangeRequestStatusChangeDateTime_findsNothing() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setCurrentStatus(status(1L, "Active", LocalDateTime.parse("2020-06-25T00:00")));
+        allChangeRequests.get(1).setCurrentStatus(status(1L, "Active", LocalDateTime.parse("2020-01-01T00:00")));
+
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .currentStatusChangeDateTimeEnd("2019-06-24T23:00")
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_statusChangeDateTimeBetweenStartAndEnd_findsMatching() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setCurrentStatus(status(1L, "Active", LocalDateTime.parse("2020-06-25T00:00")));
+        allChangeRequests.get(1).setCurrentStatus(status(1L, "Active", LocalDateTime.parse("2020-01-01T00:00")));
+
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .currentStatusChangeDateTimeStart("2020-06-24T00:00")
+            .currentStatusChangeDateTimeEnd("2020-06-26T00:00")
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_statusChangeDateTimeEqualsStartAndBeforeEnd_findsMatching() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setCurrentStatus(status(1L, "Active", LocalDateTime.parse("2020-06-25T00:00")));
+        allChangeRequests.get(1).setCurrentStatus(status(1L, "Active", LocalDateTime.parse("2020-01-01T00:00")));
+
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .currentStatusChangeDateTimeStart("2020-06-25T00:00")
+            .currentStatusChangeDateTimeEnd("2020-06-26T00:00")
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_statusChangeDateTimeEqualsEndAndAfterStart_findsMatching() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setCurrentStatus(status(1L, "Active", LocalDateTime.parse("2020-06-25T00:00")));
+        allChangeRequests.get(1).setCurrentStatus(status(1L, "Active", LocalDateTime.parse("2020-01-01T00:00")));
+
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .currentStatusChangeDateTimeStart("2020-06-24T12:30")
+            .currentStatusChangeDateTimeEnd("2020-06-25T00:00")
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_statusChangeDateTimeEqualsEndAndStart_findsMatching() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setCurrentStatus(status(1L, "Active", LocalDateTime.parse("2020-06-25T00:00")));
+        allChangeRequests.get(1).setCurrentStatus(status(1L, "Active", LocalDateTime.parse("2020-01-01T00:00")));
+
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .currentStatusChangeDateTimeStart("2020-06-25T00:00")
+            .currentStatusChangeDateTimeEnd("2020-06-25T00:00")
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+    }
 
     private List<ChangeRequestSearchResult> createChangeRequestSearchResultCollection(int collectionSize) {
         List<ChangeRequestSearchResult> changeRequests = new ArrayList<ChangeRequestSearchResult>();
