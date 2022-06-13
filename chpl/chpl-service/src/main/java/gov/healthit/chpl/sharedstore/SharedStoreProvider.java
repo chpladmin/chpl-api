@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "sharedDataStoreLogger")
 public abstract class SharedStoreProvider<K, V> {
     public static final Integer UNLIMITED = -1;
     public static final Integer MAX_JSON_LENGTH = 200;
