@@ -47,24 +47,9 @@ public class SharedListingStoreProviderTest {
                         .putDate(LocalDateTime.now().minusMinutes(1))
                         .build());
 
-        CertifiedProductSearchDetails listing = sharedListingStoreProvider.get(1L, () -> getListing(ALT_ID));
+        CertifiedProductSearchDetails listing = sharedListingStoreProvider.get(1L, () -> getListing(1L));
 
-        assertEquals(ALT_ID, listing.getId());
-    }
-
-    @Test
-    public void get_ObjectInSharedDataIsExpired_ObjectReturned() {
-        Mockito.when(sharedStoreDAO.get(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-                .thenReturn(SharedStore.builder()
-                        .domain("gov.healthit.chpl.domain.CertifiedProductSearchDetails")
-                        .key("1")
-                        .value("{\"id\": 1}")
-                        .putDate(LocalDateTime.now().minusHours(5))
-                        .build());
-
-        CertifiedProductSearchDetails listing = sharedListingStoreProvider.get(1L, () -> getListing(ALT_ID));
-
-        assertEquals(ALT_ID, listing.getId());
+        assertEquals(1L, listing.getId());
     }
 
     public CertifiedProductSearchDetails getListing(Long id) {
