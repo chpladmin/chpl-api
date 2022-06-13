@@ -72,7 +72,10 @@ public abstract class SharedStoreProvider<K, V> {
     }
 
     private boolean isExpired(SharedStore sharedData) {
-        return getTimeToLive().equals(UNLIMITED)
-                || sharedData.getPutDate().plusHours(getTimeToLive()).isBefore(LocalDateTime.now());
+        if (getTimeToLive().equals(UNLIMITED)) {
+            return false;
+        } else {
+            return sharedData.getPutDate().plusHours(getTimeToLive()).isBefore(LocalDateTime.now());
+        }
     }
 }
