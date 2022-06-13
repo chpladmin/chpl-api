@@ -55,19 +55,19 @@ public class ChangeRequestDAO extends BaseDAOImpl {
         return populateDependentObjects(cr);
     }
 
-    public List<ChangeRequestSearchResult> getAll() throws EntityRetrievalException {
+    public List<ChangeRequestSearchResult> getAll() {
         return getSearchResultEntities().stream()
                 .map(entity -> ChangeRequestConverter.convertSearchResult(entity))
                 .collect(Collectors.<ChangeRequestSearchResult>toList());
     }
 
-    public List<ChangeRequestSearchResult> getAllForAcbs(List<Long> acbIds) throws EntityRetrievalException {
+    public List<ChangeRequestSearchResult> getAllForAcbs(List<Long> acbIds) {
         return getSearchResultEntitiesByAcbs(acbIds).stream()
                 .map(entity -> ChangeRequestConverter.convertSearchResult(entity))
                 .collect(Collectors.<ChangeRequestSearchResult>toList());
     }
 
-    public List<ChangeRequestSearchResult> getAllForDevelopers(List<Long> developerIds) throws EntityRetrievalException {
+    public List<ChangeRequestSearchResult> getAllForDevelopers(List<Long> developerIds) {
         return getSearchResultEntitiesByDevelopers(developerIds).stream()
                 .map(entity -> ChangeRequestConverter.convertSearchResult(entity))
                 .collect(Collectors.<ChangeRequestSearchResult>toList());
@@ -248,8 +248,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
         return results;
     }
 
-    private List<ChangeRequestEntity> getSearchResultEntities()
-            throws EntityRetrievalException {
+    private List<ChangeRequestEntity> getSearchResultEntities() {
 
         String hql = "SELECT DISTINCT cr "
                 + "FROM ChangeRequestEntity cr  "
@@ -270,8 +269,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
         return results;
     }
 
-    private List<ChangeRequestEntity> getSearchResultEntitiesByAcbs(List<Long> acbIds)
-            throws EntityRetrievalException {
+    private List<ChangeRequestEntity> getSearchResultEntitiesByAcbs(List<Long> acbIds) {
 
         String hql = "SELECT DISTINCT cr "
                 + "FROM ChangeRequestEntity cr  "
@@ -295,8 +293,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
         return results;
     }
 
-    private List<ChangeRequestEntity> getSearchResultEntitiesByDevelopers(List<Long> developerIds)
-            throws EntityRetrievalException {
+    private List<ChangeRequestEntity> getSearchResultEntitiesByDevelopers(List<Long> developerIds) {
         String hql = "SELECT DISTINCT cr "
                 + "FROM ChangeRequestEntity cr "
                 + "JOIN FETCH cr.changeRequestType "

@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
-import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult.IdNamePairSearchResult;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import lombok.extern.log4j.Log4j2;
@@ -47,7 +47,7 @@ public class ChangeRequestSearchManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
             + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).SEARCH)")
     public ChangeRequestSearchResponse searchChangeRequests(ChangeRequestSearchRequest searchRequest)
-            throws ValidationException, EntityRetrievalException {
+            throws ValidationException {
         normalizer.normalize(searchRequest);
         validator.validate(searchRequest);
 
@@ -281,8 +281,16 @@ public class ChangeRequestSearchManager {
                     || StringUtils.isAnyEmpty(changeRequest2.getCertificationBodies().stream().map(acb -> acb.getName()).toList().toArray(new String[0]))) {
                 return 0;
             }
+            changeRequest1.getCertificationBodies().sort(new IdNamePairSearchResultComparator());
+            changeRequest2.getCertificationBodies().sort(new IdNamePairSearchResultComparator());
+            String changeRequest1SmushedAcbs = changeRequest1.getCertificationBodies().stream()
+                    .map(acb -> acb.getName())
+                    .collect(Collectors.joining(","));
+            String changeRequest2SmushedAcbs = changeRequest2.getCertificationBodies().stream()
+                    .map(acb -> acb.getName())
+                    .collect(Collectors.joining(","));
             int sortFactor = descending ? -1 : 1;
-            return (changeRequest1.getDeveloper().getName().compareTo(changeRequest2.getDeveloper().getName())) * sortFactor;
+            return (changeRequest1SmushedAcbs.compareTo(changeRequest2SmushedAcbs)) * sortFactor;
         }
     }
 
@@ -356,6 +364,19 @@ public class ChangeRequestSearchManager {
             int sortFactor = descending ? -1 : 1;
             return (changeRequest1.getCurrentStatus().getStatusChangeDateTime()
                     .compareTo(changeRequest2.getCurrentStatus().getStatusChangeDateTime())) * sortFactor;
+        }
+    }
+
+    private class IdNamePairSearchResultComparator implements Comparator<IdNamePairSearchResult> {
+        IdNamePairSearchResultComparator() {
+        }
+
+        @Override
+        public int compare(IdNamePairSearchResult item1, IdNamePairSearchResult item2) {
+            if (ObjectUtils.anyNull(item1.getName(), item2.getName())) {
+                return 0;
+            }
+            return item1.getName().compareTo(item2.getName());
         }
     }
 }
