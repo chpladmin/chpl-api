@@ -9,13 +9,13 @@ public class DeveloperExistenceValidation extends ValidationRule<ChangeRequestVa
     public boolean isValid(ChangeRequestValidationContext context) {
         // Is the developer null?
         if (context.getNewChangeRequest().getDeveloper() == null
-                || context.getNewChangeRequest().getDeveloper().getDeveloperId() == null) {
+                || context.getNewChangeRequest().getDeveloper().getId() == null) {
             getMessages().add(getErrorMessage("changeRequest.developer.required"));
             return false;
         }
 
         try {
-            context.getValidationDAOs().getDeveloperDAO().getById(context.getNewChangeRequest().getDeveloper().getDeveloperId());
+            context.getValidationDAOs().getDeveloperDAO().getById(context.getNewChangeRequest().getDeveloper().getId());
         } catch (EntityRetrievalException e) {
             getMessages().add(getErrorMessage("changeRequest.developer.invalid"));
             return false;

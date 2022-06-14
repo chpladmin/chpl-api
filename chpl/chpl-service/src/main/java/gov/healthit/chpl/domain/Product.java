@@ -31,20 +31,18 @@ public class Product implements Serializable {
     private static final long serialVersionUID = 2177195816284265811L;
 
     /**
-     * Product internal ID
+     * This property exists solely to be able to deserialize product activity events.
+     * When deserializing the activity we sometimes care about the product ID.
+     * This property should not be visible in the generated XSD (and eventually gone from the JSON).
      */
-    @XmlElement(required = true)
+    @XmlTransient
     @Deprecated
     private Long productId;
 
     /**
-     * This property exists solely to be able to deserialize product activity events. When deserializing
-     * the activity we sometimes care about the product ID. This property
-     * should not be visible in the generated XSD or any response from an API call. The eventual plan is to deprecate
-     * the above "productId" field in favor of this "id" anyway.
+     * Product internal ID
      */
-    @JsonProperty(access = Access.WRITE_ONLY)
-    @XmlTransient
+    @XmlElement(required = true)
     private Long id;
 
     /**

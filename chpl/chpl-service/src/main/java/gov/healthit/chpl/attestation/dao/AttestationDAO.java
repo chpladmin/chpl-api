@@ -58,7 +58,7 @@ public class AttestationDAO extends BaseDAOImpl{
     public DeveloperAttestationSubmission createDeveloperAttestationSubmission(DeveloperAttestationSubmission developerAttestationSubmission) throws EntityRetrievalException {
         DeveloperAttestationSubmissionEntity entity = DeveloperAttestationSubmissionEntity.builder()
                 .developer(DeveloperEntity.builder()
-                        .id(developerAttestationSubmission.getDeveloper().getDeveloperId())
+                        .id(developerAttestationSubmission.getDeveloper().getId())
                         .build())
                 .period(AttestationPeriodEntity.builder()
                         .id(developerAttestationSubmission.getPeriod().getId())

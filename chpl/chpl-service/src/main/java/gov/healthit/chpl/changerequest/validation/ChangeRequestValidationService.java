@@ -13,19 +13,16 @@ import gov.healthit.chpl.manager.rules.ValidationRule;
 @Component
 public class ChangeRequestValidationService {
 
-    private Long websiteChangeRequestTypeId;
-    private Long developerDetailsChangeRequestTypeId;
+    private Long developerDemographicsChangeRequestTypeId;
     private Long attestationChangeRequestTypeId;
 
 
     @Autowired
     public ChangeRequestValidationService(
-            @Value("${changerequest.website}") Long websiteChangeRequestTypeId,
-            @Value("${changerequest.developerDetails}") Long developerDetailsChangeRequestTypeId,
+            @Value("${changerequest.developerDemographics}") Long developerDemographicsChangeRequestTypeId,
             @Value("${changerequest.attestation}") Long attestationChangeRequestTypeId) {
 
-        this.websiteChangeRequestTypeId = websiteChangeRequestTypeId;
-        this.developerDetailsChangeRequestTypeId = developerDetailsChangeRequestTypeId;
+        this.developerDemographicsChangeRequestTypeId = developerDemographicsChangeRequestTypeId;
         this.attestationChangeRequestTypeId = attestationChangeRequestTypeId;
     }
 
@@ -42,9 +39,7 @@ public class ChangeRequestValidationService {
             rules.addAll(getUpdateValidations());
         }
 
-        if (context.getNewChangeRequest().getChangeRequestType().getId().equals(websiteChangeRequestTypeId)) {
-            rules.addAll(getWebsiteValidations());
-        } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(developerDetailsChangeRequestTypeId)) {
+        if (context.getNewChangeRequest().getChangeRequestType().getId().equals(developerDemographicsChangeRequestTypeId)) {
             rules.addAll(getDeveloperDetailsValidations());
         } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(attestationChangeRequestTypeId)) {
             rules.addAll(getAttestationValidations());
@@ -56,16 +51,12 @@ public class ChangeRequestValidationService {
         return rules;
     }
 
-    private List<ValidationRule<ChangeRequestValidationContext>> getWebsiteValidations() {
-        return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
-                new WebsiteValidation()));
-    }
-
     private List<ValidationRule<ChangeRequestValidationContext>> getDeveloperDetailsValidations() {
         return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
                 new SelfDeveloperValidation(),
-                new AddressValidation(),
-                new ContactValidation()));
+                new DemographicsValidation(),
+                new ContactValidation(),
+                new WebsiteValidation()));
     }
 
     private List<ValidationRule<ChangeRequestValidationContext>> getAttestationValidations() {
@@ -93,7 +84,6 @@ public class ChangeRequestValidationService {
 
     private List<ValidationRule<ChangeRequestValidationContext>> getUpdateValidations() {
         return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(Arrays.asList(
-                new ChangeRequestDetailsUpdateValidation(),
                 new RoleAcbHasMultipleCertificationBodiesValidation(),
                 new DeveloperActiveValidation(),
                 new CurrentStatusValidation(),

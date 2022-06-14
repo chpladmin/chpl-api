@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
@@ -25,6 +25,8 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
@@ -33,11 +35,9 @@ import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationService
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -53,7 +53,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-public class ChangeRequestManager extends SecurityManager {
+public class ChangeRequestManager {
 
     @Value("${changerequest.status.pendingacbaction}")
     private Long pendingAcbActionStatus;
@@ -70,11 +70,8 @@ public class ChangeRequestManager extends SecurityManager {
     @Value("${changerequest.status.rejected}")
     private Long rejectedStatus;
 
-    @Value("${changerequest.website}")
-    private Long websiteChangeRequestTypeId;
-
-    @Value("${changerequest.developerDetails}")
-    private Long developerDetailsChangeRequestTypeId;
+    @Value("${changerequest.developerDemographics}")
+    private Long developerDemographicsChangeRequestTypeId;
 
     @Value("${changerequest.attestation}")
     private Long attestationChangeRequestTypeId;
@@ -93,6 +90,8 @@ public class ChangeRequestManager extends SecurityManager {
     private ErrorMessageUtil msgUtil;
     private ValidationUtils validationUtils;
     private FF4j ff4j;
+
+    private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     public ChangeRequestManager(ChangeRequestDAO changeRequestDAO,
@@ -130,8 +129,8 @@ public class ChangeRequestManager extends SecurityManager {
     public Set<KeyValueModel> getChangeRequestTypes() {
         return changeRequestTypeDAO.getChangeRequestTypes().stream()
                 .filter(entity -> entity.getName().equals("Developer Attestation Change Request")
-                        || (entity.getName().equals("Developer Details Change Request") && ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST))
-                        || (entity.getName().equals("Website Change Request") && ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST)))
+                        || (entity.getName().equals("Developer Demographics Change Request")
+                                && ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST)))
                 .map(crType -> new KeyValueModel(crType.getId(), crType.getName()))
                 .collect(Collectors.<KeyValueModel>toSet());
     }
@@ -145,28 +144,14 @@ public class ChangeRequestManager extends SecurityManager {
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
-            + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).CREATE, #parentChangeRequest)")
-    public List<ChangeRequest> createChangeRequests(ChangeRequest parentChangeRequest)
-            throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException,
-            InvalidArgumentsException, NotImplementedException {
-        //get developer from db in case passed-in data is not correct
-        if (parentChangeRequest.getDeveloper() == null || parentChangeRequest.getDeveloper().getDeveloperId() == null) {
-            throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.developer.required"));
-        }
-        Developer existingDeveloper = devManager.getById(parentChangeRequest.getDeveloper().getDeveloperId());
-        parentChangeRequest.setDeveloper(existingDeveloper);
+            + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).CREATE, #changeRequest)")
+    public ChangeRequest createChangeRequest(ChangeRequest changeRequest)
+            throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException, InvalidArgumentsException, NotImplementedException {
+        changeRequest.setDeveloper(getDeveloperFromDb(changeRequest));
+        changeRequest.setChangeRequestType(getChangeRequestType(changeRequest));
+        changeRequest = updateChangeRequestWithCastedDetails(changeRequest);
 
-        //make change requests for each type detected - throw error if no changes were made
-        List<ChangeRequest> changeRequestsByType = splitByChangeRequestType(parentChangeRequest);
-        if (changeRequestsByType == null || changeRequestsByType.size() == 0) {
-            throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.noChanges"));
-        }
-
-        List<ChangeRequest> createdCrs = new ArrayList<ChangeRequest>();
-        for (ChangeRequest cr : changeRequestsByType) {
-            createdCrs.add(createChangeRequest(cr));
-        }
-        return createdCrs;
+        return saveChangeRequest(changeRequest);
     }
 
     @Transactional(readOnly = true)
@@ -202,6 +187,8 @@ public class ChangeRequestManager extends SecurityManager {
             throws EntityRetrievalException, ValidationException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
 
+        cr = updateChangeRequestWithCastedDetails(cr);
+
         ChangeRequest crFromDb = getChangeRequest(cr.getId());
 
         ChangeRequestValidationContext crValidationContext = getNewValidationContext(cr, crFromDb);
@@ -213,7 +200,10 @@ public class ChangeRequestManager extends SecurityManager {
 
         ChangeRequest updatedDetails = null, updatedStatus = null;
         // Update the details, if the user is of role developer
-        if (resourcePermissions.isUserRoleDeveloperAdmin() && cr.getDetails() != null) {
+        if (resourcePermissions.isUserRoleDeveloperAdmin()
+                && cr.getDetails() != null
+                && ChangeRequestStatusService.doesCurrentStatusExist(cr)
+                && !cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(cancelledStatus)) {
             updatedDetails = crDetailsFactory.get(crFromDb.getChangeRequestType().getId()).update(cr);
         }
 
@@ -230,53 +220,27 @@ public class ChangeRequestManager extends SecurityManager {
         return newCr;
     }
 
-    private List<ChangeRequest> splitByChangeRequestType(ChangeRequest parentChangeRequest) {
-        List<ChangeRequest> changeRequests = new ArrayList<ChangeRequest>();
-        if (isWebsiteChangeRequest(parentChangeRequest)) {
-            if (!ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST)) {
-                throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
-            }
-            ChangeRequestType websiteChangeRequestType = new ChangeRequestType();
-            websiteChangeRequestType.setId(websiteChangeRequestTypeId);
-            ChangeRequest websiteChangeRequest = new ChangeRequest();
-            websiteChangeRequest.setChangeRequestType(websiteChangeRequestType);
-            websiteChangeRequest.setDeveloper(parentChangeRequest.getDeveloper());
-            websiteChangeRequest.setSubmittedDate(parentChangeRequest.getSubmittedDate());
-            websiteChangeRequest.setDetails(extractWebsiteChangesFromDetails(parentChangeRequest));
-            changeRequests.add(websiteChangeRequest);
+    private Developer getDeveloperFromDb(ChangeRequest changeRequest) throws InvalidArgumentsException, EntityRetrievalException {
+        if (changeRequest.getDeveloper() == null || changeRequest.getDeveloper().getId() == null) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("changeRequest.developer.required"));
         }
-        if (isDeveloperDetailsChangeRequest(parentChangeRequest)) {
-            if (!ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST)) {
-                throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
-            }
-            ChangeRequestType devDetailsChangeRequestType = new ChangeRequestType();
-            devDetailsChangeRequestType.setId(developerDetailsChangeRequestTypeId);
-            ChangeRequest developerDetailsChangeRequest = new ChangeRequest();
-            developerDetailsChangeRequest.setChangeRequestType(devDetailsChangeRequestType);
-            developerDetailsChangeRequest.setDeveloper(parentChangeRequest.getDeveloper());
-            developerDetailsChangeRequest.setSubmittedDate(parentChangeRequest.getSubmittedDate());
-            developerDetailsChangeRequest.setDetails(extractDeveloperChangesFromDetails(parentChangeRequest));
-            changeRequests.add(developerDetailsChangeRequest);
-        }
-        if (isDeveloperAttestationChangeRequest(parentChangeRequest)) {
-            ChangeRequestType attestationChangeRequestType = new ChangeRequestType();
-            attestationChangeRequestType.setId(attestationChangeRequestTypeId);
-            ChangeRequest attestationChangeRequest = new ChangeRequest();
-            attestationChangeRequest.setChangeRequestType(attestationChangeRequestType);
-            attestationChangeRequest.setDeveloper(parentChangeRequest.getDeveloper());
-            attestationChangeRequest.setSubmittedDate(parentChangeRequest.getSubmittedDate());
-            attestationChangeRequest.setDetails(parentChangeRequest.getDetails());
-            changeRequests.add(attestationChangeRequest);
-        }
-        return changeRequests;
+        return devManager.getById(changeRequest.getDeveloper().getId());
     }
 
-    private boolean isWebsiteChangeRequest(ChangeRequest cr) {
-        return isWebsiteChanged(cr);
+    private ChangeRequestType getChangeRequestType(ChangeRequest parentChangeRequest) throws EntityRetrievalException {
+        if (isDeveloperDemogrpahicChangeRequest(parentChangeRequest)) {
+            return changeRequestTypeDAO.getChangeRequestTypeById(developerDemographicsChangeRequestTypeId);
+        } else if (isDeveloperAttestationChangeRequest(parentChangeRequest)) {
+            return changeRequestTypeDAO.getChangeRequestTypeById(attestationChangeRequestTypeId);
+        }
+        return null;
     }
 
-    private boolean isDeveloperDetailsChangeRequest(ChangeRequest cr) {
-        return isSelfDeveloperChanged(cr) || isAddressChanged(cr) || isContactChanged(cr);
+    private boolean isDeveloperDemogrpahicChangeRequest(ChangeRequest cr) {
+        HashMap<String, Object> crMap = (HashMap) cr.getDetails();
+        return crMap.containsKey("developerId") ||
+                (ObjectUtils.allNotNull(cr, cr.getChangeRequestType())
+                && cr.getChangeRequestType().isDemographics());
     }
 
     private boolean isDeveloperAttestationChangeRequest(ChangeRequest cr) {
@@ -284,87 +248,7 @@ public class ChangeRequestManager extends SecurityManager {
         return crMap.containsKey("attestationResponses");
     }
 
-    private boolean isWebsiteChanged(ChangeRequest cr) {
-        Developer existingDeveloper = cr.getDeveloper();
-        HashMap<String, Object> crMap = (HashMap) cr.getDetails();
-
-        String crWebsite = null;
-        if (crMap.containsKey("website")) {
-            crWebsite = crMap.get("website").toString();
-            return !StringUtils.equals(crWebsite, existingDeveloper.getWebsite());
-        }
-        return false;
-    }
-
-    private boolean isSelfDeveloperChanged(ChangeRequest cr) {
-        Developer existingDeveloper = cr.getDeveloper();
-        HashMap<String, Object> crMap = (HashMap) cr.getDetails();
-
-        Boolean crSelfDeveloper = null;
-        if (crMap.containsKey("selfDeveloper")) {
-            crSelfDeveloper = Boolean.parseBoolean(crMap.get("selfDeveloper").toString());
-            return !ObjectUtils.equals(crSelfDeveloper, existingDeveloper.getSelfDeveloper());
-        }
-        return false;
-    }
-
-    private boolean isAddressChanged(ChangeRequest cr) {
-        Developer existingDeveloper = cr.getDeveloper();
-        HashMap<String, Object> crMap = (HashMap) cr.getDetails();
-
-        if (crMap.containsKey("address")) {
-            HashMap<String, Object> addrMap = (HashMap) crMap.get("address");
-            Address address = new Address(addrMap);
-            return !address.equals(existingDeveloper.getAddress());
-        }
-        return false;
-    }
-
-    private boolean isContactChanged(ChangeRequest cr) {
-        Developer existingDeveloper = cr.getDeveloper();
-        HashMap<String, Object> crMap = (HashMap) cr.getDetails();
-
-        if (crMap.containsKey("contact")) {
-            HashMap<String, Object> contactMap = (HashMap) crMap.get("contact");
-            PointOfContact contact = new PointOfContact(contactMap);
-            return !contact.equals(existingDeveloper.getContact());
-        }
-        return false;
-    }
-
-    private Object extractWebsiteChangesFromDetails(ChangeRequest cr) {
-        HashMap<String, Object> websiteDetails = new HashMap<String, Object>();
-        HashMap<String, Object> crDetails = (HashMap) cr.getDetails();
-        if (crDetails.containsKey("id")) {
-            websiteDetails.put("id", crDetails.get("id"));
-        }
-
-        if (crDetails.containsKey("website") && crDetails.get("website") != null) {
-            websiteDetails.put("website", crDetails.get("website").toString());
-        }
-        return websiteDetails;
-    }
-
-    private Object extractDeveloperChangesFromDetails(ChangeRequest cr) {
-        HashMap<String, Object> devDetails = new HashMap<String, Object>();
-        HashMap<String, Object> crDetails = (HashMap) cr.getDetails();
-        if (crDetails.containsKey("id")) {
-            devDetails.put("id", crDetails.get("id"));
-        }
-
-        if (crDetails.containsKey("selfDeveloper")) {
-            devDetails.put("selfDeveloper", crDetails.get("selfDeveloper"));
-        }
-        if (crDetails.containsKey("address")) {
-            devDetails.put("address", crDetails.get("address"));
-        }
-        if (crDetails.containsKey("contact")) {
-            devDetails.put("contact", crDetails.get("contact"));
-        }
-        return devDetails;
-    }
-
-    private ChangeRequest createChangeRequest(ChangeRequest cr)
+    private ChangeRequest saveChangeRequest(ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
 
         ChangeRequestValidationContext crValidationContext = getNewValidationContext(cr, null);
@@ -374,14 +258,9 @@ public class ChangeRequestManager extends SecurityManager {
             throw validationException;
         }
 
-        // Save the base change request
         ChangeRequest newCr = createBaseChangeRequest(cr);
-        // Carry over the details to the new object, so we have ids necessary
-        // for saving any dependent objects
         newCr.setDetails(cr.getDetails());
-        // Save the change request details
         newCr = crDetailsFactory.get(newCr.getChangeRequestType().getId()).create(newCr);
-        // Get the new change request as it exists in DB
         newCr = getChangeRequest(newCr.getId());
 
         activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, newCr.getId(), "Change request created", null, newCr);
@@ -392,6 +271,15 @@ public class ChangeRequestManager extends SecurityManager {
         ChangeRequest newCr = changeRequestDAO.create(cr);
         newCr.getStatuses().add(crStatusService.saveInitialStatus(newCr));
         return newCr;
+    }
+
+    private ChangeRequest updateChangeRequestWithCastedDetails(ChangeRequest cr) {
+        if (isDeveloperDemogrpahicChangeRequest(cr)) {
+            cr.setDetails(mapper.convertValue(cr.getDetails(), ChangeRequestDeveloperDemographics.class));
+        } else if (isDeveloperAttestationChangeRequest(cr)) {
+            cr.setDetails(mapper.convertValue(cr.getDetails(), ChangeRequestAttestationSubmission.class));
+        }
+        return cr;
     }
 
     private ChangeRequestValidationContext getNewValidationContext(ChangeRequest newChangeRequest, ChangeRequest originalChangeRequest) {
@@ -406,8 +294,8 @@ public class ChangeRequestManager extends SecurityManager {
                 changeRequestStatusTypeDAO,
                 changeRequestTypeDAO,
                 attestationManager,
-                websiteChangeRequestTypeId,
-                developerDetailsChangeRequestTypeId,
+                developerDemographicsChangeRequestTypeId,
+                attestationChangeRequestTypeId,
                 cancelledStatus,
                 acceptedStatus,
                 rejectedStatus,

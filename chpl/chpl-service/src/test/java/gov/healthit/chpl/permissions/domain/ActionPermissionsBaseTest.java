@@ -54,7 +54,6 @@ public abstract class ActionPermissionsBaseTest extends TestingUsers {
         for (Long devId : developerIds) {
             Developer dev = new Developer();
             dev.setId(devId);
-            dev.setDeveloperId(devId);
             devs.add(dev);
         }
         return devs;

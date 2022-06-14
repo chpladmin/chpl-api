@@ -57,7 +57,7 @@ public abstract class ActionPermissions {
     public boolean isDeveloperValidForCurrentUser(final Long developerId) {
         List<Developer> developers = resourcePermissions.getAllDevelopersForCurrentUser();
         for (Developer dev : developers) {
-            if (dev.getDeveloperId().equals(developerId)) {
+            if (dev.getId().equals(developerId)) {
                 return true;
             }
         }

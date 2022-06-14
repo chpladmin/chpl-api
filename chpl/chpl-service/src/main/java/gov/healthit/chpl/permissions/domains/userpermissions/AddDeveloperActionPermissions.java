@@ -24,7 +24,7 @@ public class AddDeveloperActionPermissions extends ActionPermissions {
             return true;
         } else if (getResourcePermissions().isUserRoleDeveloperAdmin()) {
             Developer developer = (Developer) obj;
-            return isDeveloperValidForCurrentUser(developer.getDeveloperId());
+            return isDeveloperValidForCurrentUser(developer.getId());
         } else {
             return false;
         }

@@ -10,8 +10,8 @@ public class ProductVersionXmlGenerator extends XmlGenerator {
         if (pv != null) {
             sw.writeStartElement(rootNodeName);
             createSimpleElement(pv.getDetails(), "details", sw);
+            createSimpleElement(pv.getId(), "id", sw);
             createSimpleElement(pv.getVersion(), "version", sw);
-            createSimpleElement(pv.getVersionId(), "versionId", sw);
             sw.writeEndElement();
         }
     }

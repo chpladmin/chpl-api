@@ -23,23 +23,23 @@ public class ProductAndVersionNormalizer {
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
-        if (listing.getDeveloper() == null || listing.getDeveloper().getDeveloperId() == null) {
+        if (listing.getDeveloper() == null || listing.getDeveloper().getId() == null) {
             return;
         }
 
-        if (listing.getProduct() != null && listing.getProduct().getProductId() == null
+        if (listing.getProduct() != null && listing.getProduct().getId() == null
                 && !StringUtils.isEmpty(listing.getProduct().getName())) {
-            Product foundProduct = productDao.getByDeveloperAndName(listing.getDeveloper().getDeveloperId(),
+            Product foundProduct = productDao.getByDeveloperAndName(listing.getDeveloper().getId(),
                     listing.getProduct().getName());
             if (foundProduct != null) {
                 listing.setProduct(foundProduct);
             }
         }
 
-        if (listing.getProduct() != null && listing.getProduct().getProductId() != null
-                && listing.getVersion() != null && listing.getVersion().getVersionId() == null
+        if (listing.getProduct() != null && listing.getProduct().getId() != null
+                && listing.getVersion() != null && listing.getVersion().getId() == null
                 && !StringUtils.isEmpty(listing.getVersion().getVersion())) {
-            ProductVersionDTO foundVersion = versionDao.getByProductAndVersion(listing.getProduct().getProductId(),
+            ProductVersionDTO foundVersion = versionDao.getByProductAndVersion(listing.getProduct().getId(),
                     listing.getVersion().getVersion());
             if (foundVersion != null) {
                 listing.setVersion(new ProductVersion(foundVersion));
