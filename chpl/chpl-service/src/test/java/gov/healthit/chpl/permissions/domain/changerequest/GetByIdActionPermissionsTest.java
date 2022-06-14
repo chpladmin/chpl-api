@@ -47,11 +47,11 @@ public class GetByIdActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         assertTrue(permissions.hasAccess(ChangeRequest.builder()
-                .developer(Developer.builder().developerId(2L).build())
+                .developer(Developer.builder().id(2L).build())
                 .build()));
 
         assertFalse(permissions.hasAccess(ChangeRequest.builder()
-                .developer(Developer.builder().developerId(3l).build())
+                .developer(Developer.builder().id(3l).build())
                 .build()));
     }
 
@@ -91,13 +91,13 @@ public class GetByIdActionPermissionsTest extends ActionPermissionsBaseTest {
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser())
                 .thenReturn(getAllAcbForUser(1L));
         assertTrue(permissions.hasAccess(ChangeRequest.builder()
-                .developer(Developer.builder().developerId(1L).build())
+                .developer(Developer.builder().id(1L).build())
                 .build()));
 
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser())
                 .thenReturn(getAllAcbForUser(5l));
         assertFalse(permissions.hasAccess(ChangeRequest.builder()
-                .developer(Developer.builder().developerId(99l).build())
+                .developer(Developer.builder().id(99l).build())
                 .build()));
 
     }

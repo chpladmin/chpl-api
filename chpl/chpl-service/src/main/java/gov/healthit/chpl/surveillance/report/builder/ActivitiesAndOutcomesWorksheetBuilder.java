@@ -521,15 +521,15 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             editionMap.put("name",  edition);
             completeListingDetails.setCertificationEdition(editionMap);
             Developer dev = new Developer();
-            dev.setDeveloperId(listingDetails.getDeveloper().getDeveloperId());
+            dev.setId(listingDetails.getDeveloper().getId());
             dev.setName(listingDetails.getDeveloper().getName());
             completeListingDetails.setDeveloper(dev);
             Product prod = new Product();
-            prod.setProductId(listingDetails.getProduct().getProductId());
+            prod.setId(listingDetails.getProduct().getId());
             prod.setName(listingDetails.getProduct().getName());
             completeListingDetails.setProduct(prod);
             ProductVersion ver = new ProductVersion();
-            ver.setVersionId(listingDetails.getVersion().getId());
+            ver.setId(listingDetails.getVersion().getId());
             ver.setVersion(listingDetails.getVersion().getVersion());
             completeListingDetails.setVersion(ver);
 

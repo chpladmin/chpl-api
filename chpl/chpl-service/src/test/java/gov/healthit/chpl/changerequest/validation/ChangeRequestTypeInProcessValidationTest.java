@@ -42,7 +42,7 @@ public class ChangeRequestTypeInProcessValidationTest {
                         .id(ATTESTATION_CHANGE_REQUEST_TYPE)
                         .build())
                 .developer(Developer.builder()
-                        .developerId(1L)
+                        .id(1L)
                         .build())
                 .build();
     }

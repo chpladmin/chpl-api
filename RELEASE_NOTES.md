@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version 35.4.0
+_13 June 2022_
+
+### Features
+* Deprecate developerId field for Developer and remove usage in API
+* Deprecate productId field for Products and remove usage from API
+* Deprecate versionId field for Version and remove usage from API
+
+### Flagged Feature
+* Handle removed state of Conformance Methods
+
+---
+
 ## Version 35.3.1
 _6 June 2022_
 

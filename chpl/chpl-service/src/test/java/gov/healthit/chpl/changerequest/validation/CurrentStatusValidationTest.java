@@ -41,7 +41,7 @@ public class CurrentStatusValidationTest {
         newChangeRequest = ChangeRequest.builder()
                 .id(1L)
                 .developer(Developer.builder()
-                        .developerId(1L)
+                        .id(1L)
                         .build())
                 .build();
 

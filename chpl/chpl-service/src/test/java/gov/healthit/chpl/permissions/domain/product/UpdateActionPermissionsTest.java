@@ -74,7 +74,6 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         product.setId(1L);
         product.setOwner(Developer.builder()
                 .id(2L)
-                .developerId(2L)
                 .build());
 
         Developer dev = new Developer();

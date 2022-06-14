@@ -104,7 +104,7 @@ public class CertificationCriterionEntity implements Serializable {
                 .build();
     }
 
-    public CertificationCriterion buildCertificationCriterion() {
+    public CertificationCriterion toDomain() {
         return CertificationCriterion.builder()
                 .id(this.getId())
                 .certificationEdition(this.getCertificationEdition() == null ? null : this.getCertificationEdition().getYear())

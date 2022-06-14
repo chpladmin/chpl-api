@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -150,7 +150,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         if (details.getPracticeType().get("name") != null) {
             this.practiceType = details.getPracticeType().get("name").toString();
         }
-        this.developerId = details.getDeveloper().getDeveloperId();
+        this.developerId = details.getDeveloper().getId();
         this.developerName = details.getDeveloper().getName();
         this.developerWebsite = details.getDeveloper().getWebsite();
         this.selfDeveloper = details.getDeveloper().getSelfDeveloper();
@@ -161,14 +161,14 @@ public class PendingCertifiedProductDTO implements Serializable {
         }
         this.developerAddress = details.getDeveloper().getAddress();
 
-        if (details.getProduct() != null && details.getProduct().getProductId() != null) {
-            this.productId = Long.valueOf(details.getProduct().getProductId().toString());
+        if (details.getProduct() != null && details.getProduct().getId() != null) {
+            this.productId = Long.valueOf(details.getProduct().getId().toString());
         }
         if (details.getProduct() != null && !StringUtils.isEmpty(details.getProduct().getName())) {
             this.productName = details.getProduct().getName();
         }
-        if (details.getVersion() != null && details.getVersion().getVersionId() != null) {
-            this.productVersionId = Long.valueOf(details.getVersion().getVersionId().toString());
+        if (details.getVersion() != null && details.getVersion().getId() != null) {
+            this.productVersionId = Long.valueOf(details.getVersion().getId().toString());
         }
         if (details.getVersion() != null && !StringUtils.isEmpty(details.getVersion().getVersion())) {
             this.productVersion = details.getVersion().getVersion();

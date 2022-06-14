@@ -9,11 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobDataMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -22,12 +24,13 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
+import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
@@ -64,6 +67,7 @@ import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -225,6 +229,8 @@ public class CertifiedProductManager extends SecuredManager {
     private static final int SW_CODE_LOC = 7;
     private static final int DATE_CODE_LOC = 8;
 
+    private List<ConformanceMethod> allConformanceMethods;
+
     public CertifiedProductManager() {
     }
 
@@ -253,6 +259,7 @@ public class CertifiedProductManager extends SecuredManager {
             CertificationStatusDAO certStatusDao, ListingGraphDAO listingGraphDao,
             FuzzyChoicesDAO fuzzyChoicesDao, ResourcePermissions resourcePermissions,
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
+            ConformanceMethodDAO conformanceMethodDao,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
             PendingCertifiedProductManager pcpManager,
             SchedulerManager schedulerManager,
@@ -306,6 +313,8 @@ public class CertifiedProductManager extends SecuredManager {
         this.validatorFactory = validatorFactory;
         this.curesUpdateService = curesUpdateService;
         this.criteriaService = criteriaService;
+
+        allConformanceMethods = conformanceMethodDao.getAll();
     }
 
     @Transactional(readOnly = true)
@@ -489,11 +498,10 @@ public class CertifiedProductManager extends SecuredManager {
             newProduct.setName(pendingCp.getProductName());
             newProduct.setOwner(Developer.builder()
                     .id(pendingCp.getDeveloperId())
-                    .developerId(pendingCp.getDeveloperId())
                     .build());
             newProduct.setReportFileLocation(pendingCp.getReportFileLocation());
             newProduct = productManager.create(newProduct);
-            pendingCp.setProductId(newProduct.getProductId());
+            pendingCp.setProductId(newProduct.getId());
         }
 
         if (pendingCp.getProductVersionId() == null) {
@@ -1009,7 +1017,7 @@ public class CertifiedProductManager extends SecuredManager {
                         if (pendingCqm.getCertifications() != null) {
                             for (PendingCqmCertificationCriterionDTO cert : pendingCqm.getCertifications()) {
                                 CQMResultCriteriaDTO certDto = new CQMResultCriteriaDTO();
-                                if (!StringUtils.isEmpty(cert.getCertificationId())) {
+                                if (cert.getCertificationId() != null) {
                                     certDto.setCriterionId(cert.getCertificationId());
                                     cqmResultToCreate.getCriteria().add(certDto);
                                 } else if (!StringUtils.isEmpty(cert.getCertificationCriteriaNumber())) {
@@ -1119,8 +1127,23 @@ public class CertifiedProductManager extends SecuredManager {
             }
         }
 
+        //make sure removal date is filled in for all Conformance Methods
+        listing.getCertificationResults().stream()
+            .filter(certResult -> !CollectionUtils.isEmpty(certResult.getConformanceMethods()))
+            .flatMap(certResult -> certResult.getConformanceMethods().stream())
+            .forEach(conformanceMethod -> populateConformanceMethodRemovalDate(conformanceMethod));
+
         listing.getMeasures().stream()
             .forEach(measure -> associateMeasureWithCuresAndOriginalCriteria(measure));
+    }
+
+    private void populateConformanceMethodRemovalDate(CertificationResultConformanceMethod conformanceMethod) {
+        Optional<ConformanceMethod> conformanceMethodWithId = this.allConformanceMethods.stream()
+            .filter(cm -> cm.getId().equals(conformanceMethod.getConformanceMethod().getId()))
+            .findAny();
+        if (conformanceMethodWithId.isPresent()) {
+            conformanceMethod.getConformanceMethod().setRemovalDate(conformanceMethodWithId.get().getRemovalDate());
+        }
     }
 
     private void associateMeasureWithCuresAndOriginalCriteria(ListingMeasure measure) {
@@ -1223,7 +1246,7 @@ public class CertifiedProductManager extends SecuredManager {
             CertifiedProductSearchDetails updatedListing, String reason)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
         Long listingId = updatedListing.getId();
-        Long productVersionId = updatedListing.getVersion().getVersionId();
+        Long productVersionId = updatedListing.getVersion().getId();
         CertificationStatus updatedStatus = updatedListing.getCurrentStatus().getStatus();
         CertificationStatus existingStatus = existingListing.getCurrentStatus().getStatus();
         // if listing status has changed that may trigger other changes
@@ -1272,7 +1295,7 @@ public class CertifiedProductManager extends SecuredManager {
             }
             if (newDevStatus != null) {
                 DeveloperStatusEvent statusHistoryToAdd = new DeveloperStatusEvent();
-                statusHistoryToAdd.setDeveloperId(cpDeveloper.getDeveloperId());
+                statusHistoryToAdd.setDeveloperId(cpDeveloper.getId());
                 statusHistoryToAdd.setStatus(newDevStatus);
                 statusHistoryToAdd.setStatusDate(new Date());
                 statusHistoryToAdd.setReason(msgUtil.getMessage("developer.statusAutomaticallyChanged"));

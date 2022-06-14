@@ -124,8 +124,16 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
                 Developer developer = developerDao.getSimpleDeveloperById(product.getOwner().getDeveloperId(), true);
                 productMetadata.setDeveloperName(developer.getName());
             } catch (Exception ex) {
-                LOGGER.error("Unable to find developer with ID " + product.getDeveloperId() + " referenced "
-                        + "in activity for product " + product.getProductId());
+                LOGGER.error("Unable to find developer with ID " + product.getOwner().getDeveloperId() + " referenced "
+                        + "in activity for product " + (product.getId() != null ? product.getId() : product.getProductId()));
+            }
+        } else if (product.getOwner() != null && product.getOwner().getId() != null) {
+            try {
+                Developer developer = developerDao.getSimpleDeveloperById(product.getOwner().getId(), true);
+                productMetadata.setDeveloperName(developer.getName());
+            } catch (Exception ex) {
+                LOGGER.error("Unable to find developer with ID " + product.getOwner().getId() + " referenced "
+                        + "in activity for product " + (product.getId() != null ? product.getId() : product.getProductId()));
             }
         } else if (!StringUtils.isEmpty(product.getDeveloperName())) {
             productMetadata.setDeveloperName(product.getDeveloperName());
@@ -135,7 +143,7 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
                 productMetadata.setDeveloperName(developer.getName());
             } catch (Exception ex) {
                 LOGGER.error("Unable to find developer with ID " + product.getDeveloperId() + " referenced "
-                        + "in activity for product " + product.getProductId());
+                        + "in activity for product " + (product.getId() != null ? product.getId() : product.getProductId()));
             }
         }
         productMetadata.setProductName(product.getName());

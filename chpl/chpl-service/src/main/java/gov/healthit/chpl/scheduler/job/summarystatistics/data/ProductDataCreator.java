@@ -36,7 +36,7 @@ public class ProductDataCreator extends StatisticsDataCreator {
                     EmailCertificationBodyStatistic stat = new EmailCertificationBodyStatistic();
                     stat.setAcbName(entry.getKey());
                     stat.setCount(entry.getValue().stream()
-                            .filter(distinctByKey(cp -> cp.getProduct().getProductId()))
+                            .filter(distinctByKey(cp -> cp.getProduct().getId()))
                             .collect(Collectors.counting()));
                     return stat;
                 })
@@ -50,7 +50,7 @@ public class ProductDataCreator extends StatisticsDataCreator {
         return certifiedProducts.stream()
                 .filter(cp -> includeListingBasedOnEdition(cp, listingsToInclude)
                         && includeListingBasedOnStatus(cp, statuses))
-                .filter(distinctByKey(cp -> cp.getProduct().getProductId()))
+                .filter(distinctByKey(cp -> cp.getProduct().getId()))
                 .collect(Collectors.counting());
     }
 

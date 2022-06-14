@@ -14,7 +14,7 @@ public class ChangeRequestTypeInProcessValidation extends ValidationRule<ChangeR
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
         try {
-            List<ChangeRequest> crs = context.getValidationDAOs().getChangeRequestDAO().getByDeveloper(context.getNewChangeRequest().getDeveloper().getDeveloperId()).stream()
+            List<ChangeRequest> crs = context.getValidationDAOs().getChangeRequestDAO().getByDeveloper(context.getNewChangeRequest().getDeveloper().getId()).stream()
                     .filter(cr -> cr.getChangeRequestType().getId().equals(context.getNewChangeRequest().getChangeRequestType().getId()))
                     .filter(cr -> getInProcessStatuses(context).stream()
                             .anyMatch(status -> cr.getCurrentStatus().getChangeRequestStatusType().getId()

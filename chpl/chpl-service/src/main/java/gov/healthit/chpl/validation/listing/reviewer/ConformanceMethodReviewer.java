@@ -18,15 +18,18 @@ import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
+import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultConformanceMethod;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -40,18 +43,21 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
     private static final String CM_F3_CANNOT_HAVE_GAP = "ONC Test Procedure";
 
     private List<ConformanceMethodCriteriaMap> conformanceMethodCriteriaMap = new ArrayList<ConformanceMethodCriteriaMap>();
+    private CertificationResultDAO certResultDao;
     private ValidationUtils validationUtils;
     private CertificationResultRules certResultRules;
     private CertificationCriterion f3;
     private FF4j ff4j;
 
     @Autowired
-    public ConformanceMethodReviewer(ConformanceMethodDAO conformanceMethodDao, ErrorMessageUtil msgUtil,
+    public ConformanceMethodReviewer(ConformanceMethodDAO conformanceMethodDao, CertificationResultDAO certResultDao,
+            ErrorMessageUtil msgUtil,
             ValidationUtils validationUtils, CertificationResultRules certResultRules,
             CertificationCriterionService criteriaService,
             ResourcePermissions resourcePermissions, FF4j ff4j) {
         super(msgUtil, resourcePermissions);
         this.msgUtil = msgUtil;
+        this.certResultDao = certResultDao;
         this.validationUtils = validationUtils;
         this.certResultRules = certResultRules;
         this.resourcePermissions = resourcePermissions;
@@ -86,6 +92,9 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
         removeOrReplaceConformanceMethodsInvalidForCriterion(listing, certResult);
         reviewConformanceMethodsRequired(listing, certResult);
         if (!CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
+            certResult.getConformanceMethods().stream()
+                .filter(conformanceMethod -> conformanceMethod.getConformanceMethod().getRemoved())
+                .forEach(removedConformanceMethod -> reviewRemovedConformanceMethodForIcsRequirement(listing, certResult, removedConformanceMethod));
             certResult.getConformanceMethods().stream()
                 .forEach(conformanceMethod -> reviewConformanceMethodFields(listing, certResult, conformanceMethod));
             if (certResult.getCriterion().getId().equals(f3.getId())) {
@@ -229,6 +238,41 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
                 && !StringUtils.isEmpty(conformanceMethod.getConformanceMethod().getName())
                 && conformanceMethod.getConformanceMethod().getName().equalsIgnoreCase(CM_MUST_NOT_HAVE_OTHER_DATA)
                 && !StringUtils.isEmpty(conformanceMethod.getConformanceMethodVersion());
+    }
+
+    private void reviewRemovedConformanceMethodForIcsRequirement(CertifiedProductSearchDetails listing, CertificationResult certResult,
+            CertificationResultConformanceMethod conformanceMethod) {
+        if (conformanceMethod.getConformanceMethod().getRemovalDate() != null
+                && conformanceMethod.getConformanceMethod().getRemovalDate().isBefore(DateUtil.toLocalDate(listing.getCertificationDate()))) {
+            //check listing for ICS
+            if (listing.getIcs() != null && !CollectionUtils.isEmpty(listing.getIcs().getParents())) {
+                Optional<CertifiedProduct> parentWithConformanceMethodOnCriterion = listing.getIcs().getParents().stream()
+                    .filter(icsParent -> doesParentHaveRemovedConformanceMethodForCriterion(icsParent.getId(), certResult.getCriterion(),
+                            conformanceMethod.getConformanceMethod()))
+                    .findAny();
+                if (parentWithConformanceMethodOnCriterion.isEmpty()) {
+                    listing.getErrorMessages().add(msgUtil.getMessage("listing.conformanceMethod.criteria.conformanceMethodRemovedWithoutIcs",
+                            Util.formatCriteriaNumber(certResult.getCriterion()),
+                            conformanceMethod.getConformanceMethod().getName()));
+                }
+            } else {
+                listing.getErrorMessages().add(msgUtil.getMessage("listing.conformanceMethod.criteria.conformanceMethodRemovedWithoutIcs",
+                        Util.formatCriteriaNumber(certResult.getCriterion()),
+                        conformanceMethod.getConformanceMethod().getName()));
+            }
+        } // else the certification date is before the removal date so that's not an issue
+    }
+
+    private boolean doesParentHaveRemovedConformanceMethodForCriterion(Long parentListingId,
+            CertificationCriterion criterion, ConformanceMethod conformanceMethod) {
+        List<CertificationResultConformanceMethod> conformanceMethodsForParentCertResult
+            = certResultDao.getConformanceMethodsByListingAndCriterionId(parentListingId, criterion.getId());
+        if (conformanceMethodsForParentCertResult == null) {
+            return false;
+        }
+        return conformanceMethodsForParentCertResult.stream()
+                .filter(parentCmForCertResult -> parentCmForCertResult.getConformanceMethod().getId().equals(conformanceMethod.getId()))
+                .findAny().isPresent();
     }
 
     private void reviewF3ConformanceMethodsForGapRequirement(CertifiedProductSearchDetails listing, CertificationResult certResult) {

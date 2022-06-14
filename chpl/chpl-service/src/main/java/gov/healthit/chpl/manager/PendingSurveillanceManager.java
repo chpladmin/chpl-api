@@ -398,7 +398,7 @@ public class PendingSurveillanceManager extends SecuredManager {
                                 .findings(pnc.getFindings())
                                 .id(pnc.getId())
                                 .nonconformityType(pnc.getType())
-                                .criterion(pnc.getCertificationCriterionEntity() != null ? pnc.getCertificationCriterionEntity().buildCertificationCriterion() : null)
+                                .criterion(pnc.getCertificationCriterionEntity() != null ? pnc.getCertificationCriterionEntity().toDomain() : null)
                                 .resolution(pnc.getResolution())
                                 .sitesPassed(pnc.getSitesPassed())
                                 .summary(pnc.getSummary())
