@@ -74,8 +74,8 @@ public class SurveillanceRequirementReviewer implements Reviewer {
 
     private void checkRequirementTypeExists(Surveillance surv, SurveillanceRequirement req) {
         if (req.getType() == null) {
-            surv.getErrorMessages()
-                    .add(msgUtil.getMessage("surveillance.typeMissingForRequirement", req.getRequirementName()));
+            surv.getErrorMessages().add(
+                    msgUtil.getMessage("surveillance.typeMissingForRequirement", req.getRequirementName()));
         } else if (req.getType().getId() == null || req.getType().getId().longValue() <= 0) {
             SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType(req.getType().getName());
             if (reqType == null) {
@@ -97,10 +97,15 @@ public class SurveillanceRequirementReviewer implements Reviewer {
 
     private void checkCriterionRequirementTypeValidity(Surveillance surv, SurveillanceRequirement req,
             List<CertificationResultDetailsDTO> certResults) {
-        if (req.getCriterion() == null) {
+        if (req.getCriterion() == null || req.getCriterion().getId() == null) {
             surv.getErrorMessages().add(
                     msgUtil.getMessage("surveillance.requirementInvalidForRequirementType",
                             req.getRequirementName(), req.getType().getName()));
+            return;
+        } else if (!StringUtils.isEmpty(req.getRequirement())
+                && !req.getCriterion().getNumber().equalsIgnoreCase(req.getRequirement())) {
+            surv.getErrorMessages().add(
+                    msgUtil.getMessage("surveillance.requirementInvalidForRequirementType", req.getRequirement(), req.getType().getName()));
             return;
         }
         req.setRequirement(req.getCriterion().getNumber());
@@ -127,6 +132,10 @@ public class SurveillanceRequirementReviewer implements Reviewer {
 
     private void checkTransparencyRequirementTypeValidity(Surveillance surv, SurveillanceRequirement req) {
         // requirement has to be one of 170.523 (k)(1) or (k)(2)
+        if (req.getCriterion() != null && req.getCriterion().getNumber() != null) {
+            surv.getErrorMessages().add(
+                    msgUtil.getMessage("surveillance.requirementCriterionNotAllowed", req.getType().getName()));
+        }
         req.setRequirement(criterionService.coerceToCriterionNumberFormat(req.getRequirement()));
         if (!RequirementTypeEnum.K1.getName().equals(req.getRequirement())
                 && !RequirementTypeEnum.K2.getName().equals(req.getRequirement())) {
