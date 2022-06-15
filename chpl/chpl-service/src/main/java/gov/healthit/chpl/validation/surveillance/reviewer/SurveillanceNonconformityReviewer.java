@@ -3,9 +3,9 @@ package gov.healthit.chpl.validation.surveillance.reviewer;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -116,26 +116,25 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
 
     private void checkCorrectiveActionPlanDatesValidity(Surveillance surv, SurveillanceRequirement req,
             SurveillanceNonconformity nc) {
-        if (!StringUtils.isEmpty(nc.getCapApprovalDay())
-                && StringUtils.isEmpty(nc.getCapMustCompleteDay())) {
+        if (nc.getCapApprovalDay() != null && nc.getCapMustCompleteDay() == null) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateCAPMustCompleteIsRequired",
                     req.getRequirementName(),
                     nc.getNonconformityTypeName()));
         }
 
-        if (!StringUtils.isEmpty(nc.getCapEndDay()) && StringUtils.isEmpty(nc.getCapStartDay())) {
+        if (nc.getCapEndDay() != null && nc.getCapStartDay() == null) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateCAPStartIsRequired",
                     req.getRequirementName(),
                     nc.getNonconformityTypeName()));
         }
 
-        if (!StringUtils.isEmpty(nc.getCapEndDay()) && StringUtils.isEmpty(nc.getCapApprovalDay())) {
+        if (nc.getCapEndDay() != null && nc.getCapApprovalDay() != null) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateCAPApprovalIsRequired",
                     req.getRequirementName(),
                     nc.getNonconformityTypeName()));
         }
 
-        if (!StringUtils.isEmpty(nc.getCapEndDay()) && !StringUtils.isEmpty(nc.getCapStartDay())
+        if (nc.getCapEndDay() != null && nc.getCapStartDay() != null
                 && nc.getCapEndDay().compareTo(nc.getCapStartDay()) < 0) {
             surv.getErrorMessages()
                     .add(msgUtil.getMessage("surveillance.dateCAPEndNotGreaterThanDateCAPStart",

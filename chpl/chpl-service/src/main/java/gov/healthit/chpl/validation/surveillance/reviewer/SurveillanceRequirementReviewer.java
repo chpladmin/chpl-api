@@ -3,9 +3,9 @@ package gov.healthit.chpl.validation.surveillance.reviewer;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
@@ -77,8 +77,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
             surv.getErrorMessages()
                     .add(msgUtil.getMessage("surveillance.typeMissingForRequirement", req.getRequirementName()));
         } else if (req.getType().getId() == null || req.getType().getId().longValue() <= 0) {
-            SurveillanceRequirementType reqType = survDao
-                    .findSurveillanceRequirementType(req.getType().getName());
+            SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType(req.getType().getName());
             if (reqType == null) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.typeNameMissingForRequirement",
                         req.getType().getName(), req.getRequirementName()));
@@ -86,8 +85,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
                 req.setType(reqType);
             }
         } else {
-            SurveillanceRequirementType reqType = survDao
-                    .findSurveillanceRequirementType(req.getType().getId());
+            SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType(req.getType().getId());
             if (reqType == null) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.typeIdMissingForRequirement",
                         req.getType().getId(), req.getRequirementName()));
