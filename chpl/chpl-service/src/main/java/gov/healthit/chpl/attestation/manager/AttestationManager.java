@@ -126,9 +126,9 @@ public class AttestationManager {
                 .findAny()
                 .orElseThrow(() -> new ValidationException(errorMessageUtil.getMessage("attestation.submissionPeriodException.cannotCreate")));
 
-        //if (!canCreateException(developerId)) {
-        //    throw new ValidationException(errorMessageUtil.getMessage("attestation.submissionPeriodException.cannotCreate"));
-        //}
+        if (!canCreateException(developerId)) {
+            throw new ValidationException(errorMessageUtil.getMessage("attestation.submissionPeriodException.cannotCreate"));
+        }
 
         return attestationDAO.createAttestationPeriodDeveloperException(AttestationPeriodDeveloperException.builder()
                 .developer(Developer.builder()
@@ -180,10 +180,5 @@ public class AttestationManager {
         return dateToCheck != null
                 && (dateToCheck.equals(LocalDate.now())
                         || dateToCheck.isAfter(LocalDate.now()));
-    }
-
-    private Boolean withinStandardSubmissionPeriod(AttestationPeriod period) {
-        return (period.getSubmissionStart().equals(LocalDate.now()) || period.getSubmissionStart().isBefore(LocalDate.now()))
-                && (period.getSubmissionEnd().equals(LocalDate.now()) || period.getSubmissionEnd().isAfter(LocalDate.now()));
     }
 }
