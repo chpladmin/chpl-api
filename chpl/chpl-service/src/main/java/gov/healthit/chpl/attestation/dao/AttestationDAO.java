@@ -127,6 +127,15 @@ public class AttestationDAO extends BaseDAOImpl{
         return new AttestationPeriodDeveloperException(getAttestationPeriodDeveloperExceptionEntity(entity.getId()));
     }
 
+    public AttestationPeriodDeveloperException getCurrentAttestationPeriodDeveloperException(Long developerId) {
+        AttestationPeriodDeveloperExceptionEntity entity = getCurrentAttestationPeriodDeveloperExceptionEntity(developerId);
+        if (entity != null) {
+            return new AttestationPeriodDeveloperException(entity);
+        } else {
+            return null;
+        }
+    }
+
     private DeveloperAttestationResponseEntity createDeveloperAttestationResponse(AttestationSubmittedResponse response, Long developerAttestationId) {
         try {
             DeveloperAttestationResponseEntity entity = DeveloperAttestationResponseEntity.builder()
@@ -336,6 +345,26 @@ public class AttestationDAO extends BaseDAOImpl{
             throw new EntityRetrievalException(
                     "Data error. Duplicate Attestation Period Developer Exception in database.");
         }
+
+        if (result.size() == 0) {
+            return null;
+        }
+        return result.get(0);
+
+    }
+
+    private AttestationPeriodDeveloperExceptionEntity getCurrentAttestationPeriodDeveloperExceptionEntity(Long developerId) {
+        String hql = "SELECT apde "
+                + "FROM AttestationPeriodDeveloperExceptionEntity apde "
+                + "JOIN FETCH apde.developer d "
+                + "JOIN FETCH apde.period p "
+                + "WHERE d.id = :developerId "
+                + "AND apde.deleted = false ";
+
+        List<AttestationPeriodDeveloperExceptionEntity> result = entityManager
+                .createQuery(hql, AttestationPeriodDeveloperExceptionEntity.class)
+                .setParameter("developerId", developerId)
+                .getResultList();
 
         if (result.size() == 0) {
             return null;

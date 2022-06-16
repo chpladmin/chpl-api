@@ -84,10 +84,17 @@ public class AttestationManager {
     public Boolean canDeveloperSubmitChangeRequest(Long developerId) throws EntityRetrievalException {
         AttestationPeriod mostRecentPastAttestationPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
 
-        return !(doesPendingAttestationChangeRequestForDeveloperExist(developerId)
-                || doesValidExceptionExistForDeveloper(developerId)
-                || !attestationPeriodService.isDateWithinSubmissionPeriodForDeveloper(developerId, LocalDate.now())
-                || doesAttestationForDeveloperExist(developerId, mostRecentPastAttestationPeriod.getId()));
+        if (doesPendingAttestationChangeRequestForDeveloperExist(developerId)) {
+            return false;
+        } else if (doesValidExceptionExistForDeveloper(developerId)) {
+            return true;
+        } else if (attestationPeriodService.isDateWithinSubmissionPeriodForDeveloper(developerId, LocalDate.now())) {
+            return true;
+        } else if (!doesAttestationForDeveloperExist(developerId, mostRecentPastAttestationPeriod.getId())) {
+            return true;
+        }
+
+        return false;
     }
 
     @Transactional
@@ -153,7 +160,7 @@ public class AttestationManager {
     }
 
     private Boolean doesValidExceptionExistForDeveloper(Long developerId) {
-        return isDateInFuture(attestationPeriodService.getMostRecentPeriodExceptionDateForDeveloper(developerId));
+        return isDateInFuture(attestationPeriodService.getCurrentExceptionEndDateForDeveloper(developerId));
     }
 
     private Boolean isDateInFuture(LocalDate dateToCheck) {
