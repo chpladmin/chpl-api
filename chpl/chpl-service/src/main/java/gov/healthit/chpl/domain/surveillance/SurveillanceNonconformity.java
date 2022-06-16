@@ -494,6 +494,7 @@ public class SurveillanceNonconformity implements Serializable {
     }
 
     @XmlTransient
+    @Deprecated //this field should be removed from Json responses but left in the API code
     public String getNonconformityTypeName() {
         if (getCriterion() == null) {
             return getNonconformityType();

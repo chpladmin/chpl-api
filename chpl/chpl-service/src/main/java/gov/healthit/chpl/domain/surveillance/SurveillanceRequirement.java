@@ -214,6 +214,7 @@ public class SurveillanceRequirement implements Serializable {
     }
 
     @XmlTransient
+    @Deprecated //this field should be removed from Json responses but left in the API code
     public String getRequirementName() {
         if (getCriterion() == null) {
             return getRequirement();

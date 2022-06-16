@@ -109,7 +109,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
         return toInsert.getId();
     }
 
-
+    @Deprecated
     public Long insertNonconformityDocument(Long nonconformityId, SurveillanceNonconformityDocument doc)
             throws EntityRetrievalException {
         SurveillanceNonconformityEntity nc = entityManager.find(SurveillanceNonconformityEntity.class, nonconformityId);
@@ -428,7 +428,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
         return toInsert.getId();
     }
 
-
+    @Deprecated
     public void deleteNonconformityDocument(Long documentId) throws EntityRetrievalException {
         SurveillanceNonconformityDocumentationEntity doc = entityManager
                 .find(SurveillanceNonconformityDocumentationEntity.class, documentId);

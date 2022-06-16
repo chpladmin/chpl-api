@@ -163,6 +163,7 @@ public class SurveillanceManager extends SecuredManager {
         return insertedId;
     }
 
+    @Deprecated
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).ADD_DOCUMENT, #nonconformityId)")
@@ -222,6 +223,7 @@ public class SurveillanceManager extends SecuredManager {
                 beforeCp, afterCp, reason);
     }
 
+    @Deprecated
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).DELETE_DOCUMENT, #documentId)")
