@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
@@ -60,6 +62,18 @@ public class ListingSearchService {
         this.searchRequestNormalizer = new SearchRequestNormalizer();
         this.drService = drService;
         dateFormatter = DateTimeFormatter.ofPattern(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+    }
+
+    public ListingSearchResult findListing(Long listingId) throws InvalidArgumentsException {
+        List<ListingSearchResult> listings = listingSearchManager.getAllListings();
+        Optional<ListingSearchResult> matchedListing = listings.stream()
+            .filter(listing -> listing.getId().equals(listingId))
+            .findAny();
+
+        if (matchedListing.isEmpty()) {
+            throw new InvalidArgumentsException("Listing with ID " + listingId + " does not exist.");
+        }
+        return matchedListing.get();
     }
 
     public ListingSearchResponse findListings(SearchRequest searchRequest) throws ValidationException {
