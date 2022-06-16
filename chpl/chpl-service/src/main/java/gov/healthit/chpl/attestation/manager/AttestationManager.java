@@ -98,6 +98,19 @@ public class AttestationManager {
     }
 
     @Transactional
+    public AttestationPeriod getSubmittalPeriod(Long developerId) {
+        try {
+            if (canDeveloperSubmitChangeRequest(developerId)) {
+                return attestationPeriodService.getSubmittableAttestationPeriod(developerId);
+            } else {
+                return null;
+            }
+        } catch (EntityRetrievalException e) {
+            return null;
+        }
+    }
+
+    @Transactional
     public Boolean canCreateException(Long developerId) throws EntityRetrievalException {
         return !canDeveloperSubmitChangeRequest(developerId);
     }

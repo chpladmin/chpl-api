@@ -81,6 +81,10 @@ public class AttestationPeriodService {
         }
     }
 
+    public AttestationPeriodDeveloperException getCurrentAttestationPeriodDeveloperExceptionForDeveloper(Long developerId) {
+        return attestationDAO.getCurrentAttestationPeriodDeveloperException(developerId);
+    }
+
     public AttestationPeriodDeveloperException getCurrentAttestationPeriodDeveloperException(Long developerId) {
         return attestationDAO.getCurrentAttestationPeriodDeveloperException(developerId);
     }
@@ -97,5 +101,16 @@ public class AttestationPeriodService {
         }
 
         return mostRecentPeriod;
+    }
+
+    public AttestationPeriod getSubmittableAttestationPeriod(Long developerId) {
+        AttestationPeriodDeveloperException apde = attestationDAO.getCurrentAttestationPeriodDeveloperException(developerId);
+        if (apde != null
+              && (apde.getExceptionEnd().isEqual(LocalDate.now())
+              || apde.getExceptionEnd().isAfter(LocalDate.now()))) {
+          return apde.getPeriod();
+        }
+
+        return getMostRecentPastAttestationPeriod();
     }
 }

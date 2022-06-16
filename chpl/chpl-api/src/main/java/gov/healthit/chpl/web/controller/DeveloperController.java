@@ -287,6 +287,7 @@ public class DeveloperController {
         return DeveloperAttestationSubmissionResults.builder()
                 .developerAttestations(attestationManager.getDeveloperAttestations(developerId))
                 .canSubmitAttestationChangeRequest(attestationManager.canDeveloperSubmitChangeRequest(developerId))
+                .submittablePeriod(attestationManager.getSubmittalPeriod(developerId))
                 .canCreateException(attestationManager.canCreateException(developerId))
                 .build();
     }
