@@ -86,12 +86,12 @@ public class AttestationManager {
 
         if (doesPendingAttestationChangeRequestForDeveloperExist(developerId)) {
             return false;
-        } else if (doesValidExceptionExistForDeveloper(developerId)) {
+        }
+        if (doesValidExceptionExistForDeveloper(developerId)) {
             return true;
-        } else if (attestationPeriodService.isDateWithinSubmissionPeriodForDeveloper(developerId, LocalDate.now())) {
-            return true;
-        } else if (!doesAttestationForDeveloperExist(developerId, mostRecentPastAttestationPeriod.getId())) {
-            return true;
+        }
+        if (attestationPeriodService.isDateWithinSubmissionPeriodForDeveloper(developerId, LocalDate.now())) {
+            return !doesAttestationForDeveloperExist(developerId, mostRecentPastAttestationPeriod.getId());
         }
 
         return false;
