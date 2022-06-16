@@ -1256,8 +1256,7 @@ public class CertifiedProductManager extends SecuredManager {
         // if listing status has changed that may trigger other changes
         // to developer status
         if (ObjectUtils.notEqual(updatedStatus.getName(), existingStatus.getName())) {
-            // look at the updated status and see if a developer ban is
-            // appropriate
+            // look at the updated status and see if a developer ban is appropriate
             CertificationStatus updatedStatusObj = certStatusDao.getById(updatedStatus.getId());
             Developer cpDeveloper = developerDao.getByVersion(productVersionId);
             if (cpDeveloper == null) {
@@ -1269,8 +1268,7 @@ public class CertifiedProductManager extends SecuredManager {
             switch (CertificationStatusType.getValue(updatedStatusObj.getName())) {
             case SuspendedByOnc:
             case TerminatedByOnc:
-                // only onc admin can do this and it always triggers developer
-                // ban
+                // only onc admin can do this and it always triggers developer ban
                 if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
                     // find the new developer status
                     if (updatedStatusObj.getName().equals(CertificationStatusType.SuspendedByOnc.toString())) {
