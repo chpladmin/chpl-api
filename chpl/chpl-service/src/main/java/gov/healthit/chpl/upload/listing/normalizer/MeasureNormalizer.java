@@ -21,8 +21,10 @@ import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import lombok.extern.log4j.Log4j2;
 
 @Component
+@Log4j2
 public class MeasureNormalizer {
     private MacraMeasureDAO legacyMacraMeasureDao;
     private MeasureDAO measureDao;
@@ -52,7 +54,8 @@ public class MeasureNormalizer {
             listing.getMeasures().stream()
                 .forEach(listingMeasure -> {
                     populateMeasureType(listingMeasure);
-                    populateMeasure(listingMeasure);
+                    populateMeasureWithMipsValues(listingMeasure);
+                    populateMeasureWithLegacyValues(listingMeasure);
                 });
             List<ListingMeasure> combinedListingMeasures = new ArrayList<ListingMeasure>();
             combineListingMeasures(combinedListingMeasures, listing.getMeasures());
@@ -73,21 +76,40 @@ public class MeasureNormalizer {
         }
     }
 
-    private void populateMeasure(ListingMeasure listingMeasure) {
+    private void populateMeasureWithMipsValues(ListingMeasure listingMeasure) {
         if (listingMeasure.getMeasure() != null
+                && listingMeasure.getMeasure().getId() == null
+                && !StringUtils.isEmpty(listingMeasure.getMeasure().getName())
+                && !StringUtils.isEmpty(listingMeasure.getMeasure().getRequiredTest())) {
+            Measure foundMeasure = measureDao.getByNameAndRequiredTest(
+                    listingMeasure.getMeasure().getName(), listingMeasure.getMeasure().getRequiredTest());
+            if (foundMeasure != null) {
+                listingMeasure.setMeasure(foundMeasure);
+            }
+        }
+    }
+
+    private void populateMeasureWithLegacyValues(ListingMeasure listingMeasure) {
+        if (listingMeasure.getMeasure() != null
+                && listingMeasure.getMeasure().getId() == null
                 && !StringUtils.isEmpty(listingMeasure.getMeasure().getLegacyMacraMeasureValue())
                 && listingMeasure.getAssociatedCriteria() != null
                 && listingMeasure.getAssociatedCriteria().size() > 0) {
             //there should only be one associated criterion per measure at this point
-            //when it's just been parsed with the upload handler
-            Long macraMeasureId = legacyMacraMeasureDao.getMacraMeasureIdByCriterionAndValue(
-                    listingMeasure.getAssociatedCriteria().iterator().next().getId(),
-                    listingMeasure.getMeasure().getLegacyMacraMeasureValue());
-            if (macraMeasureId != null) {
-                Measure mappedMeasure = measureDao.getMeasureByMacraMeasureId(macraMeasureId);
-                if (mappedMeasure != null) {
-                    listingMeasure.setMeasure(mappedMeasure);
+            //when it's just been parsed with the criteria-level upload handler
+            CertificationCriterion associatedCriterion = listingMeasure.getAssociatedCriteria().iterator().next();
+            if (associatedCriterion.getId() != null) {
+                Long macraMeasureId = legacyMacraMeasureDao.getMacraMeasureIdByCriterionAndValue(
+                        associatedCriterion.getId(),
+                        listingMeasure.getMeasure().getLegacyMacraMeasureValue());
+                if (macraMeasureId != null) {
+                    Measure mappedMeasure = measureDao.getMeasureByMacraMeasureId(macraMeasureId);
+                    if (mappedMeasure != null) {
+                        listingMeasure.setMeasure(mappedMeasure);
+                    }
                 }
+            } else {
+                LOGGER.warn("There was no criterion ID found for criterion " + associatedCriterion.getNumber() + " so the legacy Macra Measure cannot be mapped.");
             }
         }
     }

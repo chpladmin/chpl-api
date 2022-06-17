@@ -21,6 +21,7 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import lombok.extern.log4j.Log4j2;
@@ -29,10 +30,13 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class MeasuresUploadHandler {
     private ListingUploadHandlerUtil uploadUtil;
+    private CertificationCriterionService criteriaService;
 
     @Autowired
-    public MeasuresUploadHandler(ListingUploadHandlerUtil uploadUtil) {
+    public MeasuresUploadHandler(ListingUploadHandlerUtil uploadUtil,
+            CertificationCriterionService criteriaService) {
         this.uploadUtil = uploadUtil;
+        this.criteriaService = criteriaService;
     }
 
     public List<ListingMeasure> parseAsMeasures(CSVRecord headingRecord, List<CSVRecord> listingRecords)
@@ -115,7 +119,7 @@ public class MeasuresUploadHandler {
                     .map(String::trim)
                     .collect(Collectors.toList());
             associatedCriteria.addAll(splitTrimmedCriteriaNumbers.stream()
-                    .map(criterionNumber -> CertificationCriterion.builder().number(criterionNumber).build())
+                    .flatMap(criterionNumber -> buildCriterion(criterionNumber).stream())
                     .toList());
         }
 
@@ -127,5 +131,14 @@ public class MeasuresUploadHandler {
                 .measureType(MeasureType.builder().name(measureTypeName).build())
                 .associatedCriteria(associatedCriteria)
                 .build();
+    }
+
+    private List<CertificationCriterion> buildCriterion(String criterionNumber) {
+        List<CertificationCriterion> criteria = criteriaService.getByNumber(criterionNumber);
+        if (CollectionUtils.isEmpty(criteria)) {
+            LOGGER.warn("No criteria was found with number '" + criterionNumber + "'.");
+            return new ArrayList<CertificationCriterion>();
+        }
+        return criteria;
     }
 }

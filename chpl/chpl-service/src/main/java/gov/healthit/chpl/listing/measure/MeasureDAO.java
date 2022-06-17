@@ -36,6 +36,24 @@ public class MeasureDAO extends BaseDAOImpl {
         return result;
     }
 
+    public Measure getByNameAndRequiredTest(String measureName, String requiredTest) {
+        Query query = entityManager.createQuery(
+                MEASURE_HQL_BEGIN
+                + "WHERE measure.deleted = false "
+                + "AND measure.name = :measureName "
+                + "AND measure.requiredTest = :requiredTest",
+                MeasureEntity.class);
+        query.setParameter("name", measureName);
+        query.setParameter("requiredTest", requiredTest);
+        List<MeasureEntity> entities = query.getResultList();
+
+        Measure result = null;
+        if (entities != null && entities.size() > 0) {
+            result = entities.get(0).convert();
+        }
+        return result;
+    }
+
     public Measure getMeasureByMacraMeasureId(Long macraMeasureId) {
         MeasureEntity entity = getEntityByMacraMeasureId(macraMeasureId);
         return entity.convert();
