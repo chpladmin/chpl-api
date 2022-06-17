@@ -166,6 +166,7 @@ public class SurveillanceNonconformity implements Serializable {
     @XmlElementWrapper(name = "documents", nillable = true, required = false)
     @XmlElement(name = "document")
     @Builder.Default
+    @Deprecated
     private List<SurveillanceNonconformityDocument> documents = new ArrayList<SurveillanceNonconformityDocument>();
 
     /**
@@ -477,10 +478,12 @@ public class SurveillanceNonconformity implements Serializable {
         this.resolution = resolution;
     }
 
+    @Deprecated
     public List<SurveillanceNonconformityDocument> getDocuments() {
         return documents;
     }
 
+    @Deprecated
     public void setDocuments(List<SurveillanceNonconformityDocument> documents) {
         this.documents = documents;
     }

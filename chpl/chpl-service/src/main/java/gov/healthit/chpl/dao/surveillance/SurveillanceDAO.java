@@ -322,6 +322,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
         }
     }
 
+    @Deprecated
     public SurveillanceNonconformityDocumentationEntity getDocumentById(Long documentId)
             throws EntityRetrievalException {
         Query query = entityManager.createQuery(

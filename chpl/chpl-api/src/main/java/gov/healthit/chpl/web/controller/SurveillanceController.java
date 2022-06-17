@@ -114,6 +114,7 @@ public class SurveillanceController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @Deprecated
     @RequestMapping(value = "/document/{documentId}", method = RequestMethod.GET)
     public void streamDocumentContents(@PathVariable("documentId") Long documentId,
             HttpServletResponse response) throws EntityRetrievalException, IOException {

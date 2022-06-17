@@ -123,6 +123,7 @@ public class SurveillanceManager extends SecuredManager {
         return results;
     }
 
+    @Deprecated
     @Transactional(readOnly = true)
     public SurveillanceNonconformityDocument getDocumentById(final Long docId, final boolean getFileContents)
             throws EntityRetrievalException {
