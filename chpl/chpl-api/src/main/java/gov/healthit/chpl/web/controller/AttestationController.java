@@ -49,7 +49,7 @@ public class AttestationController {
     @Operation(summary = "Get the list of Attestation Conditions, Attestations, and Valid Responses for an Attestation period",
             description = "Can be used to dynamically generate the Attestion form.",
             security = {@SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
-    @RequestMapping(value = "/periods/{periodId}form",
+    @RequestMapping(value = "/periods/{periodId}/form",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public AttestationForm getAttestationFormByPeriod(@PathVariable("periodId") Long periodId) {
