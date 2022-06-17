@@ -1200,8 +1200,10 @@ public class CertifiedProductManager extends SecuredManager {
 
     private void logCertifiedProductUpdateActivity(CertifiedProductSearchDetails existingListing,
             String reason) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
-        CertifiedProductSearchDetails changedProduct = certifiedProductDetailsManager.
-                getCertifiedProductDetails(existingListing.getId());
+
+        CertifiedProductSearchDetails changedProduct
+                = certifiedProductDetailsManager.getCertifiedProductDetailsNoCache(existingListing.getId());
+
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
                 "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing,
                 changedProduct, reason);

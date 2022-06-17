@@ -71,6 +71,16 @@ public class CertifiedProductDetailsManager {
     }
 
     @Transactional(readOnly = true)
+    public CertifiedProductSearchDetails getCertifiedProductDetailsNoCache(Long certifiedProductId) throws EntityRetrievalException {
+        try {
+            return listingService.createCertifiedSearchDetails(certifiedProductId);
+        } catch (EntityRetrievalException e) {
+            LOGGER.error(e);
+            return null;
+        }
+    }
+
+    @Transactional(readOnly = true)
     public CertifiedProductSearchDetails getCertifiedProductDetailsBasicByChplProductNumber(String chplProductNumber) throws EntityRetrievalException {
         CertifiedProductDetailsDTO dto = getCertifiedProductDetailsDtoByChplProductNumber(chplProductNumber);
         return listingService.createCertifiedProductSearchDetailsBasic(dto.getId());
