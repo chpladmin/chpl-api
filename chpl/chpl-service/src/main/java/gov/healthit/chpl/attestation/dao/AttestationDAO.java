@@ -350,7 +350,6 @@ public class AttestationDAO extends BaseDAOImpl{
             return null;
         }
         return result.get(0);
-
     }
 
     private AttestationPeriodDeveloperExceptionEntity getCurrentAttestationPeriodDeveloperExceptionEntity(Long developerId) {
@@ -370,7 +369,5 @@ public class AttestationDAO extends BaseDAOImpl{
             return null;
         }
         return result.get(0);
-
     }
-
 }

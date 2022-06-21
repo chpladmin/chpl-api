@@ -27,7 +27,7 @@ public class PublicAttestation implements Serializable {
      * Identifier used to reference the Attestations status for a given
      * Developer during the associated Attestations period.
      */
-    @XmlElement(required = true)
+    @XmlElement
     private Long id;
 
     /**
