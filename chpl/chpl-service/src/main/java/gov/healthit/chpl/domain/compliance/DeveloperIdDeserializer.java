@@ -2,8 +2,6 @@ package gov.healthit.chpl.domain.compliance;
 
 import java.io.IOException;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -20,14 +18,16 @@ public class DeveloperIdDeserializer extends JsonDeserializer<Long> {
       throws IOException, JsonProcessingException {
         Long result = null;
         JsonNode developerIdNode = jsonParser.getCodec().readTree(jsonParser);
-        if (developerIdNode != null && !StringUtils.isEmpty(developerIdNode.textValue())) {
-            //There are some values, at least in the DEV Jira, in the developer ID field
-            //that are not Long values. They are strings/chpl product IDs.
+        if (developerIdNode != null && !developerIdNode.isNumber()) {
+            //when developer ID comes out of jira it looks like a string
             try {
                 result = Long.parseLong(developerIdNode.textValue());
             } catch (NumberFormatException ex) {
                 LOGGER.error("Could not parse " + developerIdNode.textValue() + " as a developer ID (Long).");
             }
+        } else if (developerIdNode != null && developerIdNode.isNumber()) {
+            //when developer ID comes out of shared store it looks like a number
+            result = developerIdNode.longValue();
         }
         return result;
     }

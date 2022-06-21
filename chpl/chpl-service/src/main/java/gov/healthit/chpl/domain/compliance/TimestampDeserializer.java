@@ -24,12 +24,18 @@ public class TimestampDeserializer extends JsonDeserializer<Date> {
       throws IOException, JsonProcessingException {
         Date result = null;
         JsonNode timestampNode = jsonParser.getCodec().readTree(jsonParser);
-        if (timestampNode != null && !StringUtils.isEmpty(timestampNode.textValue())) {
+        if (timestampNode != null && !timestampNode.isNumber()
+                && !StringUtils.isEmpty(timestampNode.textValue())) {
+            //when timestamp comes out of jira it looks like a date/time formatted string
             try {
                 result = formatter.parse(timestampNode.textValue());
             } catch (ParseException ex) {
                 LOGGER.error("Could not parse " + timestampNode.textValue() + " as a Date.", ex);
             }
+        } else if (timestampNode != null && timestampNode.isNumber()) {
+            //when timestamp node comes out of shared store it looks like a millis-long value
+            long timestampMillis = timestampNode.longValue();
+            result = new Date(timestampMillis);
         }
         return result;
     }
