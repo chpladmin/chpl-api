@@ -37,6 +37,7 @@ public class AttestationController {
 
     @Operation(summary = "Get the list of Attestation Conditions, Attestations, and Valid Responses",
             description = "Can be used to dynamically generate the Attestion form.",
+            deprecated = true,
             security = {@SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/form",
             method = RequestMethod.GET,
