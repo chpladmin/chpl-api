@@ -52,11 +52,17 @@ public class MeasureNormalizer {
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getMeasures() != null && listing.getMeasures().size() > 0) {
             listing.getMeasures().stream()
+                .forEach(listingMeasure -> populateMeasureType(listingMeasure));
+            listing.getMeasures().stream()
+                .filter(listingMeasure -> listingMeasure.getMeasure() != null && !StringUtils.isEmpty(listingMeasure.getMeasure().getName()))
                 .forEach(listingMeasure -> {
-                    populateMeasureType(listingMeasure);
                     populateMeasureWithMipsValues(listingMeasure);
-                    populateMeasureWithLegacyValues(listingMeasure);
+                    //TODO populateAssociatedCriteriaIds(listingMeasure);
                 });
+            listing.getMeasures().stream()
+                .filter(listingMeasure -> listingMeasure.getMeasure() != null && !StringUtils.isEmpty(listingMeasure.getMeasure().getLegacyMacraMeasureValue()))
+                .forEach(listingMeasure -> populateMeasureWithLegacyValues(listingMeasure));
+
             List<ListingMeasure> combinedListingMeasures = new ArrayList<ListingMeasure>();
             combineListingMeasures(combinedListingMeasures, listing.getMeasures());
             combinedListingMeasures.stream()

@@ -40,11 +40,11 @@ public class MeasureDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(
                 MEASURE_HQL_BEGIN
                 + "WHERE measure.deleted = false "
-                + "AND measure.name = :measureName "
-                + "AND measure.requiredTest = :requiredTest",
+                + "AND UPPER(measure.name) = :measureName "
+                + "AND UPPER(measure.requiredTest) = :requiredTest",
                 MeasureEntity.class);
-        query.setParameter("name", measureName);
-        query.setParameter("requiredTest", requiredTest);
+        query.setParameter("name", measureName.toUpperCase());
+        query.setParameter("requiredTest", requiredTest.toUpperCase());
         List<MeasureEntity> entities = query.getResultList();
 
         Measure result = null;
