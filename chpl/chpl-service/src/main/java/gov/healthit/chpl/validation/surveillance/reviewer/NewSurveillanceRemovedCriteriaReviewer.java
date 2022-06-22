@@ -69,7 +69,7 @@ public class NewSurveillanceRemovedCriteriaReviewer implements Reviewer {
             if (requirement != null && requirement.equalsIgnoreCase(RequirementTypeEnum.K2.getName())) {
                 surv.getErrorMessages().add(
                         msgUtil.getMessage("surveillance.requirementNotAddedForRemovedRequirement",
-                                req.getRequirementName()));
+                                req.getRequirement()));
             }
         }
     }
