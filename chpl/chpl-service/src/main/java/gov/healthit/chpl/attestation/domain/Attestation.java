@@ -1,7 +1,6 @@
 package gov.healthit.chpl.attestation.domain;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -21,6 +20,10 @@ public class Attestation {
     private Long id;
     @Singular
     private List<AttestationValidResponse> validResponses;
+
+    @Singular
+    private List<DependentAttestation> dependentAttestations;
+
     private Condition condition;
     private String description;
     private Long sortOrder;
@@ -29,7 +32,10 @@ public class Attestation {
         this.id = entity.getId();
         this.validResponses = entity.getValidResponses().stream()
                 .map(ent -> new AttestationValidResponse(ent))
-                .collect(Collectors.toList());
+                .toList();
+        this.dependentAttestations = entity.getDependentAttestations().stream()
+                .map(e -> new DependentAttestation(e))
+                .toList();
         this.condition = new Condition(entity.getCondition());
         this.description = entity.getDescription();
         this.sortOrder = entity.getSortOrder();

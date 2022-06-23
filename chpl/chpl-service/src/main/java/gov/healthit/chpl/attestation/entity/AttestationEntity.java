@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -42,6 +43,15 @@ public class AttestationEntity {
             joinColumns = @JoinColumn(name = "attestation_id"),
             inverseJoinColumns = @JoinColumn(name = "attestation_valid_response_id"))
     private Set<AttestationValidResponseEntity> validResponses;
+
+    @OneToOne
+    @JoinTable(name = "attestation_form",
+            joinColumns = @JoinColumn(name = "attestation_period_id"))
+    private AttestationPeriodEntity attestationPeriod;
+
+    @OneToMany()
+    @JoinColumn(name = "parent_attestation_id")
+    private Set<DependentAttestationEntity> dependentAttestations;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "attestation_condition_id", nullable = false, insertable = false, updatable = false)

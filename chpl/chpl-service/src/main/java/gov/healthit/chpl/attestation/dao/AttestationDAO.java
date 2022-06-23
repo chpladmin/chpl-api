@@ -33,8 +33,8 @@ public class AttestationDAO extends BaseDAOImpl{
                 .collect(Collectors.toList());
     }
 
-    public List<Attestation> getAttestationForm() {
-        return getAttestationFormEntities().stream()
+    public List<Attestation> getAttestationForm(Long attestationPeriodId) {
+        return getAttestationFormEntities(attestationPeriodId).stream()
                 .map(ent -> new Attestation(ent))
                 .collect(Collectors.toList());
     }
@@ -167,16 +167,23 @@ public class AttestationDAO extends BaseDAOImpl{
     }
 
 
-    private List<AttestationEntity> getAttestationFormEntities() {
+    private List<AttestationEntity> getAttestationFormEntities(Long attetsationPeriodId) {
         List<AttestationEntity> result = entityManager.createQuery(
                 "SELECT DISTINCT ae "
                 + "FROM AttestationEntity ae "
-                + "JOIN FETCH ae.condition c "
+                + "LEFT JOIN FETCH ae.condition c "
+                + "LEFT JOIN FECTH ae.attestationPeriod ap "
                 + "JOIN FETCH ae.validResponses vr "
+                + "LEFT JOIN FETCH ae.dependentAttestations da "
+                + "LEFT JOIN FETCH da.attestation "
+                + "LEFT JOIN FETCH da.whenParentValidResponse "
                 + "WHERE (NOT ae.deleted = true) "
                 + "AND (NOT c.deleted = true )"
-                + "AND (NOT vr.deleted = true) ",
+                + "AND (NOT vr.deleted = true) "
+                + "AND ae.dependentAttestation = false "
+                + "AND ap.id = :attetationPeriodId ",
                 AttestationEntity.class)
+                .setParameter("attestationPeriodId", attetsationPeriodId)
                 .getResultList();
         return result;
     }
