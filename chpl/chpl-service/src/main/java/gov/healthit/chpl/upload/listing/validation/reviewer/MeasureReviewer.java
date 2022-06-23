@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,8 +53,8 @@ public class MeasureReviewer implements Reviewer {
                         && measure.getMeasure().getId() != null) {
                     //ICS + Removed check is only done for uploaded listings
                     reviewIcsAndRemovedMeasures(listing, measure);
+                    removeMeasureAssociatedCriteriaWithoutIds(listing, measure);
                     reviewMeasureHasAssociatedCriteria(listing, measure);
-                    reviewMeasureAssociatedCriteriaHaveIds(listing, measure);
                     reviewMeasureHasOnlyAllowedCriteria(listing, measure);
                     if (BooleanUtils.isFalse(measure.getMeasure().getRequiresCriteriaSelection())) {
                         reviewMeasureHasAllAllowedCriteria(listing, measure);
@@ -187,16 +188,23 @@ public class MeasureReviewer implements Reviewer {
         }
     }
 
-    private void reviewMeasureAssociatedCriteriaHaveIds(
+    private void removeMeasureAssociatedCriteriaWithoutIds(
             CertifiedProductSearchDetails listing, ListingMeasure measure) {
         measure.getAssociatedCriteria().stream()
             .filter(assocCriterion -> assocCriterion.getId() == null)
-            .forEach(assocCriterion -> listing.getErrorMessages().add(msgUtil.getMessage(
+            .forEach(assocCriterion -> listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.measure.invalidAssociatedCriterion",
                     measure.getMeasureType().getName(),
                     measure.getMeasure().getName(),
                     measure.getMeasure().getAbbreviation(),
                     assocCriterion.getNumber())));
+        Iterator<CertificationCriterion> assocCriteriaIter = measure.getAssociatedCriteria().iterator();
+        while (assocCriteriaIter.hasNext()) {
+            CertificationCriterion cc = assocCriteriaIter.next();
+            if (cc.getId() == null) {
+                assocCriteriaIter.remove();
+            }
+        }
     }
 
     private void reviewMeasureTypeExists(CertifiedProductSearchDetails listing, ListingMeasure measure) {
@@ -221,12 +229,32 @@ public class MeasureReviewer implements Reviewer {
                 measureIter.remove();
 
                 String typeName = measure.getMeasureType() == null ? "?" : measure.getMeasureType().getName();
-                String measureName = measure.getMeasure().getLegacyMacraMeasureValue() == null ? "?" : measure.getMeasure().getLegacyMacraMeasureValue();
-                listing.getWarningMessages().add(
-                        msgUtil.getMessage("listing.measureNotFoundAndRemoved", typeName,
-                                measureName,
-                                measure.getAssociatedCriteria().stream().map(crit -> Util.formatCriteriaNumber(crit)).collect(Collectors.joining(", "))));
+                String measureName = getDisplayMeasureNameForUnknownMeasure(measure);
+                String assocCriteria = null;
+                if (!CollectionUtils.isEmpty(measure.getAssociatedCriteria())) {
+                    assocCriteria = measure.getAssociatedCriteria().stream().map(crit -> Util.formatCriteriaNumber(crit)).collect(Collectors.joining(", "));
+                }
+                if (StringUtils.isEmpty(assocCriteria)) {
+                    assocCriteria = "?";
+                }
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.measureNotFoundAndRemoved",
+                        typeName, measureName, assocCriteria));
             }
         }
+    }
+
+    private String getDisplayMeasureNameForUnknownMeasure(ListingMeasure measure) {
+        String measureName = null;
+        if (measure.getMeasure() != null && measure.getMeasure().getDomain() != null
+                && !StringUtils.isEmpty(measure.getMeasure().getDomain().getName())) {
+            measureName = measure.getMeasure().getDomain().getName();
+        }
+        if (measureName == null && !StringUtils.isEmpty(measure.getMeasure().getLegacyMacraMeasureValue())) {
+            measureName = measure.getMeasure().getLegacyMacraMeasureValue();
+        }
+        if (measureName == null && measure.getMeasure() != null && !StringUtils.isEmpty(measure.getMeasure().getName())) {
+            measureName = measure.getMeasure().getName();
+        }
+        return !StringUtils.isEmpty(measureName) ? measureName : "?";
     }
 }

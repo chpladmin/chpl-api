@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.Measure;
+import gov.healthit.chpl.domain.MeasureDomain;
 import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
@@ -38,17 +39,17 @@ public class MeasuresUploadHandler {
     public List<ListingMeasure> parseAsMeasures(CSVRecord headingRecord, List<CSVRecord> listingRecords)
         throws ValidationException {
         List<ListingMeasure> listingMeasures = new ArrayList<ListingMeasure>();
-        List<String> measureNames = parseMeasureNames(headingRecord, listingRecords);
+        List<String> measureDomains = parseMeasureDomains(headingRecord, listingRecords);
         List<String> measureRequiredTests = parseMeasureRequiredTests(headingRecord, listingRecords);
         List<String> measureTypeValues = parseMeasureTypeValues(headingRecord, listingRecords);
         List<String> measureAssociatedCriteria = parseMeasureAssociatedCriteria(headingRecord, listingRecords);
-        if (uploadUtil.areCollectionsEmpty(measureNames, measureRequiredTests, measureTypeValues, measureAssociatedCriteria)) {
+        if (uploadUtil.areCollectionsEmpty(measureDomains, measureRequiredTests, measureTypeValues, measureAssociatedCriteria)) {
             return listingMeasures;
         }
 
         int max = 0;
-        if (CollectionUtils.isNotEmpty(measureNames)) {
-            max = Math.max(max, measureNames.size());
+        if (CollectionUtils.isNotEmpty(measureDomains)) {
+            max = Math.max(max, measureDomains.size());
         }
         if (CollectionUtils.isNotEmpty(measureRequiredTests)) {
             max = Math.max(max, measureRequiredTests.size());
@@ -61,15 +62,15 @@ public class MeasuresUploadHandler {
         }
         //I think everything remains ordered using these data structures so this should be okay.
         listingMeasures = IntStream.range(0, max)
-            .mapToObj(index -> buildListingMeasure(index, measureNames, measureRequiredTests, measureTypeValues, measureAssociatedCriteria))
+            .mapToObj(index -> buildListingMeasure(index, measureDomains, measureRequiredTests, measureTypeValues, measureAssociatedCriteria))
             .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+            .collect(Collectors.toCollection(ArrayList::new));
         return listingMeasures;
     }
 
-    private List<String> parseMeasureNames(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+    private List<String> parseMeasureDomains(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.MEASURE_NAME, headingRecord, listingRecords);
+                Headings.MEASURE_DOMAIN, headingRecord, listingRecords);
         return values;
     }
 
@@ -91,9 +92,9 @@ public class MeasuresUploadHandler {
         return values;
     }
 
-    private ListingMeasure buildListingMeasure(int index, List<String> measureNames, List<String> measureRequiredTests,
+    private ListingMeasure buildListingMeasure(int index, List<String> measureDomains, List<String> measureRequiredTests,
             List<String> measureTypeValues, List<String> measureAssociatedCriteria) {
-        String measureName = (measureNames != null && measureNames.size() > index) ? measureNames.get(index) : null;
+        String measureDomain = (measureDomains != null && measureDomains.size() > index) ? measureDomains.get(index) : null;
         String measureRequiredTest = (measureRequiredTests != null && measureRequiredTests.size() > index)
                 ? measureRequiredTests.get(index) : null;
         String measureTypeName = (measureTypeValues != null && measureTypeValues.size() > index)
@@ -101,7 +102,7 @@ public class MeasuresUploadHandler {
         String measureAssociatedCriteriaDelimited = (measureAssociatedCriteria != null && measureAssociatedCriteria.size() > index)
                 ? measureAssociatedCriteria.get(index) : null;
 
-        if (StringUtils.isAllEmpty(measureName, measureRequiredTest, measureTypeName, measureAssociatedCriteriaDelimited)) {
+        if (StringUtils.isAllEmpty(measureDomain, measureRequiredTest, measureTypeName, measureAssociatedCriteriaDelimited)) {
             return null;
         }
 
@@ -121,8 +122,10 @@ public class MeasuresUploadHandler {
 
         return ListingMeasure.builder()
                 .measure(Measure.builder()
-                        .name(measureName)
-                        .requiredTest(measureRequiredTest)
+                        .domain(MeasureDomain.builder()
+                                .name(measureDomain)
+                                .build())
+                        .abbreviation(measureRequiredTest)
                         .build())
                 .measureType(MeasureType.builder().name(measureTypeName).build())
                 .associatedCriteria(associatedCriteria)

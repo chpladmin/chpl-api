@@ -2,6 +2,7 @@ package gov.healthit.chpl.upload.listing.normalizer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -87,10 +88,11 @@ public class MeasureNormalizer {
     private void populateMeasureWithMipsValues(ListingMeasure listingMeasure) {
         if (listingMeasure.getMeasure() != null
                 && listingMeasure.getMeasure().getId() == null
-                && !StringUtils.isEmpty(listingMeasure.getMeasure().getName())
-                && !StringUtils.isEmpty(listingMeasure.getMeasure().getRequiredTest())) {
-            Measure foundMeasure = measureDao.getByNameAndRequiredTest(
-                    listingMeasure.getMeasure().getName(), listingMeasure.getMeasure().getRequiredTest());
+                && listingMeasure.getMeasure().getDomain() != null
+                && !StringUtils.isEmpty(listingMeasure.getMeasure().getDomain().getName())
+                && !StringUtils.isEmpty(listingMeasure.getMeasure().getAbbreviation())) {
+            Measure foundMeasure = measureDao.getByDomainAndAbbreviation(
+                    listingMeasure.getMeasure().getDomain().getName(), listingMeasure.getMeasure().getAbbreviation());
             if (foundMeasure != null) {
                 listingMeasure.setMeasure(foundMeasure);
             }
@@ -161,7 +163,7 @@ public class MeasureNormalizer {
         listingMeasure.getAssociatedCriteria().stream()
             .forEach(associatedCriterion -> {
                 List<CertificationCriterion> criteriaWithNumber = criteriaService.getByNumber(associatedCriterion.getNumber());
-                if (criteriaWithNumber.size() > 1) {
+                if (criteriaWithNumber != null && criteriaWithNumber.size() > 1) {
                     associatedCriteriaCopy.addAll(criteriaWithNumber);
                 }
             });
@@ -169,9 +171,13 @@ public class MeasureNormalizer {
     }
 
     private MeasureType getMeasureTypeByName(String name) {
-        return measureTypes.stream()
+        Optional<MeasureType> foundMeasureType = measureTypes.stream()
             .filter(type -> type.getName().equalsIgnoreCase(name))
-            .findAny().get();
+            .findAny();
+        if (foundMeasureType.isPresent()) {
+            return foundMeasureType.get();
+        }
+        return null;
     }
 
     private void combineListingMeasures(List<ListingMeasure> combinedListingMeasures, List<ListingMeasure> currListingMeasures) {

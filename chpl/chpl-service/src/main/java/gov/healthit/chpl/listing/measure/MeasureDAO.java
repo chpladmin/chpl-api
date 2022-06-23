@@ -10,8 +10,10 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.Measure;
+import lombok.extern.log4j.Log4j2;
 
 @Repository("measuresDao")
+@Log4j2
 public class MeasureDAO extends BaseDAOImpl {
     public static final String MEASURE_HQL_BEGIN = "SELECT DISTINCT measure "
             + "FROM MeasureEntity measure "
@@ -36,20 +38,23 @@ public class MeasureDAO extends BaseDAOImpl {
         return result;
     }
 
-    public Measure getByNameAndRequiredTest(String measureName, String requiredTest) {
+    public Measure getByDomainAndAbbreviation(String measureDomain, String rtAbbreviation) {
         Query query = entityManager.createQuery(
                 MEASURE_HQL_BEGIN
                 + "WHERE measure.deleted = false "
-                + "AND UPPER(measure.name) = :measureName "
-                + "AND UPPER(measure.requiredTest) = :requiredTest",
+                + "AND UPPER(measure.domain.domain) = :measureDomain "
+                + "AND UPPER(measure.abbreviation) = :rtAbbreviation",
                 MeasureEntity.class);
-        query.setParameter("name", measureName.toUpperCase());
-        query.setParameter("requiredTest", requiredTest.toUpperCase());
+        query.setParameter("measureDomain", measureDomain.toUpperCase());
+        query.setParameter("rtAbbreviation", rtAbbreviation.toUpperCase());
         List<MeasureEntity> entities = query.getResultList();
 
         Measure result = null;
         if (entities != null && entities.size() > 0) {
             result = entities.get(0).convert();
+            if (entities.size() > 1) {
+                LOGGER.warn("Expected only one measure to match '" + measureDomain + "' and '" + rtAbbreviation + "' but found more than one match. Only the first match is being used for flexible upload.");
+            }
         }
         return result;
     }

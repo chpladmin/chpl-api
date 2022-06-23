@@ -20,6 +20,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.Measure;
+import gov.healthit.chpl.domain.MeasureDomain;
 import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -203,7 +204,7 @@ public class MeasureReviewerTest {
     }
 
     @Test
-    public void review_noMeasureId_errorMessage() throws ParseException {
+    public void review_legacyMeasureNoId_errorMessage() throws ParseException {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         listing.getMeasures().add(ListingMeasure.builder()
                 .measure(Measure.builder()
@@ -222,6 +223,52 @@ public class MeasureReviewerTest {
         assertEquals(1, listing.getWarningMessages().size());
         System.out.println(listing.getWarningMessages().iterator().next());
         assertTrue(listing.getWarningMessages().contains(String.format(MEASURE_NOT_FOUND, "G1", "Test", "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_mipsMeasureWithNameNoId_errorMessage() throws ParseException {
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+        listing.getMeasures().add(ListingMeasure.builder()
+                .measure(Measure.builder()
+                        .name("m1")
+                        .build())
+                .measureType(MeasureType.builder()
+                        .id(1L)
+                        .name("G1")
+                        .build())
+                .associatedCriteria(buildCriterionSet(1L, "170.315 (a)(1)"))
+                .build());
+        assertEquals(1, listing.getMeasures().size());
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getMeasures().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        System.out.println(listing.getWarningMessages().iterator().next());
+        assertTrue(listing.getWarningMessages().contains(String.format(MEASURE_NOT_FOUND, "G1", "m1", "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_mipsMeasureWithDomainNoId_errorMessage() throws ParseException {
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+        listing.getMeasures().add(ListingMeasure.builder()
+                .measure(Measure.builder()
+                        .domain(MeasureDomain.builder()
+                                .name("m1")
+                                .build())
+                        .build())
+                .measureType(MeasureType.builder()
+                        .id(1L)
+                        .name("G1")
+                        .build())
+                .associatedCriteria(buildCriterionSet(1L, "170.315 (a)(1)"))
+                .build());
+        assertEquals(1, listing.getMeasures().size());
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getMeasures().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        System.out.println(listing.getWarningMessages().iterator().next());
+        assertTrue(listing.getWarningMessages().contains(String.format(MEASURE_NOT_FOUND, "G1", "m1", "170.315 (a)(1)")));
     }
 
     @Test
@@ -335,7 +382,7 @@ public class MeasureReviewerTest {
     }
 
     @Test
-    public void review_associatesInvalidCriterion_errorMessage() throws ParseException {
+    public void review_associatesInvalidCriterion_hasWarningAndRemovesCriterion() throws ParseException {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         Set<CertificationCriterion> associatedCriterion = new LinkedHashSet<CertificationCriterion>();
         associatedCriterion.add(CertificationCriterion.builder()
@@ -362,11 +409,12 @@ public class MeasureReviewerTest {
 
         reviewer.review(listing);
 
-        assertEquals(2, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
+        assertEquals(2, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
                 String.format(INVALID_ASSOCIATED_CRITERIA, "G1", "Test", "T", "a1")));
-        assertTrue(listing.getErrorMessages().contains(
+        assertTrue(listing.getWarningMessages().contains(
                 String.format(INVALID_ASSOCIATED_CRITERIA, "G1", "Test", "T", "junk")));
+        assertEquals(0, listing.getMeasures().get(0).getAssociatedCriteria().size());
     }
 
     @Test
@@ -459,7 +507,7 @@ public class MeasureReviewerTest {
                         .inherits(false)
                         .build())
                 .certificationResult(g1Result)
-                .measure(measure)
+                .measures(Stream.of(measure).collect(Collectors.toList()))
                 .build();
         reviewer.review(listing);
 
@@ -495,7 +543,7 @@ public class MeasureReviewerTest {
                 .build();
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(g1Result)
-                .measure(measure)
+                .measures(Stream.of(measure).collect(Collectors.toList()))
                 .build();
         reviewer.review(listing);
 
@@ -533,7 +581,7 @@ public class MeasureReviewerTest {
                         .inherits(true)
                         .build())
                 .certificationResult(g1Result)
-                .measure(measure)
+                .measures(Stream.of(measure).collect(Collectors.toList()))
                 .build();
         reviewer.review(listing);
 

@@ -18,7 +18,7 @@ import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class MeasuresUploadHandlerTest {
-    private static final String HEADER_ROW_ALL_MEASURE_FIELDS = "UNIQUE_CHPL_ID__C,Measure Name,Measure Required Test,Measure Type,Measure Associated Criteria";
+    private static final String HEADER_ROW_ALL_MEASURE_FIELDS = "UNIQUE_CHPL_ID__C,Measure Domain,Measure Required Test,Measure Type,Measure Associated Criteria";
     private static final String LISTING_ROW_BEGIN = "15.02.02.3007.A056.01.00.0.180214";
 
     private MeasuresUploadHandler handler;
@@ -55,7 +55,7 @@ public class MeasuresUploadHandlerTest {
     }
 
     @Test
-    public void parseMeasures_MeasureHeaderWithOneMeasureAndNoName_ReturnsMeasureWithNullName() {
+    public void parseMeasures_MeasureHeaderWithOneMeasureAndNoDomain_ReturnsMeasureWithEmptyDomainName() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_MEASURE_FIELDS).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",,rt1,g1,crit1");
@@ -66,14 +66,15 @@ public class MeasuresUploadHandlerTest {
         assertEquals(1, parsedListingMeasures.size());
         ListingMeasure parsedMeasure = parsedListingMeasures.get(0);
         assertNotNull(parsedMeasure.getMeasure());
-        assertEquals("", parsedMeasure.getMeasure().getName());
+        assertNotNull(parsedMeasure.getMeasure().getDomain());
+        assertEquals("", parsedMeasure.getMeasure().getDomain().getName());
     }
 
     @Test
-    public void parseMeasures_MeasureHeaderWithOneMeasureAndNoRequiredTest_ReturnsMeasureWithNullRequiredTest() {
+    public void parseMeasures_MeasureHeaderWithOneMeasureAndNoRequiredTest_ReturnsMeasureWithEmptyAbbreviation() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_MEASURE_FIELDS).get(0);
         assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",name,,g1,crit1");
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",EC,,g1,crit1");
         assertNotNull(listingRecords);
 
         List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, listingRecords);
@@ -81,14 +82,14 @@ public class MeasuresUploadHandlerTest {
         assertEquals(1, parsedListingMeasures.size());
         ListingMeasure parsedMeasure = parsedListingMeasures.get(0);
         assertNotNull(parsedMeasure.getMeasure());
-        assertEquals("", parsedMeasure.getMeasure().getRequiredTest());
+        assertEquals("", parsedMeasure.getMeasure().getAbbreviation());
     }
 
     @Test
-    public void parseMeasures_MeasureHeaderWithOneMeasureAndNoType_ReturnsMeasureWithNullTypeName() {
+    public void parseMeasures_MeasureHeaderWithOneMeasureAndNoType_ReturnsMeasureWithEmptyTypeName() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_MEASURE_FIELDS).get(0);
         assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",name,rt1,,crit1");
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",EC,rt1,,crit1");
         assertNotNull(listingRecords);
 
         List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, listingRecords);
@@ -103,7 +104,7 @@ public class MeasuresUploadHandlerTest {
     public void parseMeasures_MeasureHeaderWithOneMeasureAndNoAssociatedCriteria_ReturnsMeasureWithEmptyAssociatedCriteria() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_MEASURE_FIELDS).get(0);
         assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",name,rt1,g1,");
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",EC,rt1,g1,");
         assertNotNull(listingRecords);
 
         List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, listingRecords);
@@ -119,7 +120,7 @@ public class MeasuresUploadHandlerTest {
     public void parseMeasures_MeasureHeaderWithOneMeasureAndOneAssociatedCriterion_ReturnsMeasureWithAllFields() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_MEASURE_FIELDS).get(0);
         assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",name,rt1,g1,170.315 (a)(1)");
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",EC,RT1,G1,170.315 (a)(1)");
         assertNotNull(listingRecords);
 
         List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, listingRecords);
@@ -127,10 +128,11 @@ public class MeasuresUploadHandlerTest {
         assertEquals(1, parsedListingMeasures.size());
         ListingMeasure parsedMeasure = parsedListingMeasures.get(0);
         assertNotNull(parsedMeasure.getMeasure());
-        assertEquals("name", parsedMeasure.getMeasure().getName());
-        assertEquals("rt1", parsedMeasure.getMeasure().getRequiredTest());
+        assertNotNull(parsedMeasure.getMeasure().getDomain());
+        assertEquals("EC", parsedMeasure.getMeasure().getDomain().getName());
+        assertEquals("RT1", parsedMeasure.getMeasure().getAbbreviation());
         assertNotNull(parsedMeasure.getMeasureType());
-        assertEquals("g1", parsedMeasure.getMeasureType().getName());
+        assertEquals("G1", parsedMeasure.getMeasureType().getName());
         assertNotNull(parsedMeasure.getAssociatedCriteria());
         assertEquals(1, parsedMeasure.getAssociatedCriteria().size());
         assertEquals("170.315 (a)(1)", parsedMeasure.getAssociatedCriteria().iterator().next().getNumber());
@@ -140,7 +142,7 @@ public class MeasuresUploadHandlerTest {
     public void parseMeasures_MeasureHeaderWithOneMeasureAndTwoAssociatedCriteria_ReturnsMeasureWithAllFields() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_MEASURE_FIELDS).get(0);
         assertNotNull(headingRecord);
-        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",name,rt1,g1,170.315 (a)(1);a2");
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",EP,RT1,G1,170.315 (a)(1);a2");
         assertNotNull(listingRecords);
 
         List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, listingRecords);
@@ -148,10 +150,11 @@ public class MeasuresUploadHandlerTest {
         assertEquals(1, parsedListingMeasures.size());
         ListingMeasure parsedMeasure = parsedListingMeasures.get(0);
         assertNotNull(parsedMeasure.getMeasure());
-        assertEquals("name", parsedMeasure.getMeasure().getName());
-        assertEquals("rt1", parsedMeasure.getMeasure().getRequiredTest());
+        assertNotNull(parsedMeasure.getMeasure().getDomain());
+        assertEquals("EP", parsedMeasure.getMeasure().getDomain().getName());
+        assertEquals("RT1", parsedMeasure.getMeasure().getAbbreviation());
         assertNotNull(parsedMeasure.getMeasureType());
-        assertEquals("g1", parsedMeasure.getMeasureType().getName());
+        assertEquals("G1", parsedMeasure.getMeasureType().getName());
         assertNotNull(parsedMeasure.getAssociatedCriteria());
         assertEquals(2, parsedMeasure.getAssociatedCriteria().size());
         Iterator<CertificationCriterion> assocCriteriaIter = parsedMeasure.getAssociatedCriteria().iterator();
@@ -174,8 +177,9 @@ public class MeasuresUploadHandlerTest {
 
         ListingMeasure parsedMeasure = parsedListingMeasures.get(0);
         assertNotNull(parsedMeasure.getMeasure());
-        assertEquals("name", parsedMeasure.getMeasure().getName());
-        assertEquals("rt1", parsedMeasure.getMeasure().getRequiredTest());
+        assertNotNull(parsedMeasure.getMeasure().getDomain());
+        assertEquals("name", parsedMeasure.getMeasure().getDomain().getName());
+        assertEquals("rt1", parsedMeasure.getMeasure().getAbbreviation());
         assertNotNull(parsedMeasure.getMeasureType());
         assertEquals("g1", parsedMeasure.getMeasureType().getName());
         assertNotNull(parsedMeasure.getAssociatedCriteria());
@@ -186,8 +190,9 @@ public class MeasuresUploadHandlerTest {
 
         parsedMeasure = parsedListingMeasures.get(1);
         assertNotNull(parsedMeasure.getMeasure());
-        assertEquals("name2", parsedMeasure.getMeasure().getName());
-        assertEquals("rt2", parsedMeasure.getMeasure().getRequiredTest());
+        assertNotNull(parsedMeasure.getMeasure().getDomain());
+        assertEquals("name2", parsedMeasure.getMeasure().getDomain().getName());
+        assertEquals("rt2", parsedMeasure.getMeasure().getAbbreviation());
         assertNotNull(parsedMeasure.getMeasureType());
         assertEquals("g2", parsedMeasure.getMeasureType().getName());
         assertNotNull(parsedMeasure.getAssociatedCriteria());
@@ -196,8 +201,9 @@ public class MeasuresUploadHandlerTest {
 
         parsedMeasure = parsedListingMeasures.get(2);
         assertNotNull(parsedMeasure.getMeasure());
-        assertEquals("name3", parsedMeasure.getMeasure().getName());
-        assertEquals("rt2", parsedMeasure.getMeasure().getRequiredTest());
+        assertNotNull(parsedMeasure.getMeasure().getDomain());
+        assertEquals("name3", parsedMeasure.getMeasure().getDomain().getName());
+        assertEquals("rt2", parsedMeasure.getMeasure().getAbbreviation());
         assertNotNull(parsedMeasure.getMeasureType());
         assertEquals("", parsedMeasure.getMeasureType().getName());
         assertNotNull(parsedMeasure.getAssociatedCriteria());
@@ -219,8 +225,9 @@ public class MeasuresUploadHandlerTest {
 
         ListingMeasure parsedMeasure = parsedListingMeasures.get(0);
         assertNotNull(parsedMeasure.getMeasure());
-        assertEquals("name", parsedMeasure.getMeasure().getName());
-        assertEquals("rt1", parsedMeasure.getMeasure().getRequiredTest());
+        assertNotNull(parsedMeasure.getMeasure().getDomain());
+        assertEquals("name", parsedMeasure.getMeasure().getDomain().getName());
+        assertEquals("rt1", parsedMeasure.getMeasure().getAbbreviation());
         assertNotNull(parsedMeasure.getMeasureType());
         assertEquals("g1", parsedMeasure.getMeasureType().getName());
         assertNotNull(parsedMeasure.getAssociatedCriteria());
@@ -229,8 +236,9 @@ public class MeasuresUploadHandlerTest {
 
         parsedMeasure = parsedListingMeasures.get(1);
         assertNotNull(parsedMeasure.getMeasure());
-        assertEquals("name", parsedMeasure.getMeasure().getName());
-        assertEquals("rt1", parsedMeasure.getMeasure().getRequiredTest());
+        assertNotNull(parsedMeasure.getMeasure().getDomain());
+        assertEquals("name", parsedMeasure.getMeasure().getDomain().getName());
+        assertEquals("rt1", parsedMeasure.getMeasure().getAbbreviation());
         assertNotNull(parsedMeasure.getMeasureType());
         assertEquals("g1", parsedMeasure.getMeasureType().getName());
         assertNotNull(parsedMeasure.getAssociatedCriteria());
@@ -239,8 +247,9 @@ public class MeasuresUploadHandlerTest {
 
         parsedMeasure = parsedListingMeasures.get(2);
         assertNotNull(parsedMeasure.getMeasure());
-        assertEquals("name", parsedMeasure.getMeasure().getName());
-        assertEquals("rt1", parsedMeasure.getMeasure().getRequiredTest());
+        assertNotNull(parsedMeasure.getMeasure().getDomain());
+        assertEquals("name", parsedMeasure.getMeasure().getDomain().getName());
+        assertEquals("rt1", parsedMeasure.getMeasure().getAbbreviation());
         assertNotNull(parsedMeasure.getMeasureType());
         assertEquals("g1", parsedMeasure.getMeasureType().getName());
         assertNotNull(parsedMeasure.getAssociatedCriteria());
