@@ -33,6 +33,7 @@ public class MeasureReviewerTest {
     private static final String MISSING_ASSOCIATED_CRITERIA = "The %s measure %s for %s must have at least one associated criterion.";
     private static final String MISSING_REQUIRED_CRITERIA = "The %s measure %s for %s is missing required criterion %s.";
     private static final String NOT_ALLOWED_ASSOCIATED_CRITERIA = "The %s measure %s for %s cannot have associated criterion %s.";
+    private static final String INVALID_ASSOCIATED_CRITERIA = "The %s measure %s for %s has an invalid associated criterion %s.";
     private static final String REMOVED_MEASURE_WITHOUT_ICS = "The %s Measure: %s for %s may not be referenced since this listing does not have ICS. The measure has been removed.";
 
     private CertificationCriterionService criterionService;
@@ -67,6 +68,9 @@ public class MeasureReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.measure.associatedCriterionNotAllowed"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(NOT_ALLOWED_ASSOCIATED_CRITERIA, i.getArgument(1), i.getArgument(2), i.getArgument(3), i.getArgument(4)));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.measure.invalidAssociatedCriterion"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(INVALID_ASSOCIATED_CRITERIA, i.getArgument(1), i.getArgument(2), i.getArgument(3), i.getArgument(4)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.removedMeasureNoIcs"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(REMOVED_MEASURE_WITHOUT_ICS, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
@@ -328,6 +332,41 @@ public class MeasureReviewerTest {
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
                 String.format(NOT_ALLOWED_ASSOCIATED_CRITERIA, "G1", "Test", "T", "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_associatesInvalidCriterion_errorMessage() throws ParseException {
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+        Set<CertificationCriterion> associatedCriterion = new LinkedHashSet<CertificationCriterion>();
+        associatedCriterion.add(CertificationCriterion.builder()
+                .id(null)
+                .number("a1")
+                .build());
+        associatedCriterion.add(CertificationCriterion.builder()
+                .id(null)
+                .number("junk")
+                .build());
+        listing.getMeasures().add(ListingMeasure.builder()
+                .measure(Measure.builder()
+                        .id(1L)
+                        .name("Test")
+                        .abbreviation("T")
+                        .requiresCriteriaSelection(false)
+                        .build())
+                .measureType(MeasureType.builder()
+                        .id(1L)
+                        .name("G1")
+                        .build())
+                .associatedCriteria(associatedCriterion)
+                .build());
+
+        reviewer.review(listing);
+
+        assertEquals(2, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(
+                String.format(INVALID_ASSOCIATED_CRITERIA, "G1", "Test", "T", "a1")));
+        assertTrue(listing.getErrorMessages().contains(
+                String.format(INVALID_ASSOCIATED_CRITERIA, "G1", "Test", "T", "junk")));
     }
 
     @Test

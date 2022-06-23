@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.validation.ValidationException;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
+import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.upload.listing.Headings;
@@ -99,7 +101,10 @@ public class ListingDetailsUploadHandler {
             .build();
 
         //add measures from the criteria level - not preferred
-        listing.setMeasures(measureAtCriteriaLevelHandler.parseAsMeasures(headingRecord, listingRecords));
+        List<ListingMeasure> measuresFromCriteriaLevel = measureAtCriteriaLevelHandler.parseAsMeasures(headingRecord, listingRecords);
+        if (!CollectionUtils.isEmpty(measuresFromCriteriaLevel)) {
+            listing.getMeasures().addAll(measuresFromCriteriaLevel);
+        }
 
         //add cert result data
         List<CertificationResult> certResultList = new ArrayList<CertificationResult>();

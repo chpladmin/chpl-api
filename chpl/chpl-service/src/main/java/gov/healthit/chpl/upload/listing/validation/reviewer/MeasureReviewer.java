@@ -53,6 +53,7 @@ public class MeasureReviewer implements Reviewer {
                     //ICS + Removed check is only done for uploaded listings
                     reviewIcsAndRemovedMeasures(listing, measure);
                     reviewMeasureHasAssociatedCriteria(listing, measure);
+                    reviewMeasureAssociatedCriteriaHaveIds(listing, measure);
                     reviewMeasureHasOnlyAllowedCriteria(listing, measure);
                     if (BooleanUtils.isFalse(measure.getMeasure().getRequiresCriteriaSelection())) {
                         reviewMeasureHasAllAllowedCriteria(listing, measure);
@@ -134,6 +135,7 @@ public class MeasureReviewer implements Reviewer {
 
         List<CertificationCriterion> assocCriteriaNotAllowed =
                 measure.getAssociatedCriteria().stream()
+                .filter(assocCriterion -> assocCriterion.getId() != null)
                 .filter(notInAllowedCriteria)
                 .collect(Collectors.toList());
 
@@ -156,6 +158,7 @@ public class MeasureReviewer implements Reviewer {
 
         Predicate<CertificationCriterion> notInAssociatedCriteria =
                 allowedCriterion -> !measure.getAssociatedCriteria().stream()
+                .filter(assocCriterion -> assocCriterion.getId() != null)
                 .anyMatch(assocCriterion -> allowedCriterion.getId().equals(assocCriterion.getId()));
 
         List<CertificationCriterion> missingAllowedCriteria =
@@ -182,6 +185,18 @@ public class MeasureReviewer implements Reviewer {
                     measure.getMeasure().getName(),
                     measure.getMeasure().getAbbreviation()));
         }
+    }
+
+    private void reviewMeasureAssociatedCriteriaHaveIds(
+            CertifiedProductSearchDetails listing, ListingMeasure measure) {
+        measure.getAssociatedCriteria().stream()
+            .filter(assocCriterion -> assocCriterion.getId() == null)
+            .forEach(assocCriterion -> listing.getErrorMessages().add(msgUtil.getMessage(
+                    "listing.measure.invalidAssociatedCriterion",
+                    measure.getMeasureType().getName(),
+                    measure.getMeasure().getName(),
+                    measure.getMeasure().getAbbreviation(),
+                    assocCriterion.getNumber())));
     }
 
     private void reviewMeasureTypeExists(CertifiedProductSearchDetails listing, ListingMeasure measure) {
