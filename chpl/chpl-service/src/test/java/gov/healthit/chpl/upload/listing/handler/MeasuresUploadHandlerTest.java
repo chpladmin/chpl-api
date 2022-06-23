@@ -2,19 +2,17 @@ package gov.healthit.chpl.upload.listing.handler;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.csv.CSVRecord;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.ListingMeasure;
-import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -23,182 +21,230 @@ public class MeasuresUploadHandlerTest {
     private static final String HEADER_ROW_ALL_MEASURE_FIELDS = "UNIQUE_CHPL_ID__C,Measure Name,Measure Required Test,Measure Type,Measure Associated Criteria";
     private static final String LISTING_ROW_BEGIN = "15.02.02.3007.A056.01.00.0.180214";
 
-    private CertificationCriterionService criteriaService;
     private MeasuresUploadHandler handler;
 
     @Before
     public void setup() {
-        criteriaService = Mockito.mock(CertificationCriterionService.class);
-        //TODO: mock this
-        CertificationCriterionUploadHandler criterionHandler = Mockito.mock(CertificationCriterionUploadHandler.class);
-        Mockito.when(criterionHandler.handle(ArgumentMatchers.any()))
-            .thenReturn(buildCriterion(1L, "170.315 (a)(1)", "a title"));
         ErrorMessageUtil msgUtil = Mockito.mock(ErrorMessageUtil.class);
         ListingUploadHandlerUtil handlerUtil = new ListingUploadHandlerUtil(msgUtil);
-        handler = new MeasuresUploadHandler(handlerUtil, criteriaService);
+        handler = new MeasuresUploadHandler(handlerUtil);
     }
 
     @Test
-    public void parseMeasures_NoCriteriaOrMeasureColumns_ReturnsEmptyList() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C").get(0);
+    public void parseMeasures_NoMeasureHeadings_ReturnsEmptyList() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,CRITERIA_170_315_A_1__C").get(0);
         assertNotNull(headingRecord);
-        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("14.05.05");
-        assertNotNull(certResultRecords);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",1");
+        assertNotNull(listingRecords);
 
-        List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, certResultRecords);
+        List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, listingRecords);
         assertNotNull(parsedListingMeasures);
         assertEquals(0, parsedListingMeasures.size());
     }
 
     @Test
-    public void parseMeasures_NoMeasureColumns_ReturnsEmptyList() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString("CRITERIA_170_315_A_1__C").get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1");
-        assertNotNull(certResultRecords);
-
-        List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, certResultRecords);
-        assertNotNull(parsedListingMeasures);
-        assertEquals(0, parsedListingMeasures.size());
-    }
-
-    @Test
-    public void parseMeasures_G1MeasureHeaderNoData_ReturnsEmptyList() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
-                "CRITERIA_170_315_A_1__C,Measure Successfully Tested for G1").get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,");
-        assertNotNull(certResultRecords);
-
-        List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, certResultRecords);
-        assertNotNull(parsedListingMeasures);
-        assertEquals(0, parsedListingMeasures.size());
-    }
-
-    @Test
-    public void parseMeasures_G2MeasureHeaderNoData_ReturnsEmptyList() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
-                "CRITERIA_170_315_A_1__C,Measure Successfully Tested for G2").get(0);
-        assertNotNull(headingRecord);
-        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,");
-        assertNotNull(certResultRecords);
-
-        List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, certResultRecords);
-        assertNotNull(parsedListingMeasures);
-        assertEquals(0, parsedListingMeasures.size());
-    }
-
-    @Test
-    public void parseMeasures_AllMeasureColumnsNoData_ReturnsEmptyList() {
+    public void parseMeasures_MeasureHeadingsNoData_ReturnsEmptyList() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_MEASURE_FIELDS).get(0);
         assertNotNull(headingRecord);
-        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,,");
-        assertNotNull(certResultRecords);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",,,,");
+        assertNotNull(listingRecords);
 
-        List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, certResultRecords);
+        List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, listingRecords);
         assertNotNull(parsedListingMeasures);
         assertEquals(0, parsedListingMeasures.size());
     }
 
     @Test
-    public void parseMeasures_G1MeasureHeaderWithData_ReturnsMeasuresWithData() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
-                "CRITERIA_170_315_A_1__C,Measure Successfully Tested for G1").get(0);
+    public void parseMeasures_MeasureHeaderWithOneMeasureAndNoName_ReturnsMeasureWithNullName() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_MEASURE_FIELDS).get(0);
         assertNotNull(headingRecord);
-        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,legacy measure name");
-        assertNotNull(certResultRecords);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",,rt1,g1,crit1");
+        assertNotNull(listingRecords);
 
-        List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, certResultRecords);
+        List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, listingRecords);
+        assertNotNull(parsedListingMeasures);
+        assertEquals(1, parsedListingMeasures.size());
+        ListingMeasure parsedMeasure = parsedListingMeasures.get(0);
+        assertNotNull(parsedMeasure.getMeasure());
+        assertEquals("", parsedMeasure.getMeasure().getName());
+    }
+
+    @Test
+    public void parseMeasures_MeasureHeaderWithOneMeasureAndNoRequiredTest_ReturnsMeasureWithNullRequiredTest() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_MEASURE_FIELDS).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",name,,g1,crit1");
+        assertNotNull(listingRecords);
+
+        List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, listingRecords);
+        assertNotNull(parsedListingMeasures);
+        assertEquals(1, parsedListingMeasures.size());
+        ListingMeasure parsedMeasure = parsedListingMeasures.get(0);
+        assertNotNull(parsedMeasure.getMeasure());
+        assertEquals("", parsedMeasure.getMeasure().getRequiredTest());
+    }
+
+    @Test
+    public void parseMeasures_MeasureHeaderWithOneMeasureAndNoType_ReturnsMeasureWithNullTypeName() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_MEASURE_FIELDS).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",name,rt1,,crit1");
+        assertNotNull(listingRecords);
+
+        List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, listingRecords);
         assertNotNull(parsedListingMeasures);
         assertEquals(1, parsedListingMeasures.size());
         ListingMeasure parsedMeasure = parsedListingMeasures.get(0);
         assertNotNull(parsedMeasure.getMeasureType());
-        assertEquals("G1", parsedMeasure.getMeasureType().getName());
+        assertEquals("", parsedMeasure.getMeasureType().getName());
+    }
+
+    @Test
+    public void parseMeasures_MeasureHeaderWithOneMeasureAndNoAssociatedCriteria_ReturnsMeasureWithEmptyAssociatedCriteria() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_MEASURE_FIELDS).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",name,rt1,g1,");
+        assertNotNull(listingRecords);
+
+        List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, listingRecords);
+        assertNotNull(parsedListingMeasures);
+        assertEquals(1, parsedListingMeasures.size());
+        ListingMeasure parsedMeasure = parsedListingMeasures.get(0);
+        assertNotNull(parsedMeasure);
+        assertNotNull(parsedMeasure.getAssociatedCriteria());
+        assertEquals(0, parsedMeasure.getAssociatedCriteria().size());
+    }
+
+    @Test
+    public void parseMeasures_MeasureHeaderWithOneMeasureAndOneAssociatedCriterion_ReturnsMeasureWithAllFields() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_MEASURE_FIELDS).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",name,rt1,g1,170.315 (a)(1)");
+        assertNotNull(listingRecords);
+
+        List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, listingRecords);
+        assertNotNull(parsedListingMeasures);
+        assertEquals(1, parsedListingMeasures.size());
+        ListingMeasure parsedMeasure = parsedListingMeasures.get(0);
         assertNotNull(parsedMeasure.getMeasure());
-        assertEquals("legacy measure name", parsedMeasure.getMeasure().getLegacyMacraMeasureValue());
+        assertEquals("name", parsedMeasure.getMeasure().getName());
+        assertEquals("rt1", parsedMeasure.getMeasure().getRequiredTest());
+        assertNotNull(parsedMeasure.getMeasureType());
+        assertEquals("g1", parsedMeasure.getMeasureType().getName());
         assertNotNull(parsedMeasure.getAssociatedCriteria());
         assertEquals(1, parsedMeasure.getAssociatedCriteria().size());
+        assertEquals("170.315 (a)(1)", parsedMeasure.getAssociatedCriteria().iterator().next().getNumber());
     }
 
     @Test
-    public void parseMeasures_G2MeasureHeaderWithData_ReturnsMeasuresWithData() {
-        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
-                "CRITERIA_170_315_A_1__C,Measure Successfully Tested for G2").get(0);
+    public void parseMeasures_MeasureHeaderWithOneMeasureAndTwoAssociatedCriteria_ReturnsMeasureWithAllFields() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_MEASURE_FIELDS).get(0);
         assertNotNull(headingRecord);
-        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,legacy measure name");
-        assertNotNull(certResultRecords);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",name,rt1,g1,170.315 (a)(1);a2");
+        assertNotNull(listingRecords);
 
-        List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, certResultRecords);
+        List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, listingRecords);
         assertNotNull(parsedListingMeasures);
         assertEquals(1, parsedListingMeasures.size());
         ListingMeasure parsedMeasure = parsedListingMeasures.get(0);
-        assertNotNull(parsedMeasure.getMeasureType());
-        assertEquals("G2", parsedMeasure.getMeasureType().getName());
         assertNotNull(parsedMeasure.getMeasure());
-        assertEquals("legacy measure name", parsedMeasure.getMeasure().getLegacyMacraMeasureValue());
+        assertEquals("name", parsedMeasure.getMeasure().getName());
+        assertEquals("rt1", parsedMeasure.getMeasure().getRequiredTest());
+        assertNotNull(parsedMeasure.getMeasureType());
+        assertEquals("g1", parsedMeasure.getMeasureType().getName());
+        assertNotNull(parsedMeasure.getAssociatedCriteria());
+        assertEquals(2, parsedMeasure.getAssociatedCriteria().size());
+        Iterator<CertificationCriterion> assocCriteriaIter = parsedMeasure.getAssociatedCriteria().iterator();
+        assertEquals("170.315 (a)(1)", assocCriteriaIter.next().getNumber());
+        assertEquals("a2", assocCriteriaIter.next().getNumber());
     }
 
     @Test
-    public void parseMeasures_G1AndG2MeasureHeaderWithSingleDataRow_ReturnsMeasuresWithData() {
+    public void parseMeasures_MeasureHeaderWithMultipleMeasuresVariousData_ReturnsMeasuresCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_MEASURE_FIELDS).get(0);
         assertNotNull(headingRecord);
-        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,legacy g1,legacy g2");
-        assertNotNull(certResultRecords);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",name,rt1,g1,170.315 (a)(1);a2\n"
+                + LISTING_ROW_BEGIN + ",name2,rt2,g2,a2\n"
+                + LISTING_ROW_BEGIN + ",name3,rt2,,");
+        assertNotNull(listingRecords);
 
-        List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, certResultRecords);
+        List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, listingRecords);
         assertNotNull(parsedListingMeasures);
-        assertEquals(2, parsedListingMeasures.size());
-        for (ListingMeasure parsedMeasure : parsedListingMeasures) {
-            assertNotNull(parsedMeasure.getMeasureType());
-            if (parsedMeasure.getMeasureType().getName().equals("G1")) {
-                assertNotNull(parsedMeasure.getMeasure());
-                assertEquals("legacy g1", parsedMeasure.getMeasure().getLegacyMacraMeasureValue());
-            } else if (parsedMeasure.getMeasureType().getName().equals("G2")) {
-                assertNotNull(parsedMeasure.getMeasure());
-                assertEquals("legacy g2", parsedMeasure.getMeasure().getLegacyMacraMeasureValue());
-            } else {
-                fail("Unexpected measure type");
-            }
-        }
+        assertEquals(3, parsedListingMeasures.size());
+
+        ListingMeasure parsedMeasure = parsedListingMeasures.get(0);
+        assertNotNull(parsedMeasure.getMeasure());
+        assertEquals("name", parsedMeasure.getMeasure().getName());
+        assertEquals("rt1", parsedMeasure.getMeasure().getRequiredTest());
+        assertNotNull(parsedMeasure.getMeasureType());
+        assertEquals("g1", parsedMeasure.getMeasureType().getName());
+        assertNotNull(parsedMeasure.getAssociatedCriteria());
+        assertEquals(2, parsedMeasure.getAssociatedCriteria().size());
+        Iterator<CertificationCriterion> assocCriteriaIter = parsedMeasure.getAssociatedCriteria().iterator();
+        assertEquals("170.315 (a)(1)", assocCriteriaIter.next().getNumber());
+        assertEquals("a2", assocCriteriaIter.next().getNumber());
+
+        parsedMeasure = parsedListingMeasures.get(1);
+        assertNotNull(parsedMeasure.getMeasure());
+        assertEquals("name2", parsedMeasure.getMeasure().getName());
+        assertEquals("rt2", parsedMeasure.getMeasure().getRequiredTest());
+        assertNotNull(parsedMeasure.getMeasureType());
+        assertEquals("g2", parsedMeasure.getMeasureType().getName());
+        assertNotNull(parsedMeasure.getAssociatedCriteria());
+        assertEquals(1, parsedMeasure.getAssociatedCriteria().size());
+        assertEquals("a2", parsedMeasure.getAssociatedCriteria().iterator().next().getNumber());
+
+        parsedMeasure = parsedListingMeasures.get(2);
+        assertNotNull(parsedMeasure.getMeasure());
+        assertEquals("name3", parsedMeasure.getMeasure().getName());
+        assertEquals("rt2", parsedMeasure.getMeasure().getRequiredTest());
+        assertNotNull(parsedMeasure.getMeasureType());
+        assertEquals("", parsedMeasure.getMeasureType().getName());
+        assertNotNull(parsedMeasure.getAssociatedCriteria());
+        assertEquals(0, parsedMeasure.getAssociatedCriteria().size());
     }
 
     @Test
-    public void parseMeasures_G1AndG2MeasureHeaderWithMultipleDataRows_ReturnsMeasuresWithData() {
+    public void parseMeasures_MeasureHeaderWithDuplicateMeasureData_ReturnsDuplicateMeasures() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_ALL_MEASURE_FIELDS).get(0);
         assertNotNull(headingRecord);
-        List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,legacy g1,legacy g2\n"
-                + ",legacy2 g1,legacy2 g2\n"
-                + ",,legacy3 g2");
-        assertNotNull(certResultRecords);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",name,rt1,g1,170.315 (a)(1)\n"
+                + LISTING_ROW_BEGIN + ",name,rt1,g1,170.315 (a)(1)\n"
+                + LISTING_ROW_BEGIN + ",name,rt1,g1,170.315 (a)(1)");
+        assertNotNull(listingRecords);
 
-        List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, certResultRecords);
+        List<ListingMeasure> parsedListingMeasures = handler.parseAsMeasures(headingRecord, listingRecords);
         assertNotNull(parsedListingMeasures);
-        assertEquals(5, parsedListingMeasures.size());
-        int g1Count = 0;
-        int g2Count = 0;
-        for (ListingMeasure parsedMeasure : parsedListingMeasures) {
-            assertNotNull(parsedMeasure.getMeasureType());
-            if (parsedMeasure.getMeasureType().getName().equals("G1")) {
-                g1Count++;
-                assertNotNull(parsedMeasure.getMeasure());
-                assertNotNull(parsedMeasure.getMeasure().getLegacyMacraMeasureValue());
-            } else if (parsedMeasure.getMeasureType().getName().equals("G2")) {
-                g2Count++;
-                assertNotNull(parsedMeasure.getMeasure());
-                assertNotNull(parsedMeasure.getMeasure().getLegacyMacraMeasureValue());
-            } else {
-                fail("Unexpected measure type");
-            }
-        }
-        assertEquals(2, g1Count);
-        assertEquals(3, g2Count);
-    }
+        assertEquals(3, parsedListingMeasures.size());
 
-    private CertificationCriterion buildCriterion(Long id, String number, String title) {
-        return CertificationCriterion.builder()
-                .id(id)
-                .number(number)
-                .title(title)
-          .build();
+        ListingMeasure parsedMeasure = parsedListingMeasures.get(0);
+        assertNotNull(parsedMeasure.getMeasure());
+        assertEquals("name", parsedMeasure.getMeasure().getName());
+        assertEquals("rt1", parsedMeasure.getMeasure().getRequiredTest());
+        assertNotNull(parsedMeasure.getMeasureType());
+        assertEquals("g1", parsedMeasure.getMeasureType().getName());
+        assertNotNull(parsedMeasure.getAssociatedCriteria());
+        assertEquals(1, parsedMeasure.getAssociatedCriteria().size());
+        assertEquals("170.315 (a)(1)", parsedMeasure.getAssociatedCriteria().iterator().next().getNumber());
+
+        parsedMeasure = parsedListingMeasures.get(1);
+        assertNotNull(parsedMeasure.getMeasure());
+        assertEquals("name", parsedMeasure.getMeasure().getName());
+        assertEquals("rt1", parsedMeasure.getMeasure().getRequiredTest());
+        assertNotNull(parsedMeasure.getMeasureType());
+        assertEquals("g1", parsedMeasure.getMeasureType().getName());
+        assertNotNull(parsedMeasure.getAssociatedCriteria());
+        assertEquals(1, parsedMeasure.getAssociatedCriteria().size());
+        assertEquals("170.315 (a)(1)", parsedMeasure.getAssociatedCriteria().iterator().next().getNumber());
+
+        parsedMeasure = parsedListingMeasures.get(2);
+        assertNotNull(parsedMeasure.getMeasure());
+        assertEquals("name", parsedMeasure.getMeasure().getName());
+        assertEquals("rt1", parsedMeasure.getMeasure().getRequiredTest());
+        assertNotNull(parsedMeasure.getMeasureType());
+        assertEquals("g1", parsedMeasure.getMeasureType().getName());
+        assertNotNull(parsedMeasure.getAssociatedCriteria());
+        assertEquals(1, parsedMeasure.getAssociatedCriteria().size());
+        assertEquals("170.315 (a)(1)", parsedMeasure.getAssociatedCriteria().iterator().next().getNumber());
     }
 }

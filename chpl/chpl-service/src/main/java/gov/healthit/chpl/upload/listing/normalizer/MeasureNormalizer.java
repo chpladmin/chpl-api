@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,8 +58,9 @@ public class MeasureNormalizer {
                 .filter(listingMeasure -> listingMeasure.getMeasure() != null && !StringUtils.isEmpty(listingMeasure.getMeasure().getName()))
                 .forEach(listingMeasure -> {
                     populateMeasureWithMipsValues(listingMeasure);
-                    //TODO populateAssociatedCriteriaIds(listingMeasure);
+                    populateAssociatedCriteriaFields(listingMeasure);
                 });
+            //if we ever get rid of legacy macra measures we can remove this
             listing.getMeasures().stream()
                 .filter(listingMeasure -> listingMeasure.getMeasure() != null && !StringUtils.isEmpty(listingMeasure.getMeasure().getLegacyMacraMeasureValue()))
                 .forEach(listingMeasure -> populateMeasureWithLegacyValues(listingMeasure));
@@ -92,6 +94,26 @@ public class MeasureNormalizer {
             if (foundMeasure != null) {
                 listingMeasure.setMeasure(foundMeasure);
             }
+        }
+    }
+
+    private void populateAssociatedCriteriaFields(ListingMeasure listingMeasure) {
+        if (!CollectionUtils.isEmpty(listingMeasure.getAssociatedCriteria())) {
+            listingMeasure.getAssociatedCriteria().stream()
+                .forEach(criterion -> populateAssociatedCriterionFields(criterion));
+        }
+    }
+
+    private void populateAssociatedCriterionFields(CertificationCriterion criterion) {
+        List<CertificationCriterion> matchingCriteria = criteriaService.getByNumber(criterion.getNumber());
+        if (!CollectionUtils.isEmpty(matchingCriteria)) {
+            CertificationCriterion matchingCriterion = matchingCriteria.get(0);
+            criterion.setId(matchingCriterion.getId());
+            criterion.setCertificationEdition(matchingCriterion.getCertificationEdition());
+            criterion.setCertificationEditionId(matchingCriterion.getCertificationEditionId());
+            criterion.setDescription(matchingCriterion.getDescription());
+            criterion.setRemoved(matchingCriterion.getRemoved());
+            criterion.setTitle(matchingCriterion.getTitle());
         }
     }
 
