@@ -136,7 +136,7 @@ public class DeveloperAttestationCheckInReportDataCollector {
         AttestationPeriod period = attestationManager.getMostRecentPastAttestationPeriod();
         LOGGER.info("Most recent past att period: {}", period.toString());
 
-        List<ChangeRequest> crs = changeRequestDAO.getAll();
+        List<ChangeRequest> crs = changeRequestDAO.getAllWithDetails();
         LOGGER.info("Found {} total change requests", crs.size());
         crs = crs.stream().filter(cr -> cr.getChangeRequestType().isAttestation()
                         && ((ChangeRequestAttestationSubmission) cr.getDetails()).getAttestationPeriod().getId().equals(period.getId()))

@@ -1,0 +1,375 @@
+{
+	"info": {
+		"name": "change-requests-controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET  /change-requests/search - 200 status and access for ONC users",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"emailONC\"),password:pm.environment.get(\"passwordONC\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.test(\"ROLE_ONC users should have access to view change requests via /change-requests/search end point\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(jsonData.results.length).not.eql(0);\r",
+							" });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/change-requests/search",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"change-requests",
+						"search"
+					]
+				},
+				"description": "ROLE_ONC users should have access to view change requests via /change-requests/search end point"
+			},
+			"response": []
+		},
+		{
+			"name": "GET  /change-requests/search -ROLE_DEVELOPER - access to CRs and schema validation",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"emailDeveloper\"),password:pm.environment.get(\"passwordDeveloper\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const changerequestSchema =\r",
+							"{\r",
+							"  \"recordCount\": 0,\r",
+							"  \"pageSize\": 0,\r",
+							"  \"pageNumber\": 0,\r",
+							"  \"results\": [\r",
+							"    {\r",
+							"      \"id\": 0,\r",
+							"      \"changeRequestType\": {\r",
+							"        \"id\": 0,\r",
+							"        \"name\": \"string\"\r",
+							"      },\r",
+							"      \"developer\": {\r",
+							"        \"id\": 0,\r",
+							"        \"name\": \"string\"\r",
+							"      },\r",
+							"      \"certificationBodies\": [\r",
+							"        {\r",
+							"          \"id\": 0,\r",
+							"          \"name\": \"string\"\r",
+							"        }\r",
+							"      ],\r",
+							"      \"currentStatus\": {\r",
+							"        \"id\": 0,\r",
+							"        \"name\": \"string\",\r",
+							"        \"statusChangeDateTime\": \"2022-06-15T13:24:20.906Z\"\r",
+							"      },\r",
+							"      \"submittedDateTime\": \"2022-06-15T13:24:20.906Z\"\r",
+							"    }\r",
+							"  ]\r",
+							"}\r",
+							"var jsonResponse = pm.response.json();\r",
+							"pm.test('/change-requests/search schema is valid', function() {\r",
+							"  pm.response.to.have.status(200);  \r",
+							"  pm.expect(tv4.validate(jsonResponse, changerequestSchema)).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/rest/change-requests/search",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"change-requests",
+						"search"
+					]
+				},
+				"description": "ROLE_DEVELOPER should have access to CRs only for Developers they have administrative authority"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /change-requests/search - ONC_STAFF users should get 401 error",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.test(\"ROLE_ONC_STAFF users should not have access to view change requests via /change-requests/search end point\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+							" });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/rest/change-requests/search",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"change-requests",
+						"search"
+					]
+				},
+				"description": "ROLE_ONC_STAFF users should not have access to view change requests via /change-requests/search end point"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /change-requests/search - 200 status and access to ACB users",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"emailACB\"),password:pm.environment.get(\"passwordACB\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.test(\"ROLE_ACB users should have access to view change requests via /change-requests/search end point\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(jsonData.results.length).not.eql(0);\r",
+							" });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/rest/change-requests/search",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"change-requests",
+						"search"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

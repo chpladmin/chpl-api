@@ -9,6 +9,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -16,8 +17,6 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.user.User;
@@ -25,6 +24,10 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.search.ListingSearchService;
+import gov.healthit.chpl.search.domain.ListingSearchResult;
+import gov.healthit.chpl.service.DirectReviewSearchService;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
@@ -37,7 +40,10 @@ public class TriggerDeveloperBanJob implements Job {
     public static final String USER_PROVIDED_REASON = "reason";
 
     @Autowired
-    private Environment env;
+    private ListingSearchService searchService;
+
+    @Autowired
+    private DirectReviewSearchService drSearchService;
 
     @Autowired
     private ChplHtmlEmailBuilder htmlEmailBuilder;
@@ -50,6 +56,9 @@ public class TriggerDeveloperBanJob implements Job {
 
     @Value("${triggerDeveloperBan.body}")
     private String emailBody;
+
+    @Value("${triggerDeveloperBan.directReviewsNotAvailable}")
+    private String drsNotAvailableEmailBody;
 
     @Value("${chplUrlBegin}")
     private String chplUrlBegin;
@@ -139,8 +148,18 @@ public class TriggerDeveloperBanJob implements Job {
             reasonForListingChange = "<strong>ONC-ACB provided reason for listing change:</strong> \""
                     + reasonForListingChange + "\"";
         }
-        int openNcs = updatedListing.getCountOpenNonconformities();
-        int closedNcs = updatedListing.getCountClosedNonconformities();
+        int openSurveillanceNcs = updatedListing.getCountOpenNonconformities();
+        int closedSurveillanceNcs = updatedListing.getCountClosedNonconformities();
+        int openDirectReviewNcs = 0;
+        int closedDirectReviewNcs = 0;
+        try {
+            ListingSearchResult listingSearchResult = searchService.findListing(updatedListing.getId());
+            openDirectReviewNcs = listingSearchResult.getOpenDirectReviewNonConformityCount();
+            closedDirectReviewNcs = listingSearchResult.getClosedDirectReviewNonConformityCount();
+        } catch (InvalidArgumentsException ex) {
+            LOGGER.error("No listing was found with the ID " + updatedListing.getId() + " from the ListingSearchService. The direct review non-conformity counts are unknown.");
+        }
+
         String htmlMessage = String.format(emailBody,
                 chplUrlBegin,
                 listingDetailsUrl,
@@ -154,8 +173,14 @@ public class TriggerDeveloperBanJob implements Job {
                 Util.getDateFormatter().format(new Date(updatedListing.getCurrentStatus().getEventDate())),
                 reasonForStatusChange, // reason for change
                 reasonForListingChange, // reason for change
-                (openNcs != 1 ? "were" : "was"), openNcs, (openNcs != 1 ? "ies" : "y"), // formatted counts of open
-                closedNcs, (closedNcs != 1 ? "ies" : "y")); // and closed nonconformities, with English word endings
+                (openSurveillanceNcs != 1 ? "were" : "was"), openSurveillanceNcs, (openSurveillanceNcs != 1 ? "ies" : "y"), // formatted counts of open
+                closedSurveillanceNcs, (closedSurveillanceNcs != 1 ? "ies" : "y"), // and closed surveillance nonconformities, with English word endings
+                (openDirectReviewNcs != 1 ? "were" : "was"), openDirectReviewNcs, (openDirectReviewNcs != 1 ? "ies" : "y"), // formatted counts of open
+                closedDirectReviewNcs, (closedDirectReviewNcs != 1 ? "ies" : "y")); // and closed direct review nonconformities, with English word endings
+
+        if (!drSearchService.getDirectReviewsAvailable()) {
+            htmlMessage += drsNotAvailableEmailBody;
+        }
 
         String formattedHtmlEmailContents = htmlEmailBuilder.initialize()
             .heading("Review Activity for Developer Ban")
