@@ -2,6 +2,8 @@ package gov.healthit.chpl.attestation.domain;
 
 import java.util.List;
 
+import org.hibernate.Hibernate;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.attestation.entity.AttestationEntity;
@@ -30,13 +32,19 @@ public class Attestation {
 
     public Attestation(AttestationEntity entity) {
         this.id = entity.getId();
-        this.validResponses = entity.getValidResponses().stream()
-                .map(ent -> new AttestationValidResponse(ent))
-                .toList();
-        this.dependentAttestations = entity.getDependentAttestations().stream()
-                .map(e -> new DependentAttestation(e))
-                .toList();
-        this.condition = new Condition(entity.getCondition());
+        if (Hibernate.isInitialized(entity.getValidResponses())) {
+            this.validResponses = entity.getValidResponses().stream()
+                    .map(ent -> new AttestationValidResponse(ent))
+                    .toList();
+        }
+        if (Hibernate.isInitialized(entity.getValidResponses())) {
+            this.dependentAttestations = entity.getDependentAttestations().stream()
+                    .map(e -> new DependentAttestation(e))
+                    .toList();
+        }
+        if (entity.getCondition() != null) {
+            this.condition = new Condition(entity.getCondition());
+        }
         this.description = entity.getDescription();
         this.sortOrder = entity.getSortOrder();
     }

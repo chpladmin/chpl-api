@@ -44,7 +44,7 @@ public class AttestationController {
             produces = "application/json; charset=utf-8")
     @Deprecated
     public AttestationForm getAttestationForm() {
-        return attestationManager.getAttestationForm();
+        return null;
     }
 
     @Operation(summary = "Get the list of Attestation Conditions, Attestations, and Valid Responses for an Attestation period",
@@ -54,6 +54,6 @@ public class AttestationController {
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public AttestationForm getAttestationFormByPeriod(@PathVariable("periodId") Long periodId) {
-        return attestationManager.getAttestationForm();
+        return attestationManager.getAttestationForm(periodId);
     }
 }

@@ -181,16 +181,16 @@ public class AttestationDAO extends BaseDAOImpl{
                 "SELECT DISTINCT ae "
                 + "FROM AttestationEntity ae "
                 + "LEFT JOIN FETCH ae.condition c "
-                + "LEFT JOIN FECTH ae.attestationPeriod ap "
-                + "JOIN FETCH ae.validResponses vr "
+                + "LEFT JOIN FETCH ae.attestationPeriod ap "
+                + "LEFT JOIN FETCH ae.validResponses vr "
                 + "LEFT JOIN FETCH ae.dependentAttestations da "
                 + "LEFT JOIN FETCH da.attestation "
                 + "LEFT JOIN FETCH da.whenParentValidResponse "
                 + "WHERE (NOT ae.deleted = true) "
-                + "AND (NOT c.deleted = true )"
+                + "AND (NOT c.deleted = true ) "
                 + "AND (NOT vr.deleted = true) "
                 + "AND ae.dependentAttestation = false "
-                + "AND ap.id = :attetationPeriodId ",
+                + "AND ap.id = :attestationPeriodId ",
                 AttestationEntity.class)
                 .setParameter("attestationPeriodId", attetsationPeriodId)
                 .getResultList();

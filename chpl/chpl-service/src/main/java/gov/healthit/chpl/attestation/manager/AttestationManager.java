@@ -46,9 +46,15 @@ public class AttestationManager {
         return attestationPeriodService.getAllPeriods();
     }
 
-    public AttestationForm getAttestationForm() {
-        AttestationPeriod period = attestationPeriodService.getMostRecentPastAttestationPeriod();
-        return new AttestationForm(attestationDAO.getAttestationForm(), period);
+    public AttestationForm getAttestationForm(Long attestationPeriodId) {
+        //AttestationPeriod period = attestationPeriodService.getMostRecentPastAttestationPeriod();
+        return AttestationForm.builder()
+                .attestations(attestationDAO.getAttestationForm(attestationPeriodId))
+                .period(attestationPeriodService.getAllPeriods().stream()
+                        .filter(ap -> ap.getId().equals(attestationPeriodId))
+                        .findAny()
+                        .orElse(null))
+                .build();
     }
 
     @Transactional

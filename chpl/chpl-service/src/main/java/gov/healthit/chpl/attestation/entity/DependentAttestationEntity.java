@@ -1,7 +1,6 @@
 package gov.healthit.chpl.attestation.entity;
 
 import java.util.Date;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,10 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -24,45 +20,31 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "attestation")
+@Table(name = "dependent_attestation")
 @Getter
 @Setter
 @ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AttestationEntity {
+public class DependentAttestationEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @OneToMany
-    @JoinTable(name = "attestation_form",
-            joinColumns = @JoinColumn(name = "attestation_id"),
-            inverseJoinColumns = @JoinColumn(name = "attestation_valid_response_id"))
-    private Set<AttestationValidResponseEntity> validResponses;
-
-    @OneToOne
-    @JoinTable(name = "attestation_form",
-            joinColumns = @JoinColumn(name = "attestation_id"),
-            inverseJoinColumns = @JoinColumn(name = "attestation_period_id"))
-    private AttestationPeriodEntity attestationPeriod;
-
-    @OneToMany()
-    @JoinColumn(name = "parent_attestation_id")
-    private Set<DependentAttestationEntity> dependentAttestations;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_attestation_id", nullable = false, insertable = false, updatable = false)
+    private AttestationEntity parentAttestation;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "attestation_condition_id", nullable = false, insertable = false, updatable = false)
-    private AttestationConditionEntity condition;
+    @JoinColumn(name = "attestation_id", nullable = false, insertable = false, updatable = false)
+    private AttestationEntity attestation;
 
-    @Column(name = "dependent_attestation")
-    private Boolean dependentAttestation;
-
-    @Column(name = "description")
-    private String description;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "when_parent_valid_response_id", nullable = false, insertable = false, updatable = false)
+    private AttestationValidResponseEntity whenParentValidResponse;
 
     @Column(name = "sort_order")
     private Long sortOrder;
@@ -78,5 +60,4 @@ public class AttestationEntity {
 
     @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
     private Date lastModifiedDate;
-
 }
