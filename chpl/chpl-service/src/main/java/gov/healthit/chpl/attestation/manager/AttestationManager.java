@@ -98,7 +98,7 @@ public class AttestationManager {
     }
 
     @Transactional
-    public AttestationPeriod getSubmittalPeriod(Long developerId) {
+    public AttestationPeriod getSubmittablePeriod(Long developerId) {
         try {
             if (canDeveloperSubmitChangeRequest(developerId)) {
                 return attestationPeriodService.getSubmittableAttestationPeriod(developerId);
