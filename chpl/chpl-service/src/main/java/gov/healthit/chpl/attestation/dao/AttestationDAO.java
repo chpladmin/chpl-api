@@ -6,17 +6,20 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.attestation.domain.Attestation;
+import gov.healthit.chpl.attestation.domain.AttestationFormItem;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
 import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
+import gov.healthit.chpl.attestation.domain.DependentAttestation;
 import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
 import gov.healthit.chpl.attestation.entity.AttestationEntity;
+import gov.healthit.chpl.attestation.entity.AttestationFormItemEntity;
 import gov.healthit.chpl.attestation.entity.AttestationPeriodDeveloperExceptionEntity;
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
-import gov.healthit.chpl.attestation.entity.AttestationValidResponseEntity;
+import gov.healthit.chpl.attestation.entity.DependentAttestationFormItemEntity;
 import gov.healthit.chpl.attestation.entity.DeveloperAttestationResponseEntity;
 import gov.healthit.chpl.attestation.entity.DeveloperAttestationSubmissionEntity;
+import gov.healthit.chpl.attestation.entity.ValidResponseEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -33,10 +36,16 @@ public class AttestationDAO extends BaseDAOImpl{
                 .collect(Collectors.toList());
     }
 
-    public List<Attestation> getAttestationForm(Long attestationPeriodId) {
-        return getAttestationFormEntities(attestationPeriodId).stream()
-                .map(ent -> new Attestation(ent))
+    public List<AttestationFormItem> getAttestationFormItems(Long attestationPeriodId) {
+        return getAttestationFormItemEntities(attestationPeriodId).stream()
+                .map(ent -> new AttestationFormItem(ent))
                 .collect(Collectors.toList());
+    }
+
+    public List<DependentAttestation> getDependentAttestations(Long attestationFormItemId) {
+        return getDependentAttestationFormItemEntities(attestationFormItemId).stream()
+                .map(ent -> new DependentAttestation(ent))
+                .toList();
     }
 
     public DeveloperAttestationSubmission getDeveloperAttestationSubmission(Long developerAttestationSubmissionId) throws EntityRetrievalException {
@@ -157,7 +166,7 @@ public class AttestationDAO extends BaseDAOImpl{
 
     private DeveloperAttestationResponseEntity getDeveloperAttestationResponseEntity(AttestationSubmittedResponse response) {
         return DeveloperAttestationResponseEntity.builder()
-                .validResponse(AttestationValidResponseEntity.builder()
+                .validResponse(ValidResponseEntity.builder()
                         .id(response.getResponse().getId())
                         .build())
                 .attestation(AttestationEntity.builder()
@@ -175,24 +184,44 @@ public class AttestationDAO extends BaseDAOImpl{
         return result;
     }
 
-
-    private List<AttestationEntity> getAttestationFormEntities(Long attetsationPeriodId) {
-        List<AttestationEntity> result = entityManager.createQuery(
-                "SELECT DISTINCT ae "
-                + "FROM AttestationEntity ae "
-                + "LEFT JOIN FETCH ae.condition c "
-                + "LEFT JOIN FETCH ae.attestationPeriod ap "
-                + "LEFT JOIN FETCH ae.validResponses vr "
-                + "LEFT JOIN FETCH ae.dependentAttestations da "
-                + "LEFT JOIN FETCH da.attestation "
-                + "LEFT JOIN FETCH da.whenParentValidResponse "
-                + "WHERE (NOT ae.deleted = true) "
-                + "AND (NOT c.deleted = true ) "
+    private List<AttestationFormItemEntity> getAttestationFormItemEntities(Long attestationPeriodId) {
+        List<AttestationFormItemEntity> result = entityManager.createQuery(
+                "SELECT DISTINCT afi "
+                + "FROM AttestationFormItemEntity afi "
+                + "JOIN FETCH afi.attestationPeriod ap "
+                + "JOIN FETCH afi.attestation a "
+                + "JOIN FETCH a.validResponses vr "
+                + "LEFT JOIN FETCH a.condition "
+                + "WHERE (NOT afi.deleted = true) "
+                + "AND (NOT a.deleted = true ) "
                 + "AND (NOT vr.deleted = true) "
-                + "AND ae.dependentAttestation = false "
-                + "AND ap.id = :attestationPeriodId ",
-                AttestationEntity.class)
-                .setParameter("attestationPeriodId", attetsationPeriodId)
+                + "AND ap.id = :attestationPeriodId ", AttestationFormItemEntity.class)
+                .setParameter("attestationPeriodId", attestationPeriodId)
+                .getResultList();
+        return result;
+    }
+
+    private List<DependentAttestationFormItemEntity> getDependentAttestationFormItemEntities(Long attestationFormItemId) {
+        List<DependentAttestationFormItemEntity> result = entityManager.createQuery(
+                "SELECT DISTINCT dafi "
+                + "FROM DependentAttestationFormItemEntity dafi "
+                + "JOIN FETCH dafi.attestationFormItem afi "
+                + "JOIN FETCH afi.attestationPeriod ap "
+                + "JOIN FETCH afi.attestation a "
+                + "JOIN FETCH a.validResponses vr "
+                + "LEFT JOIN FETCH a.condition "
+                + "JOIN FETCH dafi.whenValidResponse "
+                + "JOIN FETCH dafi.childAttestation ca "
+                + "JOIN FETCH ca.validResponses cavr "
+                + "LEFT JOIN ca.condition "
+                + "WHERE (NOT dafi.deleted = true) "
+                + "AND (NOT afi.deleted = true) "
+                + "AND (NOT a.deleted = true) "
+                + "AND (NOT vr.deleted = true) "
+                + "AND (NOT ca.deleted = true) "
+                + "AND (NOT cavr.deleted = true) "
+                + "AND dafi.attestationFormItem.id = :attestationFormItemId ", DependentAttestationFormItemEntity.class)
+                .setParameter("attestationFormItemId", attestationFormItemId)
                 .getResultList();
         return result;
     }
@@ -219,11 +248,11 @@ public class AttestationDAO extends BaseDAOImpl{
         return result.get(0);
     }
 
-    private AttestationValidResponseEntity getAttestationValidResponseEntity(Long id) throws EntityRetrievalException {
-        List<AttestationValidResponseEntity> result = entityManager.createQuery(
+    private ValidResponseEntity getAttestationValidResponseEntity(Long id) throws EntityRetrievalException {
+        List<ValidResponseEntity> result = entityManager.createQuery(
                 "FROM AttestationValidResponseEntity vr "
                 + "WHERE (NOT vr.deleted = true) "
-                + "AND vr.id = :attestationValidResponseId", AttestationValidResponseEntity.class)
+                + "AND vr.id = :attestationValidResponseId", ValidResponseEntity.class)
                 .setParameter("attestationValidResponseId", id)
                 .getResultList();
 

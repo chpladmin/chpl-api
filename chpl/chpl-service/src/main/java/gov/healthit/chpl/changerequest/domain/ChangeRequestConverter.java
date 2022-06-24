@@ -8,7 +8,7 @@ import org.apache.commons.collections.CollectionUtils;
 import gov.healthit.chpl.attestation.domain.Attestation;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
-import gov.healthit.chpl.attestation.domain.AttestationValidResponse;
+import gov.healthit.chpl.attestation.domain.ValidResponse;
 import gov.healthit.chpl.attestation.domain.Condition;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationResponseEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionEntity;
@@ -146,10 +146,10 @@ public final class ChangeRequestConverter {
                                 .name(entity.getAttestation().getCondition().getName())
                                 .sortOrder(entity.getAttestation().getCondition().getSortOrder())
                                 .build())
-                        .validResponses(entity.getAttestation().getValidResponses().stream().map(ent -> new AttestationValidResponse(ent)).toList())
+                        .validResponses(entity.getAttestation().getValidResponses().stream().map(ent -> new ValidResponse(ent)).toList())
                         .sortOrder(entity.getAttestation().getSortOrder())
                         .build())
-                .response(AttestationValidResponse.builder()
+                .response(ValidResponse.builder()
                         .id(entity.getValidResponse().getId())
                         .response(entity.getValidResponse().getResponse())
                         .meaning(entity.getValidResponse().getMeaning())

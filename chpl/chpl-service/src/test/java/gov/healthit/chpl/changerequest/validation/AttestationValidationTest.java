@@ -15,7 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import gov.healthit.chpl.attestation.domain.Attestation;
 import gov.healthit.chpl.attestation.domain.AttestationForm;
 import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
-import gov.healthit.chpl.attestation.domain.AttestationValidResponse;
+import gov.healthit.chpl.attestation.domain.ValidResponse;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
@@ -134,7 +134,7 @@ public class AttestationValidationTest {
     public void isValid_AttestationSubmissionHasInvalidResponse_ReturnsFalse() {
         ChangeRequestAttestationSubmission details = createChangeRequestAttestationSubmission();
         details.setAttestationResponses(new ArrayList<AttestationSubmittedResponse>(details.getAttestationResponses()));
-        details.getAttestationResponses().get(0).setResponse(AttestationValidResponse.builder().id(5L).build());
+        details.getAttestationResponses().get(0).setResponse(ValidResponse.builder().id(5L).build());
 
         ChangeRequest cr = ChangeRequest.builder()
                 .developer(Developer.builder()
@@ -162,7 +162,7 @@ public class AttestationValidationTest {
                                 .attestation(Attestation.builder()
                                         .id(1L)
                                         .build())
-                                .response(AttestationValidResponse.builder()
+                                .response(ValidResponse.builder()
                                         .id(1L)
                                         .build())
                                 .build())
@@ -170,7 +170,7 @@ public class AttestationValidationTest {
                         .attestation(Attestation.builder()
                                 .id(2L)
                                 .build())
-                        .response(AttestationValidResponse.builder()
+                        .response(ValidResponse.builder()
                                 .id(2L)
                                 .build())
                         .build())
@@ -178,7 +178,7 @@ public class AttestationValidationTest {
                         .attestation(Attestation.builder()
                                 .id(3L)
                                 .build())
-                        .response(AttestationValidResponse.builder()
+                        .response(ValidResponse.builder()
                                 .id(1L)
                                 .build())
                         .build())
@@ -186,7 +186,7 @@ public class AttestationValidationTest {
                         .attestation(Attestation.builder()
                                 .id(4L)
                                 .build())
-                        .response(AttestationValidResponse.builder()
+                        .response(ValidResponse.builder()
                                 .id(5L)
                                 .build())
                         .build())
@@ -194,7 +194,7 @@ public class AttestationValidationTest {
                         .attestation(Attestation.builder()
                                 .id(5L)
                                 .build())
-                        .response(AttestationValidResponse.builder()
+                        .response(ValidResponse.builder()
                                 .id(1L)
                                 .build())
                         .build())
@@ -206,35 +206,35 @@ public class AttestationValidationTest {
                 .attestation(Attestation.builder()
                         .id(1L)
                         .description("Attestation 1")
-                        .validResponse(AttestationValidResponse.builder().id(1L).response("respo 1").build())
-                        .validResponse(AttestationValidResponse.builder().id(4L).response("respo 4").build())
+                        .validResponse(ValidResponse.builder().id(1L).response("respo 1").build())
+                        .validResponse(ValidResponse.builder().id(4L).response("respo 4").build())
                         .build())
                 .attestation(Attestation.builder()
                         .id(2L)
                         .description("Attestation 2")
-                        .validResponse(AttestationValidResponse.builder().id(2L).response("respo 2").build())
-                        .validResponse(AttestationValidResponse.builder().id(3L).response("respo 3").build())
-                        .validResponse(AttestationValidResponse.builder().id(4L).response("respo 4").build())
+                        .validResponse(ValidResponse.builder().id(2L).response("respo 2").build())
+                        .validResponse(ValidResponse.builder().id(3L).response("respo 3").build())
+                        .validResponse(ValidResponse.builder().id(4L).response("respo 4").build())
                         .build())
                 .attestation(Attestation.builder()
                         .id(3L)
                         .description("Attestation 3")
-                        .validResponse(AttestationValidResponse.builder().id(1L).response("respo 1").build())
-                        .validResponse(AttestationValidResponse.builder().id(4L).response("respo 4").build())
+                        .validResponse(ValidResponse.builder().id(1L).response("respo 1").build())
+                        .validResponse(ValidResponse.builder().id(4L).response("respo 4").build())
                         .build())
                 .attestation(Attestation.builder()
                         .id(4L)
                         .description("Attestation 4")
-                        .validResponse(AttestationValidResponse.builder().id(1L).build())
-                        .validResponse(AttestationValidResponse.builder().id(4L).response("respo 4").build())
-                        .validResponse(AttestationValidResponse.builder().id(5L).response("respo 5").build())
+                        .validResponse(ValidResponse.builder().id(1L).build())
+                        .validResponse(ValidResponse.builder().id(4L).response("respo 4").build())
+                        .validResponse(ValidResponse.builder().id(5L).response("respo 5").build())
                         .build())
                 .attestation(Attestation.builder()
                         .id(5L)
                         .description("Attestation 5")
-                        .validResponse(AttestationValidResponse.builder().id(1L).build())
-                        .validResponse(AttestationValidResponse.builder().id(4L).response("respo 4").build())
-                        .validResponse(AttestationValidResponse.builder().id(5L).response("respo 5").build())
+                        .validResponse(ValidResponse.builder().id(1L).build())
+                        .validResponse(ValidResponse.builder().id(4L).response("respo 4").build())
+                        .validResponse(ValidResponse.builder().id(5L).response("respo 5").build())
                         .build())
                 .build();
     }

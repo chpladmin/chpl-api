@@ -2,8 +2,6 @@ package gov.healthit.chpl.attestation.domain;
 
 import java.util.List;
 
-import org.hibernate.Hibernate;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.attestation.entity.AttestationEntity;
@@ -20,8 +18,9 @@ import lombok.Singular;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Attestation {
     private Long id;
+
     @Singular
-    private List<AttestationValidResponse> validResponses;
+    private List<ValidResponse> validResponses;
 
     @Singular
     private List<DependentAttestation> dependentAttestations;
@@ -32,16 +31,9 @@ public class Attestation {
 
     public Attestation(AttestationEntity entity) {
         this.id = entity.getId();
-        if (Hibernate.isInitialized(entity.getValidResponses())) {
-            this.validResponses = entity.getValidResponses().stream()
-                    .map(ent -> new AttestationValidResponse(ent))
-                    .toList();
-        }
-        if (Hibernate.isInitialized(entity.getValidResponses())) {
-            this.dependentAttestations = entity.getDependentAttestations().stream()
-                    .map(e -> new DependentAttestation(e))
-                    .toList();
-        }
+        this.validResponses = entity.getValidResponses().stream()
+                .map(ent -> new ValidResponse(ent))
+                .toList();
         if (entity.getCondition() != null) {
             this.condition = new Condition(entity.getCondition());
         }

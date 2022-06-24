@@ -1,6 +1,6 @@
 package gov.healthit.chpl.attestation.domain;
 
-import gov.healthit.chpl.attestation.entity.DependentAttestationEntity;
+import gov.healthit.chpl.attestation.entity.DependentAttestationFormItemEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,14 +10,14 @@ import lombok.Data;
 @AllArgsConstructor
 public class DependentAttestation {
     private Long id;
-    private Attestation attestation;
-    private AttestationValidResponse whenParentValidResponse;
+    private ValidResponse whenValidResponse;
+    private Attestation childAttestation;
     private Long sortOrder;
 
-    public DependentAttestation(DependentAttestationEntity entity) {
+    public DependentAttestation(DependentAttestationFormItemEntity entity) {
         this.id = entity.getId();
-        this.attestation = new Attestation(entity.getAttestation());
-        this.whenParentValidResponse = new AttestationValidResponse(entity.getWhenParentValidResponse());
+        this.whenValidResponse = new ValidResponse(entity.getWhenValidResponse());
+        this.childAttestation = new Attestation(entity.getChildAttestation());
         this.sortOrder = entity.getSortOrder();
     }
 }

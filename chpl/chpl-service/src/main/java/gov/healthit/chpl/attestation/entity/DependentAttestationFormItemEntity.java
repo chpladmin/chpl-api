@@ -1,7 +1,6 @@
 package gov.healthit.chpl.attestation.entity;
 
 import java.util.Date;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,9 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -23,33 +20,31 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "attestation")
+@Table(name = "dependent_attestation_form_item")
 @Getter
 @Setter
 @ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AttestationEntity {
+public class DependentAttestationFormItemEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @OneToMany
-    @JoinTable(name = "attestation_valid_response_map",
-            joinColumns = @JoinColumn(name = "attestation_id"),
-            inverseJoinColumns = @JoinColumn(name = "valid_response_id"))
-    private Set<ValidResponseEntity> validResponses;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "attestation_form_item_id", nullable = false, insertable = false, updatable = false)
+    private AttestationFormItemEntity attestationFormItem;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "attestation_condition_id", nullable = false, insertable = false, updatable = false)
-    private AttestationConditionEntity condition;
+    @JoinColumn(name = "when_valid_response_id", nullable = false, insertable = false, updatable = false)
+    private ValidResponseEntity whenValidResponse;
 
-    @Column(name = "description")
-    private String description;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "child_attestation_id", nullable = false, insertable = false, updatable = false)
+    private AttestationEntity childAttestation;
 
     @Column(name = "sort_order")
     private Long sortOrder;
@@ -65,5 +60,4 @@ public class AttestationEntity {
 
     @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
     private Date lastModifiedDate;
-
 }

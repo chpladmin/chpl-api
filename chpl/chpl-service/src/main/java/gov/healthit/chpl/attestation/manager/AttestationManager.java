@@ -28,15 +28,18 @@ import lombok.extern.log4j.Log4j2;
 public class AttestationManager {
     private AttestationDAO attestationDAO;
     private AttestationPeriodService attestationPeriodService;
+    private AttestationFormService attestationFormService;
     private ChangeRequestDAO changeRequestDAO;
     private ErrorMessageUtil errorMessageUtil;
     private Integer attestationExceptionWindowInDays;
 
     @Autowired
-    public AttestationManager(AttestationDAO attestationDAO, AttestationPeriodService attestationPeriodService, ChangeRequestDAO changeRequestDAO,
-            ErrorMessageUtil errorMessageUtil, @Value("${attestationExceptionWindowInDays}") Integer attestationExceptionWindowInDays) {
+    public AttestationManager(AttestationDAO attestationDAO, AttestationPeriodService attestationPeriodService, AttestationFormService attestationFormService,
+            ChangeRequestDAO changeRequestDAO, ErrorMessageUtil errorMessageUtil,
+            @Value("${attestationExceptionWindowInDays}") Integer attestationExceptionWindowInDays) {
         this.attestationDAO = attestationDAO;
         this.attestationPeriodService = attestationPeriodService;
+        this.attestationFormService = attestationFormService;
         this.changeRequestDAO = changeRequestDAO;
         this.errorMessageUtil = errorMessageUtil;
         this.attestationExceptionWindowInDays = attestationExceptionWindowInDays;
@@ -47,14 +50,7 @@ public class AttestationManager {
     }
 
     public AttestationForm getAttestationForm(Long attestationPeriodId) {
-        //AttestationPeriod period = attestationPeriodService.getMostRecentPastAttestationPeriod();
-        return AttestationForm.builder()
-                .attestations(attestationDAO.getAttestationForm(attestationPeriodId))
-                .period(attestationPeriodService.getAllPeriods().stream()
-                        .filter(ap -> ap.getId().equals(attestationPeriodId))
-                        .findAny()
-                        .orElse(null))
-                .build();
+        return attestationFormService.getAttestationForm(attestationPeriodId);
     }
 
     @Transactional

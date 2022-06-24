@@ -4,12 +4,9 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -20,31 +17,24 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "dependent_attestation")
+@Table(name = "valid_response")
 @Getter
 @Setter
 @ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DependentAttestationEntity {
-
+public class ValidResponseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_attestation_id", nullable = false, insertable = false, updatable = false)
-    private AttestationEntity parentAttestation;
+    @Column(name = "response")
+    private String response;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "attestation_id", nullable = false, insertable = false, updatable = false)
-    private AttestationEntity attestation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "when_parent_valid_response_id", nullable = false, insertable = false, updatable = false)
-    private AttestationValidResponseEntity whenParentValidResponse;
+    @Column(name = "meaning")
+    private String meaning;
 
     @Column(name = "sort_order")
     private Long sortOrder;
@@ -60,4 +50,5 @@ public class DependentAttestationEntity {
 
     @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
     private Date lastModifiedDate;
+
 }

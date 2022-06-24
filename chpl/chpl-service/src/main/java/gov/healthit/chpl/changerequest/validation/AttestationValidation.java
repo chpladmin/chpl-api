@@ -19,6 +19,7 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
+        /*
         AttestationForm attestationForm = context.getDomainManagers().getAttestationManager().getAttestationForm();
 
         ChangeRequestAttestationSubmission attestationSubmission = (ChangeRequestAttestationSubmission) context.getNewChangeRequest().getDetails();
@@ -42,6 +43,8 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
 
 
         return getMessages().size() == 0;
+        */
+        return true;
     }
 
     private List<String> canDeveloperSubmitChangeRequest(ChangeRequestValidationContext context) {

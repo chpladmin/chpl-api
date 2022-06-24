@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class AttestationSubmittedResponse {
     private Long id;
     private Attestation attestation;
-    private AttestationValidResponse response;
+    private ValidResponse response;
 
     @Override
     public boolean equals(Object obj) {

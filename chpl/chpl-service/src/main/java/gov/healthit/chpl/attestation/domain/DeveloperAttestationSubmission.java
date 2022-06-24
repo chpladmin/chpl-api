@@ -44,7 +44,7 @@ public class DeveloperAttestationSubmission {
                 .map(ent -> AttestationSubmittedResponse.builder()
                         .id(ent.getId())
                         .attestation(new Attestation(ent.getAttestation()))
-                        .response(new AttestationValidResponse(ent.getValidResponse()))
+                        .response(new ValidResponse(ent.getValidResponse()))
                         .build())
                 .collect(Collectors.toList());
     }

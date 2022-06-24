@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
 import gov.healthit.chpl.attestation.entity.AttestationEntity;
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
-import gov.healthit.chpl.attestation.entity.AttestationValidResponseEntity;
+import gov.healthit.chpl.attestation.entity.ValidResponseEntity;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestConverter;
@@ -57,7 +57,7 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
                             .findAny()
                             .get();
 
-                    AttestationValidResponseEntity avre = null;
+                    ValidResponseEntity avre = null;
                     try {
                         avre = getAttestationValidResponseEntity(submittedResponse.getResponse().getId());
                     } catch (EntityRetrievalException e) {
@@ -208,11 +208,11 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
         return result.get(0);
     }
 
-    private AttestationValidResponseEntity getAttestationValidResponseEntity(Long id) throws EntityRetrievalException {
-        List<AttestationValidResponseEntity> result = entityManager.createQuery(
+    private ValidResponseEntity getAttestationValidResponseEntity(Long id) throws EntityRetrievalException {
+        List<ValidResponseEntity> result = entityManager.createQuery(
                 "FROM AttestationValidResponseEntity vr "
                 + "WHERE (NOT vr.deleted = true) "
-                + "AND vr.id = :attestationValidResponseId", AttestationValidResponseEntity.class)
+                + "AND vr.id = :attestationValidResponseId", ValidResponseEntity.class)
                 .setParameter("attestationValidResponseId", id)
                 .getResultList();
 

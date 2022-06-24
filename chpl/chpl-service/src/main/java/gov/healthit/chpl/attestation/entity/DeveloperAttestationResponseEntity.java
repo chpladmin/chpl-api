@@ -42,7 +42,7 @@ public class DeveloperAttestationResponseEntity {
 
     @OneToOne()
     @JoinColumn(name = "attestation_valid_response_id", insertable = true, updatable = true)
-    private AttestationValidResponseEntity validResponse;
+    private ValidResponseEntity validResponse;
 
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
