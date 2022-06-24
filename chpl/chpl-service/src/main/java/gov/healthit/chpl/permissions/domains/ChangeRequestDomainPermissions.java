@@ -7,12 +7,14 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.permissions.domains.changerequest.CreateActionPermissions;
 import gov.healthit.chpl.permissions.domains.changerequest.GetAllActionPermissions;
 import gov.healthit.chpl.permissions.domains.changerequest.GetByIdActionPermissions;
+import gov.healthit.chpl.permissions.domains.changerequest.SearchActionPermissions;
 import gov.healthit.chpl.permissions.domains.changerequest.UpdateActionPermissions;
 
 @Component
 public class ChangeRequestDomainPermissions extends DomainPermissions {
     public static final String GET_BY_ID = "GET_BY_ID";
     public static final String GET_ALL = "GET_ALL";
+    public static final String SEARCH = "SEARCH";
     public static final String UPDATE = "UPDATE";
     public static final String CREATE = "CREATE";
 
@@ -20,10 +22,12 @@ public class ChangeRequestDomainPermissions extends DomainPermissions {
     public ChangeRequestDomainPermissions(
             @Qualifier("changeRequestGetByIdActionPermissions") GetByIdActionPermissions getByIdActionPermissions,
             @Qualifier("changeRequestGetAllActionPermissions") GetAllActionPermissions getAllActionPermissions,
+            @Qualifier("changeRequestSearchActionPermissions") SearchActionPermissions searchActionPermissions,
             @Qualifier("changeRequestUpdateActionPermissions") UpdateActionPermissions updateActionPermissions,
             @Qualifier("changeRequestCreateActionPermissions") CreateActionPermissions createActionPermissions) {
         getActionPermissions().put(GET_BY_ID, getByIdActionPermissions);
         getActionPermissions().put(GET_ALL, getAllActionPermissions);
+        getActionPermissions().put(SEARCH, searchActionPermissions);
         getActionPermissions().put(UPDATE, updateActionPermissions);
         getActionPermissions().put(CREATE, createActionPermissions);
     }
