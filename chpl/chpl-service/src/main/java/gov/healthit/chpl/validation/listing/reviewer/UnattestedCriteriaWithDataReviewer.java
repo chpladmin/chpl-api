@@ -2,30 +2,22 @@ package gov.healthit.chpl.validation.listing.reviewer;
 
 import java.util.ArrayList;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
-import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("unattestedCriteriaWithDataReviewer")
 public class UnattestedCriteriaWithDataReviewer implements Reviewer {
 
-    private ErrorMessageUtil msgUtil;
-
-    @Autowired
-    public UnattestedCriteriaWithDataReviewer(ErrorMessageUtil msgUtil) {
-        this.msgUtil = msgUtil;
-    }
-
     public void review(CertifiedProductSearchDetails listing) {
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if ((cert.isSuccess() == null || !cert.isSuccess().booleanValue())) {
+            if ((cert.isSuccess() == null || BooleanUtils.isFalse(cert.isSuccess()))) {
                 if (cert.isGap() != null && cert.isGap().booleanValue()) {
                     cert.setGap(null);
                 }
