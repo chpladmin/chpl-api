@@ -28,6 +28,7 @@ public class Attestation {
     private Condition condition;
     private String description;
     private Long sortOrder;
+    private Boolean required;
 
     public Attestation(AttestationEntity entity) {
         this.id = entity.getId();
@@ -38,6 +39,6 @@ public class Attestation {
             this.condition = new Condition(entity.getCondition());
         }
         this.description = entity.getDescription();
-        this.sortOrder = entity.getSortOrder();
+        //this.sortOrder = entity.getSortOrder();
     }
 }

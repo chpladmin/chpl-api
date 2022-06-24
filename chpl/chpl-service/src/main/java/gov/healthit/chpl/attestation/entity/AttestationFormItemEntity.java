@@ -45,6 +45,9 @@ public class AttestationFormItemEntity {
     @Column(name = "sort_order")
     private Long sortOrder;
 
+    @Column(name = "required")
+    private Boolean required;
+
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 

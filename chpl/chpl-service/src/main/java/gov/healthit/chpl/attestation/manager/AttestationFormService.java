@@ -29,6 +29,8 @@ public class AttestationFormService {
                 .attestations(formItems.stream()
                         .map(fi -> {
                             fi.getAttestation().setDependentAttestations(attestationDAO.getDependentAttestations(fi.getId()));
+                            fi.getAttestation().setSortOrder(fi.getSortOrder());
+                            fi.getAttestation().setRequired(fi.getRequired());
                             return fi.getAttestation();
                         })
                         .toList())

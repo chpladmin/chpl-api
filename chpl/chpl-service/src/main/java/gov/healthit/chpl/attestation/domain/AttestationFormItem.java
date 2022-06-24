@@ -13,11 +13,13 @@ public class AttestationFormItem {
     private AttestationPeriod attestationPeriod;
     private Attestation attestation;
     private Long sortOrder;
+    private Boolean required;
 
     public AttestationFormItem(AttestationFormItemEntity entity) {
         this.id = entity.getId();
         this.attestationPeriod = new AttestationPeriod(entity.getAttestationPeriod());
         this.attestation = new Attestation(entity.getAttestation());
         this.sortOrder = entity.getSortOrder();
+        this.required = entity.getRequired();
     }
 }

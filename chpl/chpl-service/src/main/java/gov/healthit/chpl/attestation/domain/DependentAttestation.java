@@ -13,11 +13,13 @@ public class DependentAttestation {
     private ValidResponse whenValidResponse;
     private Attestation childAttestation;
     private Long sortOrder;
+    private Boolean required;
 
     public DependentAttestation(DependentAttestationFormItemEntity entity) {
         this.id = entity.getId();
         this.whenValidResponse = new ValidResponse(entity.getWhenValidResponse());
         this.childAttestation = new Attestation(entity.getChildAttestation());
         this.sortOrder = entity.getSortOrder();
+        this.required = entity.getRequired();
     }
 }
