@@ -56,14 +56,16 @@ public class MeasureNormalizer {
             listing.getMeasures().stream()
                 .forEach(listingMeasure -> populateMeasureType(listingMeasure));
             listing.getMeasures().stream()
-                .filter(listingMeasure -> listingMeasure.getMeasure() != null && !StringUtils.isEmpty(listingMeasure.getMeasure().getName()))
+                .filter(listingMeasure -> listingMeasure.getMeasure() != null
+                    && StringUtils.isEmpty(listingMeasure.getMeasure().getLegacyMacraMeasureValue()))
                 .forEach(listingMeasure -> {
                     populateMeasureWithMipsValues(listingMeasure);
                     populateAssociatedCriteriaFields(listingMeasure);
                 });
             //if we ever get rid of legacy macra measures we can remove this
             listing.getMeasures().stream()
-                .filter(listingMeasure -> listingMeasure.getMeasure() != null && !StringUtils.isEmpty(listingMeasure.getMeasure().getLegacyMacraMeasureValue()))
+                .filter(listingMeasure -> listingMeasure.getMeasure() != null
+                    && !StringUtils.isEmpty(listingMeasure.getMeasure().getLegacyMacraMeasureValue()))
                 .forEach(listingMeasure -> populateMeasureWithLegacyValues(listingMeasure));
 
             List<ListingMeasure> combinedListingMeasures = new ArrayList<ListingMeasure>();

@@ -66,7 +66,7 @@ public class MeasureReviewer implements Reviewer {
 
     private void reviewG1RequiredMeasures(CertifiedProductSearchDetails listing) {
         List<CertificationCriterion> attestedCriteria = listing.getCertificationResults().stream()
-                .filter(certResult -> certResult.isSuccess())
+                .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
                 .map(certResult -> certResult.getCriterion())
                 .collect(Collectors.toList());
         if (validationUtils.hasCert(G1_CRITERIA_NUMBER, attestedCriteria)) {
@@ -83,7 +83,7 @@ public class MeasureReviewer implements Reviewer {
 
     private void reviewG2RequiredMeasures(CertifiedProductSearchDetails listing) {
         List<CertificationCriterion> attestedCriteria = listing.getCertificationResults().stream()
-                .filter(certResult -> certResult.isSuccess())
+                .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
                 .map(certResult -> certResult.getCriterion())
                 .collect(Collectors.toList());
         if (validationUtils.hasCert(G2_CRITERIA_NUMBER, attestedCriteria)) {
