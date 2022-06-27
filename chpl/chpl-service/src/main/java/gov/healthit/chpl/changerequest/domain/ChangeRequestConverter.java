@@ -1,6 +1,7 @@
 package gov.healthit.chpl.changerequest.domain;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -17,10 +18,14 @@ import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusTypeEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestTypeEntity;
+import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult;
+import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult.CurrentStatusSearchResult;
+import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult.IdNamePairSearchResult;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.util.DateUtil;
 
 public final class ChangeRequestConverter {
 
@@ -40,6 +45,37 @@ public final class ChangeRequestConverter {
         status.setId(entity.getId());
         status.setName(entity.getName());
         return status;
+    }
+
+    public static ChangeRequestSearchResult convertSearchResult(ChangeRequestEntity entity) {
+        return ChangeRequestSearchResult.builder()
+        .id(entity.getId())
+        .changeRequestType(IdNamePairSearchResult.builder()
+                .id(entity.getChangeRequestType().getId())
+                .name(entity.getChangeRequestType().getName())
+                .build())
+        .developer(IdNamePairSearchResult.builder()
+                .id(entity.getDeveloper().getId())
+                .name(entity.getDeveloper().getName())
+                .build())
+        .submittedDateTime(DateUtil.toLocalDateTime(entity.getCreationDate().getTime()))
+        .currentStatus(convertSearchResult(getLatestStatus(entity.getStatuses())))
+        .certificationBodies(entity.getDeveloper().getCertificationBodyMaps().stream()
+                .map(acbMapEntity -> acbMapEntity.getCertificationBody())
+                .map(acb -> IdNamePairSearchResult.builder()
+                        .id(acb.getId())
+                        .name(acb.getName())
+                        .build())
+                .toList())
+        .build();
+    }
+
+    public static CurrentStatusSearchResult convertSearchResult(ChangeRequestStatusEntity entity) {
+        return CurrentStatusSearchResult.builder()
+                .id(entity.getChangeRequestStatusType().getId())
+                .name(entity.getChangeRequestStatusType().getName())
+                .statusChangeDateTime(DateUtil.toLocalDateTime(entity.getStatusChangeDate().getTime()))
+                .build();
     }
 
     public static ChangeRequest convert(ChangeRequestEntity entity) {
@@ -65,6 +101,21 @@ public final class ChangeRequestConverter {
         ChangeRequestStatus newest = statuses.get(0);
         for (ChangeRequestStatus event : statuses) {
             if (event.getStatusChangeDate().after(newest.getStatusChangeDate())) {
+                newest = event;
+            }
+        }
+        return newest;
+    }
+
+    private static ChangeRequestStatusEntity getLatestStatus(Set<ChangeRequestStatusEntity> statuses) {
+        if (CollectionUtils.isEmpty(statuses)) {
+            return null;
+        }
+        ChangeRequestStatusEntity newest = null;
+        for (ChangeRequestStatusEntity event : statuses) {
+            if (newest == null) {
+                newest = event;
+            } else if (event.getStatusChangeDate().after(newest.getStatusChangeDate())) {
                 newest = event;
             }
         }

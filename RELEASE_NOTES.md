@@ -1,5 +1,14 @@
 # Release Notes
 
+## Version 35.5.0
+_27 June 2022_
+
+### Features
+* Deprecate GET /change-requests endpoint and add GET /change-requests/search endpoint
+* Add Direct Review open/closed non-conformity counts to Developer Ban Email
+
+---
+
 ## Version 35.4.0
 _13 June 2022_
 
