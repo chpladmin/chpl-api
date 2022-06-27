@@ -294,7 +294,6 @@ public class SurveillanceReportController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = PrivilegedSurveillance.class)
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/surveillance/{surveillanceId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public PrivilegedSurveillance updatePrivilegedSurveillanceData(
             @PathVariable Long quarterlyReportId,

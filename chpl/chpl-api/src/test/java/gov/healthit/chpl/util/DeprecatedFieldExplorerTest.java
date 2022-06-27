@@ -265,8 +265,7 @@ public class DeprecatedFieldExplorerTest {
     public void findDeprecatedFields_PrivilegedSurveillance() {
         Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(PrivilegedSurveillance.class);
         assertNotNull(deprecatedFieldNames);
-        assertEquals(1, deprecatedFieldNames.size());
-        assertTrue(deprecatedFieldNames.contains("userPermissionId"));
+        assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test

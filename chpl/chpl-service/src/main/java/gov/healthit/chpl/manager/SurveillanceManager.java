@@ -294,14 +294,13 @@ public class SurveillanceManager extends SecuredManager {
         return doc;
     }
 
-    private Surveillance convertToDomain(final SurveillanceEntity entity) {
+    private Surveillance convertToDomain(SurveillanceEntity entity) {
         Surveillance surv = new Surveillance();
         surv.setId(entity.getId());
         surv.setFriendlyId(entity.getFriendlyId());
         surv.setStartDay(entity.getStartDate());
         surv.setEndDay(entity.getEndDate());
         surv.setRandomizedSitesUsed(entity.getNumRandomizedSites());
-        surv.setAuthority(Surveillance.AUTHORITY_ACB);
         surv.setLastModifiedDate(entity.getLastModifiedDate());
 
         if (entity.getCertifiedProduct() != null) {
