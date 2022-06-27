@@ -35,6 +35,7 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.UserDeveloperMapDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.search.ListingSearchService;
@@ -249,9 +250,23 @@ public class DeveloperAttestationReportDataCollection {
             return null;
         }
         return userDeveloperMaps.stream()
-            .filter(udm -> udm.getUser() != null && !StringUtils.isEmpty(udm.getUser().getEmail()))
-            .map(udm -> udm.getUser().getEmail())
+            .filter(udm -> udm.getUser() != null)
+            .map(udm -> formatUserData(udm.getUser()))
             .collect(Collectors.toList());
+    }
+
+    private String formatUserData(UserDTO user) {
+        String userContactText = "";
+        if (!StringUtils.isEmpty(user.getFullName())) {
+            userContactText = user.getFullName();
+        }
+        if (!StringUtils.isEmpty(user.getEmail())) {
+            if (!StringUtils.isEmpty(userContactText)) {
+                userContactText += " ";
+            }
+            userContactText += "<" + user.getEmail() + ">";
+        }
+        return userContactText;
     }
 
     private String getAttestationResponse(DeveloperAttestationSubmission attestation, Long attestationId) {

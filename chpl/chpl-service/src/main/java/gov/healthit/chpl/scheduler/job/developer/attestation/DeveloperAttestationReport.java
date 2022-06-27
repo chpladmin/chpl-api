@@ -51,7 +51,7 @@ public class DeveloperAttestationReport {
                 developerId.toString(),
                 pointOfContactName,
                 pointOfContactEmail,
-                !CollectionUtils.isEmpty(developerUsers) ? developerUsers.stream().collect(Collectors.joining(";")) : "",
+                !CollectionUtils.isEmpty(developerUsers) ? developerUsers.stream().collect(Collectors.joining("; ")) : "",
                 attestationPeriod,
                 attestationStatus,
                 attestationPublishDate != null ? attestationPublishDate.toString() : "",
