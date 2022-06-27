@@ -13,8 +13,9 @@ public class ApiValidation extends ValidationRule<AttestationValidationContext> 
                 .toList();
 
         return context.getListings().stream()
-                .filter(listing -> context.getActiveStatuses().contains(listing.getCertificationStatus()))
+                .filter(listing -> context.getActiveStatuses().contains(listing.getCertificationStatus().getName()))
                 .flatMap(listing -> listing.getCriteriaMet().stream())
+                .map(criteriaMet -> criteriaMet.getId())
                 .filter(criteriaMetId -> apiCriteriaIds.contains(criteriaMetId))
                 .findAny()
                 .isPresent();

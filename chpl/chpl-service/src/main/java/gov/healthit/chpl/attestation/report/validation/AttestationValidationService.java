@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.service.CertificationCriterionService;
 
 @Component
@@ -39,7 +39,7 @@ public class AttestationValidationService {
                 .collect(Collectors.toList());
     }
 
-    public Boolean validateRealWorldTesting(Developer developer, List<CertifiedProductBasicSearchResult> listings) {
+    public Boolean validateRealWorldTesting(Developer developer, List<ListingSearchResult> listings) {
         AttestationValidationContext context = AttestationValidationContext.builder()
                 .developer(developer)
                 .listings(listings)
@@ -52,7 +52,7 @@ public class AttestationValidationService {
         return rwtValidation.isValid(context);
     }
 
-    public Boolean validateAssurances(Developer developer, List<CertifiedProductBasicSearchResult> listings) {
+    public Boolean validateAssurances(Developer developer, List<ListingSearchResult> listings) {
         AttestationValidationContext context = AttestationValidationContext.builder()
                 .developer(developer)
                 .listings(listings)
@@ -64,7 +64,7 @@ public class AttestationValidationService {
         return assurancesValidation.isValid(context);
     }
 
-    public Boolean validateApi(Developer developer, List<CertifiedProductBasicSearchResult> listings) {
+    public Boolean validateApi(Developer developer, List<ListingSearchResult> listings) {
         AttestationValidationContext context = AttestationValidationContext.builder()
                 .developer(developer)
                 .listings(listings)
