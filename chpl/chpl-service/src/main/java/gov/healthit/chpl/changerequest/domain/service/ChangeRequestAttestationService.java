@@ -345,7 +345,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         List<String> headings = Arrays.asList("Condition", "Attestation", "Response");
 
         List<List<String>> rows = attestationSubmission.getAttestationResponses().stream()
-                .sorted((r1, r2) -> r1.getAttestation().getSortOrder().compareTo(r2.getAttestation().getSortOrder()))
+//                .sorted((r1, r2) -> r1.getAttestation().getSortOrder().compareTo(r2.getAttestation().getSortOrder()))
                 .map(resp -> Arrays.asList(
                         resp.getAttestation().getCondition().getName(),
                         convertPsuedoMarkdownToHtmlLink(resp.getAttestation().getDescription()),

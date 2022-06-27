@@ -50,7 +50,7 @@ public class AttestationManager {
     }
 
     public AttestationForm getAttestationForm(Long attestationPeriodId) {
-        return attestationFormService.getAttestationForm(attestationPeriodId);
+        return attestationFormService.getAttestationForm(attestationPeriodId, null);
     }
 
     @Transactional

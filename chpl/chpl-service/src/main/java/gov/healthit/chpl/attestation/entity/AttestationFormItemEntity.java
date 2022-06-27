@@ -42,6 +42,14 @@ public class AttestationFormItemEntity {
     @JoinColumn(name = "attestation_id", nullable = false, insertable = false, updatable = false)
     private AttestationEntity attestation;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "when_valid_response_id", nullable = true, insertable = false, updatable = false)
+    private ValidResponseEntity whenValidResponse;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_attestation_form_item_id", nullable = true, insertable = false, updatable = false)
+    private AttestationFormItemEntity parentAttestationFormItem;
+
     @Column(name = "sort_order")
     private Long sortOrder;
 

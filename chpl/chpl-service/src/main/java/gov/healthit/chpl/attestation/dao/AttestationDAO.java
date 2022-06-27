@@ -10,13 +10,11 @@ import gov.healthit.chpl.attestation.domain.AttestationFormItem;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
 import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
-import gov.healthit.chpl.attestation.domain.DependentAttestation;
 import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
 import gov.healthit.chpl.attestation.entity.AttestationEntity;
 import gov.healthit.chpl.attestation.entity.AttestationFormItemEntity;
 import gov.healthit.chpl.attestation.entity.AttestationPeriodDeveloperExceptionEntity;
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
-import gov.healthit.chpl.attestation.entity.DependentAttestationFormItemEntity;
 import gov.healthit.chpl.attestation.entity.DeveloperAttestationResponseEntity;
 import gov.healthit.chpl.attestation.entity.DeveloperAttestationSubmissionEntity;
 import gov.healthit.chpl.attestation.entity.ValidResponseEntity;
@@ -36,16 +34,10 @@ public class AttestationDAO extends BaseDAOImpl{
                 .collect(Collectors.toList());
     }
 
-    public List<AttestationFormItem> getAttestationFormItems(Long attestationPeriodId) {
-        return getAttestationFormItemEntities(attestationPeriodId).stream()
+    public List<AttestationFormItem> getAttestationFormItems(Long attestationPeriodId, Long parentAttestationFormId) {
+        return getAttestationFormItemEntities(attestationPeriodId, parentAttestationFormId).stream()
                 .map(ent -> new AttestationFormItem(ent))
                 .collect(Collectors.toList());
-    }
-
-    public List<DependentAttestation> getDependentAttestations(Long attestationFormItemId) {
-        return getDependentAttestationFormItemEntities(attestationFormItemId).stream()
-                .map(ent -> new DependentAttestation(ent))
-                .toList();
     }
 
     public DeveloperAttestationSubmission getDeveloperAttestationSubmission(Long developerAttestationSubmissionId) throws EntityRetrievalException {
@@ -184,7 +176,7 @@ public class AttestationDAO extends BaseDAOImpl{
         return result;
     }
 
-    private List<AttestationFormItemEntity> getAttestationFormItemEntities(Long attestationPeriodId) {
+    private List<AttestationFormItemEntity> getAttestationFormItemEntities(Long attestationPeriodId, Long parentAttestationFormItemId) {
         List<AttestationFormItemEntity> result = entityManager.createQuery(
                 "SELECT DISTINCT afi "
                 + "FROM AttestationFormItemEntity afi "
@@ -195,33 +187,11 @@ public class AttestationDAO extends BaseDAOImpl{
                 + "WHERE (NOT afi.deleted = true) "
                 + "AND (NOT a.deleted = true ) "
                 + "AND (NOT vr.deleted = true) "
-                + "AND ap.id = :attestationPeriodId ", AttestationFormItemEntity.class)
+                + "AND ap.id = :attestationPeriodId "
+                + "AND ((:parentAttestationFormItemId is null and afi.parentAttestationFormItem is null) or afi.parentAttestationFormItem.id = :parentAttestationFormItemId)",
+                        AttestationFormItemEntity.class)
                 .setParameter("attestationPeriodId", attestationPeriodId)
-                .getResultList();
-        return result;
-    }
-
-    private List<DependentAttestationFormItemEntity> getDependentAttestationFormItemEntities(Long attestationFormItemId) {
-        List<DependentAttestationFormItemEntity> result = entityManager.createQuery(
-                "SELECT DISTINCT dafi "
-                + "FROM DependentAttestationFormItemEntity dafi "
-                + "JOIN FETCH dafi.attestationFormItem afi "
-                + "JOIN FETCH afi.attestationPeriod ap "
-                + "JOIN FETCH afi.attestation a "
-                + "JOIN FETCH a.validResponses vr "
-                + "LEFT JOIN FETCH a.condition "
-                + "JOIN FETCH dafi.whenValidResponse "
-                + "JOIN FETCH dafi.childAttestation ca "
-                + "JOIN FETCH ca.validResponses cavr "
-                + "LEFT JOIN ca.condition "
-                + "WHERE (NOT dafi.deleted = true) "
-                + "AND (NOT afi.deleted = true) "
-                + "AND (NOT a.deleted = true) "
-                + "AND (NOT vr.deleted = true) "
-                + "AND (NOT ca.deleted = true) "
-                + "AND (NOT cavr.deleted = true) "
-                + "AND dafi.attestationFormItem.id = :attestationFormItemId ", DependentAttestationFormItemEntity.class)
-                .setParameter("attestationFormItemId", attestationFormItemId)
+                .setParameter("parentAttestationFormItemId", parentAttestationFormItemId)
                 .getResultList();
         return result;
     }

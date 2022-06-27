@@ -13,27 +13,31 @@ import gov.healthit.chpl.attestation.domain.AttestationFormItem;
 @Component
 public class AttestationFormService {
     private AttestationDAO attestationDAO;
+    private AttestationPeriodService attestationPeriodService;
 
     @Autowired
-    public AttestationFormService(AttestationDAO attestationDAO) {
+    public AttestationFormService(AttestationDAO attestationDAO, AttestationPeriodService attestationPeriodService) {
         this.attestationDAO = attestationDAO;
+        this.attestationPeriodService = attestationPeriodService;
     }
 
     @Transactional(readOnly = true)
-    public AttestationForm getAttestationForm(Long periodId) {
-        List<AttestationFormItem> formItems = attestationDAO.getAttestationFormItems(periodId);
-
-
+    public AttestationForm getAttestationForm(Long periodId, Long attestationFormItemId) {
+        List<AttestationFormItem> formItems = getAttestationFormItems(periodId, attestationFormItemId);
         return AttestationForm.builder()
-                .period(formItems != null && formItems.size() != 0 ? formItems.get(0).getAttestationPeriod() : null)
-                .attestations(formItems.stream()
-                        .map(fi -> {
-                            fi.getAttestation().setDependentAttestations(attestationDAO.getDependentAttestations(fi.getId()));
-                            fi.getAttestation().setSortOrder(fi.getSortOrder());
-                            fi.getAttestation().setRequired(fi.getRequired());
-                            return fi.getAttestation();
-                        })
-                        .toList())
+                .attestations(formItems)
+                .period(attestationPeriodService.getAllPeriods().stream()
+                        .filter(p -> p.getId().equals(periodId))
+                        .findAny()
+                        .orElse(null))
                 .build();
+    }
+
+    private  List<AttestationFormItem> getAttestationFormItems(Long periodId, Long attestationFormItemId) {
+        List<AttestationFormItem> formItems = attestationDAO.getAttestationFormItems(periodId, attestationFormItemId);
+        formItems.forEach(fi -> {
+            fi.setChildAttestations(getAttestationFormItems(periodId, fi.getId()));
+        });
+        return formItems;
     }
 }

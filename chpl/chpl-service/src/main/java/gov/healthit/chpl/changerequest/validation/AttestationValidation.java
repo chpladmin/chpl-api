@@ -1,18 +1,5 @@
 package gov.healthit.chpl.changerequest.validation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.functors.DefaultEquator;
-
-import gov.healthit.chpl.attestation.domain.Attestation;
-import gov.healthit.chpl.attestation.domain.AttestationForm;
-import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
 public class AttestationValidation extends ValidationRule<ChangeRequestValidationContext> {
@@ -47,6 +34,7 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
         return true;
     }
 
+    /*
     private List<String> canDeveloperSubmitChangeRequest(ChangeRequestValidationContext context) {
         List<String> errors = new ArrayList<String>();
         try {
@@ -137,4 +125,5 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
             return false;
         }
     }
+    */
 }

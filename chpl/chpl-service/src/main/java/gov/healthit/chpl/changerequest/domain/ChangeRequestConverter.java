@@ -8,8 +8,8 @@ import org.apache.commons.collections.CollectionUtils;
 import gov.healthit.chpl.attestation.domain.Attestation;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
-import gov.healthit.chpl.attestation.domain.ValidResponse;
 import gov.healthit.chpl.attestation.domain.Condition;
+import gov.healthit.chpl.attestation.domain.ValidResponse;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationResponseEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDemographicsEntity;
@@ -147,7 +147,6 @@ public final class ChangeRequestConverter {
                                 .sortOrder(entity.getAttestation().getCondition().getSortOrder())
                                 .build())
                         .validResponses(entity.getAttestation().getValidResponses().stream().map(ent -> new ValidResponse(ent)).toList())
-                        .sortOrder(entity.getAttestation().getSortOrder())
                         .build())
                 .response(ValidResponse.builder()
                         .id(entity.getValidResponse().getId())

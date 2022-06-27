@@ -12,6 +12,6 @@ import lombok.Singular;
 @AllArgsConstructor
 public class AttestationForm {
     @Singular
-    private List<Attestation> attestations;
+    private List<AttestationFormItem> attestations;
     private AttestationPeriod period;
 }
