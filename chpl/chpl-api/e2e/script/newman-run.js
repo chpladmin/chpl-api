@@ -208,6 +208,16 @@ const surveillanceControllerTests = {
   },
 };
 
+const changerequestsControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/change-requests-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/change-requests-controller-tests.xml',
+    },
+  },
+};
+
 const jobs = [
   cb => newman.run(acbControllerTests,cb),
   cb => newman.run(apiKeyControllerTests,cb),
@@ -228,6 +238,7 @@ const jobs = [
   cb => newman.run(searchControllerTests,cb),
   cb => newman.run(certificationidControllerTests,cb),
   cb => newman.run(activityControllerTests,cb),
+  cb => newman.run(changerequestsControllerTests,cb),
   ];
 
 const responseCallback = (err) => {

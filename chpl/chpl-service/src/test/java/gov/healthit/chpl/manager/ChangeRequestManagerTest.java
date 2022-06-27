@@ -95,7 +95,7 @@ public class ChangeRequestManagerTest {
     public void getAllChangeRequestsForUser_None_ReturnsValidList() throws EntityRetrievalException {
         // Setup
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
-        Mockito.when(changeRequestDAO.getAll())
+        Mockito.when(changeRequestDAO.getAllWithDetails())
                 .thenReturn(Arrays.asList(getBasicChangeRequest(), getBasicChangeRequest(), getBasicChangeRequest()));
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
