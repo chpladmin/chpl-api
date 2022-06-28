@@ -11,13 +11,16 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
  * @author alarned
  *
  */
-public class Validator2015Phase2 extends Validator {
+public class Validator2015Legacy extends Validator {
 
     protected static final List<String> REQUIRED_CRITERIA = new ArrayList<String>(Arrays.asList("170.315 (a)(5)",
-            "170.315 (a)(9)", "170.315 (a)(14)", "170.315 (c)(1)", "170.315 (g)(7)", "170.315 (g)(10)"));
+            "170.315 (a)(9)", "170.315 (a)(14)", "170.315 (c)(1)", "170.315 (g)(7)"));
 
     protected static final List<String> CURES_REQUIRED_CRITERIA = new ArrayList<String>(Arrays.asList("170.315 (b)(1)",
             "170.315 (g)(9)"));
+
+    protected static final List<String> AA_CRITERIA_OR = new ArrayList<String>(Arrays.asList("170.315 (g)(8)",
+            "170.315 (g)(10)"));
 
     protected static final List<String> CPOE_CRITERIA_OR = new ArrayList<String>(Arrays.asList("170.315 (a)(1)",
             "170.315 (a)(2)", "170.315 (a)(3)"));
@@ -28,9 +31,11 @@ public class Validator2015Phase2 extends Validator {
     /**
      * Starting data for validator.
      */
-    public Validator2015Phase2() {
+    public Validator2015Legacy() {
         this.counts.put("criteriaRequired", REQUIRED_CRITERIA.size() + CURES_REQUIRED_CRITERIA.size());
         this.counts.put("criteriaRequiredMet", 0);
+        this.counts.put("criteriaAaRequired", 1);
+        this.counts.put("criteriaAaRequiredMet", 0);
         this.counts.put("criteriaCpoeRequired", 1);
         this.counts.put("criteriaCpoeRequiredMet", 0);
         this.counts.put("criteriaDpRequired", 1);
@@ -61,34 +66,50 @@ public class Validator2015Phase2 extends Validator {
             }
         }
         for (String crit : CURES_REQUIRED_CRITERIA) {
+            Boolean foundOriginal = false;
             Boolean foundRevised = false;
             for (CertificationCriterionDTO cert : criteriaMet.keySet()) {
                 if (cert.getNumber().equalsIgnoreCase(crit)) {
                     if (cert.getTitle().contains("Cures Update")) {
                         foundRevised = true;
+                    } else {
+                        foundOriginal = true;
                     }
                 }
             }
-            if (foundRevised) {
+            if (foundOriginal || foundRevised) {
                 this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
             } else {
-                missingAnd.add(crit + " (Cures Update)");
+                missingOr.add(new ArrayList<String>(new ArrayList<String>(Arrays.asList(crit,
+                        crit + " (Cures Update)"))));
                 criteriaValid = false;
             }
         }
+        boolean aaValid = isAAValid();
         boolean cpoeValid = isCPOEValid();
         boolean dpValid = isDPValid();
 
         this.counts.put(
                 "criteriaRequired",
-                this.counts.get("criteriaRequired")
+                this.counts.get("criteriaRequired") + this.counts.get("criteriaAaRequired")
                 + this.counts.get("criteriaCpoeRequired") + this.counts.get("criteriaDpRequired"));
         this.counts.put(
                 "criteriaRequiredMet",
-                this.counts.get("criteriaRequiredMet")
+                this.counts.get("criteriaRequiredMet") + this.counts.get("criteriaAaRequiredMet")
                 + this.counts.get("criteriaCpoeRequiredMet") + this.counts.get("criteriaDpRequiredMet"));
 
-        return (criteriaValid && cpoeValid && dpValid);
+        return (criteriaValid && aaValid && cpoeValid && dpValid);
+    }
+
+    protected boolean isAAValid() {
+        for (String crit : AA_CRITERIA_OR) {
+            if (criteriaMetContainsCriterion(crit)) {
+                this.counts.put("criteriaAaRequiredMet", 1);
+                return true;
+            }
+        }
+        missingOr.add(new ArrayList<String>(AA_CRITERIA_OR));
+        return false;
     }
 
     protected boolean isCPOEValid() {

@@ -29,9 +29,9 @@ public class ValidatorFactory {
             val = new Validator2014();
         } else if ("2015".equals(attYear)) {
             if (this.ff4j.check(FeatureList.ERD_PHASE_2)) {
-                val = new Validator2015Phase2();
-            } else {
                 val = new Validator2015();
+            } else {
+                val = new Validator2015Legacy();
             }
         } else if ("2014/2015".equals(attYear)) {
             val = new Validator20142015();
