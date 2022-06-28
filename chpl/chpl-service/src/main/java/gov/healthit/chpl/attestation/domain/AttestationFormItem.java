@@ -14,7 +14,7 @@ public class AttestationFormItem {
     private Long id;
     //private AttestationPeriod attestationPeriod;
     private Attestation attestation;
-    private List<AttestationFormItem> childAttestations;
+    private List<AttestationFormItem> childAttestationFormItems;
     private ValidResponse whenValidResponse;
     private Long sortOrder;
     private Boolean required;

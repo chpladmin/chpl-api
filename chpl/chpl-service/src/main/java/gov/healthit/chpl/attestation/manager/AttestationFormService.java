@@ -25,7 +25,7 @@ public class AttestationFormService {
     public AttestationForm getAttestationForm(Long periodId, Long attestationFormItemId) {
         List<AttestationFormItem> formItems = getAttestationFormItems(periodId, attestationFormItemId);
         return AttestationForm.builder()
-                .attestations(formItems)
+                .attestationFormItems(formItems)
                 .period(attestationPeriodService.getAllPeriods().stream()
                         .filter(p -> p.getId().equals(periodId))
                         .findAny()
@@ -36,7 +36,7 @@ public class AttestationFormService {
     private  List<AttestationFormItem> getAttestationFormItems(Long periodId, Long attestationFormItemId) {
         List<AttestationFormItem> formItems = attestationDAO.getAttestationFormItems(periodId, attestationFormItemId);
         formItems.forEach(fi -> {
-            fi.setChildAttestations(getAttestationFormItems(periodId, fi.getId()));
+            fi.setChildAttestationFormItems(getAttestationFormItems(periodId, fi.getId()));
         });
         return formItems;
     }
