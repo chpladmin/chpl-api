@@ -25,12 +25,12 @@ public class CertifiedProduct2015Gatherer {
 
     public List<CertifiedProductSearchDetails> getAll2015CertifiedProducts(Logger logger, Integer threadPoolSize) throws InterruptedException, ExecutionException {
         ForkJoinPool pool = new ForkJoinPool(threadPoolSize);
-        return pool.submit(() -> getAll2015CertifiedProducts(logger, true)).get();
+        return pool.submit(() -> getAll2015CertifiedProducts(logger)).get();
     }
 
     public List<CertifiedProductSearchDetails> getAll2015CertifiedProducts(Logger logger, Integer threadPoolSize, Boolean useListingCache) throws InterruptedException, ExecutionException {
         ForkJoinPool pool = new ForkJoinPool(threadPoolSize);
-        return pool.submit(() -> getAll2015CertifiedProducts(logger)).get();
+        return pool.submit(() -> getAll2015CertifiedProducts(logger, useListingCache)).get();
     }
 
     public List<CertifiedProductSearchDetails> getAll2015CertifiedProducts(Logger logger) {
