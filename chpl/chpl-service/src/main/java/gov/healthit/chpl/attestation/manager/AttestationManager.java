@@ -11,15 +11,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.attestation.dao.AttestationDAO;
-import gov.healthit.chpl.attestation.domain.AttestationForm;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
+import gov.healthit.chpl.attestation.domain.AttestationPeriodForm;
 import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.form.FormService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -28,18 +29,18 @@ import lombok.extern.log4j.Log4j2;
 public class AttestationManager {
     private AttestationDAO attestationDAO;
     private AttestationPeriodService attestationPeriodService;
-    private AttestationFormService attestationFormService;
+    private FormService formService;
     private ChangeRequestDAO changeRequestDAO;
     private ErrorMessageUtil errorMessageUtil;
     private Integer attestationExceptionWindowInDays;
 
     @Autowired
-    public AttestationManager(AttestationDAO attestationDAO, AttestationPeriodService attestationPeriodService, AttestationFormService attestationFormService,
+    public AttestationManager(AttestationDAO attestationDAO, AttestationPeriodService attestationPeriodService, FormService formService,
             ChangeRequestDAO changeRequestDAO, ErrorMessageUtil errorMessageUtil,
             @Value("${attestationExceptionWindowInDays}") Integer attestationExceptionWindowInDays) {
         this.attestationDAO = attestationDAO;
         this.attestationPeriodService = attestationPeriodService;
-        this.attestationFormService = attestationFormService;
+        this.formService = formService;
         this.changeRequestDAO = changeRequestDAO;
         this.errorMessageUtil = errorMessageUtil;
         this.attestationExceptionWindowInDays = attestationExceptionWindowInDays;
@@ -49,8 +50,14 @@ public class AttestationManager {
         return attestationPeriodService.getAllPeriods();
     }
 
-    public AttestationForm getAttestationForm(Long attestationPeriodId) {
-        return attestationFormService.getAttestationForm(attestationPeriodId, null);
+    public AttestationPeriodForm getAttestationForm(Long attestationPeriodId) throws EntityRetrievalException {
+        return AttestationPeriodForm.builder()
+                .period(getAllPeriods().stream()
+                        .filter(per -> per.getId().equals(attestationPeriodId))
+                        .findAny()
+                        .orElse(null))
+                .form(formService.getForm(2L))
+                .build();
     }
 
     @Transactional

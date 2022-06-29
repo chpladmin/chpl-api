@@ -13,7 +13,7 @@ import org.mockito.Mockito;
 import org.springframework.security.core.GrantedAuthority;
 
 import gov.healthit.chpl.attestation.domain.Attestation;
-import gov.healthit.chpl.attestation.domain.AttestationForm;
+import gov.healthit.chpl.attestation.domain.AttestationPeriodForm;
 import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
 import gov.healthit.chpl.attestation.domain.ValidResponse;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
@@ -201,8 +201,8 @@ public class AttestationValidationTest {
                 .build();
     }
 
-    private AttestationForm getAttestationForm() {
-        return AttestationForm.builder()
+    private AttestationPeriodForm getAttestationForm() {
+        return AttestationPeriodForm.builder()
                 .attestation(Attestation.builder()
                         .id(1L)
                         .description("Attestation 1")

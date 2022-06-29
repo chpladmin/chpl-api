@@ -15,7 +15,7 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.attestation.dao.AttestationDAO;
 import gov.healthit.chpl.attestation.domain.Attestation;
-import gov.healthit.chpl.attestation.domain.AttestationForm;
+import gov.healthit.chpl.attestation.domain.AttestationPeriodForm;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
 import gov.healthit.chpl.domain.Developer;
@@ -83,7 +83,7 @@ public class AttestationManagerTest {
 
     @Test
     public void getAttestationForm_Success_ReturnsAttestationForm() {
-        AttestationForm form = manager.getAttestationForm();
+        AttestationPeriodForm form = manager.getAttestationForm();
 
         assertNotNull(form.getAttestations());
     }

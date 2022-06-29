@@ -1,4 +1,4 @@
-package gov.healthit.chpl.attestation.domain;
+package gov.healthit.chpl.form;
 
 import java.util.List;
 
@@ -10,8 +10,10 @@ import lombok.Singular;
 @Data
 @Builder
 @AllArgsConstructor
-public class AttestationForm {
+public class Form {
+    private Long id;
+    private String description;
+
     @Singular
-    private List<AttestationFormItem> attestationFormItems;
-    private AttestationPeriod period;
+    private List<FormItem> formItems;
 }
