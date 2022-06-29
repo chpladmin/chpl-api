@@ -5,7 +5,6 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Singular;
 
 @Data
 @Builder
@@ -13,7 +12,5 @@ import lombok.Singular;
 public class Form {
     private Long id;
     private String description;
-
-    @Singular
-    private List<FormItem> formItems;
+    private List<SectionHeading> sectionHeadings;
 }

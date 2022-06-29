@@ -5,12 +5,16 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
+import gov.healthit.chpl.form.entity.FormEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,6 +36,10 @@ public class AttestationPeriodEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "form_id", nullable = true, insertable = false, updatable = false)
+    private FormEntity form;
 
     @Column(name = "period_start")
     private LocalDate periodStart;

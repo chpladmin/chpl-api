@@ -1,6 +1,8 @@
 package gov.healthit.chpl.form;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,10 +24,11 @@ public class FormService {
     @Transactional(readOnly = true)
     public Form getForm(Long formId) throws EntityRetrievalException {
         FormEntity formEntity = formDAO.getForm(formId);
+
         return Form.builder()
                 .id(formEntity.getId())
                 .description(formEntity.getDescription())
-                .formItems(getFormItems(formEntity.getId(), null))
+                .sectionHeadings(organizeFormItemsIntoSectionHeadings(getFormItems(formEntity.getId(), null)))
                 .build();
     }
 
@@ -38,5 +41,18 @@ public class FormService {
             fi.setChildFormItems(getFormItems(formId, fi.getId()));
         });
         return formItems;
+    }
+
+    private List<SectionHeading> organizeFormItemsIntoSectionHeadings(List<FormItem> formItems) {
+        //Creates a copy of the SectionHeading object (using *.toBuilder().build())
+        Map<SectionHeading, List<FormItem>> sections = formItems.stream()
+                .collect(Collectors.groupingBy(fi -> fi.getQuestion().getSectionHeading().toBuilder().build()));
+
+        return sections.entrySet().stream()
+                .map(entry -> {
+                    entry.getKey().setFormItems(entry.getValue());
+                    return entry.getKey();
+                })
+                .toList();
     }
 }

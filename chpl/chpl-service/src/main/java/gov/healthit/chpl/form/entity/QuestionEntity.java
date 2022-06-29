@@ -71,7 +71,7 @@ public class QuestionEntity {
         return Question.builder()
                 .id(id)
                 .responseCardinalityType(responseCardinalityType.toDomain())
-                .sectionHeading(sectionHeading.toDomain())
+                .sectionHeading(sectionHeading != null ? sectionHeading.toDomain() : null)
                 .allowedResponses(allowedResponses.stream()
                         .map(ent -> ent.toDomain())
                         .toList())

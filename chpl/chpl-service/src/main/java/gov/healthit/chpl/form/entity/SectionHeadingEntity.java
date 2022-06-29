@@ -34,6 +34,9 @@ public class SectionHeadingEntity {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "sort_order")
+    private Integer sortOrder;
+
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
@@ -50,6 +53,7 @@ public class SectionHeadingEntity {
         return SectionHeading.builder()
                 .id(id)
                 .name(name)
+                .sortOrder(sortOrder)
                 .build();
     }
 }

@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
+import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
@@ -69,6 +70,10 @@ public class AttestationPeriod implements Serializable {
     @JsonIgnore
     private LocalDate submissionEnd;
 
+    @XmlTransient
+    @JsonIgnore
+    private Form form;
+
     /**
      * A description of the attestation period.
      */
@@ -81,6 +86,7 @@ public class AttestationPeriod implements Serializable {
 
     public AttestationPeriod(AttestationPeriodEntity entity) {
         this.id = entity.getId();
+        this.form = entity.getForm() != null ? entity.getForm().toDomain() : null;
         this.periodStart = entity.getPeriodStart();
         this.periodEnd = entity.getPeriodEnd();
         this.submissionEnd = entity.getSubmissionEnd();
@@ -94,6 +100,14 @@ public class AttestationPeriod implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Form getForm() {
+        return form;
+    }
+
+    public void setForm(Form form) {
+        this.form = form;
     }
 
     public LocalDate getPeriodStart() {

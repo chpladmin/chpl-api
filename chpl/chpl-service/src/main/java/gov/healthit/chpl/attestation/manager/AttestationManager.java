@@ -51,13 +51,22 @@ public class AttestationManager {
     }
 
     public AttestationPeriodForm getAttestationForm(Long attestationPeriodId) throws EntityRetrievalException {
-        return AttestationPeriodForm.builder()
-                .period(getAllPeriods().stream()
-                        .filter(per -> per.getId().equals(attestationPeriodId))
-                        .findAny()
-                        .orElse(null))
-                .form(formService.getForm(2L))
-                .build();
+        AttestationPeriod attestationPeriod = getAllPeriods().stream()
+                .filter(ap -> ap.getId().equals(attestationPeriodId))
+                .findAny()
+                .orElse(null);
+
+        if (attestationPeriod != null) {
+            return AttestationPeriodForm.builder()
+                    .period(getAllPeriods().stream()
+                            .filter(per -> per.getId().equals(attestationPeriodId))
+                            .findAny()
+                            .orElse(null))
+                    .form(formService.getForm(attestationPeriod.getForm().getId()))
+                    .build();
+        } else {
+            return null;
+        }
     }
 
     @Transactional
