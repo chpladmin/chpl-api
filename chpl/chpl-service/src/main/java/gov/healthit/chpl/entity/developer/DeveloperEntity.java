@@ -133,7 +133,8 @@ public class DeveloperEntity implements Serializable {
     private Set<DeveloperCertificationBodyMapEntity> certificationBodyMaps = new LinkedHashSet<DeveloperCertificationBodyMapEntity>();
 
     @Transient
-    private List<AttestationPeriodEntity> periods;
+    @Builder.Default
+    private List<AttestationPeriodEntity> periods = new ArrayList<AttestationPeriodEntity>();
 
     public Developer toDomain() {
         return Developer.builder()
