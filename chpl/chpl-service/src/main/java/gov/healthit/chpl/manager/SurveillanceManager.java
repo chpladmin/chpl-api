@@ -429,7 +429,7 @@ public class SurveillanceManager extends SecuredManager {
 
     private void logSurveillanceUpdateActivity(CertifiedProductSearchDetails existingListing)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
-        CertifiedProductSearchDetails changedListing = cpDetailsManager.getCertifiedProductDetails(existingListing.getId());
+        CertifiedProductSearchDetails changedListing = cpDetailsManager.getCertifiedProductDetailsNoCache(existingListing.getId());
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
                 "Surveillance was updated on certified product " + changedListing.getChplProductNumber(),
                 existingListing, changedListing);
@@ -437,7 +437,7 @@ public class SurveillanceManager extends SecuredManager {
 
     private void logSurveillanceCreationActivity(CertifiedProductSearchDetails existingListing)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
-        CertifiedProductSearchDetails changedListing = cpDetailsManager.getCertifiedProductDetails(existingListing.getId());
+        CertifiedProductSearchDetails changedListing = cpDetailsManager.getCertifiedProductDetailsNoCache(existingListing.getId());
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
                 "Surveillance was added to certified product " + changedListing.getChplProductNumber(),
                 existingListing, changedListing);
