@@ -14,7 +14,7 @@ import gov.healthit.chpl.attestation.dao.AttestationDAO;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
 import gov.healthit.chpl.attestation.domain.AttestationPeriodForm;
-import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
+import gov.healthit.chpl.attestation.domain.AttestationSubmission;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.domain.Developer;
@@ -30,17 +30,19 @@ public class AttestationManager {
     private AttestationDAO attestationDAO;
     private AttestationPeriodService attestationPeriodService;
     private FormService formService;
+    private AttestationSubmissionService attestationSubmissionService;
     private ChangeRequestDAO changeRequestDAO;
     private ErrorMessageUtil errorMessageUtil;
     private Integer attestationExceptionWindowInDays;
 
     @Autowired
     public AttestationManager(AttestationDAO attestationDAO, AttestationPeriodService attestationPeriodService, FormService formService,
-            ChangeRequestDAO changeRequestDAO, ErrorMessageUtil errorMessageUtil,
+            AttestationSubmissionService attestationSubmissionService, ChangeRequestDAO changeRequestDAO, ErrorMessageUtil errorMessageUtil,
             @Value("${attestationExceptionWindowInDays}") Integer attestationExceptionWindowInDays) {
         this.attestationDAO = attestationDAO;
         this.attestationPeriodService = attestationPeriodService;
         this.formService = formService;
+        this.attestationSubmissionService = attestationSubmissionService;
         this.changeRequestDAO = changeRequestDAO;
         this.errorMessageUtil = errorMessageUtil;
         this.attestationExceptionWindowInDays = attestationExceptionWindowInDays;
@@ -75,7 +77,8 @@ public class AttestationManager {
     }, allEntries = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ATTESTATION, "
             + "T(gov.healthit.chpl.permissions.domains.AttestationDomainPermissions).CREATE, #developerAttestationSubmission)")
-    public DeveloperAttestationSubmission saveDeveloperAttestation(DeveloperAttestationSubmission developerAttestationSubmission) throws EntityRetrievalException {
+    public AttestationSubmission saveDeveloperAttestation(AttestationSubmission developerAttestationSubmission) throws EntityRetrievalException {
+        /*
         attestationDAO.getDeveloperAttestationSubmissionsByDeveloperAndPeriod(
                 developerAttestationSubmission.getDeveloper().getId(),
                 developerAttestationSubmission.getPeriod().getId())
@@ -89,13 +92,17 @@ public class AttestationManager {
                             }
                         });
         return attestationDAO.createDeveloperAttestationSubmission(developerAttestationSubmission);
+        */
+        return null;
     }
 
+    /*
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ATTESTATION, "
             + "T(gov.healthit.chpl.permissions.domains.AttestationDomainPermissions).GET_BY_DEVELOPER_ID, #developerId)")
-    public List<DeveloperAttestationSubmission> getDeveloperAttestations(Long developerId) {
-        return attestationDAO.getDeveloperAttestationSubmissionsByDeveloper(developerId);
+    */
+    public List<AttestationSubmission> getDeveloperAttestations(Long developerId) {
+        return attestationSubmissionService.getAttestationSubmissions(developerId);
     }
 
     @Transactional
@@ -186,8 +193,11 @@ public class AttestationManager {
     }
 
     private Boolean doesAttestationForDeveloperExist(Long developerId, Long attestationPeriodId) {
+        /*
         List<DeveloperAttestationSubmission> submissions = attestationDAO.getDeveloperAttestationSubmissionsByDeveloperAndPeriod(developerId, attestationPeriodId);
         return submissions != null && submissions.size() > 0;
+        */
+        return true;
     }
 
     private Boolean doesValidExceptionExistForDeveloper(Long developerId) {
@@ -199,4 +209,5 @@ public class AttestationManager {
                 && (dateToCheck.equals(LocalDate.now())
                         || dateToCheck.isAfter(LocalDate.now()));
     }
+
 }

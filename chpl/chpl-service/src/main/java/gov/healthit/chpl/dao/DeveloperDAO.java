@@ -45,8 +45,11 @@ public class DeveloperDAO extends BaseDAOImpl {
             + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
             + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
             + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
+            /*
             + "LEFT OUTER JOIN FETCH v.attestations devAtt "
-            + "LEFT OUTER JOIN FETCH devAtt.period per ";
+            + "LEFT OUTER JOIN FETCH devAtt.period per "
+            */
+            ;
 
     private static final DeveloperStatusType DEFAULT_STATUS = DeveloperStatusType.Active;
     private AddressDAO addressDao;

@@ -17,8 +17,6 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
-import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
-import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestAttestationDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
@@ -183,6 +181,8 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         Developer beforeDeveloper = developerDao.getById(cr.getDeveloper().getId());
 
         ChangeRequestAttestationSubmission attestationSubmission = (ChangeRequestAttestationSubmission) cr.getDetails();
+
+        /*
         DeveloperAttestationSubmission developerAttestation = DeveloperAttestationSubmission.builder()
                 .developer(cr.getDeveloper())
                 .period(attestationSubmission.getAttestationPeriod())
@@ -200,7 +200,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         attestationManager.deleteAttestationPeriodDeveloperExceptions(
                 developerAttestation.getDeveloper().getId(),
                 developerAttestation.getPeriod().getId());
-
+        */
         Developer updatedDeveloper = developerDao.getById(cr.getDeveloper().getId());
         try {
             activityManager.addActivity(ActivityConcept.DEVELOPER, updatedDeveloper.getId(),
@@ -344,6 +344,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private String toHtmlString(ChangeRequestAttestationSubmission attestationSubmission, ChplHtmlEmailBuilder htmlBuilder) {
         List<String> headings = Arrays.asList("Condition", "Attestation", "Response");
 
+        /*
         List<List<String>> rows = attestationSubmission.getAttestationResponses().stream()
 //                .sorted((r1, r2) -> r1.getAttestation().getSortOrder().compareTo(r2.getAttestation().getSortOrder()))
                 .map(resp -> Arrays.asList(
@@ -353,6 +354,8 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                 .collect(Collectors.toList());
 
         return htmlBuilder.getTableHtml(headings, rows, "");
+        */
+        return null;
     }
 
     private String convertPsuedoMarkdownToHtmlLink(String toConvert) {

@@ -1,7 +1,6 @@
 package gov.healthit.chpl.entity.developer;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -27,14 +26,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Where;
 
-import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
-import gov.healthit.chpl.attestation.entity.DeveloperAttestationSubmissionEntity;
 import gov.healthit.chpl.changerequest.entity.DeveloperCertificationBodyMapEntity;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.PublicAttestation;
-import gov.healthit.chpl.domain.concept.PublicAttestationStatus;
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.ContactEntity;
 import lombok.AllArgsConstructor;
@@ -121,11 +117,13 @@ public class DeveloperEntity implements Serializable {
     @Where(clause = "deleted <> 'true'")
     private Set<DeveloperStatusEventEntity> statusEvents = new LinkedHashSet<DeveloperStatusEventEntity>();
 
+    /*
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "developer")
     @Basic(optional = false)
     @Column(name = "developer_id", nullable = false)
     @Where(clause = "deleted <> 'true'")
     private Set<DeveloperAttestationSubmissionEntity> attestations = new LinkedHashSet<DeveloperAttestationSubmissionEntity>();
+    */
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "developerId")
     @Basic(optional = false)
@@ -165,6 +163,7 @@ public class DeveloperEntity implements Serializable {
         if (CollectionUtils.isEmpty(this.getPeriods())) {
             return new ArrayList<PublicAttestation>();
         }
+        /*
         return getPeriods().stream()
                 .filter(period -> period.getPeriodEnd().isBefore(LocalDate.now()))
                 .map(period -> {
@@ -177,12 +176,16 @@ public class DeveloperEntity implements Serializable {
 
                 })
                 .toList();
+        */
+        return null;
     }
 
+    /*
     private DeveloperAttestationSubmissionEntity getAttestationForPeriod(AttestationPeriod period) {
         return attestations.stream()
                 .filter(att -> att.getPeriod().getId().equals(period.getId()))
                 .findAny()
                 .orElse(null);
     }
+    */
 }

@@ -22,4 +22,5 @@ public class FormItem {
     private List<FormItem> childFormItems;
     private Integer sortOrder;
     private Boolean required;
+    private List<AllowedResponse> submittedResponses;
 }

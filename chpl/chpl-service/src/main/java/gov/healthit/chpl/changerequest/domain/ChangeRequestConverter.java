@@ -2,16 +2,10 @@ package gov.healthit.chpl.changerequest.domain;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 
-import gov.healthit.chpl.attestation.domain.Attestation;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
-import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
-import gov.healthit.chpl.attestation.domain.Condition;
-import gov.healthit.chpl.attestation.domain.ValidResponse;
-import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationResponseEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDemographicsEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
@@ -177,16 +171,18 @@ public final class ChangeRequestConverter {
                         .submissionStart(entity.getPeriod().getSubmissionStart())
                         .description(entity.getPeriod().getDescription())
                         .build())
+                /*
                 .attestationResponses(entity.getResponses().stream()
                         .map(resp -> convert(resp))
                         .collect(Collectors.toList()))
+                */
                 .signature(entity.getSignature())
                 .signatureEmail(entity.getSignatureEmail())
                 .build();
     }
 
+    /*
     private static AttestationSubmittedResponse convert(ChangeRequestAttestationResponseEntity entity) {
-
         return AttestationSubmittedResponse.builder()
                 .id(entity.getId())
                 .attestation(Attestation.builder()
@@ -206,5 +202,8 @@ public final class ChangeRequestConverter {
                         .sortOrder(entity.getValidResponse().getSortOrder())
                         .build())
                 .build();
+
+        return null;
     }
+    */
 }

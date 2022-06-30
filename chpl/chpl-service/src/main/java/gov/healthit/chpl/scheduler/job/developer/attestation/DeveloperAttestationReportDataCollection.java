@@ -20,8 +20,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.dao.AttestationDAO;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
-import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
-import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.attestation.report.validation.AttestationValidationService;
 import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
@@ -101,6 +99,7 @@ public class DeveloperAttestationReportDataCollection {
         List<DeveloperAttestationReport> reportRows = developers.stream()
                 .filter(dev -> isDeveloperManagedBySelectedAcbs(dev, selectedAcbIds))
                 .map(dev -> {
+                    /*
                     DeveloperAttestationSubmission attestation = getDeveloperAttestation(dev.getId(), mostRecentPastPeriod.getId());
 
                     return DeveloperAttestationReport.builder()
@@ -130,6 +129,8 @@ public class DeveloperAttestationReportDataCollection {
                         .activeAcbs(getActiveAcbs())
                         .developerAcbMap(getDeveloperAcbMapping(dev, logger))
                         .build();
+                    */
+                    return DeveloperAttestationReport.builder().build();
                 })
                 .sorted(Comparator.comparing(DeveloperAttestationReport::getDeveloperName))
                 .toList();
@@ -184,6 +185,7 @@ public class DeveloperAttestationReportDataCollection {
         return developerDAO.findAll();
     }
 
+    /*
     private DeveloperAttestationSubmission getDeveloperAttestation(Long developerId, Long attestationPeriodId) {
         List<DeveloperAttestationSubmission> attestations =
                 attestationDAO.getDeveloperAttestationSubmissionsByDeveloperAndPeriod(developerId, attestationPeriodId);
@@ -194,6 +196,7 @@ public class DeveloperAttestationReportDataCollection {
             return null;
         }
     }
+    */
 
     private boolean isListingActiveDuringAttestationPeriod(List<CertificationStatusEvent> statusEvents, AttestationPeriod period) {
         List<DateRange> activeDateRanges = getDateRangesWithActiveStatus(statusEvents);
@@ -239,6 +242,7 @@ public class DeveloperAttestationReportDataCollection {
         return (developer != null && developer.getContact() != null && developer.getContact().getEmail() != null) ? developer.getContact().getEmail() : "";
     }
 
+    /*
     private String getAttestationResponse(DeveloperAttestationSubmission attestation, Long attestationId) {
         if (attestation == null) {
             return "";
@@ -252,7 +256,9 @@ public class DeveloperAttestationReportDataCollection {
                 : "";
         }
     }
+    */
 
+    /*
     private String getSubmitterName(DeveloperAttestationSubmission attestation) {
         return attestation != null ? attestation.getSignature() : "";
     }
@@ -260,7 +266,7 @@ public class DeveloperAttestationReportDataCollection {
     private String getSubmitterEmail(DeveloperAttestationSubmission attestation) {
         return attestation != null ? attestation.getSignatureEmail() : "";
     }
-
+    */
     private Long getTotalSurveillanceNonconformities(Developer developer, Logger logger) {
         return getListingDataForDeveloper(developer, logger).stream()
                 .filter(listing -> activeStatuses.contains(listing.getCertificationStatus()))

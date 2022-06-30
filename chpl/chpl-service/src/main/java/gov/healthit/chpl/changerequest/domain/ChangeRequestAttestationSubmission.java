@@ -1,21 +1,15 @@
 package gov.healthit.chpl.changerequest.domain;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Objects;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.functors.DefaultEquator;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
-import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Singular;
 
 @Data
 @Builder
@@ -28,8 +22,10 @@ public class ChangeRequestAttestationSubmission implements Serializable, ChangeR
     private Long id;
     private String signature;
     private AttestationPeriod attestationPeriod;
+    /*
     @Singular
     private List<AttestationSubmittedResponse> attestationResponses;
+    */
     private String signatureEmail;
 
     public static ChangeRequestAttestationSubmission cast(Object obj) {
@@ -54,7 +50,7 @@ public class ChangeRequestAttestationSubmission implements Serializable, ChangeR
         ChangeRequestAttestationSubmission other = (ChangeRequestAttestationSubmission) obj;
 
         return Objects.equals(attestationPeriod, other.attestationPeriod)
-                && CollectionUtils.isEqualCollection(attestationResponses, other.getAttestationResponses(), DefaultEquator.INSTANCE)
+                //&& CollectionUtils.isEqualCollection(attestationResponses, other.getAttestationResponses(), DefaultEquator.INSTANCE)
                 && Objects.equals(id, other.id)
                 && Objects.equals(signature, other.signature)
                 && Objects.equals(signatureEmail, other.signatureEmail);
@@ -62,6 +58,8 @@ public class ChangeRequestAttestationSubmission implements Serializable, ChangeR
 
     @Override
     public int hashCode() {
-        return Objects.hash(attestationPeriod, attestationResponses, id, signature, signatureEmail);
+        return Objects.hash(attestationPeriod,
+                //attestationResponses,
+                id, signature, signatureEmail);
     }
 }

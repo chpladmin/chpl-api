@@ -2,7 +2,6 @@ package gov.healthit.chpl.permissions.domains.attestation;
 
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
 @Component("attestationCreateActionPermissions")
@@ -15,6 +14,7 @@ public class CreateActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess(Object obj) {
+        /*
         if (!(obj instanceof DeveloperAttestationSubmission)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
@@ -25,6 +25,8 @@ public class CreateActionPermissions extends ActionPermissions {
         } else {
             return false;
         }
+        */
+        return false;
     }
 
 }

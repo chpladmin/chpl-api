@@ -4,11 +4,16 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.form.entity.AllowedResponseEntity;
+import gov.healthit.chpl.form.entity.FormItemEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,27 +22,29 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "valid_response")
+@Table(name = "attestation_submission_response")
 @Getter
 @Setter
 @ToString
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class ValidResponseEntity {
+@AllArgsConstructor
+public class AttestationSubmissionResponseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "response")
-    private String response;
+    @Column(name = "attestation_submission_id", nullable = false)
+    private Long attestationSubmissionId;
 
-    @Column(name = "meaning")
-    private String meaning;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "response_id", nullable = true, insertable = false, updatable = false)
+    private AllowedResponseEntity response;
 
-    @Column(name = "sort_order")
-    private Long sortOrder;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "form_item_id", nullable = true, insertable = false, updatable = false)
+    private FormItemEntity formItem;
 
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;

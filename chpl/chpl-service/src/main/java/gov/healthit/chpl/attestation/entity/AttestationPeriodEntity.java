@@ -71,6 +71,7 @@ public class AttestationPeriodEntity {
     public AttestationPeriod toDomain() {
         return AttestationPeriod.builder()
                 .id(this.getId())
+                .form(form != null ? form.toDomain() : null)
                 .periodStart(this.getPeriodStart())
                 .periodEnd(this.getPeriodEnd())
                 .submissionStart(this.getSubmissionStart())

@@ -1,23 +1,16 @@
 package gov.healthit.chpl.changerequest.dao;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
-import gov.healthit.chpl.attestation.entity.AttestationEntity;
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
-import gov.healthit.chpl.attestation.entity.ValidResponseEntity;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestConverter;
-import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationResponseEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionEntity;
-import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -25,6 +18,7 @@ import lombok.extern.log4j.Log4j2;
 public class ChangeRequestAttestationDAO extends BaseDAOImpl{
 
     public ChangeRequestAttestationSubmission create(ChangeRequest cr, ChangeRequestAttestationSubmission changeRequestAttestationSubmission) throws EntityRetrievalException {
+        /*
         ChangeRequestAttestationSubmissionEntity parent = ChangeRequestAttestationSubmissionEntity.builder()
                 .changeRequest(getSession().load(ChangeRequestEntity.class, cr.getId()))
                 .period(getAttestationPeriodEntity(changeRequestAttestationSubmission.getAttestationPeriod().getId()))
@@ -41,9 +35,12 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
         changeRequestAttestationSubmission.getAttestationResponses().stream()
                 .forEach(resp -> createAttestationResponse(resp, parent.getId()));
         return ChangeRequestConverter.convert(getEntity(parent.getId()));
+        */
+        return null;
     }
 
     public ChangeRequestAttestationSubmission update(ChangeRequestAttestationSubmission changeRequestAttestationSubmission) throws EntityRetrievalException {
+        /*
         ChangeRequestAttestationSubmissionEntity entity = getEntity(changeRequestAttestationSubmission.getId());
         entity.setSignature(changeRequestAttestationSubmission.getSignature());
         entity.setSignatureEmail(changeRequestAttestationSubmission.getSignatureEmail());
@@ -69,9 +66,11 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
         update(entity);
 
         return ChangeRequestConverter.convert(getEntity(entity.getId()));
+        */
+        return null;
     }
 
-
+    /*
     private ChangeRequestAttestationResponseEntity createAttestationResponse(AttestationSubmittedResponse response, Long changeRequestAttestationSubmissionId) {
         try {
             ChangeRequestAttestationResponseEntity entity = getChangeRequestAttestationResponseEntity(response, changeRequestAttestationSubmissionId);
@@ -82,6 +81,7 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
             throw new RuntimeException(e);
         }
     }
+    */
 
     public ChangeRequestAttestationSubmission getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
         return ChangeRequestConverter.convert(getEntityByChangeRequestId(changeRequestId));
@@ -151,6 +151,7 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
         return result.get(0);
     }
 
+    /*
     private ChangeRequestAttestationResponseEntity getChangeRequestAttestationResponseEntity(
             AttestationSubmittedResponse response, Long changeRequestAttestatioSubmissionId) throws EntityRetrievalException {
         return ChangeRequestAttestationResponseEntity.builder()
@@ -163,6 +164,7 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
                 .lastModifiedDate(new Date())
                 .build();
     }
+    */
 
     private AttestationPeriodEntity getAttestationPeriodEntity(Long id) throws EntityRetrievalException {
         List<AttestationPeriodEntity> result = entityManager.createQuery(
@@ -186,6 +188,7 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
         return result.get(0);
     }
 
+    /*
     private AttestationEntity getAttestationEntity(Long id) throws EntityRetrievalException {
         List<AttestationEntity> result = entityManager.createQuery(
                 "FROM AttestationEntity ae "
@@ -207,7 +210,9 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
         }
         return result.get(0);
     }
+    */
 
+    /*
     private ValidResponseEntity getAttestationValidResponseEntity(Long id) throws EntityRetrievalException {
         List<ValidResponseEntity> result = entityManager.createQuery(
                 "FROM AttestationValidResponseEntity vr "
@@ -229,5 +234,5 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
         }
         return result.get(0);
     }
-
+    */
 }

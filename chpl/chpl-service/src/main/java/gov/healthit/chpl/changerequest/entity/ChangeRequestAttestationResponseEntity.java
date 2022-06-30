@@ -7,12 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.attestation.entity.AttestationEntity;
-import gov.healthit.chpl.attestation.entity.ValidResponseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,6 +34,7 @@ public class ChangeRequestAttestationResponseEntity {
     @Column(name = "change_request_attestation_submission_id", insertable = true, nullable = false)
     private Long changeRequestAttestationSubmissionId;
 
+    /*
     @OneToOne()
     @JoinColumn(name = "attestation_id", insertable = true, updatable = false)
     private AttestationEntity attestation;
@@ -45,6 +42,7 @@ public class ChangeRequestAttestationResponseEntity {
     @OneToOne()
     @JoinColumn(name = "attestation_valid_response_id", insertable = true, updatable = true)
     private ValidResponseEntity validResponse;
+    */
 
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
