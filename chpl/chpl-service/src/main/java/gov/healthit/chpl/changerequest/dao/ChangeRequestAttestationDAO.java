@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestConverter;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionEntity;
+import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionResponseEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import lombok.extern.log4j.Log4j2;
@@ -84,7 +84,25 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
     */
 
     public ChangeRequestAttestationSubmission getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
-        return ChangeRequestConverter.convert(getEntityByChangeRequestId(changeRequestId));
+        return getEntityByChangeRequestId(changeRequestId).toDomain();
+    }
+
+    public List<ChangeRequestAttestationSubmissionResponseEntity> getChangeRequestAttestationSubmissionResponseEntities(Long changeRequestAttestationSubmissionId) {
+        String hql = "SELECT DISTINCT crasre "
+                + "FROM ChangeRequestAttestationSubmissionResponseEntity crasre "
+                + "JOIN FETCH crasre.response resp "
+                + "JOIN FETCH crasre.formItem fi "
+                + "WHERE (NOT crasre.deleted = true) "
+                + "AND (NOT resp.deleted = true) "
+                + "AND (NOT fi.deleted = true) "
+                + "AND (crasre.changeRequestAttestationSubmissionId = :changeRequestAttestationSubmissionId) ";
+
+        List<ChangeRequestAttestationSubmissionResponseEntity> result = entityManager
+                .createQuery(hql, ChangeRequestAttestationSubmissionResponseEntity.class)
+                .setParameter("changeRequestAttestationSubmissionId", changeRequestAttestationSubmissionId)
+                .getResultList();
+
+        return result;
     }
 
     private ChangeRequestAttestationSubmissionEntity getEntity(Long changeRequestSubmissionAttestationId) throws EntityRetrievalException {
@@ -123,13 +141,10 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
         String hql = "SELECT DISTINCT crase "
                 + "FROM ChangeRequestAttestationSubmissionEntity crase "
                 + "JOIN FETCH crase.changeRequest cr "
-                + "JOIN FETCH crase.responses resp "
-                + "JOIN FETCH resp.attestation att "
-                + "JOIN FETCH att.condition cond "
-                + "JOIN FETCH resp.validResponse vr "
+                + "JOIN FETCH crase.attestationPeriod per "
+                + "LEFT JOIN FETCH per.form "
                 + "WHERE (NOT crase.deleted = true) "
-                + "AND (NOT cr.deleted = true) "
-                + "AND (NOT resp.deleted = true) "
+                + "AND (NOT per.deleted = true) "
                 + "AND (cr.id = :changeRequestId) ";
 
         List<ChangeRequestAttestationSubmissionEntity> result = entityManager

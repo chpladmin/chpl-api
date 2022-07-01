@@ -7,8 +7,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.form.entity.AllowedResponseEntity;
+import gov.healthit.chpl.form.entity.FormItemEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,14 +21,14 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "change_request_attestation_response")
+@Table(name = "change_request_attestation_submission_response")
 @Getter
 @Setter
 @ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChangeRequestAttestationResponseEntity {
+public class ChangeRequestAttestationSubmissionResponseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,15 +38,13 @@ public class ChangeRequestAttestationResponseEntity {
     @Column(name = "change_request_attestation_submission_id", insertable = true, nullable = false)
     private Long changeRequestAttestationSubmissionId;
 
-    /*
     @OneToOne()
-    @JoinColumn(name = "attestation_id", insertable = true, updatable = false)
-    private AttestationEntity attestation;
+    @JoinColumn(name = "form_item_id", insertable = true, updatable = false)
+    private FormItemEntity formItem;
 
     @OneToOne()
-    @JoinColumn(name = "attestation_valid_response_id", insertable = true, updatable = true)
-    private ValidResponseEntity validResponse;
-    */
+    @JoinColumn(name = "response_id", insertable = true, updatable = true)
+    private AllowedResponseEntity response;
 
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;

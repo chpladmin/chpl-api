@@ -22,6 +22,7 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestAttestationDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
+import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionResponseEntity;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
@@ -35,6 +36,10 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.form.Form;
+import gov.healthit.chpl.form.FormItem;
+import gov.healthit.chpl.form.FormService;
+import gov.healthit.chpl.form.SectionHeading;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.DateUtil;
@@ -44,13 +49,14 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ChangeRequestAttestationService extends ChangeRequestDetailsService<ChangeRequestAttestationSubmission> {
     private ChangeRequestDAO crDAO;
-    private ChangeRequestAttestationDAO crAttesttionDAO;
+    private ChangeRequestAttestationDAO crAttestationDAO;
     private ChplEmailFactory chplEmailFactory;
     private AttestationManager attestationManager;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
     private UserDAO userDAO;
-    private DeveloperDAO developerDao;
+    private DeveloperDAO developerDAO;
     private ActivityManager activityManager;
+    private FormService formService;
 
     @Value("${changeRequest.attestation.submitted.subject}")
     private String submittedEmailSubject;
@@ -92,25 +98,29 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private Long cancelledStatus;
 
     @Autowired
-    public ChangeRequestAttestationService(ChangeRequestDAO crDAO, ChangeRequestAttestationDAO crAttesttionDAO,
+    public ChangeRequestAttestationService(ChangeRequestDAO crDAO, ChangeRequestAttestationDAO crAttestationDAO,
             UserDeveloperMapDAO userDeveloperMapDAO, AttestationManager attestationManager,
             ChplEmailFactory chplEmailFactory, ChplHtmlEmailBuilder chplHtmlEmailBuilder,
-            UserDAO userDAO, DeveloperDAO developerDao, ActivityManager activityManager) {
+            UserDAO userDAO, DeveloperDAO developerDAO, ActivityManager activityManager,
+            FormService formService) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
-        this.crAttesttionDAO = crAttesttionDAO;
+        this.crAttestationDAO = crAttestationDAO;
         this.attestationManager = attestationManager;
         this.chplEmailFactory = chplEmailFactory;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
         this.userDAO = userDAO;
-        this.developerDao = developerDao;
+        this.developerDAO = developerDAO;
         this.activityManager = activityManager;
+        this.formService = formService;
     }
 
     @Override
     @Transactional
     public ChangeRequestAttestationSubmission getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
-        return crAttesttionDAO.getByChangeRequestId(changeRequestId);
+        ChangeRequestAttestationSubmission cras = crAttestationDAO.getByChangeRequestId(changeRequestId);
+        cras.setForm(getPopulatedForm(cras));
+        return cras;
     }
 
     @Override
@@ -121,7 +131,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
             attestation.setSignatureEmail(getUserById(AuthUtil.getCurrentUser().getId()).getEmail());
             attestation.setAttestationPeriod(getAttestationPeriod(cr));
 
-            crAttesttionDAO.create(cr, attestation);
+            crAttestationDAO.create(cr, attestation);
             ChangeRequest newCr = crDAO.get(cr.getId());
 
             try {
@@ -159,7 +169,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                         "Change request cancelled by requestor",
                         crFromDb, cr);
             } else if (haveDetailsBeenUpdated(cr, crFromDb)) {
-                cr.setDetails(crAttesttionDAO.update((ChangeRequestAttestationSubmission) cr.getDetails()));
+                cr.setDetails(crAttestationDAO.update((ChangeRequestAttestationSubmission) cr.getDetails()));
 
                 activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
                         "Change request details updated",
@@ -178,7 +188,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Override
     protected ChangeRequest execute(ChangeRequest cr) throws EntityRetrievalException, EntityCreationException {
-        Developer beforeDeveloper = developerDao.getById(cr.getDeveloper().getId());
+        Developer beforeDeveloper = developerDAO.getById(cr.getDeveloper().getId());
 
         ChangeRequestAttestationSubmission attestationSubmission = (ChangeRequestAttestationSubmission) cr.getDetails();
 
@@ -201,7 +211,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                 developerAttestation.getDeveloper().getId(),
                 developerAttestation.getPeriod().getId());
         */
-        Developer updatedDeveloper = developerDao.getById(cr.getDeveloper().getId());
+        Developer updatedDeveloper = developerDAO.getById(cr.getDeveloper().getId());
         try {
             activityManager.addActivity(ActivityConcept.DEVELOPER, updatedDeveloper.getId(),
                 "Developer attestation created.", beforeDeveloper, updatedDeveloper);
@@ -388,4 +398,35 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private Boolean haveDetailsBeenUpdated(ChangeRequest updatedCr, ChangeRequest originalCr) {
         return !((ChangeRequestAttestationSubmission) updatedCr.getDetails()).equals((originalCr.getDetails()));
     }
+
+    private Form getPopulatedForm(ChangeRequestAttestationSubmission submission) {
+        try {
+            List<ChangeRequestAttestationSubmissionResponseEntity> submittedResponses =
+                    crAttestationDAO.getChangeRequestAttestationSubmissionResponseEntities(submission.getId());
+
+            Form form = formService.getForm(submission.getAttestationPeriod().getForm().getId());
+            for (SectionHeading heading : form.getSectionHeadings()) {
+                heading.setFormItems(populateFormItemsWithSubmittedResponses(heading.getFormItems(), submittedResponses));
+            }
+
+            return form;
+        } catch (EntityRetrievalException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private List<FormItem> populateFormItemsWithSubmittedResponses(List<FormItem> formItems, List<ChangeRequestAttestationSubmissionResponseEntity> submittedResponses) {
+        for (FormItem fi : formItems) {
+            fi.setSubmittedResponses(submittedResponses.stream()
+                    .filter(sr -> sr.getFormItem().getId().equals(fi.getId()))
+                    .map(sr -> sr.getResponse().toDomain())
+                    .toList());
+
+            fi.setChildFormItems(populateFormItemsWithSubmittedResponses(fi.getChildFormItems(), submittedResponses));
+        }
+        return formItems;
+    }
+
 }

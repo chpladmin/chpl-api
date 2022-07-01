@@ -5,8 +5,6 @@ import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 
-import gov.healthit.chpl.attestation.domain.AttestationPeriod;
-import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDemographicsEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusEntity;
@@ -158,27 +156,6 @@ public final class ChangeRequestConverter {
         }
         crDev.setContact(contact);
         return crDev;
-    }
-
-    public static ChangeRequestAttestationSubmission convert(ChangeRequestAttestationSubmissionEntity entity) {
-        return ChangeRequestAttestationSubmission.builder()
-                .id(entity.getId())
-                .attestationPeriod(AttestationPeriod.builder()
-                        .id(entity.getPeriod().getId())
-                        .periodStart(entity.getPeriod().getPeriodStart())
-                        .periodEnd(entity.getPeriod().getPeriodEnd())
-                        .submissionEnd(entity.getPeriod().getSubmissionEnd())
-                        .submissionStart(entity.getPeriod().getSubmissionStart())
-                        .description(entity.getPeriod().getDescription())
-                        .build())
-                /*
-                .attestationResponses(entity.getResponses().stream()
-                        .map(resp -> convert(resp))
-                        .collect(Collectors.toList()))
-                */
-                .signature(entity.getSignature())
-                .signatureEmail(entity.getSignatureEmail())
-                .build();
     }
 
     /*
