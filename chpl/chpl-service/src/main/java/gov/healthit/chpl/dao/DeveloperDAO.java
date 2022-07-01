@@ -459,8 +459,9 @@ public class DeveloperDAO extends BaseDAOImpl {
             throw new EntityRetrievalException(msg);
         } else if (result.size() > 0) {
             entity = result.get(0);
+            entity.setPeriods(getAllAttestationPeriodEntities());
         }
-        entity.setPeriods(getAllAttestationPeriodEntities());
+
         return entity;
     }
 
@@ -475,8 +476,9 @@ public class DeveloperDAO extends BaseDAOImpl {
 
         if (result.size() > 0) {
             entity = result.get(0);
+            entity.setPeriods(getAllAttestationPeriodEntities());
         }
-        entity.setPeriods(getAllAttestationPeriodEntities());
+
         return entity;
     }
 
@@ -491,8 +493,9 @@ public class DeveloperDAO extends BaseDAOImpl {
 
         if (result.size() > 0) {
             entity = result.get(0);
+            entity.setPeriods(getAllAttestationPeriodEntities());
         }
-        entity.setPeriods(getAllAttestationPeriodEntities());
+
         return entity;
     }
 
