@@ -42,6 +42,7 @@ public class SurveillanceDetailsReviewer implements Reviewer {
         checkSurveillanceTypeValidity(surv);
         checkRandomizedSitesValidity(surv);
         checkSurveillanceEndDayRequired(surv);
+        checkStartAndEndDayValidity(surv);
     }
 
     private void checkChplProductNumberValidity(Surveillance surv) {
@@ -141,5 +142,12 @@ public class SurveillanceDetailsReviewer implements Reviewer {
 
     private boolean doesNonconformityRequireCloseDate(SurveillanceNonconformity nc) {
         return nc.getNonconformityCloseDay() != null;
+    }
+
+    private void checkStartAndEndDayValidity(Surveillance surv) {
+        if (surv.getStartDay() != null && surv.getEndDay() != null
+                && surv.getEndDay().isBefore(surv.getStartDay())) {
+            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateEndNotBeforeDateStart"));
+        }
     }
 }
