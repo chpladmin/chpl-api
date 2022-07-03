@@ -128,14 +128,14 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
                     nc.getNonconformityType()));
         }
 
-        if (nc.getCapEndDay() != null && nc.getCapApprovalDay() != null) {
+        if (nc.getCapEndDay() != null && nc.getCapApprovalDay() == null) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateCAPApprovalIsRequired",
                     req.getRequirement(),
                     nc.getNonconformityType()));
         }
 
         if (nc.getCapEndDay() != null && nc.getCapStartDay() != null
-                && nc.getCapEndDay().compareTo(nc.getCapStartDay()) < 0) {
+                && nc.getCapEndDay().isBefore(nc.getCapStartDay())) {
             surv.getErrorMessages()
                     .add(msgUtil.getMessage("surveillance.dateCAPEndNotGreaterThanDateCAPStart",
                             req.getRequirement(),
