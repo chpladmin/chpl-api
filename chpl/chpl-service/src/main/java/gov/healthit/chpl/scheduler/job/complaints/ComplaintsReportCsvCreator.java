@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.listingvalidation;
+package gov.healthit.chpl.scheduler.job.complaints;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -18,20 +18,20 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "listingValidationReportEmailJobLogger")
+@Log4j2(topic = "complaintsReportEmailJobLogger")
 @Component
-public class ListingValidationReportCsvCreator {
+public class ComplaintsReportCsvCreator {
 
     private Environment env;
 
     @Autowired
-    public ListingValidationReportCsvCreator(Environment env) {
+    public ComplaintsReportCsvCreator(Environment env) {
         this.env = env;
     }
 
     private static final String NEW_LINE_SEPARATOR = "\n";
 
-    public File createCsvFile(List<ListingValidationReport> reports) throws IOException {
+    public File createCsvFile(List<ComplaintsReportItem> reports) throws IOException {
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.builder()
                 .setRecordSeparator(NEW_LINE_SEPARATOR)
                 .build();
@@ -43,7 +43,7 @@ public class ListingValidationReportCsvCreator {
             csvFilePrinter.printRecord(getHeaderRow());
 
             reports.stream()
-                .sorted(Comparator.comparing(ListingValidationReport::getChplProductNumber))
+                .sorted(Comparator.comparing(ComplaintsReportItem::getChplProductNumber))
                 .forEach(report -> printRow(csvFilePrinter, report));
         }
         return csvFile;
@@ -74,7 +74,7 @@ public class ListingValidationReportCsvCreator {
                 "Error Message");
     }
 
-    private List<String> getRow(ListingValidationReport report) {
+    private List<String> getRow(ComplaintsReportItem report) {
         return Arrays.asList(
                 report.getCertifiedProductId().toString(),
                 report.getChplProductNumber(),
@@ -87,7 +87,7 @@ public class ListingValidationReportCsvCreator {
                 report.getErrorMessage());
     }
 
-    private void printRow(CSVPrinter csvFilePrinter, ListingValidationReport report) {
+    private void printRow(CSVPrinter csvFilePrinter, ComplaintsReportItem report) {
         try {
             csvFilePrinter.printRecord(getRow(report));
         } catch (IOException e) {
