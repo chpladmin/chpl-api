@@ -54,4 +54,36 @@ public class FormDAO extends BaseDAOImpl{
                 .getResultList();
         return result;
     }
+
+    public FormItemEntity getFormItem(Long formItemId) throws EntityRetrievalException {
+        List<FormItemEntity> result = entityManager.createQuery(
+                "SELECT DISTINCT fi "
+                + "FROM FormItemEntity fi "
+                + "JOIN FETCH fi.form f "
+                + "JOIN FETCH fi.question q "
+                + "JOIN FETCH q.allowedResponses ar "
+                + "JOIN FETCH q.responseCardinalityType "
+                + "LEFT JOIN FETCH q.sectionHeading "
+                + "WHERE (NOT fi.deleted = true) "
+                + "AND (NOT q.deleted = true ) "
+                + "AND (NOT ar.deleted = true) "
+                + "AND fi.id = :formItemId ", FormItemEntity.class)
+                .setParameter("formItemId", formItemId)
+                .getResultList();
+
+        if (result == null || result.size() == 0) {
+            throw new EntityRetrievalException(
+                    "Data error. FormItem not found in database.");
+        } else if (result.size() > 1) {
+            throw new EntityRetrievalException(
+                    "Data error. Duplicate FormItem in database.");
+        }
+
+        if (result.size() == 0) {
+            return null;
+        }
+        return result.get(0);
+
+    }
+
 }

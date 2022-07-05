@@ -32,6 +32,10 @@ public class FormService {
                 .build();
     }
 
+    public FormItem getFormItem(Long formItemID) throws EntityRetrievalException {
+        return formDAO.getFormItem(formItemID).toDomain();
+    }
+
     private List<FormItem> getFormItems(Long formId, Long parentFormItemId) {
         List<FormItem> formItems = formDAO.getFormItems(formId, parentFormItemId).stream()
                 .map(entity -> entity.toDomain())
