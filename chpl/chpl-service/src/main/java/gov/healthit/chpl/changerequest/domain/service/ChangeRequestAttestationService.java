@@ -2,6 +2,7 @@ package gov.healthit.chpl.changerequest.domain.service;
 
 import java.text.DateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -130,8 +131,16 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
             ChangeRequestAttestationSubmission attestation = (ChangeRequestAttestationSubmission) cr.getDetails();
             attestation.setSignatureEmail(getUserById(AuthUtil.getCurrentUser().getId()).getEmail());
             attestation.setAttestationPeriod(getAttestationPeriod(cr));
+            ChangeRequestAttestationSubmission createdAttestation = crAttestationDAO.create(cr, attestation);
 
-            crAttestationDAO.create(cr, attestation);
+            //Add the submitted responses...
+            List<FormItem> rolledUpFormItems = attestation.getForm().getSectionHeadings().stream()
+                    .map(sh -> gatherAllFormItems(sh.getFormItems()).stream())
+                    .flatMap(fi -> fi)
+                    .toList();
+
+            crAttestationDAO.addResponsesToChangeRequestAttestationSubmission(createdAttestation, rolledUpFormItems);
+
             ChangeRequest newCr = crDAO.get(cr.getId());
 
             try {
@@ -144,6 +153,16 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         } catch (EntityRetrievalException | UserRetrievalException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private List<FormItem> gatherAllFormItems(List<FormItem> formItems) {
+        List<FormItem> accumulatedFormItems = new ArrayList<FormItem>();
+        formItems.forEach(fi -> {
+            accumulatedFormItems.add(fi);
+            accumulatedFormItems.addAll(gatherAllFormItems(fi.getChildFormItems()));
+        });
+
+        return accumulatedFormItems;
     }
 
     @Override

@@ -246,18 +246,20 @@ public class ChangeRequestManager {
 
     private boolean isDeveloperAttestationChangeRequest(ChangeRequest cr) {
         HashMap<String, Object> crMap = (HashMap) cr.getDetails();
-        return crMap.containsKey("attestationResponses");
+        return crMap.containsKey("form");
     }
 
     private ChangeRequest saveChangeRequest(ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
 
+        /*
         ChangeRequestValidationContext crValidationContext = getNewValidationContext(cr, null);
         ValidationException validationException = new ValidationException();
         validationException.getErrorMessages().addAll(crValidationService.validate(crValidationContext));
         if (validationException.getErrorMessages().size() > 0) {
             throw validationException;
         }
+        */
 
         ChangeRequest newCr = createBaseChangeRequest(cr);
         newCr.setDetails(cr.getDetails());

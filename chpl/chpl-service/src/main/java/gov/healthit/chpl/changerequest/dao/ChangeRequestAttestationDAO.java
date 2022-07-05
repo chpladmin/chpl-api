@@ -1,5 +1,6 @@
 package gov.healthit.chpl.changerequest.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -9,8 +10,14 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionResponseEntity;
+import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.form.AllowedResponse;
+import gov.healthit.chpl.form.FormItem;
+import gov.healthit.chpl.form.entity.AllowedResponseEntity;
+import gov.healthit.chpl.form.entity.FormItemEntity;
+import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -18,10 +25,9 @@ import lombok.extern.log4j.Log4j2;
 public class ChangeRequestAttestationDAO extends BaseDAOImpl{
 
     public ChangeRequestAttestationSubmission create(ChangeRequest cr, ChangeRequestAttestationSubmission changeRequestAttestationSubmission) throws EntityRetrievalException {
-        /*
         ChangeRequestAttestationSubmissionEntity parent = ChangeRequestAttestationSubmissionEntity.builder()
                 .changeRequest(getSession().load(ChangeRequestEntity.class, cr.getId()))
-                .period(getAttestationPeriodEntity(changeRequestAttestationSubmission.getAttestationPeriod().getId()))
+                .attestationPeriod(getAttestationPeriodEntity(changeRequestAttestationSubmission.getAttestationPeriod().getId()))
                 .signature(changeRequestAttestationSubmission.getSignature())
                 .signatureEmail(changeRequestAttestationSubmission.getSignatureEmail())
                 .deleted(false)
@@ -31,12 +37,28 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
                 .build();
 
         create(parent);
+        return getByChangeRequestId(cr.getId());
+    }
 
-        changeRequestAttestationSubmission.getAttestationResponses().stream()
-                .forEach(resp -> createAttestationResponse(resp, parent.getId()));
-        return ChangeRequestConverter.convert(getEntity(parent.getId()));
-        */
-        return null;
+    public void addResponsesToChangeRequestAttestationSubmission(ChangeRequestAttestationSubmission changeRequestAttestationSubmission, List<FormItem> formItems) {
+        for (FormItem fi : formItems) {
+            for (AllowedResponse resp : fi.getSubmittedResponses()) {
+                ChangeRequestAttestationSubmissionResponseEntity entity = ChangeRequestAttestationSubmissionResponseEntity.builder()
+                        .changeRequestAttestationSubmissionId(changeRequestAttestationSubmission.getId())
+                        .formItem(FormItemEntity.builder()
+                                .id(fi.getId())
+                                .build())
+                        .response(AllowedResponseEntity.builder()
+                                .id(resp.getId())
+                                .build())
+                        .creationDate(new Date())
+                        .lastModifiedDate(new Date())
+                        .lastModifiedUser(AuthUtil.getAuditId())
+                        .deleted(false)
+                        .build();
+                create(entity);
+            }
+        }
     }
 
     public ChangeRequestAttestationSubmission update(ChangeRequestAttestationSubmission changeRequestAttestationSubmission) throws EntityRetrievalException {
