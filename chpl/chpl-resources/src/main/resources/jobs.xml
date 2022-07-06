@@ -8,18 +8,7 @@
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
-        <delete-job>
-          <name>Cures Statistics Email</name>
-          <group>chplJobs</group>
-        </delete-job>
-        <delete-job>
-          <name>curesUpdateActivityRepairJob</name>
-          <group>systemJobs</group>
-        </delete-job>
-        <delete-job>
-          <name>populateChplProductNumberHistoryJob</name>
-          <group>systemJobs</group>
-        </delete-job>
+
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
@@ -754,6 +743,16 @@
             <group>systemJobs</group>
             <description>One time job to update a defined set of Measures</description>
             <job-class>gov.healthit.chpl.scheduler.job.onetime.measures.UpdateMeasuresJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
+        <!-- One-time job to add missing measures if they don't exist -->
+        <job>
+            <name>addMissingMeasuresToListingsJob</name>
+            <group>systemJobs</group>
+            <description>One time job to update add missing measures to listings</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.measures.AddMissingMeasuresToListingsJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>

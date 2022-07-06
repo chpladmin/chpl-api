@@ -180,6 +180,10 @@
         <AppenderRef ref="updateMeasuresJob" />
         <AppenderRef ref="updateMeasuresJobJson" />
     </Logger>
+    <Logger name="addMissingMeasuresToListingsJobLogger" level="INFO"  additivity="false">
+        <AppenderRef ref="addMissingMeasuresToListingsJob" />
+        <AppenderRef ref="addMissingMeasuresToListingsJobJson" />
+    </Logger>
     <Logger name="listingsSnapshotCsvCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="listingsSnapshotCsvCreatorJob" />
         <AppenderRef ref="listingsSnapshotCsvCreatorJobJson" />
