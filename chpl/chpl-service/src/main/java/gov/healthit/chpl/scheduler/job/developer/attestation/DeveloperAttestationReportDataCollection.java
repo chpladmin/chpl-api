@@ -145,7 +145,7 @@ public class DeveloperAttestationReportDataCollection {
                 .toList();
 
         logger.info("Total Report Rows found: {}", reportRows.size());
-
+        developerListings.clear();
         return reportRows;
     }
 
