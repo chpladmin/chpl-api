@@ -162,7 +162,7 @@ public class AttestationDAO extends BaseDAOImpl{
     public List<AttestationPeriodEntity> getAllPeriodEntities() {
         List<AttestationPeriodEntity> result = entityManager.createQuery(
                 "FROM AttestationPeriodEntity ape "
-                +"JOIN FETCH ape.form "
+                + "JOIN FETCH ape.form "
                 + "WHERE (NOT ape.deleted = true)",
                 AttestationPeriodEntity.class).getResultList();
         return result;

@@ -2,6 +2,8 @@ package gov.healthit.chpl.changerequest.domain;
 
 import java.io.Serializable;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
@@ -27,11 +29,11 @@ public class ChangeRequestAttestationSubmission implements Serializable, ChangeR
     private String signature;
     private String signatureEmail;
 
-    public static ChangeRequestAttestationSubmission cast(Object obj) {
-        if (obj instanceof ChangeRequestAttestationSubmission) {
-            return (ChangeRequestAttestationSubmission) obj;
-        } else {
-            throw new RuntimeException("Could not cast object as type ChangeRequestAttestationSubmission");
-        }
+    public Boolean isEqual(ChangeRequestAttestationSubmission check) {
+        return signature.equals(check.getSignature())
+                && CollectionUtils.isEqualCollection(
+                        form.extractFormItems(),
+                        check.getForm().extractFormItems(),
+                        new Form.FormItemByIdEquator());
     }
 }

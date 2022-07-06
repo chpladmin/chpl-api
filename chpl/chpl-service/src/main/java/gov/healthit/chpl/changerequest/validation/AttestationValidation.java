@@ -2,14 +2,12 @@ package gov.healthit.chpl.changerequest.validation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Equator;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.form.AllowedResponse;
+import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.form.FormItem;
 import gov.healthit.chpl.form.validation.FormValidationResult;
 import gov.healthit.chpl.manager.rules.ValidationRule;
@@ -69,35 +67,7 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
                 .flatMap(fi -> fi)
                 .toList();
 
-        return !CollectionUtils.isEqualCollection(origFormItems, newFormItems, new FormItemEquator());
+        return !CollectionUtils.isEqualCollection(origFormItems, newFormItems, new Form.FormItemByIdEquator());
     }
 
-    private static class FormItemEquator implements Equator<FormItem> {
-        @Override
-        public boolean equate(FormItem o1, FormItem o2) {
-           return o1.getId().equals(o2.getId())
-                   && CollectionUtils.isEqualCollection(o1.getSubmittedResponses(), o2.getSubmittedResponses(), new AllowedResponseEquator());
-        }
-
-        @Override
-        public int hash(FormItem o) {
-            AllowedResponseEquator equator = new AllowedResponseEquator();
-            return o.getId().intValue()
-                    + o.getSubmittedResponses().stream()
-                        .collect(Collectors.summingInt(resp -> equator.hash(resp)));
-        }
-    }
-
-    private static class AllowedResponseEquator implements Equator<AllowedResponse> {
-
-        @Override
-        public boolean equate(AllowedResponse o1, AllowedResponse o2) {
-            return o1.getId().equals(o2.getId());
-        }
-
-        @Override
-        public int hash(AllowedResponse o) {
-            return o.getId().intValue();
-        }
-    }
 }
