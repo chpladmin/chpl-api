@@ -137,7 +137,11 @@ public class AttestationManager {
 
     @Transactional
     public Boolean canCreateException(Long developerId) throws EntityRetrievalException {
-        return !canDeveloperSubmitChangeRequest(developerId);
+        if (doesPendingAttestationChangeRequestForDeveloperExist(developerId)) {
+            return false;
+        } else {
+            return getSubmittablePeriod(developerId) == null;
+        }
     }
 
     @Transactional
