@@ -9,6 +9,7 @@ import gov.healthit.chpl.form.Form;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
+@EqualsAndHashCode
 public class ChangeRequestAttestationSubmission implements Serializable, ChangeRequestDetails {
     private static final long serialVersionUID = 2150025150434933303L;
 

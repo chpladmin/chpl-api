@@ -33,20 +33,19 @@ public class ChangeRequestValidationService {
     private List<ValidationRule<ChangeRequestValidationContext>> gatherValidations(ChangeRequestValidationContext context) {
         List<ValidationRule<ChangeRequestValidationContext>> rules = new ArrayList<ValidationRule<ChangeRequestValidationContext>>();
 
-        /*
         if (isNewChangeRequest(context)) {
             rules.addAll(getCreateValidations());
         } else {
             rules.addAll(getUpdateValidations());
         }
-        */
 
         if (context.getNewChangeRequest().getChangeRequestType().getId().equals(developerDemographicsChangeRequestTypeId)) {
             rules.addAll(getDeveloperDetailsValidations());
         } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(attestationChangeRequestTypeId)) {
-            rules.addAll(getAttestationValidations());
-            if (!isNewChangeRequest(context)) {
-                rules.addAll(getAttestationUpdateValidations());
+            if (isNewChangeRequest(context)) {
+                rules.addAll(getAttestationValidations());
+            //} else {
+            //    rules.addAll(getAttestationUpdateValidations());
             }
         }
 
