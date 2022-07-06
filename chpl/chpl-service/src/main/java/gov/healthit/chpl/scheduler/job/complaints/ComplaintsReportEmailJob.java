@@ -3,7 +3,6 @@ package gov.healthit.chpl.scheduler.job.complaints;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -19,8 +18,6 @@ import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
-import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import lombok.extern.log4j.Log4j2;
 
@@ -84,7 +81,7 @@ public class ComplaintsReportEmailJob  implements Job {
         LOGGER.info("Getting details for surveillance " + surveillanceId);
         Surveillance surv = null;
         try {
-            surveillanceManager.getById(surveillanceId);
+            surv = surveillanceManager.getById(surveillanceId);
         } catch (Exception ex) {
             LOGGER.error("No surveillance found with ID " + surveillanceId);
         }
@@ -98,7 +95,7 @@ public class ComplaintsReportEmailJob  implements Job {
         LOGGER.info("Sending email to: " + context.getMergedJobDataMap().getString("email"));
         chplEmailFactory.emailBuilder()
                 .recipient(context.getMergedJobDataMap().getString("email"))
-                .subject(env.getProperty("listingValidationReport.subject"))
+                .subject(env.getProperty("complaintsReport.subject"))
                 .htmlMessage(createHtmlMessage(context, rows.size()))
                 .fileAttachments(Arrays.asList(complaintsReportCsvCreator.createCsvFile(rows)))
                 .sendEmail();
@@ -107,42 +104,11 @@ public class ComplaintsReportEmailJob  implements Job {
 
     private String createHtmlMessage(JobExecutionContext context, int errorCount) {
         return chplHtmlEmailBuilder.initialize()
-                .heading(env.getProperty("listingValidationReport.subject"))
+                .heading(env.getProperty("complaintsReport.heading"))
                 .paragraph(
-                        env.getProperty("listingValidationReport.paragraph1.heading"),
-                        getAcbNamesAsBrSeparatedList(context))
-                .paragraph("", String.format(env.getProperty("listingValidationReport.paragraph2.body"), errorCount))
+                        "",
+                        env.getProperty("complaintsReport.paragraph1.body"))
                 .footer(true)
                 .build();
-    }
-
-    private String getAcbNamesAsBrSeparatedList(JobExecutionContext jobContext) {
-        if (Objects.nonNull(jobContext.getMergedJobDataMap().getString("acb"))) {
-            return getSelectedAcbIds(jobContext).stream()
-                    .map(acbId -> {
-                        try {
-                            return certificationBodyDAO.getById(acbId).getName();
-                        } catch (NumberFormatException | EntityRetrievalException e) {
-                            LOGGER.error("Could not retreive ACB name based on value: " + acbId, e);
-                            return "";
-                        }
-                    })
-                    .collect(Collectors.joining("<br />"));
-        } else {
-            return "";
-        }
-    }
-
-    private List<Long> getSelectedAcbIds(JobExecutionContext jobContext) {
-        return Arrays.asList(jobContext.getMergedJobDataMap().getString("acb").split(SchedulerManager.DATA_DELIMITER)).stream()
-                .map(str -> Long.parseLong(str))
-                .collect(Collectors.toList());
-    }
-
-    private boolean isListingValidForSelectedAcbs(ComplaintsReportItem lvr, List<Long> acbIds) {
-        return acbIds.stream()
-                .filter(acbId -> lvr.getCertificationBodyId().equals(acbId))
-                .findAny()
-                .isPresent();
     }
 }
