@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 35.6.0
+_6 July 2022_
+
+### Features
+* Create system job to add missing measures to listings
+
+---
+
 ## Version 35.5.0
 _27 June 2022_
 
