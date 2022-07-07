@@ -13,8 +13,9 @@ public class AssurancesValidation extends ValidationRule<AttestationValidationCo
                 .toList();
 
         return context.getListings().stream()
-                .filter(listing -> context.getActiveStatuses().contains(listing.getCertificationStatus()))
+                .filter(listing -> context.getActiveStatuses().contains(listing.getCertificationStatus().getName()))
                 .flatMap(listing -> listing.getCriteriaMet().stream())
+                .map(criteriaMet -> criteriaMet.getId())
                 .filter(criteriaMetId -> assurancesCriteriaIds.contains(criteriaMetId))
                 .findAny()
                 .isPresent();

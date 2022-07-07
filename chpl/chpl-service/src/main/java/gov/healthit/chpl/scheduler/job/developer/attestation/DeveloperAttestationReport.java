@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import gov.healthit.chpl.domain.CertificationBody;
@@ -20,6 +22,7 @@ public class DeveloperAttestationReport {
     private Long developerId;
     private String pointOfContactName;
     private String pointOfContactEmail;
+    private List<String> developerUsers;
     private String attestationStatus;
     private LocalDate attestationPublishDate;
     private String attestationPeriod;
@@ -30,6 +33,7 @@ public class DeveloperAttestationReport {
     private String realWorldTesting;
     private String submitterName;
     private String submitterEmail;
+    private Long totalSurveillances;
     private Long totalSurveillanceNonconformities;
     private Long openSurveillanceNonconformities;
     private Long totalDirectReviewNonconformities;
@@ -47,6 +51,7 @@ public class DeveloperAttestationReport {
                 developerId.toString(),
                 pointOfContactName,
                 pointOfContactEmail,
+                !CollectionUtils.isEmpty(developerUsers) ? developerUsers.stream().collect(Collectors.joining("; ")) : "",
                 attestationPeriod,
                 attestationStatus,
                 attestationPublishDate != null ? attestationPublishDate.toString() : "",
@@ -57,6 +62,7 @@ public class DeveloperAttestationReport {
                 realWorldTesting,
                 submitterName,
                 submitterEmail,
+                totalSurveillances != null ? totalSurveillances.toString() : "",
                 totalSurveillanceNonconformities != null ? totalSurveillanceNonconformities.toString() : "",
                 openSurveillanceNonconformities != null ? openSurveillanceNonconformities.toString() : "",
                 totalDirectReviewNonconformities != null ? totalDirectReviewNonconformities.toString() : "",
@@ -88,6 +94,7 @@ public class DeveloperAttestationReport {
                 "Developer DBID",
                 "Developer Point of Contact Name",
                 "Developer Point of Contact Email",
+                "Developer Users",
                 "Attestations Period",
                 "Attestations Status",
                 "Last Activity",
@@ -98,6 +105,7 @@ public class DeveloperAttestationReport {
                 "Real World Testing",
                 "Submitter Name",
                 "Submitter Email",
+                "Total Surveillance",
                 "Total Surveillance Non-conformities",
                 "Open Surveillance Non-conformities",
                 "Total Direct Review Non-conformities",

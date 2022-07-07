@@ -13,8 +13,9 @@ public class RealWorldTestingValidation extends ValidationRule<AttestationValida
                 .toList();
 
         return context.getListings().stream()
-                .filter(listing -> context.getActiveStatuses().contains(listing.getCertificationStatus()))
+                .filter(listing -> context.getActiveStatuses().contains(listing.getCertificationStatus().getName()))
                 .flatMap(listing -> listing.getCriteriaMet().stream())
+                .map(criteriaMet -> criteriaMet.getId())
                 .filter(criteriaMetId -> realWorldTestingEligibleCriteriaIds.contains(criteriaMetId))
                 .findAny()
                 .isPresent();
