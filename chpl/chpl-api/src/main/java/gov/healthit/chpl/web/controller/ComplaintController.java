@@ -2,6 +2,7 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.domain.complaint.Complaint;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -100,5 +102,18 @@ public class ComplaintController {
     public void delete(@PathVariable("complaintId") Long complaintId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         complaintManager.delete(complaintId);
+    }
+
+    @Operation(summary = "Run a job to generate the Complaints Report and email the results to the logged-in user.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, and ROLE_ONC_STAFF have access.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @DeprecatedResponseFields(responseClass = ComplaintResults.class)
+    @RequestMapping(value = "/download-all", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody ChplOneTimeTrigger downloadComplaints() throws SchedulerException, ValidationException {
+        ChplOneTimeTrigger jobTrigger = complaintManager.executeComplaintsReportJob();
+        return jobTrigger;
     }
 }

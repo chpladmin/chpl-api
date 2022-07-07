@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.quartz.JobDataMap;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,18 +22,27 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.complaint.ComplainantType;
 import gov.healthit.chpl.domain.complaint.Complaint;
+import gov.healthit.chpl.domain.schedule.ChplJob;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.manager.rules.complaints.ComplaintValidationContext;
 import gov.healthit.chpl.manager.rules.complaints.ComplaintValidationFactory;
+import gov.healthit.chpl.scheduler.job.complaints.ComplaintsReportJob;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import lombok.extern.log4j.Log4j2;
 
 @Component
+@Log4j2
 public class ComplaintManager extends SecuredManager {
 
     private ComplaintDAO complaintDAO;
@@ -39,19 +50,23 @@ public class ComplaintManager extends SecuredManager {
     private CertifiedProductDAO certifiedProductDAO;
     private ChplProductNumberUtil chplProductNumberUtil;
     private ActivityManager activityManager;
+    private SchedulerManager schedulerManager;
+    private UserManager userManager;
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
     public ComplaintManager(ComplaintDAO complaintDAO,
             ComplaintValidationFactory complaintValidationFactory, CertifiedProductDAO certifiedProductDAO,
             ChplProductNumberUtil chplProductNumberUtil, ErrorMessageUtil errorMessageUtil,
-            ActivityManager activityManager) {
+            ActivityManager activityManager, UserManager userManager, SchedulerManager schedulerManager) {
         this.complaintDAO = complaintDAO;
         this.complaintValidationFactory = complaintValidationFactory;
         this.certifiedProductDAO = certifiedProductDAO;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.errorMessageUtil = errorMessageUtil;
         this.activityManager = activityManager;
+        this.schedulerManager = schedulerManager;
+        this.userManager = userManager;
     }
 
     @Transactional
@@ -132,6 +147,30 @@ public class ComplaintManager extends SecuredManager {
             activityManager.addActivity(ActivityConcept.COMPLAINT, complaint.getId(), "Complaint has been deleted", complaint,
                     null);
         }
+    }
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
+            + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).DOWNLOAD_ALL)")
+    public ChplOneTimeTrigger executeComplaintsReportJob() throws SchedulerException, ValidationException {
+        UserDTO jobUser = null;
+        try {
+            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
+        } catch (UserRetrievalException ex) {
+            LOGGER.error("Could not find user to execute job.");
+        }
+
+        ChplOneTimeTrigger complaintsReportTrigger = new ChplOneTimeTrigger();
+        ChplJob complaintsReportJob = new ChplJob();
+        complaintsReportJob.setName(ComplaintsReportJob.JOB_NAME);
+        complaintsReportJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put(ComplaintsReportJob.EMAIL_KEY, jobUser.getEmail());
+        complaintsReportJob.setJobDataMap(jobDataMap);
+        complaintsReportTrigger.setJob(complaintsReportJob);
+        complaintsReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+        complaintsReportTrigger = schedulerManager.createBackgroundJobTrigger(complaintsReportTrigger);
+        return complaintsReportTrigger;
+
     }
 
     private List<String> runUpdateValidations(Complaint complaint) {

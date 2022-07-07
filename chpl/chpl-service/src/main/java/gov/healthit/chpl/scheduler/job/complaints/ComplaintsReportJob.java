@@ -23,6 +23,8 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "complaintsReportJobLogger")
 public class ComplaintsReportJob  implements Job {
+    public static final String JOB_NAME = "complaintsReportJob";
+    public static final String EMAIL_KEY = "email";
 
     @Autowired
     private ComplaintDAO complaintDao;
