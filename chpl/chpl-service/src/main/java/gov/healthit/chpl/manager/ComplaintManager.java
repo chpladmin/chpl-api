@@ -35,6 +35,7 @@ import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.manager.rules.complaints.ComplaintValidationContext;
 import gov.healthit.chpl.manager.rules.complaints.ComplaintValidationFactory;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.complaints.ComplaintsReportJob;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -52,13 +53,15 @@ public class ComplaintManager extends SecuredManager {
     private ActivityManager activityManager;
     private SchedulerManager schedulerManager;
     private UserManager userManager;
+    private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
     public ComplaintManager(ComplaintDAO complaintDAO,
             ComplaintValidationFactory complaintValidationFactory, CertifiedProductDAO certifiedProductDAO,
             ChplProductNumberUtil chplProductNumberUtil, ErrorMessageUtil errorMessageUtil,
-            ActivityManager activityManager, UserManager userManager, SchedulerManager schedulerManager) {
+            ActivityManager activityManager, SchedulerManager schedulerManager,
+            UserManager userManager, ResourcePermissions resourcePermissions) {
         this.complaintDAO = complaintDAO;
         this.complaintValidationFactory = complaintValidationFactory;
         this.certifiedProductDAO = certifiedProductDAO;
@@ -67,6 +70,7 @@ public class ComplaintManager extends SecuredManager {
         this.activityManager = activityManager;
         this.schedulerManager = schedulerManager;
         this.userManager = userManager;
+        this.resourcePermissions = resourcePermissions;
     }
 
     @Transactional
@@ -82,9 +86,14 @@ public class ComplaintManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).GET_ALL)")
-    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
-            + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).GET_ALL, filterObject)")
+//    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
+//            + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).GET_ALL, filterObject)")
     public List<Complaint> getAllComplaints() {
+        if (resourcePermissions.isUserRoleAcbAdmin()) {
+            return complaintDAO.getAllComplaintsForAcbs(resourcePermissions.getAllAcbsForCurrentUser().stream()
+                    .map(acb -> acb.getId())
+                    .toList());
+        }
         return complaintDAO.getAllComplaints();
     }
 
