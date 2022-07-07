@@ -21,8 +21,8 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "complaintsReportEmailJobLogger")
-public class ComplaintsReportEmailJob  implements Job {
+@Log4j2(topic = "complaintsReportJobLogger")
+public class ComplaintsReportJob  implements Job {
 
     @Autowired
     private ComplaintDAO complaintDao;

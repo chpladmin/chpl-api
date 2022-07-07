@@ -26,7 +26,7 @@ import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "complaintsReportEmailJobLogger")
+@Log4j2(topic = "complaintsReportJobLogger")
 @Component
 public class ComplaintsReportCsvCreator {
 
