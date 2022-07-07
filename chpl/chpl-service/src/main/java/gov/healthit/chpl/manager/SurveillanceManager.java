@@ -221,7 +221,7 @@ public class SurveillanceManager extends SecuredManager {
         survDao.deleteSurveillance(survToDelete);
 
         CertifiedProductSearchDetails afterCp = cpDetailsManager
-                .getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
+                .getCertifiedProductDetailsNoCache(survToDelete.getCertifiedProduct().getId());
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, afterCp.getId(),
                 "Surveillance was delete from certified product " + afterCp.getChplProductNumber(),
                 beforeCp, afterCp, reason);
@@ -233,7 +233,6 @@ public class SurveillanceManager extends SecuredManager {
     public void deleteNonconformityDocument(Long documentId) throws EntityRetrievalException {
         survDao.deleteNonconformityDocument(documentId);
     }
-
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).ACTIVITY_REPORT)")
