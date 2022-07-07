@@ -162,7 +162,7 @@ public class ComplaintManager extends SecuredManager {
         ChplOneTimeTrigger complaintsReportTrigger = new ChplOneTimeTrigger();
         ChplJob complaintsReportJob = new ChplJob();
         complaintsReportJob.setName(ComplaintsReportJob.JOB_NAME);
-        complaintsReportJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
+        complaintsReportJob.setGroup(SchedulerManager.CHPL_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(ComplaintsReportJob.EMAIL_KEY, jobUser.getEmail());
         complaintsReportJob.setJobDataMap(jobDataMap);

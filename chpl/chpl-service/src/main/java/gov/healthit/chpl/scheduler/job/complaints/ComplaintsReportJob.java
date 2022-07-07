@@ -23,7 +23,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "complaintsReportJobLogger")
 public class ComplaintsReportJob  implements Job {
-    public static final String JOB_NAME = "complaintsReportJob";
+    public static final String JOB_NAME = "Complaints Report Email";
     public static final String EMAIL_KEY = "email";
 
     @Autowired
@@ -47,13 +47,14 @@ public class ComplaintsReportJob  implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        LOGGER.info("********* Starting the Complaints Report Email job for " + context.getMergedJobDataMap().getString("email") + " *********");
+        String email = context.getMergedJobDataMap().getString(EMAIL_KEY);
+        LOGGER.info("********* Starting the Complaints Report Email job for " + email + " *********");
         try {
             sendEmail(context, getReportData());
         } catch (Exception e) {
             LOGGER.catching(e);
         } finally {
-            LOGGER.info("********* Completed the Complaints Report Email job for " + context.getMergedJobDataMap().getString("email") + " *********");
+            LOGGER.info("********* Completed the Complaints Report Email job for " + email + " *********");
         }
     }
 
@@ -94,14 +95,15 @@ public class ComplaintsReportJob  implements Job {
     }
 
     private void sendEmail(JobExecutionContext context, List<ComplaintsReportItem> rows) throws EmailNotSentException, IOException {
-        LOGGER.info("Sending email to: " + context.getMergedJobDataMap().getString("email"));
+        String email = context.getMergedJobDataMap().getString(EMAIL_KEY);
+        LOGGER.info("Sending email to: " + email);
         chplEmailFactory.emailBuilder()
-                .recipient(context.getMergedJobDataMap().getString("email"))
+                .recipient(email)
                 .subject(env.getProperty("complaintsReport.subject"))
                 .htmlMessage(createHtmlMessage(context, rows.size()))
                 .fileAttachments(Arrays.asList(complaintsReportCsvCreator.createCsvFile(rows)))
                 .sendEmail();
-        LOGGER.info("Completed Sending email to: " + context.getMergedJobDataMap().getString("email"));
+        LOGGER.info("Completed Sending email to: " + email);
     }
 
     private String createHtmlMessage(JobExecutionContext context, int errorCount) {

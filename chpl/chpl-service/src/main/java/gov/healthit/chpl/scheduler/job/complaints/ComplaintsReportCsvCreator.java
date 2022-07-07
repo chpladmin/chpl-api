@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -125,16 +126,20 @@ public class ComplaintsReportCsvCreator {
                 && hasSurveillanceRelatedToListing(report.getRelatedSurveillance(), associatedListing.getChplProductNumber())) {
             row.add(report.getRelatedSurveillance().stream()
                     .filter(surv -> isSurveillanceRelatedToListing(surv, associatedListing.getChplProductNumber()))
+                    .sorted(Comparator.comparing(Surveillance::getFriendlyId))
                     .map(surv -> surv.getFriendlyId())
                     .collect(Collectors.joining(", ")));
 
             row.add(report.getRelatedSurveillance().stream()
                     .filter(surv -> isSurveillanceRelatedToListing(surv, associatedListing.getChplProductNumber()))
+                    .sorted(Comparator.comparing(Surveillance::getFriendlyId))
                     .map(surv -> surv.getFriendlyId() + ":" + getSurveillanceResult(surv))
                     .collect(Collectors.joining(", ")));
 
             row.add(report.getRelatedSurveillance().stream()
                     .filter(surv -> isSurveillanceRelatedToListing(surv, associatedListing.getChplProductNumber()))
+                    .filter(surv -> doesSurveillanceHaveNonconformities(surv))
+                    .sorted(Comparator.comparing(Surveillance::getFriendlyId))
                     .map(surv -> surv.getFriendlyId() + ":" + getNonConformityTypes(surv))
                     .collect(Collectors.joining("; ")));
 
@@ -162,6 +167,13 @@ public class ComplaintsReportCsvCreator {
             return "Non-Conformity";
         }
         return "No Non-Conformity";
+    }
+
+    private boolean doesSurveillanceHaveNonconformities(Surveillance surv) {
+        return surv.getRequirements().stream()
+        .filter(survReq -> !CollectionUtils.isEmpty(survReq.getNonconformities()))
+        .flatMap(survReq -> survReq.getNonconformities().stream())
+        .count() > 0;
     }
 
     private String getNonConformityTypes(Surveillance surv) {
