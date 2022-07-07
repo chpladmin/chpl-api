@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
@@ -18,7 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.domain.complaint.ComplaintListingMap;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.util.DateUtil;
+import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "complaintsReportEmailJobLogger")
@@ -83,8 +88,8 @@ public class ComplaintsReportCsvCreator {
                 "product_name",
                 "version",
                 "associated_listings",
-                "associated_surveillance",
                 "associated_criteria",
+                "associated_surveillance",
                 "Surveillance result",
                 "Nonconformity type",
                 "Count of Non-Conformities");
@@ -92,16 +97,113 @@ public class ComplaintsReportCsvCreator {
 
     private List<List<String>> getRows(ComplaintsReportItem report) {
         List<List<String>> rows = new ArrayList<List<String>>();
-        if (CollectionUtils.isEmpty(report.getComplaint().getListings())) {
-            rows.add(getRow(report));
-        } else {
+        List<String> complaintFields = getComplaintFields(report);
+        if (!CollectionUtils.isEmpty(report.getComplaint().getListings())) {
             report.getComplaint().getListings().stream()
-                .forEach(listing -> rows.add(getRow(report, listing)));
+                .map(associatedListing -> rows.add(getRowForListing(complaintFields, associatedListing, report)));
+        } else {
+            rows.add(getRow(complaintFields, report));
         }
         return rows;
     }
 
-    private List<String> getRow(ComplaintsReportItem report) {
+    private List<String> getRowForListing(List<String> complaintFields, ComplaintListingMap associatedListing, ComplaintsReportItem report) {
+        List<String> row = new ArrayList<String>();
+        row.addAll(complaintFields);
+        row.add(associatedListing.getDeveloperName());
+        row.add(associatedListing.getProductName());
+        row.add(associatedListing.getVersionName());
+        row.add(associatedListing.getChplProductNumber());
+        if (!CollectionUtils.isEmpty(report.getComplaint().getCriteria())) {
+            row.add(report.getComplaint().getCriteria().stream()
+                    .map(criterion -> Util.formatCriteriaNumber(criterion.getCertificationCriterion()))
+                    .collect(Collectors.joining(", ")));
+        } else {
+            row.add("");
+        }
+        if (!CollectionUtils.isEmpty(report.getRelatedSurveillance())
+                && hasSurveillanceRelatedToListing(report.getRelatedSurveillance(), associatedListing.getChplProductNumber())) {
+            row.add(report.getRelatedSurveillance().stream()
+                    .filter(surv -> isSurveillanceRelatedToListing(surv, associatedListing.getChplProductNumber()))
+                    .map(surv -> surv.getFriendlyId())
+                    .collect(Collectors.joining(", ")));
+
+            row.add(report.getRelatedSurveillance().stream()
+                    .filter(surv -> isSurveillanceRelatedToListing(surv, associatedListing.getChplProductNumber()))
+                    .map(surv -> surv.getFriendlyId() + ":" + getSurveillanceResult(surv))
+                    .collect(Collectors.joining(", ")));
+
+            row.add(report.getRelatedSurveillance().stream()
+                    .filter(surv -> isSurveillanceRelatedToListing(surv, associatedListing.getChplProductNumber()))
+                    .map(surv -> surv.getFriendlyId() + ":" + getNonConformityTypes(surv))
+                    .collect(Collectors.joining("; ")));
+
+            long countNonconformities = report.getRelatedSurveillance().stream()
+                    .filter(surv -> isSurveillanceRelatedToListing(surv, associatedListing.getChplProductNumber()))
+                    .flatMap(surv -> surv.getRequirements().stream())
+                    .filter(survReq -> !CollectionUtils.isEmpty(survReq.getNonconformities()))
+                    .flatMap(survReq -> survReq.getNonconformities().stream())
+                    .count();
+            row.add(countNonconformities + "");
+        } else {
+            row.add("");
+            row.add("");
+            row.add("");
+            row.add("");
+        }
+        return row;
+    }
+
+    private String getSurveillanceResult(Surveillance surv) {
+        boolean anyRequirementHasNonConformity = surv.getRequirements().stream()
+            .filter(req -> !CollectionUtils.isEmpty(req.getNonconformities()))
+            .findAny().isPresent();
+        if (anyRequirementHasNonConformity) {
+            return "Non-Conformity";
+        }
+        return "No Non-Conformity";
+    }
+
+    private String getNonConformityTypes(Surveillance surv) {
+        return surv.getRequirements().stream()
+                .flatMap(req -> req.getNonconformities().stream())
+                .map(nc -> nc.getNonconformityType())
+                .collect(Collectors.joining(","));
+    }
+
+    private List<String> getRow(List<String> complaintFields, ComplaintsReportItem report) {
+        List<String> row = new ArrayList<String>();
+        row.addAll(complaintFields);
+        row.add("");
+        row.add("");
+        row.add("");
+        row.add("");
+        if (!CollectionUtils.isEmpty(report.getComplaint().getCriteria())) {
+            row.add(report.getComplaint().getCriteria().stream()
+                    .map(criterion -> Util.formatCriteriaNumber(criterion.getCertificationCriterion()))
+                    .collect(Collectors.joining(", ")));
+        } else {
+            row.add("");
+        }
+
+        row.add("");
+        row.add("");
+        row.add("");
+        row.add("");
+        return row;
+    }
+
+    private boolean hasSurveillanceRelatedToListing(Set<Surveillance> surveillance, String chplProductNumber) {
+        return surveillance.stream()
+                .filter(surv -> isSurveillanceRelatedToListing(surv, chplProductNumber))
+                .findAny().isPresent();
+    }
+
+    private boolean isSurveillanceRelatedToListing(Surveillance surv, String chplProductNumber) {
+        return surv.getCertifiedProduct().getChplProductNumber().equals(chplProductNumber);
+    }
+
+    private List<String> getComplaintFields(ComplaintsReportItem report) {
         return Arrays.asList(report.getComplaint().getId().toString(),
                 report.getComplaint().getComplainantType() != null ? report.getComplaint().getComplainantType().getName() : "",
                 report.getComplaint().getComplainantTypeOther(),
