@@ -86,8 +86,6 @@ public class ComplaintManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).GET_ALL)")
-//    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
-//            + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).GET_ALL, filterObject)")
     public List<Complaint> getAllComplaints() {
         if (resourcePermissions.isUserRoleAcbAdmin()) {
             return complaintDAO.getAllComplaintsForAcbs(resourcePermissions.getAllAcbsForCurrentUser().stream()
