@@ -28,7 +28,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SurveillanceRequirement implements Serializable {
-    private static long serialVersionUID = -4406043308588618231L;
+    private static final long serialVersionUID = -5658812197618734286L;
 
     /**
      * Surveilled requirement internal ID
@@ -214,6 +214,7 @@ public class SurveillanceRequirement implements Serializable {
     }
 
     @XmlTransient
+    @Deprecated //this field should be removed from Json responses but left in the API code
     public String getRequirementName() {
         if (getCriterion() == null) {
             return getRequirement();

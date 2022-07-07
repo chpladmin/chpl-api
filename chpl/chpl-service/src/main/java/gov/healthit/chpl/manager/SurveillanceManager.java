@@ -123,6 +123,7 @@ public class SurveillanceManager extends SecuredManager {
         return results;
     }
 
+    @Deprecated
     @Transactional(readOnly = true)
     public SurveillanceNonconformityDocument getDocumentById(final Long docId, final boolean getFileContents)
             throws EntityRetrievalException {
@@ -163,6 +164,7 @@ public class SurveillanceManager extends SecuredManager {
         return insertedId;
     }
 
+    @Deprecated
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).ADD_DOCUMENT, #nonconformityId)")
@@ -222,6 +224,7 @@ public class SurveillanceManager extends SecuredManager {
                 beforeCp, afterCp, reason);
     }
 
+    @Deprecated
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).DELETE_DOCUMENT, #documentId)")
