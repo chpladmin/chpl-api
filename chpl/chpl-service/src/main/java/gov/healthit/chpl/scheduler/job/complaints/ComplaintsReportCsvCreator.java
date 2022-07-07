@@ -100,7 +100,7 @@ public class ComplaintsReportCsvCreator {
         List<String> complaintFields = getComplaintFields(report);
         if (!CollectionUtils.isEmpty(report.getComplaint().getListings())) {
             report.getComplaint().getListings().stream()
-                .map(associatedListing -> rows.add(getRowForListing(complaintFields, associatedListing, report)));
+                .forEach(associatedListing -> rows.add(getRowForListing(complaintFields, associatedListing, report)));
         } else {
             rows.add(getRow(complaintFields, report));
         }
