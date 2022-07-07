@@ -114,6 +114,7 @@ public class SurveillanceController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @Deprecated
     @RequestMapping(value = "/document/{documentId}", method = RequestMethod.GET)
     public void streamDocumentContents(@PathVariable("documentId") Long documentId,
             HttpServletResponse response) throws EntityRetrievalException, IOException {
@@ -190,6 +191,7 @@ public class SurveillanceController {
             })
     @RequestMapping(value = "/{surveillanceId}/nonconformity/{nonconformityId}/document",
             method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    @Deprecated
     public @ResponseBody String uploadNonconformityDocument(
             @PathVariable("surveillanceId") Long surveillanceId,
             @PathVariable("nonconformityId") Long nonconformityId,
@@ -200,6 +202,7 @@ public class SurveillanceController {
         return createNonconformityDocumentForSurveillance(surveillanceId, nonconformityId, file);
     }
 
+    @Deprecated
     private String createNonconformityDocumentForSurveillance(
             Long surveillanceId,
             Long nonconformityId,
@@ -290,6 +293,7 @@ public class SurveillanceController {
         return new ResponseEntity<String>("{\"success\" : true}", responseHeaders, HttpStatus.OK);
     }
 
+    @Deprecated
     @Operation(summary = "Remove documentation from a non-conformity.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
                     + "on the associated Listing.",
@@ -308,6 +312,7 @@ public class SurveillanceController {
         return deleteNonconformityDocument(surveillanceId, docId);
     }
 
+    @Deprecated
     private String deleteNonconformityDocument(Long surveillanceId, Long docId)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
             InvalidArgumentsException {

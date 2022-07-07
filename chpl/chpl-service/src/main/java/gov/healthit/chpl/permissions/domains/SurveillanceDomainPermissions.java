@@ -17,7 +17,9 @@ public class SurveillanceDomainPermissions extends DomainPermissions {
     public static final String CREATE = "CREATE";
     public static final String UPDATE = "UPDATE";
     public static final String DELETE = "DELETE";
+    @Deprecated
     public static final String ADD_DOCUMENT = "ADD_DOCUMENT";
+    @Deprecated
     public static final String DELETE_DOCUMENT = "DELETE_DOCUMENT";
     public static final String BASIC_REPORT = "BASIC_REPORT";
     public static final String ACTIVITY_REPORT = "ACTIVITY_REPORT";
