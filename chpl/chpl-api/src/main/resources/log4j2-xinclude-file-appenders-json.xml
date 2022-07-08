@@ -979,26 +979,6 @@
             </Delete>
         </DefaultRolloverStrategy>
     </RollingFile>
-    <RollingFile name="addMissingMeasuresToListingsJobJson"
-        fileName="${logDir}/scheduler/addMissingMeasuresToListingsJob.json"
-        filePattern="${logDir}/scheduler/history/addMissingMeasuresToListingsJob-%d{yyyy-MM-dd}.json"
-        filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
-            <KeyValuePair key="service" value="addMissingMeasuresToListingsJob" />
-            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
-            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
-        </JsonLayout>
-        <Policies>
-            <TimeBasedTriggeringPolicy
-                interval="1" modulate="true" />
-        </Policies>
-        <DefaultRolloverStrategy>
-            <Delete basePath="${logDir}/scheduler/history" >
-                <IfFileName glob="addMissingMeasuresToListingsJob-*.json" />
-                <IfLastModified age="1d" />
-            </Delete>
-        </DefaultRolloverStrategy>
-    </RollingFile>
     <RollingFile name="sendEmailJobJson"
         fileName="${logDir}/scheduler/sendEmailJob.json"
         filePattern="${logDir}/scheduler/history/sendEmailJob-%d{yyyy-MM-dd}.json"

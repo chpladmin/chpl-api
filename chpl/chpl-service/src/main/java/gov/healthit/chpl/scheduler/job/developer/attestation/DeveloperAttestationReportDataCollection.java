@@ -1,42 +1,24 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
-import org.jfree.data.time.DateRange;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.dao.AttestationDAO;
-import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.attestation.report.validation.AttestationValidationService;
 import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.CertificationStatus;
-import gov.healthit.chpl.domain.CertificationStatusEvent;
-import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
-import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
+import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.search.ListingSearchService;
-import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
-import gov.healthit.chpl.search.domain.SearchRequest;
-import gov.healthit.chpl.search.domain.SearchResponse;
+import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.service.DirectReviewSearchService;
 
 @Component
@@ -57,6 +39,7 @@ public class DeveloperAttestationReportDataCollection {
     private static final String API_VALIDATION_FALSE = "No listings with API criteria (g)(7)-(g)(10)";
 
     private DeveloperDAO developerDAO;
+    private UserDeveloperMapDAO userDeveloperMapDao;
     private ListingSearchService listingSearchService;
     private AttestationDAO attestationDAO;
     private DirectReviewSearchService directReviewService;
@@ -65,12 +48,15 @@ public class DeveloperAttestationReportDataCollection {
     private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
     private AttestationPeriodService attestationPeriodService;
 
-    private Map<Long, List<CertifiedProductBasicSearchResult>> developerListings = new HashMap<Long, List<CertifiedProductBasicSearchResult>>();
+    private Map<Long, List<ListingSearchResult>> developerListings = new HashMap<Long, List<ListingSearchResult>>();
 
-    public DeveloperAttestationReportDataCollection(DeveloperDAO developerDAO, ListingSearchService listingSearchService, AttestationDAO attestationDAO,
+    public DeveloperAttestationReportDataCollection(DeveloperDAO developerDAO,
+            UserDeveloperMapDAO userDeveloperMapDao, ListingSearchService listingSearchService,
+            AttestationDAO attestationDAO,
             DirectReviewSearchService directReviewService, AttestationValidationService attestationValidationService, CertificationBodyDAO certificationBodyDAO,
             DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO, AttestationPeriodService attestationPeriodService) {
         this.developerDAO = developerDAO;
+        this.userDeveloperMapDao = userDeveloperMapDao;
         this.listingSearchService = listingSearchService;
         this.attestationDAO = attestationDAO;
         this.directReviewService = directReviewService;
@@ -86,6 +72,7 @@ public class DeveloperAttestationReportDataCollection {
             .collect(Collectors.toList());
 
     public List<DeveloperAttestationReport> collect(List<Long> selectedAcbIds, Logger logger) {
+        /*
         AttestationPeriod mostRecentPastPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
         logger.info("Most recent past attestation period: {} - {} ", mostRecentPastPeriod.getPeriodStart().toString(), mostRecentPastPeriod.getPeriodEnd().toString());
         logger.info("Selected AcbsId: {}", selectedAcbIds.stream()
@@ -99,7 +86,7 @@ public class DeveloperAttestationReportDataCollection {
         List<DeveloperAttestationReport> reportRows = developers.stream()
                 .filter(dev -> isDeveloperManagedBySelectedAcbs(dev, selectedAcbIds))
                 .map(dev -> {
-                    /*
+
                     DeveloperAttestationSubmission attestation = getDeveloperAttestation(dev.getId(), mostRecentPastPeriod.getId());
 
                     return DeveloperAttestationReport.builder()
@@ -108,6 +95,7 @@ public class DeveloperAttestationReportDataCollection {
                         .developerId(dev.getId())
                         .pointOfContactName(getPointOfContactFullName(dev))
                         .pointOfContactEmail(getPointOfContactEmail(dev))
+                        .developerUsers(getDeveloperUsers(dev))
                         .attestationStatus(attestation != null ? "Published" : "")
                         .attestationPublishDate(attestation != null ? attestation.getDatePublished() : null)
                         .attestationPeriod(String.format("%s - %s", mostRecentPastPeriod.getPeriodStart().toString(),
@@ -119,6 +107,7 @@ public class DeveloperAttestationReportDataCollection {
                         .realWorldTesting(getAttestationResponse(attestation, RWT_ATTESTATION_ID))
                         .submitterName(getSubmitterName(attestation))
                         .submitterEmail(getSubmitterEmail(attestation))
+                        .totalSurveillances(getTotalSurveillances(dev, logger))
                         .totalSurveillanceNonconformities(getTotalSurveillanceNonconformities(dev, logger))
                         .openSurveillanceNonconformities(getOpenSurveillanceNonconformities(dev, logger))
                         .totalDirectReviewNonconformities(getTotalDirectReviewNonconformities(dev, logger))
@@ -129,31 +118,34 @@ public class DeveloperAttestationReportDataCollection {
                         .activeAcbs(getActiveAcbs())
                         .developerAcbMap(getDeveloperAcbMapping(dev, logger))
                         .build();
-                    */
                     return DeveloperAttestationReport.builder().build();
                 })
                 .sorted(Comparator.comparing(DeveloperAttestationReport::getDeveloperName))
                 .toList();
 
         logger.info("Total Report Rows found: {}", reportRows.size());
-
+        developerListings.clear();
         return reportRows;
+        */
+        return null;
     }
 
-    private Boolean doesActiveListingExistDuringAttestationPeriod(List<CertifiedProductBasicSearchResult> listingsForDeveloper, AttestationPeriod period) {
+
+    /*****************************
+    private Boolean doesActiveListingExistDuringAttestationPeriod(List<ListingSearchResult> listingsForDeveloper, AttestationPeriod period) {
         return listingsForDeveloper.stream()
                 .filter(listing -> isListingActiveDuringPeriod(listing, period))
                 .findAny()
                 .isPresent();
     }
 
-    private Boolean isListingActiveDuringPeriod(CertifiedProductBasicSearchResult listing, AttestationPeriod period) {
+    private Boolean isListingActiveDuringPeriod(ListingSearchResult listing, AttestationPeriod period) {
         List<CertificationStatusEvent> statusEvents = listing.getStatusEvents().stream()
-                .map(x ->  CertificationStatusEvent.builder()
+                .map(statusEventSearchResult ->  CertificationStatusEvent.builder()
                         .status(CertificationStatus.builder()
-                                .name(x.split(":")[1])
+                                .name(statusEventSearchResult.getStatus().getName())
                                 .build())
-                        .eventDate(toDate(LocalDate.parse(x.split(":")[0])).getTime())
+                        .eventDate(toDate(statusEventSearchResult.getStatusStart()).getTime())
                         .build())
                 .sorted(Comparator.comparing(CertificationStatusEvent::getEventDate))
                 .toList();
@@ -161,7 +153,7 @@ public class DeveloperAttestationReportDataCollection {
         return isListingActiveDuringAttestationPeriod(statusEvents, period);
     }
 
-    private List<CertifiedProductBasicSearchResult> getListingDataForDeveloper(Developer developer, Logger logger) {
+    private List<ListingSearchResult> getListingDataForDeveloper(Developer developer, Logger logger) {
         if (!developerListings.containsKey(developer.getId())) {
             SearchRequest request = SearchRequest.builder()
                     .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
@@ -170,12 +162,12 @@ public class DeveloperAttestationReportDataCollection {
                     .build();
 
             try {
-                SearchResponse response = listingSearchService.search(request);
+                ListingSearchResponse response = listingSearchService.findListings(request);
                 developerListings.put(developer.getId(), response.getResults());
             } catch (ValidationException e) {
                 logger.error("Could not retrieve listings for developer {}.", developer.getName());
                 logger.error(e);
-                developerListings.put(developer.getId(), new ArrayList<CertifiedProductBasicSearchResult>());
+                developerListings.put(developer.getId(), new ArrayList<ListingSearchResult>());
             }
         }
         return developerListings.get(developer.getId());
@@ -185,7 +177,6 @@ public class DeveloperAttestationReportDataCollection {
         return developerDAO.findAll();
     }
 
-    /*
     private DeveloperAttestationSubmission getDeveloperAttestation(Long developerId, Long attestationPeriodId) {
         List<DeveloperAttestationSubmission> attestations =
                 attestationDAO.getDeveloperAttestationSubmissionsByDeveloperAndPeriod(developerId, attestationPeriodId);
@@ -196,7 +187,6 @@ public class DeveloperAttestationReportDataCollection {
             return null;
         }
     }
-    */
 
     private boolean isListingActiveDuringAttestationPeriod(List<CertificationStatusEvent> statusEvents, AttestationPeriod period) {
         List<DateRange> activeDateRanges = getDateRangesWithActiveStatus(statusEvents);
@@ -225,13 +215,8 @@ public class DeveloperAttestationReportDataCollection {
                 .toList();
     }
 
-    private CertificationBody getAcbByName(String acbName) {
-        return new CertificationBody(certificationBodyDAO.getByName(acbName));
-    }
-
     private Date toDate(LocalDate localDate) {
-        ZoneId defaultZoneId = ZoneId.systemDefault();
-        return  Date.from(localDate.atStartOfDay(defaultZoneId).toInstant());
+        return  DateUtil.toDate(localDate);
     }
 
     private String getPointOfContactFullName(Developer developer) {
@@ -242,7 +227,31 @@ public class DeveloperAttestationReportDataCollection {
         return (developer != null && developer.getContact() != null && developer.getContact().getEmail() != null) ? developer.getContact().getEmail() : "";
     }
 
-    /*
+    private List<String> getDeveloperUsers(Developer developer) {
+        List<UserDeveloperMapDTO> userDeveloperMaps = userDeveloperMapDao.getByDeveloperId(developer.getId());
+        if (CollectionUtils.isEmpty(userDeveloperMaps)) {
+            return null;
+        }
+        return userDeveloperMaps.stream()
+            .filter(udm -> udm.getUser() != null)
+            .map(udm -> formatUserData(udm.getUser()))
+            .collect(Collectors.toList());
+    }
+
+    private String formatUserData(UserDTO user) {
+        String userContactText = "";
+        if (!StringUtils.isEmpty(user.getFullName())) {
+            userContactText = user.getFullName();
+        }
+        if (!StringUtils.isEmpty(user.getEmail())) {
+            if (!StringUtils.isEmpty(userContactText)) {
+                userContactText += " ";
+            }
+            userContactText += "<" + user.getEmail() + ">";
+        }
+        return userContactText;
+    }
+
     private String getAttestationResponse(DeveloperAttestationSubmission attestation, Long attestationId) {
         if (attestation == null) {
             return "";
@@ -256,9 +265,7 @@ public class DeveloperAttestationReportDataCollection {
                 : "";
         }
     }
-    */
 
-    /*
     private String getSubmitterName(DeveloperAttestationSubmission attestation) {
         return attestation != null ? attestation.getSignature() : "";
     }
@@ -266,15 +273,26 @@ public class DeveloperAttestationReportDataCollection {
     private String getSubmitterEmail(DeveloperAttestationSubmission attestation) {
         return attestation != null ? attestation.getSignatureEmail() : "";
     }
-    */
+
+    private Long getTotalSurveillances(Developer developer, Logger logger) {
+        return getListingDataForDeveloper(developer, logger).stream()
+                .filter(listing -> activeStatuses.contains(listing.getCertificationStatus().getName()))
+                .map(listing -> addSurveillanceCount(listing))
+                .collect(Collectors.summingLong(Long::longValue));
+    }
+
     private Long getTotalSurveillanceNonconformities(Developer developer, Logger logger) {
         return getListingDataForDeveloper(developer, logger).stream()
-                .filter(listing -> activeStatuses.contains(listing.getCertificationStatus()))
+                .filter(listing -> activeStatuses.contains(listing.getCertificationStatus().getName()))
                 .map(listing -> addOpenAndClosedNonconformityCount(listing))
                 .collect(Collectors.summingLong(Long::longValue));
     }
 
-    private Long addOpenAndClosedNonconformityCount(CertifiedProductBasicSearchResult listing) {
+    private Long addSurveillanceCount(ListingSearchResult listing) {
+        return listing.getSurveillanceCount() != null ? listing.getSurveillanceCount() : 0L;
+    }
+
+    private Long addOpenAndClosedNonconformityCount(ListingSearchResult listing) {
         Long closed = listing.getClosedSurveillanceNonConformityCount() != null ? listing.getClosedSurveillanceNonConformityCount() : 0L;
         Long open = listing.getOpenSurveillanceNonConformityCount() != null ? listing.getOpenSurveillanceNonConformityCount() : 0L;
         return closed + open;
@@ -282,7 +300,7 @@ public class DeveloperAttestationReportDataCollection {
 
     private Long getOpenSurveillanceNonconformities(Developer developer, Logger logger) {
         return getListingDataForDeveloper(developer, logger).stream()
-                .filter(listing -> activeStatuses.contains(listing.getCertificationStatus()))
+                .filter(listing -> activeStatuses.contains(listing.getCertificationStatus().getName()))
                 .map(listing -> listing.getOpenSurveillanceNonConformityCount())
                 .collect(Collectors.summingLong(Long::longValue));
     }
@@ -293,7 +311,7 @@ public class DeveloperAttestationReportDataCollection {
                 .count();
     }
 
-private Long getOpenDirectReviewNonconformities(Developer developer, Logger logger) {
+    private Long getOpenDirectReviewNonconformities(Developer developer, Logger logger) {
         return directReviewService.getDeveloperDirectReviews(developer.getId(), logger).stream()
                 .flatMap(dr -> dr.getNonConformities().stream())
                 .filter(nc -> nc.getNonConformityStatus().equalsIgnoreCase(DirectReviewNonConformity.STATUS_OPEN))
@@ -329,7 +347,7 @@ private Long getOpenDirectReviewNonconformities(Developer developer, Logger logg
 
         getListingDataForDeveloper(developer, logger).stream()
                 .filter(listing -> isListingActiveDuringPeriod(listing, attestationPeriodService.getMostRecentPastAttestationPeriod()))
-                .forEach(listing -> developerAcbMap.put(Pair.of(developer.getId(), getAcbByName(listing.getAcb()).getId()), true));
+                .forEach(listing -> developerAcbMap.put(Pair.of(developer.getId(), listing.getCertificationBody().getId()), true));
 
         return developerAcbMap;
     }
@@ -340,4 +358,5 @@ private Long getOpenDirectReviewNonconformities(Developer developer, Logger logg
                 .findAny()
                 .isPresent();
     }
+    **************************/
 }

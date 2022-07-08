@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.search.domain.CertifiedProductBasicSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResult;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Singular;
@@ -18,7 +18,7 @@ public class AttestationValidationContext {
     private Developer developer;
 
     @Singular
-    private List<CertifiedProductBasicSearchResult> listings;
+    private List<ListingSearchResult> listings;
 
     private List<CertificationCriterion> realWorldTestingCriteria;
 

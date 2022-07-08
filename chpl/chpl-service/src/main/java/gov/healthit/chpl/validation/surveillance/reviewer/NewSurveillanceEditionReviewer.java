@@ -1,8 +1,8 @@
 package gov.healthit.chpl.validation.surveillance.reviewer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;

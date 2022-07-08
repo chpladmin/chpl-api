@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@Deprecated
 public class SurveillanceNonconformityDocument implements Serializable {
     private static final long serialVersionUID = -7456509117016763596L;
 
