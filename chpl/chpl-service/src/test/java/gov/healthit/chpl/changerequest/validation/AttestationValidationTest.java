@@ -1,34 +1,13 @@
 package gov.healthit.chpl.changerequest.validation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Set;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
-import org.springframework.security.core.GrantedAuthority;
-
-import gov.healthit.chpl.attestation.domain.Attestation;
-import gov.healthit.chpl.attestation.domain.AttestationPeriodForm;
-import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
-import gov.healthit.chpl.attestation.domain.ValidResponse;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.changerequest.domain.ChangeRequest;
-import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
-import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext.DomainManagers;
-import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public class AttestationValidationTest {
 
     private AttestationValidation validator;
     private AttestationManager attestationManager;
 
+    /**************
     @Before
     public void setup() throws EntityRetrievalException {
         attestationManager = Mockito.mock(AttestationManager.class);
@@ -368,4 +347,5 @@ public class AttestationValidationTest {
         }
 
     }
+    **************/
 }

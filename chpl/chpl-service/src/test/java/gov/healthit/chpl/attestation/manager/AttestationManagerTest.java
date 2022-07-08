@@ -1,25 +1,6 @@
 package gov.healthit.chpl.attestation.manager;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
-
 import gov.healthit.chpl.attestation.dao.AttestationDAO;
-import gov.healthit.chpl.attestation.domain.Attestation;
-import gov.healthit.chpl.attestation.domain.AttestationPeriodForm;
-import gov.healthit.chpl.attestation.domain.AttestationPeriod;
-import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
-import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public class AttestationManagerTest {
     private static final Integer DEFAULT_EXCEPTION_WINDOW = 3;
@@ -27,6 +8,7 @@ public class AttestationManagerTest {
     private AttestationDAO attestationDAO;
     private AttestationPeriodService attestationPeriodService;
 
+    /*
     @Before
     public void setup() throws EntityRetrievalException {
         attestationDAO = Mockito.mock(AttestationDAO.class);
@@ -137,5 +119,5 @@ public class AttestationManagerTest {
 
         Mockito.verify(attestationDAO, Mockito.times(1)).deleteDeveloperAttestationSubmission(1L);
     }
-
+    */
 }
