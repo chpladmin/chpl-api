@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.form.Form;
+import gov.healthit.chpl.form.FormItem;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,8 +33,8 @@ public class ChangeRequestAttestationSubmission implements Serializable, ChangeR
     public Boolean isEqual(ChangeRequestAttestationSubmission check) {
         return signature.equals(check.getSignature())
                 && CollectionUtils.isEqualCollection(
-                        form.extractFormItems(),
-                        check.getForm().extractFormItems(),
-                        new Form.FormItemByIdEquator());
+                        form.extractFlatFormItems(),
+                        check.getForm().extractFlatFormItems(),
+                        new FormItem.FormItemByIdEquator());
     }
 }

@@ -125,7 +125,8 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                         "Change request cancelled by requestor",
                         crFromDb, cr);
             } else if (haveDetailsBeenUpdated(cr, crFromDb)) {
-                cr.setDetails(crAttestationDAO.update((ChangeRequestAttestationSubmission) cr.getDetails()));
+                crAttestationDAO.update(cr, (ChangeRequestAttestationSubmission) cr.getDetails());
+                cr.setDetails(getByChangeRequestId(cr.getId()));
 
                 activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
                         "Change request details updated",

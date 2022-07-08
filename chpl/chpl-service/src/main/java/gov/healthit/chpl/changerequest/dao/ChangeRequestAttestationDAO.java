@@ -3,6 +3,7 @@ package gov.healthit.chpl.changerequest.dao;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
@@ -42,68 +43,100 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
 
     public void addResponsesToChangeRequestAttestationSubmission(ChangeRequestAttestationSubmission changeRequestAttestationSubmission, List<FormItem> formItems) {
         for (FormItem fi : formItems) {
-            for (AllowedResponse resp : fi.getSubmittedResponses()) {
-                ChangeRequestAttestationSubmissionResponseEntity entity = ChangeRequestAttestationSubmissionResponseEntity.builder()
-                        .changeRequestAttestationSubmissionId(changeRequestAttestationSubmission.getId())
-                        .formItem(FormItemEntity.builder()
-                                .id(fi.getId())
-                                .build())
-                        .response(AllowedResponseEntity.builder()
-                                .id(resp.getId())
-                                .build())
-                        .creationDate(new Date())
-                        .lastModifiedDate(new Date())
-                        .lastModifiedUser(AuthUtil.getAuditId())
-                        .deleted(false)
-                        .build();
-                create(entity);
+            if (!CollectionUtils.isEmpty(fi.getSubmittedResponses())) {
+                for (AllowedResponse resp : fi.getSubmittedResponses()) {
+                    ChangeRequestAttestationSubmissionResponseEntity entity = ChangeRequestAttestationSubmissionResponseEntity.builder()
+                            .changeRequestAttestationSubmissionId(changeRequestAttestationSubmission.getId())
+                            .formItem(FormItemEntity.builder()
+                                    .id(fi.getId())
+                                    .build())
+                            .response(AllowedResponseEntity.builder()
+                                    .id(resp.getId())
+                                    .build())
+                            .creationDate(new Date())
+                            .lastModifiedDate(new Date())
+                            .lastModifiedUser(AuthUtil.getAuditId())
+                            .deleted(false)
+                            .build();
+                    create(entity);
+                }
             }
         }
     }
 
-    public ChangeRequestAttestationSubmission update(ChangeRequestAttestationSubmission changeRequestAttestationSubmission) throws EntityRetrievalException {
-        /*
-        ChangeRequestAttestationSubmissionEntity entity = getEntity(changeRequestAttestationSubmission.getId());
+    public void update(ChangeRequest cr, ChangeRequestAttestationSubmission changeRequestAttestationSubmission) throws EntityRetrievalException {
+
+        ChangeRequestAttestationSubmissionEntity entity = getEntityByChangeRequestId(cr.getId());
         entity.setSignature(changeRequestAttestationSubmission.getSignature());
         entity.setSignatureEmail(changeRequestAttestationSubmission.getSignatureEmail());
-        entity.getPeriod().setId(changeRequestAttestationSubmission.getAttestationPeriod().getId());
+        entity.getAttestationPeriod().setId(changeRequestAttestationSubmission.getAttestationPeriod().getId());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
-
-        entity.getResponses().stream()
-                .forEach(response -> {
-                    AttestationSubmittedResponse submittedResponse = changeRequestAttestationSubmission.getAttestationResponses().stream()
-                            .filter(inResponse -> inResponse.getId().equals(response.getId()))
-                            .findAny()
-                            .get();
-
-                    ValidResponseEntity avre = null;
-                    try {
-                        avre = getAttestationValidResponseEntity(submittedResponse.getResponse().getId());
-                    } catch (EntityRetrievalException e) {
-                        LOGGER.error("Could not retreive AttestationValidResponseEntity with id " + submittedResponse.getResponse().getId());
-                    }
-                    response.setValidResponse(avre);
-                });
-
         update(entity);
 
-        return ChangeRequestConverter.convert(getEntity(entity.getId()));
-        */
-        return null;
+
+        List<ChangeRequestAttestationSubmissionResponseEntity> responseEntities = getChangeRequestAttestationSubmissionResponseEntities(entity.getId());
+
+        List<FormItem> items = changeRequestAttestationSubmission.getForm().extractFlatFormItems();
+        items.stream()
+                .forEach(fi -> {
+                    findAddedResponses(fi.getSubmittedResponses(), responseEntities).stream()
+                            .forEach(resp -> {
+                                LOGGER.info("Adding response: " + resp.getId());
+                                create(ChangeRequestAttestationSubmissionResponseEntity.builder()
+                                        .changeRequestAttestationSubmissionId(entity.getId())
+                                        .formItem(FormItemEntity.builder()
+                                                .id(fi.getId())
+                                                .build())
+                                        .response(AllowedResponseEntity.builder()
+                                            .id(resp.getId())
+                                            .build())
+                                        .creationDate(new Date())
+                                        .lastModifiedDate(new Date())
+                                        .lastModifiedUser(AuthUtil.getAuditId())
+                                        .deleted(false)
+                                        .build());
+                            });
+
+                    findRemovedResponses(fi.getSubmittedResponses(), filterByFormItemId(fi.getId(), responseEntities)).stream()
+                            .forEach(responseEntity -> {
+                                LOGGER.info("Removing response: " + responseEntity.getId());
+                                responseEntity.setDeleted(true);
+                                responseEntity.setLastModifiedUser(AuthUtil.getAuditId());
+                                update(responseEntity);
+                            });
+                });
     }
 
-    /*
-    private ChangeRequestAttestationResponseEntity createAttestationResponse(AttestationSubmittedResponse response, Long changeRequestAttestationSubmissionId) {
-        try {
-            ChangeRequestAttestationResponseEntity entity = getChangeRequestAttestationResponseEntity(response, changeRequestAttestationSubmissionId);
-            create(entity);
-            return entity;
-        } catch (EntityRetrievalException e) {
-            LOGGER.catching(e);
-            throw new RuntimeException(e);
-        }
+    private List<ChangeRequestAttestationSubmissionResponseEntity> filterByFormItemId(Long formItemId, List<ChangeRequestAttestationSubmissionResponseEntity> responseEntities) {
+        return responseEntities.stream()
+                .filter(ent -> ent.getFormItem().getId().equals(formItemId))
+                .toList();
     }
-    */
+
+    private List<AllowedResponse> findAddedResponses(List<AllowedResponse> submittedResponses, List<ChangeRequestAttestationSubmissionResponseEntity> existingResponses) {
+        return submittedResponses.stream()
+                .filter(sr -> !existingResponses.stream()
+                        .filter(er -> er.getResponse().getId().equals(sr.getId()))
+                        .findAny()
+                        .isPresent())
+                .toList();
+    }
+
+    private List<ChangeRequestAttestationSubmissionResponseEntity> findRemovedResponses(List<AllowedResponse> submittedResponses, List<ChangeRequestAttestationSubmissionResponseEntity> existingResponses) {
+        return existingResponses.stream()
+                .filter(er -> !submittedResponses.stream()
+                        .filter(sr -> sr.getId().equals(er.getResponse().getId()))
+                        .findAny()
+                        .isPresent())
+                .toList();
+    }
+
+    private ChangeRequestAttestationSubmissionResponseEntity findInList(Long formItemId, Long responseId, List<ChangeRequestAttestationSubmissionResponseEntity> entities) {
+        return entities.stream()
+                .filter(ent -> ent.getFormItem().getId().equals(formItemId) && ent.getResponse().getId().equals(responseId))
+                .findAny()
+                .orElse(null);
+    }
 
     public ChangeRequestAttestationSubmission getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
         return getEntityByChangeRequestId(changeRequestId).toDomain();
@@ -224,52 +257,4 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
         }
         return result.get(0);
     }
-
-    /*
-    private AttestationEntity getAttestationEntity(Long id) throws EntityRetrievalException {
-        List<AttestationEntity> result = entityManager.createQuery(
-                "FROM AttestationEntity ae "
-                + "WHERE (NOT ae.deleted = true) "
-                + "AND ae.id = :attestationId", AttestationEntity.class)
-                .setParameter("attestationId", id)
-                .getResultList();
-
-        if (result == null || result.size() == 0) {
-            throw new EntityRetrievalException(
-                    "Data error. Attestation not found in database.");
-        } else if (result.size() > 1) {
-            throw new EntityRetrievalException(
-                    "Data error. Duplicate Attestation in database.");
-        }
-
-        if (result.size() == 0) {
-            return null;
-        }
-        return result.get(0);
-    }
-    */
-
-    /*
-    private ValidResponseEntity getAttestationValidResponseEntity(Long id) throws EntityRetrievalException {
-        List<ValidResponseEntity> result = entityManager.createQuery(
-                "FROM AttestationValidResponseEntity vr "
-                + "WHERE (NOT vr.deleted = true) "
-                + "AND vr.id = :attestationValidResponseId", ValidResponseEntity.class)
-                .setParameter("attestationValidResponseId", id)
-                .getResultList();
-
-        if (result == null || result.size() == 0) {
-            throw new EntityRetrievalException(
-                    "Data error. Attestation Answernot found in database.");
-        } else if (result.size() > 1) {
-            throw new EntityRetrievalException(
-                    "Data error. Duplicate Attestation Answer in database.");
-        }
-
-        if (result.size() == 0) {
-            return null;
-        }
-        return result.get(0);
-    }
-    */
 }
