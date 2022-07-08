@@ -7,7 +7,6 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.form.FormItem;
 import gov.healthit.chpl.form.validation.FormValidationResult;
 import gov.healthit.chpl.manager.rules.ValidationRule;
@@ -67,7 +66,7 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
                 .flatMap(fi -> fi)
                 .toList();
 
-        return !CollectionUtils.isEqualCollection(origFormItems, newFormItems, new Form.FormItemByIdEquator());
+        return !CollectionUtils.isEqualCollection(origFormItems, newFormItems, new FormItem.FormItemByIdEquator());
     }
 
 }
