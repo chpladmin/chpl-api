@@ -1,6 +1,7 @@
 package gov.healthit.chpl.sharedstore;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +71,15 @@ public abstract class SharedStoreProvider<K, V> {
     public void remove(K key) {
         sharedStoreDAO.remove(getDomain(), key.toString());
         LOGGER.info("Removed from store: {} {}", getDomain(), key.toString());
+    }
+
+    public void remove(List<K> keys) {
+        List<String> convertedKeys = keys.stream()
+                .map(key -> key.toString())
+                .toList();
+
+        sharedStoreDAO.remove(getDomain(), convertedKeys);
+        LOGGER.info("Removed from store: {} {}", getDomain(), keys.toString());
     }
 
     private boolean isExpired(SharedStore sharedData) {

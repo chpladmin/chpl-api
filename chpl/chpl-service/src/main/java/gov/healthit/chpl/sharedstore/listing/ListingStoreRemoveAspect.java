@@ -65,8 +65,10 @@ public class ListingStoreRemoveAspect {
     }
 
     private void removeListingsFromStoreByDeveloperId(Long developerId) {
-        getCertifiedProductsForDeveloper(developerId).stream()
-            .forEach(details -> removeListingFromStoreByListingId(details.getId()));
+        sharedListingStoreProvider.remove(
+                getCertifiedProductsForDeveloper(developerId).stream()
+                        .map(details -> details.getId())
+                        .toList());
     }
 
     private void removeListingsFromStoreByAcbId(Long acbId) {
