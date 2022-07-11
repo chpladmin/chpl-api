@@ -72,18 +72,24 @@ public class ListingStoreRemoveAspect {
     }
 
     private void removeListingsFromStoreByAcbId(Long acbId) {
-        getCertifiedProductsForAcb(acbId).stream()
-            .forEach(details -> removeListingFromStoreByListingId(details.getId()));
+        sharedListingStoreProvider.remove(
+                getCertifiedProductsForAcb(acbId).stream()
+                        .map(details -> details.getId())
+                        .toList());
     }
 
     private void removeListingsFromStoreByProductId(Long productId) {
-        getCertifiedProductsForProduct(productId).stream()
-            .forEach(details -> removeListingFromStoreByListingId(details.getId()));
+        sharedListingStoreProvider.remove(
+                getCertifiedProductsForProduct(productId).stream()
+                        .map(details -> details.getId())
+                        .toList());
     }
 
     private void removeListingsFromStoreByVersionId(Long versionId) {
-        getCertifiedProductsForVersion(versionId).stream()
-            .forEach(details -> removeListingFromStoreByListingId(details.getId()));
+        sharedListingStoreProvider.remove(
+                getCertifiedProductsForVersion(versionId).stream()
+                        .map(details -> details.getId())
+                        .toList());
     }
 
     private List<CertifiedProductDetailsDTO> getCertifiedProductsForDeveloper(Long developerId) {
