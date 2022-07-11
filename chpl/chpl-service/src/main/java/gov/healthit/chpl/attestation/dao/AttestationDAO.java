@@ -53,47 +53,6 @@ public class AttestationDAO extends BaseDAOImpl{
         return result;
     }
 
-    /*
-    public DeveloperAttestationSubmission createDeveloperAttestationSubmission(DeveloperAttestationSubmission developerAttestationSubmission) throws EntityRetrievalException {
-        DeveloperAttestationSubmissionEntity entity = DeveloperAttestationSubmissionEntity.builder()
-                .developer(DeveloperEntity.builder()
-                        .id(developerAttestationSubmission.getDeveloper().getId())
-                        .build())
-                .period(AttestationPeriodEntity.builder()
-                        .id(developerAttestationSubmission.getPeriod().getId())
-                        .build())
-                .signature(developerAttestationSubmission.getSignature())
-                .signatureEmail(developerAttestationSubmission.getSignatureEmail())
-                .deleted(false)
-                .lastModifiedUser(AuthUtil.getAuditId())
-                .creationDate(new Date())
-                .lastModifiedDate(new Date())
-                .build();
-
-        create(entity);
-
-        developerAttestationSubmission.getResponses().stream()
-                .forEach(resp -> createDeveloperAttestationResponse(resp, entity.getId()));
-
-        return new DeveloperAttestationSubmission(getDeveloperAttestationSubmissionEntity(entity.getId()));
-    }
-    */
-
-    /*
-    public void deleteDeveloperAttestationSubmission(Long developerAttestationId) throws EntityRetrievalException {
-        DeveloperAttestationSubmissionEntity attestation = getDeveloperAttestationSubmissionEntity(developerAttestationId);
-
-        attestation.setDeleted(true);
-        update(attestation);
-
-        attestation.getResponses().stream()
-                .forEach(resp -> {
-                    resp.setDeleted(true);
-                    update(resp);
-                });
-    }
-    */
-
     public List<AttestationPeriodDeveloperException> getAttestationPeriodDeveloperExceptions(Long developerId, Long attestationPeriodId) {
         return getAttestationPeriodDeveloperExceptionEntities(developerId, attestationPeriodId).stream()
                 .map(entity -> new AttestationPeriodDeveloperException(entity))
@@ -137,27 +96,6 @@ public class AttestationDAO extends BaseDAOImpl{
             return null;
         }
     }
-
-    /*
-    private DeveloperAttestationResponseEntity createDeveloperAttestationResponse(AttestationSubmittedResponse response, Long developerAttestationId) {
-        try {
-            DeveloperAttestationResponseEntity entity = DeveloperAttestationResponseEntity.builder()
-                    .developerAttestationSubmissionId(developerAttestationId)
-                    .validResponse(getAttestationValidResponseEntity(response.getResponse().getId()))
-                    .attestation(getAttestationEntity(response.getAttestation().getId()))
-                    .deleted(false)
-                    .lastModifiedUser(AuthUtil.getAuditId())
-                    .creationDate(new Date())
-                    .lastModifiedDate(new Date())
-                    .build();
-            create(entity);
-            return entity;
-        } catch (EntityRetrievalException e) {
-            LOGGER.catching(e);
-            throw new RuntimeException(e);
-        }
-    }
-    */
 
     public List<AttestationPeriodEntity> getAllPeriodEntities() {
         List<AttestationPeriodEntity> result = entityManager.createQuery(
