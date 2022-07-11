@@ -110,7 +110,6 @@ public class ComplaintController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = ComplaintResults.class)
     @RequestMapping(value = "/download-all", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ChplOneTimeTrigger downloadComplaints() throws SchedulerException, ValidationException {
         ChplOneTimeTrigger jobTrigger = complaintManager.executeComplaintsReportJob();
