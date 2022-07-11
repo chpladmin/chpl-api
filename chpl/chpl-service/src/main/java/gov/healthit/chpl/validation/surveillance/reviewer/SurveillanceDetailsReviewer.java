@@ -1,8 +1,8 @@
 package gov.healthit.chpl.validation.surveillance.reviewer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
@@ -42,6 +42,7 @@ public class SurveillanceDetailsReviewer implements Reviewer {
         checkSurveillanceTypeValidity(surv);
         checkRandomizedSitesValidity(surv);
         checkSurveillanceEndDayRequired(surv);
+        checkStartAndEndDayValidity(surv);
     }
 
     private void checkChplProductNumberValidity(Surveillance surv) {
@@ -141,5 +142,12 @@ public class SurveillanceDetailsReviewer implements Reviewer {
 
     private boolean doesNonconformityRequireCloseDate(SurveillanceNonconformity nc) {
         return nc.getNonconformityCloseDay() != null;
+    }
+
+    private void checkStartAndEndDayValidity(Surveillance surv) {
+        if (surv.getStartDay() != null && surv.getEndDay() != null
+                && surv.getEndDay().isBefore(surv.getStartDay())) {
+            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateEndNotBeforeDateStart"));
+        }
     }
 }
