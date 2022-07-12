@@ -92,7 +92,7 @@ public class ComplaintsReportCsvCreator {
                 "Associated Criteria",
                 "Associated Surveillance",
                 "Surveillance Result",
-                "Non-Conformity Yype",
+                "Non-Conformity Type",
                 "Count of Non-Conformities");
     }
 
