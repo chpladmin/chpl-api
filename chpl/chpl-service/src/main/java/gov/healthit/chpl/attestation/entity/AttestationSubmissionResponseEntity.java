@@ -39,11 +39,11 @@ public class AttestationSubmissionResponseEntity {
     private Long attestationSubmissionId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "response_id", nullable = true, insertable = false, updatable = false)
+    @JoinColumn(name = "response_id", nullable = true, insertable = true, updatable = true)
     private AllowedResponseEntity response;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "form_item_id", nullable = true, insertable = false, updatable = false)
+    @JoinColumn(name = "form_item_id", nullable = true, insertable = true, updatable = true)
     private FormItemEntity formItem;
 
     @Column(name = "last_modified_user", nullable = false)

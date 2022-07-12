@@ -1,6 +1,7 @@
 package gov.healthit.chpl.attestation.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.attestation.domain.AttestationSubmission;
@@ -38,8 +40,12 @@ public class AttestationSubmissionEntity {
     private Long developerId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "attestation_period_id", nullable = true, insertable = false, updatable = false)
+    @JoinColumn(name = "attestation_period_id", nullable = true, insertable = true, updatable = false)
     private AttestationPeriodEntity attestationPeriod;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "attestation_submission_id", nullable = true, insertable = false, updatable = false)
+    private List<AttestationSubmissionResponseEntity> responses;
 
     @Column(name = "signature", nullable = false)
     private String signature;
@@ -62,6 +68,7 @@ public class AttestationSubmissionEntity {
     public AttestationSubmission toDomain() {
         return AttestationSubmission.builder()
                 .id(id)
+                .developerId(developerId)
                 .attestationPeriod(attestationPeriod.toDomain())
                 .signature(signature)
                 .signatureEmail(signatureEmail)

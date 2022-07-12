@@ -131,13 +131,6 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
                 .toList();
     }
 
-    private ChangeRequestAttestationSubmissionResponseEntity findInList(Long formItemId, Long responseId, List<ChangeRequestAttestationSubmissionResponseEntity> entities) {
-        return entities.stream()
-                .filter(ent -> ent.getFormItem().getId().equals(formItemId) && ent.getResponse().getId().equals(responseId))
-                .findAny()
-                .orElse(null);
-    }
-
     public ChangeRequestAttestationSubmission getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
         return getEntityByChangeRequestId(changeRequestId).toDomain();
     }

@@ -10,6 +10,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class AttestationSubmission {
     private Long id;
+    private Long developerId;
     private AttestationPeriod attestationPeriod;
     private Form form;
     private String signature;

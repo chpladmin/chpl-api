@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
+import gov.healthit.chpl.attestation.domain.AttestationSubmission;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestAttestationDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
@@ -146,28 +147,19 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Override
     protected ChangeRequest execute(ChangeRequest cr) throws EntityRetrievalException, EntityCreationException {
         Developer beforeDeveloper = developerDAO.getById(cr.getDeveloper().getId());
+        ChangeRequestAttestationSubmission changeRequestAttestationSubmission = (ChangeRequestAttestationSubmission) cr.getDetails();
 
-        ChangeRequestAttestationSubmission attestationSubmission = (ChangeRequestAttestationSubmission) cr.getDetails();
-
-        /*
-        DeveloperAttestationSubmission developerAttestation = DeveloperAttestationSubmission.builder()
-                .developer(cr.getDeveloper())
-                .period(attestationSubmission.getAttestationPeriod())
-                .signature(attestationSubmission.getSignature())
-                .signatureEmail(attestationSubmission.getSignatureEmail())
-                .responses(attestationSubmission.getAttestationResponses().stream()
-                        .map(resp -> AttestationSubmittedResponse.builder()
-                                .attestation(resp.getAttestation())
-                                .response(resp.getResponse())
-                                .build())
-                        .collect(Collectors.toList()))
+        AttestationSubmission developerAttestation = AttestationSubmission.builder()
+                .developerId(cr.getDeveloper().getId())
+                .attestationPeriod(changeRequestAttestationSubmission.getAttestationPeriod())
+                .signature(changeRequestAttestationSubmission.getSignature())
+                .signatureEmail(changeRequestAttestationSubmission.getSignatureEmail())
+                .form(changeRequestAttestationSubmission.getForm())
                 .build();
 
-        attestationManager.saveDeveloperAttestation(developerAttestation);
-        attestationManager.deleteAttestationPeriodDeveloperExceptions(
-                developerAttestation.getDeveloper().getId(),
-                developerAttestation.getPeriod().getId());
-        */
+        attestationManager.saveDeveloperAttestation(cr.getDeveloper().getId(), developerAttestation);
+        attestationManager.deleteAttestationPeriodDeveloperExceptions(cr.getDeveloper().getId(), developerAttestation.getAttestationPeriod().getId());
+
         Developer updatedDeveloper = developerDAO.getById(cr.getDeveloper().getId());
         try {
             activityManager.addActivity(ActivityConcept.DEVELOPER, updatedDeveloper.getId(),

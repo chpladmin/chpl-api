@@ -76,31 +76,15 @@ public class AttestationManager {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED
     }, allEntries = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ATTESTATION, "
-            + "T(gov.healthit.chpl.permissions.domains.AttestationDomainPermissions).CREATE, #developerAttestationSubmission)")
-    public AttestationSubmission saveDeveloperAttestation(AttestationSubmission developerAttestationSubmission) throws EntityRetrievalException {
-        /*
-        attestationDAO.getDeveloperAttestationSubmissionsByDeveloperAndPeriod(
-                developerAttestationSubmission.getDeveloper().getId(),
-                developerAttestationSubmission.getPeriod().getId())
-                .stream()
-                        .forEach(da -> {
-                            try {
-                                attestationDAO.deleteDeveloperAttestationSubmission(da.getId());
-                            } catch (EntityRetrievalException e) {
-                                LOGGER.catching(e);
-                                throw new RuntimeException(e);
-                            }
-                        });
-        return attestationDAO.createDeveloperAttestationSubmission(developerAttestationSubmission);
-        */
-        return null;
+            + "T(gov.healthit.chpl.permissions.domains.AttestationDomainPermissions).CREATE, #attestationSubmission)")
+    public AttestationSubmission saveDeveloperAttestation(Long developerId, AttestationSubmission attestationSubmission) throws EntityRetrievalException {
+        return attestationDAO.saveAttestationSubmssion(developerId, attestationSubmission);
     }
 
-    /*
+
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ATTESTATION, "
             + "T(gov.healthit.chpl.permissions.domains.AttestationDomainPermissions).GET_BY_DEVELOPER_ID, #developerId)")
-    */
     public List<AttestationSubmission> getDeveloperAttestations(Long developerId) {
         return attestationSubmissionService.getAttestationSubmissions(developerId);
     }
