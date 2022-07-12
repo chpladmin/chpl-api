@@ -232,10 +232,6 @@
 									"pm.test(\"ROLE_ONC user should have access to create surveillance\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
-									"pm.test(\"ROLE_ONC user initiated surveillance is showing authority as ROLE_ACB\", function () {\r",
-									"    var responsejson = pm.response.json();\r",
-									"    pm.expect(responsejson.authority).to.eql(\"ROLE_ACB\");\r",
-									"});\r",
 									""
 								],
 								"type": "text/javascript"
