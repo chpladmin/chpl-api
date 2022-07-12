@@ -124,7 +124,7 @@ public class DeveloperAttestationCheckInReportDataCollector {
 
         developerIds.forEach(developerId -> {
             List<ChangeRequest> crs = changeRequests.stream()
-                    .filter(cr -> cr.getDeveloper().getDeveloperId().equals(developerId))
+                    .filter(cr -> cr.getDeveloper().getId().equals(developerId))
                     .toList();
             map.put(developerId, crs);
             LOGGER.info("Found {} total attestation change requests for developer {}", crs.size(), developerId);

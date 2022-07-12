@@ -21,7 +21,6 @@ public final class DateUtil {
     private static final int NANOSECOND_MAX = 999999999;
 
     private DateUtil() {
-
     }
 
     public static String formatInEasternTime(ZonedDateTime date) {
@@ -76,6 +75,13 @@ public final class DateUtil {
         Instant instant = localDate.atTime(HOUR_MAX, MINUTE_MAX, SECOND_MAX, NANOSECOND_MAX)
                 .atZone(ZoneId.systemDefault()).toInstant();
         return instant.toEpochMilli();
+    }
+
+    public static Date toDate(LocalDate localDate) {
+        if (localDate == null) {
+            return null;
+        }
+        return Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
     }
 
     public static LocalDate toLocalDate(long epochMillis) {

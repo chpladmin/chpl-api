@@ -12,6 +12,10 @@
             <name>removeCriteriaJob</name>
             <group>systemJobs</group>
         </delete-job>
+        <delete-job>
+          <name>addMissingMeasuresToListingsJob</name>
+          <group>systemJobs</group>
+        </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
@@ -750,16 +754,6 @@
             <recover>false</recover>
         </job>
 
-        <!-- One-time job to add missing measures if they don't exist -->
-        <job>
-            <name>addMissingMeasuresToListingsJob</name>
-            <group>systemJobs</group>
-            <description>One time job to update add missing measures to listings</description>
-            <job-class>gov.healthit.chpl.scheduler.job.onetime.measures.AddMissingMeasuresToListingsJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-        </job>
-
         <!-- One time job to remove 3 criteria -->
         <job>
             <name>removeCriteriaJob</name>
@@ -878,7 +872,7 @@
                 </entry>
             </job-data-map>
         </job>
-        
+
         <job>
             <name>conformanceMethodConversionJob</name>
             <group>systemJobs</group>

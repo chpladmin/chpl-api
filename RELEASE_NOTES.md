@@ -1,5 +1,28 @@
 # Release Notes
 
+## Version 35.7.0
+_11 July 2022_
+
+### Features
+* Add Developer Users and Surveillance Count columns to Developer Attestations Report
+* Deprecate requirementName and nonconformtyTypeName fields of surveillance responses. Deprecate endpoints to add and remove nonconformity supporting documents.
+
+### Flagged Features
+* Allow only valid criteria to be used in making CMS IDs
+
+### Bug Fixes
+* Add validation for surveillance requirement type + criterion
+
+---
+
+## Version 35.6.0
+_6 July 2022_
+
+### Features
+* Create system job to add missing measures to listings
+
+---
+
 ## Version 35.5.0
 _27 June 2022_
 

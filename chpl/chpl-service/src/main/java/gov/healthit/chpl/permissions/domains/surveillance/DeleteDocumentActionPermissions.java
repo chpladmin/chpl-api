@@ -15,6 +15,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
+@Deprecated
 @Component("surveillanceDeleteDocumentActionPermissions")
 public class DeleteDocumentActionPermissions extends ActionPermissions {
 
