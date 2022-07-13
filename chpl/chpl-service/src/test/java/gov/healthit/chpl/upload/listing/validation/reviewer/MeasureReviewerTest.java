@@ -27,7 +27,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
 public class MeasureReviewerTest {
-    private static final String MEASURE_NOT_FOUND = "%s Measure '%s' was not found associated with %s and has been removed from the listing.";
+    private static final String MEASURE_NOT_FOUND = "%s Measure '%s' was not found %s and has been removed from the listing.";
     private static final String INVALID_MEASURE_TYPE = "Invalid G1/G2 Measure Type: '%s' was not found.";
     private static final String MISSING_G1_MEASURES = "Listing has attested to (g)(1), but no measures have been successfully tested for (g)(1).";
     private static final String MISSING_G2_MEASURES = "Listing has attested to (g)(2), but no measures have been successfully tested for (g)(2).";
@@ -221,8 +221,7 @@ public class MeasureReviewerTest {
         reviewer.review(listing);
         assertEquals(0, listing.getMeasures().size());
         assertEquals(1, listing.getWarningMessages().size());
-        System.out.println(listing.getWarningMessages().iterator().next());
-        assertTrue(listing.getWarningMessages().contains(String.format(MEASURE_NOT_FOUND, "G1", "Test", "170.315 (a)(1)")));
+        assertTrue(listing.getWarningMessages().contains(String.format(MEASURE_NOT_FOUND, "G1", "Test", "associated with 170.315 (a)(1)")));
     }
 
     @Test
@@ -243,8 +242,7 @@ public class MeasureReviewerTest {
         reviewer.review(listing);
         assertEquals(0, listing.getMeasures().size());
         assertEquals(1, listing.getWarningMessages().size());
-        System.out.println(listing.getWarningMessages().iterator().next());
-        assertTrue(listing.getWarningMessages().contains(String.format(MEASURE_NOT_FOUND, "G1", "m1", "170.315 (a)(1)")));
+        assertTrue(listing.getWarningMessages().contains(String.format(MEASURE_NOT_FOUND, "G1", "m1", "associated with 170.315 (a)(1)")));
     }
 
     @Test
@@ -267,8 +265,29 @@ public class MeasureReviewerTest {
         reviewer.review(listing);
         assertEquals(0, listing.getMeasures().size());
         assertEquals(1, listing.getWarningMessages().size());
-        System.out.println(listing.getWarningMessages().iterator().next());
-        assertTrue(listing.getWarningMessages().contains(String.format(MEASURE_NOT_FOUND, "G1", "m1", "170.315 (a)(1)")));
+        assertTrue(listing.getWarningMessages().contains(String.format(MEASURE_NOT_FOUND, "G1", "m1", "associated with 170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_mipsMeasureWithDomainNoIdNoCriteria_errorMessage() throws ParseException {
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+        listing.getMeasures().add(ListingMeasure.builder()
+                .measure(Measure.builder()
+                        .domain(MeasureDomain.builder()
+                                .name("m1")
+                                .build())
+                        .build())
+                .measureType(MeasureType.builder()
+                        .id(1L)
+                        .name("G1")
+                        .build())
+                .build());
+        assertEquals(1, listing.getMeasures().size());
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getMeasures().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(MEASURE_NOT_FOUND, "G1", "m1", "")));
     }
 
     @Test

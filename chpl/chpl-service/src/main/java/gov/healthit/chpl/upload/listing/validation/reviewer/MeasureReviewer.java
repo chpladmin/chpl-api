@@ -26,6 +26,7 @@ public class MeasureReviewer implements Reviewer {
     private static final String MEASUREMENT_TYPE_G2 = "G2";
     private static final String G1_CRITERIA_NUMBER = "170.315 (g)(1)";
     private static final String G2_CRITERIA_NUMBER = "170.315 (g)(2)";
+    private static final String ASSOCIATED_CRITERIA_ERROR_PREFIX = "associated with ";
 
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
@@ -209,7 +210,7 @@ public class MeasureReviewer implements Reviewer {
 
     private void reviewMeasureTypeExists(CertifiedProductSearchDetails listing, ListingMeasure measure) {
         if (measure.getMeasureType() == null || measure.getMeasureType().getId() == null) {
-            String nameForMsg = measure.getMeasureType() == null ? "?"
+            String nameForMsg = measure.getMeasureType() == null ? ""
                     : measure.getMeasureType().getName();
             listing.getErrorMessages().add(
                     msgUtil.getMessage("listing.invalidMeasureType", nameForMsg));
@@ -228,14 +229,15 @@ public class MeasureReviewer implements Reviewer {
                     && measure.getMeasure().getId() == null) {
                 measureIter.remove();
 
-                String typeName = measure.getMeasureType() == null ? "?" : measure.getMeasureType().getName();
+                String typeName = measure.getMeasureType() == null ? "The" : measure.getMeasureType().getName();
                 String measureName = getDisplayMeasureNameForUnknownMeasure(measure);
                 String assocCriteria = null;
                 if (!CollectionUtils.isEmpty(measure.getAssociatedCriteria())) {
-                    assocCriteria = measure.getAssociatedCriteria().stream().map(crit -> Util.formatCriteriaNumber(crit)).collect(Collectors.joining(", "));
+                    assocCriteria = ASSOCIATED_CRITERIA_ERROR_PREFIX
+                            + measure.getAssociatedCriteria().stream().map(crit -> Util.formatCriteriaNumber(crit)).collect(Collectors.joining(", "));
                 }
                 if (StringUtils.isEmpty(assocCriteria)) {
-                    assocCriteria = "?";
+                    assocCriteria = "";
                 }
                 listing.getWarningMessages().add(msgUtil.getMessage("listing.measureNotFoundAndRemoved",
                         typeName, measureName, assocCriteria));
@@ -255,6 +257,6 @@ public class MeasureReviewer implements Reviewer {
         if (measureName == null && measure.getMeasure() != null && !StringUtils.isEmpty(measure.getMeasure().getName())) {
             measureName = measure.getMeasure().getName();
         }
-        return !StringUtils.isEmpty(measureName) ? measureName : "?";
+        return !StringUtils.isEmpty(measureName) ? measureName : "";
     }
 }
