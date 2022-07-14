@@ -36,7 +36,7 @@ public class AttestationDAO extends BaseDAOImpl{
                 .collect(Collectors.toList());
     }
 
-    public List<AttestationSubmission> getDeveloperAttestationSubmissionsByDeveloper(Long developerId) {
+    public List<AttestationSubmission> getAttestationSubmissionsByDeveloper(Long developerId) {
         return getAttestationSubmissionEntitiesByDeveloper(developerId).stream()
                 .map(ent -> ent.toDomain())
                 .collect(Collectors.toList());

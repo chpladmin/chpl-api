@@ -26,7 +26,7 @@ public class AttestationSubmissionService {
     }
 
     public List<AttestationSubmission> getAttestationSubmissions(Long developerId) {
-        return attestationDAO.getDeveloperAttestationSubmissionsByDeveloper(developerId).stream()
+        return attestationDAO.getAttestationSubmissionsByDeveloper(developerId).stream()
                 .map(sub -> {
                     sub.setForm(getPopulatedForm(sub));
                     return sub;

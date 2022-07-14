@@ -81,7 +81,6 @@ public class AttestationManager {
         return attestationDAO.saveAttestationSubmssion(developerId, attestationSubmission);
     }
 
-
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ATTESTATION, "
             + "T(gov.healthit.chpl.permissions.domains.AttestationDomainPermissions).GET_BY_DEVELOPER_ID, #developerId)")
@@ -181,11 +180,10 @@ public class AttestationManager {
     }
 
     private Boolean doesAttestationForDeveloperExist(Long developerId, Long attestationPeriodId) {
-        /*
-        List<DeveloperAttestationSubmission> submissions = attestationDAO.getDeveloperAttestationSubmissionsByDeveloperAndPeriod(developerId, attestationPeriodId);
+        List<AttestationSubmission> submissions = attestationDAO.getAttestationSubmissionsByDeveloper(developerId).stream()
+                .filter(as -> as.getAttestationPeriod().getId().equals(attestationPeriodId))
+                .toList();
         return submissions != null && submissions.size() > 0;
-        */
-        return true;
     }
 
     private Boolean doesValidExceptionExistForDeveloper(Long developerId) {
