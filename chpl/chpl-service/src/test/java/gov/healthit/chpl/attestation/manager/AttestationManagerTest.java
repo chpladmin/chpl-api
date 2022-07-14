@@ -17,6 +17,7 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.attestation.dao.AttestationDAO;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
+import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
 import gov.healthit.chpl.attestation.domain.AttestationPeriodForm;
 import gov.healthit.chpl.attestation.domain.AttestationSubmission;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
@@ -26,6 +27,7 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.form.FormService;
 import gov.healthit.chpl.form.SectionHeading;
@@ -262,6 +264,7 @@ public class AttestationManagerTest {
         assertTrue(manager.canDeveloperSubmitChangeRequest(1L));
     }
 
+    @Test
     public void canDeveloperSubmitChangeRequest_PendingCrDoesNotExistAndNoExceptionExistsAndCurrentDateWithinSubmissionPeriodAndAttestationDoesExistForDveloper_ReturnFalse() throws EntityRetrievalException {
         Mockito.when(attestationPeriodService.getMostRecentPastAttestationPeriod()).thenReturn(getFirstAttestationPeriod());
 
@@ -298,7 +301,7 @@ public class AttestationManagerTest {
                         .attestationPeriod(getFirstAttestationPeriod())
                         .build()));
 
-        assertTrue(manager.canDeveloperSubmitChangeRequest(1L));
+        assertFalse(manager.canDeveloperSubmitChangeRequest(1L));
     }
 
     @Test
@@ -353,11 +356,14 @@ public class AttestationManagerTest {
     }
 
     @Test
-    public void canCreateException_PendingCrNotExists_ReturnTrue() throws EntityRetrievalException {
+    public void canCreateException_PendingCrNotExistsAndSubmittablePeriodExists_ReturnTrue() throws EntityRetrievalException {
 
-        /////NEED TO SWITCH TO A SPY TO MOCK this.getSubmittablePeriod()
+        /////use a spy to mock getSubmittablePeriod()
+        AttestationManager spyManager = Mockito.spy(
+                new AttestationManager(attestationDAO, attestationPeriodService, formService,
+                        attestationSubmissionService, changeRequestDAO, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
 
-
+        Mockito.doReturn(null).when(spyManager).getSubmittablePeriod(ArgumentMatchers.anyLong());
 
         //Pending Change Requests
         Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong())).thenReturn(
@@ -378,7 +384,66 @@ public class AttestationManagerTest {
                                 .build())
                         .build()));
 
-        assertFalse(manager.canCreateException(1L));
+        assertTrue(spyManager.canCreateException(1L));
+    }
+
+    @Test
+    public void canCreateException_PendingCrNotExistsAndSubmittablePeriodNotExists_ReturnFalse() throws EntityRetrievalException {
+
+        /////use a spy to mock getSubmittablePeriod()
+        AttestationManager spyManager = Mockito.spy(
+                new AttestationManager(attestationDAO, attestationPeriodService, formService,
+                        attestationSubmissionService, changeRequestDAO, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
+
+        Mockito.doReturn(getFirstAttestationPeriod()).when(spyManager).getSubmittablePeriod(ArgumentMatchers.anyLong());
+
+        //Pending Change Requests
+        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong())).thenReturn(
+                List.of(ChangeRequest.builder()
+                        .developer(Developer.builder()
+                                .id(1L)
+                                .build())
+                        .changeRequestType(ChangeRequestType.builder()
+                                .id(1L)
+                                .name("Developer Attestation Change Request")
+                                .build())
+                        .currentStatus(ChangeRequestStatus.builder()
+                                .id(1L)
+                                .changeRequestStatusType(ChangeRequestStatusType.builder()
+                                        .id(3L)
+                                        .name("Accepted")
+                                        .build())
+                                .build())
+                        .build()));
+
+        assertFalse(spyManager.canCreateException(1L));
+    }
+
+    @Test(expected = ValidationException.class)
+    public void createAttestationPeriodDeveloperException_InvalidPeriodId_ThrowsValidationException() throws EntityRetrievalException, ValidationException {
+        Mockito.when(attestationPeriodService.getAllPeriods()).thenReturn(
+                List.of(getFirstAttestationPeriod(), getSecondAttestationPeriod()));
+
+        //3L should not exist in list of periods
+        manager.createAttestationPeriodDeveloperException(1L,  3L);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void createAttestationPeriodDeveloperException_CanCreateExceptionIsFalse_ThrowsValidationException() throws EntityRetrievalException, ValidationException {
+        /////use a spy to mock canCreateException()
+        AttestationManager spyManager = Mockito.spy(
+                new AttestationManager(attestationDAO, attestationPeriodService, formService,
+                        attestationSubmissionService, changeRequestDAO, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
+
+        Mockito.doReturn(false).when(spyManager).canCreateException(ArgumentMatchers.anyLong());
+
+        Mockito.when(attestationPeriodService.getAllPeriods()).thenReturn(
+                List.of(getFirstAttestationPeriod(), getSecondAttestationPeriod()));
+
+        Mockito.when(attestationDAO.createAttestationPeriodDeveloperException(ArgumentMatchers.any(AttestationPeriodDeveloperException.class))).thenReturn(
+                AttestationPeriodDeveloperException.builder().build());
+
+        assertNotNull(spyManager.createAttestationPeriodDeveloperException(1L,  1L));
     }
 
 /*
