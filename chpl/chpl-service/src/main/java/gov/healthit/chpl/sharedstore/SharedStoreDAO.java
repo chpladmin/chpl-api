@@ -9,12 +9,14 @@ import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.Root;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 
 @Component
 public class SharedStoreDAO extends BaseDAOImpl {
 
+    @Transactional()
     public void add(SharedStore data) {
         SharedStoreEntity entity = SharedStoreEntity.builder()
                 .primaryKey(SharedStorePrimaryKey.builder()
@@ -28,6 +30,7 @@ public class SharedStoreDAO extends BaseDAOImpl {
         create(entity);
     }
 
+    @Transactional(readOnly = true)
     public SharedStore get(String type, String key) {
         SharedStoreEntity entity = getEntity(type, key);
         if (entity != null) {
@@ -37,10 +40,12 @@ public class SharedStoreDAO extends BaseDAOImpl {
         }
     }
 
+    @Transactional()
     public void remove(String type, String key) {
         remove(type, List.of(key));
     }
 
+    @Transactional()
     public void remove(String type, List<String> keys) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaDelete<SharedStoreEntity> delete = cb.createCriteriaDelete(SharedStoreEntity.class);
