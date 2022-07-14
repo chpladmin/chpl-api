@@ -90,7 +90,7 @@ public class SvapActivityPresenter implements AutoCloseable {
                 "Developer Database ID",
                 "Product Name",
                 "Product Database ID",
-                "Version Name",
+                "Version",
                 "Version Database ID",
                 "SVAP Notice Current URL",
                 "SVAP Notice Last Update",
