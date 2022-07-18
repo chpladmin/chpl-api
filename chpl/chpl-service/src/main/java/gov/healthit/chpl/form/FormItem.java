@@ -1,5 +1,6 @@
 package gov.healthit.chpl.form;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,9 @@ public class FormItem {
     private List<FormItem> childFormItems;
     private Integer sortOrder;
     private Boolean required;
-    private List<AllowedResponse> submittedResponses;
+
+    @Builder.Default
+    private List<AllowedResponse> submittedResponses = new ArrayList<AllowedResponse>();
 
     public static class FormItemByIdEquator implements Equator<FormItem> {
         @Override
