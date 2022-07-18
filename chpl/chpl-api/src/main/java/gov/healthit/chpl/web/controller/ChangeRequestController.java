@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +25,7 @@ import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchManager;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchRequest;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResponse;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -132,6 +134,20 @@ public class ChangeRequestController {
                 .sortDescending(sortDescending)
                 .build();
         return changeRequestSearchManager.searchChangeRequests(searchRequest);
+    }
+
+    @Operation(summary = "Create a report with change requests that is emailed to the logged-in user based on a set of filters.",
+            description = "Security Restrictions: ROLE_ADMIN & ROLE_ONC can get all change requests. ROLE_ACB can get change requests "
+                    + "for developers where they manage at least one certified product for the developer. ROLE_DEVELOPER can get "
+                    + "change requests where they have administrative authority based on the developer.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/report-request", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    public @ResponseBody ChplOneTimeTrigger triggerChangeRequestsReport(@RequestBody ChangeRequestSearchRequest searchRequest)
+                    throws EntityRetrievalException, ValidationException, SchedulerException {
+        return changeRequestSearchManager.triggerChangeRequestsReport(searchRequest);
     }
 
     @Operation(summary = "Get details about all change requests.",

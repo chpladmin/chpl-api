@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.quartz.JobDataMap;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
@@ -19,13 +21,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult.IdNamePairSearchResult;
+import gov.healthit.chpl.domain.schedule.ChplJob;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
+import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.SchedulerManager;
+import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.scheduler.job.changerequest.ChangeRequestReportEmailJob;
+import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
 public class ChangeRequestSearchManager {
+    private UserManager userManager;
+    private SchedulerManager schedulerManager;
     private ChangeRequestDAO changeRequestDAO;
     private ResourcePermissions resourcePermissions;
     private ChangeRequestSearchRequestValidator validator;
@@ -33,9 +45,13 @@ public class ChangeRequestSearchManager {
     private DateTimeFormatter dateFormatter;
 
     @Autowired
-    public ChangeRequestSearchManager(ChangeRequestDAO changeRequestDAO,
+    public ChangeRequestSearchManager(UserManager userManager,
+            SchedulerManager schedulerManager,
+            ChangeRequestDAO changeRequestDAO,
             ChangeRequestSearchRequestValidator validator,
             ResourcePermissions resourcePermissions) {
+        this.userManager = userManager;
+        this.schedulerManager = schedulerManager;
         this.changeRequestDAO = changeRequestDAO;
         this.resourcePermissions = resourcePermissions;
         this.validator = validator;
@@ -75,6 +91,32 @@ public class ChangeRequestSearchManager {
                 .pageSize(searchRequest.getPageSize())
                 .recordCount(matchedChangeRequests.size())
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
+            + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).SEARCH)")
+    public ChplOneTimeTrigger triggerChangeRequestsReport(ChangeRequestSearchRequest searchRequest)
+            throws SchedulerException, ValidationException {
+        UserDTO jobUser = null;
+        try {
+            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
+        } catch (UserRetrievalException ex) {
+            LOGGER.error("Could not find user to execute job.");
+        }
+
+        ChplOneTimeTrigger changeRequestsReportTrigger = new ChplOneTimeTrigger();
+        ChplJob changeRequestsReportJob = new ChplJob();
+        changeRequestsReportJob.setName(ChangeRequestReportEmailJob.JOB_NAME);
+        changeRequestsReportJob.setGroup(SchedulerManager.CHPL_JOBS_KEY);
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put(ChangeRequestReportEmailJob.USER_KEY, jobUser);
+        jobDataMap.put(ChangeRequestReportEmailJob.SEARCH_REQUEST, searchRequest);
+        changeRequestsReportJob.setJobDataMap(jobDataMap);
+        changeRequestsReportTrigger.setJob(changeRequestsReportJob);
+        changeRequestsReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+        changeRequestsReportTrigger = schedulerManager.createBackgroundJobTrigger(changeRequestsReportTrigger);
+        return changeRequestsReportTrigger;
     }
 
     private List<ChangeRequestSearchResult> filterResults(List<ChangeRequestSearchResult> allChangeRequests,
