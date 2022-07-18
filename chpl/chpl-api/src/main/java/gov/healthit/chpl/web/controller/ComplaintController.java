@@ -104,15 +104,15 @@ public class ComplaintController {
         complaintManager.delete(complaintId);
     }
 
-    @Operation(summary = "Run a job to generate the Complaints Report and email the results to the logged-in user.",
+    @Operation(summary = "Generate the Complaints Report and email the results to the logged-in user.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, and ROLE_ONC_STAFF have access.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/download-all", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody ChplOneTimeTrigger downloadComplaints() throws SchedulerException, ValidationException {
-        ChplOneTimeTrigger jobTrigger = complaintManager.executeComplaintsReportJob();
+    @RequestMapping(value = "/report-request", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    public @ResponseBody ChplOneTimeTrigger triggerComplaintsReport() throws SchedulerException, ValidationException {
+        ChplOneTimeTrigger jobTrigger = complaintManager.triggerComplaintsReport();
         return jobTrigger;
     }
 }

@@ -158,7 +158,7 @@ public class ComplaintManager extends SecuredManager {
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).DOWNLOAD_ALL)")
-    public ChplOneTimeTrigger executeComplaintsReportJob() throws SchedulerException, ValidationException {
+    public ChplOneTimeTrigger triggerComplaintsReport() throws SchedulerException, ValidationException {
         UserDTO jobUser = null;
         try {
             jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
