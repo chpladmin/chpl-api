@@ -8,6 +8,10 @@ Certification Status,Yes,Active; Suspended by ONC; Suspended by ONC-ACB; Withdra
 ACB Name,Yes,Drummond Group Inc.;UL LLC;ICSA Labs; SLI Compliance,The ONC-ACB responsible for certifying the listing
 Developer Name,Yes,<string>,The name of the developer or vendor of the certified health IT product
 Developer Database ID,Yes,<int>,The unique database ID of the developer
+Product Name,Yes,<string>,The name of the product listed on the CHPL.
+Product Database ID,Yes,<int>,The unique database ID of the product.
+Version,Yes,<string>,The version of the product listed on the CHPL.
+Version Database ID,Yes,<int>,The unique database ID of the version.
 SVAP Notice Current URL,No,<string>,URL indicating the location of the SVAP notice for this listing; required if SVAP Notice Last Update is present
 SVAP Notice Last Update,No,<YYYY-DD-MM>,Date the SVAP Notice URL was last updated; required if SVAP Notice URL is present
 Criterion,No,<string>,Any criterion that has at least one SVAP Value

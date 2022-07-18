@@ -45,9 +45,6 @@ public class DownloadableResourceController {
     @Value("${schemaDirectReviewsName}")
     private String directReviewsSchemaName;
 
-    @Value("${schemaSvapReportName}")
-    private String svapReportSchemaName;
-
     @Autowired
     public DownloadableResourceController(Environment env,
             ErrorMessageUtil msgUtil,
@@ -156,7 +153,7 @@ public class DownloadableResourceController {
         File downloadFile = null;
         if (isDefinition != null && isDefinition.booleanValue()) {
             try {
-                downloadFile = fileUtils.getDownloadFile(svapReportSchemaName);
+                downloadFile = svapManager.getSvapSummaryDefinitionFile();
             } catch (IOException ex) {
                 response.getWriter().append(ex.getMessage());
                 return;
@@ -251,7 +248,7 @@ public class DownloadableResourceController {
         File downloadFile = null;
         if (isDefinition != null && isDefinition.booleanValue()) {
             if (type.equalsIgnoreCase("basic")) {
-                downloadFile = fileUtils.getDownloadFile(env.getProperty("schemaBasicSurveillanceName"));
+                downloadFile = survManager.getBasicReportDownloadDefinitionFile();
             } else {
                 downloadFile = fileUtils.getDownloadFile(env.getProperty("schemaSurveillanceName"));
             }
