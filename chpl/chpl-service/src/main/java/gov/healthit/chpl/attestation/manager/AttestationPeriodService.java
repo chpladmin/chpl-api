@@ -50,6 +50,7 @@ public class AttestationPeriodService {
                 .toList();
 
         if (periods == null || periods.size() == 0) {
+
             return null;
         }
 

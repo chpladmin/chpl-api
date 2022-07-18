@@ -147,23 +147,24 @@ public class AttestationPeriodServiceTest {
         }
     }
 
-//    @Test
-//    public void getSubmittableAttestationPeriod_ExceptionDoesNotExistsAndNowIsNotWithinSecondPeriod_ReturnNull() {
-//        LocalDate nowDate = LocalDate.of(2022, 12, 1);
-//        AttestationPeriod firstPeriod = getFirstAttestationPeriod();
-//        AttestationPeriod secondPeriod = getSecondAttestationPeriod();
-//
-//        try (MockedStatic<LocalDate> mockedLocalDate = Mockito.mockStatic(LocalDate.class)) {
-//            mockedLocalDate.when(LocalDate::now).thenReturn(nowDate);
-//
-//            Mockito.when(attestationDAO.getCurrentAttestationPeriodDeveloperException(ArgumentMatchers.anyLong())).thenReturn(null);
-//            Mockito.when(attestationDAO.getAllPeriods()).thenReturn(List.of(firstPeriod, secondPeriod));
-//
-//            AttestationPeriod period = service.getSubmittableAttestationPeriod(1L);
-//
-//            assertNull(period);
-//        }
-//    }
+    @Test
+    public void getSubmittableAttestationPeriod_ExceptionDoesNotExistsAndNowIsAfterAllPeriods_ReturnLast() {
+        LocalDate nowDate = LocalDate.of(2022, 12, 1);
+        AttestationPeriod firstPeriod = getFirstAttestationPeriod();
+        AttestationPeriod secondPeriod = getSecondAttestationPeriod();
+
+        try (MockedStatic<LocalDate> mockedLocalDate = Mockito.mockStatic(LocalDate.class)) {
+            mockedLocalDate.when(LocalDate::now).thenReturn(nowDate);
+
+            Mockito.when(attestationDAO.getCurrentAttestationPeriodDeveloperException(ArgumentMatchers.anyLong())).thenReturn(null);
+            Mockito.when(attestationDAO.getAllPeriods()).thenReturn(List.of(firstPeriod, secondPeriod));
+
+            AttestationPeriod period = service.getSubmittableAttestationPeriod(1L);
+
+            assertNotNull(period);
+            assertEquals(secondPeriod, period);
+        }
+    }
 
     private AttestationPeriod getFirstAttestationPeriod() {
         return AttestationPeriod.builder()

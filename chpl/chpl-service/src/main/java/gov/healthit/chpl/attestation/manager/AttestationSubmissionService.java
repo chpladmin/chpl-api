@@ -45,8 +45,6 @@ public class AttestationSubmissionService {
 
             return form;
         } catch (EntityRetrievalException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
             return null;
         }
     }

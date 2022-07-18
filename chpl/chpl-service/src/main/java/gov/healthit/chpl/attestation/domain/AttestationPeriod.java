@@ -24,6 +24,7 @@ import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
@@ -33,6 +34,7 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @ToString
+@EqualsAndHashCode
 public class AttestationPeriod implements Serializable {
     private static final long serialVersionUID = 6251042464421884050L;
 
