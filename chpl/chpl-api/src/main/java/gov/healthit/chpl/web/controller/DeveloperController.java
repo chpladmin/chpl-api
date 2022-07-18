@@ -286,11 +286,9 @@ public class DeveloperController {
     public @ResponseBody DeveloperAttestationSubmissionResults getAttestations(@PathVariable("developerId") Long developerId) throws InvalidArgumentsException, EntityRetrievalException {
         return DeveloperAttestationSubmissionResults.builder()
                 .attestations(attestationManager.getDeveloperAttestations(developerId))
-                /*
                 .canSubmitAttestationChangeRequest(attestationManager.canDeveloperSubmitChangeRequest(developerId))
                 .submittablePeriod(attestationManager.getSubmittablePeriod(developerId))
                 .canCreateException(attestationManager.canCreateException(developerId))
-                */
                 .build();
     }
 
