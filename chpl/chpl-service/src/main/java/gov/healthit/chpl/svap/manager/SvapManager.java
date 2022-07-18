@@ -36,17 +36,20 @@ public class SvapManager {
     private FileUtils fileUtils;
     private ErrorMessageUtil errorMessageUtil;
     private String svapReportName = null;
+    private String svapReportSchemaName;
 
     @Autowired
     public SvapManager(SvapDAO svapDao, FileUtils fileUtils,
             ErrorMessageUtil errorMessageUtil,
             CertificationCriterionAttributeDAO certificationCriterionAttributeDAO,
-            @Value("${svapReportName}") String svapReportName) {
+            @Value("${svapReportName}") String svapReportName,
+            @Value("${schemaSvapReportName}") String svapReportSchemaName) {
         this.svapDao = svapDao;
         this.fileUtils = fileUtils;
         this.errorMessageUtil = errorMessageUtil;
         this.certificationCriterionAttributeDAO = certificationCriterionAttributeDAO;
         this.svapReportName = svapReportName;
+        this.svapReportSchemaName = svapReportSchemaName;
     }
 
     public List<SvapCriteriaMap> getAllSvapCriteriaMaps() throws EntityRetrievalException {
@@ -67,6 +70,12 @@ public class SvapManager {
             + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).SUMMARY_DOWNLOAD)")
     public File getSvapSummaryFile() throws IOException {
         return fileUtils.getNewestFileMatchingName("^" + svapReportName + "-.+\\.csv$");
+    }
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SVAP, "
+            + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).SUMMARY_DOWNLOAD)")
+    public File getSvapSummaryDefinitionFile() throws IOException {
+        return fileUtils.getDownloadFile(svapReportSchemaName);
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SVAP, "
