@@ -224,8 +224,4 @@
         <AppenderRef ref="developerAttestationCheckinReportJob" />
         <AppenderRef ref="developerAttestationCheckinReportJobJson" />
     </Logger>
-    <Logger name="conformanceMethodConversionJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="conformanceMethodConversionJob" />
-        <AppenderRef ref="conformanceMethodConversionJobJson" />
-    </Logger>
 </Loggers>

@@ -648,16 +648,4 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
-    <RollingFile name="conformanceMethodConversionJob"
-        fileName="${logDir}/scheduler/conformanceMethodConversionJob.log"
-        filePattern="${logDir}/scheduler/history/conformanceMethodConversionJob-%d{yyyy-MM-dd}.log"
-        filePermissions="rw-rw-r--">
-        <PatternLayout>
-            <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
-        </PatternLayout>
-        <Policies>
-            <TimeBasedTriggeringPolicy
-                interval="1" modulate="true" />
-        </Policies>
-    </RollingFile>
 </Appenders>

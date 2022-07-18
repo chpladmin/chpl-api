@@ -1059,24 +1059,4 @@
             </Delete>
         </DefaultRolloverStrategy>
     </RollingFile>
-    <RollingFile name="conformanceMethodConversionJobJson"
-        fileName="${logDir}/scheduler/conformanceMethodConversionJob.json"
-        filePattern="${logDir}/scheduler/history/conformanceMethodConversionJob-%d{yyyy-MM-dd}.json"
-        filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
-            <KeyValuePair key="service" value="conformanceMethodConversionJob" />
-            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
-            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
-        </JsonLayout>
-        <Policies>
-            <TimeBasedTriggeringPolicy
-                interval="1" modulate="true" />
-        </Policies>
-        <DefaultRolloverStrategy>
-            <Delete basePath="${logDir}/scheduler/history" >
-                <IfFileName glob="conformanceMethodConversionJob-*.json" />
-                <IfLastModified age="1d" />
-            </Delete>
-        </DefaultRolloverStrategy>
-    </RollingFile>
 </Appenders>
