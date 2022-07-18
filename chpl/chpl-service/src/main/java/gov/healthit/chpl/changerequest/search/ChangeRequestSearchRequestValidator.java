@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -26,15 +27,18 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class ChangeRequestSearchRequestValidator {
     private ChangeRequestManager changeRequestManager;
     private DeveloperDAO developerDao;
+    private CertificationBodyDAO acbDao;
     private ErrorMessageUtil msgUtil;
     private DateTimeFormatter dateFormatter;
 
     @Autowired
     public ChangeRequestSearchRequestValidator(ChangeRequestManager changeRequestManager,
             DeveloperDAO developerDao,
+            CertificationBodyDAO acbDao,
             ErrorMessageUtil msgUtil) {
         this.changeRequestManager = changeRequestManager;
         this.developerDao = developerDao;
+        this.acbDao = acbDao;
         this.msgUtil = msgUtil;
         dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     }
@@ -42,6 +46,7 @@ public class ChangeRequestSearchRequestValidator {
     public void validate(ChangeRequestSearchRequest request) throws ValidationException {
         Set<String> errors = new LinkedHashSet<String>();
         errors.addAll(getDeveloperIdErrors(request));
+        errors.addAll(getAcbIdsErrors(request));
         errors.addAll(getStatusNamesErrors(request));
         errors.addAll(getTypeNamesErrors(request));
         errors.addAll(getCurrentStatusChangeDateErrors(request));
@@ -66,6 +71,25 @@ public class ChangeRequestSearchRequestValidator {
             } catch (EntityRetrievalException ex) {
                 errors.add(msgUtil.getMessage("search.changeRequest.developerId.doesNotExist", request.getDeveloperId().toString()));
             }
+        }
+        return errors;
+    }
+
+    private Set<String> getAcbIdsErrors(ChangeRequestSearchRequest request) {
+        Set<String> errors = new HashSet<String>();
+        if (!CollectionUtils.isEmpty(request.getAcbIds())) {
+            request.getAcbIds().stream()
+                .forEach(acbId -> errors.addAll(getAcbIdErrors(acbId)));
+        }
+        return errors;
+    }
+
+    private Set<String> getAcbIdErrors(Long acbId) {
+        Set<String> errors = new HashSet<String>();
+        try {
+            acbDao.getById(acbId);
+        } catch (EntityRetrievalException ex) {
+            errors.add(msgUtil.getMessage("search.changeRequest.acbId.doesNotExist", acbId.toString()));
         }
         return errors;
     }

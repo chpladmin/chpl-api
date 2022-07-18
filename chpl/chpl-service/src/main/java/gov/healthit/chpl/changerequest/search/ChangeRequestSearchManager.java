@@ -83,6 +83,7 @@ public class ChangeRequestSearchManager {
         List<ChangeRequestSearchResult> matchedChangeRequests = allChangeRequests.stream()
             .filter(changeRequest -> matchesSearchTerm(changeRequest, searchRequest.getSearchTerm()))
             .filter(changeRequest -> matchesDeveloperId(changeRequest, searchRequest.getDeveloperId()))
+            .filter(changeRequest -> matchesAcbIds(changeRequest, searchRequest.getAcbIds()))
             .filter(changeRequest -> matchesStatusNames(changeRequest, searchRequest.getCurrentStatusNames()))
             .filter(changeRequest -> matchesTypeNames(changeRequest, searchRequest.getTypeNames()))
             .filter(changeRequest -> matchesCurrentStatusChangeDateTimeRange(changeRequest, searchRequest.getCurrentStatusChangeDateTimeStart(), searchRequest.getCurrentStatusChangeDateTimeEnd()))
@@ -111,6 +112,18 @@ public class ChangeRequestSearchManager {
         return changeRequest.getDeveloper() != null
                 && changeRequest.getDeveloper().getId() != null
                 && changeRequest.getDeveloper().getId().equals(developerId);
+    }
+
+    private boolean matchesAcbIds(ChangeRequestSearchResult changeRequest, Set<Long> acbIds) {
+        if (CollectionUtils.isEmpty(acbIds)) {
+            return true;
+        }
+
+        return !CollectionUtils.isEmpty(changeRequest.getCertificationBodies())
+                && changeRequest.getCertificationBodies().stream()
+                    .map(crAcbs -> crAcbs.getId())
+                    .filter(crAcbId -> acbIds.contains(crAcbId))
+                    .findAny().isPresent();
     }
 
     private boolean matchesStatusNames(ChangeRequestSearchResult changeRequest, Set<String> statusNames) {

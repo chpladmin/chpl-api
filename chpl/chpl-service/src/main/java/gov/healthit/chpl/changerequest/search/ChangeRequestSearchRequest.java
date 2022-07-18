@@ -26,6 +26,9 @@ public class ChangeRequestSearchRequest implements Serializable {
     @JsonIgnore
     private String developerIdString;
     private Long developerId;
+    @JsonIgnore
+    @Builder.Default
+    private Set<Long> acbIds = new HashSet<Long>();
     @Builder.Default
     private Set<String> currentStatusNames = new HashSet<String>();
     @Builder.Default

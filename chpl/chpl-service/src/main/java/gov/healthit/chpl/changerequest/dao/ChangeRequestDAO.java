@@ -80,7 +80,6 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 .collect(Collectors.<ChangeRequest>toList());
     }
 
-    @Deprecated
     public List<ChangeRequest> getAllWithDetailsForAcbs(List<Long> acbIds) throws EntityRetrievalException {
         return getEntitiesByAcbs(acbIds).stream()
                 .map(entity -> ChangeRequestConverter.convert(entity))

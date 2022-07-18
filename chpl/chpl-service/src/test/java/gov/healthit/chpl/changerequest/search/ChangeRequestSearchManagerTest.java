@@ -443,6 +443,80 @@ public class ChangeRequestSearchManagerTest {
     }
 
     @Test
+    public void search_singleAcbIdProvided_findsChangeRequestsWithMatchingAcbIds() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setCertificationBodies(Stream.of(acb(1L, "acb1")).collect(Collectors.toList()));
+        allChangeRequests.get(1).setCertificationBodies(Stream.of(acb(2L, "acb2")).collect(Collectors.toList()));
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .acbIds(Stream.of(1L).collect(Collectors.toSet()))
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(1L, searchResponse.getResults().get(0).getCertificationBodies().get(0).getId());
+    }
+
+    @Test
+    public void search_singleAcbIdProvidedAndChangeRequestHasMultiple_findsChangeRequestsWithMatchingAcbIds() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setCertificationBodies(Stream.of(acb(1L, "acb1"), acb(2L, "acb2")).collect(Collectors.toList()));
+        allChangeRequests.get(1).setCertificationBodies(Stream.of(acb(2L, "acb2")).collect(Collectors.toList()));
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .acbIds(Stream.of(1L).collect(Collectors.toSet()))
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(1L, searchResponse.getResults().get(0).getCertificationBodies().get(0).getId());
+    }
+
+    @Test
+    public void search_multipleAcbIdsProvidedAndChangeRequestHasMultiple_findsChangeRequestsWithMatchingAcbIds() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setCertificationBodies(Stream.of(acb(1L, "acb1"), acb(2L, "acb2")).collect(Collectors.toList()));
+        allChangeRequests.get(1).setCertificationBodies(Stream.of(acb(2L, "acb2")).collect(Collectors.toList()));
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .acbIds(Stream.of(1L, 2L).collect(Collectors.toSet()))
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_multipleAcbIdsProvidedAndNoMatches_findsNoMatches() throws ValidationException {
+        List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
+        allChangeRequests.get(0).setCertificationBodies(Stream.of(acb(1L, "acb1"), acb(2L, "acb2")).collect(Collectors.toList()));
+        allChangeRequests.get(1).setCertificationBodies(Stream.of(acb(2L, "acb2")).collect(Collectors.toList()));
+        Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
+        ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
+            .acbIds(Stream.of(3L, 4L).collect(Collectors.toSet()))
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
+    }
+
+    @Test
     public void search_singleCurrentStatusProvided_findsMatchingChangeRequests() throws ValidationException {
         List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
         allChangeRequests.get(0).setCurrentStatus(status(1L, "Accepted"));
