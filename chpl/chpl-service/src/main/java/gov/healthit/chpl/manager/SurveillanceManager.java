@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
@@ -78,6 +79,7 @@ public class SurveillanceManager extends SecuredManager {
     private FileUtils fileUtils;
     private Environment env;
     private UserDAO userDAO;
+    private String schemaBasicSurveillanceName;
 
     @SuppressWarnings("checkstyle:parameterNumber")
     @Autowired
@@ -87,7 +89,8 @@ public class SurveillanceManager extends SecuredManager {
             SurveillanceCreationValidator survCreationValidator,
             SurveillanceUpdateValidator survUpdateValidator,
             FileUtils fileUtils, Environment env, ResourcePermissions resourcePermissions,
-            UserDAO userDAO) {
+            UserDAO userDAO,
+            @Value("${schemaBasicSurveillanceName}") String schemaBasicSurveillanceName) {
         this.survDao = survDao;
         this.cpDao = cpDao;
         this.cpDetailsManager = cpDetailsManager;
@@ -99,6 +102,7 @@ public class SurveillanceManager extends SecuredManager {
         this.fileUtils = fileUtils;
         this.env = env;
         this.userDAO = userDAO;
+        this.schemaBasicSurveillanceName = schemaBasicSurveillanceName;
     }
 
     @Transactional(readOnly = true)
@@ -274,6 +278,12 @@ public class SurveillanceManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).BASIC_REPORT)")
     public File getBasicReportDownloadFile() throws IOException {
         return fileUtils.getNewestFileMatchingName("^" + env.getProperty("surveillanceBasicReportName") + "-.+\\.csv$");
+    }
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).BASIC_REPORT)")
+    public File getBasicReportDownloadDefinitionFile() throws IOException {
+        return fileUtils.getDownloadFile(schemaBasicSurveillanceName);
     }
 
     public File getAllSurveillanceDownloadFile() throws IOException {
