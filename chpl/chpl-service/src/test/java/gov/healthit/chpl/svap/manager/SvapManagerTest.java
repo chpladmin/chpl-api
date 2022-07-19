@@ -34,7 +34,7 @@ public class SvapManagerTest {
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
         FileUtils fileUtils = new FileUtils(Mockito.mock(Environment.class), errorMessageUtil);
         svapManager = new SvapManager(svapDao, fileUtils,
-                errorMessageUtil, certificationCriterionAttributeDAO, "report");
+                errorMessageUtil, certificationCriterionAttributeDAO, "report", "reportSchema");
     }
 
     @Test

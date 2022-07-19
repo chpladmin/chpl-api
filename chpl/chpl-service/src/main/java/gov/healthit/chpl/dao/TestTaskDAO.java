@@ -168,6 +168,8 @@ public class TestTaskDAO extends BaseDAOImpl {
                 + "FROM TestTaskEntity tt "
                 + "LEFT OUTER JOIN FETCH tt.testParticipants participantMappings "
                 + "LEFT OUTER JOIN FETCH participantMappings.testParticipant participant "
+                + "LEFT JOIN FETCH participant.education "
+                + "LEFT JOIN FETCH participant.ageRange "
                 + "WHERE (NOT tt.deleted = true) "
                 + "AND (tt.id = :entityid) ", TestTaskEntity.class);
         query.setParameter("entityid", id);
