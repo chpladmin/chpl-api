@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Singular;
 
 @Data
 @Builder
@@ -26,7 +27,10 @@ public class FormItem {
 
     private Question question;
     private AllowedResponse parentResponse;
+
+    @Singular
     private List<FormItem> childFormItems;
+
     private Integer sortOrder;
     private Boolean required;
 

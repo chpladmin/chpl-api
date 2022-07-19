@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Singular;
 
 @Data
 @Builder
@@ -20,6 +21,8 @@ public class Question {
     private SectionHeading sectionHeading;
 
     private ResponseCardinalityType responseCardinalityType;
+
+    @Singular
     private List<AllowedResponse> allowedResponses;
     private String question;
 }

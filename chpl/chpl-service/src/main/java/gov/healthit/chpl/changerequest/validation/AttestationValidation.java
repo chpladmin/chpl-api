@@ -29,7 +29,7 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
                 ((ChangeRequestAttestationSubmission) context.getNewChangeRequest().getDetails()).getForm());
 
         getMessages().addAll(formValidationResult.getErrorMessages());
-        return formValidationResult.getValid();
+        return getMessages().size() == 0;
     }
 
     private List<String> canDeveloperSubmitChangeRequest(ChangeRequestValidationContext context) {

@@ -81,6 +81,7 @@ public class ChangeRequestValidationContext {
     }
 
     @Data
+    @Builder
     public static class DomainManagers {
         private AttestationManager attestationManager;
 

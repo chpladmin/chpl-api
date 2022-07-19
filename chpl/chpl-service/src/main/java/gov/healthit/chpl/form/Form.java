@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Singular;
 
 @Data
 @Builder
@@ -18,6 +19,8 @@ public class Form implements Serializable {
 
     private Long id;
     private String description;
+
+    @Singular
     private List<SectionHeading> sectionHeadings;
 
     public List<FormItem> extractFormItems() {
