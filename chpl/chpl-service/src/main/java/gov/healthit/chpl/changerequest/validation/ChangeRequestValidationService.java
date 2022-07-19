@@ -12,10 +12,8 @@ import gov.healthit.chpl.manager.rules.ValidationRule;
 
 @Component
 public class ChangeRequestValidationService {
-
     private Long developerDemographicsChangeRequestTypeId;
     private Long attestationChangeRequestTypeId;
-
 
     @Autowired
     public ChangeRequestValidationService(

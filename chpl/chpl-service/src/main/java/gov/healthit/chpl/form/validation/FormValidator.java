@@ -31,70 +31,76 @@ public class FormValidator {
     }
 
     public FormValidationResult validate(Form formToValidate) {
-        List<FormItem> rolledUpFormItems = formToValidate.getSectionHeadings().stream()
-                .map(sh -> gatherAllFormItems(sh.getFormItems()).stream())
-                .flatMap(fi -> fi)
-                .toList();
-       List<String> errors = rolledUpFormItems.stream()
-                .map(fi -> validateFormItem(fi).stream())
-                .flatMap(fi -> fi)
-                .toList();
-       return FormValidationResult.builder()
-                .errorMessages(errors)
-                .valid(errors.size() == 0)
-                .build();
+        try {
+            Form cleanFormWithResponses = populateCleanFormWithSubmittedResponses(formToValidate);
+
+            List<FormItem> rolledUpFormItems = cleanFormWithResponses.getSectionHeadings().stream()
+                    .map(sh -> gatherAllFormItems(sh.getFormItems()).stream())
+                    .flatMap(fi -> fi)
+                    .toList();
+            List<String> errors = rolledUpFormItems.stream()
+                    .map(fi -> validateFormItem(fi).stream())
+                    .flatMap(fi -> fi)
+                    .toList();
+            return FormValidationResult.builder()
+                    .errorMessages(errors)
+                    .valid(errors.size() == 0)
+                    .build();
+
+        } catch (EntityRetrievalException e) {
+            return FormValidationResult.builder()
+                    .errorMessages(List.of("There was an unexpected exception validation the Form."))
+                    .valid(false)
+                    .build();
+        }
     }
 
     private List<String> validateFormItem(FormItem formItemToValidate) {
-        try {
-            List<String> errorMessages = new ArrayList<String>();
-            FormItem cleanFormItem = getMatchingFormItem(formItemToValidate.getId());
-
-            errorMessages.addAll(validateRequired(formItemToValidate, cleanFormItem));
-            errorMessages.addAll(validateCardinality(formItemToValidate, cleanFormItem));
-            errorMessages.addAll(validateResponses(formItemToValidate, cleanFormItem));
-
-            formItemToValidate.getChildFormItems().stream()
-                    .forEach(fi -> errorMessages.addAll(validateFormItem(fi)));
-
-            return errorMessages;
-        } catch (EntityRetrievalException e) {
-            return List.of("There was an unexpected exception validation the Form.");
-        }
-    }
-
-    private List<String> validateRequired(FormItem formItemToValidate, FormItem cleanFormItem) {
         List<String> errorMessages = new ArrayList<String>();
 
-        if (cleanFormItem.getRequired()
+        errorMessages.addAll(validateRequired(formItemToValidate));
+        errorMessages.addAll(validateCardinality(formItemToValidate));
+        errorMessages.addAll(validateResponses(formItemToValidate));
+        errorMessages.addAll(validateChildQuestionResponseAllowed(formItemToValidate));
+
+        formItemToValidate.getChildFormItems().stream()
+                .forEach(fi -> errorMessages.addAll(validateFormItem(fi)));
+
+        return errorMessages;
+    }
+
+    private List<String> validateRequired(FormItem formItemToValidate) {
+        List<String> errorMessages = new ArrayList<String>();
+
+        if (formItemToValidate.getRequired()
                 && CollectionUtils.isEmpty(formItemToValidate.getSubmittedResponses())) {
-            errorMessages.add(errorMessageService.getMessage("form.formItem.required", cleanFormItem.getQuestion().getQuestion()));
+            errorMessages.add(errorMessageService.getMessage("form.formItem.required", formItemToValidate.getQuestion().getQuestion()));
         }
         return errorMessages;
     }
 
-    private List<String> validateCardinality(FormItem formItemToValidate, FormItem cleanFormItem) {
+    private List<String> validateCardinality(FormItem formItemToValidate) {
         List<String> errorMessages = new ArrayList<String>();
 
-        if (cleanFormItem.getQuestion().getResponseCardinalityType().getId().equals(1L)
+        if (formItemToValidate.getQuestion().getResponseCardinalityType().getId().equals(1L)
                 && !CollectionUtils.isEmpty(formItemToValidate.getSubmittedResponses())
                 && formItemToValidate.getSubmittedResponses().size() > 1) {
-            errorMessages.add(errorMessageService.getMessage("form.formItem.cardinalitySingle", cleanFormItem.getQuestion().getQuestion()));
+            errorMessages.add(errorMessageService.getMessage("form.formItem.cardinalitySingle", formItemToValidate.getQuestion().getQuestion()));
         }
         return errorMessages;
     }
 
-    private List<String> validateResponses(FormItem formItemToValidate, FormItem cleanFormItem) {
+    private List<String> validateResponses(FormItem formItemToValidate) {
         List<String> errorMessages = new ArrayList<String>();
 
         if (!CollectionUtils.isEmpty(formItemToValidate.getSubmittedResponses())) {
             for (AllowedResponse resp : formItemToValidate.getSubmittedResponses()) {
-                if (cleanFormItem.getQuestion().getAllowedResponses().stream()
+                if (formItemToValidate.getQuestion().getAllowedResponses().stream()
                         .filter(allowedResponse -> allowedResponse.getId().equals(resp.getId()))
                         .findAny()
                         .isEmpty()) {
 
-                    errorMessages.add(errorMessageService.getMessage("form.formItem.invalidResponse", resp.getResponse(), cleanFormItem.getQuestion().getQuestion()));
+                    errorMessages.add(errorMessageService.getMessage("form.formItem.invalidResponse", resp.getResponse(), formItemToValidate.getQuestion().getQuestion()));
                 }
             }
         }
@@ -102,8 +108,27 @@ public class FormValidator {
         return errorMessages;
     }
 
-    private FormItem getMatchingFormItem(Long formItemId) throws EntityRetrievalException {
-        return formService.getFormItem(formItemId);
+    private List<String> validateChildQuestionResponseAllowed(FormItem formItemToValidate) {
+        List<String> errorMessages = new ArrayList<String>();
+
+        if (formItemToValidate.getChildFormItems() != null && formItemToValidate.getChildFormItems().size() > 0) {
+            for (FormItem childFormItem : formItemToValidate.getChildFormItems()) {
+                if (childFormItem.getSubmittedResponses() != null) {
+                    List<Long> submittedResponseIds = formItemToValidate.getSubmittedResponses().stream()
+                            .map(response -> response.getId())
+                            .toList();
+
+                    Boolean isResponseFound = submittedResponseIds.contains(childFormItem.getParentResponse().getId());
+                    if (!isResponseFound) {
+                        errorMessages.add(errorMessageService.getMessage("form.formItem.childQuestionNotApplicable",
+                                childFormItem.getQuestion().getQuestion(),
+                                formItemToValidate.getQuestion().getQuestion()));
+                    }
+                }
+            }
+        }
+
+        return errorMessages;
     }
 
     private List<FormItem> gatherAllFormItems(List<FormItem> formItems) {
@@ -116,4 +141,23 @@ public class FormValidator {
         return accumulatedFormItems;
     }
 
+    private Form populateCleanFormWithSubmittedResponses(Form submittedForm) throws EntityRetrievalException {
+        Form cleanForm = formService.getForm(submittedForm.getId());
+
+        List<FormItem> submittedFormItems = submittedForm.extractFlatFormItems();
+        List<FormItem> cleanFormItems = cleanForm.extractFlatFormItems();
+
+        submittedFormItems.stream()
+                .forEach(sfi -> {
+                    FormItem matchedCleanFormItem = cleanFormItems.stream()
+                            .filter(cfi -> cfi.getId().equals(sfi.getId()))
+                            .findAny()
+                            .orElse(null);
+
+                    if (matchedCleanFormItem != null) {
+                        matchedCleanFormItem.setSubmittedResponses(sfi.getSubmittedResponses());
+                    }
+                });
+        return cleanForm;
+    }
 }
