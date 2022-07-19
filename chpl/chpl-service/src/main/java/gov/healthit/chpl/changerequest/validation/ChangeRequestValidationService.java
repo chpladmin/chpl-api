@@ -42,11 +42,7 @@ public class ChangeRequestValidationService {
         if (context.getNewChangeRequest().getChangeRequestType().getId().equals(developerDemographicsChangeRequestTypeId)) {
             rules.addAll(getDeveloperDetailsValidations());
         } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(attestationChangeRequestTypeId)) {
-            if (isNewChangeRequest(context)) {
-                rules.addAll(getAttestationValidations());
-            //} else {
-            //    rules.addAll(getAttestationUpdateValidations());
-            }
+            rules.addAll(getAttestationValidations());
         }
 
         return rules;
