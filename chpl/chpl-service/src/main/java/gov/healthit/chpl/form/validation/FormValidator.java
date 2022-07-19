@@ -1,6 +1,7 @@
 package gov.healthit.chpl.form.validation;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -58,6 +59,8 @@ public class FormValidator {
     private List<String> validateFormItem(FormItem formItemToValidate) {
         List<String> errorMessages = new ArrayList<String>();
 
+        removeDuplicateResponses(formItemToValidate);
+
         errorMessages.addAll(validateRequired(formItemToValidate));
         errorMessages.addAll(validateCardinality(formItemToValidate));
         errorMessages.addAll(validateResponses(formItemToValidate));
@@ -113,7 +116,7 @@ public class FormValidator {
 
         if (formItemToValidate.getChildFormItems() != null && formItemToValidate.getChildFormItems().size() > 0) {
             for (FormItem childFormItem : formItemToValidate.getChildFormItems()) {
-                if (childFormItem.getSubmittedResponses() != null) {
+                if (childFormItem.getSubmittedResponses() != null && childFormItem.getSubmittedResponses().size() > 0) {
                     List<Long> submittedResponseIds = formItemToValidate.getSubmittedResponses().stream()
                             .map(response -> response.getId())
                             .toList();
@@ -129,6 +132,11 @@ public class FormValidator {
         }
 
         return errorMessages;
+    }
+
+    private void removeDuplicateResponses(FormItem formItem) {
+        HashSet<Long> seen = new HashSet<Long>();
+        formItem.getSubmittedResponses().removeIf(ar -> !seen.add(ar.getId()));
     }
 
     private List<FormItem> gatherAllFormItems(List<FormItem> formItems) {
