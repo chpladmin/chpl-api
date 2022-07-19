@@ -49,6 +49,7 @@ public class ComplaintsReportCsvCreator {
         try (FileWriter fileWriter = new FileWriter(csvFile);
                 CSVPrinter csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat)) {
 
+            fileWriter.write('\ufeff');
             csvFilePrinter.printRecord(getHeaderRow());
 
             reports.stream()
