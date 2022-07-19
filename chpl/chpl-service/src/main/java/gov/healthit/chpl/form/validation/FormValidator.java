@@ -60,6 +60,7 @@ public class FormValidator {
         List<String> errorMessages = new ArrayList<String>();
 
         removeDuplicateResponses(formItemToValidate);
+        removeChildQuestionPhantomResponses(formItemToValidate);
 
         errorMessages.addAll(validateRequired(formItemToValidate));
         errorMessages.addAll(validateCardinality(formItemToValidate));
@@ -117,13 +118,8 @@ public class FormValidator {
         if (formItemToValidate.getChildFormItems() != null && formItemToValidate.getChildFormItems().size() > 0) {
             for (FormItem childFormItem : formItemToValidate.getChildFormItems()) {
                 if (childFormItem.getSubmittedResponses() != null && childFormItem.getSubmittedResponses().size() > 0) {
-                    List<Long> submittedResponseIds = formItemToValidate.getSubmittedResponses().stream()
-                            .map(response -> response.getId())
-                            .toList();
-
-                    Boolean isResponseFound = submittedResponseIds.contains(childFormItem.getParentResponse().getId());
-                    if (!isResponseFound) {
-                        errorMessages.add(errorMessageService.getMessage("form.formItem.childQuestionNotApplicable",
+                    if (childFormItem.getSubmittedResponses() != null && childFormItem.getSubmittedResponses().size() > 0
+                            && !isResponseInResponses(childFormItem.getParentResponse().getId(), formItemToValidate.getSubmittedResponses())) {                        errorMessages.add(errorMessageService.getMessage("form.formItem.childQuestionNotApplicable",
                                 childFormItem.getQuestion().getQuestion(),
                                 formItemToValidate.getQuestion().getQuestion()));
                     }
@@ -133,6 +129,27 @@ public class FormValidator {
 
         return errorMessages;
     }
+
+    private void removeChildQuestionPhantomResponses(FormItem formItemToValidate) {
+        if (formItemToValidate.getChildFormItems() != null && formItemToValidate.getChildFormItems().size() > 0) {
+            for (FormItem childFormItem : formItemToValidate.getChildFormItems()) {
+                if (childFormItem.getSubmittedResponses() != null && childFormItem.getSubmittedResponses().size() > 0
+                        && !isResponseInResponses(childFormItem.getParentResponse().getId(), formItemToValidate.getSubmittedResponses())) {
+
+                    childFormItem.getSubmittedResponses().clear();
+                }
+            }
+        }
+    }
+
+    private Boolean isResponseInResponses(Long allowedResponseIdToFind, List<AllowedResponse> submittedResponses) {
+        return submittedResponses.stream()
+                .map(response -> response.getId())
+                .filter(respId -> respId.equals(allowedResponseIdToFind))
+                .findAny()
+                .isPresent();
+    }
+
 
     private void removeDuplicateResponses(FormItem formItem) {
         if (formItem.getSubmittedResponses() != null && formItem.getSubmittedResponses().size() > 0) {
