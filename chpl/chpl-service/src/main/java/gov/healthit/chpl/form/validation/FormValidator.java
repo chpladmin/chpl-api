@@ -135,8 +135,10 @@ public class FormValidator {
     }
 
     private void removeDuplicateResponses(FormItem formItem) {
-        HashSet<Long> seen = new HashSet<Long>();
-        formItem.getSubmittedResponses().removeIf(ar -> !seen.add(ar.getId()));
+        if (formItem.getSubmittedResponses() != null && formItem.getSubmittedResponses().size() > 0) {
+            HashSet<Long> seen = new HashSet<Long>();
+            formItem.getSubmittedResponses().removeIf(ar -> !seen.add(ar.getId()));
+        }
     }
 
     private List<FormItem> gatherAllFormItems(List<FormItem> formItems) {
