@@ -34,6 +34,10 @@ public class ChangeRequestSearchResult implements Serializable {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime submittedDateTime;
 
+    public Boolean isAttestation() {
+        return this.changeRequestType.getName().equalsIgnoreCase("Developer Attestation Change Request");
+    }
+
     @Getter
     @Builder
     @NoArgsConstructor

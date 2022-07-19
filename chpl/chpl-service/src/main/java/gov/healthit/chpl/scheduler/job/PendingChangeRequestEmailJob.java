@@ -27,6 +27,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -164,11 +165,11 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
             final Date currentDate)
                     throws EntityRetrievalException {
         LOGGER.debug("Getting pending change requests");
-        List<ChangeRequest> requests = getChangeRequestsFilteredByACBs(activeAcbs);
+        List<ChangeRequestSearchResult> requests = getChangeRequestsFilteredByACBs(activeAcbs);
         LOGGER.debug("Found " + requests.size() + "pending change requests");
 
         List<List<String>> activityCsvRows = new ArrayList<List<String>>();
-        for (ChangeRequest changeRequest : requests) {
+        for (ChangeRequestSearchResult changeRequest : requests) {
             List<String> currRow = createEmptyRow(activeAcbs);
             putChangeRequestActivityInRow(changeRequest, currRow, activeAcbs, currentDate);
             activityCsvRows.add(currRow);
@@ -176,46 +177,54 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         return activityCsvRows;
     }
 
-    private List<ChangeRequest> getChangeRequestsFilteredByACBs(List<CertificationBodyDTO> acbs) throws EntityRetrievalException {
+    private List<ChangeRequestSearchResult> getChangeRequestsFilteredByACBs(List<CertificationBodyDTO> acbs) throws EntityRetrievalException {
         List<Long> activeAcbIds = acbs.stream()
                 .map(CertificationBodyDTO::getId)
                 .collect(Collectors.toList());
 
-        Predicate<ChangeRequest> doesCrHaveAppropriateAcb = cr -> cr.getCertificationBodies().stream()
+        Predicate<ChangeRequestSearchResult> doesCrHaveAppropriateAcb = cr -> cr.getCertificationBodies().stream()
                 .anyMatch(acb -> activeAcbIds.contains(acb.getId()));
 
         return changeRequestDAO.getAllPending().stream()
                 .filter(doesCrHaveAppropriateAcb)
-                .sorted((cr1, cr2) -> cr1.getSubmittedDate().compareTo(cr2.getSubmittedDate()))
-                .collect(Collectors.<ChangeRequest>toList());
+                .sorted((cr1, cr2) -> cr1.getSubmittedDateTime().compareTo(cr2.getSubmittedDateTime()))
+                .collect(Collectors.<ChangeRequestSearchResult>toList());
     }
 
-    private void putChangeRequestActivityInRow(final ChangeRequest activity,
-            final List<String> currRow, final List<CertificationBodyDTO> activeAcbs, final Date currentDate) {
+    private void putChangeRequestActivityInRow(ChangeRequestSearchResult crSearchResult,
+            List<String> currRow, List<CertificationBodyDTO> activeAcbs, Date currentDate) {
+        ChangeRequest cr = null;
+        try {
+            cr = changeRequestDAO.get(crSearchResult.getId());
+        } catch (EntityRetrievalException ex) {
+            LOGGER.error("Cannot find change request with ID " + cr.getId());
+            return;
+        }
+
         // Straightforward data
-        currRow.set(DEVELOPER_NAME, activity.getDeveloper().getName());
-        currRow.set(DEVELOPER_CODE, activity.getDeveloper().getDeveloperCode());
-        currRow.set(DEVELOPER_CONTACT_NAME, activity.getDeveloper().getContact().getFullName());
-        currRow.set(DEVELOPER_CONTACT_EMAIL, activity.getDeveloper().getContact().getEmail());
-        currRow.set(DEVELOPER_CONTACT_PHONE_NUMBER, activity.getDeveloper().getContact().getPhoneNumber());
-        currRow.set(CR_TYPE, activity.getChangeRequestType().getName());
-        currRow.set(CR_STATUS, activity.getCurrentStatus().getChangeRequestStatusType().getName());
-        currRow.set(CR_DATE, getTimestampFormatter().format(activity.getSubmittedDate()));
-        currRow.set(CR_LATEST_DATE, getTimestampFormatter().format(activity.getCurrentStatus().getStatusChangeDate()));
-        currRow.set(CR_LATEST_COMMENT, activity.getCurrentStatus().getComment());
+        currRow.set(DEVELOPER_NAME, cr.getDeveloper().getName());
+        currRow.set(DEVELOPER_CODE, cr.getDeveloper().getDeveloperCode());
+        currRow.set(DEVELOPER_CONTACT_NAME, cr.getDeveloper().getContact().getFullName());
+        currRow.set(DEVELOPER_CONTACT_EMAIL, cr.getDeveloper().getContact().getEmail());
+        currRow.set(DEVELOPER_CONTACT_PHONE_NUMBER, cr.getDeveloper().getContact().getPhoneNumber());
+        currRow.set(CR_TYPE, cr.getChangeRequestType().getName());
+        currRow.set(CR_STATUS, cr.getCurrentStatus().getChangeRequestStatusType().getName());
+        currRow.set(CR_DATE, getTimestampFormatter().format(cr.getSubmittedDate()));
+        currRow.set(CR_LATEST_DATE, getTimestampFormatter().format(cr.getCurrentStatus().getStatusChangeDate()));
+        currRow.set(CR_LATEST_COMMENT, cr.getCurrentStatus().getComment());
 
         // Calculated time open & time in current status
-        Date changeRequestDate = activity.getSubmittedDate();
+        Date changeRequestDate = cr.getSubmittedDate();
         long daysOpen = ((currentDate.getTime() - changeRequestDate.getTime()) / MILLIS_PER_DAY);
         currRow.set(CHANGE_REQUEST_DAYS_OPEN, Double.toString(daysOpen));
-        Date changeRequestLatestDate = activity.getCurrentStatus().getStatusChangeDate();
+        Date changeRequestLatestDate = cr.getCurrentStatus().getStatusChangeDate();
         long daysLatestOpen = ((currentDate.getTime() - changeRequestLatestDate.getTime()) / MILLIS_PER_DAY);
         currRow.set(CHANGE_REQUEST_LATEST_DAYS_OPEN, Double.toString(daysLatestOpen));
 
         // Is the CR relevant for each ONC-ACB?
         for (int i = 0; i < activeAcbs.size(); i++) {
             boolean isRelevant = false;
-            for (CertificationBody acb : activity.getCertificationBodies()) {
+            for (CertificationBody acb : cr.getCertificationBodies()) {
                 if (activeAcbs.get(i).getId().equals(acb.getId())) {
                     isRelevant = true;
                 }

@@ -29,6 +29,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
@@ -57,6 +58,9 @@ public class ChangeRequestReportEmailJob  extends QuartzJob {
 
     private File tempDirectory, tempCsvFile;
     private ExecutorService executorService;
+
+    @Autowired
+    private ChangeRequestDAO changeRequestDao;
 
     @Autowired
     private ChangeRequestManager changeRequestManager;
@@ -163,12 +167,13 @@ public class ChangeRequestReportEmailJob  extends QuartzJob {
 
     private ChangeRequestSearchRequest getDefaultSearchRequest() {
         List<ChangeRequestStatusType> statusTypes = changeRequestStatusTypeDao.getChangeRequestStatusTypes();
-        Set<String> pendingStatusTypeNames = statusTypes.stream()
+        List<Long> updatableStatusIds = changeRequestDao.getUpdatableStatusIds();
+        Set<String> updatableStatusTypeNames = statusTypes.stream()
+                .filter(statusType -> updatableStatusIds.contains(statusType.getId()))
                 .map(statusType -> statusType.getName())
-                .filter(statusTypeName -> statusTypeName.toLowerCase().contains("pending"))
                 .collect(Collectors.toSet());
         return ChangeRequestSearchRequest.builder()
-                .currentStatusNames(pendingStatusTypeNames)
+                .currentStatusNames(updatableStatusTypeNames)
                 .build();
     }
     private List<ChangeRequestSearchResult> getAllChangeRequestSearchResults(ChangeRequestSearchRequest searchRequest)

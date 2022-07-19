@@ -31,7 +31,7 @@ public class ChangeRequestSearchManagerTest {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
 
-        changeRequestSearchManager = new ChangeRequestSearchManager(changeRequestDao,
+        changeRequestSearchManager = new ChangeRequestSearchManager(null, null, changeRequestDao,
                 searchRequestValidator, resourcePermissions);
     }
 
