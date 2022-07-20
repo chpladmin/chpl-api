@@ -15,6 +15,7 @@ import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
+import gov.healthit.chpl.form.FormItem;
 
 public abstract class ChangeRequestEmail {
     private UserDeveloperMapDAO userDeveloperMapDAO;
@@ -34,7 +35,7 @@ public abstract class ChangeRequestEmail {
     public List<UserDTO> getUsersForDeveloper(Long developerId) {
         return userDeveloperMapDAO.getByDeveloperId(developerId).stream()
                 .map(userDeveloperMap -> userDeveloperMap.getUser())
-                .collect(Collectors.<UserDTO> toList());
+                .toList();
     }
 
     public String getApprovalBody(ChangeRequest cr) {
@@ -52,17 +53,27 @@ public abstract class ChangeRequestEmail {
     public String toHtmlString(ChangeRequestAttestationSubmission attestationSubmission, ChplHtmlEmailBuilder htmlBuilder) {
         List<String> headings = Arrays.asList("Condition", "Attestation", "Response");
 
-        /*
-        List<List<String>> rows = attestationSubmission.getAttestationResponses().stream()
-                .map(resp -> Arrays.asList(
-                        resp.getAttestation().getCondition().getName(),
-                        convertPsuedoMarkdownToHtmlLink(resp.getAttestation().getDescription()),
-                        resp.getResponse().getResponse()))
+        List<List<String>> rows = attestationSubmission.getForm().getSectionHeadings().stream()
+                .map(sh -> Arrays.asList(
+                        sh.getName(),
+                        convertPsuedoMarkdownToHtmlLink(sh.getFormItems().get(0).getQuestion().getQuestion()),
+                        sh.getFormItems().get(0).getSubmittedResponses().get(0).getResponse() + getNoncompliantCapResponses(sh.getFormItems().get(0))))
                 .collect(Collectors.toList());
 
         return htmlBuilder.getTableHtml(headings, rows, "");
-        */
-        return "Need to deternmine what the new email should look like.";
+    }
+
+    private String getNoncompliantCapResponses(FormItem formItem) {
+        StringBuilder responses = new StringBuilder();
+        if (formItem.getChildFormItems() != null && formItem.getChildFormItems().size() > 0) {
+            FormItem childFormItem = formItem.getChildFormItems().get(0);
+            responses.append("<ul>");
+            responses.append(childFormItem.getSubmittedResponses().stream()
+                    .map(resp -> "<li>" + resp.getResponse() + "</li>")
+                    .collect(Collectors.joining()));
+            responses.append("</ul>");
+        }
+        return responses.toString();
     }
 
     private String convertPsuedoMarkdownToHtmlLink(String toConvert) {
@@ -79,6 +90,6 @@ public abstract class ChangeRequestEmail {
         return converted;
     }
 
-    public abstract void send(ChangeRequest cr) throws EmailNotSentException ;
+    public abstract void send(ChangeRequest cr) throws EmailNotSentException;
 
 }

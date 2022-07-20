@@ -125,7 +125,6 @@ public class AttestationDAO extends BaseDAOImpl{
                 .forEach(fi -> {
                     findAddedResponses(fi.getSubmittedResponses(), entity.getResponses()).stream()
                             .forEach(resp -> {
-                                LOGGER.info("Adding response: " + resp.getId());
                                 create(ChangeRequestAttestationSubmissionResponseEntity.builder()
                                         .changeRequestAttestationSubmissionId(entity.getId())
                                         .formItem(FormItemEntity.builder()
@@ -143,7 +142,6 @@ public class AttestationDAO extends BaseDAOImpl{
 
                     findRemovedResponses(fi.getSubmittedResponses(), filterByFormItemId(fi.getId(), entity.getResponses())).stream()
                             .forEach(responseEntity -> {
-                                LOGGER.info("Removing response: " + responseEntity.getId());
                                 responseEntity.setDeleted(true);
                                 responseEntity.setLastModifiedUser(AuthUtil.getAuditId());
                                 update(responseEntity);
