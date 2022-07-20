@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -73,7 +74,7 @@ public class MeasureReviewer implements Reviewer {
         if (validationUtils.hasCert(G1_CRITERIA_NUMBER, attestedCriteria)) {
             // must have at least one measure of type G1
             long g1MeasureCount = listing.getMeasures().stream()
-                .filter(measure -> measure.getMeasureType() != null
+                .filter(measure -> ObjectUtils.allNotNull(measure.getMeasureType(), measure.getMeasureType().getName())
                         && measure.getMeasureType().getName().equals(MEASUREMENT_TYPE_G1))
                 .count();
             if (g1MeasureCount == 0) {
@@ -90,7 +91,7 @@ public class MeasureReviewer implements Reviewer {
         if (validationUtils.hasCert(G2_CRITERIA_NUMBER, attestedCriteria)) {
             // must have at least one measure of type G1
             long g2MeasureCount = listing.getMeasures().stream()
-                .filter(measure -> measure.getMeasureType() != null
+                .filter(measure -> ObjectUtils.allNotNull(measure.getMeasureType(), measure.getMeasureType().getName())
                         && measure.getMeasureType().getName().equals(MEASUREMENT_TYPE_G2))
                 .count();
             if (g2MeasureCount == 0) {
@@ -210,10 +211,12 @@ public class MeasureReviewer implements Reviewer {
 
     private void reviewMeasureTypeExists(CertifiedProductSearchDetails listing, ListingMeasure measure) {
         if (measure.getMeasureType() == null || measure.getMeasureType().getId() == null) {
-            String nameForMsg = measure.getMeasureType() == null ? ""
-                    : measure.getMeasureType().getName();
-            listing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.invalidMeasureType", nameForMsg));
+            if (measure.getMeasureType() != null && !StringUtils.isEmpty(measure.getMeasureType().getName())) {
+                listing.getErrorMessages().add(
+                        msgUtil.getMessage("listing.invalidMeasureType", measure.getMeasureType().getName()));
+            } else {
+                listing.getErrorMessages().add(msgUtil.getMessage("listing.missingMeasureType"));
+            }
         }
     }
 

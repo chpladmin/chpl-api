@@ -29,6 +29,7 @@ import gov.healthit.chpl.util.ValidationUtils;
 public class MeasureReviewerTest {
     private static final String MEASURE_NOT_FOUND = "%s Measure '%s' was not found %s and has been removed from the listing.";
     private static final String INVALID_MEASURE_TYPE = "Invalid G1/G2 Measure Type: '%s' was not found.";
+    private static final String MISSING_MEASURE_TYPE = "G1/G2 Measure type is missing.";
     private static final String MISSING_G1_MEASURES = "Listing has attested to (g)(1), but no measures have been successfully tested for (g)(1).";
     private static final String MISSING_G2_MEASURES = "Listing has attested to (g)(2), but no measures have been successfully tested for (g)(2).";
     private static final String MISSING_ASSOCIATED_CRITERIA = "The %s measure %s for %s must have at least one associated criterion.";
@@ -56,6 +57,8 @@ public class MeasureReviewerTest {
             .thenAnswer(i -> String.format(MEASURE_NOT_FOUND, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.invalidMeasureType"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_MEASURE_TYPE, i.getArgument(1), ""));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.missingMeasureType")))
+            .thenAnswer(i -> MISSING_MEASURE_TYPE);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.missingG1Measures")))
             .thenAnswer(i -> String.format(MISSING_G1_MEASURES));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.missingG2Measures")))
@@ -308,6 +311,64 @@ public class MeasureReviewerTest {
 
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(INVALID_MEASURE_TYPE, "BOGUS")));
+    }
+
+    @Test
+    public void review_nullMeasureType_errorMessage() throws ParseException {
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+        listing.getMeasures().add(ListingMeasure.builder()
+                .measure(Measure.builder()
+                        .id(1L)
+                        .name("Test")
+                        .build())
+                .measureType(null)
+                .associatedCriteria(buildCriterionSet(1L, "170.315 (a)(1)"))
+                .build());
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(MISSING_MEASURE_TYPE)));
+    }
+
+    @Test
+    public void review_nullMeasureTypeName_errorMessage() throws ParseException {
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+        listing.getMeasures().add(ListingMeasure.builder()
+                .measure(Measure.builder()
+                        .id(1L)
+                        .name("Test")
+                        .build())
+                .measureType(MeasureType.builder()
+                        .name(null)
+                        .build())
+                .associatedCriteria(buildCriterionSet(1L, "170.315 (a)(1)"))
+                .build());
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(MISSING_MEASURE_TYPE)));
+    }
+
+    @Test
+    public void review_emptyMeasureTypeName_errorMessage() throws ParseException {
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+        listing.getMeasures().add(ListingMeasure.builder()
+                .measure(Measure.builder()
+                        .id(1L)
+                        .name("Test")
+                        .build())
+                .measureType(MeasureType.builder()
+                        .name("")
+                        .build())
+                .associatedCriteria(buildCriterionSet(1L, "170.315 (a)(1)"))
+                .build());
+
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(MISSING_MEASURE_TYPE)));
     }
 
     @Test
