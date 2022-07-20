@@ -21,6 +21,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.Singular;
 import lombok.ToString;
 
 @Entity
@@ -49,10 +50,12 @@ public class QuestionEntity {
     @Column(name = "question")
     private String question;
 
+
     @OneToMany
     @JoinTable(name = "question_allowed_response_map",
             joinColumns = @JoinColumn(name = "question_id"),
             inverseJoinColumns = @JoinColumn(name = "allowed_response_id"))
+    @Singular
     private Set<AllowedResponseEntity> allowedResponses;
 
     @Column(name = "last_modified_user", nullable = false)
