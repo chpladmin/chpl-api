@@ -32,6 +32,8 @@ public abstract class ChangeRequestEmail {
         this.userDeveloperMapDAO = userDeveloperMapDAO;
     }
 
+    public abstract void send(ChangeRequest cr) throws EmailNotSentException;
+
     public List<UserDTO> getUsersForDeveloper(Long developerId) {
         return userDeveloperMapDAO.getByDeveloperId(developerId).stream()
                 .map(userDeveloperMap -> userDeveloperMap.getUser())
@@ -89,7 +91,4 @@ public abstract class ChangeRequestEmail {
         }
         return converted;
     }
-
-    public abstract void send(ChangeRequest cr) throws EmailNotSentException;
-
 }
