@@ -79,6 +79,7 @@ import gov.healthit.chpl.web.controller.results.ChangeRequestResults;
 import gov.healthit.chpl.web.controller.results.ChplJobsResults;
 import gov.healthit.chpl.web.controller.results.ComplaintResults;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
+import gov.healthit.chpl.web.controller.results.DeveloperAttestationSubmissionResults;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
 import gov.healthit.chpl.web.controller.results.FilterResults;
 import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
@@ -857,5 +858,14 @@ public class DeprecatedFieldExplorerTest {
         Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(UserInvitation.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
+    }
+
+    @Test
+    public void findDeprecatedFields_DeveloperAttestationSubmissionResults() {
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(DeveloperAttestationSubmissionResults.class);
+        assertNotNull(deprecatedFieldNames);
+        assertEquals(2, deprecatedFieldNames.size());
+        assertTrue(deprecatedFieldNames.contains("canSubmitAttestationChangeRequest"));
+        assertTrue(deprecatedFieldNames.contains("developerAttestations" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developer" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
     }
 }

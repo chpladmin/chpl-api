@@ -12,7 +12,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public enum PublicAttestationStatus implements Serializable {
-    ATTESTATIONS_SUBMITTED("Attestations Submitted");
+    ATTESTATIONS_SUBMITTED("Attestations submitted"),
+    NO_ATTESTATIONS_SUBMITTED("No Attestations submitted");
 
     private String name;
 

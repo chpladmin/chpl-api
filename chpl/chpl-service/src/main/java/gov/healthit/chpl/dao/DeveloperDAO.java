@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.attestation.dao.AttestationDAO;
+import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.Developer;
@@ -36,28 +38,30 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Repository("developerDAO")
 public class DeveloperDAO extends BaseDAOImpl {
-    private static final String DEVELOPER_HQL = "SELECT DISTINCT v FROM "
-            + "DeveloperEntity v "
+    private static final String DEVELOPER_HQL = "SELECT DISTINCT v "
+            + "FROM DeveloperEntity v "
             + "LEFT OUTER JOIN FETCH v.address "
             + "LEFT OUTER JOIN FETCH v.contact "
             + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
             + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
             + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
-            + "LEFT OUTER JOIN FETCH v.publicAttestations devAtt "
+            + "LEFT OUTER JOIN FETCH v.attestations devAtt "
             + "LEFT OUTER JOIN FETCH devAtt.period per ";
 
     private static final DeveloperStatusType DEFAULT_STATUS = DeveloperStatusType.Active;
     private AddressDAO addressDao;
     private ContactDAO contactDao;
     private DeveloperStatusDAO statusDao;
+    private AttestationDAO attestationDAO;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public DeveloperDAO(AddressDAO addressDao, ContactDAO contactDao, DeveloperStatusDAO statusDao,
-            ErrorMessageUtil msgUtil) {
+            AttestationDAO attestationDAO, ErrorMessageUtil msgUtil) {
        this.addressDao = addressDao;
        this.contactDao = contactDao;
        this.statusDao = statusDao;
+       this.attestationDAO = attestationDAO;
        this.msgUtil = msgUtil;
     }
 
@@ -409,6 +413,7 @@ public class DeveloperDAO extends BaseDAOImpl {
                 UserDeveloperMapEntity.class);
         query.setParameter("userId", userId);
         List<UserDeveloperMapEntity> result = query.getResultList();
+
         return result.stream()
                 .map(entity -> entity.getDeveloper().toDomain())
                 .toList();
@@ -419,6 +424,7 @@ public class DeveloperDAO extends BaseDAOImpl {
                 DEVELOPER_HQL
                 + "WHERE (NOT v.deleted = true)",
                 DeveloperEntity.class).getResultList();
+        result.forEach(e -> e.setPeriods(getAllAttestationPeriodEntities()));
         return result;
     }
 
@@ -426,6 +432,7 @@ public class DeveloperDAO extends BaseDAOImpl {
         List<DeveloperEntity> result = entityManager
                 .createQuery(DEVELOPER_HQL, DeveloperEntity.class)
                 .getResultList();
+        result.forEach(e -> e.setPeriods(getAllAttestationPeriodEntities()));
         return result;
     }
 
@@ -449,6 +456,7 @@ public class DeveloperDAO extends BaseDAOImpl {
             throw new EntityRetrievalException(msg);
         } else if (result.size() > 0) {
             entity = result.get(0);
+            entity.setPeriods(getAllAttestationPeriodEntities());
         }
 
         return entity;
@@ -465,7 +473,9 @@ public class DeveloperDAO extends BaseDAOImpl {
 
         if (result.size() > 0) {
             entity = result.get(0);
+            entity.setPeriods(getAllAttestationPeriodEntities());
         }
+
         return entity;
     }
 
@@ -480,7 +490,9 @@ public class DeveloperDAO extends BaseDAOImpl {
 
         if (result.size() > 0) {
             entity = result.get(0);
+            entity.setPeriods(getAllAttestationPeriodEntities());
         }
+
         return entity;
     }
 
@@ -504,5 +516,9 @@ public class DeveloperDAO extends BaseDAOImpl {
         return entityManager.createQuery(hql, DeveloperEntity.class)
                 .setParameter("certificationBodyIds", certificationBodyIds)
                 .getResultList();
+    }
+
+    private List<AttestationPeriodEntity> getAllAttestationPeriodEntities() {
+        return attestationDAO.getAllPeriodEntities();
     }
 }

@@ -83,41 +83,52 @@ public class AttestationManager {
     @Transactional
     public Boolean canDeveloperSubmitChangeRequest(Long developerId) throws EntityRetrievalException {
         AttestationPeriod mostRecentPastAttestationPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
-        if (doesAttestationForDeveloperExist(developerId, mostRecentPastAttestationPeriod.getId())) {
-            if (doesPendingAttestationChangeRequestForDeveloperExist(developerId)) {
-                return false;
+
+        if (doesPendingAttestationChangeRequestForDeveloperExist(developerId)) {
+            return false;
+        }
+        if (doesValidExceptionExistForDeveloper(developerId)) {
+            return true;
+        }
+        if (attestationPeriodService.isDateWithinSubmissionPeriodForDeveloper(developerId, LocalDate.now())) {
+            return !doesAttestationForDeveloperExist(developerId, mostRecentPastAttestationPeriod.getId());
+        }
+
+        return false;
+    }
+
+    @Transactional
+    public AttestationPeriod getSubmittablePeriod(Long developerId) {
+        try {
+            if (canDeveloperSubmitChangeRequest(developerId)) {
+                return attestationPeriodService.getSubmittableAttestationPeriod(developerId);
             } else {
-                return isDateInFuture(attestationPeriodService.getMostRecentPeriodExceptionDateForDeveloper(developerId));
+                return null;
             }
-        } else {
-            return attestationPeriodService.isDateWithinSubmissionPeriodForDeveloper(developerId, LocalDate.now())
-                    && !doesPendingAttestationChangeRequestForDeveloperExist(developerId);
+        } catch (EntityRetrievalException e) {
+            return null;
         }
     }
 
     @Transactional
     public Boolean canCreateException(Long developerId) throws EntityRetrievalException {
-        if (canDeveloperSubmitChangeRequest(developerId)) {
+        if (doesPendingAttestationChangeRequestForDeveloperExist(developerId)) {
             return false;
         } else {
-            AttestationPeriod mostRecentPastAttestationPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
-            if (withinStandardSubmissionPeriod(mostRecentPastAttestationPeriod)) {
-                if (doesAttestationForDeveloperExist(developerId, mostRecentPastAttestationPeriod.getId())) {
-                    return !doesPendingAttestationChangeRequestForDeveloperExist(developerId);
-                } else {
-                    return false;
-                }
-            } else {
-                return !doesPendingAttestationChangeRequestForDeveloperExist(developerId);
-            }
+            return getSubmittablePeriod(developerId) == null;
         }
     }
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ATTESTATION, "
             + "T(gov.healthit.chpl.permissions.domains.AttestationDomainPermissions).CREATE_EXCEPTION, #developerId)")
-    public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(Long developerId)
+    public AttestationPeriodDeveloperException createAttestationPeriodDeveloperException(Long developerId, Long attestationPeriodId)
             throws EntityRetrievalException, ValidationException {
+
+        AttestationPeriod attestationPeriod = attestationPeriodService.getAllPeriods().stream()
+                .filter(per -> per.getId().equals(attestationPeriodId))
+                .findAny()
+                .orElseThrow(() -> new ValidationException(errorMessageUtil.getMessage("attestation.submissionPeriodException.cannotCreate")));
 
         if (!canCreateException(developerId)) {
             throw new ValidationException(errorMessageUtil.getMessage("attestation.submissionPeriodException.cannotCreate"));
@@ -127,7 +138,7 @@ public class AttestationManager {
                 .developer(Developer.builder()
                         .id(developerId)
                         .build())
-                .period(getMostRecentPastAttestationPeriod())
+                .period(attestationPeriod)
                 .exceptionEnd(getNewExceptionDate())
                 .build());
     }
@@ -165,14 +176,13 @@ public class AttestationManager {
         return submissions != null && submissions.size() > 0;
     }
 
+    private Boolean doesValidExceptionExistForDeveloper(Long developerId) {
+        return isDateInFuture(attestationPeriodService.getCurrentExceptionEndDateForDeveloper(developerId));
+    }
+
     private Boolean isDateInFuture(LocalDate dateToCheck) {
         return dateToCheck != null
                 && (dateToCheck.equals(LocalDate.now())
                         || dateToCheck.isAfter(LocalDate.now()));
-    }
-
-    private Boolean withinStandardSubmissionPeriod(AttestationPeriod period) {
-        return (period.getSubmissionStart().equals(LocalDate.now()) || period.getSubmissionStart().isBefore(LocalDate.now()))
-                && (period.getSubmissionEnd().equals(LocalDate.now()) || period.getSubmissionEnd().isAfter(LocalDate.now()));
     }
 }
