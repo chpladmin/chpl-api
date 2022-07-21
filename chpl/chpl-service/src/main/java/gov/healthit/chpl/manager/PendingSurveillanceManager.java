@@ -353,7 +353,6 @@ public class PendingSurveillanceManager extends SecuredManager {
                 .startDay(pr.getStartDate())
                 .endDay(pr.getEndDate())
                 .randomizedSitesUsed(pr.getNumRandomizedSites())
-                .authority(Surveillance.AUTHORITY_ACB)
                 .build();
 
         SurveillanceType survType = SurveillanceType.builder()
@@ -515,7 +514,6 @@ public class PendingSurveillanceManager extends SecuredManager {
         surv.setStartDay(entity.getStartDate());
         surv.setEndDay(entity.getEndDate());
         surv.setRandomizedSitesUsed(entity.getNumRandomizedSites());
-        surv.setAuthority(Surveillance.AUTHORITY_ACB);
         surv.setLastModifiedDate(entity.getLastModifiedDate());
 
         if (entity.getCertifiedProduct() != null) {

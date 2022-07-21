@@ -1,6 +1,7 @@
 package gov.healthit.chpl.entity.developer;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -20,11 +21,14 @@ import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.attestation.domain.AttestationPeriod;
+import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
 import gov.healthit.chpl.attestation.entity.DeveloperAttestationSubmissionEntity;
 import gov.healthit.chpl.changerequest.entity.DeveloperCertificationBodyMapEntity;
 import gov.healthit.chpl.domain.Developer;
@@ -121,12 +125,16 @@ public class DeveloperEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "developer_id", nullable = false)
     @Where(clause = "deleted <> 'true'")
-    private Set<DeveloperAttestationSubmissionEntity> publicAttestations = new LinkedHashSet<DeveloperAttestationSubmissionEntity>();
+    private Set<DeveloperAttestationSubmissionEntity> attestations = new LinkedHashSet<DeveloperAttestationSubmissionEntity>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "developerId")
     @Basic(optional = false)
     @Column(name = "vendor_id", nullable = false)
     private Set<DeveloperCertificationBodyMapEntity> certificationBodyMaps = new LinkedHashSet<DeveloperCertificationBodyMapEntity>();
+
+    @Transient
+    @Builder.Default
+    private List<AttestationPeriodEntity> periods = new ArrayList<AttestationPeriodEntity>();
 
     public Developer toDomain() {
         return Developer.builder()
@@ -155,15 +163,27 @@ public class DeveloperEntity implements Serializable {
     }
 
     private List<PublicAttestation> toPublicAttestationDomains() {
-        if (CollectionUtils.isEmpty(this.getPublicAttestations())) {
+        if (CollectionUtils.isEmpty(this.getPeriods())) {
             return new ArrayList<PublicAttestation>();
         }
-        return this.publicAttestations.stream()
-                .map(entity -> PublicAttestation.builder()
-                        .id(entity.getId())
-                        .attestationPeriod(entity.getPeriod() == null ? null : entity.getPeriod().toDomain())
-                        .status(PublicAttestationStatus.ATTESTATIONS_SUBMITTED)
-                        .build())
+        return getPeriods().stream()
+                .filter(period -> period.getPeriodEnd().isBefore(LocalDate.now()))
+                .map(period -> {
+                    DeveloperAttestationSubmissionEntity attestation = getAttestationForPeriod(period.toDomain());
+                    return PublicAttestation.builder()
+                            .id(attestation != null ? attestation.getId() : null)
+                            .attestationPeriod(period.toDomain())
+                            .status(attestation != null ? PublicAttestationStatus.ATTESTATIONS_SUBMITTED : PublicAttestationStatus.NO_ATTESTATIONS_SUBMITTED)
+                            .build();
+
+                })
                 .toList();
+    }
+
+    private DeveloperAttestationSubmissionEntity getAttestationForPeriod(AttestationPeriod period) {
+        return attestations.stream()
+                .filter(att -> att.getPeriod().getId().equals(period.getId()))
+                .findAny()
+                .orElse(null);
     }
 }
