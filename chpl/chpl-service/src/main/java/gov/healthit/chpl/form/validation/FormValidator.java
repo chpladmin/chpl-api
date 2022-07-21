@@ -14,7 +14,9 @@ import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.form.FormItem;
 import gov.healthit.chpl.form.FormService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component
 public class FormValidator {
     // 1. Are all required questions answered
@@ -119,7 +121,8 @@ public class FormValidator {
             for (FormItem childFormItem : formItemToValidate.getChildFormItems()) {
                 if (childFormItem.getSubmittedResponses() != null && childFormItem.getSubmittedResponses().size() > 0) {
                     if (childFormItem.getSubmittedResponses() != null && childFormItem.getSubmittedResponses().size() > 0
-                            && !isResponseInResponses(childFormItem.getParentResponse().getId(), formItemToValidate.getSubmittedResponses())) {                        errorMessages.add(errorMessageService.getMessage("form.formItem.childQuestionNotApplicable",
+                            && !isResponseInResponses(childFormItem.getParentResponse().getId(), formItemToValidate.getSubmittedResponses())) {
+                        errorMessages.add(errorMessageService.getMessage("form.formItem.childQuestionNotApplicable",
                                 childFormItem.getQuestion().getQuestion(),
                                 formItemToValidate.getQuestion().getQuestion()));
                     }
@@ -182,7 +185,7 @@ public class FormValidator {
                             .orElse(null);
 
                     if (matchedCleanFormItem != null) {
-                        matchedCleanFormItem.setSubmittedResponses(sfi.getSubmittedResponses());
+                        matchedCleanFormItem.getSubmittedResponses().addAll(sfi.getSubmittedResponses());
                     }
                 });
         return cleanForm;
