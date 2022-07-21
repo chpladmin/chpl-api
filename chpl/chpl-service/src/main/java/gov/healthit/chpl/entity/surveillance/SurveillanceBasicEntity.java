@@ -82,7 +82,6 @@ public class SurveillanceBasicEntity {
                 .startDay(this.getStartDate())
                 .surveillanceType(this.getSurveillanceType() != null ? this.getSurveillanceType().buildSurveillanceType() : null)
                 .surveillanceTypeId(this.getSurveillanceTypeId())
-                .userPermissionId(SurveillanceBasic.AUTHORITY_ACB)
             .build();
     }
 }
