@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -24,8 +26,13 @@ public class LocalDateTimeDeserializer extends StdDeserializer<LocalDateTime> {
     @Override
     public LocalDateTime deserialize(JsonParser jp, DeserializationContext ctxt)
             throws IOException, JsonProcessingException {
+        String localDateTimeString = jp.readValueAs(String.class);
+        if (StringUtils.isEmpty(localDateTimeString)) {
+            return null;
+        }
+
         try {
-            return LocalDateTime.parse(jp.readValueAs(String.class));
+            return LocalDateTime.parse(localDateTimeString);
         } catch (DateTimeParseException e) {
             LOGGER.info(e.getMessage(), e);
             return null;
