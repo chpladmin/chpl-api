@@ -19,7 +19,6 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ComplaintManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
 import gov.healthit.chpl.web.controller.results.ComplaintResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -44,7 +43,6 @@ public class ComplaintController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = ComplaintResults.class)
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ComplaintResults getComplaints() {
         ComplaintResults results = new ComplaintResults();
@@ -59,7 +57,6 @@ public class ComplaintController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = Complaint.class)
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody Complaint create(@RequestBody Complaint complaint) throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
         ValidationException error = new ValidationException();
@@ -78,7 +75,6 @@ public class ComplaintController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = Complaint.class)
     @RequestMapping(value = "/{complaintId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public @ResponseBody Complaint update(@RequestBody Complaint complaint)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {

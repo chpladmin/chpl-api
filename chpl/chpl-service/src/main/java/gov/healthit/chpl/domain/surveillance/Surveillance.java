@@ -41,7 +41,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Surveillance implements Serializable {
     private static final long serialVersionUID = 7018071250912371691L;
-    public static final String AUTHORITY_ACB = "ROLE_ACB";
 
     /**
      * Surveillance internal ID
@@ -108,10 +107,6 @@ public class Surveillance implements Serializable {
     @XmlElement(name = "requirement")
     @Builder.Default
     private Set<SurveillanceRequirement> requirements = new LinkedHashSet<SurveillanceRequirement>();
-
-    @XmlTransient
-    @Deprecated
-    private String authority;
 
     @XmlTransient
     @Builder.Default
@@ -222,13 +217,6 @@ public class Surveillance implements Serializable {
                 && this.randomizedSitesUsed.intValue() != anotherSurveillance.randomizedSitesUsed.intValue()) {
             return false;
         }
-        if (StringUtils.isEmpty(this.authority) && !StringUtils.isEmpty(anotherSurveillance.authority)
-                || !StringUtils.isEmpty(this.authority) && StringUtils.isEmpty(anotherSurveillance.authority)) {
-            return false;
-        } else if (!StringUtils.isEmpty(this.authority) && !StringUtils.isEmpty(anotherSurveillance.authority)
-                && !this.authority.equalsIgnoreCase(anotherSurveillance.authority)) {
-            return false;
-        }
         if (this.certifiedProduct == null && anotherSurveillance.certifiedProduct != null
                 || this.certifiedProduct != null && anotherSurveillance.certifiedProduct == null) {
             return false;
@@ -332,16 +320,6 @@ public class Surveillance implements Serializable {
 
     public void setFriendlyId(String friendlyId) {
         this.friendlyId = friendlyId;
-    }
-
-    @Deprecated
-    public String getAuthority() {
-        return authority;
-    }
-
-    @Deprecated
-    public void setAuthority(String authority) {
-        this.authority = authority;
     }
 
     public Date getLastModifiedDate() {
