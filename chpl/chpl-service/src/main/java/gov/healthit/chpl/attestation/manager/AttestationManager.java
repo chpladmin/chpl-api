@@ -195,5 +195,4 @@ public class AttestationManager {
                 && (dateToCheck.equals(LocalDate.now())
                         || dateToCheck.isAfter(LocalDate.now()));
     }
-
 }

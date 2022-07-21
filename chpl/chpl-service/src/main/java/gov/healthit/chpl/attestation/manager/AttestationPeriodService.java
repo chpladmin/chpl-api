@@ -93,6 +93,14 @@ public class AttestationPeriodService {
                 .getExceptionEnd();
     }
 
+    public AttestationPeriodDeveloperException getCurrentAttestationPeriodDeveloperExceptionForDeveloper(Long developerId) {
+        return attestationDAO.getCurrentAttestationPeriodDeveloperException(developerId);
+    }
+
+    public AttestationPeriodDeveloperException getCurrentAttestationPeriodDeveloperException(Long developerId) {
+        return attestationDAO.getCurrentAttestationPeriodDeveloperException(developerId);
+    }
+
     private AttestationPeriod getMostRecentPastAttestationPeriodForDeveloperWrtExceptions(Long developerId) {
         AttestationPeriod mostRecentPeriod = getMostRecentPastAttestationPeriod();
         if (mostRecentPeriod == null) {
@@ -106,5 +114,4 @@ public class AttestationPeriodService {
 
         return mostRecentPeriod;
     }
-
 }
