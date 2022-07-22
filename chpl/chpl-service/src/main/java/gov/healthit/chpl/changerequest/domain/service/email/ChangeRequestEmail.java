@@ -16,6 +16,7 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.form.FormItem;
+import gov.healthit.chpl.util.NullSafeEvaluator;
 
 public abstract class ChangeRequestEmail {
     private UserDeveloperMapDAO userDeveloperMapDAO;
@@ -58,16 +59,17 @@ public abstract class ChangeRequestEmail {
         List<List<String>> rows = attestationSubmission.getForm().getSectionHeadings().stream()
                 .map(sh -> Arrays.asList(
                         sh.getName(),
-                        convertPsuedoMarkdownToHtmlLink(sh.getFormItems().get(0).getQuestion().getQuestion()),
-                        sh.getFormItems().get(0).getSubmittedResponses().get(0).getResponse() + getNoncompliantCapResponses(sh.getFormItems().get(0))))
-                .collect(Collectors.toList());
+                        convertPsuedoMarkdownToHtmlLink(NullSafeEvaluator.eval(() -> sh.getFormItems().get(0).getQuestion().getQuestion(), "Unknown")),
+                        NullSafeEvaluator.eval(() -> sh.getFormItems().get(0).getSubmittedResponses().get(0).getResponse(), "")
+                        + getNoncompliantCapResponses(NullSafeEvaluator.eval(() -> sh.getFormItems().get(0), null))))
+                .toList();
 
         return htmlBuilder.getTableHtml(headings, rows, "");
     }
 
     private String getNoncompliantCapResponses(FormItem formItem) {
         StringBuilder responses = new StringBuilder();
-        if (formItem.getChildFormItems() != null && formItem.getChildFormItems().size() > 0) {
+        if (formItem != null && formItem.getChildFormItems() != null && formItem.getChildFormItems().size() > 0) {
             FormItem childFormItem = formItem.getChildFormItems().get(0);
             responses.append("<ul>");
             responses.append(childFormItem.getSubmittedResponses().stream()
