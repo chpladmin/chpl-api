@@ -6,32 +6,26 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
-import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchManager;
@@ -46,27 +40,29 @@ import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
+import gov.healthit.chpl.scheduler.job.changerequest.presenter.ChangeRequestCsvPresenter;
+import gov.healthit.chpl.scheduler.job.changerequest.presenter.ChangeRequestDetailsPresentationService;
+import gov.healthit.chpl.scheduler.job.changerequest.presenter.DownloadableAttestationPresenter;
+import gov.healthit.chpl.scheduler.job.changerequest.presenter.DownloadableDemographicsPresenter;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "changeRequestReportJobLogger")
+@Log4j2(topic = "changeRequestsReportJobLogger")
 public class ChangeRequestReportEmailJob  extends QuartzJob {
-    public static final String JOB_NAME = "Change Request Report";
+    public static final String JOB_NAME = "changeRequestsReport";
     public static final String SEARCH_REQUEST = "searchRequest";
     public static final String USER_KEY = "user";
 
-    private File tempDirectory, tempCsvFile;
-    private ExecutorService executorService;
+    private File tempDirectory, tempAttestationFile, tempDemographicFile;
 
     @Autowired
     private ChangeRequestDAO changeRequestDao;
 
     @Autowired
-    private ChangeRequestManager changeRequestManager;
+    private ChangeRequestSearchManager changeRequestSearchManager;
 
     @Autowired
-    private ChangeRequestSearchManager changeRequestSearchManager;
+    private ChangeRequestManager changeRequestManager;
 
     @Autowired
     private ChangeRequestStatusTypeDAO changeRequestStatusTypeDao;
@@ -81,10 +77,16 @@ public class ChangeRequestReportEmailJob  extends QuartzJob {
     private ChplEmailFactory chplEmailFactory;
 
     @Autowired
-    private Environment env;
+    private FF4j ff4j;
 
-    @Value("${changeRequests.report.filename}")
-    private String changeRequestsReportFilename;
+    @Value("${executorThreadCountForQuartzJobs}")
+    private String executorThreadCountForQuartzJobs;
+
+    @Value("${changeRequests.report.attestation.filename}")
+    private String changeRequestsReportAttestationFilename;
+
+    @Value("${changeRequests.report.demographic.filename}")
+    private String changeRequestsReportDemographicFilename;
 
     @Value("${changeRequests.report.subject}")
     private String changeRequestsReportMessageSubject;
@@ -95,6 +97,8 @@ public class ChangeRequestReportEmailJob  extends QuartzJob {
     @Value("${changeRequests.report.paragraph1}")
     private String changeRequestsReportMessageBody;
 
+    private ChangeRequestDetailsPresentationService crPresentationService;
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
@@ -102,23 +106,16 @@ public class ChangeRequestReportEmailJob  extends QuartzJob {
         JobDataMap jobDataMap = context.getMergedJobDataMap();
         UserDTO user = (UserDTO) jobDataMap.get(USER_KEY);
         ChangeRequestSearchRequest searchRequest = (ChangeRequestSearchRequest) jobDataMap.get(SEARCH_REQUEST);
-        String email = (String) jobDataMap.get(JOB_DATA_KEY_EMAIL);
-        List<Long> acbIds = getAcbsFromJobContext(context);
         List<ChangeRequestSearchResult> searchResults = null;
 
-        if (!StringUtils.isEmpty(email) && !CollectionUtils.isEmpty(acbIds)) {
-            LOGGER.info("No user specified. Job will send email to " + email
-                    + " with change requests for ACBs " + acbIds.stream().map(acbId -> acbId.toString()).collect(Collectors.joining(",")));
-            searchRequest = getDefaultSearchRequest();
-            searchRequest.setAcbIds(acbIds.stream().collect(Collectors.toSet()));
-        } else if (user != null) {
+        if (user != null) {
             LOGGER.info("Change Requests matching the search request will be sent to " + user.getEmail());
             if (searchRequest == null) {
                 searchRequest = getDefaultSearchRequest();
             }
         } else {
             LOGGER.fatal("The provided job context did not have enough information to run the job. "
-                    + "An email and ACBs must be provided OR a User object.");
+                    + "A User object must be provided.");
         }
 
         try {
@@ -128,40 +125,33 @@ public class ChangeRequestReportEmailJob  extends QuartzJob {
             LOGGER.catching(ex);
         }
 
-        if (!CollectionUtils.isEmpty(searchResults)) {
-            LOGGER.info("Found " + searchResults.size() + " change requests matching the search parameters for the job.");
-            //get all change request details for the search results and stream them to a file
-            initializeExecutorService();
-            try (ChangeRequestPresenter crPresenter = new ChangeRequestPresenter(LOGGER)) {
-                initializeTempFile();
-                crPresenter.open(tempCsvFile);
-                List<CompletableFuture<Void>> crFutures = getAllChangeRequestFutures(searchResults, crPresenter);
-                CompletableFuture<Void> combinedFutures = CompletableFuture
-                        .allOf(crFutures.toArray(new CompletableFuture[crFutures.size()]));
+        LOGGER.info("Found " + searchResults.size() + " change requests matching the search parameters for the job.");
+        try (ChangeRequestCsvPresenter attestationPresenter = new DownloadableAttestationPresenter(LOGGER);
+                ChangeRequestCsvPresenter demographicPresenter = new DownloadableDemographicsPresenter(LOGGER)) {
+            initializeTempFiles();
+            attestationPresenter.open(tempAttestationFile);
+            demographicPresenter.open(tempDemographicFile);
 
-                //TODO: is the .get() still necessary?
-                // This is not blocking - presumably because the job executes using it's own ExecutorService
-                // This is necessary so that the system can indicate that the job and it's threads are still running
-                combinedFutures.get();
-
-                //send the email with the file attached
-                sendEmail(context, searchRequest);
-            } catch (Exception e) {
-                LOGGER.catching(e);
-            }
-
+            Integer threadCount = 1;
             try {
-                //has to happen in a separate try block because of the presenter
-                //using auto-close - can't delete the file until it is closed by the presenter
-                cleanupTempFiles();
-            } catch (Exception ex) {
-                LOGGER.error(ex.getMessage(), ex);
-            } finally {
-                executorService.shutdown();
+                threadCount = Integer.parseInt(executorThreadCountForQuartzJobs);
+            } catch (NumberFormatException ex) {
+                LOGGER.error("Could not initialize thread count from '" + executorThreadCountForQuartzJobs + "'. Defaulting to 1.");
             }
-        } else {
-            LOGGER.info("Found 0 change requests matching the search parameters for the job.");
+            crPresentationService = new ChangeRequestDetailsPresentationService(changeRequestManager, threadCount, LOGGER);
+            crPresentationService.present(searchResults,
+                    Stream.of(attestationPresenter, demographicPresenter).toList());
+
+        } catch (Exception e) {
+            LOGGER.catching(e);
         }
+
+        try {
+            sendEmail(context, searchRequest);
+        } catch (Exception ex) {
+            LOGGER.error("Unable to send email.", ex);
+        }
+
         LOGGER.info("********* Completed the Change Request Report Email job *********");
     }
 
@@ -180,11 +170,13 @@ public class ChangeRequestReportEmailJob  extends QuartzJob {
         throws ValidationException {
         LOGGER.info("Getting all change requests...");
         List<ChangeRequestSearchResult> searchResults = new ArrayList<ChangeRequestSearchResult>();
+        LOGGER.info(searchRequest.toString());
         ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
         searchResults.addAll(searchResponse.getResults());
-        while (searchResponse.getRecordCount() > searchResponse.getResults().size()) {
+        while (searchResponse.getRecordCount() > searchResults.size()) {
             searchRequest.setPageSize(searchResponse.getPageSize());
             searchRequest.setPageNumber(searchResponse.getPageNumber() + 1);
+            LOGGER.info(searchRequest.toString());
             searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
             searchResults.addAll(searchResponse.getResults());
         }
@@ -192,44 +184,27 @@ public class ChangeRequestReportEmailJob  extends QuartzJob {
         return searchResults;
     }
 
-    private List<CompletableFuture<Void>> getAllChangeRequestFutures(List<ChangeRequestSearchResult> changeRequests,
-            ChangeRequestPresenter crPresenter) {
-        List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
-        for (ChangeRequestSearchResult changeRequest : changeRequests) {
-            futures.add(CompletableFuture
-                    .supplyAsync(() -> getChangeRequestDetails(changeRequest.getId()), executorService)
-                    .thenAccept(crDetails -> crDetails.ifPresent(cr -> addToCsvFile(crPresenter, cr))));
-        }
-        return futures;
-    }
-
-    private void addToCsvFile(ChangeRequestPresenter crPresenter, ChangeRequest changeRequest) {
-        try {
-            crPresenter.add(changeRequest);
-        } catch (IOException e) {
-            LOGGER.error(String.format("Could not write change request to CSV file: %s", changeRequest.getId()), e);
-        }
-    }
-
-    private Optional<ChangeRequest> getChangeRequestDetails(Long changeRequestId) {
-        try {
-            return Optional.of(changeRequestManager.getChangeRequest(changeRequestId));
-        } catch (EntityRetrievalException e) {
-            LOGGER.error(String.format("Could not retrieve changeRequest: %s", changeRequestId), e);
-            return Optional.empty();
-        }
-    }
-
     private void sendEmail(JobExecutionContext context, ChangeRequestSearchRequest searchRequest) throws EmailNotSentException, IOException {
-        String email = context.getMergedJobDataMap().getString(JOB_DATA_KEY_EMAIL);
+        UserDTO user = (UserDTO) context.getMergedJobDataMap().get(USER_KEY);
+        String email = user.getEmail();
+
         LOGGER.info("Sending email to: " + email);
         chplEmailFactory.emailBuilder()
                 .recipient(email)
                 .subject(changeRequestsReportMessageSubject)
                 .htmlMessage(createHtmlMessage(context, searchRequest))
-                .fileAttachments(Arrays.asList(tempCsvFile))
+                .fileAttachments(getAttachments())
                 .sendEmail();
         LOGGER.info("Completed Sending email to: " + email);
+    }
+
+    private List<File> getAttachments() {
+        List<File> attachments = new ArrayList<File>();
+        attachments.add(tempAttestationFile);
+        if (ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST)) {
+            attachments.add(tempDemographicFile);
+        }
+        return attachments;
     }
 
     private String createHtmlMessage(JobExecutionContext context, ChangeRequestSearchRequest searchRequest) {
@@ -297,67 +272,30 @@ public class ChangeRequestReportEmailJob  extends QuartzJob {
         return html;
     }
 
-    private void initializeTempFile() throws IOException {
+    private void initializeTempFiles() throws IOException {
         File downloadFolder = getDownloadFolder();
         Path tempDirBasePath = Paths.get(downloadFolder.getAbsolutePath());
         Path tempDir = Files.createTempDirectory(tempDirBasePath, TEMP_DIR_NAME);
+
         this.tempDirectory = tempDir.toFile();
+        this.tempDirectory.deleteOnExit();
 
-        Path csvPath = Files.createTempFile(tempDir, changeRequestsReportFilename, ".csv");
-        tempCsvFile = csvPath.toFile();
-    }
+        Path attestationFilePath = Files.createTempFile(tempDir, changeRequestsReportAttestationFilename, ".csv");
+        tempAttestationFile = attestationFilePath.toFile();
 
-    private void cleanupTempFiles() {
-        LOGGER.info("Deleting temporary files.");
-        if (tempCsvFile != null && tempCsvFile.exists()) {
-            tempCsvFile.delete();
-        } else {
-            LOGGER.warn("Temp change request report file was null and could not be deleted.");
-        }
-
-        if (tempDirectory != null && tempDirectory.exists()) {
-            tempDirectory.delete();
-        } else {
-            LOGGER.warn("Temp directory for change request report file was null and could not be deleted.");
-        }
+        Path demographicFilePath = Files.createTempFile(tempDir, changeRequestsReportDemographicFilename, ".csv");
+        tempDemographicFile = demographicFilePath.toFile();
     }
 
     private void setSecurityContext(UserDTO user) {
-        if (user == null) {
-            JWTAuthenticatedUser adminUser = new JWTAuthenticatedUser();
-            adminUser.setFullName("Administrator");
-            adminUser.setId(User.ADMIN_USER_ID);
-            adminUser.setFriendlyName("Admin");
-            adminUser.setSubjectName("admin");
-            adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+        JWTAuthenticatedUser jobUser = new JWTAuthenticatedUser();
+        jobUser.setFullName(user.getFullName());
+        jobUser.setId(user.getId());
+        jobUser.setFriendlyName(user.getFriendlyName());
+        jobUser.setSubjectName(user.getUsername());
+        jobUser.getPermissions().add(user.getPermission().getGrantedPermission());
 
-            SecurityContextHolder.getContext().setAuthentication(adminUser);
-            SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
-        } else {
-            JWTAuthenticatedUser jobUser = new JWTAuthenticatedUser();
-            jobUser.setFullName(user.getFullName());
-            jobUser.setId(user.getId());
-            jobUser.setFriendlyName(user.getFriendlyName());
-            jobUser.setSubjectName(user.getUsername());
-            jobUser.getPermissions().add(user.getPermission().getGrantedPermission());
-
-            SecurityContextHolder.getContext().setAuthentication(jobUser);
-            SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
-        }
-    }
-
-    private List<Long> getAcbsFromJobContext(JobExecutionContext jobContext) {
-        return Arrays.asList(jobContext.getMergedJobDataMap().getString("acb")
-                .split(SchedulerManager.DATA_DELIMITER)).stream()
-                .map(acbIdAsString -> Long.parseLong(acbIdAsString))
-                .collect(Collectors.toList());
-    }
-
-    private void initializeExecutorService() {
-        executorService = Executors.newFixedThreadPool(getThreadCountForJob());
-    }
-
-    private Integer getThreadCountForJob() throws NumberFormatException {
-        return Integer.parseInt(env.getProperty("executorThreadCountForQuartzJobs"));
+        SecurityContextHolder.getContext().setAuthentication(jobUser);
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 }

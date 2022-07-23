@@ -8,6 +8,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
 import gov.healthit.chpl.util.LocalDateTimeDeserializer;
 import gov.healthit.chpl.util.LocalDateTimeSerializer;
 import lombok.AllArgsConstructor;
@@ -35,7 +36,7 @@ public class ChangeRequestSearchResult implements Serializable {
     private LocalDateTime submittedDateTime;
 
     public Boolean isAttestation() {
-        return this.changeRequestType.getName().equalsIgnoreCase("Developer Attestation Change Request");
+        return this.changeRequestType.getName().equalsIgnoreCase(ChangeRequestType.ATTESTATION_TYPE);
     }
 
     @Getter

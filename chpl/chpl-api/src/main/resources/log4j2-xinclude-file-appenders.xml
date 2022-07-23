@@ -612,9 +612,9 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
-    <RollingFile name="changeRequestReportJob"
-        fileName="${logDir}/scheduler/changeRequestReportJob.log"
-        filePattern="${logDir}/scheduler/history/changeRequestReportJob-%d{yyyy-MM-dd}.log"
+    <RollingFile name="changeRequestsReportJob"
+        fileName="${logDir}/scheduler/changeRequestsReportJob.log"
+        filePattern="${logDir}/scheduler/history/changeRequestsReportJob-%d{yyyy-MM-dd}.log"
         filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>

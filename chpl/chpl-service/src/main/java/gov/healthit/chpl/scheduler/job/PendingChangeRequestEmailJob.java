@@ -197,7 +197,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         try {
             cr = changeRequestDAO.get(crSearchResult.getId());
         } catch (EntityRetrievalException ex) {
-            LOGGER.error("Cannot find change request with ID " + cr.getId());
+            LOGGER.error("Cannot find change request with ID " + crSearchResult.getId());
             return;
         }
 

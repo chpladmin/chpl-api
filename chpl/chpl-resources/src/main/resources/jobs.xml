@@ -836,22 +836,12 @@
         </job>
 
         <job>
-            <name>Change Requests Report</name>
-            <group>chplJobs</group>
+            <name>changeRequestsReport</name>
+            <group>chplBackgroundJobs</group>
             <description>Sends the Change Requests Report</description>
             <job-class>gov.healthit.chpl.scheduler.job.changerequest.ChangeRequestReportEmailJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
-                </entry>
-                <entry>
-                    <key>acbSpecific</key>
-                    <value>true</value>
-                </entry>
-            </job-data-map>
         </job>
 
         <job>

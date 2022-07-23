@@ -108,7 +108,7 @@ public class ChangeRequestSearchManager {
         ChplOneTimeTrigger changeRequestsReportTrigger = new ChplOneTimeTrigger();
         ChplJob changeRequestsReportJob = new ChplJob();
         changeRequestsReportJob.setName(ChangeRequestReportEmailJob.JOB_NAME);
-        changeRequestsReportJob.setGroup(SchedulerManager.CHPL_JOBS_KEY);
+        changeRequestsReportJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(ChangeRequestReportEmailJob.USER_KEY, jobUser);
         jobDataMap.put(ChangeRequestReportEmailJob.SEARCH_REQUEST, searchRequest);
