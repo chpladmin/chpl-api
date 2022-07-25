@@ -74,7 +74,8 @@ public class ComplaintsReportCsvCreator {
     private List<String> getHeaderRow() {
         return Arrays.asList(
                 "Complaint ID",
-                "ONC-ACB Complainant Type Name",
+                "ONC-ACB",
+                "Complainant Type Name",
                 "Complainant Type - Other",
                 "ONC Complaint ID",
                 "ONC-ACB Complaint ID",
@@ -218,6 +219,7 @@ public class ComplaintsReportCsvCreator {
 
     private List<String> getComplaintFields(ComplaintsReportItem report) {
         return Arrays.asList(report.getComplaint().getId().toString(),
+                report.getComplaint().getCertificationBody().getName(),
                 report.getComplaint().getComplainantType() != null ? report.getComplaint().getComplainantType().getName() : "",
                 report.getComplaint().getComplainantTypeOther(),
                 report.getComplaint().getOncComplaintId(),
