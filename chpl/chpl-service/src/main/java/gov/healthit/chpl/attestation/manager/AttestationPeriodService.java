@@ -72,6 +72,23 @@ public class AttestationPeriodService {
                 .getExceptionEnd();
     }
 
+    public LocalDate getCurrentExceptionEndDateForDeveloper(Long developerId) {
+        AttestationPeriodDeveloperException periodException = attestationDAO.getCurrentAttestationPeriodDeveloperException(developerId);
+        if (periodException != null) {
+            return periodException.getExceptionEnd();
+        } else {
+            return null;
+        }
+    }
+
+    public AttestationPeriodDeveloperException getCurrentAttestationPeriodDeveloperExceptionForDeveloper(Long developerId) {
+        return attestationDAO.getCurrentAttestationPeriodDeveloperException(developerId);
+    }
+
+    public AttestationPeriodDeveloperException getCurrentAttestationPeriodDeveloperException(Long developerId) {
+        return attestationDAO.getCurrentAttestationPeriodDeveloperException(developerId);
+    }
+
     private AttestationPeriod getMostRecentPastAttestationPeriodForDeveloperWrtExceptions(Long developerId) {
         AttestationPeriod mostRecentPeriod = getMostRecentPastAttestationPeriod();
         if (mostRecentPeriod == null) {
@@ -84,5 +101,16 @@ public class AttestationPeriodService {
         }
 
         return mostRecentPeriod;
+    }
+
+    public AttestationPeriod getSubmittableAttestationPeriod(Long developerId) {
+        AttestationPeriodDeveloperException apde = attestationDAO.getCurrentAttestationPeriodDeveloperException(developerId);
+        if (apde != null
+              && (apde.getExceptionEnd().isEqual(LocalDate.now())
+              || apde.getExceptionEnd().isAfter(LocalDate.now()))) {
+          return apde.getPeriod();
+        }
+
+        return getMostRecentPastAttestationPeriod();
     }
 }

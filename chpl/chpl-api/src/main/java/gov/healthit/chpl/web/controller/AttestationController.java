@@ -1,6 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,11 +37,23 @@ public class AttestationController {
 
     @Operation(summary = "Get the list of Attestation Conditions, Attestations, and Valid Responses",
             description = "Can be used to dynamically generate the Attestion form.",
+            deprecated = true,
             security = {@SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/form",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
+    @Deprecated
     public AttestationForm getAttestationForm() {
+        return attestationManager.getAttestationForm();
+    }
+
+    @Operation(summary = "Get the list of Attestation Conditions, Attestations, and Valid Responses for an Attestation period",
+            description = "Can be used to dynamically generate the Attestion form.",
+            security = {@SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+    @RequestMapping(value = "/periods/{periodId}/form",
+            method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public AttestationForm getAttestationFormByPeriod(@PathVariable("periodId") Long periodId) {
         return attestationManager.getAttestationForm();
     }
 }

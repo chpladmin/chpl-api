@@ -20,6 +20,7 @@ import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
 import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
+import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestAttestationDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
@@ -49,6 +50,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private ChangeRequestAttestationDAO crAttesttionDAO;
     private ChplEmailFactory chplEmailFactory;
     private AttestationManager attestationManager;
+    private AttestationPeriodService attestationPeriodService;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
     private UserDAO userDAO;
     private DeveloperDAO developerDao;
@@ -96,12 +98,15 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Autowired
     public ChangeRequestAttestationService(ChangeRequestDAO crDAO, ChangeRequestAttestationDAO crAttesttionDAO,
             UserDeveloperMapDAO userDeveloperMapDAO, AttestationManager attestationManager,
-            ChplEmailFactory chplEmailFactory, ChplHtmlEmailBuilder chplHtmlEmailBuilder,
-            UserDAO userDAO, DeveloperDAO developerDao, ActivityManager activityManager) {
+            AttestationPeriodService attestationPeriodService, ChplEmailFactory chplEmailFactory,
+            ChplHtmlEmailBuilder chplHtmlEmailBuilder, UserDAO userDAO, DeveloperDAO developerDao,
+            ActivityManager activityManager) {
+
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crAttesttionDAO = crAttesttionDAO;
         this.attestationManager = attestationManager;
+        this.attestationPeriodService = attestationPeriodService;
         this.chplEmailFactory = chplEmailFactory;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
         this.userDAO = userDAO;
@@ -370,7 +375,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     }
 
     private AttestationPeriod getAttestationPeriod(ChangeRequest cr) {
-        return attestationManager.getMostRecentPastAttestationPeriod();
+        return attestationPeriodService.getSubmittableAttestationPeriod(cr.getDeveloper().getId());
     }
 
     private UserDTO getUserById(Long userId) throws UserRetrievalException {
