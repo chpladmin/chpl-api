@@ -237,7 +237,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "LEFT JOIN FETCH dev.contact "
                 + "LEFT JOIN FETCH dev.statusEvents statusEvents "
                 + "LEFT JOIN FETCH statusEvents.developerStatus "
-                + "LEFT JOIN FETCH dev.publicAttestations devAtt "
+                + "LEFT JOIN FETCH dev.attestations devAtt "
                 + "LEFT JOIN FETCH devAtt.period per "
                 + "LEFT JOIN FETCH dev.certificationBodyMaps devAcbMaps "
                 + "LEFT JOIN FETCH devAcbMaps.certificationBody devAcb "
