@@ -79,9 +79,10 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
         List<FormItem> items = changeRequestAttestationSubmission.getForm().extractFlatFormItems();
         items.stream()
                 .forEach(fi -> {
-                    findAddedResponses(fi.getSubmittedResponses(), responseEntities).stream()
+
+                    findAddedResponses(fi.getSubmittedResponses(), filterByFormItemId(fi.getId(), responseEntities)).stream()
                             .forEach(resp -> {
-                                LOGGER.info("Adding response: " + resp.getId());
+                                LOGGER.info("Question: {} Adding response: {}", fi.getQuestion().getId(), resp.getResponse());
                                 create(ChangeRequestAttestationSubmissionResponseEntity.builder()
                                         .changeRequestAttestationSubmissionId(entity.getId())
                                         .formItem(FormItemEntity.builder()
@@ -99,7 +100,7 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
 
                     findRemovedResponses(fi.getSubmittedResponses(), filterByFormItemId(fi.getId(), responseEntities)).stream()
                             .forEach(responseEntity -> {
-                                LOGGER.info("Removing response: " + responseEntity.getId());
+                                LOGGER.info("Question: {} Removing response: {}", fi.getQuestion().getId(), responseEntity.getResponse().getResponse());
                                 responseEntity.setDeleted(true);
                                 responseEntity.setLastModifiedUser(AuthUtil.getAuditId());
                                 update(responseEntity);
