@@ -103,7 +103,7 @@ import gov.healthit.chpl.web.controller.results.SvapResults;
 import gov.healthit.chpl.web.controller.results.SystemTriggerResults;
 import gov.healthit.chpl.web.controller.results.TestingLabResults;
 
-@Ignore
+
 public class DeprecatedFieldExplorerTest {
 
     private DeprecatedFieldExplorer deprecatedFieldExplorer;
@@ -852,6 +852,9 @@ public class DeprecatedFieldExplorerTest {
         assertEquals(0, deprecatedFieldNames.size());
     }
 
+    //This test does not work due to the recursive nature of formItem -> childFormItems
+    //This test ends up in an endless loop and never finishes
+    @Ignore
     @Test
     public void findDeprecatedFields_DeveloperAttestationSubmissionResults() {
         Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(DeveloperAttestationSubmissionResults.class);
