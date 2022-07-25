@@ -290,7 +290,7 @@ public class ChangeRequestSearchRequestValidatorTest {
     @Test
     public void validate_invalidTypeName_addsError() {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
-            .typeNames(Stream.of("Sandwich").collect(Collectors.toSet()))
+            .changeRequestTypeNames(Stream.of("Sandwich").collect(Collectors.toSet()))
             .build();
         Mockito.when(changeRequestManager.getChangeRequestTypes())
             .thenReturn(Stream.of(new KeyValueModel(1L, "Demographic"), new KeyValueModel(2L, "Attestation")).collect(Collectors.toSet()));
@@ -308,7 +308,7 @@ public class ChangeRequestSearchRequestValidatorTest {
     @Test
     public void validate_invalidTypeNames_addsErrors() {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
-            .typeNames(Stream.of("Sandwich", "Horse").collect(Collectors.toSet()))
+            .changeRequestTypeNames(Stream.of("Sandwich", "Horse").collect(Collectors.toSet()))
             .build();
         Mockito.when(changeRequestManager.getChangeRequestTypes())
             .thenReturn(Stream.of(new KeyValueModel(1L, "Demographic"), new KeyValueModel(2L, "Attestation")).collect(Collectors.toSet()));
@@ -327,7 +327,7 @@ public class ChangeRequestSearchRequestValidatorTest {
     @Test
     public void validate_emptyTypeNames_noError() {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
-            .typeNames(Collections.EMPTY_SET)
+            .changeRequestTypeNames(Collections.EMPTY_SET)
             .build();
         Mockito.when(changeRequestManager.getChangeRequestTypes())
             .thenReturn(Stream.of(new KeyValueModel(1L, "Demographic"), new KeyValueModel(2L, "Attestation")).collect(Collectors.toSet()));
@@ -342,7 +342,7 @@ public class ChangeRequestSearchRequestValidatorTest {
     @Test
     public void validate_nullTypeNames_noError() {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder().build();
-        request.setTypeNames(null);
+        request.setChangeRequestTypeNames(null);
         Mockito.when(changeRequestManager.getChangeRequestTypes())
             .thenReturn(Stream.of(new KeyValueModel(1L, "Demographic"), new KeyValueModel(2L, "Attestation")).collect(Collectors.toSet()));
 
@@ -356,7 +356,7 @@ public class ChangeRequestSearchRequestValidatorTest {
     @Test
     public void validate_validTypeName_noError() {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
-                .typeNames(Stream.of("demographic").collect(Collectors.toSet()))
+                .changeRequestTypeNames(Stream.of("demographic").collect(Collectors.toSet()))
                 .build();
         Mockito.when(changeRequestManager.getChangeRequestTypes())
             .thenReturn(Stream.of(new KeyValueModel(1L, "Demographic"), new KeyValueModel(2L, "Attestation")).collect(Collectors.toSet()));
@@ -371,7 +371,7 @@ public class ChangeRequestSearchRequestValidatorTest {
     @Test
     public void validate_validTypeNames_noErrors() {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
-                .typeNames(Stream.of("DemoGRAPHic", "attestaTion").collect(Collectors.toSet()))
+                .changeRequestTypeNames(Stream.of("DemoGRAPHic", "attestaTion").collect(Collectors.toSet()))
                 .build();
         Mockito.when(changeRequestManager.getChangeRequestTypes())
             .thenReturn(Stream.of(new KeyValueModel(1L, "Demographic"), new KeyValueModel(2L, "Attestation")).collect(Collectors.toSet()));

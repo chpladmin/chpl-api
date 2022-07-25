@@ -127,7 +127,7 @@ public class ChangeRequestSearchManager {
             .filter(changeRequest -> matchesDeveloperId(changeRequest, searchRequest.getDeveloperId()))
             .filter(changeRequest -> matchesAcbIds(changeRequest, searchRequest.getAcbIds()))
             .filter(changeRequest -> matchesStatusNames(changeRequest, searchRequest.getCurrentStatusNames()))
-            .filter(changeRequest -> matchesTypeNames(changeRequest, searchRequest.getTypeNames()))
+            .filter(changeRequest -> matchesTypeNames(changeRequest, searchRequest.getChangeRequestTypeNames()))
             .filter(changeRequest -> matchesCurrentStatusChangeDateTimeRange(changeRequest, searchRequest.getCurrentStatusChangeDateTimeStart(), searchRequest.getCurrentStatusChangeDateTimeEnd()))
             .filter(changeRequest -> matchesSubmittedDateTimeRange(changeRequest, searchRequest.getSubmittedDateTimeStart(), searchRequest.getSubmittedDateTimeEnd()))
             .collect(Collectors.toList());

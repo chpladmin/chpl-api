@@ -5,7 +5,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import gov.healthit.chpl.util.CommaDelimitedStringToSetOfLongs;
+import gov.healthit.chpl.util.CommaDelimitedStringToSetOfStrings;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,13 +29,16 @@ public class ChangeRequestSearchRequest implements Serializable {
     @JsonIgnore
     private String developerIdString;
     private Long developerId;
+    @JsonDeserialize(using = CommaDelimitedStringToSetOfLongs.class)
     @JsonIgnore
     @Builder.Default
     private Set<Long> acbIds = new HashSet<Long>();
+    @JsonDeserialize(using = CommaDelimitedStringToSetOfStrings.class)
     @Builder.Default
     private Set<String> currentStatusNames = new HashSet<String>();
+    @JsonDeserialize(using = CommaDelimitedStringToSetOfStrings.class)
     @Builder.Default
-    private Set<String> typeNames = new HashSet<String>();
+    private Set<String> changeRequestTypeNames = new HashSet<String>();
     private String currentStatusChangeDateTimeStart;
     private String currentStatusChangeDateTimeEnd;
     private String submittedDateTimeStart;

@@ -113,7 +113,7 @@ public class ChangeRequestSearchRequestValidator {
     }
 
     private Set<String> getTypeNamesErrors(ChangeRequestSearchRequest request) {
-        if (CollectionUtils.isEmpty(request.getTypeNames())) {
+        if (CollectionUtils.isEmpty(request.getChangeRequestTypeNames())) {
             return Collections.emptySet();
         }
 
@@ -124,7 +124,7 @@ public class ChangeRequestSearchRequestValidator {
         } else {
             allChangeRequestTypeNames = Collections.emptySet();
         }
-        return request.getTypeNames().stream()
+        return request.getChangeRequestTypeNames().stream()
             .filter(typeName -> !isInSet(typeName, allChangeRequestTypeNames))
             .map(typeName -> msgUtil.getMessage("search.changeRequest.typeName.invalid", typeName))
             .collect(Collectors.toSet());

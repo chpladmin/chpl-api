@@ -566,7 +566,7 @@ public class ChangeRequestSearchManagerTest {
         Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
 
         ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
-            .typeNames(Stream.of("Attestation").collect(Collectors.toSet()))
+            .changeRequestTypeNames(Stream.of("Attestation").collect(Collectors.toSet()))
             .pageNumber(0)
             .pageSize(10)
         .build();
@@ -589,7 +589,7 @@ public class ChangeRequestSearchManagerTest {
         Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
 
         ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
-            .typeNames(Stream.of("Demographic", "Attestation").collect(Collectors.toSet()))
+            .changeRequestTypeNames(Stream.of("Demographic", "Attestation").collect(Collectors.toSet()))
             .pageNumber(0)
             .pageSize(10)
         .build();

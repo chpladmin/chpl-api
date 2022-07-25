@@ -123,7 +123,7 @@ public class ChangeRequestController {
                 .searchTerm(searchTerm.trim())
                 .developerIdString(developerId)
                 .currentStatusNames(convertToSetWithDelimeter(currentStatusNamesDelimited, ","))
-                .typeNames(convertToSetWithDelimeter(changeRequestTypeNamesDelimited, ","))
+                .changeRequestTypeNames(convertToSetWithDelimeter(changeRequestTypeNamesDelimited, ","))
                 .currentStatusChangeDateTimeStart(currentStatusChangeDateTimeStart.trim())
                 .currentStatusChangeDateTimeEnd(currentStatusChangeDateTimeEnd.trim())
                 .submittedDateTimeStart(submittedDateTimeStart)
