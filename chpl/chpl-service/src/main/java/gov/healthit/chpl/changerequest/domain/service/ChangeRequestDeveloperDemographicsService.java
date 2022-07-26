@@ -28,6 +28,8 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
+import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 
 @Component
 public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDetailsService<ChangeRequestDeveloperDemographics> {
@@ -113,6 +115,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     }
 
     @Override
+    @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#cr.developer.id")
     protected ChangeRequest execute(ChangeRequest cr)
             throws EntityRetrievalException, EntityCreationException {
         ChangeRequestDeveloperDemographics crDevDetails = (ChangeRequestDeveloperDemographics) cr.getDetails();

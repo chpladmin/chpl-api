@@ -29,6 +29,8 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.exception.JiraRequestFailedException;
+import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
+import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.validation.compliance.DirectReviewValidator;
 import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.CacheManager;
@@ -118,19 +120,7 @@ public class DirectReviewCachingService {
             drValidator.review(dr);
             if (CollectionUtils.isEmpty(dr.getErrorMessages())) {
                 logger.info("Adding " + dr.getJiraKey() + " for Developer " + dr.getDeveloperId() + " to Direct Review Cache");
-                if (drCache.get(dr.getDeveloperId()) != null) {
-                    Element devDirectReviewElement = drCache.get(dr.getDeveloperId());
-                    Object devDirectReviewsObj = devDirectReviewElement.getObjectValue();
-                    if (devDirectReviewsObj instanceof List<?>) {
-                        List<DirectReview> devDirectReviews = (List<DirectReview>) devDirectReviewsObj;
-                        devDirectReviews.add(dr);
-                    }
-                } else {
-                    List<DirectReview> devDirectReviews = new ArrayList<DirectReview>();
-                    devDirectReviews.add(dr);
-                    Element devDirectReviewElement = new Element(dr.getDeveloperId(), devDirectReviews);
-                    drCache.put(devDirectReviewElement);
-                }
+                addDirectReviewToMap(drCache, dr);
             } else {
                 logger.warn("Not adding Direct Review " + dr.getJiraKey() + " to the cache. "
                         + "The following error(s) were found: " + System.lineSeparator()
@@ -138,6 +128,25 @@ public class DirectReviewCachingService {
                             .map(errMsg -> "\t" + errMsg)
                             .collect(Collectors.joining(System.lineSeparator())));
             }
+        }
+    }
+
+    //This is PUBLIC so that AOP/aspectj works correctly.  Aspectj supports weaving for private methods - just need to figure
+    //out how to make it work.
+    @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#dr.developerId")
+    public void addDirectReviewToMap(Ehcache drCache, DirectReview dr) {
+        if (drCache.get(dr.getDeveloperId()) != null) {
+            Element devDirectReviewElement = drCache.get(dr.getDeveloperId());
+            Object devDirectReviewsObj = devDirectReviewElement.getObjectValue();
+            if (devDirectReviewsObj instanceof List<?>) {
+                List<DirectReview> devDirectReviews = (List<DirectReview>) devDirectReviewsObj;
+                devDirectReviews.add(dr);
+            }
+        } else {
+            List<DirectReview> devDirectReviews = new ArrayList<DirectReview>();
+            devDirectReviews.add(dr);
+            Element devDirectReviewElement = new Element(dr.getDeveloperId(), devDirectReviews);
+            drCache.put(devDirectReviewElement);
         }
     }
 
