@@ -599,6 +599,26 @@
             </Delete>
         </DefaultRolloverStrategy>
     </RollingFile>
+    <RollingFile name="sharedDataStoreJson"
+                 fileName="${logDir}/cache/sharedDataStore.json"
+                 filePattern="${logDir}/cache/history/sharedDataStore-%d{yyyy-MM-dd}.json"
+                 filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="sharedDataStore" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/cache/history" >
+                <IfFileName glob="sharedDataStore-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
     <RollingFile name="realWorldTestingUploadJobJson"
         fileName="${logDir}/scheduler/realWorldTestingUploadJob.json"
         filePattern="${logDir}/scheduler/history/realWorldTestingUploadJob-%d{yyyy-MM-dd}.json"

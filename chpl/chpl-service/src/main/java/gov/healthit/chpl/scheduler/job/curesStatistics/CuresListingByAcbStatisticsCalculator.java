@@ -171,7 +171,7 @@ public class CuresListingByAcbStatisticsCalculator {
     private CertifiedProductSearchDetails getDetails(Long id) {
         try {
             Long start = (new Date()).getTime();
-            CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetailsUsingCache(id);
+            CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(id);
             Long end = (new Date()).getTime();
             LOGGER.info("Retrieved Listing Details for " + id + " in " + (end - start) + "ms");
             return listing;

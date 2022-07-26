@@ -139,7 +139,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     private List<BrokenSurveillanceRulesDTO> processListing(Long listingId) {
         CertifiedProductSearchDetails listing;
         try {
-            listing = certifiedProductDetailsManager.getCertifiedProductDetailsUsingCache(listingId);
+            listing = certifiedProductDetailsManager.getCertifiedProductDetails(listingId);
             LOGGER.info(String.format("Complete retrieving CertifiedProductDetails for: %s", listingId));
             return brokenRules(listing);
         } catch (EntityRetrievalException e) {

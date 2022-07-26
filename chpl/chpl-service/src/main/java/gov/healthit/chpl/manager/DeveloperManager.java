@@ -57,6 +57,8 @@ import gov.healthit.chpl.manager.rules.developer.DeveloperValidationFactory;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
 import gov.healthit.chpl.scheduler.job.developer.MergeDeveloperJob;
+import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
+import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -204,6 +206,7 @@ public class DeveloperManager extends SecuredManager {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
+    @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#updatedDev.id")
     public Developer update(Developer updatedDev, boolean doUpdateValidations)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
         Developer beforeDev = getById(updatedDev.getId());
@@ -363,6 +366,7 @@ public class DeveloperManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
+    @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#oldDeveloper.id")
     public ChplOneTimeTrigger split(Developer oldDeveloper, Developer developerToCreate,
             List<Long> productIdsToMove) throws ValidationException, SchedulerException {
         // check developer fields for all valid values

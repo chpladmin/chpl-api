@@ -110,7 +110,7 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
 
     private Optional<CertifiedProductSearchDetails> getCertifiedProductDetails(Long id) {
         try {
-            return Optional.of(certifiedProductDetailsManager.getCertifiedProductDetailsUsingCache(id));
+            return Optional.of(certifiedProductDetailsManager.getCertifiedProductDetails(id));
         } catch (EntityRetrievalException e) {
             LOGGER.error("Could not retrieve certified product details for id: " + id, e);
             return Optional.empty();
