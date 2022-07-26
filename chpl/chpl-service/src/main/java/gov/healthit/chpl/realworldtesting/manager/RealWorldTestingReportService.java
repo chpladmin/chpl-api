@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -14,9 +15,13 @@ import org.springframework.stereotype.Service;
 
 import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.UserDeveloperMapDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -24,22 +29,26 @@ import gov.healthit.chpl.service.RealWorldTestingEligibility;
 import gov.healthit.chpl.service.RealWorldTestingEligiblityReason;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityService;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityServiceFactory;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Service
 public class RealWorldTestingReportService {
     private CertifiedProductDAO certifiedProductDAO;
+    private UserDeveloperMapDAO userDeveloperMapDao;
     private ErrorMessageUtil errorMsg;
     private Environment env;
     private CertificationStatusEventsService certificationStatusEventsService;
     private RealWorldTestingEligiblityServiceFactory rwtEligServiceFactory;
 
     @Autowired
-    public RealWorldTestingReportService(CertifiedProductDAO certifiedProductDAO, ErrorMessageUtil errorMsg, Environment env,
+    public RealWorldTestingReportService(CertifiedProductDAO certifiedProductDAO, UserDeveloperMapDAO userDeveloperMapDao,
+            ErrorMessageUtil errorMsg, Environment env,
             CertificationStatusEventsService certificationStatusEventsService, CertificationCriterionService certificationCriterionService,
             RealWorldTestingEligiblityServiceFactory rwtEligServiceFactory) {
 
         this.certifiedProductDAO = certifiedProductDAO;
+        this.userDeveloperMapDao = userDeveloperMapDao;
         this.errorMsg = errorMsg;
         this.env = env;
         this.certificationStatusEventsService = certificationStatusEventsService;
@@ -108,10 +117,12 @@ public class RealWorldTestingReportService {
                 .acbName(listing.getCertificationBodyName())
                 .chplProductNumber(listing.getChplProductNumber())
                 .currentStatus(currentStatus != null ? currentStatus.getStatus().getName() : "")
+                .certificationDate(DateUtil.toLocalDate(listing.getCertificationDate().getTime()))
                 .productName(listing.getProduct().getName())
                 .productId(listing.getProduct().getId())
                 .developerName(listing.getDeveloper().getName())
                 .developerId(listing.getDeveloper().getId())
+                .developerUsers(getDeveloperUsers(listing.getDeveloper()))
                 .rwtEligibilityYear(rwtElig.getEligibilityYear() != null ? rwtElig.getEligibilityYear() : null)
                 .ics(rwtElig.getReason().equals(RealWorldTestingEligiblityReason.ICS)
                         || rwtElig.getReason().equals(RealWorldTestingEligiblityReason.SELF_AND_ICS))
@@ -126,6 +137,31 @@ public class RealWorldTestingReportService {
         } else {
             return report;
         }
+    }
+
+    private List<String> getDeveloperUsers(Developer developer) {
+        List<UserDeveloperMapDTO> userDeveloperMaps = userDeveloperMapDao.getByDeveloperId(developer.getId());
+        if (CollectionUtils.isEmpty(userDeveloperMaps)) {
+            return null;
+        }
+        return userDeveloperMaps.stream()
+            .filter(udm -> udm.getUser() != null)
+            .map(udm -> formatUserData(udm.getUser()))
+            .collect(Collectors.toList());
+    }
+
+    private String formatUserData(UserDTO user) {
+        String userContactText = "";
+        if (!StringUtils.isEmpty(user.getFullName())) {
+            userContactText = user.getFullName();
+        }
+        if (!StringUtils.isEmpty(user.getEmail())) {
+            if (!StringUtils.isEmpty(userContactText)) {
+                userContactText += " ";
+            }
+            userContactText += "<" + user.getEmail() + ">";
+        }
+        return userContactText;
     }
 
     private RealWorldTestingReport addMessages(RealWorldTestingReport report) {
