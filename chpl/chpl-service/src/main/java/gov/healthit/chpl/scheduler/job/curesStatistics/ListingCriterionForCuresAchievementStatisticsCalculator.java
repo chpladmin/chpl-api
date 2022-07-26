@@ -124,7 +124,7 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
     private CertifiedProductSearchDetails getListingDetails(Long listingId) {
         CertifiedProductSearchDetails details = null;
         try {
-            details = cpdManager.getCertifiedProductDetailsUsingCache(listingId);
+            details = cpdManager.getCertifiedProductDetails(listingId);
         } catch (EntityRetrievalException ex) {
             LOGGER.error("Could not find listing with ID " + listingId, ex);
         }

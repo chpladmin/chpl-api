@@ -1,6 +1,7 @@
 package gov.healthit.chpl.sharedstore;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "sharedDataStoreLogger")
 public abstract class SharedStoreProvider<K, V> {
     public static final Integer UNLIMITED = -1;
     public static final Integer MAX_JSON_LENGTH = 200;
@@ -67,12 +68,25 @@ public abstract class SharedStoreProvider<K, V> {
         }
     }
 
-    private void remove(K key) {
+    public void remove(K key) {
         sharedStoreDAO.remove(getDomain(), key.toString());
+        LOGGER.info("Removed from store: {} {}", getDomain(), key.toString());
+    }
+
+    public void remove(List<K> keys) {
+        List<String> convertedKeys = keys.stream()
+                .map(key -> key.toString())
+                .toList();
+
+        sharedStoreDAO.remove(getDomain(), convertedKeys);
+        LOGGER.info("Removed from store: {} {}", getDomain(), keys.toString());
     }
 
     private boolean isExpired(SharedStore sharedData) {
-        return getTimeToLive().equals(UNLIMITED)
-                || sharedData.getPutDate().plusHours(getTimeToLive()).isBefore(LocalDateTime.now());
+        if (getTimeToLive().equals(UNLIMITED)) {
+            return false;
+        } else {
+            return sharedData.getPutDate().plusHours(getTimeToLive()).isBefore(LocalDateTime.now());
+        }
     }
 }

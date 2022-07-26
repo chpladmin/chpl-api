@@ -233,6 +233,9 @@ public class CertifiedProductManagerTest {
         Mockito.when(certifiedProductDetailsManager.getCertifiedProductDetails(ArgumentMatchers.anyLong()))
                 .thenReturn(getCertifiedProductSearchDetails());
 
+        Mockito.when(certifiedProductDetailsManager.getCertifiedProductDetailsNoCache(ArgumentMatchers.anyLong()))
+                .thenReturn(getCertifiedProductSearchDetails());
+
         Validator validator = Mockito.mock(Validator.class);
         Mockito.when(validatorFactory.getValidator(ArgumentMatchers.any(CertifiedProductSearchDetails.class)))
                 .thenReturn(validator);
