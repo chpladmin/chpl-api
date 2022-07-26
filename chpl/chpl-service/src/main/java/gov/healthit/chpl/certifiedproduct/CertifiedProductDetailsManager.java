@@ -19,7 +19,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.sharedstore.SharedListingStoreProvider;
+import gov.healthit.chpl.sharedstore.listing.SharedListingStoreProvider;
 import lombok.extern.log4j.Log4j2;
 
 @Component("certifiedProductDetailsManager")
@@ -60,11 +60,6 @@ public class CertifiedProductDetailsManager {
 
     @Transactional(readOnly = true)
     public CertifiedProductSearchDetails getCertifiedProductDetails(Long certifiedProductId) throws EntityRetrievalException {
-        return listingService.createCertifiedSearchDetails(certifiedProductId);
-    }
-
-    @Transactional(readOnly = true)
-    public CertifiedProductSearchDetails getCertifiedProductDetailsUsingCache(Long certifiedProductId) throws EntityRetrievalException {
         return sharedListingStoreProvider.get(certifiedProductId, () -> {
             try {
                 return listingService.createCertifiedSearchDetails(certifiedProductId);
@@ -73,6 +68,16 @@ public class CertifiedProductDetailsManager {
                 return null;
             }
         });
+    }
+
+    @Transactional(readOnly = true)
+    public CertifiedProductSearchDetails getCertifiedProductDetailsNoCache(Long certifiedProductId) throws EntityRetrievalException {
+        try {
+            return listingService.createCertifiedSearchDetails(certifiedProductId);
+        } catch (EntityRetrievalException e) {
+            LOGGER.error(e);
+            return null;
+        }
     }
 
     @Transactional(readOnly = true)

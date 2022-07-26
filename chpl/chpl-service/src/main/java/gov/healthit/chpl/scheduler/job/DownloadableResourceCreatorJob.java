@@ -79,7 +79,7 @@ public abstract class DownloadableResourceCreatorJob extends QuartzJob {
 
     protected Optional<CertifiedProductSearchDetails> getCertifiedProductSearchDetails(Long listingId) {
         try {
-            return Optional.of(certifiedProductDetailsManager.getCertifiedProductDetailsUsingCache(listingId));
+            return Optional.of(certifiedProductDetailsManager.getCertifiedProductDetails(listingId));
         } catch (EntityRetrievalException e) {
             logger.error(String.format("Could not retrieve listing: %s", listingId), e);
             return Optional.empty();
