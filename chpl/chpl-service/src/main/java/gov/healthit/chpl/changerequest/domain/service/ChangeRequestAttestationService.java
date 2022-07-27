@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmission;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
+import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestAttestationDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
@@ -44,6 +45,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private ChangeRequestDAO crDAO;
     private ChangeRequestAttestationDAO crAttestationDAO;
     private AttestationManager attestationManager;
+    private AttestationPeriodService attestationPeriodService;
     private UserDAO userDAO;
     private DeveloperDAO developerDAO;
     private ActivityManager activityManager;
@@ -56,12 +58,13 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Autowired
     public ChangeRequestAttestationService(ChangeRequestDAO crDAO, ChangeRequestAttestationDAO crAttestationDAO,
             UserDeveloperMapDAO userDeveloperMapDAO, AttestationManager attestationManager,
-            UserDAO userDAO, DeveloperDAO developerDAO, ActivityManager activityManager,
-            FormService formService, AttestationEmails attestationEmails) {
+            AttestationPeriodService attestationPeriodService, UserDAO userDAO, DeveloperDAO developerDAO,
+            ActivityManager activityManager, FormService formService, AttestationEmails attestationEmails) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crAttestationDAO = crAttestationDAO;
         this.attestationManager = attestationManager;
+        this.attestationPeriodService = attestationPeriodService;
         this.userDAO = userDAO;
         this.developerDAO = developerDAO;
         this.activityManager = activityManager;
@@ -194,7 +197,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     }
 
     private AttestationPeriod getAttestationPeriod(ChangeRequest cr) {
-        return attestationManager.getMostRecentPastAttestationPeriod();
+        return attestationPeriodService.getSubmittableAttestationPeriod(cr.getDeveloper().getId());
     }
 
     private UserDTO getUserById(Long userId) throws UserRetrievalException {
@@ -224,8 +227,6 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
             return form;
         } catch (EntityRetrievalException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
             return null;
         }
     }
