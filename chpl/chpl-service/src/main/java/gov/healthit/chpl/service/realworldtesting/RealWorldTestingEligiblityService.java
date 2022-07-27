@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.logging.log4j.Logger;
 
@@ -133,7 +134,9 @@ public class RealWorldTestingEligiblityService {
                         if (Integer.valueOf(cpParentDto.getIcsCode()) >= Integer.valueOf(cpChild.getIcsCode())) {
                             continue;
                         }
-                        if (listingIsInStatus(cpParentDto, CertificationStatusType.WithdrawnByDeveloper, logger)) {
+                        if (listingIsInStatuses(cpParentDto,
+                                Stream.of(CertificationStatusType.WithdrawnByDeveloper, CertificationStatusType.WithdrawnByAcb,
+                                        CertificationStatusType.WithdrawnByDeveloperUnderReview).toList(), logger)) {
                             //If parent is withdrawn continue with calculating its eligibility year.... Uh-oh - possible recursion...
                             RealWorldTestingEligibility parentEligibility = getRwtEligibilityYearForListing(cpParent.getId(), logger);
                             if (parentEligibility.getEligibilityYear() != null) {
@@ -154,12 +157,15 @@ public class RealWorldTestingEligiblityService {
         }
     }
 
-    private boolean listingIsInStatus(CertifiedProductDTO listing, CertificationStatusType certificationStatus, Logger logger) {
+    private boolean listingIsInStatuses(CertifiedProductDTO listing, List<CertificationStatusType> certificationStatuses, Logger logger) {
         boolean result = false;
         try {
             CertificationStatusEvent currentStatusEvent = certStatusService.getCurrentCertificationStatusEvent(listing.getId());
             logger.debug("Listing " + listing.getId() + " has current certification status of " + currentStatusEvent.getStatus().getName());
-            result = currentStatusEvent != null && currentStatusEvent.getStatus().getName().equals(certificationStatus.getName());
+            result = currentStatusEvent != null && certificationStatuses.stream()
+                    .map(status -> status.getName())
+                    .filter(statusName -> currentStatusEvent.getStatus().getName().equals(statusName))
+                    .findAny().isPresent();
         } catch (EntityRetrievalException ex) {
             logger.error("Unable to get current certification status event for listing  " + listing.getId(), ex);
             return result;
