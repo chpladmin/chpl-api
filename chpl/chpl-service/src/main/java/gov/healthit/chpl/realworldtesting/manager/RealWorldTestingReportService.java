@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -22,6 +23,7 @@ import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.UserDeveloperMapDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -41,6 +43,8 @@ public class RealWorldTestingReportService {
     private CertificationStatusEventsService certificationStatusEventsService;
     private RealWorldTestingEligiblityServiceFactory rwtEligServiceFactory;
 
+    private List<CertificationStatusType> withdrawnStatuses;
+
     @Autowired
     public RealWorldTestingReportService(CertifiedProductDAO certifiedProductDAO, UserDeveloperMapDAO userDeveloperMapDao,
             ErrorMessageUtil errorMsg, Environment env,
@@ -53,6 +57,8 @@ public class RealWorldTestingReportService {
         this.env = env;
         this.certificationStatusEventsService = certificationStatusEventsService;
         this.rwtEligServiceFactory = rwtEligServiceFactory;
+        withdrawnStatuses = Stream.of(CertificationStatusType.WithdrawnByDeveloper, CertificationStatusType.WithdrawnByAcb,
+                CertificationStatusType.WithdrawnByDeveloperUnderReview).toList();
     }
 
     public List<RealWorldTestingReport> getRealWorldTestingReports(List<Long> acbIds, Logger logger) {
@@ -165,7 +171,9 @@ public class RealWorldTestingReportService {
     }
 
     private RealWorldTestingReport addMessages(RealWorldTestingReport report) {
-        if (isRwtPlansEmpty(report)) {
+        if (isWithdrawn(report.getCurrentStatus())) {
+            report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.listingWithdrawnMessage"));
+        } else if (isRwtPlansEmpty(report)) {
             if (BooleanUtils.isTrue(report.getIcs())
                     && (arePlansLateWarning(report.getRwtEligibilityYear()) || arePlansLateError(report.getRwtEligibilityYear()))) {
                 report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.eligibleByIcs.warning",
@@ -196,6 +204,13 @@ public class RealWorldTestingReportService {
             }
         }
         return report;
+    }
+
+    private boolean isWithdrawn(String statusName) {
+        return withdrawnStatuses.stream()
+                .map(status -> status.getName())
+                .filter(sn -> sn.equalsIgnoreCase(statusName))
+                .findAny().isPresent();
     }
 
     private boolean arePlansLateWarning(Integer rwtEligYear) {
