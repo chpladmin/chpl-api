@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -57,8 +56,8 @@ public class RealWorldTestingReportService {
         this.env = env;
         this.certificationStatusEventsService = certificationStatusEventsService;
         this.rwtEligServiceFactory = rwtEligServiceFactory;
-        withdrawnStatuses = Stream.of(CertificationStatusType.WithdrawnByDeveloper, CertificationStatusType.WithdrawnByAcb,
-                CertificationStatusType.WithdrawnByDeveloperUnderReview).toList();
+        withdrawnStatuses = List.of(CertificationStatusType.WithdrawnByDeveloper, CertificationStatusType.WithdrawnByAcb,
+                CertificationStatusType.WithdrawnByDeveloperUnderReview);
     }
 
     public List<RealWorldTestingReport> getRealWorldTestingReports(List<Long> acbIds, Logger logger) {
