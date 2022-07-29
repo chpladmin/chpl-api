@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.csv.CSVFormat;
@@ -72,9 +71,9 @@ public class CertificationIdCsvCreator {
     }
 
     private List<String> getHeaderRow(boolean includeProducts) {
-        List<String> headings = Arrays.asList(
-                "CMS ID",
-                "Creation Date");
+        List<String> headings = new ArrayList<String>();
+        headings.add("CMS ID");
+        headings.add("Creation Date");
         if (includeProducts) {
             headings.add("CHPL Product(s)");
         }

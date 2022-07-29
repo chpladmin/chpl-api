@@ -149,7 +149,7 @@ public class CertificationIdManager {
         ChplOneTimeTrigger complaintsReportTrigger = new ChplOneTimeTrigger();
         ChplJob complaintsReportJob = new ChplJob();
         complaintsReportJob.setName(CertificationIdEmailJob.JOB_NAME);
-        complaintsReportJob.setGroup(SchedulerManager.CHPL_JOBS_KEY);
+        complaintsReportJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(CertificationIdEmailJob.USER_KEY, jobUser);
         complaintsReportJob.setJobDataMap(jobDataMap);
