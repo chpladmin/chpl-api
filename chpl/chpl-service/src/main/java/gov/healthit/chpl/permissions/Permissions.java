@@ -10,6 +10,7 @@ import gov.healthit.chpl.permissions.domains.ActivityDomainPermissions;
 import gov.healthit.chpl.permissions.domains.AnnouncementDomainPermissions;
 import gov.healthit.chpl.permissions.domains.AttestationDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions;
+import gov.healthit.chpl.permissions.domains.CertificationIdDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertificationResultsDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions;
@@ -40,6 +41,7 @@ public class Permissions {
     public static final String CERTIFICATION_RESULTS = "CERTIFICATION_RESULTS";
     public static final String CERTIFIED_PRODUCT = "CERTIFIED_PRODUCT";
     public static final String CORRECTIVE_ACTION_PLAN = "CORRECTIVE_ACTION_PLAN";
+    public static final String CERTIFICATION_ID = "CERTIFICATION_ID";
     public static final String INVITATION = "INVITATION";
     public static final String PENDING_CERTIFIED_PRODUCT = "PENDING_CERTIFIED_PRODUCT";
     public static final String LISTING_UPLOAD = "LISTING_UPLOAD";
@@ -73,6 +75,7 @@ public class Permissions {
             CertificationResultsDomainPermissions certificationResultsDomainPermissions,
             CertifiedProductDomainPermissions certifiedProductDomainPermissions,
             CorrectiveActionPlanDomainPermissions correctiveActionPlanDomainPermissions,
+            CertificationIdDomainPermissions certificationIdDomainPermissions,
             InvitationDomainPermissions invitationDomainPermissions,
             PendingCertifiedProductDomainPermissions pendingCertifiedProductDomainPermissions,
             ListingUploadDomainPerissions listingUploadDomainPermissions,
@@ -100,6 +103,7 @@ public class Permissions {
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
         domainPermissions.put(CERTIFIED_PRODUCT, certifiedProductDomainPermissions);
         domainPermissions.put(CORRECTIVE_ACTION_PLAN, correctiveActionPlanDomainPermissions);
+        domainPermissions.put(CERTIFICATION_ID, certificationIdDomainPermissions);
         domainPermissions.put(INVITATION, invitationDomainPermissions);
         domainPermissions.put(PENDING_CERTIFIED_PRODUCT, pendingCertifiedProductDomainPermissions);
         domainPermissions.put(LISTING_UPLOAD, listingUploadDomainPermissions);

@@ -191,6 +191,16 @@
             </job-data-map>
         </job>
 
+        <!-- Certification ID Email Background Job -->
+        <job>
+            <name>certificationIdEmailJob</name>
+            <group>chplBackgroundJobs</group>
+            <description>Generates the Certification ID file and emails it to the appropriate user.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.certificationId.CertificationIdEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
         <!-- Inheritance Report data creator -->
         <job>
             <name>inheritanceErrorsReportCreator</name>

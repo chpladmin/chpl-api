@@ -28,8 +28,8 @@ public class CacheInitializer {
         List<String> caches = new ArrayList<String>();
         caches.add(CacheNames.COLLECTIONS_LISTINGS);
         caches.add(CacheNames.COLLECTIONS_SEARCH);
-        caches.add(CacheNames.ALL_CERT_IDS);
-        caches.add(CacheNames.ALL_CERT_IDS_WITH_PRODUCTS);
+//        caches.add(CacheNames.ALL_CERT_IDS);
+//        caches.add(CacheNames.ALL_CERT_IDS_WITH_PRODUCTS);
         // all below caches make up the search options
         caches.add(CacheNames.EDITION_NAMES);
         caches.add(CacheNames.CERTIFICATION_STATUSES);

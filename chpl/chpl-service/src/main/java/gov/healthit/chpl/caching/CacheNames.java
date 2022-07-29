@@ -3,8 +3,6 @@ package gov.healthit.chpl.caching;
 public final class CacheNames {
     private CacheNames() {}
 
-    public static final String ALL_CERT_IDS_WITH_PRODUCTS = "allCertIdsWithProducts";
-    public static final String ALL_CERT_IDS = "allCertIds";
     public static final String ALL_DEVELOPERS = "allDevelopers";
     public static final String ALL_DEVELOPERS_INCLUDING_DELETED = "allDevelopersIncludingDeleted";
     public static final String JOB_TYPES = "jobTypes";

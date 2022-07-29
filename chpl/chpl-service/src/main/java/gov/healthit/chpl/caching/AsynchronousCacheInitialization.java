@@ -64,7 +64,7 @@ public class AsynchronousCacheInitialization {
     public void initializeCertificationIdsGetAll()
             throws IOException, EntityRetrievalException, InterruptedException {
         LOGGER.info("Starting cache initialization for CertificationIdManager.getAll()");
-        certificationIdManager.getAllCached();
+//        certificationIdManager.getAllCached();
         LOGGER.info("Finished cache initialization for CertificationIdManager.getAll()");
     }
 
@@ -72,7 +72,7 @@ public class AsynchronousCacheInitialization {
     public void initializeCertificationIdsGetAllWithProducts()
             throws IOException, EntityRetrievalException, InterruptedException {
         LOGGER.info("Starting cache initialization for CertificationIdManager.getAllWithProducts()");
-        certificationIdManager.getAllWithProductsCached();
+//        certificationIdManager.getAllWithProductsCached();
         LOGGER.info("Finished cache initialization for CertificationIdManager.getAllWithProducts()");
     }
 }

@@ -46,8 +46,6 @@ public class ChplCacheConfig {
     public CacheManager cacheManager() {
         EhCacheCacheManager cacheManager = new EhCacheCacheManager(ehCacheCacheManager().getObject());
         net.sf.ehcache.CacheManager backingManager = cacheManager.getCacheManager();
-        backingManager.addCacheIfAbsent(createEternalCache(CacheNames.ALL_CERT_IDS));
-        backingManager.addCacheIfAbsent(createEternalCache(CacheNames.ALL_CERT_IDS_WITH_PRODUCTS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.ALL_DEVELOPERS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.CERTIFICATION_CRITERION_NUMBERS));

@@ -28,6 +28,10 @@
         <AppenderRef ref="curesStatisticsEmailJob" />
         <AppenderRef ref="curesStatisticsEmailJobJson" />
     </Logger>
+    <Logger name="certificationIdEmailJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="certificationIdEmailJob" />
+        <AppenderRef ref="certificationIdEmailJobJson" />
+    </Logger>
     <Logger name="urlStatusDataCollectorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="urlStatusDataCollectorJob" />
         <AppenderRef ref="urlStatusDataCollectorJobJson" />

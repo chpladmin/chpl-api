@@ -5,34 +5,53 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.quartz.JobDataMap;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationIdDAO;
 import gov.healthit.chpl.domain.SimpleCertificationId;
 import gov.healthit.chpl.domain.SimpleCertificationIdWithProducts;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.schedule.ChplJob;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.auth.UserManager;
+import gov.healthit.chpl.scheduler.job.certificationId.CertificationIdEmailJob;
+import gov.healthit.chpl.util.AuthUtil;
+import lombok.extern.log4j.Log4j2;
 
 @Service
+@Log4j2
 public class CertificationIdManager {
-    @Autowired
     private CertificationIdDAO certificationIdDao;
+    private ActivityManager activityManager;
+    private SchedulerManager schedulerManager;
+    private UserManager userManager;
 
     @Autowired
-    private ActivityManager activityManager;
+    public CertificationIdManager(CertificationIdDAO certificationIdDao,
+            ActivityManager activityManager, SchedulerManager schedulerManager,
+            UserManager userManager) {
+        this.certificationIdDao = certificationIdDao;
+        this.activityManager = activityManager;
+        this.schedulerManager = schedulerManager;
+        this.userManager = userManager;
+    }
 
     @Transactional(readOnly = true)
     public CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException {
@@ -68,6 +87,8 @@ public class CertificationIdManager {
         return certificationIdDao.verifyByCertificationId(certificationIds);
     }
 
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_ID, "
+            + "T(gov.healthit.chpl.permissions.domains.CertificationIdDomainPermissions).GET_ALL)")
     @Transactional(readOnly = true)
     public List<SimpleCertificationId> getAll() {
         List<SimpleCertificationId> results = new ArrayList<SimpleCertificationId>();
@@ -78,12 +99,8 @@ public class CertificationIdManager {
         return results;
     }
 
-    @Transactional(readOnly = true)
-    @Cacheable(CacheNames.ALL_CERT_IDS)
-    public List<SimpleCertificationId> getAllCached() {
-        return getAll();
-    }
-
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_ID, "
+            + "T(gov.healthit.chpl.permissions.domains.CertificationIdDomainPermissions).GET_ALL_WITH_PRODUCTS)")
     @Transactional(readOnly = true)
     public List<SimpleCertificationId> getAllWithProducts() {
         //the key in this map is concatenated certification id and created millis
@@ -118,17 +135,32 @@ public class CertificationIdManager {
         return new ArrayList<SimpleCertificationId>(results.values());
     }
 
-    @Transactional(readOnly = true)
-    @Cacheable(CacheNames.ALL_CERT_IDS_WITH_PRODUCTS)
-    public List<SimpleCertificationId> getAllWithProductsCached() {
-        return getAllWithProducts();
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_ID, "
+            + "T(gov.healthit.chpl.permissions.domains.CertificationIdDomainPermissions).GET_ALL)")
+    @Transactional
+    public ChplOneTimeTrigger triggerCmsIdReport() throws SchedulerException, ValidationException {
+        UserDTO jobUser = null;
+        try {
+            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
+        } catch (UserRetrievalException ex) {
+            LOGGER.error("Could not find user to execute job.");
+        }
+
+        ChplOneTimeTrigger complaintsReportTrigger = new ChplOneTimeTrigger();
+        ChplJob complaintsReportJob = new ChplJob();
+        complaintsReportJob.setName(CertificationIdEmailJob.JOB_NAME);
+        complaintsReportJob.setGroup(SchedulerManager.CHPL_JOBS_KEY);
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put(CertificationIdEmailJob.USER_KEY, jobUser);
+        complaintsReportJob.setJobDataMap(jobDataMap);
+        complaintsReportTrigger.setJob(complaintsReportJob);
+        complaintsReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+        complaintsReportTrigger = schedulerManager.createBackgroundJobTrigger(complaintsReportTrigger);
+        return complaintsReportTrigger;
     }
 
     @Transactional(readOnly = false)
-    @CacheEvict(value = {
-            CacheNames.ALL_CERT_IDS, CacheNames.ALL_CERT_IDS_WITH_PRODUCTS
-    }, allEntries = true)
-    public CertificationIdDTO create(final List<Long> productIds, final String year)
+    public CertificationIdDTO create(List<Long> productIds, String year)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
         CertificationIdDTO result = certificationIdDao.create(productIds, year);

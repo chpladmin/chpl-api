@@ -14,6 +14,7 @@ import gov.healthit.chpl.scheduler.job.RealWorldTestingUploadJob;
 import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
 import gov.healthit.chpl.scheduler.job.SurveillanceUploadJob;
 import gov.healthit.chpl.scheduler.job.TriggerDeveloperBanJob;
+import gov.healthit.chpl.scheduler.job.certificationId.CertificationIdEmailJob;
 import gov.healthit.chpl.scheduler.job.surveillanceReport.AnnualReportGenerationJob;
 import gov.healthit.chpl.scheduler.job.surveillanceReport.QuarterlyReportGenerationJob;
 
@@ -21,6 +22,7 @@ import gov.healthit.chpl.scheduler.job.surveillanceReport.QuarterlyReportGenerat
 public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissions {
 
     private static final List<String> BACKGROUND_JOBS_ACB_CAN_CREATE = new ArrayList<String>();
+    private static final List<String> BACKGROUND_JOBS_CMS_STAFF_CAN_CREATE = new ArrayList<String>();
 
     @PostConstruct
     public void init() {
@@ -31,6 +33,8 @@ public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissio
         BACKGROUND_JOBS_ACB_CAN_CREATE.add(ListingUploadValidationJob.JOB_NAME);
         BACKGROUND_JOBS_ACB_CAN_CREATE.add(SurveillanceUploadJob.JOB_NAME);
         BACKGROUND_JOBS_ACB_CAN_CREATE.add(TriggerDeveloperBanJob.JOB_NAME);
+
+        BACKGROUND_JOBS_CMS_STAFF_CAN_CREATE.add(CertificationIdEmailJob.JOB_NAME);
     }
 
     @Override
@@ -51,12 +55,26 @@ public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissio
                     return true;
                 }
             }
+        } else if (getResourcePermissions().isUserRoleCmsStaff()) {
+            if (obj instanceof ChplOneTimeTrigger) {
+                ChplOneTimeTrigger trigger = (ChplOneTimeTrigger) obj;
+                if (trigger.getJob() != null && canCmsStaffCreateJob(trigger.getJob().getName())) {
+                    return true;
+                }
+            }
         }
         return false;
     }
 
     private boolean canAcbCreateJob(String jobName) {
         return BACKGROUND_JOBS_ACB_CAN_CREATE.stream()
+                .filter(job -> job.equalsIgnoreCase(jobName))
+                .findAny()
+                .isPresent();
+    }
+
+    private boolean canCmsStaffCreateJob(String jobName) {
+        return BACKGROUND_JOBS_CMS_STAFF_CAN_CREATE.stream()
                 .filter(job -> job.equalsIgnoreCase(jobName))
                 .findAny()
                 .isPresent();
