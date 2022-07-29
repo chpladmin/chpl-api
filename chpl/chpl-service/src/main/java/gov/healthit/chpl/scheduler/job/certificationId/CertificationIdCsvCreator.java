@@ -41,9 +41,7 @@ public class CertificationIdCsvCreator {
                 CSVPrinter csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat)) {
 
             fileWriter.write('\ufeff');
-            if (includesProducts(certificationIds)) {
-                csvFilePrinter.printRecord(getHeaderRow(true));
-            }
+            csvFilePrinter.printRecord(getHeaderRow(includesProducts(certificationIds)));
 
             certificationIds.stream()
                 .sorted((certId1, certId2) -> certId1.getCertificationId().compareTo(certId2.getCertificationId()))
