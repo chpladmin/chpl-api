@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.logging.log4j.Logger;
 
@@ -61,9 +60,11 @@ public class RealWorldTestingEligiblityService {
         this.rwtProgramStartDate = rwtProgramStartDate;
         this.rwtProgramFirstEligibilityYear = rwtProgramFirstEligibilityYear;
 
-        withdrawnStatuses = Stream.of(CertificationStatusType.WithdrawnByDeveloper,
+        withdrawnStatuses = List.of(CertificationStatusType.WithdrawnByDeveloper,
                 CertificationStatusType.WithdrawnByAcb,
-                CertificationStatusType.WithdrawnByDeveloperUnderReview).toList();
+                CertificationStatusType.WithdrawnByDeveloperUnderReview,
+                CertificationStatusType.Retired,
+                CertificationStatusType.TerminatedByOnc);
     }
 
     public RealWorldTestingEligibility getRwtEligibilityYearForListing(Long listingId, Logger logger) {

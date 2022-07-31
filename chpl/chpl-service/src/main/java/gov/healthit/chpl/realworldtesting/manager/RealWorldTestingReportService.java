@@ -56,8 +56,11 @@ public class RealWorldTestingReportService {
         this.env = env;
         this.certificationStatusEventsService = certificationStatusEventsService;
         this.rwtEligServiceFactory = rwtEligServiceFactory;
-        withdrawnStatuses = List.of(CertificationStatusType.WithdrawnByDeveloper, CertificationStatusType.WithdrawnByAcb,
-                CertificationStatusType.WithdrawnByDeveloperUnderReview);
+        withdrawnStatuses = List.of(CertificationStatusType.WithdrawnByDeveloper,
+                CertificationStatusType.WithdrawnByAcb,
+                CertificationStatusType.WithdrawnByDeveloperUnderReview,
+                CertificationStatusType.Retired,
+                CertificationStatusType.TerminatedByOnc);
     }
 
     public List<RealWorldTestingReport> getRealWorldTestingReports(List<Long> acbIds, Logger logger) {
