@@ -58,11 +58,23 @@ public class FormValidator {
         }
     }
 
+    public Form removePhantomAndDuplicateResponses(Form formToValidate) {
+        try {
+            Form cleanFormWithResponses = populateCleanFormWithSubmittedResponses(formToValidate);
+            cleanFormWithResponses.extractFlatFormItems().stream()
+                    .forEach(fi -> {
+                        removeDuplicateResponses(fi);
+                        removeChildQuestionPhantomResponses(fi);
+                    });
+            return cleanFormWithResponses;
+        } catch (EntityRetrievalException e) {
+            LOGGER.error(e);
+            return null;
+        }
+    }
+
     private List<String> validateFormItem(FormItem formItemToValidate) {
         List<String> errorMessages = new ArrayList<String>();
-
-        removeDuplicateResponses(formItemToValidate);
-        removeChildQuestionPhantomResponses(formItemToValidate);
 
         errorMessages.addAll(validateRequired(formItemToValidate));
         errorMessages.addAll(validateCardinality(formItemToValidate));

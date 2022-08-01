@@ -7,6 +7,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.form.FormItem;
 import gov.healthit.chpl.form.validation.FormValidationResult;
 import gov.healthit.chpl.manager.rules.ValidationRule;
@@ -25,8 +26,9 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
             getMessages().addAll(validateSignature(context, attestationSubmission));
         }
 
-        FormValidationResult formValidationResult = context.getFormValidator().validate(
-                ((ChangeRequestAttestationSubmission) context.getNewChangeRequest().getDetails()).getForm());
+        Form formToValidate =  ((ChangeRequestAttestationSubmission) context.getNewChangeRequest().getDetails()).getForm();
+        formToValidate = context.getFormValidator().removePhantomAndDuplicateResponses(formToValidate);
+        FormValidationResult formValidationResult = context.getFormValidator().validate(formToValidate);
 
         getMessages().addAll(formValidationResult.getErrorMessages());
         return getMessages().size() == 0;

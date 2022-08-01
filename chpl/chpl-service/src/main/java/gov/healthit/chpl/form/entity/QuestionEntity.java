@@ -50,7 +50,6 @@ public class QuestionEntity {
     @Column(name = "question")
     private String question;
 
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "question")
     @Singular(value = "questionAllowedResponse")
     private List<QuestionAllowedResponseMapEntity> questionAllowedResponseMap;

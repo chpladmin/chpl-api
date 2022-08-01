@@ -35,6 +35,7 @@ import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.form.FormItem;
 import gov.healthit.chpl.form.FormService;
 import gov.healthit.chpl.form.SectionHeading;
+import gov.healthit.chpl.form.validation.FormValidator;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
@@ -49,6 +50,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private UserDAO userDAO;
     private DeveloperDAO developerDAO;
     private ActivityManager activityManager;
+    private FormValidator formValidator;
     private FormService formService;
     private AttestationEmails attestationEmails;
 
@@ -59,7 +61,8 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     public ChangeRequestAttestationService(ChangeRequestDAO crDAO, ChangeRequestAttestationDAO crAttestationDAO,
             UserDeveloperMapDAO userDeveloperMapDAO, AttestationManager attestationManager,
             AttestationPeriodService attestationPeriodService, UserDAO userDAO, DeveloperDAO developerDAO,
-            ActivityManager activityManager, FormService formService, AttestationEmails attestationEmails) {
+            ActivityManager activityManager, FormService formService, FormValidator formValidator,
+            AttestationEmails attestationEmails) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crAttestationDAO = crAttestationDAO;
@@ -69,6 +72,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         this.developerDAO = developerDAO;
         this.activityManager = activityManager;
         this.formService = formService;
+        this.formValidator = formValidator;
         this.attestationEmails = attestationEmails;
     }
 
@@ -111,6 +115,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         try {
             ChangeRequest crFromDb = crDAO.get(cr.getId());
             ChangeRequestAttestationSubmission attestation = (ChangeRequestAttestationSubmission) cr.getDetails();
+            attestation.setForm(formValidator.removePhantomAndDuplicateResponses(attestation.getForm()));
 
             // Use the id from the DB, not the object. Client could have changed the id.
             attestation.setId(((ChangeRequestAttestationSubmission) crFromDb.getDetails()).getId());
@@ -129,6 +134,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                         "Change request cancelled by requestor",
                         crFromDb, cr);
             } else if (haveDetailsBeenUpdated(cr, crFromDb)) {
+
                 crAttestationDAO.update(cr, (ChangeRequestAttestationSubmission) cr.getDetails());
                 cr.setDetails(getByChangeRequestId(cr.getId()));
 
