@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class AllowedResponse {
     private Long id;
     private String response;
+    private Integer sortOrder;
 
     public static class AllowedResponseByIdEquator implements Equator<AllowedResponse> {
 

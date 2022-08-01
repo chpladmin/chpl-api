@@ -1,7 +1,7 @@
 package gov.healthit.chpl.form.entity;
 
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,11 +10,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.form.AllowedResponse;
 import gov.healthit.chpl.form.Question;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,12 +51,9 @@ public class QuestionEntity {
     private String question;
 
 
-    @OneToMany
-    @JoinTable(name = "question_allowed_response_map",
-            joinColumns = @JoinColumn(name = "question_id"),
-            inverseJoinColumns = @JoinColumn(name = "allowed_response_id"))
-    @Singular
-    private Set<AllowedResponseEntity> allowedResponses;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "question")
+    @Singular(value = "questionAllowedResponse")
+    private List<QuestionAllowedResponseMapEntity> questionAllowedResponseMap;
 
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
@@ -75,10 +72,15 @@ public class QuestionEntity {
                 .id(id)
                 .responseCardinalityType(responseCardinalityType.toDomain())
                 .sectionHeading(sectionHeading != null ? sectionHeading.toDomain() : null)
-                .allowedResponses(allowedResponses.stream()
-                        .map(ent -> ent.toDomain())
+                .allowedResponses(questionAllowedResponseMap.stream()
+                        .map(ent -> {
+                            AllowedResponse ar = ent.getAllowedResponse().toDomain();
+                            ar.setSortOrder(ent.getSortOrder());
+                            return ar;
+                        })
                         .toList())
                 .question(question)
                 .build();
+
     }
 }

@@ -15,6 +15,7 @@ import gov.healthit.chpl.form.dao.FormDAO;
 import gov.healthit.chpl.form.entity.AllowedResponseEntity;
 import gov.healthit.chpl.form.entity.FormEntity;
 import gov.healthit.chpl.form.entity.FormItemEntity;
+import gov.healthit.chpl.form.entity.QuestionAllowedResponseMapEntity;
 import gov.healthit.chpl.form.entity.QuestionEntity;
 import gov.healthit.chpl.form.entity.ResponseCardinalityTypeEntity;
 import gov.healthit.chpl.form.entity.SectionHeadingEntity;
@@ -98,10 +99,13 @@ public class FormServiceTest {
                                 .id(1L)
                                 .description("Single")
                                 .build())
-                        .allowedResponse(AllowedResponseEntity.builder()
-                                .id(1l)
-                                .response("Yes")
-                                .build())
+                        .questionAllowedResponse(QuestionAllowedResponseMapEntity.builder()
+                                .allowedResponse(AllowedResponseEntity.builder()
+                                        .id(1l)
+                                        .response("Yes")
+                                        .build())
+                                .build()
+                                )
                         .sectionHeading(SectionHeadingEntity.builder()
                                 .id(sectionHeadingId)
                                 .name(section)
