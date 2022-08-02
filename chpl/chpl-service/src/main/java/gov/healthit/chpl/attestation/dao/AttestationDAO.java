@@ -114,7 +114,7 @@ public class AttestationDAO extends BaseDAOImpl{
     }
 
     private AttestationSubmission updateAttestationSubmission(AttestationSubmission attestationSubmission) throws EntityRetrievalException {
-        AttestationSubmissionEntity entity = getAttestationSubmissionEntity(attestationSubmission.getId());
+        AttestationSubmissionEntity entity = getAttestationSubmissionEntity(attestationSubmission.getDeveloperId(), attestationSubmission.getAttestationPeriod().getId());
         entity.setSignature(attestationSubmission.getSignature());
         entity.setSignatureEmail(attestationSubmission.getSignatureEmail());
         entity.getAttestationPeriod().setId(attestationSubmission.getAttestationPeriod().getId());
@@ -267,6 +267,40 @@ public class AttestationDAO extends BaseDAOImpl{
         List<AttestationSubmissionEntity> result = entityManager
                 .createQuery(hql, AttestationSubmissionEntity.class)
                 .setParameter("attestationSubmissionId", attestationSubmissionId)
+                .getResultList();
+
+        if (result == null || result.size() == 0) {
+            throw new EntityRetrievalException(
+                    "Data error. Attestation Submission not found in database.");
+        } else if (result.size() > 1) {
+            throw new EntityRetrievalException(
+                "Data error. Duplicate Attestation 4Submission in database.");
+        }
+
+        if (result.size() == 0) {
+            return null;
+        }
+        return result.get(0);
+    }
+
+    private AttestationSubmissionEntity getAttestationSubmissionEntity(Long developerId, Long attestationPeriodId) throws EntityRetrievalException {
+        String hql = "SELECT DISTINCT ase "
+                + "FROM AttestationSubmissionEntity ase "
+                + "JOIN FETCH ase.attestationPeriod per "
+                + "LEFT JOIN FETCH per.form "
+                + "LEFT JOIN FETCH ase.responses resp "
+                + "LEFT JOIN FETCH resp.formItem fi "
+                + "LEFT JOIN FETCH fi.question "
+                + "LEFT JOIN FETCH resp.response "
+                + "WHERE (NOT ase.deleted = true) "
+                + "AND (NOT per.deleted = true) "
+                + "AND (ase.developerId = :developerId) "
+                + "AND (per.id = :attestationPeriodId) ";
+
+        List<AttestationSubmissionEntity> result = entityManager
+                .createQuery(hql, AttestationSubmissionEntity.class)
+                .setParameter("developerId", developerId)
+                .setParameter("attestationPeriodId", attestationPeriodId)
                 .getResultList();
 
         if (result == null || result.size() == 0) {
