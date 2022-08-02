@@ -43,6 +43,8 @@ public class AttestationValidationTest {
                         .errorMessages(new ArrayList<String>())
                         .valid(true)
                         .build());
+        Mockito.when(formValidator.removePhantomAndDuplicateResponses(ArgumentMatchers.any(Form.class)))
+            .thenAnswer(i -> i.getArgument(0));
 
         User currentUser = new JWTAuthenticatedUser();
         currentUser.setFullName("User A");

@@ -27,7 +27,6 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
         }
 
         Form formToValidate =  ((ChangeRequestAttestationSubmission) context.getNewChangeRequest().getDetails()).getForm();
-        formToValidate = context.getFormValidator().removePhantomAndDuplicateResponses(formToValidate);
         FormValidationResult formValidationResult = context.getFormValidator().validate(formToValidate);
 
         getMessages().addAll(formValidationResult.getErrorMessages());
