@@ -75,7 +75,7 @@ public class ComplaintsReportCsvCreator {
         return Arrays.asList(
                 "Complaint ID",
                 "ONC-ACB",
-                "Complainant Type Name",
+                "Complainant Type",
                 "Complainant Type - Other",
                 "ONC Complaint ID",
                 "ONC-ACB Complaint ID",
