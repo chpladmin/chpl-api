@@ -20,7 +20,7 @@ public class RealWorldTestingCriteriaService {
     private Map<Integer, List<String>> eligibleCriteriaKeysMap;
 
     public RealWorldTestingCriteriaService(CertificationCriterionService certificationCriterionService,
-            @Value("${realWorldTestingCriteriaKeys}") Map<Integer, List<String>> eligibleCriteriaKeysMap) {
+            @Value("#{${realWorldTestingCriteriaKeys}}") Map<Integer, List<String>> eligibleCriteriaKeysMap) {
         this.certificationCriterionService = certificationCriterionService;
         this.eligibleCriteriaKeysMap = eligibleCriteriaKeysMap;
     }
@@ -35,10 +35,12 @@ public class RealWorldTestingCriteriaService {
     }
 
     private Integer getYearOrMostRecentPastYear(Integer requestedYear) throws InvalidArgumentsException {
-        return eligibleCriteriaKeysMap.keySet().stream()
+        Integer i = eligibleCriteriaKeysMap.keySet().stream()
                 .filter(y -> y <= requestedYear)
                 .max(Integer::compareTo)
                 .orElseThrow(InvalidArgumentsException::new);
+        LOGGER.info("{} -> {}");
+        return i;
     }
 
     private List<CertificationCriterion> getRwtEligibleCriteria(List<String> eligibleCriteriaKeys) {

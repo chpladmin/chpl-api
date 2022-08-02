@@ -115,8 +115,8 @@ public class RealWorldTestingEligiblityService {
                 // If the listing is certified before the program start date it is not eligible for RWT elig based on ICS.
                 if (isDateAfterOrEqualToRwtProgramStartDate(listing.get().getCertificationDate())
                     && listing.get().getIcs().getParents() != null
-                    && listing.get().getIcs().getParents().size() > 0
-                    && doesListingAttestToEligibleCriteria(listing.get())) {
+                    && listing.get().getIcs().getParents().size() > 0) {
+                    //&& doesListingAttestToEligibleCriteria(listing.get())) {
 
                     //Need a "details" object for the icsCode
                     CertifiedProductDTO cpChild = certifiedProductDAO.getById(listing.get().getId());
@@ -131,7 +131,8 @@ public class RealWorldTestingEligiblityService {
                         if (listingIsInStatus(cpParentDto, CertificationStatusType.WithdrawnByDeveloper, logger)) {
                             //If parent is withdrawn continue with calculating its eligibility year.... Uh-oh - possible recursion...
                             RealWorldTestingEligibility parentEligibility = getRwtEligibilityYearForListing(cpParent.getId(), logger);
-                            if (parentEligibility.getEligibilityYear() != null) {
+                            if (parentEligibility.getEligibilityYear() != null
+                                    && doesListingAttestToEligibleCriteria(listing.get(), parentEligibility.getEligibilityYear())) {
                                 parentEligibilityYears.add(parentEligibility.getEligibilityYear());
                             }
                         }
