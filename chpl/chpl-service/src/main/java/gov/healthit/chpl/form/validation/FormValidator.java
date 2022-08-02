@@ -36,6 +36,7 @@ public class FormValidator {
     public FormValidationResult validate(Form formToValidate) {
         try {
             Form cleanFormWithResponses = populateCleanFormWithSubmittedResponses(formToValidate);
+            cleanFormWithResponses = removePhantomAndDuplicateResponses(cleanFormWithResponses);
 
             List<FormItem> rolledUpFormItems = cleanFormWithResponses.getSectionHeadings().stream()
                     .map(sh -> gatherAllFormItems(sh.getFormItems()).stream())
