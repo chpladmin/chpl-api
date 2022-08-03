@@ -116,7 +116,6 @@ public class RealWorldTestingEligiblityService {
                 if (isDateAfterOrEqualToRwtProgramStartDate(listing.get().getCertificationDate())
                     && listing.get().getIcs().getParents() != null
                     && listing.get().getIcs().getParents().size() > 0) {
-                    //&& doesListingAttestToEligibleCriteria(listing.get())) {
 
                     //Need a "details" object for the icsCode
                     CertifiedProductDTO cpChild = certifiedProductDAO.getById(listing.get().getId());

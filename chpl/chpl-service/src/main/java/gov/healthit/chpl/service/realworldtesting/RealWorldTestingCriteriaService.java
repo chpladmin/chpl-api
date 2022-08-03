@@ -1,5 +1,7 @@
 package gov.healthit.chpl.service.realworldtesting;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -17,12 +19,15 @@ import lombok.extern.log4j.Log4j2;
 public class RealWorldTestingCriteriaService {
 
     private CertificationCriterionService certificationCriterionService;
-    private Map<Integer, List<String>> eligibleCriteriaKeysMap;
+    private Map<Integer, List<String>> eligibleCriteriaKeysMap = new HashMap<>();
 
     public RealWorldTestingCriteriaService(CertificationCriterionService certificationCriterionService,
-            @Value("#{${realWorldTestingCriteriaKeys}}") Map<Integer, List<String>> eligibleCriteriaKeysMap) {
+            @Value("#{${realWorldTestingCriteriaKeys}}") Map<Integer, String> eligibleCriteriaKeysMap) {
         this.certificationCriterionService = certificationCriterionService;
-        this.eligibleCriteriaKeysMap = eligibleCriteriaKeysMap;
+        this.eligibleCriteriaKeysMap = eligibleCriteriaKeysMap.entrySet().stream()
+                .collect(Collectors.toMap(
+                        (entry -> entry.getKey()),
+                        (entry -> Arrays.asList(entry.getValue().split("\\s*,\\s*")))));
     }
 
     public List<CertificationCriterion> getEligibleCriteria(Integer year) {
@@ -39,7 +44,6 @@ public class RealWorldTestingCriteriaService {
                 .filter(y -> y <= requestedYear)
                 .max(Integer::compareTo)
                 .orElseThrow(InvalidArgumentsException::new);
-        LOGGER.info("{} -> {}");
         return i;
     }
 
