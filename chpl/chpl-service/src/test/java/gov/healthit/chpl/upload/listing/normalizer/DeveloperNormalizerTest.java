@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -215,12 +216,12 @@ public class DeveloperNormalizerTest {
                         .email("test@test.com")
                         .phoneNumber("123-456-7890")
                         .build())
-                .statusEvent(DeveloperStatusEvent.builder()
+                .statusEvents(List.of(DeveloperStatusEvent.builder()
                         .status(DeveloperStatus.builder()
                                 .status(DeveloperStatusType.Active.getName())
                                 .build())
                         .statusDate(new Date())
-                        .build())
+                        .build()))
                 .build();
     }
 }

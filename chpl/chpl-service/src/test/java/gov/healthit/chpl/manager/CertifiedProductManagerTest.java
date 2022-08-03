@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -315,7 +316,7 @@ public class CertifiedProductManagerTest {
                                 .build())
                         .developerCode("3046")
                         .name("Acelis Connected Health Technologies")
-                        .statusEvent(DeveloperStatusEvent.builder()
+                        .statusEvents(List.of(DeveloperStatusEvent.builder()
                                 .developerId(1L)
                                 .id(1L)
                                 .status(DeveloperStatus.builder()
@@ -323,7 +324,7 @@ public class CertifiedProductManagerTest {
                                         .status("Active")
                                         .build())
                                 .statusDate(cal2.getTime())
-                                .build())
+                                .build()))
                         .build())
                 .product(Product.builder()
                         .id(1L)
