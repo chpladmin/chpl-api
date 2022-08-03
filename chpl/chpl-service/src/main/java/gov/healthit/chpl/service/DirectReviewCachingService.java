@@ -17,6 +17,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -83,6 +84,7 @@ public class DirectReviewCachingService {
     @CacheEvict(value = { CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH }, allEntries = true)
     public void populateDirectReviewsCache(Logger logger) {
         logger.info("Fetching all direct review data.");
+        setDirectReviewsAvailable(null);
         List<DirectReview> allDirectReviews = new ArrayList<DirectReview>();
         try {
             int nextPageStart = 0;
@@ -226,8 +228,12 @@ public class DirectReviewCachingService {
         try {
             response = jiraAuthenticatedRestTemplate.getForEntity(url, String.class);
             logger.debug("Response: " + response.getBody());
+        } catch (HttpClientErrorException httpEx) {
+            logger.error("Unable to connect to Jira with the URL " + url + ". Message: " + httpEx.getMessage() + "; response status code " + httpEx.getStatusCode());
+            throw new JiraRequestFailedException(httpEx.getMessage(), httpEx, httpEx.getStatusCode());
         } catch (Exception ex) {
-            HttpStatus statusCode =  (response != null ? response.getStatusCode() : null);
+            HttpStatus statusCode =  (response != null && response.getStatusCode() != null
+                    ? response.getStatusCode() : HttpStatus.INTERNAL_SERVER_ERROR);
             logger.error("Unable to connect to Jira with the URL " + url + ". Message: " + ex.getMessage() + "; response status code " + statusCode);
             throw new JiraRequestFailedException(ex.getMessage(), ex, statusCode);
         }

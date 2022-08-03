@@ -47,6 +47,15 @@ public class DirectReviewSearchService {
         return directReviewsAvailable;
     }
 
+    public boolean getDirectReviewsLoading() {
+        Ehcache drCache = getDirectReviewsCache();
+        if (drCache instanceof HttpStatusAwareCache) {
+            HttpStatusAwareCache drStatusAwareCache = (HttpStatusAwareCache) drCache;
+            return drStatusAwareCache.getHttpStatus() == null;
+        }
+        return false;
+    }
+
     public List<DirectReview> getAll() {
         List<DirectReview> drs = new ArrayList<DirectReview>();
 
