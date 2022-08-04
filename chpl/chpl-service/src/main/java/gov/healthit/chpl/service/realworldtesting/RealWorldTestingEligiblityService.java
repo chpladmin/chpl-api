@@ -229,7 +229,14 @@ public class RealWorldTestingEligiblityService {
 
     private boolean isListingStatusActiveAsOfEligibilityDate(CertifiedProductSearchDetails listing, LocalDate eligibilityDate) {
         CertificationStatusEvent event = listing.getStatusOnDate(convertLocalDateToDateUtcAtMidnight(eligibilityDate));
-        return Objects.nonNull(event) && event.getStatus().getName().equals(CertificationStatusType.Active.getName());
+        return Objects.nonNull(event)
+                && isActive(event.getStatus().getName());
+    }
+
+    private boolean isActive(String statusName) {
+        return statusName.equals(CertificationStatusType.Active.getName())
+                || statusName.equals(CertificationStatusType.SuspendedByAcb.getName())
+                || statusName.equals(CertificationStatusType.SuspendedByOnc.getName());
     }
 
     private Date convertLocalDateToDateUtcAtMidnight(LocalDate localDate) {
