@@ -841,6 +841,21 @@
             <recover>true</recover>
         </job>
 
+      <job>
+            <name>Complaints Report Email</name>
+            <group>chplJobs</group>
+            <description>Sends the Complaints Report</description>
+            <job-class>gov.healthit.chpl.scheduler.job.complaints.ComplaintsReportJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value>
+                </entry>
+            </job-data-map>
+        </job>
+
         <job>
             <name>Developer Attestations Report Email</name>
             <group>chplJobs</group>
@@ -874,7 +889,7 @@
                 </entry>
             </job-data-map>
         </job>
-        
+
         <job>
             <name>conformanceMethodConversionJob</name>
             <group>systemJobs</group>
