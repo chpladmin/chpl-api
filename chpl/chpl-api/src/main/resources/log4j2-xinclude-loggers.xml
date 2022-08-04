@@ -220,6 +220,10 @@
         <AppenderRef ref="changeRequestsReportJob" />
         <AppenderRef ref="changeRequestsReportJobJson" />
     </Logger>
+    <Logger name="complaintsReportJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="complaintsReportJob" />
+        <AppenderRef ref="complaintsReportJobJson" />
+    </Logger>
     <Logger name="developerAttestationReportJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="developerAttestationReportJob" />
         <AppenderRef ref="developerAttestationReportJobJson" />

@@ -624,6 +624,7 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
+
     <RollingFile name="changeRequestsReportJob"
         fileName="${logDir}/scheduler/changeRequestsReportJob.log"
         filePattern="${logDir}/scheduler/history/changeRequestsReportJob-%d{yyyy-MM-dd}.log"
@@ -636,6 +637,20 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
+
+    <RollingFile name="complaintsReportJob"
+        fileName="${logDir}/scheduler/complaintsReportJob.log"
+        filePattern="${logDir}/scheduler/history/complaintsReportJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
+        <PatternLayout>
+            <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+        </PatternLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+    </RollingFile>
+
     <RollingFile name="developerAttestationReportJob"
         fileName="${logDir}/scheduler/developerAttestationReportJob.log"
         filePattern="${logDir}/scheduler/history/developerAttestationReportJob-%d{yyyy-MM-dd}.log"
@@ -648,6 +663,7 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
+
     <RollingFile name="developerAttestationCheckinReportJob"
         fileName="${logDir}/scheduler/developerAttestationCheckinReportJob.log"
         filePattern="${logDir}/scheduler/history/developerAttestationCheckinReportJob-%d{yyyy-MM-dd}.log"
