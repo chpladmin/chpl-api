@@ -1,7 +1,5 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation;
 
-import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 
 import org.quartz.Job;
@@ -69,11 +67,11 @@ public class DeveloperAttestationCheckInReportJob implements Job {
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
                     List<DeveloperAttestationCheckInReport> reportRows = developerAttestationCheckInReportDataCollection.collect();
-                    File csv = developerAttestationCheckInReportCsvWriter.generateFile(reportRows);
+                    //File csv = developerAttestationCheckInReportCsvWriter.generateFile(reportRows);
                     chplEmailFactory.emailBuilder()
                             .recipient(context.getMergedJobDataMap().getString("email"))
                             .subject(emailSubject)
-                            .fileAttachments(Arrays.asList(csv))
+                            //.fileAttachments(Arrays.asList(csv))
                             .htmlMessage(chplHtmlEmailBuilder.initialize()
                                     .heading(sectionHeading)
                                     .paragraph("", emailBody)
