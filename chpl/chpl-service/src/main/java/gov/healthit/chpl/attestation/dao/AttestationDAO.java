@@ -15,7 +15,6 @@ import gov.healthit.chpl.attestation.entity.AttestationPeriodDeveloperExceptionE
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
 import gov.healthit.chpl.attestation.entity.AttestationSubmissionEntity;
 import gov.healthit.chpl.attestation.entity.AttestationSubmissionResponseEntity;
-import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionResponseEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -65,11 +64,18 @@ public class AttestationDAO extends BaseDAOImpl{
                 .filter(ent -> ent.getAttestationPeriod().getId().equals(attestationSubmission.getAttestationPeriod().getId()))
                 .findAny();
 
-        if (entity.isEmpty()) {
-            return createAttestationSubmission(developerId, attestationSubmission);
-        } else {
-            return updateAttestationSubmission(attestationSubmission);
+        if (entity.isPresent()) {
+            deleteAttestationSubmission(entity.get().getId());
         }
+        return createAttestationSubmission(developerId, attestationSubmission);
+    }
+
+    private void deleteAttestationSubmission(Long attestationSubmissionId) throws EntityRetrievalException {
+        AttestationSubmissionEntity entity = getAttestationSubmissionEntity(attestationSubmissionId);
+
+        entity.setDeleted(true);
+        entity.getResponses().forEach(resp -> resp.setDeleted(true));
+        update(entity);
     }
 
     private AttestationSubmission createAttestationSubmission(Long developerId, AttestationSubmission attestationSubmission) throws EntityRetrievalException {
@@ -111,70 +117,6 @@ public class AttestationDAO extends BaseDAOImpl{
         }
 
         return getAttestationSubmissionEntity(parent.getId()).toDomain();
-    }
-
-    private AttestationSubmission updateAttestationSubmission(AttestationSubmission attestationSubmission) throws EntityRetrievalException {
-        AttestationSubmissionEntity entity = getAttestationSubmissionEntity(attestationSubmission.getDeveloperId(), attestationSubmission.getAttestationPeriod().getId());
-        entity.setSignature(attestationSubmission.getSignature());
-        entity.setSignatureEmail(attestationSubmission.getSignatureEmail());
-        entity.getAttestationPeriod().setId(attestationSubmission.getAttestationPeriod().getId());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-
-        List<FormItem> items = attestationSubmission.getForm().extractFlatFormItems();
-        items.stream()
-                .forEach(fi -> {
-                    findAddedResponses(fi.getSubmittedResponses(), entity.getResponses()).stream()
-                            .forEach(resp -> {
-                                create(ChangeRequestAttestationSubmissionResponseEntity.builder()
-                                        .changeRequestAttestationSubmissionId(entity.getId())
-                                        .formItem(FormItemEntity.builder()
-                                                .id(fi.getId())
-                                                .build())
-                                        .response(AllowedResponseEntity.builder()
-                                            .id(resp.getId())
-                                            .build())
-                                        .creationDate(new Date())
-                                        .lastModifiedDate(new Date())
-                                        .lastModifiedUser(AuthUtil.getAuditId())
-                                        .deleted(false)
-                                        .build());
-                            });
-
-                    findRemovedResponses(fi.getSubmittedResponses(), filterByFormItemId(fi.getId(), entity.getResponses())).stream()
-                            .forEach(responseEntity -> {
-                                responseEntity.setDeleted(true);
-                                responseEntity.setLastModifiedUser(AuthUtil.getAuditId());
-                                update(responseEntity);
-                            });
-                });
-
-        update(entity);
-
-        return getAttestationSubmissionEntity(entity.getId()).toDomain();
-    }
-
-    private List<AttestationSubmissionResponseEntity> filterByFormItemId(Long formItemId, List<AttestationSubmissionResponseEntity> responseEntities) {
-        return responseEntities.stream()
-                .filter(ent -> ent.getFormItem().getId().equals(formItemId))
-                .toList();
-    }
-
-    private List<AllowedResponse> findAddedResponses(List<AllowedResponse> submittedResponses, List<AttestationSubmissionResponseEntity> existingResponses) {
-        return submittedResponses.stream()
-                .filter(sr -> !existingResponses.stream()
-                        .filter(er -> er.getResponse().getId().equals(sr.getId()))
-                        .findAny()
-                        .isPresent())
-                .toList();
-    }
-
-    private List<AttestationSubmissionResponseEntity> findRemovedResponses(List<AllowedResponse> submittedResponses, List<AttestationSubmissionResponseEntity> existingResponses) {
-        return existingResponses.stream()
-                .filter(er -> !submittedResponses.stream()
-                        .filter(sr -> sr.getId().equals(er.getResponse().getId()))
-                        .findAny()
-                        .isPresent())
-                .toList();
     }
 
     public List<AttestationPeriodDeveloperException> getAttestationPeriodDeveloperExceptions(Long developerId, Long attestationPeriodId) {
@@ -240,6 +182,7 @@ public class AttestationDAO extends BaseDAOImpl{
                 + "LEFT JOIN FETCH fi.question "
                 + "LEFT JOIN FETCH resp.response "
                 + "WHERE (NOT ase.deleted = true) "
+                + "AND (NOT resp.deleted = true) "
                 + "AND (NOT per.deleted = true) "
                 + "AND (ase.developerId = :developerId) ";
 
@@ -261,6 +204,7 @@ public class AttestationDAO extends BaseDAOImpl{
                 + "LEFT JOIN FETCH fi.question "
                 + "LEFT JOIN FETCH resp.response "
                 + "WHERE (NOT ase.deleted = true) "
+                + "AND (NOT resp.deleted = true) "
                 + "AND (NOT per.deleted = true) "
                 + "AND (ase.id = :attestationSubmissionId) ";
 
@@ -274,41 +218,7 @@ public class AttestationDAO extends BaseDAOImpl{
                     "Data error. Attestation Submission not found in database.");
         } else if (result.size() > 1) {
             throw new EntityRetrievalException(
-                "Data error. Duplicate Attestation 4Submission in database.");
-        }
-
-        if (result.size() == 0) {
-            return null;
-        }
-        return result.get(0);
-    }
-
-    private AttestationSubmissionEntity getAttestationSubmissionEntity(Long developerId, Long attestationPeriodId) throws EntityRetrievalException {
-        String hql = "SELECT DISTINCT ase "
-                + "FROM AttestationSubmissionEntity ase "
-                + "JOIN FETCH ase.attestationPeriod per "
-                + "LEFT JOIN FETCH per.form "
-                + "LEFT JOIN FETCH ase.responses resp "
-                + "LEFT JOIN FETCH resp.formItem fi "
-                + "LEFT JOIN FETCH fi.question "
-                + "LEFT JOIN FETCH resp.response "
-                + "WHERE (NOT ase.deleted = true) "
-                + "AND (NOT per.deleted = true) "
-                + "AND (ase.developerId = :developerId) "
-                + "AND (per.id = :attestationPeriodId) ";
-
-        List<AttestationSubmissionEntity> result = entityManager
-                .createQuery(hql, AttestationSubmissionEntity.class)
-                .setParameter("developerId", developerId)
-                .setParameter("attestationPeriodId", attestationPeriodId)
-                .getResultList();
-
-        if (result == null || result.size() == 0) {
-            throw new EntityRetrievalException(
-                    "Data error. Attestation Submission not found in database.");
-        } else if (result.size() > 1) {
-            throw new EntityRetrievalException(
-                "Data error. Duplicate Attestation 4Submission in database.");
+                "Data error. Duplicate Attestation Submission in database.");
         }
 
         if (result.size() == 0) {
