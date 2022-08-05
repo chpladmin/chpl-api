@@ -1,7 +1,5 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation;
 
-import java.util.List;
-
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -66,7 +64,7 @@ public class DeveloperAttestationCheckInReportJob implements Job {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
-                    List<DeveloperAttestationCheckInReport> reportRows = developerAttestationCheckInReportDataCollection.collect();
+                    //List<DeveloperAttestationCheckInReport> reportRows = developerAttestationCheckInReportDataCollection.collect();
                     //File csv = developerAttestationCheckInReportCsvWriter.generateFile(reportRows);
                     chplEmailFactory.emailBuilder()
                             .recipient(context.getMergedJobDataMap().getString("email"))
