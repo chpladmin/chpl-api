@@ -44,7 +44,7 @@ import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil.ChplProductNumberParts;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.ProductResults;
 import gov.healthit.chpl.web.controller.results.SplitProductResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -77,7 +77,7 @@ public class ProductController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = ProductResults.class)
+    @DeprecatedApiResponseFields(responseClass = ProductResults.class)
     public @ResponseBody ProductResults getAllProducts(@RequestParam(required = false) final Long developerId) {
         List<Product> productList = null;
         if (developerId != null && developerId > 0) {
@@ -96,7 +96,7 @@ public class ProductController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/{productId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = Product.class)
+    @DeprecatedApiResponseFields(responseClass = Product.class)
     public @ResponseBody Product getProductById(@PathVariable("productId") final Long productId)
             throws EntityRetrievalException {
         return  productManager.getById(productId);
@@ -132,7 +132,7 @@ public class ProductController {
             })
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = Product.class)
+    @DeprecatedApiResponseFields(responseClass = Product.class)
     public ResponseEntity<Product> updateProduct(
             @RequestBody(required = true) final UpdateProductsRequest productInfo)
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
@@ -300,7 +300,7 @@ public class ProductController {
             })
     @RequestMapping(value = "/{productId}/split", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = SplitProductResponse.class)
+    @DeprecatedApiResponseFields(responseClass = SplitProductResponse.class)
     public ResponseEntity<SplitProductResponse> splitProduct(@PathVariable("productId") final Long productId,
             @RequestBody(required = true) final SplitProductsRequest splitRequest)
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,

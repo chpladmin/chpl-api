@@ -27,7 +27,8 @@ import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.AnnouncementResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -50,7 +51,7 @@ public class AnnouncementController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = AnnouncementResults.class)
+    @DeprecatedApiResponseFields(responseClass = AnnouncementResults.class)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.FOUR_HOURS)
     public @ResponseBody AnnouncementResults getAnnouncements(
             @RequestParam(required = false, defaultValue = "false") boolean future) {
@@ -67,6 +68,10 @@ public class AnnouncementController {
         return results;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/announcements/{announcementId}",
+        removalDate = "2022-10-15",
+        message = "This endpoint is deprecated and will be removed in a future release.")
     @Operation(summary = "Get a specific announcement.",
             description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can retrieve future scheduled "
                     + "announcements and private announcements.  ROLE_ACB, ROLE_ATL, and ROLE_CMS_STAFF "
@@ -76,7 +81,6 @@ public class AnnouncementController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @Deprecated
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.FOUR_HOURS)
     public @ResponseBody Announcement getAnnouncementById(@PathVariable("announcementId") Long announcementId)
             throws EntityRetrievalException {
@@ -91,7 +95,7 @@ public class AnnouncementController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = Announcement.class)
+    @DeprecatedApiResponseFields(responseClass = Announcement.class)
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public Announcement create(@RequestBody Announcement announcement) throws InvalidArgumentsException,
@@ -124,7 +128,7 @@ public class AnnouncementController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = Announcement.class)
+    @DeprecatedApiResponseFields(responseClass = Announcement.class)
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public Announcement updateAnnouncement(@PathVariable("announcementId") Long announcementId, @RequestBody Announcement announcement)

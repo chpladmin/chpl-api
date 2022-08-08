@@ -30,7 +30,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.ChangeRequestResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -62,7 +62,7 @@ public class ChangeRequestController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/{changeRequestId:^-?\\d+$}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = ChangeRequest.class)
+    @DeprecatedApiResponseFields(responseClass = ChangeRequest.class)
     public @ResponseBody ChangeRequest getChangeRequest(@PathVariable final Long changeRequestId) throws EntityRetrievalException {
         return changeRequestManager.getChangeRequest(changeRequestId);
     }
@@ -156,7 +156,7 @@ public class ChangeRequestController {
             })
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = ChangeRequestResults.class)
+    @DeprecatedApiResponseFields(responseClass = ChangeRequestResults.class)
     public ChangeRequestResults createChangeRequest(@RequestBody final ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException {
@@ -176,7 +176,7 @@ public class ChangeRequestController {
             })
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = ChangeRequest.class)
+    @DeprecatedApiResponseFields(responseClass = ChangeRequest.class)
     public ChangeRequest updateChangeRequest(@RequestBody final ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException, EmailNotSentException {

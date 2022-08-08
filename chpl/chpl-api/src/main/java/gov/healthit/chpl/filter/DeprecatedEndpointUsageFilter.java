@@ -34,7 +34,7 @@ import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.util.ApiKeyUtil;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -152,7 +152,7 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
 
     private boolean isHandlerResponseDeprecated(HandlerMethod handlerMethod) {
         return handlerMethod != null && (handlerMethod.getMethodAnnotation(Deprecated.class) == null)
-                && (handlerMethod.getMethodAnnotation(DeprecatedResponseFields.class) != null);
+                && (handlerMethod.getMethodAnnotation(DeprecatedApiResponseFields.class) != null);
     }
 
     private ApiKey getApiKey(HttpServletRequest request) {

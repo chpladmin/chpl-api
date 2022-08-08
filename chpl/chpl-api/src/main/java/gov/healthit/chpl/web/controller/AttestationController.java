@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.healthit.chpl.attestation.domain.AttestationForm;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.results.AttestationPeriodResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -35,6 +36,10 @@ public class AttestationController {
         return new AttestationPeriodResults(attestationManager.getAllPeriods());
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/attestations/form",
+        removalDate = "2023-01-01",
+        message = "This endpoint is deprecated and will be removed in a future release. Please use /attestations/periods/{periodId}/form to get the Attestation Form for an Attestation Period.")
     @Operation(summary = "Get the list of Attestation Conditions, Attestations, and Valid Responses",
             description = "Can be used to dynamically generate the Attestion form.",
             deprecated = true,
@@ -42,7 +47,6 @@ public class AttestationController {
     @RequestMapping(value = "/form",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @Deprecated
     public AttestationForm getAttestationForm() {
         return attestationManager.getAttestationForm();
     }

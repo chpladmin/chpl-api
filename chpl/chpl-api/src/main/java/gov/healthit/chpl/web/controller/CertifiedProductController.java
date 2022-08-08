@@ -76,7 +76,7 @@ import gov.healthit.chpl.validation.listing.Validator;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.CQMResultDetailResults;
 import gov.healthit.chpl.web.controller.results.CertificationResults;
 import gov.healthit.chpl.web.controller.results.MeasureResults;
@@ -173,7 +173,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/details",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = CertifiedProductSearchDetails.class)
+    @DeprecatedApiResponseFields(responseClass = CertifiedProductSearchDetails.class)
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
 
@@ -198,7 +198,7 @@ public class CertifiedProductController {
             + "{addlSoftwareCode}.{certDateCode}/details",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = CertifiedProductSearchDetails.class)
+    @DeprecatedApiResponseFields(responseClass = CertifiedProductSearchDetails.class)
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumber(
             @PathVariable("year") String year,
             @PathVariable("testingLab") String testingLab,
@@ -232,7 +232,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{chplPrefix}-{identifier}/details",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = CertifiedProductSearchDetails.class)
+    @DeprecatedApiResponseFields(responseClass = CertifiedProductSearchDetails.class)
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumber2(
             @PathVariable("chplPrefix") String chplPrefix,
             @PathVariable("identifier") String identifier) throws EntityRetrievalException {
@@ -265,7 +265,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = CertifiedProductSearchBasicDetails.class)
+    @DeprecatedApiResponseFields(responseClass = CertifiedProductSearchBasicDetails.class)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchBasicDetails getCertifiedProductByIdBasic(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
@@ -302,7 +302,7 @@ public class CertifiedProductController {
     })
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
             + "{addlSoftwareCode}.{certDateCode}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = CertifiedProductSearchBasicDetails.class)
+    @DeprecatedApiResponseFields(responseClass = CertifiedProductSearchBasicDetails.class)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchBasicDetails getCertifiedProductByChplProductNumberBasic(
             @PathVariable("year") String year,
@@ -346,7 +346,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{chplPrefix}-{identifier}",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = CertifiedProductSearchBasicDetails.class)
+    @DeprecatedApiResponseFields(responseClass = CertifiedProductSearchBasicDetails.class)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchBasicDetails getCertifiedProductByChplProductNumberBasic2(
             @PathVariable("chplPrefix") String chplPrefix,
@@ -671,7 +671,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/ics_relationships", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    @DeprecatedResponseFields(responseClass = IcsFamilyTreeNode.class)
+    @DeprecatedApiResponseFields(responseClass = IcsFamilyTreeNode.class)
     public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeById(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
         List<IcsFamilyTreeNode> familyTree = cpManager.getIcsFamilyTree(certifiedProductId);
@@ -694,7 +694,7 @@ public class CertifiedProductController {
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    @DeprecatedResponseFields(responseClass = IcsFamilyTreeNode.class)
+    @DeprecatedApiResponseFields(responseClass = IcsFamilyTreeNode.class)
     public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeByChplProductNumber(
             @PathVariable("year") String year,
             @PathVariable("testingLab") String testingLab,
@@ -723,7 +723,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{chplPrefix}-{identifier}/ics_relationships", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    @DeprecatedResponseFields(responseClass = IcsFamilyTreeNode.class)
+    @DeprecatedApiResponseFields(responseClass = IcsFamilyTreeNode.class)
     public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeByChplProductNumber(
             @PathVariable("chplPrefix") String chplPrefix,
             @PathVariable("identifier") String identifier) throws EntityRetrievalException {
@@ -744,7 +744,7 @@ public class CertifiedProductController {
             })
     @RequestMapping(value = "/{certifiedProductId}", method = RequestMethod.PUT,
             produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = CertifiedProductSearchDetails.class)
+    @DeprecatedApiResponseFields(responseClass = CertifiedProductSearchDetails.class)
     public ResponseEntity<CertifiedProductSearchDetails> updateCertifiedProduct(
             @RequestBody(required = true) ListingUpdateRequest updateRequest)
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
@@ -788,6 +788,7 @@ public class CertifiedProductController {
         return new ResponseEntity<CertifiedProductSearchDetails>(changedProduct, responseHeaders, HttpStatus.OK);
     }
 
+    @Deprecated
     @Operation(summary = "Get metadata for all pending listings the user has access to.",
             description = "Pending listings are created via CSV file upload and are left in the 'pending' state "
                     + " until validated and confirmed.  Security Restrictions: ROLE_ADMIN, ROLE_ACB and have "
@@ -795,9 +796,8 @@ public class CertifiedProductController {
             deprecated = true,
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
-    @Deprecated
     @RequestMapping(value = "/pending/metadata", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = PendingCertifiedProductMetadata.class)
+    @DeprecatedApiResponseFields(responseClass = PendingCertifiedProductMetadata.class)
     public @ResponseBody List<PendingCertifiedProductMetadata> getPendingCertifiedProductMetadata()
             throws AccessDeniedException {
         List<PendingCertifiedProductMetadataDTO> metadataDtos = pcpManager.getAllPendingCertifiedProductMetadata();
