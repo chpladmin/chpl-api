@@ -45,6 +45,7 @@ import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.service.DirectReviewCachingService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.DeveloperAttestationSubmissionResults;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
@@ -293,6 +294,10 @@ public class DeveloperController {
     }
 
     @Deprecated
+    @DeprecatedApi(friendlyUrl = "/developers/{developerId}/attestations/exception",
+        httpMethod = "POST",
+        removalDate = "2023-01-01",
+        message = "This endpoint is deprecated and will be removed in a future release. Please use /developers/{developerId}/attestations/{attestationPeriodId}/exception to create a new attestation submission end date exception for a developer.")
     @Operation(summary = "Create a new attestation submission end date exception for a developer.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ONC_ACB",
             security = {
