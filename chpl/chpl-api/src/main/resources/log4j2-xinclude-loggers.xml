@@ -8,6 +8,10 @@
         <AppenderRef ref="cacheListenerActivity" />
         <AppenderRef ref="cacheListenerActivity" />
     </Logger>
+    <Logger name="sharedDataStoreLogger" level="INFO">
+        <AppenderRef ref="sharedDataStore" />
+        <AppenderRef ref="sharedDataStoreJson" />
+    </Logger>
     <Logger name="summaryStatisticsEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="summaryStatisticsEmailJob" />
         <AppenderRef ref="summaryStatisticsEmailJobJson" />
@@ -211,6 +215,10 @@
         additivity="false">
         <AppenderRef ref="sendEmailJob" />
         <AppenderRef ref="sendEmailJobJson" />
+    </Logger>
+    <Logger name="complaintsReportJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="complaintsReportJob" />
+        <AppenderRef ref="complaintsReportJobJson" />
     </Logger>
     <Logger name="developerAttestationReportJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="developerAttestationReportJob" />

@@ -57,6 +57,15 @@ public class ComplaintDAO extends BaseDAOImpl {
         return convertToComplaints(results);
     }
 
+    public List<Complaint> getAllComplaintsForAcbs(List<Long> acbIds) {
+        Query query = entityManager.createQuery(GET_COMPLAINTS_HQL
+                + " AND c.certificationBodyId IN (:acbIds)",
+                ComplaintEntity.class);
+        query.setParameter("acbIds", acbIds);
+        List<ComplaintEntity> results = query.getResultList();
+        return convertToComplaints(results);
+    }
+
     public List<Complaint> getAllComplaintsBetweenDates(Long acbId, LocalDate startDate, LocalDate endDate) {
         Query query = entityManager.createQuery(GET_COMPLAINTS_HQL
                 + " AND c.certificationBodyId = :acbId "

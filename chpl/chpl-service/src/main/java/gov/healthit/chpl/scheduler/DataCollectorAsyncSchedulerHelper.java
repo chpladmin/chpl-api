@@ -32,7 +32,7 @@ public class DataCollectorAsyncSchedulerHelper {
     public Future<CertifiedProductSearchDetails> getCertifiedProductDetail(
             final Long id, final CertifiedProductDetailsManager certifiedProductDetailsManager)
                 throws EntityRetrievalException {
-        CertifiedProductSearchDetails dto = certifiedProductDetailsManager.getCertifiedProductDetailsUsingCache(id);
+        CertifiedProductSearchDetails dto = certifiedProductDetailsManager.getCertifiedProductDetails(id);
         getLogger().info("Finishing retrieving Details for: " + id);
         return new AsyncResult<CertifiedProductSearchDetails>(dto);
     }

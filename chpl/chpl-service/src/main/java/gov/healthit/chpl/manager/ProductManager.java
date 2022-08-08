@@ -35,6 +35,8 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.DirectReviewUpdateEmailService;
+import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
+import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil.ChplProductNumberParts;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -163,6 +165,7 @@ public class ProductManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
+    @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#product.id")
     public Product updateProductOwnership(Product product)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         Map<Long, CertifiedProductSearchDetails> preUpdateListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
@@ -204,6 +207,7 @@ public class ProductManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
+    @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#product.id")
     public Product update(Product product)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         return updateProduct(product);
@@ -215,6 +219,7 @@ public class ProductManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
+    @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#toCreate.id")
     public Product merge(List<Long> productIdsToMerge, Product toCreate)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
@@ -256,6 +261,7 @@ public class ProductManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
+    @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#productToCreate.id")
     public Product split(Product oldProduct, Product productToCreate, String newProductCode,
             List<ProductVersionDTO> newProductVersions)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {

@@ -165,6 +165,8 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.TriggerDeveloperBanJob;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CuresUpdateService;
+import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
+import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
@@ -1079,6 +1081,7 @@ public class CertifiedProductManager extends SecuredManager {
     // listings collection is not evicted here because it's pre-fetched and
     // handled in a listener
     // no other caches have ACB data so we do not need to clear all
+    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#certifiedProductId")
     public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         CertifiedProductDTO toUpdate = cpDao.getById(certifiedProductId);
@@ -1165,6 +1168,7 @@ public class CertifiedProductManager extends SecuredManager {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
+    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#updateRequest.listing.id")
     public CertifiedProductDTO update(ListingUpdateRequest updateRequest)
             throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException, IOException, ValidationException, MissingReasonException {
@@ -1196,8 +1200,10 @@ public class CertifiedProductManager extends SecuredManager {
 
     private void logCertifiedProductUpdateActivity(CertifiedProductSearchDetails existingListing,
             String reason) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
-        CertifiedProductSearchDetails changedProduct = certifiedProductDetailsManager.
-                getCertifiedProductDetails(existingListing.getId());
+
+        CertifiedProductSearchDetails changedProduct
+                = certifiedProductDetailsManager.getCertifiedProductDetailsNoCache(existingListing.getId());
+
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
                 "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing,
                 changedProduct, reason);

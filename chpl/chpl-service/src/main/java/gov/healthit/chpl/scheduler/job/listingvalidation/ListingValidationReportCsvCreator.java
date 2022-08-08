@@ -32,7 +32,9 @@ public class ListingValidationReportCsvCreator {
     private static final String NEW_LINE_SEPARATOR = "\n";
 
     public File createCsvFile(List<ListingValidationReport> reports) throws IOException {
-        CSVFormat csvFileFormat = CSVFormat.DEFAULT.withRecordSeparator(NEW_LINE_SEPARATOR);
+        CSVFormat csvFileFormat = CSVFormat.DEFAULT.builder()
+                .setRecordSeparator(NEW_LINE_SEPARATOR)
+                .build();
 
         File csvFile = getOutputFile();
         try (FileWriter fileWriter = new FileWriter(csvFile);
