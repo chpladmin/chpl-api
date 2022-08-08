@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.ff4j.FF4j;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,7 +47,6 @@ import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.upload.listing.ListingUploadManager;
 import gov.healthit.chpl.util.AuthUtil;
-import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
 import gov.healthit.chpl.web.controller.results.ListingUploadResponse;
@@ -70,17 +68,13 @@ public class ListingUploadController {
     private String uploadErrorEmailSubject;
 
     private ListingUploadManager listingUploadManager;
-    private ErrorMessageUtil msgUtil;
-    private FF4j ff4j;
     private ChplEmailFactory chplEmailFactory;
 
 
     @Autowired
-    public ListingUploadController(ListingUploadManager listingUploadManager, ErrorMessageUtil msgUtil, FF4j ff4j,
+    public ListingUploadController(ListingUploadManager listingUploadManager,
             ChplEmailFactory chplEmailFactory) {
         this.listingUploadManager = listingUploadManager;
-        this.msgUtil = msgUtil;
-        this.ff4j = ff4j;
         this.chplEmailFactory = chplEmailFactory;
     }
 
