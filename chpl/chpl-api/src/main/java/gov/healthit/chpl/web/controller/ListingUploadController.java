@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.quartz.SchedulerException;
@@ -36,7 +35,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ConfirmListingRequest;
@@ -93,9 +91,6 @@ public class ListingUploadController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ListingUpload> getAll() {
-        if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
-            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
-        }
         return listingUploadManager.getAllProcessingAndAvailable();
     }
 
@@ -108,9 +103,6 @@ public class ListingUploadController {
     @RequestMapping(value = "/pending/{id:^-?\\d+$}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public CertifiedProductSearchDetails geById(@PathVariable("id") Long id)
             throws ValidationException, EntityRetrievalException {
-        if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
-            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
-        }
         return listingUploadManager.getDetailsById(id);
     }
 
@@ -123,9 +115,6 @@ public class ListingUploadController {
     @RequestMapping(value = "/pending/{id:^-?\\d+$}/submitted", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public CertifiedProductSearchDetails geUserEnteredDeveloper(@PathVariable("id") Long id)
             throws ValidationException, EntityRetrievalException {
-        if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
-            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
-        }
         return listingUploadManager.getSubmittedListing(id);
     }
 
@@ -137,10 +126,6 @@ public class ListingUploadController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<ListingUploadResponse> upload(@RequestParam("file") MultipartFile file) throws ValidationException, MaxUploadSizeExceededException {
-        if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
-            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
-        }
-
         List<ListingUpload> successfulListingUploads = new ArrayList<ListingUpload>();
         List<ListingUpload> listingsToAdd = new ArrayList<ListingUpload>();
         try {
@@ -255,10 +240,6 @@ public class ListingUploadController {
     public void rejectListingUpload(@PathVariable("id") Long id)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, ObjectMissingValidationException {
-        if (!ff4j.check(FeatureList.ENHANCED_UPLOAD)) {
-            throw new NotImplementedException(msgUtil.getMessage("notImplemented"));
-        }
-
         //call the GET to return bad request if the id is not something that can be deleted
         listingUploadManager.getById(id);
         //perform delete
