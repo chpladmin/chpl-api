@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.attestation.dao.AttestationDAO;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
@@ -43,7 +42,6 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventPair;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
@@ -84,7 +82,6 @@ public class DeveloperManager extends SecuredManager {
     private DeveloperValidationFactory developerValidationFactory;
     private ValidationUtils validationUtils;
     private SchedulerManager schedulerManager;
-    private AttestationDAO attestationDAO;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -93,7 +90,7 @@ public class DeveloperManager extends SecuredManager {
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
             DeveloperValidationFactory developerValidationFactory, ValidationUtils validationUtils,
-            SchedulerManager schedulerManager, AttestationDAO attestationDAO) {
+            SchedulerManager schedulerManager) {
         this.developerDao = developerDao;
         this.productManager = productManager;
         this.versionManager = versionManager;
@@ -107,7 +104,6 @@ public class DeveloperManager extends SecuredManager {
         this.developerValidationFactory = developerValidationFactory;
         this.validationUtils = validationUtils;
         this.schedulerManager = schedulerManager;
-        this.attestationDAO = attestationDAO;
     }
 
     @Transactional(readOnly = true)
@@ -448,42 +444,10 @@ public class DeveloperManager extends SecuredManager {
         return duplicatedChplProductNumbers;
     }
 
-    public void validateDeveloperInSystemIfExists(PendingCertifiedProductDTO pendingCp)
-            throws EntityRetrievalException, ValidationException {
-        if (!isNewDeveloperCode(pendingCp.getUniqueId())) {
-            Developer systemDeveloperDTO = null;
-            if (pendingCp.getDeveloperId() != null) {
-                systemDeveloperDTO = getById(pendingCp.getDeveloperId());
-            }
-            if (systemDeveloperDTO != null) {
-                String acbName = pendingCp.getCertificationBodyName();
-                if (!StringUtils.isEmpty(acbName)) {
-                    Set<String> sysDevErrorMessages = runSystemValidations(systemDeveloperDTO);
-                    if (!sysDevErrorMessages.isEmpty()) {
-                        throw new ValidationException(sysDevErrorMessages);
-                    }
-                } else {
-                    LOGGER.error("Unable to validate system developer as the pending ACB Name is null "
-                            + "or its String representation is null or empty");
-                    throw new ValidationException(msgUtil.getMessage("system.developer.pendingACBNameNullOrEmpty"));
-                }
-            } else {
-                LOGGER.warn("Skipping system validation due to null pending developer or a null system developer");
-            }
-        } else {
-            LOGGER.info("Skipping system validation due to new developer code '" + getNewDeveloperCode() + "'");
-        }
-    }
-
     @Transactional(readOnly = true)
     @Cacheable(CacheNames.GET_DECERTIFIED_DEVELOPERS)
     public List<DecertifiedDeveloper> getDecertifiedDeveloperCollection() {
         return developerDao.getDecertifiedDeveloperCollection();
-    }
-
-    private boolean isNewDeveloperCode(String chplProductNumber) {
-        String devCode = chplProductNumberUtil.getDeveloperCode(chplProductNumber);
-        return StringUtils.equals(devCode, getNewDeveloperCode());
     }
 
     private Set<String> runUpdateValidations(Developer developer) {
@@ -540,10 +504,6 @@ public class DeveloperManager extends SecuredManager {
             }
         }
         return errorMessages;
-    }
-
-    public static String getNewDeveloperCode() {
-        return NEW_DEVELOPER_CODE;
     }
 
     private class DuplicateChplProdNumber {

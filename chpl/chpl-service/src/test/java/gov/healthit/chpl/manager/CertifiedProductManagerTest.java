@@ -44,15 +44,7 @@ import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.PromotingInteroperabilityUserDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
-import gov.healthit.chpl.dao.TestDataDAO;
-import gov.healthit.chpl.dao.TestFunctionalityDAO;
-import gov.healthit.chpl.dao.TestParticipantDAO;
-import gov.healthit.chpl.dao.TestProcedureDAO;
-import gov.healthit.chpl.dao.TestStandardDAO;
-import gov.healthit.chpl.dao.TestTaskDAO;
-import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
-import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationStatus;
@@ -75,7 +67,6 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
-import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CuresUpdateService;
@@ -113,15 +104,6 @@ public class CertifiedProductManagerTest {
     private CuresUpdateEventDAO curesUpdateDao;
     private PromotingInteroperabilityUserDAO piuDao;
     private CertificationResultManager certResultManager;
-    private OptionalStandardDAO optionalStandardDao;
-    private TestToolDAO testToolDao;
-    private TestStandardDAO testStandardDao;
-    private TestProcedureDAO testProcDao;
-    private TestDataDAO testDataDao;
-    private TestFunctionalityDAO testFuncDao;
-    private UcdProcessDAO ucdDao;
-    private TestParticipantDAO testParticipantDao;
-    private TestTaskDAO testTaskDao;
     private CertificationStatusDAO certStatusDao;
     private ListingGraphDAO listingGraphDao;
     private FuzzyChoicesDAO fuzzyChoicesDao;
@@ -162,15 +144,6 @@ public class CertifiedProductManagerTest {
         curesUpdateDao = Mockito.mock(CuresUpdateEventDAO.class);
         piuDao = Mockito.mock(PromotingInteroperabilityUserDAO.class);
         certResultManager = Mockito.mock(CertificationResultManager.class);
-        optionalStandardDao = Mockito.mock(OptionalStandardDAO.class);
-        testToolDao = Mockito.mock(TestToolDAO.class);
-        testStandardDao = Mockito.mock(TestStandardDAO.class);
-        testProcDao = Mockito.mock(TestProcedureDAO.class);
-        testDataDao = Mockito.mock(TestDataDAO.class);
-        testFuncDao = Mockito.mock(TestFunctionalityDAO.class);
-        ucdDao = Mockito.mock(UcdProcessDAO.class);
-        testParticipantDao = Mockito.mock(TestParticipantDAO.class);
-        testTaskDao = Mockito.mock(TestTaskDAO.class);
         certStatusDao = Mockito.mock(CertificationStatusDAO.class);
         listingGraphDao = Mockito.mock(ListingGraphDAO.class);
         fuzzyChoicesDao = Mockito.mock(FuzzyChoicesDAO.class);
@@ -186,11 +159,10 @@ public class CertifiedProductManagerTest {
                 certCriterionDao, qmsDao,  targetedUserDao, asDao,  cpQmsDao, cpMeasureDao, cpTestingLabDao,
                 cpTargetedUserDao, cpAccStdDao,  cqmResultDAO, cqmCriterionDao,  atlDao,
                 developerDao,  devStatusDao, developerManager,  productManager, versionManager,
-                statusEventDao, curesUpdateDao, piuDao,  certResultManager, optionalStandardDao, testToolDao, testStandardDao,
-                testProcDao,  testDataDao, testFuncDao,  ucdDao, testParticipantDao,  testTaskDao, certStatusDao,
+                statusEventDao, curesUpdateDao, piuDao,  certResultManager, certStatusDao,
                 listingGraphDao, fuzzyChoicesDao,  resourcePermissions, certifiedProductSearchResultDAO,
                 Mockito.mock(ConformanceMethodDAO.class),
-                certifiedProductDetailsManager, Mockito.mock(PendingCertifiedProductManager.class),
+                certifiedProductDetailsManager,
                 Mockito.mock(SchedulerManager.class),
                 activityManager, validatorFactory, curesUpdateService, criterionService);
     }

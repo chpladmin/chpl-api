@@ -29,7 +29,6 @@ import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
-import gov.healthit.chpl.domain.UploadTemplateVersion;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.entity.FuzzyType;
@@ -534,21 +533,6 @@ public class DimensionalDataController {
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getNonconformityTypeOptions() {
         Set<CertificationCriterion> data = dimensionalDataManager.getNonconformityTypeOptions();
-        SearchOption result = new SearchOption();
-        result.setExpandable(false);
-        result.setData(data);
-        return result;
-    }
-
-    @Operation(summary = "Get all available pending listing upload template versions.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/upload_template_versions", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchOption getUploadTemplateVersions() {
-        Set<UploadTemplateVersion> data = dimensionalDataManager.getUploadTemplateVersions();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);

@@ -1,27 +1,14 @@
 package gov.healthit.chpl.web.controller;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 
-import javax.persistence.EntityNotFoundException;
-
-import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -39,39 +24,23 @@ import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchBasicDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.ConfirmCertifiedProductRequest;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
-import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
-import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
-import gov.healthit.chpl.domain.PendingCertifiedProductMetadata;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMetadataDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
-import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
-import gov.healthit.chpl.exception.DeprecatedUploadTemplateException;
-import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
-import gov.healthit.chpl.exception.ObjectMissingValidationException;
-import gov.healthit.chpl.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
-import gov.healthit.chpl.manager.CertifiedProductUploadManager;
 import gov.healthit.chpl.manager.DeveloperManager;
-import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
-import gov.healthit.chpl.validation.listing.PendingValidator;
 import gov.healthit.chpl.validation.listing.Validator;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
@@ -80,7 +49,6 @@ import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.CQMResultDetailResults;
 import gov.healthit.chpl.web.controller.results.CertificationResults;
 import gov.healthit.chpl.web.controller.results.MeasureResults;
-import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -102,41 +70,26 @@ public class CertifiedProductController {
     @Value("${uploadErrorEmailSubject}")
     private String uploadErrorEmailSubject;
 
-    private CertifiedProductUploadManager uploadManager;
     private CertifiedProductDetailsManager cpdManager;
     private CertifiedProductManager cpManager;
-    private ResourcePermissions resourcePermissions;
-    private PendingCertifiedProductManager pcpManager;
     private ActivityManager activityManager;
     private ListingValidatorFactory validatorFactory;
-    private ErrorMessageUtil msgUtil;
     private ChplProductNumberUtil chplProductNumberUtil;
-    private DeveloperManager developerManager;
-    private ChplEmailFactory chplEmailFactory;
-
-
 
     @SuppressWarnings({
             "checkstyle:parameternumber"
     })
     @Autowired
-    public CertifiedProductController(CertifiedProductUploadManager uploadManager,
-            CertifiedProductDetailsManager cpdManager, CertifiedProductManager cpManager,
-            ResourcePermissions resourcePermissions, PendingCertifiedProductManager pcpManager,
+    public CertifiedProductController(CertifiedProductDetailsManager cpdManager, CertifiedProductManager cpManager,
+            ResourcePermissions resourcePermissions,
             ActivityManager activityManager, ListingValidatorFactory validatorFactory,
             ErrorMessageUtil msgUtil, ChplProductNumberUtil chplProductNumberUtil, DeveloperManager developerManager,
             ChplEmailFactory chplEmailFactory) {
-        this.uploadManager = uploadManager;
         this.cpdManager = cpdManager;
         this.cpManager = cpManager;
-        this.resourcePermissions = resourcePermissions;
-        this.pcpManager = pcpManager;
         this.activityManager = activityManager;
         this.validatorFactory = validatorFactory;
-        this.msgUtil = msgUtil;
         this.chplProductNumberUtil = chplProductNumberUtil;
-        this.developerManager = developerManager;
-        this.chplEmailFactory = chplEmailFactory;
     }
 
     @Operation(summary = "List all certified products",
@@ -786,269 +739,6 @@ public class CertifiedProductController {
             responseHeaders.set("CHPL-Id-Changed", existingListing.getChplProductNumber());
         }
         return new ResponseEntity<CertifiedProductSearchDetails>(changedProduct, responseHeaders, HttpStatus.OK);
-    }
-
-    @Deprecated
-    @Operation(summary = "Get metadata for all pending listings the user has access to.",
-            description = "Pending listings are created via CSV file upload and are left in the 'pending' state "
-                    + " until validated and confirmed.  Security Restrictions: ROLE_ADMIN, ROLE_ACB and have "
-                    + "administrative authority on the ACB that uploaded the product.",
-            deprecated = true,
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
-    @RequestMapping(value = "/pending/metadata", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(responseClass = PendingCertifiedProductMetadata.class)
-    public @ResponseBody List<PendingCertifiedProductMetadata> getPendingCertifiedProductMetadata()
-            throws AccessDeniedException {
-        List<PendingCertifiedProductMetadataDTO> metadataDtos = pcpManager.getAllPendingCertifiedProductMetadata();
-
-        List<PendingCertifiedProductMetadata> result = new ArrayList<PendingCertifiedProductMetadata>();
-        for (PendingCertifiedProductMetadataDTO metadataDto : metadataDtos) {
-            result.add(new PendingCertifiedProductMetadata(metadataDto));
-        }
-        return result;
-    }
-
-    @Operation(summary = "List a specific pending certified product.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ACB and administrative authority "
-                    + "on the ACB for each pending certified product is required.",
-            deprecated = true,
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
-    @Deprecated
-    @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(
-            @PathVariable("pcpId") Long pcpId) throws EntityRetrievalException, EntityNotFoundException,
-            AccessDeniedException, ObjectMissingValidationException {
-        PendingCertifiedProductDetails details = pcpManager.getById(pcpId);
-        if (details == null) {
-            throw new EntityNotFoundException(msgUtil.getMessage("pendingListing.notFound"));
-        } else {
-            // make sure the user has permissions on the pending listings acb
-            // will throw access denied if they do not have the permissions
-            Long pendingListingAcbId = new Long(details.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
-            resourcePermissions.getAcbIfPermissionById(pendingListingAcbId);
-        }
-        return details;
-    }
-
-    @Operation(summary = "Reject a pending certified product.",
-            description = "Essentially deletes a pending certified product. Security Restrictions: ROLE_ADMIN or have ROLE_ACB "
-                    + "and administrative authority on the ACB for each pending certified product is required.",
-            deprecated = true,
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
-    @Deprecated
-    @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}", method = RequestMethod.DELETE,
-            produces = "application/json; charset=utf-8")
-    public @ResponseBody String rejectPendingCertifiedProduct(@PathVariable("pcpId") Long pcpId)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
-            AccessDeniedException, ObjectMissingValidationException {
-        pcpManager.deletePendingCertifiedProduct(pcpId);
-        return "{\"success\" : true}";
-    }
-
-    @Operation(summary = "Reject several pending certified products.",
-            description = "Marks a list of pending certified products as deleted. ROLE_ADMIN or ROLE_ACB "
-                    + " and administrative authority on the ACB for each pending certified product is required.",
-            deprecated = true,
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
-    @Deprecated
-    @RequestMapping(value = "/pending", method = RequestMethod.DELETE,
-            produces = "application/json; charset=utf-8")
-    public @ResponseBody String rejectPendingCertifiedProducts(@RequestBody IdListContainer idList)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
-            AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
-
-        if (idList == null || idList.getIds() == null || idList.getIds().size() == 0) {
-            throw new InvalidArgumentsException("At least one id must be provided for rejection.");
-        }
-
-        ObjectsMissingValidationException possibleExceptions = new ObjectsMissingValidationException();
-        for (Long pcpId : idList.getIds()) {
-            try {
-                pcpManager.deletePendingCertifiedProduct(pcpId);
-            } catch (ObjectMissingValidationException ex) {
-                possibleExceptions.getExceptions().add(ex);
-            }
-        }
-
-        if (possibleExceptions.getExceptions() != null && possibleExceptions.getExceptions().size() > 0) {
-            throw possibleExceptions;
-        }
-        return "{\"success\" : true}";
-    }
-
-    @Operation(summary = "Confirm a pending certified product.",
-            description = "Creates a new certified product in the system based on all of the information "
-                    + "passed in on the request. This information may differ from what was previously "
-                    + "entered for the pending certified product during upload. It will first be validated "
-                    + "to check for errors, then a new certified product is created, and the old pending certified"
-                    + "product will be removed. Security Restrictions:  ROLE_ADMIN or have ROLE_ACB and "
-                    + "administrative authority on the ACB for each pending certified product is required.",
-            deprecated = true,
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
-    @RequestMapping(value = "/pending/{pcpId:^-?\\d+$}/beta/confirm", method = RequestMethod.POST,
-            produces = "application/json; charset=utf-8")
-    @Deprecated
-    public ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProductRequest(
-            @RequestBody(required = true) ConfirmCertifiedProductRequest request)
-            throws InvalidArgumentsException, ValidationException,
-            EntityCreationException, EntityRetrievalException,
-            ObjectMissingValidationException, IOException {
-        Long acbId = getAcbIdFromPendingListing(request.getPendingListing());
-        if (acbId == null) {
-            throw new InvalidArgumentsException(msgUtil.getMessage("pendlingListing.missingAcb"));
-        }
-        PendingCertifiedProductDTO pcpDto = new PendingCertifiedProductDTO(request.getPendingListing());
-        validate(pcpDto, request.isAcknowledgeWarnings());
-        ResponseEntity<CertifiedProductSearchDetails> response = null;
-        boolean wasAvailable = pcpManager.markAsProcessingIfAvailable(acbId, pcpDto.getId());
-        if (wasAvailable) {
-            CertifiedProductSearchDetails createdListing = null;
-            try {
-                CertifiedProductDTO createdProduct = cpManager.createFromPending(pcpDto, request.isAcknowledgeWarnings());
-                createdListing = cpdManager.getCertifiedProductDetails(createdProduct.getId());
-            } catch (Exception ex) {
-                // TODO - alert on this message in datadog
-                LOGGER.error("Unexpected exception confirming pending listing " + pcpDto.getId() + ".", ex);
-                pcpManager.markAsNotProcessing(acbId, pcpDto.getId());
-            } finally {
-                response = getConfirmResponse(createdListing);
-            }
-        } else {
-            throw new InvalidArgumentsException(msgUtil.getMessage("pendingListing.alreadyProcessing"));
-        }
-        return response;
-    }
-
-    private Long getAcbIdFromPendingListing(PendingCertifiedProductDetails pendingListing) {
-        return MapUtils.getLong(pendingListing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_ID_KEY);
-    }
-
-    private void validate(PendingCertifiedProductDTO pcpDto, boolean isAcknowledgeWarnings)
-            throws EntityRetrievalException, ValidationException {
-        PendingValidator validator = validatorFactory.getValidator(pcpDto);
-        if (validator != null) {
-            validator.validate(pcpDto, false);
-        }
-        if (pcpDto.getErrorMessages() != null && pcpDto.getErrorMessages().size() > 0
-                || (pcpDto.getWarningMessages() != null && pcpDto.getWarningMessages().size() > 0
-                        && !isAcknowledgeWarnings)) {
-            throw new ValidationException(pcpDto.getErrorMessages(), pcpDto.getWarningMessages());
-        }
-        developerManager.validateDeveloperInSystemIfExists(pcpDto);
-    }
-
-    private ResponseEntity<CertifiedProductSearchDetails> getConfirmResponse(CertifiedProductSearchDetails createdListing) {
-        if (createdListing != null) {
-            HttpHeaders responseHeaders = new HttpHeaders();
-            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-            return new ResponseEntity<CertifiedProductSearchDetails>(createdListing, responseHeaders, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<CertifiedProductSearchDetails>(null, null, HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @Operation(summary = "Upload a file with certified products",
-            description = "Accepts a CSV file with very specific fields to create pending certified products. "
-                    + "Security Restrictions: ROLE_ADMIN or user uploading the file must have ROLE_ACB "
-                    + "and administrative authority on the ACB(s) specified in the file.",
-            deprecated = true,
-            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
-    @Deprecated
-    @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public ResponseEntity<PendingCertifiedProductResults> upload(@RequestParam("file") MultipartFile file)
-            throws ValidationException, JsonProcessingException, InvalidArgumentsException, MaxUploadSizeExceededException {
-        List<PendingCertifiedProductEntity> listingsToAdd = new ArrayList<PendingCertifiedProductEntity>();
-        Set<String> errorMessages = new HashSet<String>();
-        HttpHeaders responseHeaders = new HttpHeaders();
-        try {
-            listingsToAdd = uploadManager.parseListingsFromFile(file);
-        } catch (DeprecatedUploadTemplateException dep) {
-            responseHeaders.set(
-                    HttpHeaders.WARNING, "299 - \"Deprecated upload template\"");
-        } catch (ValidationException e) {
-            errorMessages.addAll(e.getErrorMessages());
-        } catch (InvalidArgumentsException | JsonProcessingException e) {
-            errorMessages.add(e.getMessage());
-        }
-        if (errorMessages.size() > 0) {
-            throw new ValidationException(errorMessages);
-        }
-
-        List<PendingCertifiedProductDetails> uploadedListings = new ArrayList<PendingCertifiedProductDetails>();
-        for (PendingCertifiedProductEntity listingToAdd : listingsToAdd) {
-            try {
-                PendingCertifiedProductDTO pendingCpDto = pcpManager.createOrReplace(listingToAdd);
-                PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
-                uploadedListings.add(details);
-            } catch (EntityCreationException | EntityRetrievalException ex) {
-                String error = "Error creating pending certified product " + listingToAdd.getUniqueId()
-                        + ". Error was: " + ex.getMessage();
-                LOGGER.error(error);
-                // send an email that something weird happened
-                sendUploadError(file, ex);
-                throw new ValidationException(error);
-            }
-        }
-
-        PendingCertifiedProductResults results = new PendingCertifiedProductResults();
-        results.getPendingCertifiedProducts().addAll(uploadedListings);
-        return new ResponseEntity<PendingCertifiedProductResults>(results, responseHeaders, HttpStatus.OK);
-    }
-
-    private void sendUploadError(MultipartFile file, Exception ex) {
-        if (StringUtils.isEmpty(uploadErrorEmailRecipients)) {
-            return;
-        }
-        List<String> recipients = Arrays.asList(uploadErrorEmailRecipients.split(","));
-
-        // figure out the filename for the attachment
-        String originalFilename = file.getOriginalFilename();
-        int indexOfExtension = originalFilename.indexOf(".");
-        String filenameWithoutExtension = file.getOriginalFilename();
-        if (indexOfExtension >= 0) {
-            filenameWithoutExtension = originalFilename.substring(0, indexOfExtension);
-        }
-        String extension = ".csv";
-        if (indexOfExtension >= 0) {
-            extension = originalFilename.substring(indexOfExtension);
-        }
-
-        // attach the file the user tried to upload
-        File temp = null;
-        List<File> attachments = null;
-        try {
-            temp = File.createTempFile(filenameWithoutExtension, extension);
-            file.transferTo(temp);
-            attachments = new ArrayList<File>();
-            attachments.add(temp);
-        } catch (IOException io) {
-            LOGGER.error("Could not create temporary file for attachment: " + io.getMessage(), io);
-        }
-
-        // create the email body
-        String htmlBody = "<p>Upload attempted at " + new Date()
-                + "<br/>Uploaded by " + AuthUtil.getUsername() + "</p>";
-        StringWriter writer = new StringWriter();
-        ex.printStackTrace(new PrintWriter(writer));
-        htmlBody += "<pre>" + writer.toString() + "</pre>";
-
-        // build and send the email
-        try {
-            chplEmailFactory.emailBuilder().recipients(recipients)
-                    .subject(uploadErrorEmailSubject)
-                    .fileAttachments(attachments)
-                    .htmlMessage(htmlBody)
-                    .sendEmail();
-        } catch (EmailNotSentException msgEx) {
-            LOGGER.error("Could not send email about failed listing upload: " + msgEx.getMessage(), msgEx);
-        }
     }
 
     private CertifiedProductSearchDetails validateCertifiedProduct(
