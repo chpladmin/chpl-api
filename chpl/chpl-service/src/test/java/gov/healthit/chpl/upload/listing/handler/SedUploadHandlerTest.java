@@ -175,6 +175,23 @@ public class SedUploadHandlerTest {
     }
 
     @Test
+    public void parseTasks_CriterionTaskIdEmptyAndAvailableTaskColumns_ReturnsSedWithNullTaskId() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                "UNIQUE_CHPL_ID__C,Task Identifier,Participant Identifier,"
+                + "CRITERIA_170_315_A_1__C,Task Identifier,Participant Identifier").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
+                "14.05.05,A1,A1.1,1,,A1.1");
+        assertNotNull(listingRecords);
+
+        CertifiedProductSed parsedSed = handler.parseAsSed(headingRecord, listingRecords);
+        assertNotNull(parsedSed);
+        assertNotNull(parsedSed.getTestTasks());
+        assertEquals(1, parsedSed.getTestTasks().size());
+        assertNull(parsedSed.getTestTasks().get(0).getUniqueId());
+    }
+
+    @Test
     public void parseTasks_CriterionParticipantAndAvailableParticipantColumns_ReturnsSedWithParticipantData() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 "UNIQUE_CHPL_ID__C," + TEST_PARTICIPANT_HEADER
