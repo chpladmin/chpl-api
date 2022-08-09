@@ -1,6 +1,7 @@
 package gov.healthit.chpl.changerequest.domain.service.email;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,7 +16,9 @@ import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
+import gov.healthit.chpl.form.AllowedResponse;
 import gov.healthit.chpl.form.FormItem;
+import gov.healthit.chpl.form.SectionHeading;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 
 public abstract class ChangeRequestEmail {
@@ -57,6 +60,7 @@ public abstract class ChangeRequestEmail {
         List<String> headings = Arrays.asList("Condition", "Attestation", "Response");
 
         List<List<String>> rows = attestationSubmission.getForm().getSectionHeadings().stream()
+                .sorted(Comparator.comparing(SectionHeading::getSortOrder))
                 .map(sh -> Arrays.asList(
                         sh.getName(),
                         convertPsuedoMarkdownToHtmlLink(NullSafeEvaluator.eval(() -> sh.getFormItems().get(0).getQuestion().getQuestion(), "Unknown")),
@@ -73,6 +77,7 @@ public abstract class ChangeRequestEmail {
             FormItem childFormItem = formItem.getChildFormItems().get(0);
             responses.append("<ul>");
             responses.append(childFormItem.getSubmittedResponses().stream()
+                    .sorted(Comparator.comparing(AllowedResponse::getSortOrder))
                     .map(resp -> "<li>" + resp.getResponse() + "</li>")
                     .collect(Collectors.joining()));
             responses.append("</ul>");
