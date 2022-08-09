@@ -136,10 +136,10 @@ public class DeveloperDetailsUploadHandlerTest {
     @Test
     public void parseAddress_AllAddressFields_ParsesCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
-                HEADER_ROW + ",VENDOR_STREET_ADDRESS__C,VENDOR_CITY__C,VENDOR_STATE__C,VENDOR_ZIP__C").get(0);
+                HEADER_ROW + ",VENDOR_STREET_ADDRESS__C,VENDOR_STREET_ADDRESS_2__C,VENDOR_CITY__C,VENDOR_STATE__C,VENDOR_ZIP__C").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(
-                LISTING_ROW + "," + "111 Rocky Rd.,Baltimore,MD,21205");
+                LISTING_ROW + "," + "111 Rocky Rd.,Suite 100,Baltimore,MD,21205");
         assertNotNull(listingRecords);
 
         Developer developer = handler.handle(headingRecord, listingRecords);
@@ -147,6 +147,7 @@ public class DeveloperDetailsUploadHandlerTest {
         Address address = developer.getUserEnteredAddress();
         assertNotNull(address);
         assertEquals("111 Rocky Rd.", address.getLine1());
+        assertEquals("Suite 100", address.getLine2());
         assertEquals("Baltimore", address.getCity());
         assertEquals("MD", address.getState());
         assertEquals("21205", address.getZipcode());

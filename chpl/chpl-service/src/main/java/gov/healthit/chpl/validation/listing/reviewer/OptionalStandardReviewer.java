@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,7 +37,8 @@ public class OptionalStandardReviewer extends PermissionBasedReviewer implements
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         List<CertificationResult> certificationResultsWithOptionalStandards = listing.getCertificationResults().stream()
-                .filter(cr -> cr.isSuccess() && cr.getOptionalStandards() != null && cr.getOptionalStandards().size() > 0)
+                .filter(cr -> BooleanUtils.isTrue(cr.isSuccess())
+                        && !CollectionUtils.isEmpty(cr.getOptionalStandards()))
                 .collect(Collectors.toList());
         Map<Long, List<OptionalStandardCriteriaMap>> optionalStandardCriteriaMap = null;
         try {

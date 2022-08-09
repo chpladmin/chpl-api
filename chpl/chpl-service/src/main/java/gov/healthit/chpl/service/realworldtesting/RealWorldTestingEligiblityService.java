@@ -41,6 +41,7 @@ public class RealWorldTestingEligiblityService {
     private CertifiedProductDAO certifiedProductDAO;
 
     private Map<Long, RealWorldTestingEligibility> memo = new HashMap<Long, RealWorldTestingEligibility>();
+    private List<CertificationStatusType> withdrawnStatuses;
 
     public RealWorldTestingEligiblityService(RealWorldTestingCriteriaService realWorldTestingCriteriaService,
             RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer,
@@ -53,6 +54,12 @@ public class RealWorldTestingEligiblityService {
         this.certStatusService = certStatusService;
         this.rwtProgramStartDate = rwtProgramStartDate;
         this.rwtProgramFirstEligibilityYear = rwtProgramFirstEligibilityYear;
+
+        withdrawnStatuses = List.of(CertificationStatusType.WithdrawnByDeveloper,
+                CertificationStatusType.WithdrawnByAcb,
+                CertificationStatusType.WithdrawnByDeveloperUnderReview,
+                CertificationStatusType.Retired,
+                CertificationStatusType.TerminatedByOnc);
     }
 
     public RealWorldTestingEligibility getRwtEligibilityYearForListing(Long listingId, Logger logger) {
@@ -127,7 +134,7 @@ public class RealWorldTestingEligiblityService {
                         if (Integer.valueOf(cpParentDto.getIcsCode()) >= Integer.valueOf(cpChild.getIcsCode())) {
                             continue;
                         }
-                        if (listingIsInStatus(cpParentDto, CertificationStatusType.WithdrawnByDeveloper, logger)) {
+                        if (listingIsWithdrawn(cpParentDto, logger)) {
                             //If parent is withdrawn continue with calculating its eligibility year.... Uh-oh - possible recursion...
                             RealWorldTestingEligibility parentEligibility = getRwtEligibilityYearForListing(cpParent.getId(), logger);
                             if (parentEligibility.getEligibilityYear() != null
@@ -149,12 +156,15 @@ public class RealWorldTestingEligiblityService {
         }
     }
 
-    private boolean listingIsInStatus(CertifiedProductDTO listing, CertificationStatusType certificationStatus, Logger logger) {
+    private boolean listingIsWithdrawn(CertifiedProductDTO listing, Logger logger) {
         boolean result = false;
         try {
             CertificationStatusEvent currentStatusEvent = certStatusService.getCurrentCertificationStatusEvent(listing.getId());
             logger.debug("Listing " + listing.getId() + " has current certification status of " + currentStatusEvent.getStatus().getName());
-            result = currentStatusEvent != null && currentStatusEvent.getStatus().getName().equals(certificationStatus.getName());
+            result = currentStatusEvent != null && withdrawnStatuses.stream()
+                    .map(status -> status.getName())
+                    .filter(statusName -> currentStatusEvent.getStatus().getName().equals(statusName))
+                    .findAny().isPresent();
         } catch (EntityRetrievalException ex) {
             logger.error("Unable to get current certification status event for listing  " + listing.getId(), ex);
             return result;
@@ -208,7 +218,14 @@ public class RealWorldTestingEligiblityService {
 
     private boolean isListingStatusActiveAsOfEligibilityDate(CertifiedProductSearchDetails listing, LocalDate eligibilityDate) {
         CertificationStatusEvent event = listing.getStatusOnDate(convertLocalDateToDateUtcAtMidnight(eligibilityDate));
-        return Objects.nonNull(event) && event.getStatus().getName().equals(CertificationStatusType.Active.getName());
+        return Objects.nonNull(event)
+                && isActive(event.getStatus().getName());
+    }
+
+    private boolean isActive(String statusName) {
+        return statusName.equals(CertificationStatusType.Active.getName())
+                || statusName.equals(CertificationStatusType.SuspendedByAcb.getName())
+                || statusName.equals(CertificationStatusType.SuspendedByOnc.getName());
     }
 
     private Date convertLocalDateToDateUtcAtMidnight(LocalDate localDate) {
