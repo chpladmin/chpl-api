@@ -20,9 +20,9 @@ import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import lombok.extern.log4j.Log4j2;
 
-@Component("measureUploadHandler")
+@Component("measuresAtCriteriaLevelUploadHandler")
 @Log4j2
-public class MeasureUploadHandler {
+public class MeasuresAtCriteriaLevelUploadHandler {
     private static final String G1_MEASURE_TYPE = "G1";
     private static final String G2_MEASURE_TYPE = "G2";
 
@@ -30,7 +30,7 @@ public class MeasureUploadHandler {
     private ListingUploadHandlerUtil uploadUtil;
 
     @Autowired
-    public MeasureUploadHandler(CertificationCriterionUploadHandler criterionHandler,
+    public MeasuresAtCriteriaLevelUploadHandler(CertificationCriterionUploadHandler criterionHandler,
             ListingUploadHandlerUtil uploadUtil) {
         this.criterionHandler = criterionHandler;
         this.uploadUtil = uploadUtil;
