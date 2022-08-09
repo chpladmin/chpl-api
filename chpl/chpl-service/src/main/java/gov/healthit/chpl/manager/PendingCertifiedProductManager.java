@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certifiedproduct.service.CertificationResultService;
 import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
@@ -480,7 +479,7 @@ public class PendingCertifiedProductManager extends SecuredManager {
 
     private List<ConformanceMethod> getAvailableConformanceMethodsForCriteria(CertificationResult result, List<ConformanceMethodCriteriaMap> conformanceMethodCriteriaMap) {
         return conformanceMethodCriteriaMap.stream()
-                .filter(cmm -> ff4j.check(FeatureList.CONFORMANCE_METHOD) && cmm.getCriterion().getId().equals(result.getCriterion().getId()))
+                .filter(cmm -> cmm.getCriterion().getId().equals(result.getCriterion().getId()))
                 .map(cmm -> cmm.getConformanceMethod())
                 .collect(Collectors.toList());
     }
