@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.user.User;
@@ -18,30 +16,6 @@ import lombok.extern.log4j.Log4j2;
 @Repository("deprecatedApiUsageDao")
 @Log4j2
 public class DeprecatedApiUsageDao extends BaseDAOImpl {
-
-    @Transactional
-    public DeprecatedApi getDeprecatedApi(HttpMethod httpMethod, String apiOperation, String requestParameter) {
-        String hql = "SELECT api "
-                + "FROM DeprecatedApiEntity api "
-                + "WHERE deleted = false "
-                + "AND httpMethod = :httpMethod "
-                + "AND apiOperation = :apiOperation";
-        if (!StringUtils.isEmpty(requestParameter)) {
-            hql += " AND requestParameter = :requestParameter";
-        }
-        Query query = entityManager.createQuery(hql);
-        query.setParameter("httpMethod", httpMethod.name());
-        query.setParameter("apiOperation", apiOperation);
-        if (!StringUtils.isEmpty(requestParameter)) {
-            query.setParameter("requestParameter", requestParameter);
-        }
-        List<DeprecatedApiEntity> matchingDeprecatedApis = query.getResultList();
-        if (matchingDeprecatedApis == null || matchingDeprecatedApis.size() == 0) {
-            LOGGER.error("Deprecated API method = '" + httpMethod.name() + "', apiOperation = '" + apiOperation + "', requestParamter = '" + requestParameter + "' was not found.");
-            return null;
-        }
-        return matchingDeprecatedApis.get(0).toDomain();
-    }
 
     @Transactional
     public List<DeprecatedApiUsage> getUnnotifiedUsage() {
@@ -59,7 +33,9 @@ public class DeprecatedApiUsageDao extends BaseDAOImpl {
 
     @Transactional
     public void createOrUpdateDeprecatedApiUsage(DeprecatedApiUsage apiUsage) {
-        DeprecatedApiUsageEntity existingEntity = getDeprecatedApiUsage(apiUsage.getApiKey().getId(), apiUsage.getApi().getId());
+        DeprecatedApiUsageEntity existingEntity = getDeprecatedApiUsage(apiUsage.getApiKey().getId(),
+                apiUsage.getHttpMethod(), apiUsage.getApiOperation(),
+                apiUsage.getResponseField());
         if (existingEntity == null) {
             create(apiUsage);
         } else {
@@ -83,14 +59,19 @@ public class DeprecatedApiUsageDao extends BaseDAOImpl {
         DeprecatedApiUsageEntity entity = new DeprecatedApiUsageEntity();
         entity.setApiCallCount(1L);
         entity.setApiKeyId(apiUsage.getApiKey().getId());
+        entity.setHttpMethod(apiUsage.getHttpMethod());
+        entity.setApiOperation(apiUsage.getApiOperation());
+        entity.setResponseField(apiUsage.getResponseField());
+        entity.setRemovalDate(apiUsage.getRemovalDate());
+        entity.setMessage(apiUsage.getMessage());
         entity.setDeleted(false);
-        entity.setDeprecatedApiId(apiUsage.getApi().getId());
         entity.setLastAccessedDate(new Date());
         entity.setLastModifiedUser(User.SYSTEM_USER_ID);
         create(entity);
     }
 
-    private DeprecatedApiUsageEntity getDeprecatedApiUsage(Long apiKeyId, Long deprecatedApiId) {
+    private DeprecatedApiUsageEntity getDeprecatedApiUsage(Long apiKeyId, String httpMethod,
+            String apiOperation, String responseField) {
         String hql = "SELECT apiUsage "
                 + "FROM DeprecatedApiUsageEntity apiUsage "
                 + "JOIN FETCH apiUsage.deprecatedApi api "
@@ -98,13 +79,20 @@ public class DeprecatedApiUsageDao extends BaseDAOImpl {
                 + "WHERE apiUsage.notificationSent IS NULL "
                 + "AND apiUsage.deleted = false "
                 + "AND apiUsage.apiKeyId = :apiKeyId "
-                + "AND apiUsage.deprecatedApiId = :deprecatedApiId";
+                + "AND apiUsage.httpMethod = :httpMethod "
+                + "AND apiUsage.apiOperation = :apiOperation "
+                + "AND apiUsage.responseField = :responseField";
         Query query = entityManager.createQuery(hql);
         query.setParameter("apiKeyId", apiKeyId);
-        query.setParameter("deprecatedApiId", deprecatedApiId);
+        query.setParameter("httpMethod", httpMethod);
+        query.setParameter("apiOperation", apiOperation);
+        query.setParameter("responseField", responseField);
         List<DeprecatedApiUsageEntity> results = query.getResultList();
         if (results == null || results.size() == 0) {
-            LOGGER.info("No deprecated api usage exists for api key ID " + apiKeyId + " and deprecated api ID: " + deprecatedApiId);
+            LOGGER.info("No deprecated api usage exists for api key ID " + apiKeyId
+                    + ", HTTP Method " + httpMethod
+                    + ", API Operation " + apiOperation
+                    + ", and Response Field " + responseField);
             return null;
         }
         return results.get(0);

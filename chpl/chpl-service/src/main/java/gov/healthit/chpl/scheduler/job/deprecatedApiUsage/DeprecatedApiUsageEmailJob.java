@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,7 +23,6 @@ import gov.healthit.chpl.api.deprecatedUsage.DeprecatedApiUsage;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedApiUsageDao;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseFieldApiUsage;
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseFieldApiUsageDao;
 import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
@@ -34,9 +34,6 @@ import lombok.extern.log4j.Log4j2;
 public class DeprecatedApiUsageEmailJob implements Job {
     @Autowired
     private DeprecatedApiUsageDao deprecatedApiUsageDao;
-
-    @Autowired
-    private DeprecatedResponseFieldApiUsageDao deprecatedResponseFieldApiUsageDao;
 
     @Autowired
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
@@ -77,19 +74,13 @@ public class DeprecatedApiUsageEmailJob implements Job {
         try {
             List<DeprecatedApiUsage> allDeprecatedApiUsage = deprecatedApiUsageDao.getUnnotifiedUsage();
             LOGGER.info(allDeprecatedApiUsage.size() + " records of deprecated API usage were retrieved.");
-            List<DeprecatedResponseFieldApiUsage> allDeprecatedResponseFieldUsage = deprecatedResponseFieldApiUsageDao.getUnnotifiedUsage();
-            LOGGER.info(allDeprecatedResponseFieldUsage.size() + " records of APIs with deprecated response field usage were retrieved.");
 
-            Set<ApiKey> apiKeys = getDistinctApiKeys(allDeprecatedApiUsage, allDeprecatedResponseFieldUsage);
-            LOGGER.info(apiKeys.size() + " API Keys accessed deprecated APIs.");
+            Set<ApiKey> apiKeys = getDistinctApiKeys(allDeprecatedApiUsage);
+            LOGGER.info(apiKeys.size() + " distinct API Keys were found.");
 
             apiKeys.stream()
-                .forEach(apiKey -> sendUsageEmailAndDeleteUsageRecords(
-                        apiKey,
+                .forEach(apiKey -> sendUsageEmailAndDeleteUsageRecords(apiKey,
                         allDeprecatedApiUsage.stream()
-                            .filter(usage -> usage.getApiKey().equals(apiKey))
-                            .collect(Collectors.toList()),
-                        allDeprecatedResponseFieldUsage.stream()
                             .filter(usage -> usage.getApiKey().equals(apiKey))
                             .collect(Collectors.toList())));
 
@@ -100,46 +91,53 @@ public class DeprecatedApiUsageEmailJob implements Job {
         LOGGER.info("********* Completed the Deprecated Api Usage Email job. *********");
     }
 
-    private Set<ApiKey> getDistinctApiKeys(List<DeprecatedApiUsage> allDeprecatedApiUsage,
-            List<DeprecatedResponseFieldApiUsage> allDeprecatedResponseFieldUsage) {
+    private Set<ApiKey> getDistinctApiKeys(List<DeprecatedApiUsage> allDeprecatedApiUsage) {
         Set<ApiKey> distinctApiKeys = new LinkedHashSet<ApiKey>();
         distinctApiKeys.addAll(
                 allDeprecatedApiUsage.stream()
                     .map(usage -> usage.getApiKey())
                     .distinct()
                     .collect(Collectors.toList()));
-        distinctApiKeys.addAll(
-                allDeprecatedResponseFieldUsage.stream()
-                    .map(usage -> usage.getApiKey())
-                    .distinct()
-                    .collect(Collectors.toList()));
         return distinctApiKeys;
     }
 
-    private void sendUsageEmailAndDeleteUsageRecords(ApiKey apiKey, List<DeprecatedApiUsage> deprecatedApiUsage,
-            List<DeprecatedResponseFieldApiUsage> deprecatedResponseFieldUsage) {
-        LOGGER.info("API Key " + apiKey.getId() + " for " + apiKey.getEmail() + " has used " + deprecatedApiUsage.size() + " deprecated APIs.");
-        LOGGER.info("API Key " + apiKey.getId() + " for " + apiKey.getEmail() + " has used " + deprecatedResponseFieldUsage.size() + " APIs with deprecated response fields.");
+    private void sendUsageEmailAndDeleteUsageRecords(ApiKey apiKey, List<DeprecatedApiUsage> allUsage) {
+        long deprecatedApisUsedCount = getDeprecatedApiUsage(allUsage).size();
+        long apisWithDeprecatedResponseFieldsUsedCount = getApisUsedWithDeprecatedResponseFields(allUsage)
+                .keySet()
+                .size();
+
+        LOGGER.info("API Key " + apiKey.getId() + " for " + apiKey.getEmail() + " has used " + deprecatedApisUsedCount + " deprecated APIs.");
+        LOGGER.info("API Key " + apiKey.getId() + " for " + apiKey.getEmail() + " has used " + apisWithDeprecatedResponseFieldsUsedCount + " APIs with deprecated response fields.");
 
         EmailBuilder emailBuilder = chplEmailFactory.emailBuilder();
         try {
             emailBuilder.recipient(apiKey.getEmail())
                 .subject(deprecatedApiUsageEmailSubject)
-                .htmlMessage(createHtmlMessage(apiKey, deprecatedApiUsage, deprecatedResponseFieldUsage))
+                .htmlMessage(createHtmlMessage(apiKey, deprecatedApiUsage))
                 .sendEmail();
             LOGGER.info("Sent email to " + apiKey.getEmail() + ".");
             deprecatedApiUsage.stream().forEach(item -> markAsUserNotified(item));
             LOGGER.info("Marked " + deprecatedApiUsage.size() + " deprecated API usage records as user-notified for " + apiKey.getEmail());
-            deprecatedResponseFieldUsage.stream().forEach(item -> markAsUserNotified(item));
-            LOGGER.info("Marked " + deprecatedResponseFieldUsage.size() + " deprecated response field usage records as user-notified for " + apiKey.getEmail());
         } catch (Exception ex) {
             LOGGER.error("Unable to send email to " + apiKey.getEmail() + ". "
                     + "User may not have been notified and database records will not be deleted.", ex);
         }
     }
 
-    private String createHtmlMessage(ApiKey apiKey, List<DeprecatedApiUsage> deprecatedApiUsage,
-            List<DeprecatedResponseFieldApiUsage> deprecatedResponseFieldUsage) throws IOException {
+    private List<DeprecatedApiUsage> getDeprecatedApiUsage(List<DeprecatedApiUsage> allUsage) {
+        return allUsage.stream()
+                .filter(usage -> usage.getResponseField() == null)
+                .collect(Collectors.toList());
+    }
+
+    private Map<String, List<DeprecatedApiUsage>> getApisUsedWithDeprecatedResponseFields(List<DeprecatedApiUsage> allUsage) {
+        return allUsage.stream()
+                .filter(usage -> usage.getResponseField() != null)
+                .collect(Collectors.groupingBy(DeprecatedApiUsage::getEndpoint));
+    }
+
+    private String createHtmlMessage(ApiKey apiKey, List<DeprecatedApiUsage> deprecatedApiUsage) throws IOException {
         List<String> apiUsageHeading  = Stream.of("HTTP Method", "API Endpoint", "Usage Count", "Last Accessed", "Message", "Estimated Removal Date").collect(Collectors.toList());
         List<List<String>> apiUsageData = new ArrayList<List<String>>();
         deprecatedApiUsage.stream().forEach(api -> apiUsageData.add(createEndpointUsageData(api)));
