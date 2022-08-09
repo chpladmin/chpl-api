@@ -94,6 +94,9 @@ public class DeveloperReviewer implements Reviewer {
             if (!StringUtils.isEmpty(userEnteredAddress.getLine1()) && !userEnteredAddress.getLine1().equals(address.getLine1())) {
                 listing.getWarningMessages().add(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "street address", userEnteredAddress.getLine1(), address.getLine1()));
             }
+            if (!StringUtils.isEmpty(userEnteredAddress.getLine2()) && !userEnteredAddress.getLine2().equals(address.getLine2())) {
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "street address line 2", userEnteredAddress.getLine2(), address.getLine2()));
+            }
             if (!StringUtils.isEmpty(userEnteredAddress.getCity()) && !userEnteredAddress.getCity().equals(address.getCity())) {
                 listing.getWarningMessages().add(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "city", userEnteredAddress.getCity(), address.getCity()));
             }

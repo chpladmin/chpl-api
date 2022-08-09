@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.validation.ValidationException;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
+import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.upload.listing.Headings;
@@ -34,7 +36,8 @@ public class ListingDetailsUploadHandler {
     private QmsUploadHandler qmsHandler;
     private IcsUploadHandler icsHandler;
     private CqmUploadHandler cqmHandler;
-    private MeasureUploadHandler measureHandler;
+    private MeasuresUploadHandler measuresUploadHandler;
+    private MeasuresAtCriteriaLevelUploadHandler measureAtCriteriaLevelHandler;
     private SedUploadHandler sedUploadHandler;
     private CertificationResultUploadHandler certResultHandler;
     private ListingUploadHandlerUtil uploadUtil;
@@ -47,7 +50,8 @@ public class ListingDetailsUploadHandler {
             TargetedUsersUploadHandler targetedUserUploadHandler,
             AccessibilityStandardsUploadHandler accessibilityStandardsHandler,
             QmsUploadHandler qmsHandler, IcsUploadHandler icsHandler,
-            CqmUploadHandler cqmHandler, MeasureUploadHandler measureHandler,
+            CqmUploadHandler cqmHandler, MeasuresUploadHandler measuresUploadHandler,
+            MeasuresAtCriteriaLevelUploadHandler measureAtCriteriaLevelHandler,
             SedUploadHandler sedUploadHandler, CertificationResultUploadHandler certResultHandler,
             ListingUploadHandlerUtil uploadUtil) {
         this.editionHandler = editionHandler;
@@ -58,7 +62,8 @@ public class ListingDetailsUploadHandler {
         this.qmsHandler = qmsHandler;
         this.icsHandler = icsHandler;
         this.cqmHandler = cqmHandler;
-        this.measureHandler = measureHandler;
+        this.measuresUploadHandler = measuresUploadHandler;
+        this.measureAtCriteriaLevelHandler = measureAtCriteriaLevelHandler;
         this.sedUploadHandler = sedUploadHandler;
         this.certResultHandler = certResultHandler;
         this.uploadUtil = uploadUtil;
@@ -87,13 +92,19 @@ public class ListingDetailsUploadHandler {
                 .ics(icsHandler.handle(headingRecord, listingRecords))
                 .svapNoticeUrl(parseSvapNoticeUrl(headingRecord, listingRecords))
                 .cqmResults(cqmHandler.handle(headingRecord, listingRecords))
-                .measures(measureHandler.parseAsMeasures(headingRecord, listingRecords))
+                .measures(measuresUploadHandler.parseAsMeasures(headingRecord, listingRecords))
                 .sedReportFileLocation(parseSedReportLocationUrl(headingRecord, listingRecords))
                 .sedIntendedUserDescription(parseSedIntendedUserDescription(headingRecord, listingRecords))
                 .sedTestingEndDate(parseSedTestingDate(headingRecord, listingRecords))
                 .sedTestingEndDateStr(parseSedTestingDateStr(headingRecord, listingRecords))
                 .sed(sedUploadHandler.parseAsSed(headingRecord, listingRecords))
             .build();
+
+        //add measures from the criteria level - not preferred
+        List<ListingMeasure> measuresFromCriteriaLevel = measureAtCriteriaLevelHandler.parseAsMeasures(headingRecord, listingRecords);
+        if (!CollectionUtils.isEmpty(measuresFromCriteriaLevel)) {
+            listing.getMeasures().addAll(measuresFromCriteriaLevel);
+        }
 
         //add cert result data
         List<CertificationResult> certResultList = new ArrayList<CertificationResult>();

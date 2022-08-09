@@ -58,6 +58,8 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceReportingActivityJob;
+import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
+import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceCreationValidator;
@@ -146,6 +148,7 @@ public class SurveillanceManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
+    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#survToInsert.certifiedProduct.id")
     public Long createSurveillance(Surveillance survToInsert)
             throws UserPermissionRetrievalException, EntityRetrievalException, JsonProcessingException, EntityCreationException,
             ValidationException {
@@ -185,6 +188,7 @@ public class SurveillanceManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
+    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#survToUpdate.certifiedProduct.id")
     public void updateSurveillance(final Surveillance survToUpdate) throws EntityRetrievalException,
             EntityCreationException, JsonProcessingException, ValidationException {
         CertifiedProductSearchDetails beforeListing = cpDetailsManager
@@ -210,6 +214,7 @@ public class SurveillanceManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
+    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#survToDelete.certifiedProduct.id")
     public void deleteSurveillance(Surveillance survToDelete, String reason)
             throws InvalidArgumentsException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
         if (survToDelete == null) {
@@ -222,7 +227,7 @@ public class SurveillanceManager extends SecuredManager {
         survDao.deleteSurveillance(survToDelete);
 
         CertifiedProductSearchDetails afterCp = cpDetailsManager
-                .getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
+                .getCertifiedProductDetailsNoCache(survToDelete.getCertifiedProduct().getId());
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, afterCp.getId(),
                 "Surveillance was delete from certified product " + afterCp.getChplProductNumber(),
                 beforeCp, afterCp, reason);
@@ -235,7 +240,6 @@ public class SurveillanceManager extends SecuredManager {
     public void deleteNonconformityDocument(Long documentId) throws EntityRetrievalException {
         survDao.deleteNonconformityDocument(documentId);
     }
-
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).ACTIVITY_REPORT)")
@@ -436,7 +440,7 @@ public class SurveillanceManager extends SecuredManager {
 
     private void logSurveillanceUpdateActivity(CertifiedProductSearchDetails existingListing)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
-        CertifiedProductSearchDetails changedListing = cpDetailsManager.getCertifiedProductDetails(existingListing.getId());
+        CertifiedProductSearchDetails changedListing = cpDetailsManager.getCertifiedProductDetailsNoCache(existingListing.getId());
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
                 "Surveillance was updated on certified product " + changedListing.getChplProductNumber(),
                 existingListing, changedListing);
@@ -444,7 +448,7 @@ public class SurveillanceManager extends SecuredManager {
 
     private void logSurveillanceCreationActivity(CertifiedProductSearchDetails existingListing)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
-        CertifiedProductSearchDetails changedListing = cpDetailsManager.getCertifiedProductDetails(existingListing.getId());
+        CertifiedProductSearchDetails changedListing = cpDetailsManager.getCertifiedProductDetailsNoCache(existingListing.getId());
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
                 "Surveillance was added to certified product " + changedListing.getChplProductNumber(),
                 existingListing, changedListing);

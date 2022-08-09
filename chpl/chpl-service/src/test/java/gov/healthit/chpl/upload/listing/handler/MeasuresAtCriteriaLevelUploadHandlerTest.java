@@ -18,10 +18,10 @@ import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-public class MeasureUploadHandlerTest {
+public class MeasuresAtCriteriaLevelUploadHandlerTest {
     private static final String HEADER_ROW_ALL_MEASURE_FIELDS = "CRITERIA_170_315_A_1__C,Measure Successfully Tested for G1,Measure Successfully Tested for G2";
 
-    private MeasureUploadHandler handler;
+    private MeasuresAtCriteriaLevelUploadHandler handler;
 
     @Before
     public void setup() {
@@ -30,7 +30,7 @@ public class MeasureUploadHandlerTest {
             .thenReturn(buildCriterion(1L, "170.315 (a)(1)", "a title"));
         ErrorMessageUtil msgUtil = Mockito.mock(ErrorMessageUtil.class);
         ListingUploadHandlerUtil handlerUtil = new ListingUploadHandlerUtil(msgUtil);
-        handler = new MeasureUploadHandler(criterionHandler, handlerUtil);
+        handler = new MeasuresAtCriteriaLevelUploadHandler(criterionHandler, handlerUtil);
     }
 
     @Test

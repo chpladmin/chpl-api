@@ -1,5 +1,28 @@
 # Release Notes
 
+## Version 35.9.0
+_8 August 2022_
+
+### Features
+* Add complaints report email quartz job
+* Add POST /complaints/report-request endpoint to allow users to get the new complaints report
+* Use Shared Store for Listing details
+
+---
+
+## Version 35.8.0
+_25 July 2022_
+
+### Features
+* Attestations from previous periods can be modified
+* Add Product, Product Database ID, Version, and Version Database ID to the SVAP Summary Download file
+* Remove deprecated fields surveillance "authority" and "userPermissionId"
+
+### Bug Fixes
+* Fix error during editing of SED tasks
+
+---
+
 ## Version 35.7.0
 _11 July 2022_
 

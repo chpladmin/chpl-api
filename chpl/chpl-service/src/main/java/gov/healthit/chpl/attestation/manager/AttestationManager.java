@@ -21,6 +21,8 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.form.FormService;
+import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
+import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -77,6 +79,7 @@ public class AttestationManager {
     }, allEntries = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ATTESTATION, "
             + "T(gov.healthit.chpl.permissions.domains.AttestationDomainPermissions).CREATE, #attestationSubmission)")
+    @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#attestationSubmission.developerId")
     public AttestationSubmission saveDeveloperAttestation(Long developerId, AttestationSubmission attestationSubmission) throws EntityRetrievalException {
         return attestationDAO.saveAttestationSubmssion(developerId, attestationSubmission);
     }

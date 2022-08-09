@@ -37,6 +37,8 @@ import gov.healthit.chpl.form.FormService;
 import gov.healthit.chpl.form.SectionHeading;
 import gov.healthit.chpl.form.validation.FormValidator;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
+import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -154,6 +156,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     }
 
     @Override
+    @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#cr.developer.id")
     protected ChangeRequest execute(ChangeRequest cr) throws EntityRetrievalException, EntityCreationException {
         Developer beforeDeveloper = developerDAO.getById(cr.getDeveloper().getId());
         ChangeRequestAttestationSubmission changeRequestAttestationSubmission = (ChangeRequestAttestationSubmission) cr.getDetails();
