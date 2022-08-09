@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -1134,14 +1135,14 @@ public class DeveloperReviewerTest {
                         .email("test@test.com")
                         .phoneNumber("123-456-7890")
                         .build())
-                .statusEvent(DeveloperStatusEvent.builder()
+                .statusEvents(List.of(DeveloperStatusEvent.builder()
                         .developerId(id)
                         .id(1L)
                         .status(DeveloperStatus.builder()
                             .status(DeveloperStatusType.Active.getName())
                             .build())
                         .statusDate(new Date())
-                        .build())
+                        .build()))
                 .build();
     }
 }
