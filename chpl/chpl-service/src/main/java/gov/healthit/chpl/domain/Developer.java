@@ -96,8 +96,8 @@ public class Developer implements Serializable {
      */
     @XmlElementWrapper(name = "statusEvents", nillable = true, required = false)
     @XmlElement(name = "statusEvent", required = false, nillable = true)
-    @Singular
-    private List<DeveloperStatusEvent> statusEvents;
+    @Builder.Default
+    private List<DeveloperStatusEvent> statusEvents = new ArrayList<DeveloperStatusEvent>();
 
     /**
      * Public attestations submitted by the developer.
