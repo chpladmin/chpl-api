@@ -109,6 +109,6 @@ public class SvapReviewer {
     }
 
     private boolean doesListingHaveIcs(CertifiedProductSearchDetails listing) {
-        return CollectionUtils.isNotEmpty(listing.getIcs().getParents());
+        return listing.getIcs().getInherits();
     }
 }

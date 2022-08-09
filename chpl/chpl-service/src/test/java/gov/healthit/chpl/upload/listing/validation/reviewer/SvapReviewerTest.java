@@ -17,6 +17,7 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
@@ -363,7 +364,7 @@ public class SvapReviewerTest {
     }
 
     @Test
-    public void review_validSvapMarkedReplaced_hasWarning() {
+    public void review_validSvapMarkedReplaced_hasError() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
         .thenReturn(true);
 
@@ -390,13 +391,54 @@ public class SvapReviewerTest {
                         .success(true)
                         .svaps(svaps)
                         .build())
+                .ics(InheritedCertificationStatus.builder()
+                        .inherits(false)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertEquals(0, listing.getWarningMessages().size());
+        assertTrue(listing.getErrorMessages().contains(
+                String.format(SVAP_REPLACED, "svap2", "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_validSvapMarkedReplacedWithIcs_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
+        .thenReturn(true);
+
+        List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
+        svaps.add(CertificationResultSvap.builder()
+                .svapId(1L)
+                .regulatoryTextCitation("svap1")
+                .replaced(false)
+                .build());
+        svaps.add(CertificationResultSvap.builder()
+                .svapId(2L)
+                .regulatoryTextCitation("svap2")
+                .replaced(true)
+                .build());
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationEdition(create2015EditionMap())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .removed(false)
+                                .build())
+                        .success(true)
+                        .svaps(svaps)
+                        .build())
+                .ics(InheritedCertificationStatus.builder()
+                        .inherits(true)
+                        .build())
                 .build();
         reviewer.review(listing);
 
         assertEquals(0, listing.getErrorMessages().size());
-        assertEquals(1, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(
-                String.format(SVAP_REPLACED, "svap2", "170.315 (a)(1)")));
+        assertEquals(0, listing.getWarningMessages().size());
     }
 
     @Test
