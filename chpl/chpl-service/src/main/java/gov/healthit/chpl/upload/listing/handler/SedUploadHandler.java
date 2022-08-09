@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -131,8 +132,7 @@ public class SedUploadHandler {
 
     private boolean listingContainsTask(List<TestTask> listingTestTasks, TestTask certResultTask) {
         return listingTestTasks.stream()
-            .filter(listingTestTask -> !StringUtils.isEmpty(listingTestTask.getUniqueId())
-                    && listingTestTask.getUniqueId().equals(certResultTask.getUniqueId()))
+            .filter(listingTestTask -> Objects.equals(listingTestTask.getUniqueId(), certResultTask.getUniqueId()))
             .filter(listingTestTask ->
                 participantsUniqueIdsMatch(listingTestTask.getTestParticipants(), certResultTask.getTestParticipants()))
             .findAny().isPresent();
@@ -141,7 +141,7 @@ public class SedUploadHandler {
     private void addCriteriaToExistingTestTask(List<TestTask> listingTestTasks, TestTask certResultTask,
             CertificationCriterion criterion) {
         listingTestTasks.stream()
-            .filter(listingTestTask -> listingTestTask.getUniqueId().equals(certResultTask.getUniqueId()))
+            .filter(listingTestTask -> Objects.equals(listingTestTask.getUniqueId(), certResultTask.getUniqueId()))
             .filter(listingTestTask ->
                 participantsUniqueIdsMatch(listingTestTask.getTestParticipants(), certResultTask.getTestParticipants()))
             .forEach(listingTestTask -> {
@@ -153,7 +153,7 @@ public class SedUploadHandler {
             List<TestTask> availableTestTasks, List<TestParticipant> availableTestParticipants) {
         TestTask result = null;
         Optional<TestTask> taskFromAvailOpt = availableTestTasks.stream()
-                .filter(availTask -> availTask.getUniqueId().equals(certResultTask.getUniqueId()))
+                .filter(availTask -> Objects.equals(availTask.getUniqueId(), certResultTask.getUniqueId()))
                 .findAny();
         if (taskFromAvailOpt.isPresent()) {
             TestTask taskFromAvail = taskFromAvailOpt.get();
@@ -174,7 +174,7 @@ public class SedUploadHandler {
             List<TestParticipant> availableTestParticipants) {
         TestParticipant result = null;
         Optional<TestParticipant> participantFromAvailOpt = availableTestParticipants.stream()
-            .filter(availParticipant -> availParticipant.getUniqueId().equals(testParticipant.getUniqueId()))
+            .filter(availParticipant -> Objects.equals(availParticipant.getUniqueId(), testParticipant.getUniqueId()))
             .findAny();
         if (participantFromAvailOpt.isPresent()) {
             TestParticipant participantFromAvail = participantFromAvailOpt.get();
@@ -256,14 +256,14 @@ public class SedUploadHandler {
 
     private boolean isReferenced(List<TestTask> allTestTasks, TestTask testTaskToFind) {
         return allTestTasks.stream()
-                .filter(tt -> tt.getUniqueId().equals(testTaskToFind.getUniqueId()))
+                .filter(tt -> Objects.equals(tt.getUniqueId(), testTaskToFind.getUniqueId()))
                 .findAny().isPresent();
     }
 
     private boolean isReferenced(List<TestTask> allTestTasks, TestParticipant participantToFind) {
         return allTestTasks.stream()
                 .flatMap(tt -> tt.getTestParticipants().stream())
-                .filter(tp -> tp.getUniqueId().equals(participantToFind.getUniqueId()))
+                .filter(tp -> Objects.equals(tp.getUniqueId(), participantToFind.getUniqueId()))
                 .findAny().isPresent();
     }
 

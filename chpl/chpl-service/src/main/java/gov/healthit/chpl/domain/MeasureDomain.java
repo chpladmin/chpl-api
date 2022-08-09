@@ -10,9 +10,14 @@ import org.apache.commons.lang3.ObjectUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@AllArgsConstructor
 public class MeasureDomain implements Serializable {
     private static final long serialVersionUID = -745253265541448011L;
     private Long id;

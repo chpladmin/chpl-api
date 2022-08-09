@@ -1,8 +1,9 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
@@ -12,12 +13,6 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 
-/**
- * Makes sure the version is included with a test tool.
- *
- * @author kekey
- *
- */
 @Component("testTool2015Reviewer")
 public class TestTool2015Reviewer extends PermissionBasedReviewer{
 
@@ -29,7 +24,7 @@ public class TestTool2015Reviewer extends PermissionBasedReviewer{
     @Override
     public void review(final CertifiedProductSearchDetails listing) {
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE)
+            if (BooleanUtils.isTrue(cert.isSuccess())
                     && cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
                 for (CertificationResultTestTool testTool : cert.getTestToolsUsed()) {
                     if (!StringUtils.isEmpty(testTool.getTestToolName())

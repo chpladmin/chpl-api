@@ -33,6 +33,7 @@ public class DeveloperDetailsUploadHandler {
                 .build();
         Address address = Address.builder()
                 .line1(uploadUtil.parseSingleRowField(Headings.DEVELOPER_ADDRESS, headingRecord, listingRecords))
+                .line2(uploadUtil.parseSingleRowField(Headings.DEVELOPER_ADDRESS_LINE_2, headingRecord, listingRecords))
                 .city(uploadUtil.parseSingleRowField(Headings.DEVELOPER_CITY, headingRecord, listingRecords))
                 .state(uploadUtil.parseSingleRowField(Headings.DEVELOPER_STATE, headingRecord, listingRecords))
                 .zipcode(uploadUtil.parseSingleRowField(Headings.DEVELOPER_ZIP, headingRecord, listingRecords))
@@ -56,6 +57,7 @@ public class DeveloperDetailsUploadHandler {
                 && !uploadUtil.hasHeading(Headings.DEVELOPER_WEBSITE, headingRecord)
                 && !uploadUtil.hasHeading(Headings.SELF_DEVELOPER, headingRecord)
                 && !uploadUtil.hasHeading(Headings.DEVELOPER_ADDRESS, headingRecord)
+                && !uploadUtil.hasHeading(Headings.DEVELOPER_ADDRESS_LINE_2, headingRecord)
                 && !uploadUtil.hasHeading(Headings.DEVELOPER_CITY, headingRecord)
                 && !uploadUtil.hasHeading(Headings.DEVELOPER_STATE, headingRecord)
                 && !uploadUtil.hasHeading(Headings.DEVELOPER_ZIP, headingRecord)
