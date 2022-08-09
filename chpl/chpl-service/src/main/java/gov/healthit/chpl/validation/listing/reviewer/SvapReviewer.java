@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -47,7 +49,7 @@ public class SvapReviewer implements ComparisonReviewer {
             validateSvapNoticeUrl(updatedListing);
 
             List<CertificationResult> certificationResultsWithSvaps = updatedListing.getCertificationResults().stream()
-                    .filter(cr -> cr.isSuccess() && cr.getSvaps() != null && cr.getSvaps().size() > 0)
+                    .filter(cr -> BooleanUtils.isTrue(cr.isSuccess()) && !CollectionUtils.isEmpty(cr.getSvaps()))
                     .collect(Collectors.toList());
 
             Map<Long, List<SvapCriteriaMap>> svapCriteriaMap = null;

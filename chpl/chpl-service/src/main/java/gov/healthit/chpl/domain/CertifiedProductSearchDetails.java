@@ -323,7 +323,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElementWrapper(name = "measures", nillable = true, required = false)
     @XmlElement(name = "measure")
-    @Singular
+    @Builder.Default
     private List<ListingMeasure> measures = new ArrayList<ListingMeasure>();
 
     /**

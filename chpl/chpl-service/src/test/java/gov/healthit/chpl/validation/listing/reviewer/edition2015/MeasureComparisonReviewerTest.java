@@ -3,6 +3,8 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -66,36 +68,25 @@ public class MeasureComparisonReviewerTest {
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(true);
 
-        CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
-                .measure(ListingMeasure.builder()
+        ListingMeasure measure = ListingMeasure.builder()
+                .id(1L)
+                .measureType(MeasureType.builder()
                         .id(1L)
-                        .measureType(MeasureType.builder()
-                                .id(1L)
-                                .name("G1")
-                                .build())
-                        .measure(Measure.builder()
-                            .id(GAP_EP_ID)
-                            .abbreviation("GAP-EP")
-                            .name("Measure Name")
-                            .removed(true)
-                            .build())
+                        .name("G1")
                         .build())
+                .measure(Measure.builder()
+                    .id(GAP_EP_ID)
+                    .abbreviation("GAP-EP")
+                    .name("Measure Name")
+                    .removed(true)
+                    .build())
                 .build();
 
+        CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
+                .measures(Stream.of(measure).collect(Collectors.toList()))
+                .build();
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
-                .measure(ListingMeasure.builder()
-                        .id(1L)
-                        .measureType(MeasureType.builder()
-                                .id(1L)
-                                .name("G1")
-                                .build())
-                        .measure(Measure.builder()
-                            .id(GAP_EP_ID)
-                            .abbreviation("GAP-EP")
-                            .name("Measure Name")
-                            .removed(true)
-                            .build())
-                        .build())
+                .measures(Stream.of(measure).collect(Collectors.toList()))
                 .build();
         updatedListing.setErrorMessages(new HashSet<String>());
 
@@ -109,49 +100,40 @@ public class MeasureComparisonReviewerTest {
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
 
-        CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
-                .measure(ListingMeasure.builder()
+        ListingMeasure measure1 = ListingMeasure.builder()
+                .id(1L)
+                .measureType(MeasureType.builder()
                         .id(1L)
-                        .measureType(MeasureType.builder()
-                                .id(1L)
-                                .name("G1")
-                                .build())
-                        .measure(Measure.builder()
-                            .id(GAP_EP_ID)
-                            .abbreviation("GAP-EP")
-                            .name("Measure Name")
-                            .removed(true)
-                            .build())
+                        .name("G1")
                         .build())
+                .measure(Measure.builder()
+                    .id(GAP_EP_ID)
+                    .abbreviation("GAP-EP")
+                    .name("Measure Name")
+                    .removed(true)
+                    .build())
+                .build();
+
+        ListingMeasure measure2 = ListingMeasure.builder()
+                .id(2L)
+                .measureType(MeasureType.builder()
+                        .id(1L)
+                        .name("G1")
+                        .build())
+                .measure(Measure.builder()
+                    .id(GAP_EH_CAH)
+                    .abbreviation("GAP-EH/CAH")
+                    .name("Measure Name 2")
+                    .removed(true)
+                    .build())
+                .build();
+
+        CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
+                .measures(Stream.of(measure1).collect(Collectors.toList()))
                 .build();
 
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
-                .measure(ListingMeasure.builder()
-                        .id(1L)
-                        .measureType(MeasureType.builder()
-                                .id(1L)
-                                .name("G1")
-                                .build())
-                        .measure(Measure.builder()
-                            .id(GAP_EP_ID)
-                            .abbreviation("GAP-EP")
-                            .name("Measure Name")
-                            .removed(true)
-                            .build())
-                        .build())
-                .measure(ListingMeasure.builder()
-                        .id(2L)
-                        .measureType(MeasureType.builder()
-                                .id(1L)
-                                .name("G1")
-                                .build())
-                        .measure(Measure.builder()
-                            .id(GAP_EH_CAH)
-                            .abbreviation("GAP-EH/CAH")
-                            .name("Measure Name 2")
-                            .removed(true)
-                            .build())
-                        .build())
+                .measures(Stream.of(measure1, measure2).collect(Collectors.toList()))
                 .build();
         updatedListing.setErrorMessages(new HashSet<String>());
 
@@ -165,49 +147,40 @@ public class MeasureComparisonReviewerTest {
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
 
-        CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
-                .measure(ListingMeasure.builder()
-                        .id(1L)
-                        .measureType(MeasureType.builder()
-                                .id(2L)
-                                .name("G2")
-                                .build())
-                        .measure(Measure.builder()
-                            .id(GAP_EP_ID)
-                            .abbreviation("GAP-EP")
-                            .name("Measure Name")
-                            .removed(true)
-                            .build())
+        ListingMeasure measure1 = ListingMeasure.builder()
+                .id(1L)
+                .measureType(MeasureType.builder()
+                        .id(2L)
+                        .name("G2")
                         .build())
+                .measure(Measure.builder()
+                    .id(GAP_EP_ID)
+                    .abbreviation("GAP-EP")
+                    .name("Measure Name")
+                    .removed(true)
+                    .build())
+                .build();
+
+        ListingMeasure measure2 = ListingMeasure.builder()
+                .id(2L)
+                .measureType(MeasureType.builder()
+                        .id(2L)
+                        .name("G2")
+                        .build())
+                .measure(Measure.builder()
+                    .id(GAP_EH_CAH)
+                    .abbreviation("GAP-EH/CAH")
+                    .name("Measure Name 2")
+                    .removed(true)
+                    .build())
+                .build();
+
+        CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
+                .measures(Stream.of(measure1).collect(Collectors.toList()))
                 .build();
 
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
-                .measure(ListingMeasure.builder()
-                        .id(1L)
-                        .measureType(MeasureType.builder()
-                                .id(2L)
-                                .name("G2")
-                                .build())
-                        .measure(Measure.builder()
-                            .id(GAP_EP_ID)
-                            .abbreviation("GAP-EP")
-                            .name("Measure Name")
-                            .removed(true)
-                            .build())
-                        .build())
-                .measure(ListingMeasure.builder()
-                        .id(2L)
-                        .measureType(MeasureType.builder()
-                                .id(2L)
-                                .name("G2")
-                                .build())
-                        .measure(Measure.builder()
-                            .id(GAP_EH_CAH)
-                            .abbreviation("GAP-EH/CAH")
-                            .name("Measure Name 2")
-                            .removed(true)
-                            .build())
-                        .build())
+                .measures(Stream.of(measure1, measure2).collect(Collectors.toList()))
                 .build();
         updatedListing.setErrorMessages(new HashSet<String>());
 
@@ -221,36 +194,38 @@ public class MeasureComparisonReviewerTest {
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
 
+        ListingMeasure measure1 = ListingMeasure.builder()
+                .id(1L)
+                .measureType(MeasureType.builder()
+                        .id(1L)
+                        .name("G1")
+                        .build())
+                .measure(Measure.builder()
+                    .id(GAP_EP_ID)
+                    .abbreviation("GAP-EP")
+                    .name("Measure Name")
+                    .removed(true)
+                    .build())
+                .build();
+        ListingMeasure measure2 = ListingMeasure.builder()
+                .id(2L)
+                .measureType(MeasureType.builder()
+                        .id(2L)
+                        .name("G2")
+                        .build())
+                .measure(Measure.builder()
+                    .id(GAP_EH_CAH)
+                    .abbreviation("GAP-EH/CAH")
+                    .name("Measure Name 2")
+                    .removed(true)
+                    .build())
+                .build();
+
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .build();
 
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
-                .measure(ListingMeasure.builder()
-                        .id(1L)
-                        .measureType(MeasureType.builder()
-                                .id(1L)
-                                .name("G1")
-                                .build())
-                        .measure(Measure.builder()
-                            .id(GAP_EP_ID)
-                            .abbreviation("GAP-EP")
-                            .name("Measure Name")
-                            .removed(true)
-                            .build())
-                        .build())
-                .measure(ListingMeasure.builder()
-                        .id(2L)
-                        .measureType(MeasureType.builder()
-                                .id(2L)
-                                .name("G2")
-                                .build())
-                        .measure(Measure.builder()
-                            .id(GAP_EH_CAH)
-                            .abbreviation("GAP-EH/CAH")
-                            .name("Measure Name 2")
-                            .removed(true)
-                            .build())
-                        .build())
+                .measures(Stream.of(measure1, measure2).collect(Collectors.toList()))
                 .build();
         updatedListing.setErrorMessages(new HashSet<String>());
 
@@ -264,36 +239,39 @@ public class MeasureComparisonReviewerTest {
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
 
+        ListingMeasure measure1 = ListingMeasure.builder()
+                .id(1L)
+                .measureType(MeasureType.builder()
+                        .id(1L)
+                        .name("G1")
+                        .build())
+                .measure(Measure.builder()
+                    .id(GAP_EP_ID)
+                    .abbreviation("GAP-EP")
+                    .name("Measure Name")
+                    .removed(false)
+                    .build())
+                .build();
+
+        ListingMeasure measure2 = ListingMeasure.builder()
+                .id(2L)
+                .measureType(MeasureType.builder()
+                        .id(2L)
+                        .name("G2")
+                        .build())
+                .measure(Measure.builder()
+                    .id(GAP_EH_CAH)
+                    .abbreviation("GAP-EH/CAH")
+                    .name("Measure Name 2")
+                    .removed(false)
+                    .build())
+                .build();
+
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .build();
 
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
-                .measure(ListingMeasure.builder()
-                        .id(1L)
-                        .measureType(MeasureType.builder()
-                                .id(1L)
-                                .name("G1")
-                                .build())
-                        .measure(Measure.builder()
-                            .id(GAP_EP_ID)
-                            .abbreviation("GAP-EP")
-                            .name("Measure Name")
-                            .removed(false)
-                            .build())
-                        .build())
-                .measure(ListingMeasure.builder()
-                        .id(2L)
-                        .measureType(MeasureType.builder()
-                                .id(2L)
-                                .name("G2")
-                                .build())
-                        .measure(Measure.builder()
-                            .id(GAP_EH_CAH)
-                            .abbreviation("GAP-EH/CAH")
-                            .name("Measure Name 2")
-                            .removed(false)
-                            .build())
-                        .build())
+                .measures(Stream.of(measure1, measure2).collect(Collectors.toList()))
                 .build();
         updatedListing.setErrorMessages(new HashSet<String>());
 

@@ -1,5 +1,15 @@
 # Release Notes
 
+## Version 35.9.0
+_8 August 2022_
+
+### Features
+* Add complaints report email quartz job
+* Add POST /complaints/report-request endpoint to allow users to get the new complaints report
+* Use Shared Store for Listing details
+
+---
+
 ## Version 35.8.0
 _25 July 2022_
 
