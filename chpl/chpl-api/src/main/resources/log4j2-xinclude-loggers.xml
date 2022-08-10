@@ -2,11 +2,11 @@
 <Loggers>
     <Logger name="net.sf.ehcache" level="INFO" additivity="false">
         <AppenderRef ref="cacheListenerActivity" />
-        <AppenderRef ref="cacheListenerActivity" />
+        <AppenderRef ref="cacheListenerActivityJson" />
     </Logger>
     <Logger name="org.springframework.cache" level="INFO">
         <AppenderRef ref="cacheListenerActivity" />
-        <AppenderRef ref="cacheListenerActivity" />
+        <AppenderRef ref="cacheListenerActivityJson" />
     </Logger>
     <Logger name="sharedDataStoreLogger" level="INFO">
         <AppenderRef ref="sharedDataStore" />
