@@ -16,7 +16,6 @@ import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
-import gov.healthit.chpl.form.AllowedResponse;
 import gov.healthit.chpl.form.FormItem;
 import gov.healthit.chpl.form.SectionHeading;
 import gov.healthit.chpl.util.NullSafeEvaluator;
@@ -77,7 +76,7 @@ public abstract class ChangeRequestEmail {
             FormItem childFormItem = formItem.getChildFormItems().get(0);
             responses.append("<ul>");
             responses.append(childFormItem.getSubmittedResponses().stream()
-                    .sorted(Comparator.comparing(AllowedResponse::getSortOrder))
+                    .sorted(Comparator.comparing(ar -> ar.getSortOrder() != null ? ar.getSortOrder() : 0))
                     .map(resp -> "<li>" + resp.getResponse() + "</li>")
                     .collect(Collectors.joining()));
             responses.append("</ul>");
