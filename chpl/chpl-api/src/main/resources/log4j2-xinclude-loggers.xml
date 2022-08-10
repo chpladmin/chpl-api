@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Loggers>
-    <Logger name="net.sf.ehcache" level="TRACE" additivity="false">
+    <Logger name="net.sf.ehcache" level="DEBUG" additivity="false">
         <AppenderRef ref="cacheListenerActivity" />
         <AppenderRef ref="cacheListenerActivityJson" />
     </Logger>
-    <Logger name="org.springframework.cache" level="TRACE">
+    <Logger name="org.springframework.cache" level="DEBUG">
         <AppenderRef ref="cacheListenerActivity" />
         <AppenderRef ref="cacheListenerActivityJson" />
     </Logger>
