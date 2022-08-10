@@ -1,12 +1,14 @@
 package gov.healthit.chpl.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.caching.HttpStatusAwareCache;
 import gov.healthit.chpl.domain.status.CacheStatusName;
 import gov.healthit.chpl.domain.status.ServerStatusName;
 import gov.healthit.chpl.domain.status.SystemStatus;
@@ -33,14 +35,18 @@ public class StatusController {
     }
 
     @RequestMapping(value = "/cache-info", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public void printDrCacheInfo() {
+    public HttpStatus printDrCacheInfo() {
         Cache drCache = CacheManager.getInstance().getCache(CacheNames.DIRECT_REVIEWS);
         if (drCache != null) {
             LOGGER.info("DR cache must not be decorated..." + drCache.getClass());
         } else {
             Ehcache drDecoratedCache = CacheManager.getInstance().getEhcache(CacheNames.DIRECT_REVIEWS);
             LOGGER.info("DR cache is decorated..." + drDecoratedCache.getClass());
+            HttpStatusAwareCache drStatusAwareCache = (HttpStatusAwareCache) drDecoratedCache;
+            return drStatusAwareCache.getHttpStatus();
         }
+        LOGGER.info("returning null...");
+        return null;
     }
 
     @Operation(summary = "Check that the rest services are up and running and indicate whether "
