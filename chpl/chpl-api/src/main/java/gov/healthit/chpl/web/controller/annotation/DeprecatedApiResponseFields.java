@@ -13,7 +13,7 @@ public @interface DeprecatedApiResponseFields {
      *  The class containing deprecated fields that is being returned from the method.
      *  Any field in this class with the DeprecatedResponseField annotation will give information on its individual removal date.
      */
-    Class<?>[] responseClass() default Object.class;
+    Class<?> responseClass() default Object.class;
 
     /**
      * friendlyUrl provides a way to consolidate similar endpoints that have different URLs.

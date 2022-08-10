@@ -30,7 +30,7 @@ public class DeprecatedFieldExplorer {
         classToDeprecatedFieldNamesMap = new LinkedHashMap<Class<?>, Set<String>>();
     }
 
-    public Set<String> getDeprecatedFieldsForClass(Class<?> clazz) {
+    public Set<String> getDeprecatedFieldsNamesForClass(Class<?> clazz) {
         if (classToDeprecatedFieldNamesMap.get(clazz) == null) {
             LOGGER.debug("Finding all deprecated fields for class " + clazz.getName());
             Set<String> deprecatedFieldNames = new LinkedHashSet<String>();

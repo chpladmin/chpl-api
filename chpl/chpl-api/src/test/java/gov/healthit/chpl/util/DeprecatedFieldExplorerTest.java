@@ -110,7 +110,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_CertifiedProductSearchDetails() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(CertifiedProductSearchDetails.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(CertifiedProductSearchDetails.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(8, deprecatedFieldNames.size());
         assertTrue(deprecatedFieldNames.contains("developer" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
@@ -125,7 +125,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_CertifiedProductSearchBasicDetails() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(CertifiedProductSearchBasicDetails.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(CertifiedProductSearchBasicDetails.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(8, deprecatedFieldNames.size());
         assertTrue(deprecatedFieldNames.contains("developer" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
@@ -140,7 +140,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_CertificationResults() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(CertificationResults.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(CertificationResults.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
@@ -148,7 +148,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_SurveillanceResults() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(SurveillanceResults.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(SurveillanceResults.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(3, deprecatedFieldNames.size());
@@ -159,7 +159,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_Surveillance() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(Surveillance.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(Surveillance.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(3, deprecatedFieldNames.size());
@@ -170,14 +170,14 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_ApiKey() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ApiKey.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(ApiKey.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_CertificationIdResults() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(CertificationIdResults.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(CertificationIdResults.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
@@ -185,28 +185,28 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_CertifiedProductFlatSearchResult() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(CertifiedProductFlatSearchResult.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(CertifiedProductFlatSearchResult.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_SearchResponse() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(SearchResponse.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(SearchResponse.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_ListingSearchResponse() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ListingSearchResponse.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(ListingSearchResponse.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_ComplaintResults() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ComplaintResults.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(ComplaintResults.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
@@ -214,7 +214,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_Complaint() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(Complaint.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(Complaint.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
@@ -223,14 +223,14 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_QuarterlyReport() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(QuarterlyReport.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(QuarterlyReport.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_RelevantListing() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(RelevantListing.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(RelevantListing.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
@@ -238,49 +238,49 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_PrivilegedSurveillance() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(PrivilegedSurveillance.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(PrivilegedSurveillance.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_ChplOneTimeTrigger() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ChplOneTimeTrigger.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(ChplOneTimeTrigger.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_ScheduleTriggersResults() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ScheduleTriggersResults.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(ScheduleTriggersResults.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_ScheduleOneTimeTriggersResults() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ScheduleOneTimeTriggersResults.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(ScheduleOneTimeTriggersResults.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_ChplJobsResults() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ChplJobsResults.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(ChplJobsResults.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_SystemTriggerResults() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(SystemTriggerResults.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(SystemTriggerResults.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_CertifiedProduct() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(CertifiedProduct.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(CertifiedProduct.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
@@ -288,7 +288,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_CqmResultDetails() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(CQMResultDetailResults.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(CQMResultDetailResults.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
@@ -296,7 +296,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_MeasureResults() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(MeasureResults.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(MeasureResults.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
@@ -304,7 +304,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_IcsFamilyTreeNode() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(IcsFamilyTreeNode.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(IcsFamilyTreeNode.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(5, deprecatedFieldNames.size());
         assertTrue(deprecatedFieldNames.contains("developer" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
@@ -316,7 +316,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_ActivityDetails() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ActivityDetails.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(ActivityDetails.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
@@ -324,7 +324,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_ActivityMetadataPage() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ActivityMetadataPage.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(ActivityMetadataPage.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
@@ -332,7 +332,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_ActivityMetadata() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ActivityMetadata.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(ActivityMetadata.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
@@ -340,7 +340,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_AnnouncementResults() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(AnnouncementResults.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(AnnouncementResults.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(2, deprecatedFieldNames.size());
@@ -350,7 +350,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_Announcement() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(Announcement.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(Announcement.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(2, deprecatedFieldNames.size());
@@ -360,7 +360,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_BooleanResult() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(BooleanResult.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(BooleanResult.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
@@ -368,7 +368,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_UpdatePasswordResponse() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(UpdatePasswordResponse.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(UpdatePasswordResponse.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
@@ -376,7 +376,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_CertificationBodyResults() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(CertificationBodyResults.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(CertificationBodyResults.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
@@ -384,7 +384,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_CertificationBody() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(CertificationBody.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(CertificationBody.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
@@ -392,7 +392,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_UsersResponse() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(UsersResponse.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(UsersResponse.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
@@ -400,7 +400,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_SimpleCertificationId() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(SimpleCertificationId.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(SimpleCertificationId.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
@@ -408,7 +408,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_CertificationIdLookupResults() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(CertificationIdLookupResults.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(CertificationIdLookupResults.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
@@ -416,7 +416,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_CertificationIdVerifyResults() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(CertificationIdVerifyResults.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(CertificationIdVerifyResults.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
@@ -424,7 +424,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_ChangeRequest() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ChangeRequest.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(ChangeRequest.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(1, deprecatedFieldNames.size());
         assertTrue(deprecatedFieldNames.contains("developer" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
@@ -432,7 +432,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_ChangeRequestResults() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ChangeRequestResults.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(ChangeRequestResults.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(1, deprecatedFieldNames.size());
@@ -441,7 +441,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_ChplFileDTO() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(CHPLFileDTO.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(CHPLFileDTO.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
@@ -449,7 +449,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_DecertifiedDeveloper() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(DecertifiedDeveloper.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(DecertifiedDeveloper.class);
 
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
@@ -457,7 +457,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_DeveloperResults() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(DeveloperResults.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(DeveloperResults.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(1, deprecatedFieldNames.size());
         assertTrue(deprecatedFieldNames.contains("developers" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "developerId"));
@@ -465,7 +465,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_Developer() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(Developer.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(Developer.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(1, deprecatedFieldNames.size());
         assertTrue(deprecatedFieldNames.contains("developerId"));
@@ -473,7 +473,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_DeveloperTree() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(DeveloperTree.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(DeveloperTree.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(5, deprecatedFieldNames.size());
         assertTrue(deprecatedFieldNames.contains("developerId"));
@@ -485,42 +485,42 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_DirectReview() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(DirectReview.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(DirectReview.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_PermissionDeletedResponse() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(PermissionDeletedResponse.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(PermissionDeletedResponse.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_FuzzyChoices() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(FuzzyChoices.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(FuzzyChoices.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_KeyValueModel() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(KeyValueModel.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(KeyValueModel.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_KeyValueModelStatuses() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(KeyValueModelStatuses.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(KeyValueModelStatuses.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_SearchOption() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(SearchOption.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(SearchOption.class);
         //this isn't a great check because the SearchOption class has a generic list with
         //anything extending Object so actual classes that are returned here may have deprecated
         //fields that this would not catch
@@ -530,112 +530,112 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_OptionalStandard() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(OptionalStandard.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(OptionalStandard.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_TestFunctionality() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(TestFunctionality.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(TestFunctionality.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_CriteriaSpecificDescriptiveModel() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(CriteriaSpecificDescriptiveModel.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(CriteriaSpecificDescriptiveModel.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_TestStandard() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(TestStandard.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(TestStandard.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_Measure() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(Measure.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(Measure.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_MeasureType() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(MeasureType.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(MeasureType.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_SurveillanceRequirementOptions() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(SurveillanceRequirementOptions.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(SurveillanceRequirementOptions.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_DimensionalData() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(DimensionalData.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(DimensionalData.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_CertificationCriterionResults() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(CertificationCriterionResults.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(CertificationCriterionResults.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_SvapResults() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(SvapResults.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(SvapResults.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_Svap() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(Svap.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(Svap.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_FilterResults() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(FilterResults.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(FilterResults.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_Filter() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(Filter.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(Filter.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_ListingUpload() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ListingUpload.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(ListingUpload.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_ListingUploadResponse() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ListingUploadResponse.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(ListingUploadResponse.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_ProductResults() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ProductResults.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(ProductResults.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(3, deprecatedFieldNames.size());
         assertTrue(deprecatedFieldNames.contains("products" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "productId"));
@@ -645,7 +645,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_Product() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(Product.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(Product.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(3, deprecatedFieldNames.size());
         assertTrue(deprecatedFieldNames.contains("productId"));
@@ -655,7 +655,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_SplitProductResponse() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(SplitProductResponse.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(SplitProductResponse.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(6, deprecatedFieldNames.size());
         assertTrue(deprecatedFieldNames.contains("oldProduct" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "productId"));
@@ -668,7 +668,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_ProductVersion() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ProductVersion.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(ProductVersion.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(1, deprecatedFieldNames.size());
         assertTrue(deprecatedFieldNames.contains("versionId"));
@@ -676,7 +676,7 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_SplitVersionResponse() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(SplitVersionResponse.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(SplitVersionResponse.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(2, deprecatedFieldNames.size());
         assertTrue(deprecatedFieldNames.contains("oldVersion" + DeprecatedFieldExplorer.FIELD_SEPARATOR + "versionId"));
@@ -685,126 +685,126 @@ public class DeprecatedFieldExplorerTest {
 
     @Test
     public void findDeprecatedFields_RealWorldTestingUploadResponse() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(RealWorldTestingUploadResponse.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(RealWorldTestingUploadResponse.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_NonconformityTypeStatisticsResult() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(NonconformityTypeStatisticsResult.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(NonconformityTypeStatisticsResult.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_ListingCountStatisticsResult() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ListingCountStatisticsResult.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(ListingCountStatisticsResult.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_CriterionProductStatisticsResult() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(CriterionProductStatisticsResult.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(CriterionProductStatisticsResult.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_IncumbentDevelopersStatisticsResult() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(IncumbentDevelopersStatisticsResult.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(IncumbentDevelopersStatisticsResult.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_SedParticipantStatisticsCountResults() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(SedParticipantStatisticsCountResults.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(SedParticipantStatisticsCountResults.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_ParticipantGenderStatistics() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ParticipantGenderStatistics.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(ParticipantGenderStatistics.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_ParticipantAgeStatisticsResult() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ParticipantAgeStatisticsResult.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(ParticipantAgeStatisticsResult.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_ParticipantEducationStatisticsResult() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ParticipantEducationStatisticsResult.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(ParticipantEducationStatisticsResult.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_ParticipantExperienceStatisticsResult() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(ParticipantExperienceStatisticsResult.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(ParticipantExperienceStatisticsResult.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_SystemStatus() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(SystemStatus.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(SystemStatus.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_AnnualReport() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(AnnualReport.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(AnnualReport.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_CertificationCriterion() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(CertificationCriterion.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(CertificationCriterion.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_TestingLabResults() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(TestingLabResults.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(TestingLabResults.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_TestingLab() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(TestingLab.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(TestingLab.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_User() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(User.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(User.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_UserInvitation() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(UserInvitation.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(UserInvitation.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(0, deprecatedFieldNames.size());
     }
 
     @Test
     public void findDeprecatedFields_DeveloperAttestationSubmissionResults() {
-        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsForClass(DeveloperAttestationSubmissionResults.class);
+        Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(DeveloperAttestationSubmissionResults.class);
         assertNotNull(deprecatedFieldNames);
         assertEquals(2, deprecatedFieldNames.size());
         assertTrue(deprecatedFieldNames.contains("canSubmitAttestationChangeRequest"));
