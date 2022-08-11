@@ -60,11 +60,10 @@ public final class ChangeRequestConverter {
                 .build())
         .submittedDateTime(DateUtil.toLocalDateTime(entity.getCreationDate().getTime()))
         .currentStatus(convertSearchResult(getLatestStatus(entity.getStatuses())))
-        .certificationBodies(entity.getDeveloper().getCertificationBodyMaps().stream()
-                .map(acbMapEntity -> acbMapEntity.getCertificationBody())
-                .map(acb -> IdNamePairSearchResult.builder()
-                        .id(acb.getId())
-                        .name(acb.getName())
+        .certificationBodies(entity.getCertificationBodies().stream()
+                .map(e -> IdNamePairSearchResult.builder()
+                        .id(e.getId())
+                        .name(e.getName())
                         .build())
                 .toList())
         .build();
@@ -88,8 +87,8 @@ public final class ChangeRequestConverter {
             .map(statusEntity -> convert(statusEntity))
             .forEach(status -> cr.getStatuses().add(status));
         cr.setCurrentStatus(getLatestStatus(cr.getStatuses()));
-        cr.setCertificationBodies(entity.getDeveloper().getCertificationBodyMaps().stream()
-                .map(acbMapEntity -> acbMapEntity.getCertificationBody().buildCertificationBody())
+        cr.setCertificationBodies(entity.getCertificationBodies().stream()
+                .map(e -> e.buildCertificationBody())
                 .toList());
         return cr;
     }
