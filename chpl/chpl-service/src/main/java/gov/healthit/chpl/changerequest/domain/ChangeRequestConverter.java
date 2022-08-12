@@ -157,30 +157,4 @@ public final class ChangeRequestConverter {
         crDev.setContact(contact);
         return crDev;
     }
-
-    /*
-    private static AttestationSubmittedResponse convert(ChangeRequestAttestationResponseEntity entity) {
-        return AttestationSubmittedResponse.builder()
-                .id(entity.getId())
-                .attestation(Attestation.builder()
-                        .id(entity.getAttestation().getId())
-                        .description(entity.getAttestation().getDescription())
-                        .condition(Condition.builder()
-                                .id(entity.getAttestation().getCondition().getId())
-                                .name(entity.getAttestation().getCondition().getName())
-                                .sortOrder(entity.getAttestation().getCondition().getSortOrder())
-                                .build())
-                        .validResponses(entity.getAttestation().getValidResponses().stream().map(ent -> new ValidResponse(ent)).toList())
-                        .build())
-                .response(ValidResponse.builder()
-                        .id(entity.getValidResponse().getId())
-                        .response(entity.getValidResponse().getResponse())
-                        .meaning(entity.getValidResponse().getMeaning())
-                        .sortOrder(entity.getValidResponse().getSortOrder())
-                        .build())
-                .build();
-
-        return null;
-    }
-    */
 }

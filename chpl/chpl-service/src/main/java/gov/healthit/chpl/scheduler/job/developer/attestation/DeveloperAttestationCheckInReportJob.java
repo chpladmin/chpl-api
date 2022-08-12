@@ -69,6 +69,7 @@ public class DeveloperAttestationCheckInReportJob implements Job {
                     chplEmailFactory.emailBuilder()
                             .recipient(context.getMergedJobDataMap().getString("email"))
                             .subject(emailSubject)
+                            //TODO - add back in when working on OCD-3980
                             //.fileAttachments(Arrays.asList(csv))
                             .htmlMessage(chplHtmlEmailBuilder.initialize()
                                     .heading(sectionHeading)
