@@ -320,16 +320,6 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
             .collect(Collectors.toList());
     }
 
-
-
-
-
-
-
-
-
-
-
     private void sendWithdrawnDetailsEmail(ChangeRequest cr) throws EmailNotSentException {
         chplEmailFactory.emailBuilder()
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()

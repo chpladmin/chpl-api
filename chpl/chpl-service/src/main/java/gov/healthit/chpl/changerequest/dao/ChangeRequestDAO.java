@@ -14,10 +14,12 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestConverter;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
+import gov.healthit.chpl.changerequest.entity.ChangeRequestCertificationBodyMapEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestTypeEntity;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
@@ -47,7 +49,22 @@ public class ChangeRequestDAO extends BaseDAOImpl {
     public ChangeRequest create(ChangeRequest cr) throws EntityRetrievalException {
         ChangeRequestEntity entity = getNewEntity(cr);
         create(entity);
+        addCertificationBodies(entity.getId(), cr.getCertificationBodies());
         return ChangeRequestConverter.convert(getEntityById(entity.getId()));
+    }
+
+    private void addCertificationBodies(Long changeRequestId, List<CertificationBody> certificationBodies) {
+        certificationBodies.stream()
+                .forEach(acb -> {
+                    ChangeRequestCertificationBodyMapEntity entity = new ChangeRequestCertificationBodyMapEntity();
+                    entity.setCertificationBodyId(acb.getId());
+                    entity.setChangeRequestId(changeRequestId);
+                    entity.setDeleted(false);
+                    entity.setCreationDate(new Date());
+                    entity.setLastModifiedDate(new Date());
+                    entity.setLastModifiedUser(AuthUtil.getAuditId());
+                    create(entity);
+                });
     }
 
     public ChangeRequest get(Long changeRequestId) throws EntityRetrievalException {

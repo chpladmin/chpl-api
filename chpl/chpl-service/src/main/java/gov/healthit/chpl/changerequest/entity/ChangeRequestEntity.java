@@ -56,7 +56,7 @@ public class ChangeRequestEntity {
     @Where(clause = "deleted <> 'true'")
     private Set<ChangeRequestStatusEntity> statuses = new LinkedHashSet<ChangeRequestStatusEntity>();
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "change_request_certification_body_map",
             joinColumns = @JoinColumn(name = "change_request_id"),
             inverseJoinColumns = @JoinColumn(name = "certification_body_id"))
