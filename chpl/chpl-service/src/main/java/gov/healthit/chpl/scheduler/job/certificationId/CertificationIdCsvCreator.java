@@ -44,7 +44,7 @@ public class CertificationIdCsvCreator {
             csvFilePrinter.printRecord(getHeaderRow(includesProducts(certificationIds)));
 
             certificationIds.stream()
-                .sorted((certId1, certId2) -> certId1.getCertificationId().compareTo(certId2.getCertificationId()))
+                .sorted((certId1, certId2) -> certId2.getCreated().compareTo(certId1.getCreated()))
                 .forEach(certId -> printRow(csvFilePrinter, certId));
         }
         return csvFile;
