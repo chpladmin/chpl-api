@@ -196,7 +196,7 @@ public class ListingService {
                     listing.getCertificationEvents(), LOGGER);
         }
         listing.setDirectReviews(drs);
-        listing.setDirectReviewsAvailable(drService.getDirectReviewsAvailable());
+        listing.setDirectReviewsAvailable(drService.doesCacheHaveAnyOkData());
     }
 
     private List<CertifiedProductDTO> getCertifiedProductChildren(Long id) {

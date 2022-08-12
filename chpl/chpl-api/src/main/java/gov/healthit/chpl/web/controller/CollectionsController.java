@@ -148,14 +148,14 @@ public class CollectionsController {
             }
             BasicSearchResponse response = new BasicSearchResponse();
             response.setResults(mutableSearchResults);
-            response.setDirectReviewsAvailable(drService.getDirectReviewsAvailable());
+            response.setDirectReviewsAvailable(drService.doesCacheHaveAnyOkData());
             result = nonNullJsonMapper.writeValueAsString(response);
         } else {
             ObjectMapper viewMapper = new ObjectMapper();
             viewMapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false);
             BasicSearchResponse response = new BasicSearchResponse();
             response.setResults(cachedSearchResults);
-            response.setDirectReviewsAvailable(drService.getDirectReviewsAvailable());
+            response.setDirectReviewsAvailable(drService.doesCacheHaveAnyOkData());
             result = viewMapper.writerWithView(SearchViews.Default.class).writeValueAsString(response);
         }
 

@@ -77,10 +77,6 @@ public class DirectReview implements Serializable {
     @XmlElement(name = "nonConformity")
     private List<DirectReviewNonConformity> nonConformities = new ArrayList<DirectReviewNonConformity>();
 
-    @JsonIgnore
-    @XmlTransient
-    private LocalDateTime fetched;
-
     @XmlTransient
     @JsonIgnore
     private Set<String> errorMessages = new HashSet<String>();

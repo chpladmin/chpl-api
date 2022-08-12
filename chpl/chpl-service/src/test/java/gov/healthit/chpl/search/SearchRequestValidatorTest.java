@@ -58,7 +58,7 @@ public class SearchRequestValidatorTest {
     public void setup() {
         dimensionalDataManager = Mockito.mock(DimensionalDataManager.class);
         drService = Mockito.mock(DirectReviewSearchService.class);
-        Mockito.when(drService.getDirectReviewsAvailable()).thenReturn(true);
+        Mockito.when(drService.doesCacheHaveAnyOkData()).thenReturn(true);
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.certificationStatuses.invalid"), ArgumentMatchers.anyString()))
@@ -894,7 +894,7 @@ public class SearchRequestValidatorTest {
 
     @Test
     public void validate_nullComplianceFilterDirectReviewsNotAvailable_noErrors() {
-        Mockito.when(drService.getDirectReviewsAvailable()).thenReturn(false);
+        Mockito.when(drService.doesCacheHaveAnyOkData()).thenReturn(false);
 
         SearchRequest request = SearchRequest.builder()
             .complianceActivity(null)
@@ -908,7 +908,7 @@ public class SearchRequestValidatorTest {
 
     @Test
     public void validate_emptyComplianceFilterDirectReviewsNotAvailable_noErrors() {
-        Mockito.when(drService.getDirectReviewsAvailable()).thenReturn(false);
+        Mockito.when(drService.doesCacheHaveAnyOkData()).thenReturn(false);
 
         SearchRequest request = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
@@ -926,7 +926,7 @@ public class SearchRequestValidatorTest {
 
     @Test
     public void validate_hasHadComplianceFilterNotNullDirectReviewsNotAvailable_addsError() {
-        Mockito.when(drService.getDirectReviewsAvailable()).thenReturn(false);
+        Mockito.when(drService.doesCacheHaveAnyOkData()).thenReturn(false);
 
         SearchRequest request = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
@@ -946,7 +946,7 @@ public class SearchRequestValidatorTest {
 
     @Test
     public void validate_hasNonConformityOptionsDirectReviewsNotAvailable_addsError() {
-        Mockito.when(drService.getDirectReviewsAvailable()).thenReturn(false);
+        Mockito.when(drService.doesCacheHaveAnyOkData()).thenReturn(false);
 
         SearchRequest request = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()
@@ -966,7 +966,7 @@ public class SearchRequestValidatorTest {
 
     @Test
     public void validate_hasNonConformityOptionsOperatorDirectReviewsNotAvailable_addsError() {
-        Mockito.when(drService.getDirectReviewsAvailable()).thenReturn(false);
+        Mockito.when(drService.doesCacheHaveAnyOkData()).thenReturn(false);
 
         SearchRequest request = SearchRequest.builder()
             .complianceActivity(ComplianceSearchFilter.builder()

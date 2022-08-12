@@ -50,7 +50,7 @@ public class DirectReviewDownloadableResourceCreatorJob extends DownloadableReso
                 return;
             }
 
-            if (!drSearchService.getDirectReviewsAvailable()) {
+            if (!drSearchService.doesCacheHaveAnyOkData()) {
                 LOGGER.fatal("Direct Reviews cache is not available. "
                         + "There may have been an error retreiving direct reviews from Jira. "
                         + "Not writing out a file.");
