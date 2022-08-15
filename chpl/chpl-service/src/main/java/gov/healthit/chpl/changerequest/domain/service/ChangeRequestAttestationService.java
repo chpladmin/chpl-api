@@ -1,22 +1,15 @@
 package gov.healthit.chpl.changerequest.domain.service;
 
 import java.text.DateFormat;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.lang3.StringUtils;
-import org.jfree.data.time.DateRange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -26,36 +19,28 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
 import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
+import gov.healthit.chpl.attestation.manager.AttestationCertificationBodyService;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestAttestationDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
-import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.CertificationStatus;
-import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
-import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.search.ListingSearchService;
-import gov.healthit.chpl.search.domain.ListingSearchResult;
-import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.AuthUtil;
@@ -76,8 +61,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private UserDAO userDAO;
     private DeveloperDAO developerDao;
     private ActivityManager activityManager;
-    private ListingSearchService listingSearchService;
-    private CertificationBodyDAO certificationBodyDAO;
+    private AttestationCertificationBodyService attestationCertificationBodyService;
 
     @Value("${changeRequest.attestation.submitted.subject}")
     private String submittedEmailSubject;
@@ -123,8 +107,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
             UserDeveloperMapDAO userDeveloperMapDAO, AttestationManager attestationManager,
             AttestationPeriodService attestationPeriodService, ChplEmailFactory chplEmailFactory,
             ChplHtmlEmailBuilder chplHtmlEmailBuilder, UserDAO userDAO, DeveloperDAO developerDao,
-            ActivityManager activityManager, ListingSearchService listingSearchService,
-            CertificationBodyDAO certificationBodyDAO) {
+            ActivityManager activityManager, AttestationCertificationBodyService atttesAttestationCertificationBodyService) {
 
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
@@ -136,14 +119,8 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         this.userDAO = userDAO;
         this.developerDao = developerDao;
         this.activityManager = activityManager;
-        this.listingSearchService = listingSearchService;
-        this.certificationBodyDAO = certificationBodyDAO;
+        this.attestationCertificationBodyService = atttesAttestationCertificationBodyService;
     }
-
-    private List<String> activeStatuses = Stream.of(CertificationStatusType.Active.getName(),
-            CertificationStatusType.SuspendedByAcb.getName(),
-            CertificationStatusType.SuspendedByOnc.getName())
-            .collect(Collectors.toList());
 
     @Override
     @Transactional
@@ -250,74 +227,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Override
     public List<CertificationBody> getAssociatedCertificationBodies(ChangeRequest cr) {
-        try {
-            return getListingDataForDeveloper(cr.getDeveloper()).stream()
-                .filter(listing -> isListingActiveDuringPeriod(listing, attestationPeriodService.getMostRecentPastAttestationPeriod()))
-                .map(listing -> listing.getCertificationBody())
-                .collect(Collectors.toSet()).stream()
-                .map(pair -> getCertificationBody(pair.getId()))
-                .toList();
-        } catch (ValidationException e) {
-            LOGGER.error("Could not identify Certification Body for Developer with id: {}", cr.getDeveloper().getId());
-            return null;
-        }
-    }
-
-    private CertificationBody getCertificationBody(Long acbId) {
-        try {
-            return new CertificationBody(certificationBodyDAO.getById(acbId));
-        } catch (Exception e) {
-            LOGGER.error("Could not identify Certification Body with id: {}", acbId);
-            return null;
-        }
-    }
-
-    private List<ListingSearchResult> getListingDataForDeveloper(Developer developer) throws ValidationException {
-        SearchRequest request = SearchRequest.builder()
-                .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
-                .developer(developer.getName())
-                .pageSize(MAX_PAGE_SIZE)
-                .build();
-        return listingSearchService.findListings(request).getResults();
-    }
-
-    private Boolean isListingActiveDuringPeriod(ListingSearchResult listing, AttestationPeriod period) {
-        List<CertificationStatusEvent> statusEvents = listing.getStatusEvents().stream()
-                .map(statusEventSearchResult ->  CertificationStatusEvent.builder()
-                        .status(CertificationStatus.builder()
-                                .name(statusEventSearchResult.getStatus().getName())
-                                .build())
-                        .eventDate(toDate(statusEventSearchResult.getStatusStart()).getTime())
-                        .build())
-                .sorted(Comparator.comparing(CertificationStatusEvent::getEventDate))
-                .toList();
-
-        return isListingActiveDuringAttestationPeriod(statusEvents, period);
-    }
-
-    private boolean isListingActiveDuringAttestationPeriod(List<CertificationStatusEvent> statusEvents, AttestationPeriod period) {
-        List<DateRange> activeDateRanges = getDateRangesWithActiveStatus(statusEvents);
-        return activeDateRanges.stream()
-            .filter(activeDates -> toDate(period.getPeriodStart()).getTime() <= activeDates.getUpperMillis()
-                    && toDate(period.getPeriodEnd()).getTime() >= activeDates.getLowerMillis())
-            .findAny().isPresent();
-    }
-
-    private Date toDate(LocalDate localDate) {
-        return  DateUtil.toDate(localDate);
-    }
-
-    private List<DateRange> getDateRangesWithActiveStatus(List<CertificationStatusEvent> listingStatusEvents) {
-        //Assumes statuses are sorted
-        return IntStream.range(0, listingStatusEvents.size())
-            .filter(i -> listingStatusEvents.get(i) != null && listingStatusEvents.get(i).getStatus() != null
-                && !StringUtils.isEmpty(listingStatusEvents.get(i).getStatus().getName()))
-            .filter(i -> activeStatuses.contains(listingStatusEvents.get(i).getStatus().getName()))
-            .mapToObj(i -> new DateRange(new Date(listingStatusEvents.get(i).getEventDate()),
-                    i < (listingStatusEvents.size() - 1) ? new Date(listingStatusEvents.get(i + 1).getEventDate())
-                            //Math.max here to handle the case where status is a future date
-                            : new Date(Math.max(System.currentTimeMillis(), listingStatusEvents.get(i).getEventDate()))))
-            .collect(Collectors.toList());
+        return attestationCertificationBodyService.getAssociatedCertificationBodies(cr.getDeveloper().getId());
     }
 
     private void sendWithdrawnDetailsEmail(ChangeRequest cr) throws EmailNotSentException {

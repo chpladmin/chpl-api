@@ -22,6 +22,7 @@ import gov.healthit.chpl.attestation.dao.AttestationDAO;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
 import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
+import gov.healthit.chpl.attestation.manager.AttestationCertificationBodyService;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.attestation.report.validation.AttestationValidationService;
 import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
@@ -71,6 +72,7 @@ public class DeveloperAttestationReportDataCollection {
     private CertificationBodyDAO certificationBodyDAO;
     private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
     private AttestationPeriodService attestationPeriodService;
+    private AttestationCertificationBodyService attestationCertificationBodyService;
 
     private Map<Long, List<ListingSearchResult>> developerListings = new HashMap<Long, List<ListingSearchResult>>();
 
@@ -78,7 +80,9 @@ public class DeveloperAttestationReportDataCollection {
             UserDeveloperMapDAO userDeveloperMapDao, ListingSearchService listingSearchService,
             AttestationDAO attestationDAO,
             DirectReviewSearchService directReviewService, AttestationValidationService attestationValidationService, CertificationBodyDAO certificationBodyDAO,
-            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO, AttestationPeriodService attestationPeriodService) {
+            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO, AttestationPeriodService attestationPeriodService,
+            AttestationCertificationBodyService attestationCertificationBodyService) {
+
         this.developerDAO = developerDAO;
         this.userDeveloperMapDao = userDeveloperMapDao;
         this.listingSearchService = listingSearchService;
@@ -88,6 +92,7 @@ public class DeveloperAttestationReportDataCollection {
         this.certificationBodyDAO = certificationBodyDAO;
         this.developerCertificationBodyMapDAO = developerCertificationBodyMapDAO;
         this.attestationPeriodService = attestationPeriodService;
+        this.attestationCertificationBodyService = attestationCertificationBodyService;
 }
 
     private List<String> activeStatuses = Stream.of(CertificationStatusType.Active.getName(),
@@ -362,9 +367,8 @@ private Long getOpenDirectReviewNonconformities(Developer developer, Logger logg
     private Map<Pair<Long, Long>, Boolean> getDeveloperAcbMapping(Developer developer, Logger logger) {
         Map<Pair<Long, Long>, Boolean> developerAcbMap = new HashMap<Pair<Long, Long>, Boolean>();
 
-        getListingDataForDeveloper(developer, logger).stream()
-                .filter(listing -> isListingActiveDuringPeriod(listing, attestationPeriodService.getMostRecentPastAttestationPeriod()))
-                .forEach(listing -> developerAcbMap.put(Pair.of(developer.getId(), listing.getCertificationBody().getId()), true));
+        attestationCertificationBodyService.getAssociatedCertificationBodies(developer.getId()).stream()
+            .forEach(acb -> developerAcbMap.put(Pair.of(developer.getId(), acb.getId()), true));
 
         return developerAcbMap;
     }
