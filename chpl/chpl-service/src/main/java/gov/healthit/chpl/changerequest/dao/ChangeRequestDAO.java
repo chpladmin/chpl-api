@@ -27,8 +27,6 @@ import gov.healthit.chpl.util.AuthUtil;
 @Repository("changeRequestDAO")
 public class ChangeRequestDAO extends BaseDAOImpl {
 
-    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
-    private ChangeRequestStatusDAO changeRequestStatusDAO;
     private ChangeRequestDetailsFactory changeRequestDetailsFactory;
 
     @Value("${changerequest.status.pendingacbaction}")
@@ -38,11 +36,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
     private Long pendingDeveloperAction;
 
     @Autowired
-    public ChangeRequestDAO(DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO,
-            ChangeRequestStatusDAO changeRequestStatusDAO,
-            @Lazy ChangeRequestDetailsFactory changeRequestDetailsFactory) {
-        this.developerCertificationBodyMapDAO = developerCertificationBodyMapDAO;
-        this.changeRequestStatusDAO = changeRequestStatusDAO;
+    public ChangeRequestDAO(@Lazy ChangeRequestDetailsFactory changeRequestDetailsFactory) {
         this.changeRequestDetailsFactory = changeRequestDetailsFactory;
     }
 

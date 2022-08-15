@@ -43,6 +43,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.form.validation.FormValidator;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -89,6 +90,8 @@ public class ChangeRequestManager {
     private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
     private ValidationUtils validationUtils;
+    private FormValidator formValidator;
+
     private FF4j ff4j;
 
     private ObjectMapper mapper = new ObjectMapper();
@@ -108,6 +111,7 @@ public class ChangeRequestManager {
             ResourcePermissions resourcePermissions,
             ErrorMessageUtil msgUtil,
             ValidationUtils validationUtils,
+            FormValidator formValidator,
             FF4j ff4j) {
         this.changeRequestDAO = changeRequestDAO;
         this.changeRequestTypeDAO = changeRequestTypeDAO;
@@ -122,6 +126,7 @@ public class ChangeRequestManager {
         this.resourcePermissions = resourcePermissions;
         this.msgUtil = msgUtil;
         this.validationUtils = validationUtils;
+        this.formValidator = formValidator;
         this.ff4j = ff4j;
     }
 
@@ -246,11 +251,12 @@ public class ChangeRequestManager {
 
     private boolean isDeveloperAttestationChangeRequest(ChangeRequest cr) {
         HashMap<String, Object> crMap = (HashMap) cr.getDetails();
-        return crMap.containsKey("attestationResponses");
+        return crMap.containsKey("form");
     }
 
     private ChangeRequest saveChangeRequest(ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
+
 
         ChangeRequestValidationContext crValidationContext = getNewValidationContext(cr, null);
         ValidationException validationException = new ValidationException();
@@ -258,6 +264,7 @@ public class ChangeRequestManager {
         if (validationException.getErrorMessages().size() > 0) {
             throw validationException;
         }
+
 
         ChangeRequest newCr = createBaseChangeRequest(cr);
         newCr.setDetails(cr.getDetails());
@@ -293,6 +300,7 @@ public class ChangeRequestManager {
                 AuthUtil.getCurrentUser(),
                 newChangeRequest,
                 originalChangeRequest,
+                formValidator,
                 resourcePermissions,
                 validationUtils,
                 developerDAO,

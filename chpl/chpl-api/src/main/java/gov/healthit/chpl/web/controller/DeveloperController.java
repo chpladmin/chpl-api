@@ -285,7 +285,7 @@ public class DeveloperController {
     @RequestMapping(value = "/{developerId}/attestations", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody DeveloperAttestationSubmissionResults getAttestations(@PathVariable("developerId") Long developerId) throws InvalidArgumentsException, EntityRetrievalException {
         return DeveloperAttestationSubmissionResults.builder()
-                .developerAttestations(attestationManager.getDeveloperAttestations(developerId))
+                .attestations(attestationManager.getDeveloperAttestations(developerId))
                 .canSubmitAttestationChangeRequest(attestationManager.canDeveloperSubmitChangeRequest(developerId))
                 .submittablePeriod(attestationManager.getSubmittablePeriod(developerId))
                 .canCreateException(attestationManager.canCreateException(developerId))

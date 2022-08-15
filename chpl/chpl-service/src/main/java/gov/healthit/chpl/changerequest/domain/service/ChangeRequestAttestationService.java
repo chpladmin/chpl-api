@@ -1,12 +1,6 @@
 package gov.healthit.chpl.changerequest.domain.service;
 
-import java.text.DateFormat;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -17,8 +11,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
-import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
-import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
+import gov.healthit.chpl.attestation.domain.AttestationSubmission;
 import gov.healthit.chpl.attestation.manager.AttestationCertificationBodyService;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
@@ -26,6 +19,8 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestAttestationDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
+import gov.healthit.chpl.changerequest.domain.service.email.AttestationEmails;
+import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionResponseEntity;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
@@ -33,18 +28,20 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.email.ChplEmailFactory;
-import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.form.Form;
+import gov.healthit.chpl.form.FormItem;
+import gov.healthit.chpl.form.FormService;
+import gov.healthit.chpl.form.SectionHeading;
+import gov.healthit.chpl.form.validation.FormValidator;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.AuthUtil;
-import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -53,79 +50,46 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private static final Integer MAX_PAGE_SIZE = 100;
 
     private ChangeRequestDAO crDAO;
-    private ChangeRequestAttestationDAO crAttesttionDAO;
-    private ChplEmailFactory chplEmailFactory;
+    private ChangeRequestAttestationDAO crAttestationDAO;
     private AttestationManager attestationManager;
     private AttestationPeriodService attestationPeriodService;
-    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
     private UserDAO userDAO;
-    private DeveloperDAO developerDao;
+    private DeveloperDAO developerDAO;
     private ActivityManager activityManager;
     private AttestationCertificationBodyService attestationCertificationBodyService;
-
-    @Value("${changeRequest.attestation.submitted.subject}")
-    private String submittedEmailSubject;
-
-    @Value("${changeRequest.attestation.submitted.body}")
-    private String submittedEmailBody;
-
-    @Value("${changeRequest.attestation.approval.subject}")
-    private String approvalEmailSubject;
-
-    @Value("${changeRequest.attestation.approval.body}")
-    private String approvalEmailBody;
-
-    @Value("${changeRequest.attestation.rejected.subject}")
-    private String rejectedEmailSubject;
-
-    @Value("${changeRequest.attestation.rejected.body}")
-    private String rejectedEmailBody;
-
-    @Value("${changeRequest.attestation.pendingDeveloperAction.subject}")
-    private String pendingDeveloperActionEmailSubject;
-
-    @Value("${changeRequest.attestation.pendingDeveloperAction.body}")
-    private String pendingDeveloperActionEmailBody;
-
-    @Value("${changeRequest.attestation.updated.subject}")
-    private String updatedEmailSubject;
-
-    @Value("${changeRequest.attestation.updated.body}")
-    private String updatedEmailBody;
-
-    @Value("${changeRequest.attestation.withdrawn.subject}")
-    private String withdrawnEmailSubject;
-
-    @Value("${changeRequest.attestation.withdrawn.body}")
-    private String withdrawnEmailBody;
+    private FormValidator formValidator;
+    private FormService formService;
+    private AttestationEmails attestationEmails;
 
     @Value("${changerequest.status.cancelledbyrequester}")
     private Long cancelledStatus;
 
     @Autowired
-    public ChangeRequestAttestationService(ChangeRequestDAO crDAO, ChangeRequestAttestationDAO crAttesttionDAO,
+    public ChangeRequestAttestationService(ChangeRequestDAO crDAO, ChangeRequestAttestationDAO crAttestationDAO,
             UserDeveloperMapDAO userDeveloperMapDAO, AttestationManager attestationManager,
-            AttestationPeriodService attestationPeriodService, ChplEmailFactory chplEmailFactory,
-            ChplHtmlEmailBuilder chplHtmlEmailBuilder, UserDAO userDAO, DeveloperDAO developerDao,
-            ActivityManager activityManager, AttestationCertificationBodyService atttesAttestationCertificationBodyService) {
-
+            AttestationPeriodService attestationPeriodService, UserDAO userDAO, DeveloperDAO developerDAO,
+            ActivityManager activityManager, FormService formService, FormValidator formValidator,
+            AttestationEmails attestationEmails, AttestationCertificationBodyService atttesAttestationCertificationBodyService) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
-        this.crAttesttionDAO = crAttesttionDAO;
+        this.crAttestationDAO = crAttestationDAO;
         this.attestationManager = attestationManager;
         this.attestationPeriodService = attestationPeriodService;
-        this.chplEmailFactory = chplEmailFactory;
-        this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
         this.userDAO = userDAO;
-        this.developerDao = developerDao;
+        this.developerDAO = developerDAO;
         this.activityManager = activityManager;
         this.attestationCertificationBodyService = atttesAttestationCertificationBodyService;
+        this.formService = formService;
+        this.formValidator = formValidator;
+        this.attestationEmails = attestationEmails;
     }
 
     @Override
     @Transactional
     public ChangeRequestAttestationSubmission getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
-        return crAttesttionDAO.getByChangeRequestId(changeRequestId);
+        ChangeRequestAttestationSubmission cras = crAttestationDAO.getByChangeRequestId(changeRequestId);
+        cras.setForm(getPopulatedForm(cras));
+        return cras;
     }
 
     @Override
@@ -135,12 +99,15 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
             ChangeRequestAttestationSubmission attestation = (ChangeRequestAttestationSubmission) cr.getDetails();
             attestation.setSignatureEmail(getUserById(AuthUtil.getCurrentUser().getId()).getEmail());
             attestation.setAttestationPeriod(getAttestationPeriod(cr));
+            ChangeRequestAttestationSubmission createdAttestation = crAttestationDAO.create(cr, attestation);
 
-            crAttesttionDAO.create(cr, attestation);
+            List<FormItem> rolledUpFormItems = attestation.getForm().extractFlatFormItems();
+            crAttestationDAO.addResponsesToChangeRequestAttestationSubmission(createdAttestation, rolledUpFormItems);
+
             ChangeRequest newCr = crDAO.get(cr.getId());
 
             try {
-                sendSubmittedEmail(newCr);
+                attestationEmails.getSubmittedEmail().send(newCr);
             } catch (EmailNotSentException e) {
                 LOGGER.error(e);
             }
@@ -156,6 +123,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         try {
             ChangeRequest crFromDb = crDAO.get(cr.getId());
             ChangeRequestAttestationSubmission attestation = (ChangeRequestAttestationSubmission) cr.getDetails();
+            attestation.setForm(formValidator.removePhantomAndDuplicateResponses(attestation.getForm()));
 
             // Use the id from the DB, not the object. Client could have changed the id.
             attestation.setId(((ChangeRequestAttestationSubmission) crFromDb.getDetails()).getId());
@@ -174,7 +142,9 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                         "Change request cancelled by requestor",
                         crFromDb, cr);
             } else if (haveDetailsBeenUpdated(cr, crFromDb)) {
-                cr.setDetails(crAttesttionDAO.update((ChangeRequestAttestationSubmission) cr.getDetails()));
+
+                crAttestationDAO.update(cr, (ChangeRequestAttestationSubmission) cr.getDetails());
+                cr.setDetails(getByChangeRequestId(cr.getId()));
 
                 activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
                         "Change request details updated",
@@ -194,28 +164,21 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     @Override
     @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#cr.developer.id")
     protected ChangeRequest execute(ChangeRequest cr) throws EntityRetrievalException, EntityCreationException {
-        Developer beforeDeveloper = developerDao.getById(cr.getDeveloper().getId());
+        Developer beforeDeveloper = developerDAO.getById(cr.getDeveloper().getId());
+        ChangeRequestAttestationSubmission changeRequestAttestationSubmission = (ChangeRequestAttestationSubmission) cr.getDetails();
 
-        ChangeRequestAttestationSubmission attestationSubmission = (ChangeRequestAttestationSubmission) cr.getDetails();
-        DeveloperAttestationSubmission developerAttestation = DeveloperAttestationSubmission.builder()
-                .developer(cr.getDeveloper())
-                .period(attestationSubmission.getAttestationPeriod())
-                .signature(attestationSubmission.getSignature())
-                .signatureEmail(attestationSubmission.getSignatureEmail())
-                .responses(attestationSubmission.getAttestationResponses().stream()
-                        .map(resp -> AttestationSubmittedResponse.builder()
-                                .attestation(resp.getAttestation())
-                                .response(resp.getResponse())
-                                .build())
-                        .collect(Collectors.toList()))
+        AttestationSubmission developerAttestation = AttestationSubmission.builder()
+                .developerId(cr.getDeveloper().getId())
+                .attestationPeriod(changeRequestAttestationSubmission.getAttestationPeriod())
+                .signature(changeRequestAttestationSubmission.getSignature())
+                .signatureEmail(changeRequestAttestationSubmission.getSignatureEmail())
+                .form(changeRequestAttestationSubmission.getForm())
                 .build();
 
-        attestationManager.saveDeveloperAttestation(developerAttestation);
-        attestationManager.deleteAttestationPeriodDeveloperExceptions(
-                developerAttestation.getDeveloper().getId(),
-                developerAttestation.getPeriod().getId());
+        attestationManager.saveDeveloperAttestation(cr.getDeveloper().getId(), developerAttestation);
+        attestationManager.deleteAttestationPeriodDeveloperExceptions(cr.getDeveloper().getId(), developerAttestation.getAttestationPeriod().getId());
 
-        Developer updatedDeveloper = developerDao.getById(cr.getDeveloper().getId());
+        Developer updatedDeveloper = developerDAO.getById(cr.getDeveloper().getId());
         try {
             activityManager.addActivity(ActivityConcept.DEVELOPER, updatedDeveloper.getId(),
                 "Developer attestation created.", beforeDeveloper, updatedDeveloper);
@@ -231,161 +194,26 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     }
 
     private void sendWithdrawnDetailsEmail(ChangeRequest cr) throws EmailNotSentException {
-        chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
-                        .map(user -> user.getEmail())
-                        .collect(Collectors.toList()))
-                .subject(withdrawnEmailSubject)
-                .htmlMessage(withdrawnUpdatedHtmlMessage(cr))
-                .sendEmail();
+        attestationEmails.getWithdrawnEmail().send(cr);
     }
 
     private void sendUpdatedDetailsEmail(ChangeRequest cr) throws EmailNotSentException {
-        chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
-                        .map(user -> user.getEmail())
-                        .collect(Collectors.toList()))
-                .subject(updatedEmailSubject)
-                .htmlMessage(createUpdatedHtmlMessage(cr))
-                .sendEmail();
-    }
-
-    private void sendSubmittedEmail(ChangeRequest cr) throws EmailNotSentException {
-        chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
-                        .map(user -> user.getEmail())
-                        .collect(Collectors.toList()))
-                .subject(submittedEmailSubject)
-                .htmlMessage(createSubmittedHtmlMessage(cr))
-                .sendEmail();
+        attestationEmails.getUpdatedEmail().send(cr);
     }
 
     @Override
     protected void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException {
-        chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
-                        .map(user -> user.getEmail())
-                        .collect(Collectors.toList()))
-                .subject(approvalEmailSubject)
-                .htmlMessage(createAcceptedHtmlMessage(cr))
-                .sendEmail();
+        attestationEmails.getAcceptedEmail().send(cr);
     }
 
     @Override
     protected void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException {
-        chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
-                        .map(user -> user.getEmail())
-                        .collect(Collectors.toList()))
-                .subject(pendingDeveloperActionEmailSubject)
-                .htmlMessage(createPendingDeveloperActionHtmlMessage(cr))
-                .sendEmail();
+        attestationEmails.getPendingDeveloperActionEmail().send(cr);
     }
 
     @Override
     protected void sendRejectedEmail(ChangeRequest cr) throws EmailNotSentException {
-        chplEmailFactory.emailBuilder()
-                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
-                        .map(user -> user.getEmail())
-                        .collect(Collectors.toList()))
-                .subject(rejectedEmailSubject)
-                .htmlMessage(createRejectedHtmlMessage(cr))
-                .sendEmail();
-    }
-
-    private String withdrawnUpdatedHtmlMessage(ChangeRequest cr) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, YYYY");
-        return chplHtmlEmailBuilder.initialize()
-                .heading("Developer Attestations Withdrawn")
-                .paragraph("", String.format(withdrawnEmailBody,
-                        cr.getDeveloper().getName(),
-                        formatter.format(DateUtil.toLocalDate(cr.getSubmittedDate().getTime())),
-                        AuthUtil.getUsername()))
-                .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
-                .footer(true)
-                .build();
-    }
-
-    private String createUpdatedHtmlMessage(ChangeRequest cr) {
-        ChangeRequestAttestationSubmission details = (ChangeRequestAttestationSubmission) cr.getDetails();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, YYYY");
-        String period = formatter.format(details.getAttestationPeriod().getPeriodStart()) + " - " + formatter.format(details.getAttestationPeriod().getPeriodEnd());
-        return chplHtmlEmailBuilder.initialize()
-                .heading("Developer Attestations Submitted")
-                .paragraph("", String.format(updatedEmailBody, cr.getDeveloper().getName(), period))
-                .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
-                .footer(true)
-                .build();
-    }
-
-    private String createSubmittedHtmlMessage(ChangeRequest cr) {
-        ChangeRequestAttestationSubmission details = (ChangeRequestAttestationSubmission) cr.getDetails();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, YYYY");
-        String period = formatter.format(details.getAttestationPeriod().getPeriodStart()) + " - " + formatter.format(details.getAttestationPeriod().getPeriodEnd());
-        return chplHtmlEmailBuilder.initialize()
-                .heading("Developer Attestations Submitted")
-                .paragraph("", String.format(submittedEmailBody, cr.getDeveloper().getName(), period))
-                .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
-                .footer(true)
-                .build();
-    }
-
-    private String createAcceptedHtmlMessage(ChangeRequest cr) {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
-        return chplHtmlEmailBuilder.initialize()
-                .heading("Developer Attestations Accepted")
-                .paragraph("", String.format(approvalEmailBody, df.format(cr.getSubmittedDate()), getApprovalBody(cr)))
-                .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
-                .footer(true)
-                .build();
-    }
-
-    private String createPendingDeveloperActionHtmlMessage(ChangeRequest cr) {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
-        return chplHtmlEmailBuilder.initialize()
-                .heading("Developer Action Required")
-                .paragraph("", String.format(pendingDeveloperActionEmailBody, df.format(cr.getSubmittedDate()), getApprovalBody(cr), cr.getCurrentStatus().getComment()))
-                .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
-                .footer(true)
-                .build();
-    }
-
-    private String createRejectedHtmlMessage(ChangeRequest cr) {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
-        return chplHtmlEmailBuilder.initialize()
-                .heading("Developer Attestations Rejected")
-                .paragraph("", String.format(rejectedEmailBody, df.format(cr.getSubmittedDate()), getApprovalBody(cr), cr.getCurrentStatus().getComment()))
-                .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
-                .footer(true)
-                .build();
-    }
-
-    private String toHtmlString(ChangeRequestAttestationSubmission attestationSubmission, ChplHtmlEmailBuilder htmlBuilder) {
-        List<String> headings = Arrays.asList("Condition", "Attestation", "Response");
-
-        List<List<String>> rows = attestationSubmission.getAttestationResponses().stream()
-                .sorted((r1, r2) -> r1.getAttestation().getSortOrder().compareTo(r2.getAttestation().getSortOrder()))
-                .map(resp -> Arrays.asList(
-                        resp.getAttestation().getCondition().getName(),
-                        convertPsuedoMarkdownToHtmlLink(resp.getAttestation().getDescription()),
-                        resp.getResponse().getResponse()))
-                .collect(Collectors.toList());
-
-        return htmlBuilder.getTableHtml(headings, rows, "");
-    }
-
-    private String convertPsuedoMarkdownToHtmlLink(String toConvert) {
-        String regex = "^(.*)\\[(.*)\\]\\((.*)\\)(.*)$";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(toConvert);
-        String converted = "";
-
-        if (matcher.find() && matcher.groupCount() == 4) {
-            converted = matcher.group(1) + "<a href=" + matcher.group(3) + ">" + matcher.group(2) + "</a>" + matcher.group(4);
-        } else {
-          converted = toConvert;
-        }
-        return converted;
+        attestationEmails.getRejectedEmail().send(cr);
     }
 
     private AttestationPeriod getAttestationPeriod(ChangeRequest cr) {
@@ -402,6 +230,37 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     }
 
     private Boolean haveDetailsBeenUpdated(ChangeRequest updatedCr, ChangeRequest originalCr) {
-        return !((ChangeRequestAttestationSubmission) updatedCr.getDetails()).equals((originalCr.getDetails()));
+        ChangeRequestAttestationSubmission updated = (ChangeRequestAttestationSubmission) updatedCr.getDetails();
+        ChangeRequestAttestationSubmission orig = (ChangeRequestAttestationSubmission) originalCr.getDetails();
+        return !orig.isEqual(updated);
     }
+
+    private Form getPopulatedForm(ChangeRequestAttestationSubmission submission) {
+        try {
+            List<ChangeRequestAttestationSubmissionResponseEntity> submittedResponses =
+                    crAttestationDAO.getChangeRequestAttestationSubmissionResponseEntities(submission.getId());
+
+            Form form = formService.getForm(submission.getAttestationPeriod().getForm().getId());
+            for (SectionHeading heading : form.getSectionHeadings()) {
+                heading.setFormItems(populateFormItemsWithSubmittedResponses(heading.getFormItems(), submittedResponses));
+            }
+
+            return form;
+        } catch (EntityRetrievalException e) {
+            return null;
+        }
+    }
+
+    private List<FormItem> populateFormItemsWithSubmittedResponses(List<FormItem> formItems, List<ChangeRequestAttestationSubmissionResponseEntity> submittedResponses) {
+        for (FormItem fi : formItems) {
+            fi.setSubmittedResponses(submittedResponses.stream()
+                    .filter(sr -> sr.getFormItem().getId().equals(fi.getId()))
+                    .map(sr -> sr.getResponse().toDomain())
+                    .toList());
+
+            fi.setChildFormItems(populateFormItemsWithSubmittedResponses(fi.getChildFormItems(), submittedResponses));
+        }
+        return formItems;
+    }
+
 }
