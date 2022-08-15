@@ -29,7 +29,7 @@ import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
-import gov.healthit.chpl.attestation.entity.DeveloperAttestationSubmissionEntity;
+import gov.healthit.chpl.attestation.entity.AttestationSubmissionEntity;
 import gov.healthit.chpl.changerequest.entity.DeveloperCertificationBodyMapEntity;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
@@ -121,11 +121,11 @@ public class DeveloperEntity implements Serializable {
     @Where(clause = "deleted <> 'true'")
     private Set<DeveloperStatusEventEntity> statusEvents = new LinkedHashSet<DeveloperStatusEventEntity>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "developer")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "developerId")
     @Basic(optional = false)
     @Column(name = "developer_id", nullable = false)
     @Where(clause = "deleted <> 'true'")
-    private Set<DeveloperAttestationSubmissionEntity> attestations = new LinkedHashSet<DeveloperAttestationSubmissionEntity>();
+    private Set<AttestationSubmissionEntity> attestations = new LinkedHashSet<AttestationSubmissionEntity>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "developerId")
     @Basic(optional = false)
@@ -169,7 +169,7 @@ public class DeveloperEntity implements Serializable {
         return getPeriods().stream()
                 .filter(period -> period.getPeriodEnd().isBefore(LocalDate.now()))
                 .map(period -> {
-                    DeveloperAttestationSubmissionEntity attestation = getAttestationForPeriod(period.toDomain());
+                    AttestationSubmissionEntity attestation = getAttestationForPeriod(period.toDomain());
                     return PublicAttestation.builder()
                             .id(attestation != null ? attestation.getId() : null)
                             .attestationPeriod(period.toDomain())
@@ -180,9 +180,9 @@ public class DeveloperEntity implements Serializable {
                 .toList();
     }
 
-    private DeveloperAttestationSubmissionEntity getAttestationForPeriod(AttestationPeriod period) {
+    private AttestationSubmissionEntity getAttestationForPeriod(AttestationPeriod period) {
         return attestations.stream()
-                .filter(att -> att.getPeriod().getId().equals(period.getId()))
+                .filter(att -> att.getAttestationPeriod().getId().equals(period.getId()))
                 .findAny()
                 .orElse(null);
     }

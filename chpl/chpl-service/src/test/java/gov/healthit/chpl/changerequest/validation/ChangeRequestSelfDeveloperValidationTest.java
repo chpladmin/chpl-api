@@ -97,6 +97,7 @@ public class ChangeRequestSelfDeveloperValidationTest {
         return new ChangeRequestValidationContext(null,
                         getChangeRequestSelfDeveloper(selfDeveloperValue),
                         null,
+                        null,
                         resourcePermissions,
                         null,
                         null,

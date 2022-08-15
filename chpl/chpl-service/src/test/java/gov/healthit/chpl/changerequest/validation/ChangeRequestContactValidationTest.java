@@ -218,6 +218,7 @@ public class ChangeRequestContactValidationTest {
         return new ChangeRequestValidationContext(null,
                         getChangeRequestContact(contact),
                         null,
+                        null,
                         resourcePermissions,
                         null,
                         null,
