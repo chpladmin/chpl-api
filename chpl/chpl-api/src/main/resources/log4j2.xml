@@ -6,5 +6,5 @@
         <Property name="logDir">${sys:catalina.home}/logs</Property>
     </Properties>
     <xi:include href="log4j2-xinclude-file-appenders.xml" />
-    <xi:include href="log4j2-xinclude-loggers.xml" />
+    <xi:include href="log4j2-xinclude-loggers-local.xml" />
 </Configuration>
