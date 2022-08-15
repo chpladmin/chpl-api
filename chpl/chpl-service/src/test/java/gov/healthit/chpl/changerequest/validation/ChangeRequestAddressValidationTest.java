@@ -277,6 +277,7 @@ public class ChangeRequestAddressValidationTest {
     private ChangeRequestValidationContext getValidationContext(Address address, ResourcePermissions resourcePermissions) {
         return new ChangeRequestValidationContext(null, getChangeRequestAddress(address),
                         null,
+                        null,
                         resourcePermissions,
                         null,
                         null,

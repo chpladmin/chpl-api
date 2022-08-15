@@ -6,8 +6,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.attestation.domain.AttestationForm;
+import gov.healthit.chpl.attestation.domain.AttestationPeriodForm;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.results.AttestationPeriodResults;
@@ -47,8 +48,8 @@ public class AttestationController {
     @RequestMapping(value = "/form",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public AttestationForm getAttestationForm() {
-        return attestationManager.getAttestationForm();
+    public AttestationPeriodForm getAttestationForm() {
+        return null;
     }
 
     @Operation(summary = "Get the list of Attestation Conditions, Attestations, and Valid Responses for an Attestation period",
@@ -57,7 +58,7 @@ public class AttestationController {
     @RequestMapping(value = "/periods/{periodId}/form",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public AttestationForm getAttestationFormByPeriod(@PathVariable("periodId") Long periodId) {
-        return attestationManager.getAttestationForm();
+    public AttestationPeriodForm getAttestationFormByPeriod(@PathVariable("periodId") Long periodId) throws EntityRetrievalException {
+        return attestationManager.getAttestationForm(periodId);
     }
 }

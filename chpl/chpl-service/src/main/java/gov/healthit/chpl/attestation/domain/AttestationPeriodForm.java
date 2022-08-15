@@ -1,17 +1,14 @@
 package gov.healthit.chpl.attestation.domain;
 
-import java.util.List;
-
+import gov.healthit.chpl.form.Form;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Singular;
 
 @Data
 @Builder
 @AllArgsConstructor
-public class AttestationForm {
-    @Singular
-    private List<Attestation> attestations;
+public class AttestationPeriodForm {
+    private Form form;
     private AttestationPeriod period;
 }
