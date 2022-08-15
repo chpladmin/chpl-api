@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -76,7 +77,7 @@ public class ListingStatusAndUserRoleReviewer implements ComparisonReviewer {
 
     private List<CertificationResult> getAttestedToCriteria(CertifiedProductSearchDetails listing) {
         return listing.getCertificationResults().stream()
-                .filter(cr -> cr.isSuccess())
+                .filter(cr -> BooleanUtils.isTrue(cr.isSuccess()))
                 .collect(Collectors.toList());
     }
 

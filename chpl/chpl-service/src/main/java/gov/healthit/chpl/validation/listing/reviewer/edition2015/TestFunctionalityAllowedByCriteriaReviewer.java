@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
@@ -48,8 +49,7 @@ public class TestFunctionalityAllowedByCriteriaReviewer extends PermissionBasedR
     public void review(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationResults() != null) {
             for (CertificationResult cr : listing.getCertificationResults()) {
-                if (cr.isSuccess() != null && cr.isSuccess().equals(Boolean.TRUE)
-                        && cr.getTestFunctionality() != null) {
+                if (BooleanUtils.isTrue(cr.isSuccess()) && cr.getTestFunctionality() != null) {
                     for (CertificationResultTestFunctionality crtf : cr.getTestFunctionality()) {
                         Set<String> messages = getTestingFunctionalityErrorMessages(crtf, cr, listing);
                         for (String message : messages) {

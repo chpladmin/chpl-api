@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -54,7 +55,7 @@ public class TestFunctionalityAllowedByRoleReviewer implements ComparisonReviewe
 
                 //Only check removed CertificationResultTestFunctionality if the criteria is attested to
                 List<CertificationResultTestFunctionality> removedCrtfs = new ArrayList<CertificationResultTestFunctionality>();
-                if (updatedCr.isSuccess()) {
+                if (BooleanUtils.isTrue(updatedCr.isSuccess())) {
                     removedCrtfs = getRemovedCrtfs(listUpdateCrtfs, listExistingCrtfs);
                 }
 

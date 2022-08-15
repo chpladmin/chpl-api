@@ -61,7 +61,7 @@ public class ChangeRequestManagerTest {
                 .thenReturn(getBasicChangeRequest());
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
-                null, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null, null, null,
                 null, null, null, ff4j);
 
         // Run
@@ -82,7 +82,7 @@ public class ChangeRequestManagerTest {
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
                 null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, ff4j);
+                null, null, null, null, ff4j);
 
         // Run
         changeRequestManager.getChangeRequest(11l);
@@ -101,7 +101,7 @@ public class ChangeRequestManagerTest {
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
                 null, null, null, null, null, null, null, null, null, null, null,
-                resourcePermissions, null, null, ff4j);
+                resourcePermissions, null, null, null, ff4j);
 
         // Run
         List<ChangeRequest> crs = changeRequestManager.getAllChangeRequestsForUser();
@@ -149,6 +149,7 @@ public class ChangeRequestManagerTest {
                 resourcePermissions,
                 null,
                 null,
+                null,
                 ff4j);
 
         // Run
@@ -179,6 +180,7 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 crValidationService,
+                null,
                 null,
                 null,
                 null,
@@ -234,6 +236,7 @@ public class ChangeRequestManagerTest {
                 resourcePermissions,
                 null,
                 null,
+                null,
                 ff4j);
 
         // Run
@@ -282,6 +285,7 @@ public class ChangeRequestManagerTest {
                 null,
                 resourcePermissions,
                 errorMessageUtil,
+                null,
                 null,
                 ff4j);
 

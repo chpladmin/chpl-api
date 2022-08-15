@@ -11,15 +11,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.attestation.dao.AttestationDAO;
-import gov.healthit.chpl.attestation.domain.AttestationForm;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
-import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
+import gov.healthit.chpl.attestation.domain.AttestationPeriodForm;
+import gov.healthit.chpl.attestation.domain.AttestationSubmission;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.form.FormService;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -30,15 +31,20 @@ import lombok.extern.log4j.Log4j2;
 public class AttestationManager {
     private AttestationDAO attestationDAO;
     private AttestationPeriodService attestationPeriodService;
+    private FormService formService;
+    private AttestationSubmissionService attestationSubmissionService;
     private ChangeRequestDAO changeRequestDAO;
     private ErrorMessageUtil errorMessageUtil;
     private Integer attestationExceptionWindowInDays;
 
     @Autowired
-    public AttestationManager(AttestationDAO attestationDAO, AttestationPeriodService attestationPeriodService, ChangeRequestDAO changeRequestDAO,
-            ErrorMessageUtil errorMessageUtil, @Value("${attestationExceptionWindowInDays}") Integer attestationExceptionWindowInDays) {
+    public AttestationManager(AttestationDAO attestationDAO, AttestationPeriodService attestationPeriodService, FormService formService,
+            AttestationSubmissionService attestationSubmissionService, ChangeRequestDAO changeRequestDAO, ErrorMessageUtil errorMessageUtil,
+            @Value("${attestationExceptionWindowInDays}") Integer attestationExceptionWindowInDays) {
         this.attestationDAO = attestationDAO;
         this.attestationPeriodService = attestationPeriodService;
+        this.formService = formService;
+        this.attestationSubmissionService = attestationSubmissionService;
         this.changeRequestDAO = changeRequestDAO;
         this.errorMessageUtil = errorMessageUtil;
         this.attestationExceptionWindowInDays = attestationExceptionWindowInDays;
@@ -48,9 +54,23 @@ public class AttestationManager {
         return attestationPeriodService.getAllPeriods();
     }
 
-    public AttestationForm getAttestationForm() {
-        AttestationPeriod period = attestationPeriodService.getMostRecentPastAttestationPeriod();
-        return new AttestationForm(attestationDAO.getAttestationForm(), period);
+    public AttestationPeriodForm getAttestationForm(Long attestationPeriodId) throws EntityRetrievalException {
+        AttestationPeriod attestationPeriod = getAllPeriods().stream()
+                .filter(ap -> ap.getId().equals(attestationPeriodId))
+                .findAny()
+                .orElse(null);
+
+        if (attestationPeriod != null) {
+            return AttestationPeriodForm.builder()
+                    .period(getAllPeriods().stream()
+                            .filter(per -> per.getId().equals(attestationPeriodId))
+                            .findAny()
+                            .orElse(null))
+                    .form(formService.getForm(attestationPeriod.getForm().getId()))
+                    .build();
+        } else {
+            return null;
+        }
     }
 
     @Transactional
@@ -58,29 +78,17 @@ public class AttestationManager {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED
     }, allEntries = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ATTESTATION, "
-            + "T(gov.healthit.chpl.permissions.domains.AttestationDomainPermissions).CREATE, #developerAttestationSubmission)")
-    @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#developerAttestationSubmission.developer.id")
-    public DeveloperAttestationSubmission saveDeveloperAttestation(DeveloperAttestationSubmission developerAttestationSubmission) throws EntityRetrievalException {
-        attestationDAO.getDeveloperAttestationSubmissionsByDeveloperAndPeriod(
-                developerAttestationSubmission.getDeveloper().getId(),
-                developerAttestationSubmission.getPeriod().getId())
-                .stream()
-                        .forEach(da -> {
-                            try {
-                                attestationDAO.deleteDeveloperAttestationSubmission(da.getId());
-                            } catch (EntityRetrievalException e) {
-                                LOGGER.catching(e);
-                                throw new RuntimeException(e);
-                            }
-                        });
-        return attestationDAO.createDeveloperAttestationSubmission(developerAttestationSubmission);
+            + "T(gov.healthit.chpl.permissions.domains.AttestationDomainPermissions).CREATE, #attestationSubmission)")
+    @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#attestationSubmission.developerId")
+    public AttestationSubmission saveDeveloperAttestation(Long developerId, AttestationSubmission attestationSubmission) throws EntityRetrievalException {
+        return attestationDAO.saveAttestationSubmssion(developerId, attestationSubmission);
     }
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ATTESTATION, "
             + "T(gov.healthit.chpl.permissions.domains.AttestationDomainPermissions).GET_BY_DEVELOPER_ID, #developerId)")
-    public List<DeveloperAttestationSubmission> getDeveloperAttestations(Long developerId) {
-        return attestationDAO.getDeveloperAttestationSubmissionsByDeveloper(developerId);
+    public List<AttestationSubmission> getDeveloperAttestations(Long developerId) {
+        return attestationSubmissionService.getAttestationSubmissions(developerId);
     }
 
     @Transactional
@@ -175,7 +183,9 @@ public class AttestationManager {
     }
 
     private Boolean doesAttestationForDeveloperExist(Long developerId, Long attestationPeriodId) {
-        List<DeveloperAttestationSubmission> submissions = attestationDAO.getDeveloperAttestationSubmissionsByDeveloperAndPeriod(developerId, attestationPeriodId);
+        List<AttestationSubmission> submissions = attestationDAO.getAttestationSubmissionsByDeveloper(developerId).stream()
+                .filter(as -> as.getAttestationPeriod().getId().equals(attestationPeriodId))
+                .toList();
         return submissions != null && submissions.size() > 0;
     }
 

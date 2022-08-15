@@ -1,9 +1,5 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -68,12 +64,13 @@ public class DeveloperAttestationCheckInReportJob implements Job {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
-                    List<DeveloperAttestationCheckInReport> reportRows = developerAttestationCheckInReportDataCollection.collect();
-                    File csv = developerAttestationCheckInReportCsvWriter.generateFile(reportRows);
+                    //List<DeveloperAttestationCheckInReport> reportRows = developerAttestationCheckInReportDataCollection.collect();
+                    //File csv = developerAttestationCheckInReportCsvWriter.generateFile(reportRows);
                     chplEmailFactory.emailBuilder()
                             .recipient(context.getMergedJobDataMap().getString("email"))
                             .subject(emailSubject)
-                            .fileAttachments(Arrays.asList(csv))
+                            //TODO - add back in when working on OCD-3980
+                            //.fileAttachments(Arrays.asList(csv))
                             .htmlMessage(chplHtmlEmailBuilder.initialize()
                                     .heading(sectionHeading)
                                     .paragraph("", emailBody)

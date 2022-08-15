@@ -74,7 +74,8 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationResults().stream()
-                .filter(cr -> cr.isSuccess() && cr.getConformanceMethods() != null && cr.getConformanceMethods().size() > 0)
+                .filter(cr -> BooleanUtils.isTrue(cr.isSuccess())
+                        && !CollectionUtils.isEmpty(cr.getConformanceMethods()))
                 .count() > 0
                 && !ff4j.check(FeatureList.CONFORMANCE_METHOD)) {
             listing.getErrorMessages().add("Conformance Methods are not implemented yet");

@@ -2,6 +2,7 @@ package gov.healthit.chpl.validation.listing.reviewer;
 
 import java.util.List;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -62,7 +63,7 @@ public abstract class PermissionBasedReviewer implements Reviewer {
     }
 
     public Boolean isCertificationResultAttestedTo(CertificationResult cert) {
-        return cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE);
+        return BooleanUtils.isTrue(cert.isSuccess());
     }
 
     @Override

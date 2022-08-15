@@ -158,10 +158,13 @@ public class DeveloperAttestationCheckInReportDataCollector {
 
     private String getAttestationResponse(ChangeRequest cr, Long attestationConditionId) {
        ChangeRequestAttestationSubmission details = (ChangeRequestAttestationSubmission) cr.getDetails();
+       /*
        return details.getAttestationResponses().stream()
                .filter(resp -> resp.getAttestation().getCondition().getId().equals(attestationConditionId))
                .map(resp -> resp.getResponse().getResponse())
                .findAny()
                .orElse("");
+        */
+       return null;
     }
 }
