@@ -2,10 +2,10 @@ package gov.healthit.chpl.scheduler.job.changerequest.presenter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
@@ -34,11 +34,16 @@ public class DownloadableAttestationPresenter extends ChangeRequestCsvPresenter 
                 CR_CREATED_DATE_HEADING,
                 CR_LAST_UPDATED_DATE_HEADING,
                 CR_ACBS_HEADING,
-                CR_QUESTION1_HEADING,
-                CR_QUESTION2_HEADING,
-                CR_QUESTION3_HEADING,
-                CR_QUESTION4_HEADING,
-                CR_QUESTION5_HEADING,
+                CR_QUESTION1_RESPONSE_HEADING,
+                CR_QUESTION1_OPTIONAL_RESPONSE_HEADING,
+                CR_QUESTION2_RESPONSE_HEADING,
+                CR_QUESTION2_OPTIONAL_RESPONSE_HEADING,
+                CR_QUESTION3_RESPONSE_HEADING,
+                CR_QUESTION3_OPTIONAL_RESPONSE_HEADING,
+                CR_QUESTION4_RESPONSE_HEADING,
+                CR_QUESTION4_OPTIONAL_RESPONSE_HEADING,
+                CR_QUESTION5_RESPONSE_HEADING,
+                CR_QUESTION5_OPTIONAL_RESPONSE_HEADING,
                 CR_SUBMITTER_NAME_HEADING,
                 CR_SUBMITTER_EMAIL_HEADING)
                 .collect(Collectors.toList());
@@ -65,26 +70,46 @@ public class DownloadableAttestationPresenter extends ChangeRequestCsvPresenter 
                 .map(acb -> acb.getName())
                 .collect(Collectors.joining(",")));
         ChangeRequestAttestationSubmission details = (ChangeRequestAttestationSubmission) changeRequest.getDetails();
-        result.add(getResponse(details, CR_QUESTION1_HEADING));
-        result.add(getResponse(details, CR_QUESTION2_HEADING));
-        result.add(getResponse(details, CR_QUESTION3_HEADING));
-        result.add(getResponse(details, CR_QUESTION4_HEADING));
-        result.add(getResponse(details, CR_QUESTION5_HEADING));
+        result.add(getParentResponse(details, CR_QUESTION1_RESPONSE_HEADING));
+        result.add(getFirstChildResponse(details, CR_QUESTION1_OPTIONAL_RESPONSE_HEADING));
+        result.add(getParentResponse(details, CR_QUESTION2_RESPONSE_HEADING));
+        result.add(getFirstChildResponse(details, CR_QUESTION2_OPTIONAL_RESPONSE_HEADING));
+        result.add(getParentResponse(details, CR_QUESTION3_RESPONSE_HEADING));
+        result.add(getFirstChildResponse(details, CR_QUESTION3_OPTIONAL_RESPONSE_HEADING));
+        result.add(getParentResponse(details, CR_QUESTION4_RESPONSE_HEADING));
+        result.add(getFirstChildResponse(details, CR_QUESTION4_OPTIONAL_RESPONSE_HEADING));
+        result.add(getParentResponse(details, CR_QUESTION5_RESPONSE_HEADING));
+        result.add(getFirstChildResponse(details, CR_QUESTION5_OPTIONAL_RESPONSE_HEADING));
         result.add(details.getSignature());
         result.add(details.getSignatureEmail());
         return result;
     }
 
-    private String getResponse(ChangeRequestAttestationSubmission attestation, String conditionName) {
-        Optional<String> attestationResponse = attestation.getAttestationResponses().stream()
-            .filter(response -> response.getAttestation().getCondition()
-                    .getName().equals(conditionName))
-            .map(response -> response.getResponse().getResponse())
-            .findFirst();
-        if (!attestationResponse.isPresent()) {
+    private String getParentResponse(ChangeRequestAttestationSubmission attestation, String conditionName) {
+        String attestationResponse = attestation.getForm().getSectionHeadings().stream()
+            .filter(section -> conditionName.startsWith(section.getName()))
+            .flatMap(section -> section.getFormItems().get(0).getSubmittedResponses().stream())
+            .map(submittedResponse -> submittedResponse.getResponse())
+            .collect(Collectors.joining("; "));
+        if (attestationResponse == null) {
             return "";
         }
-        return attestationResponse.get();
+        return attestationResponse;
+    }
+
+    private String getFirstChildResponse(ChangeRequestAttestationSubmission attestation, String conditionName) {
+        String attestationResponse = attestation.getForm().getSectionHeadings().stream()
+            .filter(section -> conditionName.startsWith(section.getName()))
+            .map(section -> section.getFormItems().get(0))
+            .filter(formItem -> !CollectionUtils.isEmpty(formItem.getChildFormItems()))
+            .map(formItem -> formItem.getChildFormItems().get(0))
+            .flatMap(childFormItem -> childFormItem.getSubmittedResponses().stream())
+            .map(submittedResponse -> submittedResponse.getResponse())
+            .collect(Collectors.joining("; "));
+        if (attestationResponse == null) {
+            return "";
+        }
+        return attestationResponse;
     }
 
 }

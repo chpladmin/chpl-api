@@ -216,7 +216,7 @@
         <AppenderRef ref="sendEmailJob" />
         <AppenderRef ref="sendEmailJobJson" />
     </Logger>
-    <Logger name="changeRequestsReportJobLogger" level="DEBUG" additivity="false">
+    <Logger name="changeRequestsReportJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="changeRequestsReportJob" />
         <AppenderRef ref="changeRequestsReportJobJson" />
     </Logger>
