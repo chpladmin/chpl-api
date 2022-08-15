@@ -7,6 +7,7 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.form.validation.FormValidator;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ValidationUtils;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,7 @@ public class ChangeRequestValidationContext {
     private ChangeRequest origChangeRequest;
     private ValidationDAOs validationDAOs;
     private DomainManagers domainManagers;
+    private FormValidator formValidator;
     private ResourcePermissions resourcePermissions;
     private ValidationUtils validationUtils;
     private ChangeRequestTypeIds changeRequestTypeIds;
@@ -32,6 +34,7 @@ public class ChangeRequestValidationContext {
     public ChangeRequestValidationContext(User user,
             ChangeRequest newChangeRequest,
             ChangeRequest origChangeRequest,
+            FormValidator formValidator,
             ResourcePermissions resourcePermissions,
             ValidationUtils validationUtils,
             DeveloperDAO developerDAO,
@@ -50,6 +53,7 @@ public class ChangeRequestValidationContext {
         this.currentUser = user;
         this.newChangeRequest = newChangeRequest;
         this.origChangeRequest = origChangeRequest;
+        this.formValidator = formValidator;
         this.resourcePermissions = resourcePermissions;
         this.validationUtils = validationUtils;
         this.validationDAOs = new ValidationDAOs(developerDAO, changeRequestDAO, changeRequestStatusTypeDAO, changeRequestTypeDAO);
@@ -77,6 +81,7 @@ public class ChangeRequestValidationContext {
     }
 
     @Data
+    @Builder
     public static class DomainManagers {
         private AttestationManager attestationManager;
 

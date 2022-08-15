@@ -12,10 +12,8 @@ import gov.healthit.chpl.manager.rules.ValidationRule;
 
 @Component
 public class ChangeRequestValidationService {
-
     private Long developerDemographicsChangeRequestTypeId;
     private Long attestationChangeRequestTypeId;
-
 
     @Autowired
     public ChangeRequestValidationService(
@@ -43,9 +41,6 @@ public class ChangeRequestValidationService {
             rules.addAll(getDeveloperDetailsValidations());
         } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(attestationChangeRequestTypeId)) {
             rules.addAll(getAttestationValidations());
-            if (!isNewChangeRequest(context)) {
-                rules.addAll(getAttestationUpdateValidations());
-            }
         }
 
         return rules;
