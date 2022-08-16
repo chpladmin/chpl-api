@@ -29,7 +29,7 @@ public class SvapReviewerTest {
     private static final String SVAPS_NOT_APPLICABLE = "Standards Version Advancement Process(es) are not applicable for the criterion %s. They have been removed.";
     private static final String SVAP_NOT_FOUND_AND_REMOVED = "Standards Version Advancement Process %s is not valid for criteria %s. It has been removed.";
     private static final String SVAP_NAME_MISSING = "There was no Regulatory Text Citation found for SVAP(s) on criteria %s.";
-    private static final String SVAP_REPLACED = "Standards Version Advancement Process %s for criteria %s has been replaced.";
+    private static final String SVAP_REPLACED = "Standards Version Advancement Process %s for criteria %s has been replaced and is only allowable for listings with ICS.";
 
     private CertificationResultRules certResultRules;
     private ErrorMessageUtil msgUtil;
@@ -48,7 +48,7 @@ public class SvapReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.svap.missingCitation"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(SVAP_NAME_MISSING, i.getArgument(1), ""));
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.svap.replaced"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.svap.replacedWithIcs"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(SVAP_REPLACED, i.getArgument(1), i.getArgument(2)));
 
