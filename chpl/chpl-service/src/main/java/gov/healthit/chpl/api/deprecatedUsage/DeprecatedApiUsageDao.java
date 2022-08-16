@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.user.User;
@@ -21,7 +22,6 @@ public class DeprecatedApiUsageDao extends BaseDAOImpl {
     public List<DeprecatedApiUsage> getUnnotifiedUsage() {
         String hql = "SELECT apiUsage "
                 + "FROM DeprecatedApiUsageEntity apiUsage "
-                + "JOIN FETCH apiUsage.deprecatedApi api "
                 + "JOIN FETCH apiUsage.apiKey apiKey "
                 + "WHERE apiUsage.notificationSent IS NULL "
                 + "AND apiUsage.deleted = false "
@@ -74,19 +74,24 @@ public class DeprecatedApiUsageDao extends BaseDAOImpl {
             String apiOperation, String responseField) {
         String hql = "SELECT apiUsage "
                 + "FROM DeprecatedApiUsageEntity apiUsage "
-                + "JOIN FETCH apiUsage.deprecatedApi api "
                 + "JOIN FETCH apiUsage.apiKey apiKey "
                 + "WHERE apiUsage.notificationSent IS NULL "
                 + "AND apiUsage.deleted = false "
                 + "AND apiUsage.apiKeyId = :apiKeyId "
                 + "AND apiUsage.httpMethod = :httpMethod "
-                + "AND apiUsage.apiOperation = :apiOperation "
-                + "AND apiUsage.responseField = :responseField";
+                + "AND apiUsage.apiOperation = :apiOperation ";
+        if (!StringUtils.isEmpty(responseField)) {
+                hql +=  "AND apiUsage.responseField = :responseField";
+        } else {
+            hql += "AND apiUsage.responseField IS NULL";
+        }
         Query query = entityManager.createQuery(hql);
         query.setParameter("apiKeyId", apiKeyId);
         query.setParameter("httpMethod", httpMethod);
         query.setParameter("apiOperation", apiOperation);
-        query.setParameter("responseField", responseField);
+        if (!StringUtils.isEmpty(responseField)) {
+            query.setParameter("responseField", responseField);
+        }
         List<DeprecatedApiUsageEntity> results = query.getResultList();
         if (results == null || results.size() == 0) {
             LOGGER.info("No deprecated api usage exists for api key ID " + apiKeyId
