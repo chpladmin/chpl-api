@@ -281,8 +281,6 @@ public class ChangeRequestManager {
         ChangeRequest newCr = changeRequestDAO.create(cr);
         newCr.getStatuses().add(crStatusService.saveInitialStatus(newCr));
 
-
-
         return newCr;
     }
 
