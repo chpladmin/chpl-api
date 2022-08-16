@@ -103,7 +103,7 @@ public class SvapReviewer {
         if (svap.getSvapId() != null
                 && BooleanUtils.isTrue(svap.getReplaced())
                 && !doesListingHaveIcs(listing)) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.svap.replaced",
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.svap.replacedWithIcs",
                     svap.getRegulatoryTextCitation(), certResult.getCriterion().getNumber()));
         }
     }
