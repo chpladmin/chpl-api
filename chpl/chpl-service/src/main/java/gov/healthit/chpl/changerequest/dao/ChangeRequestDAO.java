@@ -240,7 +240,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "LEFT JOIN FETCH devAtt.attestationPeriod per "
                 + "LEFT JOIN FETCH cr.certificationBodies cb "
                 + "LEFT JOIN FETCH cb.address "
-                + "JOIN FETCH cr.stat0uses crStatus "
+                + "JOIN FETCH cr.statuses crStatus "
                 + "JOIN FETCH crStatus.changeRequestStatusType "
                 + "LEFT JOIN FETCH crStatus.certificationBody acb "
                 + "LEFT JOIN FETCH acb.address "
