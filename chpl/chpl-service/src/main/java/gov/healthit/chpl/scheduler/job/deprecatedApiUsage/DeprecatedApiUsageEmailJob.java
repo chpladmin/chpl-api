@@ -161,7 +161,7 @@ public class DeprecatedApiUsageEmailJob implements Job {
 
     private List<String> createEndpointUsageData(DeprecatedApiUsage deprecatedApiUsage) {
         return Stream.of(deprecatedApiUsage.getHttpMethod(),
-                deprecatedApiUsage.getEndpoint(),
+                deprecatedApiUsage.getApiOperation(),
                 deprecatedApiUsage.getCallCount().toString(),
                 getEasternTimeDisplay(deprecatedApiUsage.getLastAccessedDate()),
                 deprecatedApiUsage.getMessage(),
