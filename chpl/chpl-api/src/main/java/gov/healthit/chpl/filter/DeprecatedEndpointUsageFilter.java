@@ -127,7 +127,10 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
                 LinkedHashMap<String, Object> deprecatedItems = deprecatedFieldExplorer.getUniqueDeprecatedItemsForClass(classWithDeprecatedResponseFields);
 
                 deprecatedItems.keySet().stream()
-                    .forEach(deprecatedFieldName -> logDeprecatedResponseFieldApiUsage(apiKey, deprecatedApiResponseFieldsAnnotation, deprecatedFieldName, deprecatedItems));
+                    .forEach(deprecatedFieldName -> logDeprecatedResponseFieldApiUsage(apiKey,
+                            deprecatedApiResponseFieldsAnnotation,
+                            deprecatedFieldName,
+                            deprecatedItems.get(deprecatedFieldName)));
             }
         } else {
             LOGGER.error("Could not determine unique matching URL Pattern for " + request.getMethod()

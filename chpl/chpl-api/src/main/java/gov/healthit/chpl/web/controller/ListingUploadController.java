@@ -104,7 +104,7 @@ public class ListingUploadController {
                     + "according to ONC-ACB(s) and CHPL permissions.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
-    @DeprecatedApiResponseFields(responseClass = CertifiedProductSearchDetails.class)
+    @DeprecatedApiResponseFields(responseClass = CertifiedProductSearchDetails.class, friendlyUrl = "/listings/pending/{id}")
     @RequestMapping(value = "/pending/{id:^-?\\d+$}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public CertifiedProductSearchDetails geById(@PathVariable("id") Long id)
             throws ValidationException, EntityRetrievalException {
@@ -119,7 +119,7 @@ public class ListingUploadController {
                     + "according to ONC-ACB(s) and CHPL permissions.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
-    @DeprecatedApiResponseFields(responseClass = CertifiedProductSearchDetails.class)
+    @DeprecatedApiResponseFields(responseClass = CertifiedProductSearchDetails.class, friendlyUrl = "/listings/pending/{id}/submitted")
     @RequestMapping(value = "/pending/{id:^-?\\d+$}/submitted", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public CertifiedProductSearchDetails geUserEnteredDeveloper(@PathVariable("id") Long id)
             throws ValidationException, EntityRetrievalException {

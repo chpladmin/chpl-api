@@ -77,7 +77,7 @@ public class ProductController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(responseClass = ProductResults.class)
+    @DeprecatedApiResponseFields(responseClass = ProductResults.class, friendlyUrl = "/products")
     public @ResponseBody ProductResults getAllProducts(@RequestParam(required = false) final Long developerId) {
         List<Product> productList = null;
         if (developerId != null && developerId > 0) {
@@ -96,7 +96,7 @@ public class ProductController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/{productId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(responseClass = Product.class)
+    @DeprecatedApiResponseFields(responseClass = Product.class, friendlyUrl = "/products/{productId}")
     public @ResponseBody Product getProductById(@PathVariable("productId") final Long productId)
             throws EntityRetrievalException {
         return  productManager.getById(productId);
@@ -132,7 +132,7 @@ public class ProductController {
             })
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(responseClass = Product.class, httpMethod = "PUT")
+    @DeprecatedApiResponseFields(responseClass = Product.class, httpMethod = "PUT", friendlyUrl = "/products")
     public ResponseEntity<Product> updateProduct(
             @RequestBody(required = true) final UpdateProductsRequest productInfo)
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
@@ -300,7 +300,7 @@ public class ProductController {
             })
     @RequestMapping(value = "/{productId}/split", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(responseClass = SplitProductResponse.class, httpMethod = "POST")
+    @DeprecatedApiResponseFields(responseClass = SplitProductResponse.class, httpMethod = "POST", friendlyUrl = "/products/{productId}/split")
     public ResponseEntity<SplitProductResponse> splitProduct(@PathVariable("productId") final Long productId,
             @RequestBody(required = true) final SplitProductsRequest splitRequest)
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,

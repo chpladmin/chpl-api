@@ -86,7 +86,7 @@ public class DeveloperController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @DeprecatedApiResponseFields(responseClass = DeveloperResults.class)
+    @DeprecatedApiResponseFields(responseClass = DeveloperResults.class, friendlyUrl = "/developers")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody DeveloperResults getDevelopers(
             @RequestParam(value = "showDeleted", required = false, defaultValue = "false") boolean showDeleted) {
@@ -106,7 +106,7 @@ public class DeveloperController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @DeprecatedApiResponseFields(responseClass = Developer.class)
+    @DeprecatedApiResponseFields(responseClass = Developer.class, friendlyUrl = "/developers/{developerId}")
     @RequestMapping(value = "/{developerId}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody Developer getDeveloperById(@PathVariable("developerId") Long developerId)
@@ -119,7 +119,7 @@ public class DeveloperController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @DeprecatedApiResponseFields(responseClass = DeveloperTree.class)
+    @DeprecatedApiResponseFields(responseClass = DeveloperTree.class, friendlyUrl = "/developers/{developerId}/hierarchy")
     @RequestMapping(value = "/{developerId}/hierarchy", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody DeveloperTree getDeveloperHierarchyById(@PathVariable("developerId") Long developerId)
@@ -145,7 +145,7 @@ public class DeveloperController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedApiResponseFields(responseClass = Developer.class, httpMethod = "PUT")
+    @DeprecatedApiResponseFields(responseClass = Developer.class, httpMethod = "PUT", friendlyUrl = "/developers/{developerId}")
     @RequestMapping(value = "/{developerId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public ResponseEntity<Developer> update(@PathVariable("developerId") Long developerId,
