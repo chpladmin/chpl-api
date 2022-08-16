@@ -1,7 +1,10 @@
 package gov.healthit.chpl.filter;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,11 +29,12 @@ import org.springframework.web.util.UrlPathHelper;
 import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedApiUsage;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedApiUsageDao;
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.util.ApiKeyUtil;
-import gov.healthit.chpl.util.DeprecatedFieldExplorer;
+import gov.healthit.chpl.util.DeprecatedResponseFieldExplorer;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import lombok.extern.log4j.Log4j2;
@@ -46,7 +50,7 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
     private DeprecatedApiUsageDao deprecatedApiUsageDao;
     private RequestMappingHandlerMapping requestMappingHandlerMapping;
     private UrlPathHelper urlPathHelper;
-    private DeprecatedFieldExplorer deprecatedFieldExplorer;
+    private DeprecatedResponseFieldExplorer deprecatedFieldExplorer;
 
     @Autowired
     public DeprecatedEndpointUsageFilter(ApiKeyManager apiKeyManager,
@@ -55,7 +59,7 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
         this.apiKeyManager = apiKeyManager;
         this.deprecatedApiUsageDao = deprecatedApiUsageDao;
         this.requestMappingHandlerMapping = requestMappingHandlerMapping;
-        this.deprecatedFieldExplorer = new DeprecatedFieldExplorer();
+        this.deprecatedFieldExplorer = new DeprecatedResponseFieldExplorer();
         this.urlPathHelper = new UrlPathHelper();
     }
 
@@ -77,7 +81,7 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
             if (isHandlerMethodDeprecated(handlerMethod)) {
                 logDeprecatedApiUsage(requestMapping, handlerMethod, request);
             } else if (isHandlerResponseDeprecated(handlerMethod)) {
-                logDeprecatedResponseFieldApiUsage(requestMapping, handlerMethod, request);
+                logDeprecatedResponseFieldsApiUsage(requestMapping, handlerMethod, request);
             } else if (handlerMethod == null) {
                 LOGGER.error("No handler method was found for request " + request.getRequestURI());
             }
@@ -110,7 +114,7 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
         }
     }
 
-    private void logDeprecatedResponseFieldApiUsage(RequestMappingInfo requestMapping, HandlerMethod handlerMethod, HttpServletRequest request) {
+    private void logDeprecatedResponseFieldsApiUsage(RequestMappingInfo requestMapping, HandlerMethod handlerMethod, HttpServletRequest request) {
         Set<String> matchingUrlPatterns = requestMapping.getPatternsCondition().getPatterns();
         if (matchingUrlPatterns != null && matchingUrlPatterns.size() > 0) {
             String matchingUrlPattern = matchingUrlPatterns.iterator().next();
@@ -119,21 +123,40 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
             if (apiKey != null) {
                 DeprecatedApiResponseFields deprecatedApiResponseFieldsAnnotation = handlerMethod.getMethodAnnotation(DeprecatedApiResponseFields.class);
                 Class classWithDeprecatedResponseFields = deprecatedApiResponseFieldsAnnotation.responseClass();
-                Set<String> deprecatedFieldNames = deprecatedFieldExplorer.getDeprecatedFieldsNamesForClass(classWithDeprecatedResponseFields);
+                //map with keys as the field name and values as the Field or Method
+                LinkedHashMap<String, Object> deprecatedItems = deprecatedFieldExplorer.getUniqueDeprecatedItemsForClass(classWithDeprecatedResponseFields);
 
-                //TODO: I need more than the field names here... I need the reflected Field
-                //to be able to get it's related annotations (removal date, message)
-//                deprecatedFieldNames.stream()
-//                    .forEach(responseField -> createOrUpdateUsage());
-//                DeprecatedResponseFieldApiUsage deprecatedResponseFieldApiUsage = DeprecatedResponseFieldApiUsage.builder()
-//                        .apiKey(apiKey)
-//                        .api(deprecatedResponseFieldApi)
-//                        .build();
-//                deprecatedResponseFieldApiUsageDao.createOrUpdateUsage(deprecatedResponseFieldApiUsage);
+                deprecatedItems.keySet().stream()
+                    .forEach(deprecatedFieldName -> logDeprecatedResponseFieldApiUsage(apiKey, deprecatedApiResponseFieldsAnnotation, deprecatedFieldName, deprecatedItems));
             }
         } else {
             LOGGER.error("Could not determine unique matching URL Pattern for " + request.getMethod()
                 + " Request: " + request.getRequestURI());
+        }
+    }
+
+    private void logDeprecatedResponseFieldApiUsage(ApiKey apiKey, DeprecatedApiResponseFields deprecatedApiAnnotaiton,
+            String deprecatedFieldName, Object classItem) {
+        DeprecatedResponseField deprecatedResponseFieldAnnotation = null;
+        if (classItem instanceof Field) {
+            Field field = (Field) classItem;
+            deprecatedResponseFieldAnnotation = field.getAnnotation(DeprecatedResponseField.class);
+        } else if (classItem instanceof Method) {
+            Method method = (Method) classItem;
+            deprecatedResponseFieldAnnotation = method.getAnnotation(DeprecatedResponseField.class);
+        }
+        if (deprecatedResponseFieldAnnotation == null) {
+            LOGGER.warn("Expected a DeprecatedResponseField annotation on " + classItem + " but it was not found.");
+        } else {
+            DeprecatedApiUsage deprecatedApiUsage = DeprecatedApiUsage.builder()
+                    .apiKey(apiKey)
+                    .httpMethod(deprecatedApiAnnotaiton.httpMethod())
+                    .apiOperation(deprecatedApiAnnotaiton.friendlyUrl())
+                    .message(deprecatedResponseFieldAnnotation.message())
+                    .removalDate(LocalDate.parse(deprecatedResponseFieldAnnotation.removalDate()))
+                    .responseField(deprecatedFieldName)
+                    .build();
+            deprecatedApiUsageDao.createOrUpdateDeprecatedApiUsage(deprecatedApiUsage);
         }
     }
 

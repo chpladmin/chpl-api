@@ -117,7 +117,7 @@ public class ProductVersionController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedApiResponseFields(responseClass = ProductVersion.class)
+    @DeprecatedApiResponseFields(responseClass = ProductVersion.class, httpMethod = "PUT")
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public ResponseEntity<ProductVersion> updateVersion(
@@ -184,7 +184,7 @@ public class ProductVersionController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedApiResponseFields(responseClass = SplitVersionResponse.class)
+    @DeprecatedApiResponseFields(responseClass = SplitVersionResponse.class, httpMethod = "POST")
     @RequestMapping(value = "/{versionId}/split", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public ResponseEntity<SplitVersionResponse> splitVersion(@PathVariable("versionId") final Long versionId,

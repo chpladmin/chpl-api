@@ -697,7 +697,7 @@ public class CertifiedProductController {
             })
     @RequestMapping(value = "/{certifiedProductId}", method = RequestMethod.PUT,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(responseClass = CertifiedProductSearchDetails.class)
+    @DeprecatedApiResponseFields(responseClass = CertifiedProductSearchDetails.class, httpMethod = "PUT")
     public ResponseEntity<CertifiedProductSearchDetails> updateCertifiedProduct(
             @RequestBody(required = true) ListingUpdateRequest updateRequest)
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,

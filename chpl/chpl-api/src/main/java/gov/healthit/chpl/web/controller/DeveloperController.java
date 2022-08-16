@@ -145,7 +145,7 @@ public class DeveloperController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedApiResponseFields(responseClass = Developer.class)
+    @DeprecatedApiResponseFields(responseClass = Developer.class, httpMethod = "PUT")
     @RequestMapping(value = "/{developerId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public ResponseEntity<Developer> update(@PathVariable("developerId") Long developerId,

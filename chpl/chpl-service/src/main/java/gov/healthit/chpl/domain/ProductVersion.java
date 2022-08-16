@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,6 +30,8 @@ public class ProductVersion implements Serializable {
      */
     @XmlTransient
     @Deprecated
+    @DeprecatedResponseField(removalDate = "2022-10-15",
+        message = "This field is deprecated and will be removed from the response data in a future release. Please use id.")
     private Long versionId;
 
     /**

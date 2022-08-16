@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,6 +38,8 @@ public class Product implements Serializable {
      */
     @XmlTransient
     @Deprecated
+    @DeprecatedResponseField(removalDate = "2022-10-15",
+        message = "This field is deprecated and will be removed from the response data in a future release. Please use id.")
     private Long productId;
 
     /**

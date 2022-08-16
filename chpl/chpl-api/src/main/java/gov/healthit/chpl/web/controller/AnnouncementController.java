@@ -95,7 +95,7 @@ public class AnnouncementController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedApiResponseFields(responseClass = Announcement.class)
+    @DeprecatedApiResponseFields(responseClass = Announcement.class, httpMethod = "POST")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public Announcement create(@RequestBody Announcement announcement) throws InvalidArgumentsException,
@@ -128,7 +128,7 @@ public class AnnouncementController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedApiResponseFields(responseClass = Announcement.class)
+    @DeprecatedApiResponseFields(responseClass = Announcement.class, httpMethod = "PUT")
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public Announcement updateAnnouncement(@PathVariable("announcementId") Long announcementId, @RequestBody Announcement announcement)

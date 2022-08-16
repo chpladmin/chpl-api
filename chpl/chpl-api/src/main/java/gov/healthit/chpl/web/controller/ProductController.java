@@ -132,7 +132,7 @@ public class ProductController {
             })
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(responseClass = Product.class)
+    @DeprecatedApiResponseFields(responseClass = Product.class, httpMethod = "PUT")
     public ResponseEntity<Product> updateProduct(
             @RequestBody(required = true) final UpdateProductsRequest productInfo)
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
@@ -300,7 +300,7 @@ public class ProductController {
             })
     @RequestMapping(value = "/{productId}/split", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(responseClass = SplitProductResponse.class)
+    @DeprecatedApiResponseFields(responseClass = SplitProductResponse.class, httpMethod = "POST")
     public ResponseEntity<SplitProductResponse> splitProduct(@PathVariable("productId") final Long productId,
             @RequestBody(required = true) final SplitProductsRequest splitRequest)
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,

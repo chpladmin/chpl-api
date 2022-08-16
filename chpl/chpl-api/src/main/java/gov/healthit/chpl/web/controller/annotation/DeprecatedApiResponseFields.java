@@ -16,6 +16,12 @@ public @interface DeprecatedApiResponseFields {
     Class<?> responseClass() default Object.class;
 
     /**
+     * The HTTP Method (GET, POST, etc.) of the API endpoint with deprecated response field(s).
+     * @return
+     */
+    String httpMethod() default "GET";
+
+    /**
      * friendlyUrl provides a way to consolidate similar endpoints that have different URLs.
      * For example, /certified_product/111 should map to the same friendlyUrl as /certified_product/CHP-12345
      * and the same friendlyUrl as /certified_product/15.04.04.TREE. Their usage may all be counted together.

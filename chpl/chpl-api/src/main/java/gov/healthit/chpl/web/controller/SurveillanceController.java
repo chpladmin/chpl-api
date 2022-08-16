@@ -165,7 +165,7 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedApiResponseFields(responseClass = Surveillance.class)
+    @DeprecatedApiResponseFields(responseClass = Surveillance.class, httpMethod = "POST")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<Surveillance> createSurveillance(
             @RequestBody(required = true) Surveillance survToInsert) throws ValidationException,
@@ -254,7 +254,7 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedApiResponseFields(responseClass = Surveillance.class)
+    @DeprecatedApiResponseFields(responseClass = Surveillance.class, httpMethod = "PUT")
     @RequestMapping(value = "/{surveillanceId}", method = RequestMethod.PUT,
             produces = "application/json; charset=utf-8")
     public ResponseEntity<Surveillance> updateSurveillance(
@@ -418,7 +418,7 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedApiResponseFields(responseClass = Surveillance.class)
+    @DeprecatedApiResponseFields(responseClass = Surveillance.class, httpMethod = "POST")
     @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     public ResponseEntity<Surveillance> confirmPendingSurveillance(@RequestBody(required = true) Surveillance survToInsert)
@@ -442,7 +442,7 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedApiResponseFields(responseClass = SurveillanceResults.class)
+    @DeprecatedApiResponseFields(responseClass = SurveillanceResults.class, httpMethod = "POST")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ResponseEntity<?> upload(@RequestParam("file") MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException, EntityRetrievalException,
