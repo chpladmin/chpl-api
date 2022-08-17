@@ -233,6 +233,9 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "LEFT JOIN FETCH statusEvents.developerStatus "
                 + "LEFT JOIN FETCH dev.attestations devAtt "
                 + "LEFT JOIN FETCH devAtt.period per "
+                //TODO: In OCD-3985 this needs to be fixed. This method is only used in the Developer Attestation Check-In Report
+                //and it will WORK but it will be WRONG if we leave it like this. The ACB relationship should come from the
+                //change request object itself rather than the developer after OCD-3940 is merged.
                 + "LEFT JOIN FETCH dev.certificationBodyMaps devAcbMaps "
                 + "LEFT JOIN FETCH devAcbMaps.certificationBody devAcb "
                 + "LEFT JOIN FETCH devAcb.address "
