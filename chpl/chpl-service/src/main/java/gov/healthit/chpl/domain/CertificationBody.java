@@ -45,11 +45,4 @@ public class CertificationBody implements Serializable {
             this.address = entity.getAddress().toDomain();
         }
     }
-
-
-    @Override
-    public String toString() {
-        return "CertificationBody [id=" + id + ", acbCode=" + acbCode + ", name=" + name + ", website=" + website
-                + ", address=" + address + ", retired=" + retired + ", retirementDate=" + retirementDate + "]";
-    }
 }
