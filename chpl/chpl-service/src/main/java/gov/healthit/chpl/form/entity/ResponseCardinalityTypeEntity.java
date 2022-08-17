@@ -1,4 +1,4 @@
-package gov.healthit.chpl.attestation.entity;
+package gov.healthit.chpl.form.entity;
 
 import java.util.Date;
 
@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.form.ResponseCardinalityType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,27 +18,21 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "attestation_valid_response")
+@Table(name = "response_cardinality_type")
 @Getter
 @Setter
 @ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AttestationValidResponseEntity {
+public class ResponseCardinalityTypeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "response")
-    private String response;
-
-    @Column(name = "meaning")
-    private String meaning;
-
-    @Column(name = "sort_order")
-    private Long sortOrder;
+    @Column(name = "description")
+    private String description;
 
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
@@ -51,4 +46,10 @@ public class AttestationValidResponseEntity {
     @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
     private Date lastModifiedDate;
 
+    public ResponseCardinalityType toDomain() {
+        return ResponseCardinalityType.builder()
+                .id(id)
+                .description(description)
+                .build();
+    }
 }
