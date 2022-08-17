@@ -190,7 +190,10 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Override
     public List<CertificationBody> getAssociatedCertificationBodies(ChangeRequest cr) {
-        return attestationCertificationBodyService.getAssociatedCertificationBodies(cr.getDeveloper().getId());
+        ChangeRequestAttestationSubmission changeRequestAttestationSubmission = (ChangeRequestAttestationSubmission) cr.getDetails();
+
+        return attestationCertificationBodyService.getAssociatedCertificationBodies(
+                cr.getDeveloper().getId(), changeRequestAttestationSubmission.getAttestationPeriod().getId());
     }
 
     private void sendWithdrawnDetailsEmail(ChangeRequest cr) throws EmailNotSentException {

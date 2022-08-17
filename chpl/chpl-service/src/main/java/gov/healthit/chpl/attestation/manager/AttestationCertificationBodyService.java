@@ -55,10 +55,17 @@ public class AttestationCertificationBodyService {
     }
 
     public List<CertificationBody> getAssociatedCertificationBodies(Long developerId) {
-        try {
+        return getAssociatedCertificationBodies(developerId, attestationPeriodService.getMostRecentPastAttestationPeriod().getId());
+    }
 
+    public List<CertificationBody> getAssociatedCertificationBodies(Long developerId, Long attestationPeriodId) {
+        try {
+            AttestationPeriod period = attestationPeriodService.getAllPeriods().stream()
+                    .filter(per -> per.getId().equals(attestationPeriodId))
+                    .findAny()
+                    .get();
             return getListingDataForDeveloper(developerManager.getById(developerId)).stream()
-                .filter(listing -> isListingActiveDuringPeriod(listing, attestationPeriodService.getMostRecentPastAttestationPeriod()))
+                .filter(listing -> isListingActiveDuringPeriod(listing, period))
                 .map(listing -> listing.getCertificationBody())
                 .collect(Collectors.toSet()).stream()
                 .map(pair -> getCertificationBody(pair.getId()))
