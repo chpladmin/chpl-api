@@ -739,41 +739,6 @@ public class ActivityController {
         return activityMetadataManager.getAnnualReportActivityMetadata(startDate, endDate);
     }
 
-    @Operation(summary = "Get metadata about auditable records in the system for pending listings.",
-            description = "All parameters are optional and will default to the first page of pending listing activity "
-                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/metadata/pending-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public ActivityMetadataPage metadataForPendingListings(@RequestParam(required = false) Long start,
-            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
-        return pagedMetadataManager.getPendingListingActivityMetadata(start, end, pageNum, pageSize);
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/activity/metadata/beta/pending-listings",
-        removalDate = "2022-10-18",
-        message = "This endpoint is deprecated and will be removed in a future release. Please use /activity/metadata/pending-listings instead.")
-    @Operation(summary = "Get metadata about auditable records in the system for pending listings.",
-            description = "All parameters are optional and will default to the first page of pending listing activity "
-                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/metadata/beta/pending-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public ActivityMetadataPage metadataForPendingListingsDeprecated(@RequestParam(required = false) Long start,
-            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
-        return pagedMetadataManager.getPendingListingActivityMetadata(start, end, pageNum, pageSize);
-    }
-
     @Operation(summary = "Get metadata about auditable records in the system for corrective action plans.",
             description = "All parameters are optional and will default to the first page of corrective action plan activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "

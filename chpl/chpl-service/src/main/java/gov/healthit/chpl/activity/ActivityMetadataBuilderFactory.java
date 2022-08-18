@@ -22,7 +22,6 @@ public class ActivityMetadataBuilderFactory {
     private TestingLabActivityMetadataBuilder atlBuilder;
     private UserMaintenanceActivityMetadataBuilder userMaintenanceActivityMetadataBuilder;
     private AnnouncementActivityMetadataBuilder announcementActivityMetadataBuilder;
-    private PendingListingActivityMetadataBuilder pendingListingActivityMetadataBuilder;
     private CorrectActionPlanActivityMetadataBuilder correctActionPlanActivityMetadataBuilder;
     private PendingSurveillanceActivityMetadataBuilder pendingSurveillanceActivityMetadataBuilder;
     private ComplaintActivityMetadataBuilder complaintActivityMetadataBuilder;
@@ -41,7 +40,6 @@ public class ActivityMetadataBuilderFactory {
             @Qualifier("atlActivityMetadataBuilder") final TestingLabActivityMetadataBuilder atlBuilder,
             @Qualifier("userMaintenanceActivityMetadataBuilder") final UserMaintenanceActivityMetadataBuilder userMaintenanceActivityMetadataBuilder,
             @Qualifier("announcementActivityMetadataBuilder") final AnnouncementActivityMetadataBuilder announcementActivityMetadataBuilder,
-            @Qualifier("pendingListingActivityMetadataBuilder") final PendingListingActivityMetadataBuilder pendingListingActivityMetadataBuilder,
             @Qualifier("correctActionPlanActivityMetadataBuilder") final CorrectActionPlanActivityMetadataBuilder correctActionPlanActivityMetadataBuilder,
             @Qualifier("pendingSurveillanceActivityMetadataBuilder") final PendingSurveillanceActivityMetadataBuilder pendingSurveillanceActivityMetadataBuilder,
             @Qualifier("complaintActivityMetadataBuilder") final ComplaintActivityMetadataBuilder complaintActivityMetadataBuilder,
@@ -57,7 +55,6 @@ public class ActivityMetadataBuilderFactory {
         this.atlBuilder = atlBuilder;
         this.userMaintenanceActivityMetadataBuilder = userMaintenanceActivityMetadataBuilder;
         this.announcementActivityMetadataBuilder = announcementActivityMetadataBuilder;
-        this.pendingListingActivityMetadataBuilder = pendingListingActivityMetadataBuilder;
         this.correctActionPlanActivityMetadataBuilder = correctActionPlanActivityMetadataBuilder;
         this.pendingSurveillanceActivityMetadataBuilder = pendingSurveillanceActivityMetadataBuilder;
         this.complaintActivityMetadataBuilder = complaintActivityMetadataBuilder;
@@ -101,9 +98,6 @@ public class ActivityMetadataBuilderFactory {
             break;
         case ANNOUNCEMENT:
             builder = announcementActivityMetadataBuilder;
-            break;
-        case PENDING_CERTIFIED_PRODUCT:
-            builder = pendingListingActivityMetadataBuilder;
             break;
         case CORRECTIVE_ACTION_PLAN:
             builder = correctActionPlanActivityMetadataBuilder;
