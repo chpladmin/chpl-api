@@ -207,7 +207,6 @@ public class DirectReviewCachingService {
         } else {
             drContainer = getDirectReviewsForDeveloperFromCache(developerId, logger);
         }
-
         return drContainer;
     }
 
@@ -358,6 +357,7 @@ public class DirectReviewCachingService {
                         JsonNode fields = issueNode.get(JIRA_FIELDS_FIELD);
                         DirectReview dr = mapper.readValue(fields.toString(), DirectReview.class);
                         dr.setJiraKey(jiraKey);
+                        dr.setFetched(LocalDateTime.now());
                         if (dr.getStartDate() != null) {
                             drs.add(dr);
                         }
