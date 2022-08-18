@@ -80,8 +80,6 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             //these fields are null for ALL current listings
             entity.setSedTesting(null);
             entity.setQmsTesting(null);
-            //Can't set this field because it is a FK to a different pending listing table
-            entity.setPendingCertifiedProductId(null);
 
             create(entity);
             return entity.getId();
