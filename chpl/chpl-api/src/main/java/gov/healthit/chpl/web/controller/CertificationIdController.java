@@ -78,6 +78,7 @@ public class CertificationIdController {
             MediaType.APPLICATION_JSON_VALUE
     })
     @Deprecated
+    //TODO: Use new annotation from OCD-4019
     public List<SimpleCertificationId> getAll() throws IOException {
         List<SimpleCertificationId> results = null;
         if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()

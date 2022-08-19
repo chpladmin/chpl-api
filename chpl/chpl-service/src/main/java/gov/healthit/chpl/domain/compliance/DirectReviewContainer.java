@@ -7,6 +7,12 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import gov.healthit.chpl.util.LocalDateTimeDeserializer;
+import gov.healthit.chpl.util.LocalDateTimeSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,6 +27,11 @@ public class DirectReviewContainer implements Serializable {
 
     @Builder.Default
     private List<DirectReview> directReviews = new ArrayList<DirectReview>();
-    private HttpStatus httpStatus;
+
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime fetched;
+
+    @JsonIgnore
+    private HttpStatus httpStatus;
 }
