@@ -11,8 +11,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.util.LocalDateTimeDeserializer;
-import gov.healthit.chpl.util.LocalDateTimeSerializer;
+import gov.healthit.chpl.util.EasternToUtcLocalDateTimeDeserializer;
+import gov.healthit.chpl.util.UtcToEasternLocalDateTimeSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,8 +28,8 @@ public class DirectReviewContainer implements Serializable {
     @Builder.Default
     private List<DirectReview> directReviews = new ArrayList<DirectReview>();
 
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = EasternToUtcLocalDateTimeDeserializer.class)
+    @JsonSerialize(using = UtcToEasternLocalDateTimeSerializer.class)
     private LocalDateTime fetched;
 
     @JsonIgnore
