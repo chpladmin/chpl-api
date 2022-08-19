@@ -39,7 +39,7 @@ public class Product implements Serializable {
     @XmlTransient
     @Deprecated
     @DeprecatedResponseField(removalDate = "2022-10-15",
-        message = "This field is deprecated and will be removed from the response data in a future release. Please use id.")
+        message = "This field is deprecated and will be removed from the response data in a future release. Please replace usage of the 'productId' field with 'id'.")
     private Long productId;
 
     /**

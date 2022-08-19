@@ -20,7 +20,7 @@ public class DeveloperAttestationSubmissionResults implements Serializable {
 
     @Deprecated
     @DeprecatedResponseField(removalDate = "2023-01-01",
-        message = "This field is deprecated and will be removed from the response data in a future release. Please use submittablePeriod.")
+        message = "This field is deprecated and will be removed from the response data in a future release. Please replace usage of the 'canSubmitAttestationChangeRequest' field with 'submittablePeriod'.")
     private Boolean canSubmitAttestationChangeRequest = false;
 
     private AttestationPeriod submittablePeriod;

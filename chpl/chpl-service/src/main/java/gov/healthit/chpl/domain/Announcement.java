@@ -32,11 +32,11 @@ public class Announcement implements Serializable {
     private LocalDateTime endDateTime;
     @Deprecated
     @DeprecatedResponseField(removalDate = "2022-10-15",
-        message = "This field is deprecated and will be removed from the response data in a future release. Please use startDateTime.")
+        message = "This field is deprecated and will be removed from the response data in a future release. Please replace usage of the 'startDate' field with 'startDateTime'.")
     private Date startDate;
     @Deprecated
     @DeprecatedResponseField(removalDate = "2022-10-15",
-        message = "This field is deprecated and will be removed from the response data in a future release. Please use endDateTime.")
+        message = "This field is deprecated and will be removed from the response data in a future release. Please replace usage of the 'endDate' field with 'endDateTime'.")
     private Date endDate;
     private Boolean isPublic;
     private Date creationDate;
