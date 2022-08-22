@@ -1,5 +1,21 @@
 # Release Notes
 
+## Version 36.0.0
+_22 August 2022_
+
+### Breaking Change
+* Revise Attestations Language and Responses for next Attestations period
+
+### Features
+* Replaced SVAP values should be allowed for new Listings with ICS
+* Update RWT Eligible Criteria based on year
+* Allow G1/G2 measures to be parsed at Listing level in during upload
+* Update RWT Report to use new message about a Listing being withdrawn instead of errors or warnings
+* Include all Withdrawn Listing statuses in the RWT Report Email
+* Add Certification Date and Developer Users as columns to the RWT Report
+
+---
+
 ## Version 35.9.0
 _8 August 2022_
 
