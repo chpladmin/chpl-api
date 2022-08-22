@@ -30,7 +30,6 @@ import gov.healthit.chpl.domain.SplitDeveloperRequest;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.domain.compliance.DirectReview;
-import gov.healthit.chpl.domain.compliance.DirectReviewContainer;
 import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.auth.UserDTO;
@@ -133,24 +132,10 @@ public class DeveloperController {
             })
     @RequestMapping(value = "/{developerId:^-?\\d+$}/direct-reviews",
             method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @Deprecated
-    //TODO: Use new annotation from OCD-4019
-    public @ResponseBody ResponseEntity<List<DirectReview>> getDirectReviewsDeprecated(
+    public @ResponseBody ResponseEntity<List<DirectReview>> getDirectReviews(
             @PathVariable("developerId") Long developerId) throws JiraRequestFailedException {
         return new ResponseEntity<List<DirectReview>>(
                 directReviewService.getDirectReviews(developerId).getDirectReviews(), HttpStatus.OK);
-    }
-
-    @Operation(summary = "Get all direct reviews for a specified developer.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/{developerId:^-?\\d+$}/direct-reviews/v2",
-            method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody ResponseEntity<DirectReviewContainer> getDirectReviews(
-            @PathVariable("developerId") Long developerId) throws JiraRequestFailedException {
-        return new ResponseEntity<DirectReviewContainer>(
-                directReviewService.getDirectReviews(developerId), HttpStatus.OK);
     }
 
     @Operation(summary = "Update a developer.",
