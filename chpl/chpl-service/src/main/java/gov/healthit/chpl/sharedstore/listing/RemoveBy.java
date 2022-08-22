@@ -5,5 +5,6 @@ public enum RemoveBy {
     DEVELOPER_ID,
     ACB_ID,
     PRODUCT_ID,
-    VERSION_ID;
+    VERSION_ID,
+    ALL;
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -56,7 +57,7 @@ public class MeasureValidityReviewer implements Reviewer {
 
     private void reviewG1RequiredMeasures(CertifiedProductSearchDetails listing) {
         List<CertificationCriterion> attestedCriteria = listing.getCertificationResults().stream()
-                .filter(certResult -> certResult.isSuccess())
+                .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
                 .map(certResult -> certResult.getCriterion())
                 .collect(Collectors.toList());
         if (validationUtils.hasCert(G1_CRITERIA_NUMBER, attestedCriteria)) {
@@ -73,7 +74,7 @@ public class MeasureValidityReviewer implements Reviewer {
 
     private void reviewG2RequiredMeasures(CertifiedProductSearchDetails listing) {
         List<CertificationCriterion> attestedCriteria = listing.getCertificationResults().stream()
-                .filter(certResult -> certResult.isSuccess())
+                .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
                 .map(certResult -> certResult.getCriterion())
                 .collect(Collectors.toList());
         if (validationUtils.hasCert(G2_CRITERIA_NUMBER, attestedCriteria)) {

@@ -133,8 +133,8 @@
         <AppenderRef ref="realWorldTestingUploadJobJson" />
     </Logger>
     <Logger name="realWorldTestingReportEmailJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="realWorldTestingEmailJob" />
-        <AppenderRef ref="realWorldTestingEmailJobJson" />
+        <AppenderRef ref="realWorldTestingReportEmailJob" />
+        <AppenderRef ref="realWorldTestingReportEmailJobJson" />
     </Logger>
     <Logger name="auditDataRetentionJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="auditDataRetentionJob" />

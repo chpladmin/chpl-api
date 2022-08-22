@@ -1,8 +1,9 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
@@ -28,7 +29,7 @@ public class ValidDataReviewer extends PermissionBasedReviewer {
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE)) {
+            if (BooleanUtils.isTrue(cert.isSuccess())) {
                 if (!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
                     String formattedPrivacyAndSecurityFramework = CertificationResult
                             .formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());

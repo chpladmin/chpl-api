@@ -1,18 +1,19 @@
-package gov.healthit.chpl.changerequest.entity;
+package gov.healthit.chpl.attestation.entity;
 
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.attestation.entity.AttestationEntity;
-import gov.healthit.chpl.attestation.entity.AttestationValidResponseEntity;
+import gov.healthit.chpl.form.entity.AllowedResponseEntity;
+import gov.healthit.chpl.form.entity.FormItemEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,30 +22,29 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "change_request_attestation_response")
+@Table(name = "attestation_submission_response")
 @Getter
 @Setter
 @ToString
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class ChangeRequestAttestationResponseEntity {
-
+@AllArgsConstructor
+public class AttestationSubmissionResponseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "change_request_attestation_submission_id", insertable = true, nullable = false)
-    private Long changeRequestAttestationSubmissionId;
+    @Column(name = "attestation_submission_id", nullable = false)
+    private Long attestationSubmissionId;
 
-    @OneToOne()
-    @JoinColumn(name = "attestation_id", insertable = true, updatable = false)
-    private AttestationEntity attestation;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "response_id", nullable = true, insertable = true, updatable = true)
+    private AllowedResponseEntity response;
 
-    @OneToOne()
-    @JoinColumn(name = "attestation_valid_response_id", insertable = true, updatable = true)
-    private AttestationValidResponseEntity validResponse;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "form_item_id", nullable = true, insertable = true, updatable = true)
+    private FormItemEntity formItem;
 
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;

@@ -25,8 +25,6 @@ import gov.healthit.chpl.util.AuthUtil;
 @Repository("changeRequestDAO")
 public class ChangeRequestDAO extends BaseDAOImpl {
 
-    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
-    private ChangeRequestStatusDAO changeRequestStatusDAO;
     private ChangeRequestDetailsFactory changeRequestDetailsFactory;
 
     @Value("${changerequest.status.pendingacbaction}")
@@ -36,11 +34,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
     private Long pendingDeveloperAction;
 
     @Autowired
-    public ChangeRequestDAO(DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO,
-            ChangeRequestStatusDAO changeRequestStatusDAO,
-            @Lazy ChangeRequestDetailsFactory changeRequestDetailsFactory) {
-        this.developerCertificationBodyMapDAO = developerCertificationBodyMapDAO;
-        this.changeRequestStatusDAO = changeRequestStatusDAO;
+    public ChangeRequestDAO(@Lazy ChangeRequestDetailsFactory changeRequestDetailsFactory) {
         this.changeRequestDetailsFactory = changeRequestDetailsFactory;
     }
 
@@ -121,8 +115,6 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "LEFT JOIN FETCH dev.contact "
                 + "LEFT JOIN FETCH dev.statusEvents statusEvents "
                 + "LEFT JOIN FETCH statusEvents.developerStatus "
-                + "LEFT JOIN FETCH dev.attestations devAtt "
-                + "LEFT JOIN FETCH devAtt.period per "
                 + "LEFT JOIN FETCH dev.certificationBodyMaps devAcbMaps "
                 + "LEFT JOIN FETCH devAcbMaps.certificationBody devAcb "
                 + "LEFT JOIN FETCH devAcb.address "
@@ -165,8 +157,6 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "LEFT JOIN FETCH dev.contact "
                 + "LEFT JOIN FETCH dev.statusEvents statusEvents "
                 + "LEFT JOIN FETCH statusEvents.developerStatus "
-                + "LEFT JOIN FETCH dev.attestations devAtt "
-                + "LEFT JOIN FETCH devAtt.period per "
                 + "LEFT JOIN FETCH dev.certificationBodyMaps devAcbMaps "
                 + "LEFT JOIN FETCH devAcbMaps.certificationBody devAcb "
                 + "LEFT JOIN FETCH devAcb.address "
@@ -197,8 +187,6 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "LEFT JOIN FETCH dev.contact "
                 + "LEFT JOIN FETCH dev.statusEvents statusEvents "
                 + "LEFT JOIN FETCH statusEvents.developerStatus "
-                + "LEFT JOIN FETCH dev.attestations devAtt "
-                + "LEFT JOIN FETCH devAtt.period per "
                 + "LEFT JOIN FETCH dev.certificationBodyMaps devAcbMaps "
                 + "LEFT JOIN FETCH devAcbMaps.certificationBody devAcb "
                 + "LEFT JOIN FETCH devAcb.address "
@@ -229,8 +217,6 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "LEFT JOIN FETCH dev.contact "
                 + "LEFT JOIN FETCH dev.statusEvents statusEvents "
                 + "LEFT JOIN FETCH statusEvents.developerStatus "
-                + "LEFT JOIN FETCH dev.attestations devAtt "
-                + "LEFT JOIN FETCH devAtt.period per "
                 + "LEFT JOIN FETCH dev.certificationBodyMaps devAcbMaps "
                 + "LEFT JOIN FETCH devAcbMaps.certificationBody devAcb "
                 + "LEFT JOIN FETCH devAcb.address "

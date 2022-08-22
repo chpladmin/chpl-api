@@ -1,19 +1,18 @@
-package gov.healthit.chpl.attestation.entity;
+package gov.healthit.chpl.form.entity;
 
 import java.util.Date;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.entity.developer.DeveloperEntity;
+import gov.healthit.chpl.form.QuestionAllowedResponseMap;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,36 +21,29 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "developer_attestation_submission")
+@Table(name = "question_allowed_response_map")
 @Getter
 @Setter
 @ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DeveloperAttestationSubmissionEntity {
+public class QuestionAllowedResponseMapEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @OneToOne()
-    @JoinColumn(name = "developer_id")
-    private DeveloperEntity developer;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "question_id", nullable = false, insertable = false, updatable = false)
+    private QuestionEntity question;
 
-    @OneToOne()
-    @JoinColumn(name = "attestation_period_id")
-    private AttestationPeriodEntity period;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "allowed_response_id", nullable = false, insertable = false, updatable = false)
+    private AllowedResponseEntity allowedResponse;
 
-    @OneToMany()
-    @JoinColumn(name = "developer_attestation_submission_id")
-    private Set<DeveloperAttestationResponseEntity> responses;
-
-    @Column(name = "signature", nullable = false)
-    private String signature;
-
-    @Column(name = "signature_email", nullable = false)
-    private String signatureEmail;
+    @Column(name = "sort_order", nullable = false)
+    private Integer sortOrder;
 
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
@@ -65,4 +57,12 @@ public class DeveloperAttestationSubmissionEntity {
     @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
     private Date lastModifiedDate;
 
+    public QuestionAllowedResponseMap toDomain() {
+        return QuestionAllowedResponseMap.builder()
+                .id(id)
+                .question(question.toDomain())
+                .response(allowedResponse.toDomain())
+                .sortOrder(sortOrder)
+                .build();
+    }
 }

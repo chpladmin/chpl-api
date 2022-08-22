@@ -2,7 +2,6 @@ package gov.healthit.chpl.service.realworldtesting;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 
@@ -27,7 +25,6 @@ import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.RealWorldTestingEligibility;
 import gov.healthit.chpl.service.RealWorldTestingEligiblityReason;
 import gov.healthit.chpl.util.DateUtil;
@@ -35,29 +32,34 @@ import gov.healthit.chpl.util.DateUtil;
 // This class *should* only be instantiated by RealWorldTestingServiceFactory, so that the memoization is threadsafe.
 // To get an instance of this class use RealWorldTestingServiceFactory.getInstance().
 public class RealWorldTestingEligiblityService {
-    private String[] eligibleCriteriaKeys;
+    private RealWorldTestingCriteriaService realWorldTestingCriteriaService;
     private LocalDate rwtProgramStartDate;
     private Integer rwtProgramFirstEligibilityYear;
-    private CertificationCriterionService certificationCriterionService;
     private RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer;
     private CertificationStatusEventsService certStatusService;
     private ListingActivityUtil listingActivityUtil;
     private CertifiedProductDAO certifiedProductDAO;
 
     private Map<Long, RealWorldTestingEligibility> memo = new HashMap<Long, RealWorldTestingEligibility>();
+    private List<CertificationStatusType> withdrawnStatuses;
 
-    public RealWorldTestingEligiblityService(CertificationCriterionService certificationCriterionService,
+    public RealWorldTestingEligiblityService(RealWorldTestingCriteriaService realWorldTestingCriteriaService,
             RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer,
             CertificationStatusEventsService certStatusService, ListingActivityUtil listingActivityUtil,
-            CertifiedProductDAO certifiedProductDAO, String[] eligibleCriteriaKeys, LocalDate rwtProgramStartDate, Integer rwtProgramFirstEligibilityYear) {
-        this.certificationCriterionService = certificationCriterionService;
+            CertifiedProductDAO certifiedProductDAO, LocalDate rwtProgramStartDate, Integer rwtProgramFirstEligibilityYear) {
+        this.realWorldTestingCriteriaService = realWorldTestingCriteriaService;
         this.realWorldTestingEligibilityActivityExplorer = realWorldTestingEligibilityActivityExplorer;
         this.listingActivityUtil = listingActivityUtil;
         this.certifiedProductDAO = certifiedProductDAO;
-        this.eligibleCriteriaKeys = eligibleCriteriaKeys;
         this.certStatusService = certStatusService;
         this.rwtProgramStartDate = rwtProgramStartDate;
         this.rwtProgramFirstEligibilityYear = rwtProgramFirstEligibilityYear;
+
+        withdrawnStatuses = List.of(CertificationStatusType.WithdrawnByDeveloper,
+                CertificationStatusType.WithdrawnByAcb,
+                CertificationStatusType.WithdrawnByDeveloperUnderReview,
+                CertificationStatusType.Retired,
+                CertificationStatusType.TerminatedByOnc);
     }
 
     public RealWorldTestingEligibility getRwtEligibilityYearForListing(Long listingId, Logger logger) {
@@ -120,8 +122,7 @@ public class RealWorldTestingEligiblityService {
                 // If the listing is certified before the program start date it is not eligible for RWT elig based on ICS.
                 if (isDateAfterOrEqualToRwtProgramStartDate(listing.get().getCertificationDate())
                     && listing.get().getIcs().getParents() != null
-                    && listing.get().getIcs().getParents().size() > 0
-                    && doesListingAttestToEligibleCriteria(listing.get())) {
+                    && listing.get().getIcs().getParents().size() > 0) {
 
                     //Need a "details" object for the icsCode
                     CertifiedProductDTO cpChild = certifiedProductDAO.getById(listing.get().getId());
@@ -133,10 +134,11 @@ public class RealWorldTestingEligiblityService {
                         if (Integer.valueOf(cpParentDto.getIcsCode()) >= Integer.valueOf(cpChild.getIcsCode())) {
                             continue;
                         }
-                        if (listingIsInStatus(cpParentDto, CertificationStatusType.WithdrawnByDeveloper, logger)) {
+                        if (listingIsWithdrawn(cpParentDto, logger)) {
                             //If parent is withdrawn continue with calculating its eligibility year.... Uh-oh - possible recursion...
                             RealWorldTestingEligibility parentEligibility = getRwtEligibilityYearForListing(cpParent.getId(), logger);
-                            if (parentEligibility.getEligibilityYear() != null) {
+                            if (parentEligibility.getEligibilityYear() != null
+                                    && doesListingAttestToEligibleCriteria(listing.get(), parentEligibility.getEligibilityYear())) {
                                 parentEligibilityYears.add(parentEligibility.getEligibilityYear());
                             }
                         }
@@ -154,12 +156,15 @@ public class RealWorldTestingEligiblityService {
         }
     }
 
-    private boolean listingIsInStatus(CertifiedProductDTO listing, CertificationStatusType certificationStatus, Logger logger) {
+    private boolean listingIsWithdrawn(CertifiedProductDTO listing, Logger logger) {
         boolean result = false;
         try {
             CertificationStatusEvent currentStatusEvent = certStatusService.getCurrentCertificationStatusEvent(listing.getId());
             logger.debug("Listing " + listing.getId() + " has current certification status of " + currentStatusEvent.getStatus().getName());
-            result = currentStatusEvent != null && currentStatusEvent.getStatus().getName().equals(certificationStatus.getName());
+            result = currentStatusEvent != null && withdrawnStatuses.stream()
+                    .map(status -> status.getName())
+                    .filter(statusName -> currentStatusEvent.getStatus().getName().equals(statusName))
+                    .findAny().isPresent();
         } catch (EntityRetrievalException ex) {
             logger.error("Unable to get current certification status event for listing  " + listing.getId(), ex);
             return result;
@@ -186,12 +191,12 @@ public class RealWorldTestingEligiblityService {
     private boolean isListingRwtEligible(CertifiedProductSearchDetails listing, LocalDate asOfDate) {
         return isListingStatusActiveAsOfEligibilityDate(listing, asOfDate)
                 && isCertificationDateBeforeEligibilityDate(listing, asOfDate)
-                && doesListingAttestToEligibleCriteria(listing);
+                && doesListingAttestToEligibleCriteria(listing, asOfDate.getYear());
 
     }
 
-    private boolean doesListingAttestToEligibleCriteria(CertifiedProductSearchDetails listing) {
-        List<CertificationCriterion> eligibleCriteria = getRwtEligibleCriteria();
+    private boolean doesListingAttestToEligibleCriteria(CertifiedProductSearchDetails listing, Integer year) {
+        List<CertificationCriterion> eligibleCriteria = realWorldTestingCriteriaService.getEligibleCriteria(year);
         return listing.getCertificationResults().stream()
                 .filter(result -> result.isSuccess()
                         && eligibleCriteria.stream()
@@ -200,12 +205,6 @@ public class RealWorldTestingEligiblityService {
                         .isPresent())
                 .findAny()
                 .isPresent();
-    }
-
-    private List<CertificationCriterion> getRwtEligibleCriteria() {
-        return Arrays.asList(eligibleCriteriaKeys).stream()
-                .map(key -> certificationCriterionService.get(key))
-                .collect(Collectors.toList());
     }
 
     private boolean isCertificationDateBeforeEligibilityDate(CertifiedProductSearchDetails listing, LocalDate eligibilityDate) {
@@ -219,7 +218,14 @@ public class RealWorldTestingEligiblityService {
 
     private boolean isListingStatusActiveAsOfEligibilityDate(CertifiedProductSearchDetails listing, LocalDate eligibilityDate) {
         CertificationStatusEvent event = listing.getStatusOnDate(convertLocalDateToDateUtcAtMidnight(eligibilityDate));
-        return Objects.nonNull(event) && event.getStatus().getName().equals(CertificationStatusType.Active.getName());
+        return Objects.nonNull(event)
+                && isActive(event.getStatus().getName());
+    }
+
+    private boolean isActive(String statusName) {
+        return statusName.equals(CertificationStatusType.Active.getName())
+                || statusName.equals(CertificationStatusType.SuspendedByAcb.getName())
+                || statusName.equals(CertificationStatusType.SuspendedByOnc.getName());
     }
 
     private Date convertLocalDateToDateUtcAtMidnight(LocalDate localDate) {
