@@ -1,6 +1,5 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,30 +22,31 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 public class SvapNormalizer {
-    private List<SvapCriteriaMap> svapCriteriaMap = new ArrayList<SvapCriteriaMap>();
+    private SvapDAO svapDao;
 
     @Autowired
     public SvapNormalizer(SvapDAO svapDao) {
+        this.svapDao = svapDao;
+    }
+
+    public void normalize(CertifiedProductSearchDetails listing) {
         try {
-            svapCriteriaMap = svapDao.getAllSvapCriteriaMap();
+            List<SvapCriteriaMap> svapCriteriaMap = svapDao.getAllSvapCriteriaMap();
+            if (!CollectionUtils.isEmpty(listing.getCertificationResults())) {
+                listing.getCertificationResults().stream()
+                    .forEach(certResult -> fillInSvapData(certResult, svapCriteriaMap));
+            }
         } catch (EntityRetrievalException ex) {
             LOGGER.error("Could not initialize svap criteria map for flexible upload.", ex);
         }
     }
 
-    public void normalize(CertifiedProductSearchDetails listing) {
-        if (!CollectionUtils.isEmpty(listing.getCertificationResults())) {
-            listing.getCertificationResults().stream()
-                .forEach(certResult -> fillInSvapData(certResult));
-        }
+    private void fillInSvapData(CertificationResult certResult, List<SvapCriteriaMap> svapCriteriaMap) {
+        populateAllowedSvaps(certResult, svapCriteriaMap);
+        populateSvapsFields(certResult.getCriterion(), certResult.getSvaps(), svapCriteriaMap);
     }
 
-    private void fillInSvapData(CertificationResult certResult) {
-        populateAllowedSvaps(certResult);
-        populateSvapsFields(certResult.getCriterion(), certResult.getSvaps());
-    }
-
-    private void populateAllowedSvaps(CertificationResult certResult) {
+    private void populateAllowedSvaps(CertificationResult certResult, List<SvapCriteriaMap> svapCriteriaMap) {
         if (certResult != null && certResult.getCriterion() != null
                 && certResult.getCriterion().getId() != null) {
             List<Svap> allowedSvaps = svapCriteriaMap.stream()
@@ -57,14 +57,14 @@ public class SvapNormalizer {
         }
     }
 
-    private void populateSvapsFields(CertificationCriterion criterion, List<CertificationResultSvap> svaps) {
+    private void populateSvapsFields(CertificationCriterion criterion, List<CertificationResultSvap> svaps, List<SvapCriteriaMap> svapCriteriaMap) {
         if (!CollectionUtils.isEmpty(svaps)) {
             svaps.stream()
-                .forEach(svap -> populateSvapFields(criterion, svap));
+                .forEach(svap -> populateSvapFields(criterion, svap, svapCriteriaMap));
         }
     }
 
-    private void populateSvapFields(CertificationCriterion criterion, CertificationResultSvap certResultSvap) {
+    private void populateSvapFields(CertificationCriterion criterion, CertificationResultSvap certResultSvap, List<SvapCriteriaMap> svapCriteriaMap) {
         Optional<SvapCriteriaMap> matchedSvap = svapCriteriaMap.stream()
             .filter(scm -> scm.getCriterion().getId().equals(criterion.getId()))
             .filter(scm -> scm.getSvap().getRegulatoryTextCitation().equalsIgnoreCase(certResultSvap.getRegulatoryTextCitation()))
