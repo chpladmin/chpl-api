@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.auth.UserPermissionDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
@@ -23,6 +24,7 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
+import gov.healthit.chpl.entity.NonconformityTypeEntity;
 import gov.healthit.chpl.entity.ValidationMessageType;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceNonconformityEntity;
@@ -742,6 +744,12 @@ public class SurveillanceDAO extends BaseDAOImpl {
         }
     }
 
+    public List<NonconformityType> getNonconformityTypes() {
+        return getNonconformityTypeEntities().stream()
+                .map(e -> e.toDomain())
+                .toList();
+    }
+
     private PendingSurveillanceEntity fetchPendingSurveillanceById(Long id, Boolean includeDeleted)
             throws EntityRetrievalException {
         PendingSurveillanceEntity entity = null;
@@ -775,6 +783,12 @@ public class SurveillanceDAO extends BaseDAOImpl {
 
         List<PendingSurveillanceEntity> results = query.getResultList();
         return results;
+    }
+
+    private List<NonconformityTypeEntity> getNonconformityTypeEntities() {
+        Query query = entityManager.createQuery("from NonconformityTypeEntity",
+                NonconformityTypeEntity.class);
+        return query.getResultList();
     }
 
     private SurveillanceType convert(SurveillanceTypeEntity entity) {

@@ -13,13 +13,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @ToString
 public class CertificationCriterion implements Serializable {
