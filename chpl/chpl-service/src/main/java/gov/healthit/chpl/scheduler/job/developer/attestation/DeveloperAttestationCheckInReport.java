@@ -16,10 +16,15 @@ public class DeveloperAttestationCheckInReport {
     private LocalDateTime lastStatusChangeDate;
     private String relevantAcbs;
     private String informationBlockingResponse;
+    private String informationBlockingNoncompliantResponse;
     private String assurancesResponse;
+    private String assurancesNoncompliantResponse;
     private String communicationsResponse;
+    private String communicationsNoncompliantResponse;
     private String rwtResponse;
+    private String rwtNoncompliantResponse;
     private String apiResponse;
+    private String apiNoncompliantResponse;
     private String signature;
     private String signatureEmail;
 
@@ -31,10 +36,15 @@ public class DeveloperAttestationCheckInReport {
                 lastStatusChangeDate != null ? lastStatusChangeDate.toString() : "",
                 relevantAcbs != null ? relevantAcbs : "",
                 informationBlockingResponse != null ? informationBlockingResponse : "",
+                informationBlockingNoncompliantResponse != null ? informationBlockingNoncompliantResponse : "",
                 assurancesResponse != null ? assurancesResponse : "",
+                assurancesNoncompliantResponse != null ? assurancesNoncompliantResponse : "",
                 communicationsResponse != null ? communicationsResponse : "",
+                communicationsNoncompliantResponse != null ? communicationsNoncompliantResponse : "",
                 rwtResponse != null ? rwtResponse : "",
+                rwtNoncompliantResponse != null ? rwtNoncompliantResponse : "",
                 apiResponse != null ? apiResponse : "",
+                apiNoncompliantResponse != null ? apiNoncompliantResponse : "",
                 signature != null ? signature : "",
                 signatureEmail != null ? signatureEmail : "");
     }

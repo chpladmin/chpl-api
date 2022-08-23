@@ -35,8 +35,16 @@ public class ListingStoreRemoveAspect {
     @AfterReturning("execution(* *.*(..)) && @annotation(listingStoreRemove)")
     @Transactional
     public void listingStoreRemove(JoinPoint joinPoint, ListingStoreRemove listingStoreRemove) {
-      Long id = getValue(joinPoint, listingStoreRemove.id());
-      removeListingsFromStore(listingStoreRemove.removeBy(), id);
+        if (listingStoreRemove.removeBy().equals(RemoveBy.ALL)) {
+            removeAllListingsFromStore();
+        } else {
+            Long id = getValue(joinPoint, listingStoreRemove.id());
+            removeListingsFromStore(listingStoreRemove.removeBy(), id);
+        }
+    }
+
+    private void removeAllListingsFromStore() {
+        sharedListingStoreProvider.removeAll();
     }
 
     private void removeListingsFromStore(RemoveBy removeBy, Long id) {
