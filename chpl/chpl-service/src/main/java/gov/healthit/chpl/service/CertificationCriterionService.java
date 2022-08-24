@@ -96,20 +96,28 @@ public class CertificationCriterionService {
         return getCertificationResultSortIndex(valueA) - getCertificationResultSortIndex(valueB);
     }
 
+    public static boolean hasCuresInTitle(String title) {
+        return title != null && title.contains(CURES_TITLE);
+    }
+
     public static boolean hasCuresInTitle(CertificationCriterion criterion) {
-        return criterion.getTitle() != null && criterion.getTitle().contains(CURES_TITLE);
+        return hasCuresInTitle(criterion.getTitle());
     }
 
     public static boolean hasCuresInTitle(CertificationCriterionDTO criterion) {
-        return hasCuresInTitle(new CertificationCriterion(criterion));
+        return hasCuresInTitle(criterion.getTitle());
     }
 
-    public static String formatCriteriaNumber(CertificationCriterion criterion) {
-        String result = criterion.getNumber();
-        if (hasCuresInTitle(criterion)) {
+    public static String formatCriteriaNumber(String number, String title) {
+        String result = number;
+        if (hasCuresInTitle(title)) {
             result += CURES_SUFFIX;
         }
         return result;
+    }
+
+    public static String formatCriteriaNumber(CertificationCriterion criterion) {
+        return formatCriteriaNumber(criterion.getNumber(), criterion.getTitle());
     }
 
     public static String formatCriteriaNumber(CertificationCriterion criterion, boolean formatForRemoved) {

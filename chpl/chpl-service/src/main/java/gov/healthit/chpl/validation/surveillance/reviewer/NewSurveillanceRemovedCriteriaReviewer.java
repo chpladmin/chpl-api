@@ -14,6 +14,7 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import gov.healthit.chpl.util.Util;
@@ -78,9 +79,7 @@ public class NewSurveillanceRemovedCriteriaReviewer implements Reviewer {
         if (NullSafeEvaluator.eval(() -> nc.getType().getRemoved(), false)) {
             surv.getErrorMessages().add(
                     msgUtil.getMessage("surveillance.nonconformityNotAddedForRemovedCriteria",
-                            //TODO - TMY - need to figure this out... (OCD-4029)
-                            //Util.formatCriteriaNumber(criterion)
-                            nc.getType().getNumber()));
+                            CertificationCriterionService.formatCriteriaNumber(nc.getType().getNumber(), nc.getType().getTitle())));
         }
 
         //if (!StringUtils.isEmpty(nc.getNonconformityType())) {

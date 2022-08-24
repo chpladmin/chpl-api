@@ -201,8 +201,7 @@ public class SurveillanceCsvPresenter {
 
     protected List<String> generateNonconformityRowValues(final SurveillanceNonconformity nc) {
         List<String> ncRow = new ArrayList<String>();
-        //TODO - TMY - Need to handle Cures criteria (OCD-4029)
-        ncRow.add(NullSafeEvaluator.eval(() -> nc.getType().getNumber(), ""));
+        ncRow.add(NullSafeEvaluator.eval(() -> CertificationCriterionService.formatCriteriaNumber(nc.getType().getNumber(), nc.getType().getTitle()), ""));
 
         // Derive the status
         if (nc.getNonconformityCloseDay() == null) {

@@ -1,7 +1,7 @@
 package gov.healthit.chpl.util;
 
 public class DeprecatedFieldExplorerTest {
-    //TODO - TMY - Will we still have this test?  (OCD-4029)
+    //TODO - TMY - Will we still have this test? - YES (OCD-4029)
     /*
     private DeprecatedFieldExplorer deprecatedFieldExplorer;
 

@@ -48,13 +48,18 @@ public class NonconformityTypeEntity implements Serializable {
     @Column(name = "removed")
     private Boolean removed;
 
+    @Column(name="classification")
+    private String classification;
+
     public NonconformityType toDomain() {
         return NonconformityType.builder()
                 .id(this.getId())
                 .certificationEditionId(this.getCertificationEditionId())
+                //.number(CertificationCriterionService.formatCriteriaNumber(this.getNumber(), this.getTitle()))
                 .number(this.getNumber())
                 .removed(this.getRemoved())
                 .title(this.getTitle())
+                .classification(this.getClassification())
                 .build();
     }
 }
