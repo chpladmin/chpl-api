@@ -1,13 +1,12 @@
 package gov.healthit.chpl.validation.surveillance.reviewer;
 
-import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
@@ -16,6 +15,7 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.NullSafeEvaluator;
 import gov.healthit.chpl.util.Util;
 
 @Component
@@ -75,26 +75,43 @@ public class NewSurveillanceRemovedCriteriaReviewer implements Reviewer {
     }
 
     private void checkNonconformityForRemovedCriteria(Surveillance surv, SurveillanceNonconformity nc) {
-        if (!StringUtils.isEmpty(nc.getNonconformityType())) {
-            List<CertificationCriterionDTO> criteria = certDao.getAllByNumber(nc.getNonconformityType());
-            if (criteria != null && criteria.size() > 0) {
-                CertificationCriterionDTO criterion = criteria.get(0);
-                if (criterion != null && criterion.getRemoved() != null
-                        && criterion.getRemoved().booleanValue()) {
-                    surv.getErrorMessages().add(
-                            msgUtil.getMessage("surveillance.nonconformityNotAddedForRemovedCriteria",
-                                    Util.formatCriteriaNumber(criterion)));
-                }
-            }
+        if (NullSafeEvaluator.eval(() -> nc.getType().getRemoved(), false)) {
+            surv.getErrorMessages().add(
+                    msgUtil.getMessage("surveillance.nonconformityNotAddedForRemovedCriteria",
+                            //TODO - TMY - need to figure this out... (OCD-4029)
+                            //Util.formatCriteriaNumber(criterion)
+                            nc.getType().getNumber()));
         }
+
+        //if (!StringUtils.isEmpty(nc.getNonconformityType())) {
+        //    List<CertificationCriterionDTO> criteria = certDao.getAllByNumber(nc.getNonconformityType());
+        //    if (criteria != null && criteria.size() > 0) {
+        //        CertificationCriterionDTO criterion = criteria.get(0);
+        //        if (criterion != null && criterion.getRemoved() != null
+        //                && criterion.getRemoved().booleanValue()) {
+        //            surv.getErrorMessages().add(
+        //                    msgUtil.getMessage("surveillance.nonconformityNotAddedForRemovedCriteria",
+        //                            Util.formatCriteriaNumber(criterion)));
+        //        }
+        //    }
+        //}
     }
 
     private void checkNonconformityForRemovedTransparency(Surveillance surv, SurveillanceNonconformity nc) {
-        String requirement = nc.getNonconformityType();
-        if (requirement != null && requirement.equalsIgnoreCase(NonconformityType.K2.getName())) {
+        //TODO - TMY - can we do this differently now? (OCD-4029
+        if (Objects.equals(
+                NullSafeEvaluator.eval(() -> nc.getType().getTitle(), null),
+                "170.523 (k)(2)")) {
             surv.getErrorMessages().add(
                     msgUtil.getMessage("surveillance.nonconformityNotAddedForRemovedRequirement",
-                            nc.getNonconformityType()));
+                    nc.getType().getNumber()));
         }
+
+        //String requirement = nc.getNonconformityType();
+        //if (requirement != null && requirement.equalsIgnoreCase(NonconformityType.K2.getName())) {
+        //    surv.getErrorMessages().add(
+        //            msgUtil.getMessage("surveillance.nonconformityNotAddedForRemovedRequirement",
+        //                    nc.getNonconformityType()));
+        //}
     }
 }

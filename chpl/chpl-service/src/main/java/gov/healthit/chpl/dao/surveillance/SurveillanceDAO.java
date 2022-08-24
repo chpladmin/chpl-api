@@ -47,7 +47,8 @@ public class SurveillanceDAO extends BaseDAOImpl {
     private static Logger LOGGER = LogManager.getLogger(SurveillanceDAO.class);
     private static String SURVEILLANCE_FULL_HQL = "SELECT DISTINCT surv "
             + "FROM SurveillanceEntity surv "
-            + "JOIN FETCH surv.certifiedProduct " + "JOIN FETCH surv.surveillanceType "
+            + "JOIN FETCH surv.certifiedProduct "
+            + "JOIN FETCH surv.surveillanceType "
             + "LEFT OUTER JOIN FETCH surv.surveilledRequirements reqs "
             + "LEFT OUTER JOIN FETCH reqs.surveillanceRequirementType "
             + "LEFT OUTER JOIN FETCH reqs.certificationCriterionEntity cce "
@@ -55,7 +56,9 @@ public class SurveillanceDAO extends BaseDAOImpl {
             + "LEFT OUTER JOIN FETCH reqs.surveillanceResultTypeEntity "
             + "LEFT OUTER JOIN FETCH reqs.nonconformities ncs "
             + "LEFT OUTER JOIN FETCH ncs.certificationCriterionEntity cce2 "
+            + "LEFT OUTER JOIN FETCH ncs.type nct "
             + "LEFT JOIN FETCH cce2.certificationEdition "
+            + "LEFT JOIN FETCH nct.certificationEdition "
             + "LEFT OUTER JOIN FETCH ncs.documents docs "
             + "WHERE surv.deleted <> true ";
     private static String PENDING_SURVEILLANCE_FULL_HQL = "SELECT DISTINCT surv "
@@ -417,10 +420,10 @@ public class SurveillanceDAO extends BaseDAOImpl {
                 toInsertNc.setNonconformityCloseDate(nc.getNonconformityCloseDay());
                 toInsertNc.setSummary(nc.getSummary());
                 toInsertNc.setTotalSites(nc.getTotalSites());
-                toInsertNc.setType(nc.getNonconformityType());
-                if (nc.getCriterion() != null) {
-                    toInsertNc.setCertificationCriterionId(nc.getCriterion().getId());
-                }
+                //.setType(nc.getNonconformityType());
+                //if (nc.getCriterion() != null) {
+                //    toInsertNc.setCertificationCriterionId(nc.getCriterion().getId());
+                //}
                 toInsertNc.setDeleted(false);
                 toInsertNc.setLastModifiedUser(AuthUtil.getAuditId());
 
@@ -855,10 +858,15 @@ public class SurveillanceDAO extends BaseDAOImpl {
         if (from.getCriterion() != null) {
             to.setCertificationCriterionId(from.getCriterion().getId());
         } else if (from.getNonconformityType() != null) {
-            to.setType(from.getNonconformityType());
+            to.setNonconformityType(from.getNonconformityType());
             to.setCertificationCriterionId(null);
         }
-
+        to.setType(NonconformityTypeEntity.builder()
+                .id(from.getType().getId())
+                .number(from.getType().getNumber())
+                .title(from.getType().getTitle())
+                .removed(from.getType().getRemoved())
+                .build());
         to.setCapApproval(from.getCapApprovalDay());
         to.setCapEndDate(from.getCapEndDay());
         to.setCapMustCompleteDate(from.getCapMustCompleteDay());
@@ -871,6 +879,5 @@ public class SurveillanceDAO extends BaseDAOImpl {
         to.setNonconformityCloseDate(from.getNonconformityCloseDay());
         to.setSummary(from.getSummary());
         to.setTotalSites(from.getTotalSites());
-        to.setType(from.getNonconformityType());
     }
 }

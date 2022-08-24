@@ -43,7 +43,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.surveillance.rules.RuleComplianceCalculator;
 import gov.healthit.chpl.search.dao.ListingSearchDao;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
-import gov.healthit.chpl.service.CertificationCriterionService;
 
 @DisallowConcurrentExecution
 public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
@@ -275,11 +274,16 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     private BrokenSurveillanceRulesDTO addNcData(BrokenSurveillanceRulesDTO rule, SurveillanceNonconformity nc) {
 
         rule.setNonconformity(true);
-        if (nc.getCriterion() != null) {
-            rule.setNonconformityCriteria(CertificationCriterionService.formatCriteriaNumber(nc.getCriterion()));
-        } else {
-            rule.setNonconformityCriteria(nc.getNonconformityType());
+        //if (nc.getCriterion() != null) {
+        //    rule.setNonconformityCriteria(CertificationCriterionService.formatCriteriaNumber(nc.getCriterion()));
+        //} else {
+        //    rule.setNonconformityCriteria(nc.getNonconformityType());
+        //}
+        //TODO - TMY - Need to handle Cures criteria (OCD-4029)
+        if (nc.getType() != null && nc.getType().getNumber() != null) {
+            rule.setNonconformityCriteria(nc.getType().getNumber());
         }
+
         if (nc.getNonconformityCloseDay() != null) {
             rule.setNonConformityCloseDate(nc.getNonconformityCloseDay());
         }

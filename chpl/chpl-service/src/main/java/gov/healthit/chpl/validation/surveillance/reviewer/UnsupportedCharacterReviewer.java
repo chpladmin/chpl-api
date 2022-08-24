@@ -33,8 +33,8 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                 addSurveillanceWarningForInvalidCharacters(surv, nc.getDeveloperExplanation(),
                         "Developer Explanation '" + nc.getDeveloperExplanation() + "'");
                 addSurveillanceWarningForInvalidCharacters(surv, nc.getFindings(), "Findings '" + nc.getFindings() + "'");
-                addSurveillanceWarningForInvalidCharacters(surv, nc.getNonconformityType(),
-                        "Nonconformity Type '" + nc.getNonconformityType() + "'");
+                //addSurveillanceWarningForInvalidCharacters(surv, nc.getNonconformityType(),
+                //        "Nonconformity Type '" + nc.getNonconformityType() + "'");
                 addSurveillanceWarningForInvalidCharacters(surv, nc.getResolution(),
                         "Resolution '" + nc.getResolution() + "'");
                 addSurveillanceWarningForInvalidCharacters(surv, nc.getSummary(), "Summary '" + nc.getSummary() + "'");

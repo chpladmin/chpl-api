@@ -181,7 +181,9 @@ public class ComplaintsReportCsvCreator {
     private String getNonConformityTypes(Surveillance surv) {
         return surv.getRequirements().stream()
                 .flatMap(req -> req.getNonconformities().stream())
-                .map(nc -> nc.getNonconformityType())
+                //TODO - TMY - Need to handle Cures criteria (OCD-4029)
+                //.map(nc -> nc.getNonconformityType())
+                .map(nc -> nc.getType().getNumber())
                 .collect(Collectors.joining(","));
     }
 

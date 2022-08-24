@@ -392,12 +392,13 @@ public class SurveillanceManager extends SecuredManager {
                         nc.setDeveloperExplanation(ncEntity.getDeveloperExplanation());
                         nc.setFindings(ncEntity.getFindings());
                         nc.setId(ncEntity.getId());
-                        nc.setNonconformityType(ncEntity.getType());
+                        nc.setNonconformityType(ncEntity.getNonconformityType());
                         if (ncEntity.getCertificationCriterionEntity() != null) {
                             CertificationCriterionEntity criterionEntity = ncEntity.getCertificationCriterionEntity();
                             CertificationCriterion criterion = convertToDomain(criterionEntity);
                             nc.setCriterion(criterion);
                         }
+                        nc.setType(ncEntity.getType().toDomain());
                         nc.setResolution(ncEntity.getResolution());
                         nc.setSitesPassed(ncEntity.getSitesPassed());
                         nc.setSummary(ncEntity.getSummary());

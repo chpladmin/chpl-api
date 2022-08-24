@@ -398,6 +398,7 @@ public class PendingSurveillanceManager extends SecuredManager {
                                 .id(pnc.getId())
                                 .nonconformityType(pnc.getType())
                                 .criterion(pnc.getCertificationCriterionEntity() != null ? pnc.getCertificationCriterionEntity().toDomain() : null)
+                                .type(pnc.getNcType().toDomain())
                                 .resolution(pnc.getResolution())
                                 .sitesPassed(pnc.getSitesPassed())
                                 .summary(pnc.getSummary())
@@ -584,7 +585,7 @@ public class PendingSurveillanceManager extends SecuredManager {
                         nc.setDeveloperExplanation(ncEntity.getDeveloperExplanation());
                         nc.setFindings(ncEntity.getFindings());
                         nc.setId(ncEntity.getId());
-                        nc.setNonconformityType(ncEntity.getType());
+                        nc.setNonconformityType(ncEntity.getNonconformityType());
                         nc.setResolution(ncEntity.getResolution());
                         nc.setSitesPassed(ncEntity.getSitesPassed());
                         nc.setSummary(ncEntity.getSummary());

@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
@@ -18,6 +17,7 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.NullSafeEvaluator;
 
 @Component("surveillanceRemovedDataComparisonReviewer")
 public class SurveillanceRemovedDataComparisonReviewer implements ComparisonReviewer {
@@ -95,13 +95,15 @@ public class SurveillanceRemovedDataComparisonReviewer implements ComparisonRevi
                     .filter(existingSurvNonconformity -> doNonconformitiesMatch(updatedNonconformity, existingSurvNonconformity))
                     .findFirst();
 
-            if (!existingNonconformity.isPresent() && hasRemovedCriteria(updatedNonconformity)) {
+            //if (!existingNonconformity.isPresent() && hasRemovedCriteria(updatedNonconformity)) {
+            if (!existingNonconformity.isPresent() && hasRemovedNonconformity(updatedNonconformity)) {
                 // if it's a new nonconformity it can't have any removed criteria
                 updatedSurveillance.getErrorMessages().add(
                         msgUtil.getMessage("surveillance.nonconformityNotAddedForRemovedCriteria",
                                 updatedNonconformity.getNonconformityType()));
             } else if (existingNonconformity.isPresent()
-                    && hasRemovedCriteria(updatedNonconformity)
+                    //&& hasRemovedCriteria(updatedNonconformity)
+                    && hasRemovedNonconformity(updatedNonconformity)
                     && !updatedNonconformity.matches(existingNonconformity.get())) {
                 // if it's an existing nonconformity with a removed criteria then it can't be edited
                 updatedSurveillance.getErrorMessages().add(
@@ -114,6 +116,9 @@ public class SurveillanceRemovedDataComparisonReviewer implements ComparisonRevi
     private void checkNonconformitiesForRemovedRequirement(Surveillance updatedSurveillance,
             List<SurveillanceNonconformity> existingSurvNonconformities,
             List<SurveillanceNonconformity> updatedSurvNonconformities) {
+
+        //TODO - TMY - need to figure this out... (OCD-4029)
+        /*
         for (SurveillanceNonconformity updatedNonconformity : updatedSurvNonconformities) {
             // look for an existing nonconformity that matches the updated nonconformity
             // and check for removed transparency and/or updates to the nonconformity
@@ -122,7 +127,8 @@ public class SurveillanceRemovedDataComparisonReviewer implements ComparisonRevi
                     .filter(existingSurvNonconformity -> doNonconformitiesMatch(updatedNonconformity, existingSurvNonconformity))
                     .findFirst();
 
-            if (!existingNonconformity.isPresent() && hasRemovedCriteria(updatedNonconformity)) {
+            //if (!existingNonconformity.isPresent() && hasRemovedCriteria(updatedNonconformity)) {
+            if (!existingNonconformity.isPresent() && hasRemovedNonconformity(updatedNonconformity)) {
                 // if it's a new nonconformity it can't have any removed criteria
                 updatedSurveillance.getErrorMessages().add(
                         msgUtil.getMessage("surveillance.nonconformityNotAddedForRemovedCriteria",
@@ -133,7 +139,8 @@ public class SurveillanceRemovedDataComparisonReviewer implements ComparisonRevi
                         msgUtil.getMessage("surveillance.nonconformityNotAddedForRemovedRequirement",
                                 updatedNonconformity.getNonconformityType()));
             } else if (existingNonconformity.isPresent()
-                    && hasRemovedCriteria(updatedNonconformity)
+                    //&& hasRemovedCriteria(updatedNonconformity)
+                    && hasRemovedNonconformity(updatedNonconformity)
                     && !updatedNonconformity.matches(existingNonconformity.get())) {
                 // if it's an existing nonconformity with a removed criteria then it can't be edited
                 updatedSurveillance.getErrorMessages().add(
@@ -148,6 +155,7 @@ public class SurveillanceRemovedDataComparisonReviewer implements ComparisonRevi
                                 updatedNonconformity.getNonconformityType()));
             }
         }
+        */
     }
 
     /**
@@ -200,29 +208,35 @@ public class SurveillanceRemovedDataComparisonReviewer implements ComparisonRevi
     /**
      * Determine if a nonconformity references a removed criteria.
      */
-    private boolean hasRemovedCriteria(SurveillanceNonconformity nonconformity) {
-        if (!StringUtils.isEmpty(nonconformity.getNonconformityType())) {
-            String nonconformityType = criterionService.coerceToCriterionNumberFormat(nonconformity.getNonconformityType());
-            List<CertificationCriterionDTO> criteria = criterionDao.getAllByNumber(nonconformityType);
-            // TODO Fix this as part of OCD-3220
-            if (criteria != null && criteria.size() > 0) {
-                CertificationCriterionDTO criterion = criteria.get(0);
-                if (criterion != null && criterion.getRemoved() != null
-                        && criterion.getRemoved().booleanValue()) {
-                    return true;
-                }
-            }
-        }
-        return false;
+
+    private boolean hasRemovedNonconformity(SurveillanceNonconformity nonconformity) {
+        return NullSafeEvaluator.eval(() -> nonconformity.getType().getRemoved(), false);
     }
 
-    private boolean hasRemovedRequirement(SurveillanceNonconformity nonconformity) {
-        if (!StringUtils.isEmpty(nonconformity.getNonconformityType())) {
-            String requirement = nonconformity.getNonconformityType();
-            if (requirement != null && requirement.equalsIgnoreCase(NonconformityType.K2.getName())) {
-                return true;
-            }
-        }
-        return false;
-    }
+    //private boolean hasRemovedCriteria(SurveillanceNonconformity nonconformity) {
+    //
+    //    if (!StringUtils.isEmpty(nonconformity.getNonconformityType())) {
+    //        String nonconformityType = criterionService.coerceToCriterionNumberFormat(nonconformity.getNonconformityType());
+    //        List<CertificationCriterionDTO> criteria = criterionDao.getAllByNumber(nonconformityType);
+    //        // TODO Fix this as part of OCD-3220
+    //        if (criteria != null && criteria.size() > 0) {
+    //            CertificationCriterionDTO criterion = criteria.get(0);
+    //            if (criterion != null && criterion.getRemoved() != null
+    //                    && criterion.getRemoved().booleanValue()) {
+    //                return true;
+    //            }
+    //        }
+    //    }
+    //    return false;
+    //}
+
+    //private boolean hasRemovedRequirement(SurveillanceNonconformity nonconformity) {
+    //    if (!StringUtils.isEmpty(nonconformity.getNonconformityType())) {
+    //        String requirement = nonconformity.getNonconformityType();
+    //        if (requirement != null && requirement.equalsIgnoreCase(NonconformityType.K2.getName())) {
+    //            return true;
+    //        }
+    //    }
+    //    return false;
+    //}
 }

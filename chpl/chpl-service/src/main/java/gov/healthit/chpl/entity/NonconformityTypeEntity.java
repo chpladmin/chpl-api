@@ -1,14 +1,15 @@
 package gov.healthit.chpl.entity;
 
 import java.io.Serializable;
-import java.util.Date;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.NonconformityType;
@@ -34,6 +35,10 @@ public class NonconformityTypeEntity implements Serializable {
     @Column(name = "certification_edition_id")
     private Long certificationEditionId;
 
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_edition_id", insertable = false, updatable = false)
+    private CertificationEditionEntity certificationEdition;
+
     @Column(length = 15)
     private String number;
 
@@ -42,21 +47,6 @@ public class NonconformityTypeEntity implements Serializable {
 
     @Column(name = "removed")
     private Boolean removed;
-
-    @Column(name = "creation_date", nullable = false)
-    private Date creationDate;
-
-    @Basic(optional = false)
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
 
     public NonconformityType toDomain() {
         return NonconformityType.builder()

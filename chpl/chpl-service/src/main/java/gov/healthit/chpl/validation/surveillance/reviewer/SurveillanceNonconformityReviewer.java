@@ -1,7 +1,6 @@
 package gov.healthit.chpl.validation.surveillance.reviewer;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
@@ -72,6 +70,8 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
 
     private void checkNonconformityTypeValidity(Surveillance surv, SurveillanceRequirement req,
             SurveillanceNonconformity nc, List<CertificationResultDetailsDTO> certResults) {
+        //TODO - TMY - Need to determine if we still need this (OCD-4029)
+        /*
         if (StringUtils.isEmpty(nc.getNonconformityType()) && nc.getCriterion() == null) {
             surv.getErrorMessages().add(
                     msgUtil.getMessage("surveillance.nonConformityTypeRequired",
@@ -105,6 +105,7 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
                                 NonconformityType.OTHER.getName()));
             }
         }
+        */
     }
 
     private boolean isCriteriaAttestedTo(CertificationResultDetailsDTO certResult, CertificationCriterion criterion) {

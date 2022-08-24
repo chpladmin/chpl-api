@@ -1,11 +1,12 @@
 package gov.healthit.chpl.permissions.domains.surveillance;
 
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
-import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity;
@@ -14,6 +15,7 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.NullSafeEvaluator;
 
 @Deprecated
 @Component("surveillanceDeleteDocumentActionPermissions")
@@ -49,17 +51,20 @@ public class DeleteDocumentActionPermissions extends ActionPermissions {
                         //done instead of returning false to get a more customized message than
                         //Access is denied.
                         throw new AccessDeniedException(msgUtil.getMessage(
-                                "surveillance.nonconformityDocNotDeletedForRemovedCriteria", nonconformity.getType()));
+                                "surveillance.nonconformityDocNotDeletedForRemovedCriteria",
+                                nonconformity.getType().getNumber()));
                     } else if (isNonconformityForRemovedRequirement(nonconformity)) {
                         //done instead of returning false to get a more customized message than
                         //Access is denied.
                         throw new AccessDeniedException(msgUtil.getMessage(
-                                "surveillance.nonconformityDocNotDeletedForRemovedRequirement", nonconformity.getType()));
+                                "surveillance.nonconformityDocNotDeletedForRemovedRequirement",
+                                nonconformity.getType().getNumber()));
                     } else if (isListing2014Edition(surv)) {
                         //done instead of returning false to get a more customized message than
                         //Access is denied.
                         throw new AccessDeniedException(msgUtil.getMessage(
-                                "surveillance.nonconformityDocNotDeletedFor2014Edition", nonconformity.getType()));
+                                "surveillance.nonconformityDocNotDeletedFor2014Edition",
+                                nonconformity.getType().getNumber()));
                     } else {
                         return true;
                     }
@@ -90,15 +95,19 @@ public class DeleteDocumentActionPermissions extends ActionPermissions {
     }
 
     private boolean isNonconformityForRemovedCriteria(SurveillanceNonconformityEntity nonconformity) {
-        return nonconformity != null
-                && nonconformity.getCertificationCriterionEntity() != null
-                && nonconformity.getCertificationCriterionEntity().getRemoved() != null
-                && nonconformity.getCertificationCriterionEntity().getRemoved().booleanValue();
+        //return nonconformity != null
+        //        && nonconformity.getCertificationCriterionEntity() != null
+        //        && nonconformity.getCertificationCriterionEntity().getRemoved() != null
+        //        && nonconformity.getCertificationCriterionEntity().getRemoved().booleanValue();
+        return NullSafeEvaluator.eval(() -> nonconformity.getType().getRemoved().booleanValue(), false);
     }
 
     private boolean isNonconformityForRemovedRequirement(SurveillanceNonconformityEntity nonconformity) {
-        return nonconformity != null
-                && nonconformity.getType().equalsIgnoreCase(NonconformityType.K2.getName());
+        //return nonconformity != null
+        //        && nonconformity.getType().equalsIgnoreCase(NonconformityType.K2.getName());
+        return Objects.equals(
+                NullSafeEvaluator.eval(() -> nonconformity.getType().getTitle(), null),
+                "170.523 (k)(2)");
     }
 
     private boolean isListing2014Edition(SurveillanceEntity surv) {

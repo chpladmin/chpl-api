@@ -2,6 +2,7 @@ package gov.healthit.chpl.entity.surveillance;
 
 import java.time.LocalDate;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,6 +14,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
+import gov.healthit.chpl.entity.NonconformityTypeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,6 +45,10 @@ public class PendingSurveillanceNonconformityEntity {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "certification_criterion_id", insertable = false, updatable = false)
     private CertificationCriterionEntity certificationCriterionEntity;
+
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "nonconformity_type_id", insertable = false, updatable = false)
+    private NonconformityTypeEntity ncType;
 
     @Column(name = "non_conformity_close_date")
     private LocalDate nonconformityCloseDate;

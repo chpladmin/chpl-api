@@ -58,6 +58,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         dateFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public Surveillance handle() throws InvalidArgumentsException {
         Surveillance surv = new Surveillance();
@@ -258,18 +259,19 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         SurveillanceNonconformity nc = new SurveillanceNonconformity();
 
         // nonconformity type
-        String ncTypeStr = record.get(colIndex++).trim();
-        nc.setNonconformityType(ncTypeStr);
-        //look at cert results to determine if/which criterion
-        if (certResults != null && certResults.size() > 0) {
-            Optional<CertificationResultDetailsDTO> attestedCertResult =
-                    certResults.stream()
-                    .filter(certResult -> isCriteriaAttestedTo(certResult, nc.getNonconformityType()))
-                    .findFirst();
-            if (attestedCertResult.isPresent()) {
-                nc.setCriterion(new CertificationCriterion(attestedCertResult.get().getCriterion()));
-            }
-        }
+        //TODO - TMY - need to figure this out... (OCD-4029)
+        //String ncTypeStr = record.get(colIndex++).trim();
+        //nc.setNonconformityType(ncTypeStr);
+        ////look at cert results to determine if/which criterion
+        //if (certResults != null && certResults.size() > 0) {
+        //    Optional<CertificationResultDetailsDTO> attestedCertResult =
+        //            certResults.stream()
+        //            .filter(certResult -> isCriteriaAttestedTo(certResult, nc.getNonconformityType()))
+        //            .findFirst();
+        //    if (attestedCertResult.isPresent()) {
+        //        nc.setCriterion(new CertificationCriterion(attestedCertResult.get().getCriterion()));
+        //    }
+        //}
 
         // nonconformity status
         String ncStatusStr = record.get(colIndex++).trim();
@@ -376,26 +378,32 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
                 && certResult.getSuccess().booleanValue()
                 && certResult.getNumber().equals(criterionNumber);
     }
+    @Override
     public List<CSVRecord> getRecord() {
         return record;
     }
 
+    @Override
     public void setRecord(final List<CSVRecord> record) {
         this.record = record;
     }
 
+    @Override
     public CSVRecord getHeading() {
         return heading;
     }
 
+    @Override
     public void setHeading(final CSVRecord heading) {
         this.heading = heading;
     }
 
+    @Override
     public int getLastDataIndex() {
         return lastDataIndex;
     }
 
+    @Override
     public void setLastDataIndex(final int lastDataIndex) {
         this.lastDataIndex = lastDataIndex;
     }

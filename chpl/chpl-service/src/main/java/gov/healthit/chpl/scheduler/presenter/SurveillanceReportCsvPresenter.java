@@ -14,7 +14,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
-import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.util.NullSafeEvaluator;
 
 public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 
@@ -160,11 +160,15 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
             final SurveillanceNonconformity nc) {
         List<String> ncFields = new ArrayList<String>();
         ncFields.add("Y");
-        if (nc.getCriterion() != null) {
-            ncFields.add(CertificationCriterionService.formatCriteriaNumber(nc.getCriterion()));
-        } else if (nc.getNonconformityType() != null) {
-            ncFields.add(nc.getNonconformityType());
-        }
+        //if (nc.getCriterion() != null) {
+        //    ncFields.add(CertificationCriterionService.formatCriteriaNumber(nc.getCriterion()));
+        //} else if (nc.getNonconformityType() != null) {
+        //    ncFields.add(nc.getNonconformityType());
+        //}
+
+        //TODO - TMY - Need to handle Cures criteria (OCD-4029)
+        ncFields.add(NullSafeEvaluator.eval(() -> nc.getType().getNumber(), ""));
+
         if (nc.getDateOfDeterminationDay() != null) {
             ncFields.add(getDateFormatter().format(nc.getDateOfDeterminationDay()));
         } else {

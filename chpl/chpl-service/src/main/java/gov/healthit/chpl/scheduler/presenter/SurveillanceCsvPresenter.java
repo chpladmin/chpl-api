@@ -19,6 +19,7 @@ import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.util.NullSafeEvaluator;
 
 public class SurveillanceCsvPresenter {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceCsvPresenter.class);
@@ -200,13 +201,9 @@ public class SurveillanceCsvPresenter {
 
     protected List<String> generateNonconformityRowValues(final SurveillanceNonconformity nc) {
         List<String> ncRow = new ArrayList<String>();
-        if (nc.getCriterion() != null) {
-            ncRow.add(CertificationCriterionService.formatCriteriaNumber(nc.getCriterion()));
-        } else if (nc.getNonconformityType() != null) {
-            ncRow.add(nc.getNonconformityType());
-        } else {
-            ncRow.add("");
-        }
+        //TODO - TMY - Need to handle Cures criteria (OCD-4029)
+        ncRow.add(NullSafeEvaluator.eval(() -> nc.getType().getNumber(), ""));
+
         // Derive the status
         if (nc.getNonconformityCloseDay() == null) {
             ncRow.add("Open");
