@@ -4,9 +4,9 @@ import java.util.Iterator;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -100,9 +100,15 @@ public class SvapReviewer {
 
     private void reviewSvapMarkedAsReplaced(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultSvap svap) {
-        if (svap.getSvapId() != null && BooleanUtils.isTrue(svap.getReplaced())) {
-            listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.svap.replaced",
+        if (svap.getSvapId() != null
+                && BooleanUtils.isTrue(svap.getReplaced())
+                && !doesListingHaveIcs(listing)) {
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.svap.replacedWithIcs",
                     svap.getRegulatoryTextCitation(), certResult.getCriterion().getNumber()));
         }
+    }
+
+    private boolean doesListingHaveIcs(CertifiedProductSearchDetails listing) {
+        return listing.getIcs().getInherits();
     }
 }

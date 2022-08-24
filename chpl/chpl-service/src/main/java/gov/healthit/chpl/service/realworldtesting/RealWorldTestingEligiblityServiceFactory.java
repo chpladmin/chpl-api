@@ -10,13 +10,9 @@ import gov.healthit.chpl.activity.history.ListingActivityUtil;
 import gov.healthit.chpl.activity.history.explorer.RealWorldTestingEligibilityActivityExplorer;
 import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.service.CertificationCriterionService;
 
 @Component
 public class RealWorldTestingEligiblityServiceFactory {
-
-    @Value("${realWorldTestingCriteriaKeys}")
-    private String[] eligibleCriteriaKeys;
 
     @Value("${rwtProgramFirstEligibilityYear}")
     private Integer rwtProgramFirstEligibilityYear;
@@ -24,16 +20,17 @@ public class RealWorldTestingEligiblityServiceFactory {
     @Value("#{T(java.time.LocalDate).parse('${rwtProgramStartDate}')}")
     private LocalDate rwtProgramStartDate;
 
-    private CertificationCriterionService criterionService;
+    private RealWorldTestingCriteriaService realWorldTestingCriteriaService;
     private RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer;
     private ListingActivityUtil listingActivityUtil;
     private CertificationStatusEventsService certStatusService;
     private CertifiedProductDAO certifiedProductDAO;
 
     @Autowired
-    public RealWorldTestingEligiblityServiceFactory(CertificationCriterionService criterionService, RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer,
-            ListingActivityUtil listingActivityUtil, CertificationStatusEventsService certStatusService, CertifiedProductDAO certifiedProductDAO) {
-        this.criterionService = criterionService;
+    public RealWorldTestingEligiblityServiceFactory(RealWorldTestingCriteriaService realWorldTestingCriteriaService,
+            RealWorldTestingEligibilityActivityExplorer realWorldTestingEligibilityActivityExplorer, ListingActivityUtil listingActivityUtil,
+            CertificationStatusEventsService certStatusService, CertifiedProductDAO certifiedProductDAO) {
+        this.realWorldTestingCriteriaService = realWorldTestingCriteriaService;
         this.realWorldTestingEligibilityActivityExplorer = realWorldTestingEligibilityActivityExplorer;
         this.listingActivityUtil = listingActivityUtil;
         this.certStatusService = certStatusService;
@@ -41,9 +38,8 @@ public class RealWorldTestingEligiblityServiceFactory {
     }
 
     public RealWorldTestingEligiblityService getInstance() {
-       return  new RealWorldTestingEligiblityService(criterionService, realWorldTestingEligibilityActivityExplorer,
-               certStatusService, listingActivityUtil, certifiedProductDAO, eligibleCriteriaKeys,
-               rwtProgramStartDate, rwtProgramFirstEligibilityYear);
+       return  new RealWorldTestingEligiblityService(realWorldTestingCriteriaService, realWorldTestingEligibilityActivityExplorer,
+               certStatusService, listingActivityUtil, certifiedProductDAO, rwtProgramStartDate, rwtProgramFirstEligibilityYear);
     }
 
 }

@@ -21,6 +21,8 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
+import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.svap.dao.SvapDAO;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
@@ -81,6 +83,7 @@ public class SvapManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SVAP, "
             + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).UPDATE)")
     @Transactional
+    @ListingStoreRemove(removeBy = RemoveBy.ALL)
     public Svap update(Svap svap) throws EntityRetrievalException, ValidationException {
         Svap originalSvap = svapDao.getById(svap.getSvapId());
         validateForEdit(svap,  originalSvap);

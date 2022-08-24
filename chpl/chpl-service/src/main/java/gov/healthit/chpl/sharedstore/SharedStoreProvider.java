@@ -82,6 +82,11 @@ public abstract class SharedStoreProvider<K, V> {
         LOGGER.info("Removed from store: {} {}", getDomain(), keys.toString());
     }
 
+    public void removeAll() {
+        sharedStoreDAO.removeByDomain(getDomain());
+        LOGGER.info("**** REMOVED ALL {} ****", getDomain());
+    }
+
     private boolean isExpired(SharedStore sharedData) {
         if (getTimeToLive().equals(UNLIMITED)) {
             return false;
