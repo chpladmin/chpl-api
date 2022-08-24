@@ -15,6 +15,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -43,11 +44,11 @@ public class ChangeRequestAttestationSubmissionEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "attestation_period_id")
-    private AttestationPeriodEntity period;
+    private AttestationPeriodEntity attestationPeriod;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "change_request_attestation_submission_id")
-    private Set<ChangeRequestAttestationResponseEntity> responses;
+    private Set<ChangeRequestAttestationSubmissionResponseEntity> responses;
 
     @Column(name = "signature", nullable = false)
     private String signature;
@@ -67,4 +68,12 @@ public class ChangeRequestAttestationSubmissionEntity {
     @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
     private Date lastModifiedDate;
 
+    public ChangeRequestAttestationSubmission toDomain() {
+        return ChangeRequestAttestationSubmission.builder()
+                .id(id)
+                .attestationPeriod(attestationPeriod.toDomain())
+                .signature(signature)
+                .signatureEmail(signatureEmail)
+                .build();
+    }
 }

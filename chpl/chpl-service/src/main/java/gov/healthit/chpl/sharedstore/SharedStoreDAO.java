@@ -56,6 +56,15 @@ public class SharedStoreDAO extends BaseDAOImpl {
         entityManager.createQuery(delete).executeUpdate();
     }
 
+    @Transactional()
+    public void removeByDomain(String domain) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaDelete<SharedStoreEntity> delete = cb.createCriteriaDelete(SharedStoreEntity.class);
+        Root<SharedStoreEntity> root = delete.from(SharedStoreEntity.class);
+        delete.where(cb.equal(root.get("primaryKey").get("domain"), domain));
+        entityManager.createQuery(delete).executeUpdate();
+    }
+
     private SharedStoreEntity getEntity(String domain, String key) {
         List<SharedStoreEntity> result = entityManager.createQuery(
                 "FROM SharedStoreEntity sse "

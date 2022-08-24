@@ -50,13 +50,34 @@ public class AttestationPeriodService {
                 .toList();
 
         if (periods == null || periods.size() == 0) {
+
             return null;
         }
 
         return periods.get(0);
     }
 
-    public LocalDate getMostRecentPeriodExceptionDateForDeveloper(Long developerId) {
+    public LocalDate getCurrentExceptionEndDateForDeveloper(Long developerId) {
+        AttestationPeriodDeveloperException periodException = attestationDAO.getCurrentAttestationPeriodDeveloperException(developerId);
+        if (periodException != null) {
+            return periodException.getExceptionEnd();
+        } else {
+            return null;
+        }
+    }
+
+    public AttestationPeriod getSubmittableAttestationPeriod(Long developerId) {
+        AttestationPeriodDeveloperException apde = attestationDAO.getCurrentAttestationPeriodDeveloperException(developerId);
+        if (apde != null
+              && (apde.getExceptionEnd().isEqual(LocalDate.now())
+              || apde.getExceptionEnd().isAfter(LocalDate.now()))) {
+          return apde.getPeriod();
+        }
+
+        return getMostRecentPastAttestationPeriod();
+    }
+
+    private LocalDate getMostRecentPeriodExceptionDateForDeveloper(Long developerId) {
         AttestationPeriod period = getMostRecentPastAttestationPeriod();
         List<AttestationPeriodDeveloperException> periodExceptions =
                 attestationDAO.getAttestationPeriodDeveloperExceptions(developerId, period.getId());
@@ -70,15 +91,6 @@ public class AttestationPeriodService {
                 .toList()
                 .get(0)
                 .getExceptionEnd();
-    }
-
-    public LocalDate getCurrentExceptionEndDateForDeveloper(Long developerId) {
-        AttestationPeriodDeveloperException periodException = attestationDAO.getCurrentAttestationPeriodDeveloperException(developerId);
-        if (periodException != null) {
-            return periodException.getExceptionEnd();
-        } else {
-            return null;
-        }
     }
 
     public AttestationPeriodDeveloperException getCurrentAttestationPeriodDeveloperExceptionForDeveloper(Long developerId) {
@@ -101,16 +113,5 @@ public class AttestationPeriodService {
         }
 
         return mostRecentPeriod;
-    }
-
-    public AttestationPeriod getSubmittableAttestationPeriod(Long developerId) {
-        AttestationPeriodDeveloperException apde = attestationDAO.getCurrentAttestationPeriodDeveloperException(developerId);
-        if (apde != null
-              && (apde.getExceptionEnd().isEqual(LocalDate.now())
-              || apde.getExceptionEnd().isAfter(LocalDate.now()))) {
-          return apde.getPeriod();
-        }
-
-        return getMostRecentPastAttestationPeriod();
     }
 }

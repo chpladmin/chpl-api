@@ -1,49 +1,25 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
-import org.jfree.data.time.DateRange;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.dao.AttestationDAO;
-import gov.healthit.chpl.attestation.domain.AttestationPeriod;
-import gov.healthit.chpl.attestation.domain.AttestationSubmittedResponse;
-import gov.healthit.chpl.attestation.domain.DeveloperAttestationSubmission;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.attestation.report.validation.AttestationValidationService;
 import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
-import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.CertificationStatus;
-import gov.healthit.chpl.domain.CertificationStatusEvent;
-import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
-import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.dto.UserDeveloperMapDTO;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.search.ListingSearchService;
-import gov.healthit.chpl.search.domain.ListingSearchResponse;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
-import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.service.DirectReviewSearchService;
-import gov.healthit.chpl.util.DateUtil;
 
 @Component
 public class DeveloperAttestationReportDataCollection {
@@ -96,6 +72,7 @@ public class DeveloperAttestationReportDataCollection {
             .collect(Collectors.toList());
 
     public List<DeveloperAttestationReport> collect(List<Long> selectedAcbIds, Logger logger) {
+        /*
         AttestationPeriod mostRecentPastPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
         logger.info("Most recent past attestation period: {} - {} ", mostRecentPastPeriod.getPeriodStart().toString(), mostRecentPastPeriod.getPeriodEnd().toString());
         logger.info("Selected AcbsId: {}", selectedAcbIds.stream()
@@ -109,6 +86,7 @@ public class DeveloperAttestationReportDataCollection {
         List<DeveloperAttestationReport> reportRows = developers.stream()
                 .filter(dev -> isDeveloperManagedBySelectedAcbs(dev, selectedAcbIds))
                 .map(dev -> {
+
                     DeveloperAttestationSubmission attestation = getDeveloperAttestation(dev.getId(), mostRecentPastPeriod.getId());
 
                     return DeveloperAttestationReport.builder()
@@ -140,6 +118,7 @@ public class DeveloperAttestationReportDataCollection {
                         .activeAcbs(getActiveAcbs())
                         .developerAcbMap(getDeveloperAcbMapping(dev, logger))
                         .build();
+                    return DeveloperAttestationReport.builder().build();
                 })
                 .sorted(Comparator.comparing(DeveloperAttestationReport::getDeveloperName))
                 .toList();
@@ -147,8 +126,12 @@ public class DeveloperAttestationReportDataCollection {
         logger.info("Total Report Rows found: {}", reportRows.size());
         developerListings.clear();
         return reportRows;
+        */
+        return null;
     }
 
+
+    /*****************************
     private Boolean doesActiveListingExistDuringAttestationPeriod(List<ListingSearchResult> listingsForDeveloper, AttestationPeriod period) {
         return listingsForDeveloper.stream()
                 .filter(listing -> isListingActiveDuringPeriod(listing, period))
@@ -328,7 +311,7 @@ public class DeveloperAttestationReportDataCollection {
                 .count();
     }
 
-private Long getOpenDirectReviewNonconformities(Developer developer, Logger logger) {
+    private Long getOpenDirectReviewNonconformities(Developer developer, Logger logger) {
         return directReviewService.getDeveloperDirectReviews(developer.getId(), logger).stream()
                 .flatMap(dr -> dr.getNonConformities().stream())
                 .filter(nc -> nc.getNonConformityStatus().equalsIgnoreCase(DirectReviewNonConformity.STATUS_OPEN))
@@ -375,4 +358,5 @@ private Long getOpenDirectReviewNonconformities(Developer developer, Logger logg
                 .findAny()
                 .isPresent();
     }
+    **************************/
 }

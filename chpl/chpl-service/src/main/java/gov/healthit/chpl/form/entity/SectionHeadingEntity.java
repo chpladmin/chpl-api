@@ -1,20 +1,15 @@
-package gov.healthit.chpl.attestation.entity;
+package gov.healthit.chpl.form.entity;
 
 import java.util.Date;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.form.SectionHeading;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,35 +18,24 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "attestation")
+@Table(name = "section_heading")
 @Getter
 @Setter
 @ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AttestationEntity {
-
+public class SectionHeadingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @OneToMany
-    @JoinTable(name = "attestation_form",
-            joinColumns = @JoinColumn(name = "attestation_id"),
-            inverseJoinColumns = @JoinColumn(name = "attestation_valid_response_id"))
-    private Set<AttestationValidResponseEntity> validResponses;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "attestation_condition_id", nullable = false, insertable = false, updatable = false)
-    private AttestationConditionEntity condition;
-
-    @Column(name = "description")
-    private String description;
+    @Column(name = "name")
+    private String name;
 
     @Column(name = "sort_order")
-    private Long sortOrder;
+    private Integer sortOrder;
 
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
@@ -65,4 +49,11 @@ public class AttestationEntity {
     @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
     private Date lastModifiedDate;
 
+    public SectionHeading toDomain() {
+        return SectionHeading.builder()
+                .id(id)
+                .name(name)
+                .sortOrder(sortOrder)
+                .build();
+    }
 }
