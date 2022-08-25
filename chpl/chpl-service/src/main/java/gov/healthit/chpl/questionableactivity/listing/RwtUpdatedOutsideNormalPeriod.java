@@ -21,10 +21,14 @@ public abstract class RwtUpdatedOutsideNormalPeriod {
                 || hasCheckDateChanged(origListing.getRwtResultsCheckDate(), newListing.getRwtResultsCheckDate()))
                 && isCurrentDateOutsideNormalPlanUpdatePeriod()) {
 
-            return List.of(QuestionableActivityListingDTO.builder()
+            List x =  List.of(QuestionableActivityListingDTO.builder()
                     .before(getRwtInfoFromListing(origListing))
                     .after(getRwtInfoFromListing(newListing))
                     .build());
+
+            LOGGER.info("Questionable Activities Created: {}", x.size());
+
+            return x;
         } else {
             return null;
         }
@@ -38,30 +42,40 @@ public abstract class RwtUpdatedOutsideNormalPeriod {
 
     private LocalDate getNormalUpdatePeriodBegin() {
         String[] dateParts = getStartMonthAndDay().split("/");
-        return LocalDate.of(
+        LocalDate x = LocalDate.of(
                 LocalDate.now().getYear(),
                 Integer.valueOf(dateParts[0]),
                 Integer.valueOf(dateParts[1]));
+        LOGGER.info("Normal Update Period Begin {}", x.toString());
+        return x;
      }
 
     private LocalDate getNormalUpdatePeriodEnd() {
         String[] dateParts = getEndMonthAndDay().split("/");
-        return LocalDate.of(
+        LocalDate x = LocalDate.of(
                 LocalDate.now().getYear(),
                 Integer.valueOf(dateParts[0]),
                 Integer.valueOf(dateParts[1]));
+        LOGGER.info("Normal Update Period END {}", x.toString());
+        return x;
      }
 
     private Boolean hasUrlChanged(String originalUrl, String newUrl) {
-        return Objects.equals(originalUrl, newUrl);
+        Boolean x = Objects.equals(originalUrl, newUrl);
+        LOGGER.info("Has URL Changed: {}", x);
+        return x;
     }
 
     private Boolean hasCheckDateChanged(LocalDate originalCheckDate, LocalDate newCheckDate) {
-        return Objects.equals(originalCheckDate, newCheckDate);
+        Boolean x = Objects.equals(originalCheckDate, newCheckDate);
+        LOGGER.info("Has Date Changed: {}", x);
+        return x;
     }
 
     private Boolean isCurrentDateOutsideNormalPlanUpdatePeriod() {
-        return LocalDate.now().isBefore(getNormalUpdatePeriodBegin())
+        Boolean x = LocalDate.now().isBefore(getNormalUpdatePeriodBegin())
                 || LocalDate.now().isAfter(getNormalUpdatePeriodEnd());
+        LOGGER.info("Is Current Date Outside Normal Plan Update Period: {}", x);
+        return x;
     }
 }
