@@ -73,9 +73,7 @@ public class AttestationExceptionEmail {
                     return "an ONC-ACB";
                 }
                 return acbsForUser.get(0).getName();
-            } else if (resourcePermissions.isUserRoleAdmin()) {
-                return "CHPL Admin";
-            } else if (resourcePermissions.isUserRoleOnc()) {
+            } else if (resourcePermissions.isUserRoleOnc() || resourcePermissions.isUserRoleAdmin()) {
                 return "ONC";
             } else {
                 LOGGER.warn("The current user did not have one of the expected roles... " + AuthUtil.getCurrentUser().getSubjectName());
