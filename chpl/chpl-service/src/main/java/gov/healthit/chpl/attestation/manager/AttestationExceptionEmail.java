@@ -78,7 +78,8 @@ public class AttestationExceptionEmail {
             } else if (resourcePermissions.isUserRoleOnc()) {
                 return "ONC";
             } else {
-                return "";
+                LOGGER.warn("The current user did not have one of the expected roles... " + AuthUtil.getCurrentUser().getSubjectName());
+                return "an administrator";
             }
         }
 }
