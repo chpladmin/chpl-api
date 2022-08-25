@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 
@@ -13,8 +14,5 @@ public class NonconformityType extends CertificationCriterion implements Seriali
     private static final long serialVersionUID = -7437221753188417890L;
 
     @JsonIgnore
-    private String classification;
-    //public NonconformityType(Long id, String number, String title, Long certificationEditionId, String description, Boolean removed) {
-    //    super(id, number, title,certificationEditionId, null, description, removed);
-    //}
+    private NonconformityClassification classification;
 }

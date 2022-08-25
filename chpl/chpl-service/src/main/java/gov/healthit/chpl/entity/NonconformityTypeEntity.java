@@ -13,6 +13,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.NonconformityType;
+import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -48,18 +49,17 @@ public class NonconformityTypeEntity implements Serializable {
     @Column(name = "removed")
     private Boolean removed;
 
-    @Column(name="classification")
+    @Column(name = "classification")
     private String classification;
 
     public NonconformityType toDomain() {
         return NonconformityType.builder()
                 .id(this.getId())
                 .certificationEditionId(this.getCertificationEditionId())
-                //.number(CertificationCriterionService.formatCriteriaNumber(this.getNumber(), this.getTitle()))
                 .number(this.getNumber())
                 .removed(this.getRemoved())
                 .title(this.getTitle())
-                .classification(this.getClassification())
+                .classification(NonconformityClassification.valueOf(this.classification))
                 .build();
     }
 }

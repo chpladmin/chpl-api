@@ -585,7 +585,7 @@ public class PendingSurveillanceManager extends SecuredManager {
                         nc.setDeveloperExplanation(ncEntity.getDeveloperExplanation());
                         nc.setFindings(ncEntity.getFindings());
                         nc.setId(ncEntity.getId());
-                        nc.setNonconformityType(ncEntity.getNonconformityType());
+                        nc.setType(ncEntity.getType().toDomain());
                         nc.setResolution(ncEntity.getResolution());
                         nc.setSitesPassed(ncEntity.getSitesPassed());
                         nc.setSummary(ncEntity.getSummary());

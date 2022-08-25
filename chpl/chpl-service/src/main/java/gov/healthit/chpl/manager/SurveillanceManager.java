@@ -33,6 +33,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
+import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
@@ -392,13 +393,12 @@ public class SurveillanceManager extends SecuredManager {
                         nc.setDeveloperExplanation(ncEntity.getDeveloperExplanation());
                         nc.setFindings(ncEntity.getFindings());
                         nc.setId(ncEntity.getId());
-                        nc.setNonconformityType(ncEntity.getNonconformityType());
-                        if (ncEntity.getCertificationCriterionEntity() != null) {
-                            CertificationCriterionEntity criterionEntity = ncEntity.getCertificationCriterionEntity();
-                            CertificationCriterion criterion = convertToDomain(criterionEntity);
-                            nc.setCriterion(criterion);
-                        }
                         nc.setType(ncEntity.getType().toDomain());
+                        if (nc.getType().getClassification().equals(NonconformityClassification.REQUIREMENT)) {
+                            nc.setNonconformityType(ncEntity.getType().getNumber());
+                        } else if (nc.getType().getClassification().equals(NonconformityClassification.CRITERION)) {
+                            nc.setCriterion(nc.getType());
+                        }
                         nc.setResolution(ncEntity.getResolution());
                         nc.setSitesPassed(ncEntity.getSitesPassed());
                         nc.setSummary(ncEntity.getSummary());

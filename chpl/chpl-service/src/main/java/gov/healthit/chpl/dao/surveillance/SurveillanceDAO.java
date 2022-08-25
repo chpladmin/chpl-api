@@ -5,16 +5,12 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.dao.auth.UserPermissionDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
@@ -39,13 +35,14 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceResultTypeEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceTypeEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
+import lombok.extern.log4j.Log4j2;
 
 @Repository("surveillanceDAO")
+@Log4j2
 public class SurveillanceDAO extends BaseDAOImpl {
-    private static Logger LOGGER = LogManager.getLogger(SurveillanceDAO.class);
-    private static String SURVEILLANCE_FULL_HQL = "SELECT DISTINCT surv "
+    private static String SURVEILLANCE_FULL_HQL =
+            "SELECT DISTINCT surv "
             + "FROM SurveillanceEntity surv "
             + "JOIN FETCH surv.certifiedProduct "
             + "JOIN FETCH surv.surveillanceType "
@@ -55,12 +52,11 @@ public class SurveillanceDAO extends BaseDAOImpl {
             + "LEFT JOIN FETCH cce.certificationEdition "
             + "LEFT OUTER JOIN FETCH reqs.surveillanceResultTypeEntity "
             + "LEFT OUTER JOIN FETCH reqs.nonconformities ncs "
-            + "LEFT OUTER JOIN FETCH ncs.certificationCriterionEntity cce2 "
             + "LEFT OUTER JOIN FETCH ncs.type nct "
-            + "LEFT JOIN FETCH cce2.certificationEdition "
             + "LEFT JOIN FETCH nct.certificationEdition "
             + "LEFT OUTER JOIN FETCH ncs.documents docs "
             + "WHERE surv.deleted <> true ";
+
     private static String PENDING_SURVEILLANCE_FULL_HQL = "SELECT DISTINCT surv "
             + "FROM PendingSurveillanceEntity surv "
             + "JOIN FETCH surv.certifiedProduct "
@@ -71,17 +67,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
             + "LEFT OUTER JOIN FETCH ncs.certificationCriterionEntity cce2 "
             + "LEFT OUTER JOIN FETCH cce2.certificationEdition "
             + "LEFT OUTER JOIN FETCH surv.validation ";
-
-    private UserPermissionDAO userPermissionDao;
-    private ResourcePermissions resourcePermissions;
-
-    @Autowired
-    public SurveillanceDAO(UserPermissionDAO userPermissionDao,
-            ResourcePermissions resourcePermissions) {
-        this.userPermissionDao = userPermissionDao;
-        this.resourcePermissions = resourcePermissions;
-    }
-
 
     public Long insertSurveillance(Surveillance surv) throws UserPermissionRetrievalException {
         SurveillanceEntity toInsert = new SurveillanceEntity();
@@ -855,12 +840,12 @@ public class SurveillanceDAO extends BaseDAOImpl {
 
     private void populateSurveillanceNonconformityEntity(SurveillanceNonconformityEntity to,
             SurveillanceNonconformity from) {
-        if (from.getCriterion() != null) {
-            to.setCertificationCriterionId(from.getCriterion().getId());
-        } else if (from.getNonconformityType() != null) {
-            to.setNonconformityType(from.getNonconformityType());
-            to.setCertificationCriterionId(null);
-        }
+        //if (from.getCriterion() != null) {
+        //    to.setCertificationCriterionId(from.getCriterion().getId());
+        //} else if (from.getNonconformityType() != null) {
+        //    to.setNonconformityType(from.getNonconformityType());
+        //    to.setCertificationCriterionId(null);
+        //}
         to.setType(NonconformityTypeEntity.builder()
                 .id(from.getType().getId())
                 .number(from.getType().getNumber())
