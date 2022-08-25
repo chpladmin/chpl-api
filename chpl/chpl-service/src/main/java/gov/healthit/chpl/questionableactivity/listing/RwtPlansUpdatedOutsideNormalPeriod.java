@@ -13,12 +13,12 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-public class RwtPlansUpadatedOutsideNormalPeriod extends RwtUpdatedOutsideNormalPeriod implements ListingActivity {
+public class RwtPlansUpdatedOutsideNormalPeriod extends RwtUpdatedOutsideNormalPeriod implements ListingActivity {
     private String rwtPlanStartDayOfYear;
     private String rwtPlanDueDate;
 
     @Autowired
-    public RwtPlansUpadatedOutsideNormalPeriod(@Value("${rwtPlanStartDayOfYear}") String rwtPlanStartDayOfYear,
+    public RwtPlansUpdatedOutsideNormalPeriod(@Value("${rwtPlanStartDayOfYear}") String rwtPlanStartDayOfYear,
             @Value("${rwtPlanDueDate}") String rwtPlanDueDate) {
         this.rwtPlanStartDayOfYear = rwtPlanStartDayOfYear;
         this.rwtPlanDueDate = rwtPlanDueDate;
@@ -36,7 +36,7 @@ public class RwtPlansUpadatedOutsideNormalPeriod extends RwtUpdatedOutsideNormal
 
     @Override
     public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
-        return getQuestionableActivity(origListing, newListing);
+        return getQuestionableActivity(origListing.getRwtPlansUrl(), newListing.getRwtPlansUrl(), origListing.getRwtPlansCheckDate(),  newListing.getRwtPlansCheckDate());
     }
 
     @Override

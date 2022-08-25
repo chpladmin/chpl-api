@@ -28,8 +28,8 @@ import gov.healthit.chpl.questionableactivity.listing.DeletedRwtPlanActivity;
 import gov.healthit.chpl.questionableactivity.listing.DeletedRwtResultsActivity;
 import gov.healthit.chpl.questionableactivity.listing.DeletedSurveillanceActivity;
 import gov.healthit.chpl.questionableactivity.listing.ListingActivity;
-import gov.healthit.chpl.questionableactivity.listing.RwtPlansUpadatedOutsideNormalPeriod;
-import gov.healthit.chpl.questionableactivity.listing.RwtResultsUpadatedOutsideNormalPeriod;
+import gov.healthit.chpl.questionableactivity.listing.RwtPlansUpdatedOutsideNormalPeriod;
+import gov.healthit.chpl.questionableactivity.listing.RwtResultsUpdatedOutsideNormalPeriod;
 import gov.healthit.chpl.questionableactivity.listing.UpdateCurrentCertificationStatusActivity;
 import gov.healthit.chpl.questionableactivity.listing.Updated2011EditionListingActivity;
 import gov.healthit.chpl.questionableactivity.listing.Updated2014EditionListingActivity;
@@ -83,8 +83,8 @@ public class ListingQuestionableActivityService {
         processListingActivity(DeletedMeasuresActivity.class.getName(), origListing, newListing, activityReason);
         processListingActivity(AddedRemovedSurveillanceNonconformityActivity.class.getName(), origListing, newListing, activityReason);
         processListingActivity(AddedRemovedSurveillanceRequirementActivity.class.getName(), origListing, newListing, activityReason);
-        processListingActivity(RwtResultsUpadatedOutsideNormalPeriod.class.getName(), origListing, newListing, activityReason);
-        processListingActivity(RwtPlansUpadatedOutsideNormalPeriod.class.getName(), origListing, newListing, activityReason);
+        processListingActivity(RwtResultsUpdatedOutsideNormalPeriod.class.getName(), origListing, newListing, activityReason);
+        processListingActivity(RwtPlansUpdatedOutsideNormalPeriod.class.getName(), origListing, newListing, activityReason);
 
         // finally check for other changes that are only questionable
         // outside of the acceptable activity threshold
