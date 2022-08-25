@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -45,6 +47,7 @@ import gov.healthit.chpl.scheduler.job.changerequest.presenter.ChangeRequestCsvP
 import gov.healthit.chpl.scheduler.job.changerequest.presenter.ChangeRequestDetailsPresentationService;
 import gov.healthit.chpl.scheduler.job.changerequest.presenter.DownloadableAttestationPresenter;
 import gov.healthit.chpl.scheduler.job.changerequest.presenter.DownloadableDemographicsPresenter;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "changeRequestsReportJobLogger")
@@ -98,6 +101,7 @@ public class ChangeRequestReportEmailJob  extends QuartzJob {
     private String changeRequestsReportMessageBody;
 
     private ChangeRequestDetailsPresentationService crPresentationService;
+    private DateTimeFormatter dateTimeFormatter;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -106,6 +110,7 @@ public class ChangeRequestReportEmailJob  extends QuartzJob {
         JobDataMap jobDataMap = context.getMergedJobDataMap();
         UserDTO user = (UserDTO) jobDataMap.get(USER_KEY);
         ChangeRequestSearchRequest searchRequest = (ChangeRequestSearchRequest) jobDataMap.get(SEARCH_REQUEST);
+        dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         List<ChangeRequestSearchResult> searchResults = null;
 
         if (user != null) {
@@ -220,7 +225,19 @@ public class ChangeRequestReportEmailJob  extends QuartzJob {
         if (searchRequest == null) {
             return "";
         }
+
         String html = "<ul>";
+        html += getDeveloperSearchTermHtml(searchRequest);
+        html += getSearchTermHtml(searchRequest);
+        html += getCurrentStatusSearchTermsHtml(searchRequest);
+        html += getSubmittedDateSearchTermsHtml(searchRequest);
+        html += getCurrentStatusChangeSearchTermsHtml(searchRequest);
+        html += "</ul>";
+        return html;
+    }
+
+    private String getDeveloperSearchTermHtml(ChangeRequestSearchRequest searchRequest) {
+        String html = "";
         if (searchRequest.getDeveloperId() != null) {
             String devName = searchRequest.getDeveloperId().toString();
             try {
@@ -233,9 +250,19 @@ public class ChangeRequestReportEmailJob  extends QuartzJob {
             }
             html += "<li>Developer: " + devName + "</li>";
         }
+        return html;
+    }
+
+    private String getSearchTermHtml(ChangeRequestSearchRequest searchRequest) {
+        String html = "";
         if (!StringUtils.isEmpty(searchRequest.getSearchTerm())) {
             html += "<li>Search Term: " + searchRequest.getSearchTerm() + "</li>";
         }
+        return html;
+    }
+
+    private String getCurrentStatusSearchTermsHtml(ChangeRequestSearchRequest searchRequest) {
+        String html = "";
         if (!CollectionUtils.isEmpty(searchRequest.getCurrentStatusNames())) {
             html += "<li>Status";
             if (searchRequest.getCurrentStatusNames().size() > 1) {
@@ -244,33 +271,51 @@ public class ChangeRequestReportEmailJob  extends QuartzJob {
             html += ": " + searchRequest.getCurrentStatusNames().stream().collect(Collectors.joining(","))
                     + "</li>";
         }
-
-        if (!StringUtils.isEmpty(searchRequest.getSubmittedDateTimeEnd())
-                && StringUtils.isEmpty(searchRequest.getSubmittedDateTimeStart())) {
-            html += "<li>Created Before: " + searchRequest.getSubmittedDateTimeEnd() + "</li>";
-        } else if (!StringUtils.isEmpty(searchRequest.getSubmittedDateTimeStart())
-                && StringUtils.isEmpty(searchRequest.getSubmittedDateTimeEnd())) {
-            html += "<li>Created After: " + searchRequest.getSubmittedDateTimeStart() + "</li>";
-        } else if (!StringUtils.isEmpty(searchRequest.getSubmittedDateTimeStart())
-                && !StringUtils.isEmpty(searchRequest.getSubmittedDateTimeEnd())) {
-            html += "<li>Created Between: " + searchRequest.getSubmittedDateTimeEnd()
-                        + " and " + searchRequest.getSubmittedDateTimeStart() + "</li>";
-        }
-
-        if (!StringUtils.isEmpty(searchRequest.getCurrentStatusChangeDateTimeEnd())
-                && StringUtils.isEmpty(searchRequest.getCurrentStatusChangeDateTimeStart())) {
-            html += "<li>Last Updated Before: " + searchRequest.getCurrentStatusChangeDateTimeEnd() + "</li>";
-        } else if (!StringUtils.isEmpty(searchRequest.getCurrentStatusChangeDateTimeStart())
-                && StringUtils.isEmpty(searchRequest.getCurrentStatusChangeDateTimeEnd())) {
-            html += "<li>Last Updated After: " + searchRequest.getCurrentStatusChangeDateTimeStart() + "</li>";
-        } else if (!StringUtils.isEmpty(searchRequest.getCurrentStatusChangeDateTimeStart())
-                && !StringUtils.isEmpty(searchRequest.getCurrentStatusChangeDateTimeEnd())) {
-            html += "<li>Last Updated Between: " + searchRequest.getCurrentStatusChangeDateTimeEnd()
-            + " and " + searchRequest.getCurrentStatusChangeDateTimeStart() + "</li>";
-        }
-        html += "</ul>";
         return html;
     }
+
+    private String getSubmittedDateSearchTermsHtml(ChangeRequestSearchRequest searchRequest) {
+        LocalDateTime startDateTime = null, endDateTime = null;
+        if (!StringUtils.isEmpty(searchRequest.getSubmittedDateTimeStart())) {
+            startDateTime = LocalDateTime.parse(searchRequest.getSubmittedDateTimeStart(), dateTimeFormatter);
+        }
+        if (!StringUtils.isEmpty(searchRequest.getSubmittedDateTimeEnd())) {
+            endDateTime = LocalDateTime.parse(searchRequest.getSubmittedDateTimeEnd(), dateTimeFormatter);
+        }
+
+        String html = "";
+        if (endDateTime != null && startDateTime == null) {
+            html += "<li>Created Before: " + DateUtil.formatInEasternTime(endDateTime) + "</li>";
+        } else if (endDateTime == null && startDateTime != null) {
+            html += "<li>Created After: " + DateUtil.formatInEasternTime(startDateTime) + "</li>";
+        } else if (endDateTime != null && startDateTime != null) {
+            html += "<li>Created Between: " + DateUtil.formatInEasternTime(endDateTime)
+                        + " and " + DateUtil.formatInEasternTime(startDateTime) + "</li>";
+        }
+        return html;
+    }
+
+    private String getCurrentStatusChangeSearchTermsHtml(ChangeRequestSearchRequest searchRequest) {
+        LocalDateTime startDateTime = null, endDateTime = null;
+        if (!StringUtils.isEmpty(searchRequest.getCurrentStatusChangeDateTimeStart())) {
+            startDateTime = LocalDateTime.parse(searchRequest.getCurrentStatusChangeDateTimeStart(), dateTimeFormatter);
+        }
+        if (!StringUtils.isEmpty(searchRequest.getCurrentStatusChangeDateTimeEnd())) {
+            endDateTime = LocalDateTime.parse(searchRequest.getCurrentStatusChangeDateTimeEnd(), dateTimeFormatter);
+        }
+
+        String html = "";
+        if (endDateTime != null && startDateTime == null) {
+            html += "<li>Last Updated Before: " + DateUtil.formatInEasternTime(endDateTime) + "</li>";
+        } else if (endDateTime == null && startDateTime != null) {
+            html += "<li>Last Updated After: " + DateUtil.formatInEasternTime(startDateTime) + "</li>";
+        } else if (endDateTime != null && startDateTime != null) {
+            html += "<li>Last Updated Between: " + DateUtil.formatInEasternTime(endDateTime)
+                        + " and " + DateUtil.formatInEasternTime(startDateTime) + "</li>";
+        }
+        return html;
+    }
+
 
     private void initializeTempFiles() throws IOException {
         File downloadFolder = getDownloadFolder();
