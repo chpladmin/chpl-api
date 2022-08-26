@@ -73,8 +73,7 @@ public class AddedRemovedSurveillanceNonconformityActivity implements ListingAct
     private Boolean hasNonconformityBeenUpdatedToRemovedNonconformity(SurveillanceNonconformity origNonconformity, List<SurveillanceNonconformity> newNoncoformities) {
         Optional<SurveillanceNonconformity> updatedNonconformity = getMatchingNonconformity(origNonconformity, newNoncoformities);
         if (updatedNonconformity.isPresent()) {
-            return !updatedNonconformity.get().getNonconformityType().equals(origNonconformity.getNonconformityType())
-                    && isNonconformityTypeRemoved(updatedNonconformity.get().getType());
+            return isNonconformityTypeRemoved(updatedNonconformity.get().getType());
         }
         return false;
     }

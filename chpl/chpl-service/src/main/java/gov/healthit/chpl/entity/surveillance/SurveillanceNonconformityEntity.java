@@ -40,15 +40,8 @@ public class SurveillanceNonconformityEntity {
     @Column(name = "certification_criterion_id")
     private Long certificationCriterionId;
 
-    //@OneToOne(optional = true, fetch = FetchType.LAZY)
-    //@JoinColumn(name = "certification_criterion_id", insertable = false, updatable = false)
-    //private CertificationCriterionEntity certificationCriterionEntity;
-
-    //@Column(name = "nonconformity_type")
-    //private String nonconformityType;
-
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "nonconformity_type_id", insertable = false, updatable = false)
+    @JoinColumn(name = "nonconformity_type_id", insertable = true, updatable = true)
     private NonconformityTypeEntity type;
 
     @Column(name = "date_of_determination")
