@@ -7,30 +7,20 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.ChplProductNumberDAO;
-import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.dao.TestingLabDAO;
 
 public class ChplProductNumberUtilTest {
 
-    private TestingLabDAO testingLabDao;
-    private CertificationBodyDAO certBodyDao;
-    private DeveloperDAO developerDao;
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDao;
     private ChplProductNumberDAO chplProductNumberDao;
     private ChplProductNumberUtil chplProductNumberUtil;
 
     @Before
     public void before() {
-        testingLabDao = Mockito.mock(TestingLabDAO.class);
-        certBodyDao = Mockito.mock(CertificationBodyDAO.class);
-        developerDao = Mockito.mock(DeveloperDAO.class);
         certifiedProductSearchResultDao = Mockito.mock(CertifiedProductSearchResultDAO.class);
         chplProductNumberDao = Mockito.mock(ChplProductNumberDAO.class);
-        chplProductNumberUtil = new ChplProductNumberUtil(testingLabDao, certBodyDao, developerDao,
-                certifiedProductSearchResultDao, chplProductNumberDao);
+        chplProductNumberUtil = new ChplProductNumberUtil(certifiedProductSearchResultDao, chplProductNumberDao);
     }
 
     @Test

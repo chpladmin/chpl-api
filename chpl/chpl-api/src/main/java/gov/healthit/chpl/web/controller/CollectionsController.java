@@ -33,6 +33,7 @@ import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -56,6 +57,9 @@ public class CollectionsController {
     }
 
     @Deprecated
+    @DeprecatedApi(friendlyUrl = "/collections/certified-products",
+        removalDate = "2022-06-01",
+        message = "This endpoint is deprecated and will be removed in a future release. Please use /search/v2 to access this data.")
     @Operation(summary = "Get basic data about all certified products in the system.", description = "",
             deprecated = true,
             security = {
