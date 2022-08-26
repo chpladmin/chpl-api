@@ -32,7 +32,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ConfirmListingRequest;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.exception.DeprecatedUploadTemplateException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -99,30 +98,26 @@ public class ListingUploadManagerTest {
     }
 
     @Test(expected = ValidationException.class)
-    public void upload_EmptyData_Fails() throws JsonProcessingException, ValidationException,
-        InvalidArgumentsException, DeprecatedUploadTemplateException {
+    public void upload_EmptyData_Fails() throws ValidationException {
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", "".getBytes());
         uploadManager.parseUploadFile(file);
     }
 
     @Test(expected = ValidationException.class)
-    public void upload_HeaderOnly_Fails() throws JsonProcessingException, ValidationException,
-        InvalidArgumentsException, DeprecatedUploadTemplateException {
+    public void upload_HeaderOnly_Fails() throws ValidationException {
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", HEADER_2015_V19.getBytes());
         uploadManager.parseUploadFile(file);
     }
 
     @Test(expected = ValidationException.class)
-    public void upload_BadContentType_Fails() throws JsonProcessingException, ValidationException,
-        InvalidArgumentsException, DeprecatedUploadTemplateException {
+    public void upload_BadContentType_Fails() throws ValidationException {
         String fileContents = HEADER_2015_V19 + "\n" + listing1Csv;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/plain", fileContents.getBytes());
         uploadManager.parseUploadFile(file);
     }
 
     @Test
-    public void uploadV19SingleListing_ValidData_Successful() throws JsonProcessingException, ValidationException,
-        InvalidArgumentsException, DeprecatedUploadTemplateException {
+    public void uploadV19SingleListing_ValidData_Successful() throws ValidationException {
         String fileContents = HEADER_2015_V19 + "\n" + listing1Csv;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
 
@@ -132,8 +127,7 @@ public class ListingUploadManagerTest {
     }
 
     @Test
-    public void uploadV19SingleListing_NewlinesAfterHeader_Successful() throws JsonProcessingException, ValidationException,
-        InvalidArgumentsException, DeprecatedUploadTemplateException {
+    public void uploadV19SingleListing_NewlinesAfterHeader_Successful() throws ValidationException {
         String fileContents = HEADER_2015_V19 + "\n\n\n\n" + listing1Csv;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
 
@@ -143,8 +137,7 @@ public class ListingUploadManagerTest {
     }
 
     @Test
-    public void uploadV19_DuplicateChplIds_GroupsAsSingleListing() throws JsonProcessingException, ValidationException,
-        InvalidArgumentsException, DeprecatedUploadTemplateException {
+    public void uploadV19_DuplicateChplIds_GroupsAsSingleListing() throws ValidationException {
         String fileContents = HEADER_2015_V19 + "\n" + listing1Csv + "\n" + listing1Csv;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
 
@@ -155,8 +148,7 @@ public class ListingUploadManagerTest {
 
     @Test()
     public void uploadV19_DuplicateChplIdsNewDeveloper_GroupsAsSingleListing()
-            throws JsonProcessingException, ValidationException,
-        InvalidArgumentsException, DeprecatedUploadTemplateException {
+            throws ValidationException {
         String fileContents = HEADER_2015_V19 + "\n" + listingNewDeveloperCsv + listingNewDeveloperCsv;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
 
@@ -166,8 +158,7 @@ public class ListingUploadManagerTest {
     }
 
     @Test
-    public void uploadV19MultipleListings_Succeeds() throws JsonProcessingException, ValidationException,
-        InvalidArgumentsException, DeprecatedUploadTemplateException {
+    public void uploadV19MultipleListings_Succeeds() throws ValidationException {
         String fileContents = HEADER_2015_V19 + "\n" + listing1Csv + "\n"
                 + listing2Csv + "\n" + listingNewDeveloperCsv;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
@@ -178,40 +169,35 @@ public class ListingUploadManagerTest {
     }
 
     @Test(expected = ValidationException.class)
-    public void uploadSingleListing_MissingDeveloperColumn_Fails() throws JsonProcessingException, ValidationException,
-        InvalidArgumentsException, DeprecatedUploadTemplateException {
+    public void uploadSingleListing_MissingDeveloperColumn_Fails() throws ValidationException {
         String fileContents = HEADER_2015_V19.replace("VENDOR__C", "") + "\n" + listing1Csv;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
         uploadManager.parseUploadFile(file);
     }
 
     @Test(expected = ValidationException.class)
-    public void uploadSingleListing_MissingProductColumn_Fails() throws JsonProcessingException, ValidationException,
-        InvalidArgumentsException, DeprecatedUploadTemplateException {
+    public void uploadSingleListing_MissingProductColumn_Fails() throws ValidationException {
         String fileContents = HEADER_2015_V19.replace("PRODUCT__C", "") + "\n" + listing1Csv;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
         uploadManager.parseUploadFile(file);
     }
 
     @Test(expected = ValidationException.class)
-    public void uploadSingleListing_MissingVersionColumn_Fails() throws JsonProcessingException, ValidationException,
-        InvalidArgumentsException, DeprecatedUploadTemplateException {
+    public void uploadSingleListing_MissingVersionColumn_Fails() throws ValidationException {
         String fileContents = HEADER_2015_V19.replace("VERSION__C", "") + "\n" + listing1Csv;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
         uploadManager.parseUploadFile(file);
     }
 
     @Test(expected = ValidationException.class)
-    public void uploadSingleListing_MissingUniqueIdColumn_Fails() throws JsonProcessingException, ValidationException,
-        InvalidArgumentsException, DeprecatedUploadTemplateException {
+    public void uploadSingleListing_MissingUniqueIdColumn_Fails() throws ValidationException {
         String fileContents = HEADER_2015_V19.replace("UNIQUE_CHPL_ID__C", "") + "\n" + listing1Csv;
         MockMultipartFile file = new MockMultipartFile("2015_v19.csv", "2015_v19.csv", "text/csv", fileContents.getBytes());
         uploadManager.parseUploadFile(file);
     }
 
     @Test
-    public void uploadSingleListing_MissingAcbColumn_Succeeds() throws JsonProcessingException, ValidationException,
-        InvalidArgumentsException, DeprecatedUploadTemplateException {
+    public void uploadSingleListing_MissingAcbColumn_Succeeds() throws ValidationException {
         Mockito.when(acbDao.getByCode(ArgumentMatchers.anyString())).thenReturn(createAcb());
         Mockito.when(chplProductNumberUtil.getAcbCode(ArgumentMatchers.anyString())).thenReturn("04");
 
@@ -229,8 +215,7 @@ public class ListingUploadManagerTest {
 
     @Test
     public void uploadSingleListing_MissingAcbColumnAndJunkInChplId_AcbIsNull()
-            throws JsonProcessingException, ValidationException,
-        InvalidArgumentsException, DeprecatedUploadTemplateException {
+            throws ValidationException {
         Mockito.when(acbDao.getByCode(ArgumentMatchers.anyString())).thenReturn(createAcb());
         Mockito.when(chplProductNumberUtil.getAcbCode(ArgumentMatchers.anyString()))
             .thenThrow(ArrayIndexOutOfBoundsException.class);
@@ -252,8 +237,7 @@ public class ListingUploadManagerTest {
 
     @Test(expected = ValidationException.class)
     public void uploadSingleListing_HasRequiredColumnsMissingChplIdData_ThrowsException()
-            throws JsonProcessingException, ValidationException,
-        InvalidArgumentsException, DeprecatedUploadTemplateException {
+            throws ValidationException {
 
         String fileContents = "UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,VERSION__C" + "\n"
                 + ",DEV Name,Prod Name,1.0";
@@ -263,8 +247,7 @@ public class ListingUploadManagerTest {
 
     @Test(expected = ValidationException.class)
     public void uploadSingleListing_HasRequiredColumnsMissingDeveloperData_ThrowsException()
-            throws JsonProcessingException, ValidationException,
-        InvalidArgumentsException, DeprecatedUploadTemplateException {
+            throws ValidationException {
 
         String fileContents = "UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,VERSION__C" + "\n"
                 + "15.04.04.2669.MDTB.03.01.1.200707,,Prod Name,1.0";
@@ -274,8 +257,7 @@ public class ListingUploadManagerTest {
 
     @Test(expected = ValidationException.class)
     public void uploadSingleListing_HasRequiredColumnsMissingProductData_ThrowsException()
-            throws JsonProcessingException, ValidationException,
-        InvalidArgumentsException, DeprecatedUploadTemplateException {
+            throws ValidationException {
 
         String fileContents = "UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,VERSION__C" + "\n"
                 + "15.04.04.2669.MDTB.03.01.1.200707,DEV Name,,1.0";
@@ -285,8 +267,7 @@ public class ListingUploadManagerTest {
 
     @Test(expected = ValidationException.class)
     public void uploadSingleListing_HasRequiredColumnsMissingVersionData_ThrowsException()
-            throws JsonProcessingException, ValidationException,
-        InvalidArgumentsException, DeprecatedUploadTemplateException {
+            throws ValidationException {
 
         String fileContents = "UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,VERSION__C" + "\n"
                 + "15.04.04.2669.MDTB.03.01.1.200707,DEV Name,Prod Name,";
@@ -296,8 +277,7 @@ public class ListingUploadManagerTest {
 
     @Test
     public void uploadSingleListing_ValidChplId_ParsesAcbAndCertDate()
-            throws JsonProcessingException, ValidationException,
-        InvalidArgumentsException, DeprecatedUploadTemplateException {
+            throws ValidationException {
         Mockito.when(acbDao.getByCode(ArgumentMatchers.anyString())).thenReturn(createAcb());
         Mockito.when(chplProductNumberUtil.getAcbCode(ArgumentMatchers.anyString()))
             .thenReturn("04");
@@ -323,8 +303,7 @@ public class ListingUploadManagerTest {
 
     @Test
     public void uploadSingleListing_ChplIdInFirstColumnOnly_ParsesListing()
-            throws JsonProcessingException, ValidationException,
-        InvalidArgumentsException, DeprecatedUploadTemplateException {
+            throws ValidationException {
         Mockito.when(acbDao.getByCode(ArgumentMatchers.anyString())).thenReturn(createAcb());
         Mockito.when(chplProductNumberUtil.getAcbCode(ArgumentMatchers.anyString()))
             .thenReturn("04");
