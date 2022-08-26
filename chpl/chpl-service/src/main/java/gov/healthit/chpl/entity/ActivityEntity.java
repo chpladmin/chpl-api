@@ -65,23 +65,6 @@ import lombok.ToString;
                     + ") as \"results\" "
                 + "WHERE record_num >= :firstRecord and record_num < :lastRecord",
                 resultClass = ActivityEntity.class
-            ),
-    @NamedNativeQuery(
-            name = "getPendingListingActivityByAcbIdsAndDate",
-            query = "SELECT * "
-                    + "FROM " + BaseDAOImpl.SCHEMA_NAME + ".activity a "
-                    + "JOIN " + BaseDAOImpl.SCHEMA_NAME + ".activity_concept ac "
-                    + "ON a.activity_object_concept_id = ac.activity_concept_id "
-                    + "AND ac.concept = :conceptName "
-                    + "LEFT OUTER JOIN " + BaseDAOImpl.SCHEMA_NAME + ".user u "
-                    + "ON a.last_modified_user = u.user_id "
-                    + "WHERE ( "
-                    + "cast(a.original_data as json)->>'certificationBodyId' IN (:acbIds) "
-                    + "OR cast(a.new_data as json)->>'certificationBodyId' IN (:acbIds) "
-                    + ")"
-                    + "AND (a.activity_date >= :startDate) "
-                    + "AND (a.activity_date <= :endDate)",
-                    resultClass = ActivityEntity.class
             )
 })
 @Getter

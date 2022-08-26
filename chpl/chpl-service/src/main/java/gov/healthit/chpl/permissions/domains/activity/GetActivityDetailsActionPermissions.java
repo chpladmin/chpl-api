@@ -19,7 +19,6 @@ import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.surveillance.report.AnnualReportDAO;
 import gov.healthit.chpl.surveillance.report.QuarterlyReportDAO;
@@ -87,13 +86,6 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
                 // Admin and Onc can see this activity.
                 // Others should get access denied.
                 return (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc());
-            case PENDING_CERTIFIED_PRODUCT:
-                if (details.getNewData() != null) {
-                    return hasAccessToPendingListing(details.getNewData());
-                } else if (details.getOriginalData() != null) {
-                    return hasAccessToPendingListing(details.getOriginalData());
-                }
-                break;
             case USER:
                 if (details.getNewData() != null) {
                     return hasAccessToUser(details.getNewData());
@@ -296,34 +288,6 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
         return getResourcePermissions().isUserRoleAdmin()
                 || getResourcePermissions().isUserRoleOnc()
                 || getResourcePermissions().isUserRoleAcbAdmin();
-    }
-
-    /**
-     * Admin and onc can see all pending listing activity. Acb user can see
-     * activity for listing uploaded to their Acb. Others should get access
-     * denied.
-     *
-     * @param pendingListingJson
-     * @return
-     */
-    private boolean hasAccessToPendingListing(JsonNode pendingListingJson) {
-        boolean hasAccess = getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
-
-        if (!hasAccess) {
-            PendingCertifiedProductDTO pcp = null;
-            try {
-                pcp = jsonMapper.convertValue(pendingListingJson, PendingCertifiedProductDTO.class);
-            } catch (Exception ex) {
-                LOGGER.error(
-                        "Could not parse activity as PendingCertifiedProductDTO. " + "JSON was: " + pendingListingJson,
-                        ex);
-            }
-
-            if (pcp != null && pcp.getCertificationBodyId() != null) {
-                hasAccess = isAcbValidForCurrentUser(pcp.getCertificationBodyId());
-            }
-        }
-        return hasAccess;
     }
 
     /**
