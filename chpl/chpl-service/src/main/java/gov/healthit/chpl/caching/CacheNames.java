@@ -23,7 +23,6 @@ public final class CacheNames {
     public static final String GET_ALL_UNRESTRICTED_APIKEYS = "getAllUnrestrictedApiKeys";
     public static final String FIND_SURVEILLANCE_REQ_TYPE = "findSurveillanceRequirementType";
     public static final String FIND_SURVEILLANCE_RESULT_TYPE = "findSurveillanceResultType";
-    public static final String UPLOAD_TEMPLATE_VERSIONS = "uploadTemplateVersions";
     public static final String TEST_PROCEDURES = "testProcedures";
     public static final String TEST_DATA = "testData";
     public static final String TEST_FUNCTIONALITY_MAPS = "testFunctionalityMaps";

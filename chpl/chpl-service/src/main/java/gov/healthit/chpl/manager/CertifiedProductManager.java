@@ -53,16 +53,7 @@ import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.PromotingInteroperabilityUserDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
-import gov.healthit.chpl.dao.TestDataDAO;
-import gov.healthit.chpl.dao.TestFunctionalityDAO;
-import gov.healthit.chpl.dao.TestParticipantDAO;
-import gov.healthit.chpl.dao.TestProcedureDAO;
-import gov.healthit.chpl.dao.TestStandardDAO;
-import gov.healthit.chpl.dao.TestTaskDAO;
-import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
-import gov.healthit.chpl.dao.UcdProcessDAO;
-import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -83,10 +74,8 @@ import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
-import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
@@ -96,15 +85,6 @@ import gov.healthit.chpl.dto.CQMResultDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
-import gov.healthit.chpl.dto.CertificationResultDTO;
-import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
-import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
-import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
-import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
-import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
-import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
-import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -114,43 +94,12 @@ import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.CuresUpdateEventDTO;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
-import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
-import gov.healthit.chpl.dto.TestDataDTO;
-import gov.healthit.chpl.dto.TestFunctionalityDTO;
-import gov.healthit.chpl.dto.TestParticipantDTO;
-import gov.healthit.chpl.dto.TestProcedureDTO;
-import gov.healthit.chpl.dto.TestStandardDTO;
-import gov.healthit.chpl.dto.TestTaskDTO;
-import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
-import gov.healthit.chpl.dto.UcdProcessDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultAdditionalSoftwareDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultOptionalStandardDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestDataDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestFunctionalityDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestProcedureDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestStandardDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestTaskDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestTaskParticipantDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultTestToolDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultUcdProcessDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductAccessibilityStandardDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductMeasureDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductQmsStandardDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTargetedUserDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTestingLabDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCqmCertificationCriterionDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCqmCriterionDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingTestParticipantDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingTestTaskDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
-import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -158,9 +107,6 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
-import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
-import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
-import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.TriggerDeveloperBanJob;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -181,7 +127,6 @@ public class CertifiedProductManager extends SecuredManager {
     private ErrorMessageUtil msgUtil;
     private CertifiedProductDAO cpDao;
     private CertifiedProductSearchDAO searchDao;
-    private CertificationResultDAO certDao;
     private CertificationCriterionDAO certCriterionDao;
     private QmsStandardDAO qmsDao;
     private TargetedUserDAO targetedUserDao;
@@ -203,33 +148,17 @@ public class CertifiedProductManager extends SecuredManager {
     private CuresUpdateEventDAO curesUpdateDao;
     private PromotingInteroperabilityUserDAO piuDao;
     private CertificationResultManager certResultManager;
-    private OptionalStandardDAO optionalStandardDao;
-    private TestToolDAO testToolDao;
-    private TestStandardDAO testStandardDao;
-    private TestProcedureDAO testProcDao;
-    private TestDataDAO testDataDao;
-    private TestFunctionalityDAO testFuncDao;
-    private UcdProcessDAO ucdDao;
-    private TestParticipantDAO testParticipantDao;
-    private TestTaskDAO testTaskDao;
     private CertificationStatusDAO certStatusDao;
     private ListingGraphDAO listingGraphDao;
     private FuzzyChoicesDAO fuzzyChoicesDao;
     private ResourcePermissions resourcePermissions;
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
-    private PendingCertifiedProductManager pcpManager;
     private SchedulerManager schedulerManager;
     private ActivityManager activityManager;
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
     private CertificationCriterionService criteriaService;
-
-    private static final int PROD_CODE_LOC = 4;
-    private static final int VER_CODE_LOC = 5;
-    private static final int ICS_CODE_LOC = 6;
-    private static final int SW_CODE_LOC = 7;
-    private static final int DATE_CODE_LOC = 8;
 
     private List<ConformanceMethod> allConformanceMethods;
 
@@ -253,17 +182,11 @@ public class CertifiedProductManager extends SecuredManager {
             ProductVersionManager versionManager, CertificationStatusEventDAO statusEventDao,
             CuresUpdateEventDAO curesUpdateDao,
             PromotingInteroperabilityUserDAO piuDao, CertificationResultManager certResultManager,
-            OptionalStandardDAO optionalStandardDao,
-            TestToolDAO testToolDao, TestStandardDAO testStandardDao,
-            TestProcedureDAO testProcDao, TestDataDAO testDataDao,
-            TestFunctionalityDAO testFuncDao, UcdProcessDAO ucdDao,
-            TestParticipantDAO testParticipantDao, TestTaskDAO testTaskDao,
             CertificationStatusDAO certStatusDao, ListingGraphDAO listingGraphDao,
             FuzzyChoicesDAO fuzzyChoicesDao, ResourcePermissions resourcePermissions,
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
             ConformanceMethodDAO conformanceMethodDao,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
-            PendingCertifiedProductManager pcpManager,
             SchedulerManager schedulerManager,
             ActivityManager activityManager, ListingValidatorFactory validatorFactory,
             CuresUpdateService curesUpdateService,
@@ -272,7 +195,6 @@ public class CertifiedProductManager extends SecuredManager {
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
         this.searchDao = searchDao;
-        this.certDao = certDao;
         this.certCriterionDao = certCriterionDao;
         this.qmsDao = qmsDao;
         this.targetedUserDao = targetedUserDao;
@@ -294,22 +216,12 @@ public class CertifiedProductManager extends SecuredManager {
         this.curesUpdateDao = curesUpdateDao;
         this.piuDao = piuDao;
         this.certResultManager = certResultManager;
-        this.optionalStandardDao = optionalStandardDao;
-        this.testToolDao = testToolDao;
-        this.testStandardDao = testStandardDao;
-        this.testProcDao = testProcDao;
-        this.testDataDao = testDataDao;
-        this.testFuncDao = testFuncDao;
-        this.ucdDao = ucdDao;
-        this.testParticipantDao = testParticipantDao;
-        this.testTaskDao = testTaskDao;
         this.certStatusDao = certStatusDao;
         this.listingGraphDao = listingGraphDao;
         this.fuzzyChoicesDao = fuzzyChoicesDao;
         this.resourcePermissions = resourcePermissions;
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
-        this.pcpManager = pcpManager;
         this.schedulerManager = schedulerManager;
         this.activityManager = activityManager;
         this.validatorFactory = validatorFactory;
@@ -428,649 +340,6 @@ public class CertifiedProductManager extends SecuredManager {
         }
 
         return familyTree;
-    }
-
-    @Deprecated
-    @SuppressWarnings({"checkstyle:linelength", "checkstyle:methodlength"})
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CREATE_FROM_PENDING, #pendingCp)")
-    @Transactional(readOnly = false)
-    @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES, CacheNames.DEVELOPER_NAMES
-    }, allEntries = true)
-    public CertifiedProductDTO createFromPending(PendingCertifiedProductDTO pendingCp, boolean acknowledgeWarnings)
-            throws EntityRetrievalException, EntityCreationException, IOException {
-
-        CertifiedProductDTO toCreate = new CertifiedProductDTO();
-        toCreate.setPendingCertifiedProductId(pendingCp.getId());
-        toCreate.setAcbCertificationId(pendingCp.getAcbCertificationId());
-        toCreate.setReportFileLocation(pendingCp.getReportFileLocation());
-        toCreate.setSedReportFileLocation(pendingCp.getSedReportFileLocation());
-        toCreate.setSedIntendedUserDescription(pendingCp.getSedIntendedUserDescription());
-        toCreate.setSedTestingEnd(pendingCp.getSedTestingEnd());
-        toCreate.setIcs(pendingCp.getIcs());
-        toCreate.setAccessibilityCertified(pendingCp.getAccessibilityCertified());
-        toCreate.setPracticeTypeId(pendingCp.getPracticeTypeId());
-        toCreate.setProductClassificationTypeId(pendingCp.getProductClassificationId());
-        toCreate.setCreationDate(new Date());
-        toCreate.setDeleted(false);
-        toCreate.setLastModifiedDate(new Date());
-        toCreate.setLastModifiedUser(AuthUtil.getAuditId());
-
-        if (pendingCp.getCertificationBodyId() == null) {
-            throw new EntityCreationException("ACB ID must be specified.");
-        }
-        toCreate.setCertificationBodyId(pendingCp.getCertificationBodyId());
-
-        if (pendingCp.getCertificationEditionId() == null) {
-            throw new EntityCreationException("The ID of an existing certification edition (year) must be provided. "
-                    + "  A new certification edition cannot be created via this process.");
-        }
-        toCreate.setCertificationEditionId(pendingCp.getCertificationEditionId());
-        toCreate.setMandatoryDisclosures(pendingCp.getMandatoryDisclosures());
-        toCreate.setSvapNoticeUrl(pendingCp.getSvapNoticeUrl());
-
-        Long developerId = null;
-        if (pendingCp.getDeveloperId() == null) {
-            Developer newDeveloper = new Developer();
-            if (StringUtils.isEmpty(pendingCp.getDeveloperName())) {
-                throw new EntityCreationException("You must provide a developer name to create a new developer.");
-            }
-            newDeveloper.setName(pendingCp.getDeveloperName());
-            newDeveloper.setWebsite(pendingCp.getDeveloperWebsite());
-            newDeveloper.setSelfDeveloper(pendingCp.getSelfDeveloper() == null ? Boolean.FALSE : pendingCp.getSelfDeveloper());
-            Address developerAddress = pendingCp.getDeveloperAddress();
-            newDeveloper.setAddress(developerAddress);
-            PointOfContact developerContact = new PointOfContact();
-            developerContact.setFullName(pendingCp.getDeveloperContactName());
-            developerContact.setPhoneNumber(pendingCp.getDeveloperPhoneNumber());
-            developerContact.setEmail(pendingCp.getDeveloperEmail());
-            newDeveloper.setContact(developerContact);
-            // create the dev, address, and contact
-            developerId = developerManager.create(newDeveloper);
-            pendingCp.setDeveloperId(developerId);
-        }
-
-        if (pendingCp.getProductId() == null) {
-            Product newProduct = new Product();
-            if (pendingCp.getProductName() == null) {
-                throw new EntityCreationException("Either product name or ID must be provided.");
-            }
-            newProduct.setName(pendingCp.getProductName());
-            newProduct.setOwner(Developer.builder()
-                    .id(pendingCp.getDeveloperId())
-                    .build());
-            newProduct.setReportFileLocation(pendingCp.getReportFileLocation());
-            newProduct = productManager.create(newProduct);
-            pendingCp.setProductId(newProduct.getId());
-        }
-
-        if (pendingCp.getProductVersionId() == null) {
-            ProductVersionDTO newVersion = new ProductVersionDTO();
-            if (pendingCp.getProductVersion() == null) {
-                throw new EntityCreationException("Either version id or version must be provided.");
-            }
-            newVersion.setVersion(pendingCp.getProductVersion());
-            newVersion.setProductId(pendingCp.getProductId());
-            newVersion = versionManager.create(newVersion);
-            pendingCp.setProductVersionId(newVersion.getId());
-        }
-        toCreate.setProductVersionId(pendingCp.getProductVersionId());
-
-        String uniqueId = pendingCp.getUniqueId();
-        String[] uniqueIdParts = uniqueId.split("\\.");
-        toCreate.setProductCode(uniqueIdParts[PROD_CODE_LOC]);
-        toCreate.setVersionCode(uniqueIdParts[VER_CODE_LOC]);
-        toCreate.setIcsCode(uniqueIdParts[ICS_CODE_LOC]);
-        toCreate.setAdditionalSoftwareCode(uniqueIdParts[SW_CODE_LOC]);
-        toCreate.setCertifiedDateCode(uniqueIdParts[DATE_CODE_LOC]);
-
-        CertifiedProductDTO newCertifiedProduct = cpDao.create(toCreate);
-
-        // ATLs
-        if (pendingCp.getTestingLabs() != null && pendingCp.getTestingLabs().size() > 0) {
-            for (PendingCertifiedProductTestingLabDTO tl : pendingCp.getTestingLabs()) {
-                CertifiedProductTestingLabDTO tlDto = new CertifiedProductTestingLabDTO();
-                tlDto.setTestingLabId(atlDao.getByName(tl.getTestingLabName()).getId());
-                tlDto.setTestingLabName(tl.getTestingLabName());
-                tlDto.setCertifiedProductId(newCertifiedProduct.getId());
-                cpTestingLabDao.createCertifiedProductTestingLab(tlDto);
-            }
-        } else {
-            throw new EntityCreationException("ATL ID must be specified.");
-        }
-
-        // ics
-        if (pendingCp.getIcsParents() != null && pendingCp.getIcsParents().size() > 0) {
-            for (CertifiedProductDetailsDTO parentCpDto : pendingCp.getIcsParents()) {
-                CertifiedProduct cp = searchDao.getByChplProductNumber(parentCpDto.getChplProductNumber());
-                if (cp != null) {
-                    ListingToListingMapDTO toAdd = new ListingToListingMapDTO();
-                    toAdd.setChildId(newCertifiedProduct.getId());
-                    toAdd.setParentId(cp.getId());
-                    listingGraphDao.createListingMap(toAdd);
-                }
-            }
-        }
-        if (pendingCp.getIcsChildren() != null && pendingCp.getIcsChildren().size() > 0) {
-            for (CertifiedProductDetailsDTO childCpDto : pendingCp.getIcsChildren()) {
-                CertifiedProduct cp = searchDao.getByChplProductNumber(childCpDto.getChplProductNumber());
-                if (cp != null) {
-                    ListingToListingMapDTO toAdd = new ListingToListingMapDTO();
-                    toAdd.setChildId(cp.getId());
-                    toAdd.setParentId(newCertifiedProduct.getId());
-                    listingGraphDao.createListingMap(toAdd);
-                }
-            }
-        }
-
-        List<String> fuzzyQmsChoices = fuzzyChoicesDao.getByType(FuzzyType.QMS_STANDARD).getChoices();
-
-        // qms
-        if (pendingCp.getQmsStandards() != null && pendingCp.getQmsStandards().size() > 0) {
-            for (PendingCertifiedProductQmsStandardDTO pendingQms : pendingCp.getQmsStandards()) {
-                if (!fuzzyQmsChoices.contains(pendingQms.getName())) {
-                    fuzzyQmsChoices.add(pendingQms.getName());
-                    FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
-                    dto.setFuzzyType(FuzzyType.QMS_STANDARD);
-                    dto.setChoices(fuzzyQmsChoices);
-                    fuzzyChoicesDao.update(dto);
-                }
-                CertifiedProductQmsStandardDTO qmsDto = new CertifiedProductQmsStandardDTO();
-                QmsStandardDTO qms = qmsDao.findOrCreate(pendingQms.getQmsStandardId(), pendingQms.getName());
-                qmsDto.setQmsStandardId(qms.getId());
-                qmsDto.setCertifiedProductId(newCertifiedProduct.getId());
-                qmsDto.setApplicableCriteria(pendingQms.getApplicableCriteria());
-                qmsDto.setQmsModification(pendingQms.getModification());
-                cpQmsDao.createCertifiedProductQms(qmsDto);
-            }
-        }
-
-        if (pendingCp.getMeasures() != null && pendingCp.getMeasures().size() > 0) {
-            for (PendingCertifiedProductMeasureDTO pendingMeasure : pendingCp.getMeasures()) {
-                ListingMeasure measureToAdd = new ListingMeasure();
-                measureToAdd.setMeasure(pendingMeasure.getMeasure());
-                measureToAdd.setMeasureType(pendingMeasure.getMeasureType());
-                measureToAdd.setAssociatedCriteria(pendingMeasure.getAssociatedCriteria());
-                cpMeasureDao.createCertifiedProductMeasureMapping(newCertifiedProduct.getId(), measureToAdd);
-            }
-        }
-
-        // targeted users
-        if (pendingCp.getTargetedUsers() != null && pendingCp.getTargetedUsers().size() > 0) {
-            for (PendingCertifiedProductTargetedUserDTO tu : pendingCp.getTargetedUsers()) {
-                CertifiedProductTargetedUserDTO tuDto = new CertifiedProductTargetedUserDTO();
-                if (tu.getTargetedUserId() == null) {
-                    TargetedUserDTO toAdd = new TargetedUserDTO();
-                    toAdd.setName(tu.getName());
-                    toAdd = targetedUserDao.create(toAdd);
-                    tuDto.setTargetedUserId(toAdd.getId());
-                } else {
-                    tuDto.setTargetedUserId(tu.getTargetedUserId());
-                }
-                tuDto.setCertifiedProductId(newCertifiedProduct.getId());
-                cpTargetedUserDao.createCertifiedProductTargetedUser(tuDto);
-            }
-        }
-
-        List<String> fuzzyAsChoices = fuzzyChoicesDao.getByType(FuzzyType.ACCESSIBILITY_STANDARD).getChoices();
-
-        // accessibility standards
-        if (pendingCp.getAccessibilityStandards() != null && pendingCp.getAccessibilityStandards().size() > 0) {
-            for (PendingCertifiedProductAccessibilityStandardDTO as : pendingCp.getAccessibilityStandards()) {
-                CertifiedProductAccessibilityStandardDTO asDto = new CertifiedProductAccessibilityStandardDTO();
-                asDto.setCertifiedProductId(newCertifiedProduct.getId());
-                if (!fuzzyAsChoices.contains(as.getName())) {
-                    fuzzyAsChoices.add(as.getName());
-                    FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
-                    dto.setFuzzyType(FuzzyType.ACCESSIBILITY_STANDARD);
-                    dto.setChoices(fuzzyAsChoices);
-                    fuzzyChoicesDao.update(dto);
-                }
-                if (as.getAccessibilityStandardId() != null) {
-                    asDto.setAccessibilityStandardName(as.getName());
-                    asDto.setAccessibilityStandardId(as.getAccessibilityStandardId());
-                } else {
-                    // check again for a matching accessibility std because the
-                    // uesr could have edited
-                    // it since upload
-                    AccessibilityStandardDTO match = asDao.getByName(as.getName());
-                    if (match != null) {
-                        asDto.setAccessibilityStandardName(match.getName());
-                        asDto.setAccessibilityStandardId(match.getId());
-                    } else {
-                        // if it wasn't there then create it
-                        AccessibilityStandardDTO asToCreate = new AccessibilityStandardDTO();
-                        asToCreate.setName(as.getName());
-                        match = asDao.create(asToCreate);
-                        asDto.setAccessibilityStandardId(match.getId());
-                        asDto.setAccessibilityStandardName(match.getName());
-                    }
-                }
-
-                if (asDto.getAccessibilityStandardId() != null) {
-                    cpAccStdDao.createCertifiedProductAccessibilityStandard(asDto);
-                } else {
-                    LOGGER.error("Could not insert accessibility standard with null id. Name was " + as.getName());
-                }
-            }
-        }
-
-        // certs
-        if (pendingCp.getCertificationCriterion() != null && pendingCp.getCertificationCriterion().size() > 0) {
-
-            // participants and tasks are re-used across multiple certifications
-            // within the same product
-            List<TestParticipantDTO> testParticipantsAdded = new ArrayList<TestParticipantDTO>();
-            List<TestTaskDTO> testTasksAdded = new ArrayList<TestTaskDTO>();
-
-            for (PendingCertificationResultDTO certResult : pendingCp.getCertificationCriterion()) {
-                CertificationCriterionDTO criterion = certCriterionDao.getByNumberAndTitle(
-                        certResult.getCriterion().getNumber(), certResult.getCriterion().getTitle());
-                if (criterion == null) {
-                    throw new EntityCreationException(
-                            "Could not find certification criterion with number " + certResult.getCriterion().getNumber());
-                }
-                CertificationResultDTO certResultToCreate = new CertificationResultDTO();
-                certResultToCreate.setCertificationCriterionId(criterion.getId());
-                certResultToCreate.setCertifiedProductId(newCertifiedProduct.getId());
-                certResultToCreate.setSuccessful(certResult.getMeetsCriteria());
-                boolean isCertified = (certResultToCreate.getSuccessful() != null
-                        && certResultToCreate.getSuccessful().booleanValue());
-                certResultToCreate.setGap(isCertified ? certResult.getGap() : null);
-                certResultToCreate.setG1Success(certResult.getG1Success());
-                certResultToCreate.setG2Success(certResult.getG2Success());
-
-                if (isCertified && certResult.getSed() == null) {
-                    if (certResult.getUcdProcesses() != null && certResult.getUcdProcesses().size() > 0) {
-                        certResultToCreate.setSed(Boolean.TRUE);
-                    } else {
-                        certResultToCreate.setSed(Boolean.FALSE);
-                    }
-                } else {
-                    certResultToCreate.setSed(isCertified ? certResult.getSed() : null);
-                }
-                certResultToCreate.setApiDocumentation(isCertified ? certResult.getApiDocumentation() : null);
-                certResultToCreate.setPrivacySecurityFramework(isCertified ? certResult.getPrivacySecurityFramework() : null);
-                certResultToCreate.setAttestationAnswer(isCertified ? certResult.getAttestationAnswer() : null);
-                certResultToCreate.setDocumentationUrl(isCertified ? certResult.getDocumentationUrl() : null);
-                certResultToCreate.setExportDocumentation(isCertified ? certResult.getExportDocumentation() : null);
-                certResultToCreate.setUseCases(isCertified ? certResult.getUseCases() : null);
-                certResultToCreate.setServiceBaseUrlList(isCertified ? certResult.getServiceBaseUrlList() : null);
-                CertificationResultDTO createdCert = certDao.create(certResultToCreate);
-
-                if (isCertified) {
-                    if (certResult.getAdditionalSoftware() != null && certResult.getAdditionalSoftware().size() > 0) {
-                        for (PendingCertificationResultAdditionalSoftwareDTO software : certResult
-                                .getAdditionalSoftware()) {
-                            CertificationResultAdditionalSoftwareDTO as = new CertificationResultAdditionalSoftwareDTO();
-
-                            as.setCertifiedProductId(software.getCertifiedProductId());
-                            as.setJustification(software.getJustification());
-                            as.setName(software.getName());
-                            as.setVersion(software.getVersion());
-                            as.setGrouping(software.getGrouping());
-                            as.setCertificationResultId(createdCert.getId());
-                            certDao.addAdditionalSoftwareMapping(as);
-                        }
-                    }
-
-                    if (certResult.getOptionalStandards() != null && certResult.getOptionalStandards().size() > 0) {
-                        for (PendingCertificationResultOptionalStandardDTO std : certResult.getOptionalStandards()) {
-                            CertificationResultOptionalStandardEntity standard = new CertificationResultOptionalStandardEntity();
-                            if (std.getOptionalStandardId() == null) {
-                                OptionalStandard foundOptionalStandard = optionalStandardDao.getByCitation(std.getCitation());
-                                if (foundOptionalStandard != null) {
-                                    standard.setOptionalStandardId(foundOptionalStandard.getId());
-                                } else {
-                                    LOGGER.error("Will not insert optional standard with null id. Citation was " + std.getCitation());
-                                }
-                            } else {
-                                standard.setOptionalStandardId(std.getOptionalStandardId());
-                            }
-                            standard.setCertificationResultId(createdCert.getId());
-                            CertificationResultOptionalStandard existingMapping = certDao.lookupOptionalStandardMapping(
-                                    standard.getCertificationResultId(), standard.getOptionalStandardId());
-                            if (existingMapping == null) {
-                                certDao.addOptionalStandardMapping(standard);
-                            }
-                        }
-                    }
-
-                    List<String> fuzzyUcdChoices = fuzzyChoicesDao.getByType(FuzzyType.UCD_PROCESS).getChoices();
-
-                    if (certResult.getUcdProcesses() != null && certResult.getUcdProcesses().size() > 0) {
-                        for (PendingCertificationResultUcdProcessDTO pendingUcd : certResult.getUcdProcesses()) {
-                            if (!fuzzyUcdChoices.contains(pendingUcd.getUcdProcessName())) {
-                                fuzzyUcdChoices.add(pendingUcd.getUcdProcessName());
-                                FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
-                                dto.setFuzzyType(FuzzyType.UCD_PROCESS);
-                                dto.setChoices(fuzzyUcdChoices);
-                                fuzzyChoicesDao.update(dto);
-                            }
-                            CertificationResultUcdProcessDTO ucdDto = new CertificationResultUcdProcessDTO();
-                            UcdProcessDTO ucd = ucdDao.findOrCreate(pendingUcd.getUcdProcessId(),
-                                    pendingUcd.getUcdProcessName());
-
-                            ucdDto.setUcdProcessId(ucd.getId());
-                            ucdDto.setCertificationResultId(createdCert.getId());
-                            ucdDto.setUcdProcessDetails(pendingUcd.getUcdProcessDetails());
-                            certDao.addUcdProcessMapping(ucdDto);
-                        }
-                    }
-
-                    if (certResult.getTestData() != null && certResult.getTestData().size() > 0) {
-                        for (PendingCertificationResultTestDataDTO testData : certResult.getTestData()) {
-                            CertificationResultTestDataDTO testDto = new CertificationResultTestDataDTO();
-                            testDto.setAlteration(testData.getAlteration());
-                            testDto.setVersion(testData.getVersion());
-                            testDto.setCertificationResultId(createdCert.getId());
-                            if (testData.getTestDataId() != null) {
-                                testDto.setTestDataId(testData.getTestDataId());
-                                testDto.setTestData(testData.getTestData());
-                                certDao.addTestDataMapping(testDto);
-                            } else if (testData.getTestData() != null) {
-                                TestDataDTO foundTestData = testDataDao.getByCriterionAndValue(
-                                        certResult.getCriterion().getId(), testData.getTestData().getName());
-                                if (foundTestData == null) {
-                                    LOGGER.error("Could not find test data for " + certResult.getCriterion().getNumber()
-                                            + " and test data name " + testData.getTestData().getName());
-                                } else {
-                                    testDto.setTestData(foundTestData);
-                                    testDto.setTestDataId(foundTestData.getId());
-                                    certDao.addTestDataMapping(testDto);
-                                }
-                            } else {
-                                LOGGER.error("No valid test data was supplied.");
-                            }
-                        }
-                    }
-
-                    if (certResult.getTestFunctionality() != null && certResult.getTestFunctionality().size() > 0) {
-                        for (PendingCertificationResultTestFunctionalityDTO func : certResult.getTestFunctionality()) {
-                            if (func.getTestFunctionalityId() != null) {
-                                CertificationResultTestFunctionalityDTO funcDto = new CertificationResultTestFunctionalityDTO();
-
-                                funcDto.setTestFunctionalityId(func.getTestFunctionalityId());
-                                funcDto.setCertificationResultId(createdCert.getId());
-                                certDao.addTestFunctionalityMapping(funcDto);
-                            } else {
-                                // check again for a matching test tool because
-                                // the user could have edited
-                                // it since upload
-                                TestFunctionalityDTO match = testFuncDao.getByNumberAndEdition(func.getNumber(),
-                                        pendingCp.getCertificationEditionId());
-                                if (match != null) {
-                                    CertificationResultTestFunctionalityDTO funcDto
-                                        = new CertificationResultTestFunctionalityDTO();
-
-                                    funcDto.setTestFunctionalityId(match.getId());
-                                    funcDto.setCertificationResultId(createdCert.getId());
-                                    certDao.addTestFunctionalityMapping(funcDto);
-                                } else {
-                                    LOGGER.error("Could not insert test functionality with null id. Number was "
-                                            + func.getNumber() + " and edition id "
-                                            + pendingCp.getCertificationEditionId());
-                                }
-                            }
-                        }
-                    }
-
-                    if (certResult.getTestProcedures() != null && certResult.getTestProcedures().size() > 0) {
-                        for (PendingCertificationResultTestProcedureDTO proc : certResult.getTestProcedures()) {
-                            CertificationResultTestProcedureDTO procDto = new CertificationResultTestProcedureDTO();
-                            procDto.setVersion(proc.getVersion());
-                            procDto.setCertificationResultId(createdCert.getId());
-
-                            if (proc.getTestProcedureId() != null) {
-                                procDto.setTestProcedureId(proc.getTestProcedureId());
-                                procDto.setTestProcedure(proc.getTestProcedure());
-                                certDao.addTestProcedureMapping(procDto);
-                            } else if (proc.getTestProcedure() != null) {
-                                // check again for a matching test procedure
-                                // because
-                                // the user could have edited it since upload
-                                TestProcedureDTO foundTp = testProcDao.getByCriterionIdAndValue(
-                                        certResult.getCriterion().getId(), proc.getTestProcedure().getName());
-                                if (foundTp == null) {
-                                    LOGGER.error("Could not find test procedure for " + certResult.getCriterion().getNumber()
-                                            + " and test procedure name " + proc.getTestProcedure().getName());
-                                } else {
-                                    procDto.setTestProcedure(foundTp);
-                                    procDto.setTestProcedureId(foundTp.getId());
-                                    certDao.addTestProcedureMapping(procDto);
-                                }
-                            } else {
-                                LOGGER.error("No valid test procedure was supplied.");
-                            }
-                        }
-                    }
-
-                    if (certResult.getTestStandards() != null && certResult.getTestStandards().size() > 0) {
-                        for (PendingCertificationResultTestStandardDTO std : certResult.getTestStandards()) {
-                            CertificationResultTestStandardDTO stdDto = new CertificationResultTestStandardDTO();
-                            if (std.getTestStandardId() == null) {
-                                // try to look up by name and edition
-                                TestStandardDTO foundTestStandard = testStandardDao.getByNumberAndEdition(std.getName(),
-                                        pendingCp.getCertificationEditionId());
-                                if (foundTestStandard != null) {
-                                    stdDto.setTestStandardId(foundTestStandard.getId());
-                                } else {
-                                    LOGGER.error("Will not insert test standard with null id. Name was " + std.getName());
-                                }
-                            } else {
-                                stdDto.setTestStandardId(std.getTestStandardId());
-                            }
-                            stdDto.setCertificationResultId(createdCert.getId());
-                            // make sure this isn't a duplicate test standard
-                            // for this criteria
-                            CertificationResultTestStandardDTO existingMapping = certDao.lookupTestStandardMapping(
-                                    stdDto.getCertificationResultId(), stdDto.getTestStandardId());
-                            if (existingMapping == null) {
-                                certDao.addTestStandardMapping(stdDto);
-                            }
-                        }
-                    }
-
-                    if (certResult.getTestTools() != null && certResult.getTestTools().size() > 0) {
-                        for (PendingCertificationResultTestToolDTO tool : certResult.getTestTools()) {
-                            if (tool.getTestToolId() != null) {
-                                CertificationResultTestToolDTO toolDto = new CertificationResultTestToolDTO();
-                                toolDto.setTestToolId(tool.getTestToolId());
-                                toolDto.setTestToolVersion(tool.getVersion());
-                                toolDto.setCertificationResultId(createdCert.getId());
-                                certDao.addTestToolMapping(toolDto);
-                            } else {
-                                // check again for a matching test tool because
-                                // the user could have edited
-                                // it since upload
-                                TestToolDTO match = testToolDao.getByName(tool.getName());
-                                if (match != null) {
-                                    CertificationResultTestToolDTO toolDto = new CertificationResultTestToolDTO();
-                                    toolDto.setTestToolId(match.getId());
-                                    toolDto.setTestToolVersion(tool.getVersion());
-                                    toolDto.setCertificationResultId(createdCert.getId());
-                                    certDao.addTestToolMapping(toolDto);
-                                } else {
-                                    LOGGER.error("Could not insert test tool with null id. Name was " + tool.getName());
-                                }
-                            }
-                        }
-                    }
-
-                    if (certResult.getTestTasks() != null && certResult.getTestTasks().size() > 0) {
-                        // Map<Long, Long> pendingTaskToConfirmedTaskMap = new
-                        // HashMap<Long, Long>();
-                        for (PendingCertificationResultTestTaskDTO certTask : certResult.getTestTasks()) {
-                            // have we already added this one?
-                            TestTaskDTO existingTt = null;
-                            for (TestTaskDTO tt : testTasksAdded) {
-                                if (certTask.getPendingTestTask() != null && certTask.getPendingTestTask().getUniqueId()
-                                        .equals(tt.getPendingUniqueId())) {
-                                    existingTt = tt;
-                                }
-                            }
-                            if (existingTt == null && certTask.getPendingTestTask() != null) {
-                                PendingTestTaskDTO pendingTask = certTask.getPendingTestTask();
-                                // if(pendingTaskToConfirmedTaskMap.get(pendingTask.getId())
-                                // != null) {
-                                // existingTt =
-                                // testTaskDao.getById(pendingTaskToConfirmedTaskMap.get(pendingTask.getId()));
-                                // } else {
-                                TestTaskDTO tt = new TestTaskDTO();
-                                tt.setDescription(pendingTask.getDescription());
-                                tt.setTaskErrors(Float.valueOf(pendingTask.getTaskErrors()));
-                                tt.setTaskErrorsStddev(Float.valueOf(pendingTask.getTaskErrorsStddev()));
-                                tt.setTaskPathDeviationObserved(
-                                        Integer.valueOf(pendingTask.getTaskPathDeviationObserved()));
-                                tt.setTaskPathDeviationOptimal(
-                                        Integer.valueOf(pendingTask.getTaskPathDeviationOptimal()));
-                                tt.setTaskRating(Float.valueOf(pendingTask.getTaskRating()));
-                                tt.setTaskRatingScale(pendingTask.getTaskRatingScale());
-                                tt.setTaskRatingStddev(Float.valueOf(pendingTask.getTaskRatingStddev()));
-                                tt.setTaskSuccessAverage(Float.valueOf(pendingTask.getTaskSuccessAverage()));
-                                tt.setTaskSuccessStddev(Float.valueOf(pendingTask.getTaskSuccessStddev()));
-                                tt.setTaskTimeAvg(Long.valueOf(pendingTask.getTaskTimeAvg()));
-                                tt.setTaskTimeDeviationObservedAvg(
-                                        Integer.valueOf(pendingTask.getTaskTimeDeviationObservedAvg()));
-                                tt.setTaskTimeDeviationOptimalAvg(
-                                        Integer.valueOf(pendingTask.getTaskTimeDeviationOptimalAvg()));
-                                tt.setTaskTimeStddev(Integer.valueOf(pendingTask.getTaskTimeStddev()));
-
-                                // add test task
-                                existingTt = testTaskDao.create(tt);
-                                // pendingTaskToConfirmedTaskMap.put(pendingTask.getId(),
-                                // existingTt.getId());
-                                // }
-                                existingTt.setPendingUniqueId(pendingTask.getUniqueId());
-                                testTasksAdded.add(existingTt);
-                            }
-                            // add mapping from cert result to test task
-                            CertificationResultTestTaskDTO taskDto = new CertificationResultTestTaskDTO();
-                            if (existingTt != null) {
-                                taskDto.setTestTaskId(existingTt.getId());
-                                taskDto.setCertificationResultId(createdCert.getId());
-                                taskDto.setTestTask(existingTt);
-                            }
-
-                            if (certTask.getTaskParticipants() != null) {
-                                for (PendingCertificationResultTestTaskParticipantDTO certTaskPart : certTask
-                                        .getTaskParticipants()) {
-                                    PendingTestParticipantDTO certPart = certTaskPart.getTestParticipant();
-                                    if (certPart != null) {
-                                        TestParticipantDTO existingPart = null;
-                                        for (TestParticipantDTO currPart : testParticipantsAdded) {
-                                            if (currPart.getPendingUniqueId().equals(certPart.getUniqueId())) {
-                                                existingPart = currPart;
-                                            }
-                                        }
-                                        if (existingPart == null) {
-                                            TestParticipantDTO tp = new TestParticipantDTO();
-                                            tp.setAgeRangeId(certPart.getAgeRangeId());
-                                            tp.setAssistiveTechnologyNeeds(certPart.getAssistiveTechnologyNeeds());
-                                            tp.setComputerExperienceMonths(
-                                                    Integer.valueOf(certPart.getComputerExperienceMonths()));
-                                            tp.setEducationTypeId(certPart.getEducationTypeId());
-                                            tp.setGender(certPart.getGender());
-                                            tp.setOccupation(certPart.getOccupation());
-                                            tp.setProductExperienceMonths(
-                                                    Integer.valueOf(certPart.getProductExperienceMonths()));
-                                            tp.setProfessionalExperienceMonths(
-                                                    Integer.valueOf(certPart.getProfessionalExperienceMonths()));
-
-                                            // add participant
-                                            existingPart = testParticipantDao.create(tp);
-                                            existingPart.setPendingUniqueId(certPart.getUniqueId());
-                                            testParticipantsAdded.add(existingPart);
-                                        }
-                                        taskDto.getTestTask().getParticipants().add(existingPart);
-                                    }
-                                }
-                            }
-
-                            certDao.addTestTaskMapping(taskDto);
-                        }
-                    }
-                }
-            }
-        }
-
-        // cqms
-        // we only insert successful ones, but all of the ones in the pendingDTO
-        // are successful
-        if (pendingCp.getCqmCriterion() != null && pendingCp.getCqmCriterion().size() > 0) {
-            for (PendingCqmCriterionDTO pendingCqm : pendingCp.getCqmCriterion()) {
-                if (pendingCqm.isMeetsCriteria() && !StringUtils.isEmpty(pendingCqm.getVersion())) {
-                    CQMCriterionDTO criterion = null;
-                    if (pendingCqm.getCmsId().startsWith("CMS")) {
-                        criterion = cqmCriterionDao.getCMSByNumberAndVersion(pendingCqm.getCmsId(),
-                                pendingCqm.getVersion());
-
-                        if (criterion == null) {
-                            throw new EntityCreationException("Could not find a CQM with number "
-                                    + pendingCqm.getCmsId() + " and version " + pendingCqm.getVersion() + ".");
-                        }
-
-                        CQMResultDTO cqmResultToCreate = new CQMResultDTO();
-                        cqmResultToCreate.setCqmCriterionId(criterion.getId());
-                        cqmResultToCreate.setCertifiedProductId(newCertifiedProduct.getId());
-                        cqmResultToCreate.setSuccess(pendingCqm.isMeetsCriteria());
-                        if (pendingCqm.getCertifications() != null) {
-                            for (PendingCqmCertificationCriterionDTO cert : pendingCqm.getCertifications()) {
-                                CQMResultCriteriaDTO certDto = new CQMResultCriteriaDTO();
-                                if (cert.getCertificationId() != null) {
-                                    certDto.setCriterionId(cert.getCertificationId());
-                                    cqmResultToCreate.getCriteria().add(certDto);
-                                } else if (!StringUtils.isEmpty(cert.getCertificationCriteriaNumber())) {
-                                    CertificationCriterionDTO critDto = certCriterionDao
-                                            .getById(cert.getCertificationId());
-                                    if (critDto != null) {
-                                        certDto.setCriterionId(critDto.getId());
-                                        cqmResultToCreate.getCriteria().add(certDto);
-                                    } else {
-                                        LOGGER.error("Could not find a matching certification criterion for '"
-                                                + cert.getCertificationCriteriaNumber() + "'.");
-                                    }
-                                } else {
-                                    LOGGER.error("Neither certification id or number was specified.");
-                                }
-                            }
-                        }
-                        cqmResultDAO.create(cqmResultToCreate);
-                    }
-                }
-            }
-        }
-
-        // if all this was successful, insert a certification status event for
-        // the certification date
-        CertificationStatus activeCertStatus = certStatusDao.getByStatusName(CertificationStatusType.Active.toString());
-        Date certificationDate = pendingCp.getCertificationDate();
-        CertificationStatusEvent certEvent = CertificationStatusEvent.builder()
-                .eventDate(certificationDate.getTime())
-                .status(activeCertStatus)
-                .build();
-        statusEventDao.create(newCertifiedProduct.getId(), certEvent);
-
-        CuresUpdateEventDTO curesEvent = new CuresUpdateEventDTO();
-        curesEvent.setCreationDate(new Date());
-        curesEvent.setDeleted(false);
-        curesEvent.setEventDate(certificationDate);
-        curesEvent.setCuresUpdate(curesUpdateService.isCuresUpdate(pendingCp));
-        curesEvent.setCertifiedProductId(newCertifiedProduct.getId());
-        curesUpdateDao.create(curesEvent);
-
-        pcpManager.confirm(pendingCp.getCertificationBodyId(), pendingCp.getId());
-        logCertifiedProductCreateActivity(newCertifiedProduct.getId());
-        return newCertifiedProduct;
-    }
-
-    private void logCertifiedProductCreateActivity(Long listingId) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
-        CertifiedProductSearchDetails confirmedListing
-            = certifiedProductDetailsManager.getCertifiedProductDetails(listingId);
-        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listingId,
-            "Created a certified product", null, confirmedListing);
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")

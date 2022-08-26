@@ -22,7 +22,6 @@ import gov.healthit.chpl.permissions.domains.FilterDomainPermissions;
 import gov.healthit.chpl.permissions.domains.FuzzyMatchPermissions;
 import gov.healthit.chpl.permissions.domains.InvitationDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions;
-import gov.healthit.chpl.permissions.domains.PendingCertifiedProductDomainPermissions;
 import gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ProductDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions;
@@ -43,7 +42,6 @@ public class Permissions {
     public static final String CORRECTIVE_ACTION_PLAN = "CORRECTIVE_ACTION_PLAN";
     public static final String CERTIFICATION_ID = "CERTIFICATION_ID";
     public static final String INVITATION = "INVITATION";
-    public static final String PENDING_CERTIFIED_PRODUCT = "PENDING_CERTIFIED_PRODUCT";
     public static final String LISTING_UPLOAD = "LISTING_UPLOAD";
     public static final String SURVEILLANCE = "SURVEILLANCE";
     public static final String SURVEILLANCE_REPORT = "SURVEILLANCE_REPORT";
@@ -77,7 +75,6 @@ public class Permissions {
             CorrectiveActionPlanDomainPermissions correctiveActionPlanDomainPermissions,
             CertificationIdDomainPermissions certificationIdDomainPermissions,
             InvitationDomainPermissions invitationDomainPermissions,
-            PendingCertifiedProductDomainPermissions pendingCertifiedProductDomainPermissions,
             ListingUploadDomainPerissions listingUploadDomainPermissions,
             SurveillanceDomainPermissions surveillanceDomainPermissions,
             SurveillanceReportDomainPermissions surveillanceReportDomainPermissions,
@@ -105,7 +102,6 @@ public class Permissions {
         domainPermissions.put(CORRECTIVE_ACTION_PLAN, correctiveActionPlanDomainPermissions);
         domainPermissions.put(CERTIFICATION_ID, certificationIdDomainPermissions);
         domainPermissions.put(INVITATION, invitationDomainPermissions);
-        domainPermissions.put(PENDING_CERTIFIED_PRODUCT, pendingCertifiedProductDomainPermissions);
         domainPermissions.put(LISTING_UPLOAD, listingUploadDomainPermissions);
         domainPermissions.put(SURVEILLANCE, surveillanceDomainPermissions);
         domainPermissions.put(SURVEILLANCE_REPORT, surveillanceReportDomainPermissions);
