@@ -432,7 +432,8 @@ public class DeveloperDAO extends BaseDAOImpl {
         List<DeveloperEntity> result = entityManager
                 .createQuery(DEVELOPER_HQL, DeveloperEntity.class)
                 .getResultList();
-        result.forEach(e -> e.setPeriods(getAllAttestationPeriodEntities()));
+        List<AttestationPeriodEntity> allAttestationPeriods = getAllAttestationPeriodEntities();
+        result.forEach(e -> e.setPeriods(allAttestationPeriods));
         return result;
     }
 

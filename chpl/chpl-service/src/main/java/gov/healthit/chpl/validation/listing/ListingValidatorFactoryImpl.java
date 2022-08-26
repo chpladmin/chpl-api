@@ -1,14 +1,13 @@
 package gov.healthit.chpl.validation.listing;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -24,10 +23,6 @@ public class ListingValidatorFactoryImpl implements ListingValidatorFactory {
 
     @Autowired
     private AllowedListingValidator allowedValidator;
-
-    //pending listing validators (for upload)
-    @Autowired
-    private Edition2015PendingListingValidator pending2015Validator;
 
     //legacy validators (for update of CHP- listings)
     @Autowired
@@ -70,19 +65,6 @@ public class ListingValidatorFactoryImpl implements ListingValidatorFactory {
     private ErrorMessageUtil msgUtil;
     @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
-
-    @Override
-    public PendingValidator getValidator(PendingCertifiedProductDTO listing) {
-        if (listing.getCertificationEdition().equals("2015")) {
-            return pending2015Validator;
-        } else {
-            String errMsg = msgUtil.getMessage(
-                    "listing.validator.certificationEditionNotFound", listing.getCertificationEdition());
-            listing.getErrorMessages().add(errMsg);
-            LOGGER.error(errMsg);
-        }
-        return null;
-    }
 
     @Override
     public Validator getValidator(final CertifiedProductSearchDetails listing) {

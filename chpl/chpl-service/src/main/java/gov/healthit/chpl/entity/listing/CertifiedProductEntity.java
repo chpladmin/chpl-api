@@ -120,9 +120,6 @@ public class CertifiedProductEntity implements Serializable {
     @Column(name = "product_additional_software")
     private String productAdditionalSoftware;
 
-    @Column(name = "pending_certified_product_id")
-    private Long pendingCertifiedProductId;
-
     @Basic(optional = true)
     @OneToMany(targetEntity = CertificationResultEntity.class, mappedBy = "certifiedProduct", fetch = FetchType.LAZY)
     private List<CertificationResultEntity> certificationResult;
