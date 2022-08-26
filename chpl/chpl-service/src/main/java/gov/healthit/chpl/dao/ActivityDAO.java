@@ -234,35 +234,6 @@ public class ActivityDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
-    public List<ActivityDTO> findPendingListingActivity(List<CertificationBodyDTO> pendingListingAcbs,
-            Date startDate, Date endDate) {
-        Query query = entityManager.createNamedQuery("getPendingListingActivityByAcbIdsAndDate",
-                ActivityEntity.class);
-        query.setParameter("conceptName", ActivityConcept.PENDING_CERTIFIED_PRODUCT.name());
-        // parameters need to be strings
-        List<String> acbIdParams = new ArrayList<String>();
-        for (CertificationBodyDTO acb : pendingListingAcbs) {
-            acbIdParams.add(acb.getId().toString());
-        }
-        query.setParameter("acbIds", acbIdParams);
-        query.setParameter("startDate", startDate);
-        query.setParameter("endDate", endDate);
-        List<ActivityEntity> entities = query.getResultList();
-        return entities.stream()
-            .map(entity -> mapEntityToDto(entity))
-            .collect(Collectors.toList());
-    }
-
-    public List<ActivityDTO> findPendingListingActivity(Long pendingListingId,
-            Date startDate, Date endDate) {
-        List<ActivityEntity> entities = getEntitiesByObjectId(pendingListingId,
-                ActivityConcept.PENDING_CERTIFIED_PRODUCT, startDate, endDate);
-
-        return entities.stream()
-                .map(entity -> mapEntityToDto(entity))
-                .collect(Collectors.toList());
-    }
-
     public List<ActivityDTO> findUserActivity(List<Long> userIds, Date startDate, Date endDate) {
         List<ActivityEntity> entities = getEntitiesByObjectIds(userIds,
                 ActivityConcept.USER, startDate, endDate);

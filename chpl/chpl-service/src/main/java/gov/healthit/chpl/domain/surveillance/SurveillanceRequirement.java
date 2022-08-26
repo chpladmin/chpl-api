@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.util.Util;
 import lombok.AllArgsConstructor;
@@ -215,6 +216,8 @@ public class SurveillanceRequirement implements Serializable {
 
     @XmlTransient
     @Deprecated //this field should be removed from Json responses but left in the API code
+    @DeprecatedResponseField(removalDate = "2023-01-01",
+        message = "This field is deprecated and will be removed from the response data in a future release.")
     public String getRequirementName() {
         if (getCriterion() == null) {
             return getRequirement();

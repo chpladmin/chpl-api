@@ -10,7 +10,6 @@ import gov.healthit.chpl.domain.activity.ComplaintActivityMetadata;
 import gov.healthit.chpl.domain.activity.CorrectiveActionPlanActivityMetadata;
 import gov.healthit.chpl.domain.activity.DeveloperActivityMetadata;
 import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
-import gov.healthit.chpl.domain.activity.PendingListingActivityMetadata;
 import gov.healthit.chpl.domain.activity.PendingSurveillanceActivityMetadata;
 import gov.healthit.chpl.domain.activity.ProductActivityMetadata;
 import gov.healthit.chpl.domain.activity.QuarterlyReportActivityMetadata;
@@ -84,9 +83,6 @@ public abstract class ActivityMetadataBuilder {
             break;
         case ANNOUNCEMENT:
             metadata = new AnnouncementActivityMetadata();
-            break;
-        case PENDING_CERTIFIED_PRODUCT:
-            metadata = new PendingListingActivityMetadata();
             break;
         case CORRECTIVE_ACTION_PLAN:
             metadata = new CorrectiveActionPlanActivityMetadata();

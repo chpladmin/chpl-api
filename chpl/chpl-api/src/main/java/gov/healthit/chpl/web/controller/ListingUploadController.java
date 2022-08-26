@@ -48,7 +48,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.upload.listing.ListingUploadManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.ListingUploadResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -93,7 +93,7 @@ public class ListingUploadController {
                     + "according to ONC-ACB(s) and CHPL permissions.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
-    @DeprecatedResponseFields(responseClass = CertifiedProductSearchDetails.class)
+    @DeprecatedApiResponseFields(responseClass = CertifiedProductSearchDetails.class, friendlyUrl = "/listings/pending/{id}")
     @RequestMapping(value = "/pending/{id:^-?\\d+$}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public CertifiedProductSearchDetails geById(@PathVariable("id") Long id)
             throws ValidationException, EntityRetrievalException {
@@ -105,7 +105,7 @@ public class ListingUploadController {
                     + "according to ONC-ACB(s) and CHPL permissions.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
-    @DeprecatedResponseFields(responseClass = CertifiedProductSearchDetails.class)
+    @DeprecatedApiResponseFields(responseClass = CertifiedProductSearchDetails.class, friendlyUrl = "/listings/pending/{id}/submitted")
     @RequestMapping(value = "/pending/{id:^-?\\d+$}/submitted", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public CertifiedProductSearchDetails geUserEnteredDeveloper(@PathVariable("id") Long id)
             throws ValidationException, EntityRetrievalException {
