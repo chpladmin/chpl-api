@@ -47,6 +47,7 @@ import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -136,6 +137,9 @@ public class ActivityController {
     }
 
     @Deprecated
+    @DeprecatedApi(friendlyUrl = "/activity/metadata/beta/listings",
+            removalDate = "2022-10-18",
+            message = "This endpoint is deprecated and will be removed in a future release. Please use /activity/metadata/listings instead.")
     @Operation(summary = "Get metadata about auditable records in the system for listings.",
             description = "All parameters are optional and will default to the first page of listing activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
@@ -274,6 +278,9 @@ public class ActivityController {
     }
 
     @Deprecated
+    @DeprecatedApi(friendlyUrl = "/activity/metadata/beta/developers",
+            removalDate = "2022-10-18",
+            message = "This endpoint is deprecated and will be removed in a future release. Please use /activity/metadata/developers instead.")
     @Operation(summary = "Get metadata about auditable records in the system for developers.",
             description = "All parameters are optional and will default to the first page of listing activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
@@ -340,6 +347,9 @@ public class ActivityController {
     }
 
     @Deprecated
+    @DeprecatedApi(friendlyUrl = "/activity/metadata/beta/products",
+            removalDate = "2022-10-18",
+            message = "This endpoint is deprecated and will be removed in a future release. Please use /activity/metadata/products instead.")
     @Operation(summary = "Get metadata about auditable records in the system for products.",
             description = "All parameters are optional and will default to the first page of product activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
@@ -406,6 +416,9 @@ public class ActivityController {
     }
 
     @Deprecated
+    @DeprecatedApi(friendlyUrl = "/activity/metadata/beta/versions",
+        removalDate = "2022-10-18",
+        message = "This endpoint is deprecated and will be removed in a future release. Please use /activity/metadata/versions instead.")
     @Operation(summary = "Get metadata about auditable records in the system for versions.",
             description = "All parameters are optional and will default to the first page of version activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
@@ -472,6 +485,9 @@ public class ActivityController {
     }
 
     @Deprecated
+    @DeprecatedApi(friendlyUrl = "/activity/metadata/beta/acbs",
+        removalDate = "2022-10-18",
+        message = "This endpoint is deprecated and will be removed in a future release. Please use /activity/metadata/acbs instead.")
     @Operation(summary = "Get metadata about auditable records in the system for certification bodies.",
             description = "All parameters are optional and will default to the first page of ONC-ACB activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
@@ -536,6 +552,9 @@ public class ActivityController {
     }
 
     @Deprecated
+    @DeprecatedApi(friendlyUrl = "/activity/metadata/beta/atls",
+        removalDate = "2022-10-18",
+        message = "This endpoint is deprecated and will be removed in a future release. Please use /activity/metadata/atls instead.")
     @Operation(summary = "Get metadata about auditable records in the system for testing labs.",
             description = "All parameters are optional and will default to the first page of ONC-ATL activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
@@ -599,6 +618,9 @@ public class ActivityController {
     }
 
     @Deprecated
+    @DeprecatedApi(friendlyUrl = "/activity/metadata/beta/users",
+        removalDate = "2022-10-18",
+        message = "This endpoint is deprecated and will be removed in a future release. Please use /activity/metadata/users instead.")
     @Operation(summary = "Get metadata about auditable records in the system for users.",
             description = "All parameters are optional and will default to the first page of user activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
@@ -634,6 +656,9 @@ public class ActivityController {
     }
 
     @Deprecated
+    @DeprecatedApi(friendlyUrl = "/activity/metadata/beta/announcements",
+        removalDate = "2022-10-18",
+        message = "This endpoint is deprecated and will be removed in a future release. Please use /activity/metadata/announcements instead.")
     @Operation(summary = "Get metadata about auditable records in the system for announcements.",
             description = "All parameters are optional and will default to the first page of announcement activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
@@ -714,38 +739,6 @@ public class ActivityController {
         return activityMetadataManager.getAnnualReportActivityMetadata(startDate, endDate);
     }
 
-    @Operation(summary = "Get metadata about auditable records in the system for pending listings.",
-            description = "All parameters are optional and will default to the first page of pending listing activity "
-                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/metadata/pending-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public ActivityMetadataPage metadataForPendingListings(@RequestParam(required = false) Long start,
-            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
-        return pagedMetadataManager.getPendingListingActivityMetadata(start, end, pageNum, pageSize);
-    }
-
-    @Deprecated
-    @Operation(summary = "Get metadata about auditable records in the system for pending listings.",
-            description = "All parameters are optional and will default to the first page of pending listing activity "
-                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/metadata/beta/pending-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public ActivityMetadataPage metadataForPendingListingsDeprecated(@RequestParam(required = false) Long start,
-            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
-        return pagedMetadataManager.getPendingListingActivityMetadata(start, end, pageNum, pageSize);
-    }
-
     @Operation(summary = "Get metadata about auditable records in the system for corrective action plans.",
             description = "All parameters are optional and will default to the first page of corrective action plan activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
@@ -762,6 +755,9 @@ public class ActivityController {
     }
 
     @Deprecated
+    @DeprecatedApi(friendlyUrl = "/activity/metadata/beta/corrective-action-plans",
+        removalDate = "2022-10-18",
+        message = "This endpoint is deprecated and will be removed in a future release. Please use /activity/metadata/corrective-action-plans instead.")
     @Operation(summary = "Get metadata about auditable records in the system for corrective action plans.",
             description = "All parameters are optional and will default to the first page of corrective action plan activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
@@ -795,6 +791,9 @@ public class ActivityController {
     }
 
     @Deprecated
+    @DeprecatedApi(friendlyUrl = "/activity/metadata/beta/pending-surveillances",
+        removalDate = "2022-10-18",
+        message = "This endpoint is deprecated and will be removed in a future release. Please use /activity/metadata/pending-surveillances instead.")
     @Operation(summary = "Get metadata about auditable records in the system for pending surveillances.",
             description = "All parameters are optional and will default to the first page of pending surveillance activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
@@ -847,6 +846,9 @@ public class ActivityController {
     }
 
     @Deprecated
+    @DeprecatedApi(friendlyUrl = "/activity/metadata/beta/api-keys",
+        removalDate = "2022-10-18",
+        message = "This endpoint is deprecated and will be removed in a future release. Please use /activity/metadata/api-keys instead.")
     @Operation(summary = "Get metadata about auditable records in the system for API Keys.",
             description = "All parameters are optional and will default to the first page of API Key activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
@@ -865,6 +867,9 @@ public class ActivityController {
     }
 
     @Deprecated
+    @DeprecatedApi(friendlyUrl = "/activity/users/{id}",
+        removalDate = "2022-10-18",
+        message = "This endpoint is deprecated and will be removed in a future release.")
     @Operation(summary = "Get auditable data about a specific CHPL user account.",
             description = "A start and end date may optionally be provided to limit activity results.  "
                     + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_CMS_STAFF "
@@ -912,6 +917,9 @@ public class ActivityController {
     }
 
     @Deprecated
+    @DeprecatedApi(friendlyUrl = "/activity/user_activities/{id}",
+        removalDate = "2022-10-18",
+        message = "This endpoint is deprecated and will be removed in a future release.")
     @Operation(summary = "Track the actions of a specific user in the system",
             description = "A start and end date may optionally be provided to limit activity results."
                     + "Security Restrictions: ROLE_ADMIN or ROLE_ONC",

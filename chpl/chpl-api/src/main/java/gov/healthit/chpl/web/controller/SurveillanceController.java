@@ -57,7 +57,8 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.SurveillanceResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -99,7 +100,7 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = SurveillanceResults.class)
+    @DeprecatedApiResponseFields(responseClass = SurveillanceResults.class, friendlyUrl = "/surveillance/pending")
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody SurveillanceResults getAllPendingSurveillance() throws AccessDeniedException {
 
@@ -109,12 +110,15 @@ public class SurveillanceController {
         return results;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/surveillance/document/{documentId}",
+        removalDate = "2023-01-01",
+        message = "This endpoint is deprecated and will be removed in a future release.")
     @Operation(summary = "Download nonconformity supporting documentation.",
             description = "Download a specific file that was previously uploaded to a surveillance nonconformity.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @Deprecated
     @RequestMapping(value = "/document/{documentId}", method = RequestMethod.GET)
     public void streamDocumentContents(@PathVariable("documentId") Long documentId,
             HttpServletResponse response) throws EntityRetrievalException, IOException {
@@ -161,7 +165,7 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = Surveillance.class)
+    @DeprecatedApiResponseFields(responseClass = Surveillance.class, httpMethod = "POST", friendlyUrl = "/surveillance")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<Surveillance> createSurveillance(
             @RequestBody(required = true) Surveillance survToInsert) throws ValidationException,
@@ -181,6 +185,11 @@ public class SurveillanceController {
         return new ResponseEntity<Surveillance>(result, responseHeaders, HttpStatus.OK);
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/surveillance/{surveillanceId}/nonconformity/{nonconformityId}/document",
+        httpMethod = "POST",
+        removalDate = "2023-01-01",
+        message = "This endpoint is deprecated and will be removed in a future release.")
     @Operation(summary = "Add documentation to an existing nonconformity.",
             description = "Upload a file of any kind (current size limit 5MB) as supporting "
                     + " documentation to an existing nonconformity. Security Restrictions: ROLE_ADMIN, ROLE_ONC, or "
@@ -191,7 +200,6 @@ public class SurveillanceController {
             })
     @RequestMapping(value = "/{surveillanceId}/nonconformity/{nonconformityId}/document",
             method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    @Deprecated
     public @ResponseBody String uploadNonconformityDocument(
             @PathVariable("surveillanceId") Long surveillanceId,
             @PathVariable("nonconformityId") Long nonconformityId,
@@ -246,7 +254,7 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = Surveillance.class)
+    @DeprecatedApiResponseFields(responseClass = Surveillance.class, httpMethod = "PUT", friendlyUrl = "/surveillance/{surveillanceId}")
     @RequestMapping(value = "/{surveillanceId}", method = RequestMethod.PUT,
             produces = "application/json; charset=utf-8")
     public ResponseEntity<Surveillance> updateSurveillance(
@@ -294,6 +302,10 @@ public class SurveillanceController {
     }
 
     @Deprecated
+    @DeprecatedApi(friendlyUrl = "/surveillance/{surveillanceId}/document/{docId}",
+        httpMethod = "DELETE",
+        removalDate = "2023-01-01",
+        message = "This endpoint is deprecated and will be removed in a future release.")
     @Operation(summary = "Remove documentation from a non-conformity.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
                     + "on the associated Listing.",
@@ -406,7 +418,7 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = Surveillance.class)
+    @DeprecatedApiResponseFields(responseClass = Surveillance.class, httpMethod = "POST", friendlyUrl = "/surveillance/pending/confirm")
     @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     public ResponseEntity<Surveillance> confirmPendingSurveillance(@RequestBody(required = true) Surveillance survToInsert)
@@ -430,7 +442,7 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = { SurveillanceResults.class })
+    @DeprecatedApiResponseFields(responseClass = SurveillanceResults.class, httpMethod = "POST", friendlyUrl = "/surveillance/upload")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ResponseEntity<?> upload(@RequestParam("file") MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException, EntityRetrievalException,

@@ -14,7 +14,6 @@ import gov.healthit.chpl.permissions.domains.activity.GetApiKeyManagementActivit
 import gov.healthit.chpl.permissions.domains.activity.GetAtlActivityMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetChangeRequestActivityMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetComplaintActivityMetadataActionPermissions;
-import gov.healthit.chpl.permissions.domains.activity.GetPendingListingMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetPendingSurveillanceMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetQuarterlyReportActivityMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetUserActivityActionPermissions;
@@ -30,7 +29,6 @@ public class ActivityDomainPermissions extends DomainPermissions {
     public static final String GET_ACTIVITY_DETAILS = "GET_ACTIVITY_DETAILS";
     public static final String GET_USER_MAINTENANCE_METADATA = "GET_USER_MAINTENANCE_METADATA";
     public static final String GET_ACTIVITY_METADATA_BY_CONCEPT = "GET_ACTIVITY_METADATA_BY_CONCEPT";
-    public static final String GET_PENDING_LISTING_METADATA = "GET_PENDING_LISTING_METADATA";
     public static final String GET_PENDING_SURVEILLANCE_METADATA = "GET_PENDING_SURVEILLANCE_METADATA";
     public static final String GET_COMPLAINT_METADATA = "GET_COMPLAINT_METADATA";
     public static final String GET_QUARTERLY_REPORT_METADATA = "GET_QUARTERLY_REPORT_METADATA";
@@ -48,7 +46,6 @@ public class ActivityDomainPermissions extends DomainPermissions {
             @Qualifier("actionGetActivityDetailsActionPermissions") GetActivityDetailsActionPermissions getActivityDetails,
             @Qualifier("activityGetUserMaintenanceMetadataActionPermissions") GetUserMaintenanceMetadataActionPermissions getUserMaintenanceMetadataActionPermissions,
             @Qualifier("activityGetActivityMetadataByConceptActionPermissions") GetActivityMetadataByConceptActionPermissions getActivityMetadataByConceptActionPermissions,
-            @Qualifier("activityGetPendingListingMetadataActionPermissions") GetPendingListingMetadataActionPermissions getPendingListingMetadataActionPermissions,
             @Qualifier("activityGetPendingSurveillanceMetadataActionPermissions") GetPendingSurveillanceMetadataActionPermissions getPendingSurveillanceMetadataActionPermissions,
             @Qualifier("activityGetComplaintActivityMetadataActionPermissions") GetComplaintActivityMetadataActionPermissions getComplaintActivityMetadataActionPermissions,
             @Qualifier("activityGetQuarterlyReportActivityMetadataActionPermissions") GetQuarterlyReportActivityMetadataActionPermissions getQuarterlyReportActivityMetadataActionPermissions,
@@ -64,7 +61,6 @@ public class ActivityDomainPermissions extends DomainPermissions {
         getActionPermissions().put(GET_ACTIVITY_DETAILS, getActivityDetails);
         getActionPermissions().put(GET_USER_MAINTENANCE_METADATA, getUserMaintenanceMetadataActionPermissions);
         getActionPermissions().put(GET_ACTIVITY_METADATA_BY_CONCEPT, getActivityMetadataByConceptActionPermissions);
-        getActionPermissions().put(GET_PENDING_LISTING_METADATA, getPendingListingMetadataActionPermissions);
         getActionPermissions().put(GET_PENDING_SURVEILLANCE_METADATA, getPendingSurveillanceMetadataActionPermissions);
         getActionPermissions().put(GET_COMPLAINT_METADATA, getComplaintActivityMetadataActionPermissions);
         getActionPermissions().put(GET_QUARTERLY_REPORT_METADATA, getQuarterlyReportActivityMetadataActionPermissions);

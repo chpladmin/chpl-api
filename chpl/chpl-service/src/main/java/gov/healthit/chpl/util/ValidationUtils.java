@@ -7,16 +7,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.listing.pending.PendingCertificationResultDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 
 @Component
@@ -329,16 +327,6 @@ public class ValidationUtils {
         return result;
     }
 
-    public boolean containsCert(PendingCertificationResultDTO certToCompare, String[] certs) {
-        boolean hasCert = false;
-        for (String cert : certs) {
-            if (certToCompare.getCriterion() != null && certToCompare.getCriterion().getNumber().equals(cert)) {
-                hasCert = true;
-            }
-        }
-        return hasCert;
-    }
-
     public boolean containsCert(CertificationResult certToCompare, String[] certs) {
         boolean hasCert = false;
         for (String cert : certs) {
@@ -502,19 +490,6 @@ public class ValidationUtils {
                 .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
                 .map(attestedCertResult -> attestedCertResult.getCriterion())
                 .collect(Collectors.<CertificationCriterion>toList());
-    }
-
-    public List<CertificationCriterion> getAttestedCriteria(PendingCertifiedProductDTO listing) {
-        return listing.getCertificationCriterion().stream()
-                .filter(certResult -> certResult.getMeetsCriteria() != null && certResult.getMeetsCriteria().equals(Boolean.TRUE))
-                .map(attestedCertResult -> new CertificationCriterion(attestedCertResult.getCriterion()))
-                .collect(Collectors.<CertificationCriterion>toList());
-    }
-
-    public boolean isEligibleForErrors(PendingCertificationResultDTO certResult) {
-        return certResult.getCriterion() != null
-                && BooleanUtils.isNotTrue(certResult.getCriterion().getRemoved())
-                && BooleanUtils.isTrue(certResult.getMeetsCriteria());
     }
 
     public boolean isEligibleForErrors(CertificationResult certResult) {
