@@ -29,7 +29,6 @@ import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
-import gov.healthit.chpl.dao.UploadTemplateVersionDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CertificationBody;
@@ -47,7 +46,6 @@ import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
-import gov.healthit.chpl.domain.UploadTemplateVersion;
 import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
@@ -67,7 +65,6 @@ import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestProcedureCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
-import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
@@ -98,7 +95,6 @@ public class DimensionalDataManager {
     private TargetedUserDAO tuDao;
     private DeveloperStatusDAO devStatusDao;
     private SurveillanceDAO survDao;
-    private UploadTemplateVersionDAO uploadTemplateDao;
     private QuarterDAO quarterDao;
     private ProductDAO productDao;
     private DeveloperDAO devDao;
@@ -115,7 +111,7 @@ public class DimensionalDataManager {
                                   TestStandardDAO testStandardDao, TestProcedureDAO testProcedureDao,
                                   TestDataDAO testDataDao, AccessibilityStandardDAO asDao, UcdProcessDAO ucdDao,
                                   QmsStandardDAO qmsDao, TargetedUserDAO tuDao, DeveloperStatusDAO devStatusDao,
-                                  SurveillanceDAO survDao, UploadTemplateVersionDAO uploadTemplateDao, QuarterDAO quarterDao,
+                                  SurveillanceDAO survDao, QuarterDAO quarterDao,
                                   ProductDAO productDao, DeveloperDAO devDao, MeasureDAO measureDao,
                                   ListingMeasureDAO listingMeasureDao, CQMCriterionDAO cqmCriterionDao,
                                   CertificationEditionDAO certEditionDao, OptionalStandardDAO optionalStandardDao) {
@@ -135,7 +131,6 @@ public class DimensionalDataManager {
         this.tuDao = tuDao;
         this.devStatusDao = devStatusDao;
         this.survDao = survDao;
-        this.uploadTemplateDao = uploadTemplateDao;
         this.quarterDao = quarterDao;
         this.productDao = productDao;
         this.devDao = devDao;
@@ -362,21 +357,6 @@ public class DimensionalDataManager {
             results.add(new KeyValueModel(result.getId(), result.getName()));
         }
         return results;
-    }
-
-    @Transactional
-    @Cacheable(value = CacheNames.UPLOAD_TEMPLATE_VERSIONS)
-    public Set<UploadTemplateVersion> getUploadTemplateVersions() {
-        LOGGER.debug("Getting all upload template verisons from the database (not cached).");
-
-        List<UploadTemplateVersionDTO> dtos = this.uploadTemplateDao.findAll();
-        Set<UploadTemplateVersion> templates = new HashSet<UploadTemplateVersion>();
-
-        for (UploadTemplateVersionDTO dto : dtos) {
-            templates.add(new UploadTemplateVersion(dto));
-        }
-
-        return templates;
     }
 
     @Transactional

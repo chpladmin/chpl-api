@@ -424,7 +424,8 @@ public class DeveloperDAO extends BaseDAOImpl {
                 DEVELOPER_HQL
                 + "WHERE (NOT v.deleted = true)",
                 DeveloperEntity.class).getResultList();
-        result.forEach(e -> e.setPeriods(getAllAttestationPeriodEntities()));
+        List<AttestationPeriodEntity> attestationPeriodEntities = getAllAttestationPeriodEntities();
+        result.forEach(e -> e.setPeriods(attestationPeriodEntities));
         return result;
     }
 
@@ -432,7 +433,8 @@ public class DeveloperDAO extends BaseDAOImpl {
         List<DeveloperEntity> result = entityManager
                 .createQuery(DEVELOPER_HQL, DeveloperEntity.class)
                 .getResultList();
-        result.forEach(e -> e.setPeriods(getAllAttestationPeriodEntities()));
+        List<AttestationPeriodEntity> allAttestationPeriods = getAllAttestationPeriodEntities();
+        result.forEach(e -> e.setPeriods(allAttestationPeriods));
         return result;
     }
 

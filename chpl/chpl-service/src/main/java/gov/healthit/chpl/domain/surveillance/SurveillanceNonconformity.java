@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.util.LocalDateAdapter;
@@ -179,6 +180,8 @@ public class SurveillanceNonconformity implements Serializable {
     @XmlElement(name = "document")
     @Builder.Default
     @Deprecated
+    @DeprecatedResponseField(removalDate = "2023-01-01",
+        message = "This field is deprecated and will be removed from the response data in a future release.")
     private List<SurveillanceNonconformityDocument> documents = new ArrayList<SurveillanceNonconformityDocument>();
 
     /**
@@ -513,6 +516,8 @@ public class SurveillanceNonconformity implements Serializable {
 
     @XmlTransient
     @Deprecated //this field should be removed from Json responses but left in the API code
+    @DeprecatedResponseField(removalDate = "2023-01-01",
+        message = "This field is deprecated and will be removed from the response data in a future release.")
     public String getNonconformityTypeName() {
         //if (getCriterion() == null) {
         //    return getNonconformityType();

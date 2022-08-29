@@ -33,6 +33,9 @@ public class ChangeRequestDAO extends BaseDAOImpl {
     @Value("${changerequest.status.pendingdeveloperaction}")
     private Long pendingDeveloperAction;
 
+    @Value("${changerequest.attestation}")
+    private Long attestationTypeId;
+
     @Autowired
     public ChangeRequestDAO(@Lazy ChangeRequestDetailsFactory changeRequestDetailsFactory) {
         this.changeRequestDetailsFactory = changeRequestDetailsFactory;
@@ -67,6 +70,13 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 .collect(Collectors.<ChangeRequestSearchResult>toList());
     }
 
+    public List<ChangeRequestSearchResult> getAttestationChangeRequestsForPeriod(Long periodId) {
+        return getSearchResultEntitiesByTypeAndPeriod(attestationTypeId, periodId).stream()
+                .map(entity -> ChangeRequestConverter.convertSearchResult(entity))
+                .collect(Collectors.<ChangeRequestSearchResult>toList());
+    }
+
+    @Deprecated
     public List<ChangeRequest> getAllWithDetails() throws EntityRetrievalException {
         return getEntities().stream()
                 .map(entity -> ChangeRequestConverter.convert(entity))
@@ -90,12 +100,18 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 .collect(Collectors.<ChangeRequest>toList());
     }
 
-    public List<ChangeRequest> getAllPending() throws EntityRetrievalException {
-        return getAllWithDetails().stream()
-                .filter(cr -> getUpdatableStatuses().contains(cr.getCurrentStatus().getChangeRequestStatusType().getId()))
-                .collect(Collectors.<ChangeRequest>toList());
+    public List<ChangeRequestSearchResult> getAllPending() throws EntityRetrievalException {
+        return getAll().stream()
+                .filter(cr -> getUpdatableStatusIds().contains(cr.getCurrentStatus().getId()))
+                .collect(Collectors.<ChangeRequestSearchResult>toList());
     }
 
+    public List<Long> getUpdatableStatusIds() {
+        List<Long> statuses = new ArrayList<Long>();
+        statuses.add(pendingAcbAction);
+        statuses.add(pendingDeveloperAction);
+        return statuses;
+    }
 
     public List<ChangeRequest> getByDeveloper(Long developerId) throws EntityRetrievalException {
         List<Long> developers = new ArrayList<Long>(Arrays.asList(developerId));
@@ -206,6 +222,42 @@ public class ChangeRequestDAO extends BaseDAOImpl {
         return results;
     }
 
+    private List<ChangeRequestEntity> getSearchResultEntitiesByTypeAndPeriod(Long crTypeId, Long periodId) {
+        String hql = "SELECT DISTINCT cr "
+                + "FROM ChangeRequestEntity cr "
+                + "JOIN FETCH cr.changeRequestType crType "
+                + "JOIN FETCH cr.developer dev "
+                + "LEFT JOIN FETCH dev.address "
+                + "LEFT JOIN FETCH dev.contact "
+                + "LEFT JOIN FETCH dev.statusEvents statusEvents "
+                + "LEFT JOIN FETCH statusEvents.developerStatus "
+                + "LEFT JOIN FETCH dev.attestations devAtt "
+                + "LEFT JOIN FETCH devAtt.period per "
+                //TODO: In OCD-3985 this needs to be fixed. This method is only used in the Developer Attestation Check-In Report
+                //and it will WORK but it will be WRONG if we leave it like this. The ACB relationship should come from the
+                //change request object itself rather than the developer after OCD-3940 is merged.
+                + "LEFT JOIN FETCH dev.certificationBodyMaps devAcbMaps "
+                + "LEFT JOIN FETCH devAcbMaps.certificationBody devAcb "
+                + "LEFT JOIN FETCH devAcb.address "
+                + "JOIN FETCH cr.statuses crStatus "
+                + "JOIN FETCH crStatus.changeRequestStatusType "
+                + "LEFT JOIN FETCH crStatus.certificationBody acb "
+                + "LEFT JOIN FETCH acb.address "
+                + "JOIN FETCH crStatus.userPermission "
+                + "WHERE cr.deleted = false "
+                + "AND crType.id = :crTypeId "
+                + "AND per.id = :periodId";
+
+        List<ChangeRequestEntity> results = entityManager
+                .createQuery(hql, ChangeRequestEntity.class)
+                .setParameter("crTypeId", crTypeId)
+                .setParameter("periodId", periodId)
+                .getResultList();
+
+        return results;
+    }
+
+    @Deprecated
     private List<ChangeRequestEntity> getEntities()
             throws EntityRetrievalException {
 
@@ -311,13 +363,6 @@ public class ChangeRequestDAO extends BaseDAOImpl {
         entity.setCreationDate(new Date());
         entity.setLastModifiedDate(new Date());
         return entity;
-    }
-
-    private List<Long> getUpdatableStatuses() {
-        List<Long> statuses = new ArrayList<Long>();
-        statuses.add(pendingAcbAction);
-        statuses.add(pendingDeveloperAction);
-        return statuses;
     }
 
     private ChangeRequest populateDependentObjects(ChangeRequest cr) {

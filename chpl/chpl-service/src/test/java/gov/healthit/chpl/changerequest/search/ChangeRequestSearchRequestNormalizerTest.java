@@ -50,14 +50,14 @@ public class ChangeRequestSearchRequestNormalizerTest {
     @Test
     public void normalize_currentTypeNames_trimsCorrectly() {
         ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
-                .typeNames(Stream.of("test1 ", " test2 ", "", " ", null, "test3").collect(Collectors.toSet()))
+                .changeRequestTypeNames(Stream.of("test1 ", " test2 ", "", " ", null, "test3").collect(Collectors.toSet()))
                 .build();
         normalizer.normalize(searchRequest);
 
-        assertEquals(3, searchRequest.getTypeNames().size());
-        assertTrue(searchRequest.getTypeNames().contains("test1"));
-        assertTrue(searchRequest.getTypeNames().contains("test2"));
-        assertTrue(searchRequest.getTypeNames().contains("test3"));
+        assertEquals(3, searchRequest.getChangeRequestTypeNames().size());
+        assertTrue(searchRequest.getChangeRequestTypeNames().contains("test1"));
+        assertTrue(searchRequest.getChangeRequestTypeNames().contains("test2"));
+        assertTrue(searchRequest.getChangeRequestTypeNames().contains("test3"));
     }
 
     @Test
