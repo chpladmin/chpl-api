@@ -5,6 +5,7 @@ import java.io.Serializable;
 import lombok.Getter;
 
 @Getter
+@Deprecated
 public enum RequirementTypeEnum implements Serializable {
     K1("170.523 (k)(1)", false),
     K2("170.523 (k)(2)", true),

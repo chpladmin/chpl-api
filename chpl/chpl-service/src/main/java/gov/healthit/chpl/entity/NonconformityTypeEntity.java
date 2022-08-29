@@ -7,10 +7,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
+import gov.healthit.chpl.dto.CertificationEditionDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,12 +34,12 @@ public class NonconformityTypeEntity implements Serializable {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    //@Column(name = "certification_edition_id")
-    //private Long certificationEditionId;
+    @Column(name = "certification_edition_id")
+    private Long certificationEditionId;
 
-    //@OneToOne(optional = true, fetch = FetchType.LAZY)
-    //@JoinColumn(name = "certification_edition_id", insertable = false, updatable = false)
-    //private CertificationEditionEntity certificationEdition;
+    @OneToOne(optional = true)
+    @JoinColumn(name = "certification_edition_id", insertable = false, updatable = false)
+    private CertificationEditionEntity certificationEdition;
 
     @Column(length = 15)
     private String number;
@@ -52,7 +56,7 @@ public class NonconformityTypeEntity implements Serializable {
     public NonconformityType toDomain() {
         return NonconformityType.builder()
                 .id(this.getId())
-                //.certificationEditionId(this.getCertificationEditionId())
+                .certificationEdition(this.getCertificationEdition() != null ? new CertificationEdition(new CertificationEditionDTO(this.getCertificationEdition())) : null)
                 .number(this.getNumber())
                 .removed(this.getRemoved())
                 .title(this.getTitle())

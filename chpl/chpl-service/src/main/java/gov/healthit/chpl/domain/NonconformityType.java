@@ -16,6 +16,7 @@ public class NonconformityType implements Serializable {
     private static final long serialVersionUID = -7437221753188417890L;
 
     private Long id;
+    private CertificationEdition certificationEdition;
     private String number;
     private String title;
     private Boolean removed;

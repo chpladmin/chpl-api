@@ -774,7 +774,9 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
     private List<NonconformityTypeEntity> getNonconformityTypeEntities() {
-        Query query = entityManager.createQuery("from NonconformityTypeEntity",
+        Query query = entityManager.createQuery(
+                "FROM NonconformityTypeEntity e "
+                + "LEFT JOIN FETCH e.certificationEdition",
                 NonconformityTypeEntity.class);
         return query.getResultList();
     }
