@@ -15,6 +15,7 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
+import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
@@ -58,7 +59,7 @@ public class DeveloperAttestationCheckInReportDataCollector {
 
     }
 
-    private DeveloperAttestationCheckInReport convert(Entry<Long, List<ChangeRequest>> entry) {
+    private DeveloperAttestationCheckInReport convert(Entry<Long, List<ChangeRequestSearchResult>> entry) {
         return entry.getValue() != null && entry.getValue().size() > 0
                 ? convert(entry.getValue())
                 : convert(entry.getKey());
@@ -80,9 +81,12 @@ public class DeveloperAttestationCheckInReportDataCollector {
         }
     }
 
-    private DeveloperAttestationCheckInReport convert(List<ChangeRequest> crs) {
-        ChangeRequest cr = getMostRecentChangeRequest(crs);
-        return DeveloperAttestationCheckInReport.builder()
+    private DeveloperAttestationCheckInReport convert(List<ChangeRequestSearchResult> crs) {
+        ChangeRequestSearchResult crSearchResult = getMostRecentChangeRequest(crs);
+        try {
+            ChangeRequest cr = changeRequestDAO.get(crSearchResult.getId());
+
+            return DeveloperAttestationCheckInReport.builder()
                 .developerName(cr.getDeveloper().getName())
                 .submittedDate(cr.getSubmittedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
                 .published(cr.getDeveloper().getAttestations().stream()
@@ -102,28 +106,32 @@ public class DeveloperAttestationCheckInReportDataCollector {
                 .signature(((ChangeRequestAttestationSubmission) cr.getDetails()).getSignature())
                 .signatureEmail(((ChangeRequestAttestationSubmission) cr.getDetails()).getSignatureEmail())
                 .build();
+        } catch (EntityRetrievalException ex) {
+            LOGGER.error("Cannot get change request details for ID " + crSearchResult.getId());
+            return null;
+        }
     }
 
-    private ChangeRequest getMostRecentChangeRequest(List<ChangeRequest> changeRequests) {
+    private ChangeRequestSearchResult getMostRecentChangeRequest(List<ChangeRequestSearchResult> changeRequests) {
         if (changeRequests == null || changeRequests.size() == 0) {
             return null;
         } else if (changeRequests.size() == 1) {
             return changeRequests.get(0);
         } else {
             return changeRequests.stream()
-                    .sorted((cr1, cr2) -> cr1.getSubmittedDate().compareTo(cr2.getSubmittedDate()) * -1)
+                    .sorted((cr1, cr2) -> cr1.getSubmittedDateTime().compareTo(cr2.getSubmittedDateTime()) * -1)
                     .toList()
                     .get(0);
         }
     }
 
-    private Map<Long, List<ChangeRequest>> getDevelopersWithAttestationChangeRequestsForMostRecentAttestationPeriod() throws EntityRetrievalException {
-        Map<Long, List<ChangeRequest>> map = new HashMap<Long, List<ChangeRequest>>();
+    private Map<Long, List<ChangeRequestSearchResult>> getDevelopersWithAttestationChangeRequestsForMostRecentAttestationPeriod() throws EntityRetrievalException {
+        Map<Long, List<ChangeRequestSearchResult>> map = new HashMap<Long, List<ChangeRequestSearchResult>>();
         List<Long> developerIds = getDeveloperIdsFromDeveloperAttestationReport();
-        List<ChangeRequest> changeRequests = getAllAttestationChangeRequestsForMostRecentPastAttestationPeriod();
+        List<ChangeRequestSearchResult> changeRequests = getAllAttestationChangeRequestsForMostRecentPastAttestationPeriod();
 
         developerIds.forEach(developerId -> {
-            List<ChangeRequest> crs = changeRequests.stream()
+            List<ChangeRequestSearchResult> crs = changeRequests.stream()
                     .filter(cr -> cr.getDeveloper().getId().equals(developerId))
                     .toList();
             map.put(developerId, crs);
@@ -132,16 +140,12 @@ public class DeveloperAttestationCheckInReportDataCollector {
         return map;
     }
 
-    private List<ChangeRequest> getAllAttestationChangeRequestsForMostRecentPastAttestationPeriod() throws EntityRetrievalException {
+    private List<ChangeRequestSearchResult> getAllAttestationChangeRequestsForMostRecentPastAttestationPeriod() throws EntityRetrievalException {
         AttestationPeriod period = attestationManager.getMostRecentPastAttestationPeriod();
         LOGGER.info("Most recent past att period: {}", period.toString());
 
-        List<ChangeRequest> crs = changeRequestDAO.getAllWithDetails();
-        LOGGER.info("Found {} total change requests", crs.size());
-        crs = crs.stream().filter(cr -> cr.getChangeRequestType().isAttestation()
-                        && ((ChangeRequestAttestationSubmission) cr.getDetails()).getAttestationPeriod().getId().equals(period.getId()))
-                .toList();
-        LOGGER.info("Found {} total attestation change requests", crs.size());
+        List<ChangeRequestSearchResult> crs = changeRequestDAO.getAttestationChangeRequestsForPeriod(period.getId());
+        LOGGER.info("Found {} total attestation change requests for the most recent past period.", crs.size());
         return crs;
     }
 

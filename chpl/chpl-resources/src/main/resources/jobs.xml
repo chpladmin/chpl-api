@@ -859,6 +859,15 @@
         </job>
 
         <job>
+            <name>changeRequestsReport</name>
+            <group>chplBackgroundJobs</group>
+            <description>Sends the Change Requests Report</description>
+            <job-class>gov.healthit.chpl.scheduler.job.changerequest.ChangeRequestReportEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
+        <job>
             <name>Developer Attestations Report Email</name>
             <group>chplJobs</group>
             <description>Sends the Developer Attestations Report</description>
