@@ -9,6 +9,8 @@ import org.springframework.core.env.Environment;
 
 public abstract class QuartzJob implements Job {
     protected static final String JOB_DATA_KEY_EMAIL = "email";
+    protected static final String JOB_DATA_KEY_ACB = "acb";
+    protected static final String TEMP_DIR_NAME = "temp";
 
     private Environment env;
 

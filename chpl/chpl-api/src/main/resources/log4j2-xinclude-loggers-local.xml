@@ -168,6 +168,9 @@
         additivity="false">
         <AppenderRef ref="sendEmailJob" />
     </Logger>
+    <Logger name="changeRequestsReportJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="changeRequestsReportJob" />
+    </Logger>
     <Logger name="developerAttestationReportJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="developerAttestationReportJob" />
     </Logger>

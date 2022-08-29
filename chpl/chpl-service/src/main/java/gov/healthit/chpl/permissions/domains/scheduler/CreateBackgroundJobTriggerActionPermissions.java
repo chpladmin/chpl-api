@@ -15,6 +15,7 @@ import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
 import gov.healthit.chpl.scheduler.job.SurveillanceUploadJob;
 import gov.healthit.chpl.scheduler.job.TriggerDeveloperBanJob;
 import gov.healthit.chpl.scheduler.job.certificationId.CertificationIdEmailJob;
+import gov.healthit.chpl.scheduler.job.changerequest.ChangeRequestReportEmailJob;
 import gov.healthit.chpl.scheduler.job.surveillanceReport.AnnualReportGenerationJob;
 import gov.healthit.chpl.scheduler.job.surveillanceReport.QuarterlyReportGenerationJob;
 
@@ -23,6 +24,7 @@ public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissio
 
     private static final List<String> BACKGROUND_JOBS_ACB_CAN_CREATE = new ArrayList<String>();
     private static final List<String> BACKGROUND_JOBS_CMS_STAFF_CAN_CREATE = new ArrayList<String>();
+    private static final List<String> BACKGROUND_JOBS_DEVELOPER_CAN_CREATE = new ArrayList<String>();
 
     @PostConstruct
     public void init() {
@@ -33,8 +35,9 @@ public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissio
         BACKGROUND_JOBS_ACB_CAN_CREATE.add(ListingUploadValidationJob.JOB_NAME);
         BACKGROUND_JOBS_ACB_CAN_CREATE.add(SurveillanceUploadJob.JOB_NAME);
         BACKGROUND_JOBS_ACB_CAN_CREATE.add(TriggerDeveloperBanJob.JOB_NAME);
-
+        BACKGROUND_JOBS_ACB_CAN_CREATE.add(ChangeRequestReportEmailJob.JOB_NAME);
         BACKGROUND_JOBS_CMS_STAFF_CAN_CREATE.add(CertificationIdEmailJob.JOB_NAME);
+        BACKGROUND_JOBS_DEVELOPER_CAN_CREATE.add(ChangeRequestReportEmailJob.JOB_NAME);
     }
 
     @Override
@@ -62,6 +65,13 @@ public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissio
                     return true;
                 }
             }
+        } else if (getResourcePermissions().isUserRoleDeveloperAdmin()) {
+            if (obj instanceof ChplOneTimeTrigger) {
+                ChplOneTimeTrigger trigger = (ChplOneTimeTrigger) obj;
+                if (trigger.getJob() != null && canDeveloperCreateJob(trigger.getJob().getName())) {
+                    return true;
+                }
+            }
         }
         return false;
     }
@@ -75,6 +85,13 @@ public class CreateBackgroundJobTriggerActionPermissions extends ActionPermissio
 
     private boolean canCmsStaffCreateJob(String jobName) {
         return BACKGROUND_JOBS_CMS_STAFF_CAN_CREATE.stream()
+                .filter(job -> job.equalsIgnoreCase(jobName))
+                .findAny()
+                .isPresent();
+    }
+
+    private boolean canDeveloperCreateJob(String jobName) {
+        return BACKGROUND_JOBS_DEVELOPER_CAN_CREATE.stream()
                 .filter(job -> job.equalsIgnoreCase(jobName))
                 .findAny()
                 .isPresent();

@@ -1039,6 +1039,28 @@
             </Delete>
         </DefaultRolloverStrategy>
     </RollingFile>
+
+    <RollingFile name="changeRequestsReportJobJson"
+        fileName="${logDir}/scheduler/changeRequestsReportJob.json"
+        filePattern="${logDir}/scheduler/history/changeRequestsReportJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="changeRequestsReportJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="changeRequestsReportJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+
     <RollingFile name="complaintsReportJobJson"
         fileName="${logDir}/scheduler/complaintsReportJob.json"
         filePattern="${logDir}/scheduler/history/complaintsReportJob-%d{yyyy-MM-dd}.json"
@@ -1059,6 +1081,7 @@
             </Delete>
         </DefaultRolloverStrategy>
     </RollingFile>
+
     <RollingFile name="developerAttestationReportJobJson"
         fileName="${logDir}/scheduler/developerAttestationReportJob.json"
         filePattern="${logDir}/scheduler/history/developerAttestationReportJob-%d{yyyy-MM-dd}.json"
@@ -1095,26 +1118,6 @@
         <DefaultRolloverStrategy>
             <Delete basePath="${logDir}/scheduler/history" >
                 <IfFileName glob="developerAttestationCheckinReportJob-*.json" />
-                <IfLastModified age="1d" />
-            </Delete>
-        </DefaultRolloverStrategy>
-    </RollingFile>
-    <RollingFile name="conformanceMethodConversionJobJson"
-        fileName="${logDir}/scheduler/conformanceMethodConversionJob.json"
-        filePattern="${logDir}/scheduler/history/conformanceMethodConversionJob-%d{yyyy-MM-dd}.json"
-        filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
-            <KeyValuePair key="service" value="conformanceMethodConversionJob" />
-            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
-            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
-        </JsonLayout>
-        <Policies>
-            <TimeBasedTriggeringPolicy
-                interval="1" modulate="true" />
-        </Policies>
-        <DefaultRolloverStrategy>
-            <Delete basePath="${logDir}/scheduler/history" >
-                <IfFileName glob="conformanceMethodConversionJob-*.json" />
                 <IfLastModified age="1d" />
             </Delete>
         </DefaultRolloverStrategy>
