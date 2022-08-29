@@ -43,6 +43,8 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
+import gov.healthit.chpl.domain.NonconformityType;
+import gov.healthit.chpl.domain.NonconformityTypeEnum;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
@@ -328,7 +330,60 @@ public class DimensionalDataManager {
         return result;
     }
 
+    @Deprecated
     public Set<CertificationCriterion> getNonconformityTypeOptions() {
+        LOGGER.debug("Getting all nonconformity types from the database (not cached).");
+
+        Set<CertificationCriterion> result = new HashSet<CertificationCriterion>();
+
+        List<CertificationCriterionDTO> criteria2014 = certificationCriterionDao.findByCertificationEditionYear("2014");
+        for (CertificationCriterionDTO crit : criteria2014) {
+            result.add(new CertificationCriterion(crit));
+        }
+        List<CertificationCriterionDTO> criteria2015 = certificationCriterionDao.findByCertificationEditionYear("2015");
+        for (CertificationCriterionDTO crit : criteria2015) {
+            result.add(new CertificationCriterion(crit));
+        }
+
+        CertificationCriterion k1Type = new CertificationCriterion();
+        k1Type.setNumber(NonconformityTypeEnum.K1.getName());
+        k1Type.setRemoved(NonconformityTypeEnum.K1.getRemoved());
+        result.add(k1Type);
+
+        CertificationCriterion k2Type = new CertificationCriterion();
+        k2Type.setNumber(NonconformityTypeEnum.K2.getName());
+        k2Type.setRemoved(NonconformityTypeEnum.K2.getRemoved());
+        result.add(k2Type);
+
+        CertificationCriterion lType = new CertificationCriterion();
+        lType.setNumber(NonconformityTypeEnum.L.getName());
+        lType.setRemoved(NonconformityTypeEnum.L.getRemoved());
+        result.add(lType);
+
+        CertificationCriterion rwtPlanType = new CertificationCriterion();
+        rwtPlanType.setNumber(NonconformityTypeEnum.ANNUAL_RWT_PLAN.getName());
+        rwtPlanType.setRemoved(NonconformityTypeEnum.ANNUAL_RWT_PLAN.getRemoved());
+        result.add(rwtPlanType);
+
+        CertificationCriterion rwtResultsType = new CertificationCriterion();
+        rwtResultsType.setNumber(NonconformityTypeEnum.ANNUAL_RWT_RESULTS.getName());
+        rwtResultsType.setRemoved(NonconformityTypeEnum.ANNUAL_RWT_RESULTS.getRemoved());
+        result.add(rwtResultsType);
+
+        CertificationCriterion otherType = new CertificationCriterion();
+        otherType.setNumber(NonconformityTypeEnum.OTHER.getName());
+        otherType.setRemoved(NonconformityTypeEnum.OTHER.getRemoved());
+        result.add(otherType);
+
+        CertificationCriterion attestationsSubmissionType = new CertificationCriterion();
+        attestationsSubmissionType.setNumber(NonconformityTypeEnum.SEMIANNUAL_ATTESTATIONS_SUBMISSION.getName());
+        attestationsSubmissionType.setRemoved(NonconformityTypeEnum.SEMIANNUAL_ATTESTATIONS_SUBMISSION.getRemoved());
+        result.add(attestationsSubmissionType);
+
+        return result;
+    }
+
+    public Set<NonconformityType> getNonconformityTypes() {
         LOGGER.debug("Getting all nonconformity types from the database (not cached).");
 
         return survDao.getNonconformityTypes().stream()

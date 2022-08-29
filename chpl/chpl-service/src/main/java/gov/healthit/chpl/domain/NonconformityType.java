@@ -12,8 +12,13 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Data
 @NoArgsConstructor
-public class NonconformityType extends CertificationCriterion implements Serializable {
+public class NonconformityType implements Serializable {
     private static final long serialVersionUID = -7437221753188417890L;
+
+    private Long id;
+    private String number;
+    private String title;
+    private Boolean removed;
 
     @JsonIgnore
     private NonconformityClassification classification;

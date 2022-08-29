@@ -59,6 +59,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceReportingActivityJob;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.AuthUtil;
@@ -82,6 +83,7 @@ public class SurveillanceManager extends SecuredManager {
     private FileUtils fileUtils;
     private Environment env;
     private UserDAO userDAO;
+    private CertificationCriterionService certificationCriterionService;
     private String schemaBasicSurveillanceName;
 
     @SuppressWarnings("checkstyle:parameterNumber")
@@ -92,7 +94,7 @@ public class SurveillanceManager extends SecuredManager {
             SurveillanceCreationValidator survCreationValidator,
             SurveillanceUpdateValidator survUpdateValidator,
             FileUtils fileUtils, Environment env, ResourcePermissions resourcePermissions,
-            UserDAO userDAO,
+            UserDAO userDAO, CertificationCriterionService certificationCriterionService,
             @Value("${schemaBasicSurveillanceName}") String schemaBasicSurveillanceName) {
         this.survDao = survDao;
         this.cpDao = cpDao;
@@ -105,6 +107,7 @@ public class SurveillanceManager extends SecuredManager {
         this.fileUtils = fileUtils;
         this.env = env;
         this.userDAO = userDAO;
+        this.certificationCriterionService = certificationCriterionService;
         this.schemaBasicSurveillanceName = schemaBasicSurveillanceName;
     }
 
@@ -397,7 +400,7 @@ public class SurveillanceManager extends SecuredManager {
                         if (nc.getType().getClassification().equals(NonconformityClassification.REQUIREMENT)) {
                             nc.setNonconformityType(ncEntity.getType().getNumber());
                         } else if (nc.getType().getClassification().equals(NonconformityClassification.CRITERION)) {
-                            nc.setCriterion(nc.getType());
+                            nc.setCriterion(certificationCriterionService.get(nc.getType().getId()));
                         }
                         nc.setResolution(ncEntity.getResolution());
                         nc.setSitesPassed(ncEntity.getSitesPassed());

@@ -528,9 +528,24 @@ public class DimensionalDataController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @RequestMapping(value = "/nonconformity-types/v2", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SearchOption getNonconformityTypes() {
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        result.setData(dimensionalDataManager.getNonconformityTypes());
+        return result;
+    }
+
+    @Operation(summary = "Get all possible nonconformity type options in the CHPL",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/nonconformity-types", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    @Deprecated
     public @ResponseBody SearchOption getNonconformityTypeOptions() {
         Set<CertificationCriterion> data = dimensionalDataManager.getNonconformityTypeOptions();
         SearchOption result = new SearchOption();
