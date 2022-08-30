@@ -100,12 +100,6 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 .collect(Collectors.<ChangeRequest>toList());
     }
 
-    public List<ChangeRequestSearchResult> getAllPending() throws EntityRetrievalException {
-        return getAll().stream()
-                .filter(cr -> getUpdatableStatusIds().contains(cr.getCurrentStatus().getId()))
-                .collect(Collectors.<ChangeRequestSearchResult>toList());
-    }
-
     public List<Long> getUpdatableStatusIds() {
         List<Long> statuses = new ArrayList<Long>();
         statuses.add(pendingAcbAction);
