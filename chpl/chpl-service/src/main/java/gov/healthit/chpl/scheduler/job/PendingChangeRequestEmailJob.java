@@ -5,12 +5,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -141,26 +139,6 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         return temp;
     }
 
-    private List<String> getHeaderRow(final List<CertificationBodyDTO> activeAcbs) {
-        List<String> row = createEmptyRow(activeAcbs);
-        row.set(DEVELOPER_NAME, "Developer Name");
-        row.set(DEVELOPER_CODE, "Developer Code");
-        row.set(DEVELOPER_CONTACT_NAME, "Developer Contact Name");
-        row.set(DEVELOPER_CONTACT_EMAIL, "Developer Contact Email");
-        row.set(DEVELOPER_CONTACT_PHONE_NUMBER, "Developer Contact Phone Number");
-        row.set(CR_TYPE, "Change Request Type");
-        row.set(CR_STATUS, "Change Request Status");
-        row.set(CR_DATE, "Change Request Open Date");
-        row.set(CHANGE_REQUEST_DAYS_OPEN, "Change Request Days Open");
-        row.set(CR_LATEST_DATE, "Change Request Latest Change Date");
-        row.set(CHANGE_REQUEST_LATEST_DAYS_OPEN, "Change Request Days In Current State");
-        row.set(CR_LATEST_COMMENT, "Change Request Latest Comment");
-        for (int i = 0; i < activeAcbs.size(); i++) {
-            row.set(ONC_ACB_START + i, activeAcbs.get(i).getName());
-        }
-        return row;
-    }
-
     private List<List<String>> createChangeRequestRows(final List<CertificationBodyDTO> activeAcbs,
             final Date currentDate)
                     throws EntityRetrievalException {
@@ -239,13 +217,6 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
             row.add("");
         }
         return row;
-    }
-
-    private DateFormat getTimestampFormatter() {
-        return DateFormat.getDateTimeInstance(
-                DateFormat.LONG,
-                DateFormat.LONG,
-                Locale.US);
     }
 
     private void sendEmail(JobExecutionContext jobContext, List<List<String>> csvRows, List<CertificationBodyDTO> acbs)

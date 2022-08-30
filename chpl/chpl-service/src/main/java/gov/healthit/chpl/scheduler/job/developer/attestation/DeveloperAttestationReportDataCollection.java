@@ -1,25 +1,48 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
+import org.jfree.data.time.DateRange;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.dao.AttestationDAO;
+import gov.healthit.chpl.attestation.domain.AttestationPeriod;
+import gov.healthit.chpl.attestation.domain.AttestationSubmission;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.attestation.report.validation.AttestationValidationService;
 import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
+import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.CertificationStatus;
+import gov.healthit.chpl.domain.CertificationStatusEvent;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
+import gov.healthit.chpl.dto.UserDeveloperMapDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.search.ListingSearchService;
+import gov.healthit.chpl.search.domain.ListingSearchResponse;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
+import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.service.DirectReviewSearchService;
+import gov.healthit.chpl.util.DateUtil;
 
 @Component
 public class DeveloperAttestationReportDataCollection {
@@ -64,7 +87,7 @@ public class DeveloperAttestationReportDataCollection {
         this.certificationBodyDAO = certificationBodyDAO;
         this.developerCertificationBodyMapDAO = developerCertificationBodyMapDAO;
         this.attestationPeriodService = attestationPeriodService;
-}
+    }
 
     private List<String> activeStatuses = Stream.of(CertificationStatusType.Active.getName(),
             CertificationStatusType.SuspendedByAcb.getName(),
@@ -72,7 +95,6 @@ public class DeveloperAttestationReportDataCollection {
             .collect(Collectors.toList());
 
     public List<DeveloperAttestationReport> collect(List<Long> selectedAcbIds, Logger logger) {
-        /*
         AttestationPeriod mostRecentPastPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
         logger.info("Most recent past attestation period: {} - {} ", mostRecentPastPeriod.getPeriodStart().toString(), mostRecentPastPeriod.getPeriodEnd().toString());
         logger.info("Selected AcbsId: {}", selectedAcbIds.stream()
@@ -85,53 +107,50 @@ public class DeveloperAttestationReportDataCollection {
 
         List<DeveloperAttestationReport> reportRows = developers.stream()
                 .filter(dev -> isDeveloperManagedBySelectedAcbs(dev, selectedAcbIds))
-                .map(dev -> {
-
-                    DeveloperAttestationSubmission attestation = getDeveloperAttestation(dev.getId(), mostRecentPastPeriod.getId());
-
-                    return DeveloperAttestationReport.builder()
-                        .developerName(dev.getName())
-                        .developerCode(dev.getDeveloperCode())
-                        .developerId(dev.getId())
-                        .pointOfContactName(getPointOfContactFullName(dev))
-                        .pointOfContactEmail(getPointOfContactEmail(dev))
-                        .developerUsers(getDeveloperUsers(dev))
-                        .attestationStatus(attestation != null ? "Published" : "")
-                        .attestationPublishDate(attestation != null ? attestation.getDatePublished() : null)
-                        .attestationPeriod(String.format("%s - %s", mostRecentPastPeriod.getPeriodStart().toString(),
-                                mostRecentPastPeriod.getPeriodEnd().toString()))
-                        .informationBlocking(getAttestationResponse(attestation, INFORMATION_BLOCKING_ATTESTATION_ID))
-                        .assurances(getAttestationResponse(attestation, ASSURANCES_ATTESTATION_ID))
-                        .communications(getAttestationResponse(attestation, COMMUNICATIONS_ATTESTATION_ID))
-                        .applicationProgrammingInterfaces(getAttestationResponse(attestation, API_ATTESTATION_ID))
-                        .realWorldTesting(getAttestationResponse(attestation, RWT_ATTESTATION_ID))
-                        .submitterName(getSubmitterName(attestation))
-                        .submitterEmail(getSubmitterEmail(attestation))
-                        .totalSurveillances(getTotalSurveillances(dev, logger))
-                        .totalSurveillanceNonconformities(getTotalSurveillanceNonconformities(dev, logger))
-                        .openSurveillanceNonconformities(getOpenSurveillanceNonconformities(dev, logger))
-                        .totalDirectReviewNonconformities(getTotalDirectReviewNonconformities(dev, logger))
-                        .openDirectReviewNonconformities(getOpenDirectReviewNonconformities(dev, logger))
-                        .assurancesValidation(getAssurancesValidation(dev, logger))
-                        .realWorldTestingValidation(getRealWorldTestingValidation(dev, logger))
-                        .apiValidation(getApiValidation(dev, logger))
-                        .activeAcbs(getActiveAcbs())
-                        .developerAcbMap(getDeveloperAcbMapping(dev, logger))
-                        .build();
-                    return DeveloperAttestationReport.builder().build();
-                })
+                .map(dev -> toDeveloperAttestationReport(dev, mostRecentPastPeriod, logger))
                 .sorted(Comparator.comparing(DeveloperAttestationReport::getDeveloperName))
                 .toList();
 
         logger.info("Total Report Rows found: {}", reportRows.size());
         developerListings.clear();
         return reportRows;
-        */
-        return null;
     }
 
+    private DeveloperAttestationReport toDeveloperAttestationReport(Developer dev,
+            AttestationPeriod mostRecentPastPeriod, Logger logger) {
+        AttestationSubmission attestation = getDeveloperAttestation(dev.getId(), mostRecentPastPeriod.getId());
 
-    /*****************************
+        return DeveloperAttestationReport.builder()
+            .developerName(dev.getName())
+            .developerCode(dev.getDeveloperCode())
+            .developerId(dev.getId())
+            .pointOfContactName(getPointOfContactFullName(dev))
+            .pointOfContactEmail(getPointOfContactEmail(dev))
+            .developerUsers(getDeveloperUsers(dev))
+            .attestationStatus(attestation != null ? "Published" : "")
+            .attestationPublishDate(attestation != null ? attestation.getDatePublished() : null)
+            .attestationPeriod(String.format("%s - %s", mostRecentPastPeriod.getPeriodStart().toString(),
+                    mostRecentPastPeriod.getPeriodEnd().toString()))
+            .informationBlocking(getAttestationResponse(attestation, INFORMATION_BLOCKING_ATTESTATION_ID))
+            .assurances(getAttestationResponse(attestation, ASSURANCES_ATTESTATION_ID))
+            .communications(getAttestationResponse(attestation, COMMUNICATIONS_ATTESTATION_ID))
+            .applicationProgrammingInterfaces(getAttestationResponse(attestation, API_ATTESTATION_ID))
+            .realWorldTesting(getAttestationResponse(attestation, RWT_ATTESTATION_ID))
+            .submitterName(getSubmitterName(attestation))
+            .submitterEmail(getSubmitterEmail(attestation))
+            .totalSurveillances(getTotalSurveillances(dev, logger))
+            .totalSurveillanceNonconformities(getTotalSurveillanceNonconformities(dev, logger))
+            .openSurveillanceNonconformities(getOpenSurveillanceNonconformities(dev, logger))
+            .totalDirectReviewNonconformities(getTotalDirectReviewNonconformities(dev, logger))
+            .openDirectReviewNonconformities(getOpenDirectReviewNonconformities(dev, logger))
+            .assurancesValidation(getAssurancesValidation(dev, logger))
+            .realWorldTestingValidation(getRealWorldTestingValidation(dev, logger))
+            .apiValidation(getApiValidation(dev, logger))
+            .activeAcbs(getActiveAcbs())
+            .developerAcbMap(getDeveloperAcbMapping(dev, logger))
+            .build();
+    }
+
     private Boolean doesActiveListingExistDuringAttestationPeriod(List<ListingSearchResult> listingsForDeveloper, AttestationPeriod period) {
         return listingsForDeveloper.stream()
                 .filter(listing -> isListingActiveDuringPeriod(listing, period))
@@ -177,9 +196,9 @@ public class DeveloperAttestationReportDataCollection {
         return developerDAO.findAll();
     }
 
-    private DeveloperAttestationSubmission getDeveloperAttestation(Long developerId, Long attestationPeriodId) {
-        List<DeveloperAttestationSubmission> attestations =
-                attestationDAO.getDeveloperAttestationSubmissionsByDeveloperAndPeriod(developerId, attestationPeriodId);
+    private AttestationSubmission getDeveloperAttestation(Long developerId, Long attestationPeriodId) {
+        List<AttestationSubmission> attestations =
+                attestationDAO.getAttestationSubmissionsByDeveloperAndPeriod(developerId, attestationPeriodId);
 
         if (attestations != null && attestations.size() > 0) {
             return attestations.get(0);
@@ -252,25 +271,46 @@ public class DeveloperAttestationReportDataCollection {
         return userContactText;
     }
 
-    private String getAttestationResponse(DeveloperAttestationSubmission attestation, Long attestationId) {
+    private String getAttestationResponse(AttestationSubmission attestation, Long conditionId) {
         if (attestation == null) {
             return "";
         } else {
-             AttestationSubmittedResponse response = attestation.getResponses().stream()
-                    .filter(resp -> resp.getAttestation().getId().equals(attestationId))
-                    .findAny()
-                    .orElse(null);
-            return response != null
-                ? String.format("%s : %s", response.getAttestation().getCondition().getName(), response.getResponse().getResponse())
-                : "";
+            String attestationResponse = attestation.getForm().getSectionHeadings().stream()
+                    .filter(section -> conditionId.equals(section.getId()))
+                    .flatMap(section -> section.getFormItems().get(0).getSubmittedResponses().stream())
+                    .map(submittedResponse -> submittedResponse.getResponse())
+                    .collect(Collectors.joining("; "));
+            if (attestationResponse == null) {
+                return "";
+            }
+            return attestationResponse;
         }
     }
 
-    private String getSubmitterName(DeveloperAttestationSubmission attestation) {
+    private String getAttestationOptionalResponse(AttestationSubmission attestation, Long conditionId) {
+        if (attestation == null) {
+            return "";
+        } else {
+            String attestationResponse = attestation.getForm().getSectionHeadings().stream()
+                    .filter(section -> conditionId.equals(section.getId()))
+                    .map(section -> section.getFormItems().get(0))
+                    .filter(formItem -> !CollectionUtils.isEmpty(formItem.getChildFormItems()))
+                    .map(formItem -> formItem.getChildFormItems().get(0))
+                    .flatMap(childFormItem -> childFormItem.getSubmittedResponses().stream())
+                    .map(submittedResponse -> submittedResponse.getResponse())
+                    .collect(Collectors.joining("; "));
+                if (attestationResponse == null) {
+                    return "";
+                }
+                return attestationResponse;
+        }
+    }
+
+    private String getSubmitterName(AttestationSubmission attestation) {
         return attestation != null ? attestation.getSignature() : "";
     }
 
-    private String getSubmitterEmail(DeveloperAttestationSubmission attestation) {
+    private String getSubmitterEmail(AttestationSubmission attestation) {
         return attestation != null ? attestation.getSignatureEmail() : "";
     }
 
@@ -358,5 +398,4 @@ public class DeveloperAttestationReportDataCollection {
                 .findAny()
                 .isPresent();
     }
-    **************************/
 }
