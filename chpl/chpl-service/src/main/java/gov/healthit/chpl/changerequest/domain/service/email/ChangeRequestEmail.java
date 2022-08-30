@@ -3,10 +3,11 @@ package gov.healthit.chpl.changerequest.domain.service.email;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.commonmark.node.Node;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -64,7 +65,7 @@ public abstract class ChangeRequestEmail {
                 .sorted(Comparator.comparing(SectionHeading::getSortOrder))
                 .map(sh -> Arrays.asList(
                         sh.getName(),
-                        convertPsuedoMarkdownToHtmlLink(NullSafeEvaluator.eval(() -> sh.getFormItems().get(0).getQuestion().getQuestion(), "Unknown")),
+                        convertMarkdownToHtml(NullSafeEvaluator.eval(() -> sh.getFormItems().get(0).getQuestion().getQuestion(), "Unknown")),
                         NullSafeEvaluator.eval(() -> sh.getFormItems().get(0).getSubmittedResponses().get(0).getResponse(), "")
                         + getNoncompliantCapResponses(NullSafeEvaluator.eval(() -> sh.getFormItems().get(0), null))))
                 .toList();
@@ -86,17 +87,11 @@ public abstract class ChangeRequestEmail {
         return responses.toString();
     }
 
-    private String convertPsuedoMarkdownToHtmlLink(String toConvert) {
-        String regex = "^(.*)\\[(.*)\\]\\((.*)\\)(.*)$";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(toConvert);
-        String converted = "";
-
-        if (matcher.find() && matcher.groupCount() == 4) {
-            converted = matcher.group(1) + "<a href=" + matcher.group(3) + ">" + matcher.group(2) + "</a>" + matcher.group(4);
-        } else {
-          converted = toConvert;
-        }
+    private String convertMarkdownToHtml(String toConvert) {
+        Parser parser  = Parser.builder().build();
+        Node document = parser.parse(toConvert);
+        HtmlRenderer renderer = HtmlRenderer.builder().build();
+        String converted = renderer.render(document);
         return converted;
     }
 }

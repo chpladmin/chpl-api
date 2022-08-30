@@ -8,11 +8,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
@@ -29,13 +27,11 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ConformanceMethodNormalizer {
     private ErrorMessageUtil msgUtil;
-    private FF4j ff4j;
     private List<ConformanceMethodCriteriaMap> conformanceMethodCriteriaMap = new ArrayList<ConformanceMethodCriteriaMap>();
 
     @Autowired
-    public ConformanceMethodNormalizer(ConformanceMethodDAO conformanceMethodDao, ErrorMessageUtil msgUtil, FF4j ff4j) {
+    public ConformanceMethodNormalizer(ConformanceMethodDAO conformanceMethodDao, ErrorMessageUtil msgUtil) {
         this.msgUtil = msgUtil;
-        this.ff4j = ff4j;
 
         try {
             this.conformanceMethodCriteriaMap = conformanceMethodDao.getAllConformanceMethodCriteriaMap();
@@ -45,10 +41,6 @@ public class ConformanceMethodNormalizer {
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
-        if (!ff4j.check(FeatureList.CONFORMANCE_METHOD)) {
-            return;
-        }
-
         if (!CollectionUtils.isEmpty(listing.getCertificationResults())) {
             listing.getCertificationResults().stream()
                 .forEach(certResult -> fillInConformanceMethodData(listing, certResult));
