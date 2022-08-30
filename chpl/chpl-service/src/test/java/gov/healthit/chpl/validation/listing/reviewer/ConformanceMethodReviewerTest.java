@@ -12,13 +12,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
@@ -59,7 +57,6 @@ public class ConformanceMethodReviewerTest {
     private CertificationResultRules certResultRules;
     private ResourcePermissions resourcePermissions;
     private ConformanceMethodReviewer conformanceMethodReviewer;
-    private FF4j ff4j;
 
     @Before
     public void before() throws EntityRetrievalException {
@@ -170,14 +167,9 @@ public class ConformanceMethodReviewerTest {
             .thenReturn(getF3());
 
         certResultDao = Mockito.mock(CertificationResultDAO.class);
-
-        ff4j = Mockito.mock(FF4j.class);
-        Mockito.when(ff4j.check(FeatureList.CONFORMANCE_METHOD))
-            .thenReturn(true);
-
         conformanceMethodReviewer = new ConformanceMethodReviewer(conformanceMethodDao, certResultDao,
                 msgUtil, new ValidationUtils(), certResultRules, criterionService,
-                resourcePermissions, ff4j);
+                resourcePermissions);
     }
 
     @Test

@@ -19,6 +19,7 @@ public class Form implements Serializable {
 
     private Long id;
     private String description;
+    private String instructions;
 
     @Singular
     private List<SectionHeading> sectionHeadings;
