@@ -35,8 +35,8 @@ public class ChangeRequestSearchRequestNormalizer {
     }
 
     private void normalizeTypes(ChangeRequestSearchRequest request) {
-        if (!CollectionUtils.isEmpty(request.getTypeNames())) {
-            request.setTypeNames(request.getTypeNames().stream()
+        if (!CollectionUtils.isEmpty(request.getChangeRequestTypeNames())) {
+            request.setChangeRequestTypeNames(request.getChangeRequestTypeNames().stream()
                     .filter(type -> !StringUtils.isBlank(type))
                     .map(type -> type.trim())
                     .collect(Collectors.toSet()));

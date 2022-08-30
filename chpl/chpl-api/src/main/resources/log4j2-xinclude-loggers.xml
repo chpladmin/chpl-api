@@ -216,6 +216,10 @@
         <AppenderRef ref="sendEmailJob" />
         <AppenderRef ref="sendEmailJobJson" />
     </Logger>
+    <Logger name="changeRequestsReportJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="changeRequestsReportJob" />
+        <AppenderRef ref="changeRequestsReportJobJson" />
+    </Logger>
     <Logger name="complaintsReportJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="complaintsReportJob" />
         <AppenderRef ref="complaintsReportJobJson" />
@@ -227,9 +231,5 @@
     <Logger name="developerAttestationCheckinReportJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="developerAttestationCheckinReportJob" />
         <AppenderRef ref="developerAttestationCheckinReportJobJson" />
-    </Logger>
-    <Logger name="conformanceMethodConversionJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="conformanceMethodConversionJob" />
-        <AppenderRef ref="conformanceMethodConversionJobJson" />
     </Logger>
 </Loggers>

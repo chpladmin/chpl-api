@@ -14,9 +14,11 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.KeyValueModel;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -24,6 +26,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class ChangeRequestSearchRequestValidatorTest {
     private static final String DEVELOPER_ID_INVALID_FORMAT = "The developerId parameter '%s' is not a valid number.";
     private static final String DEVELOPER_DOES_NOT_EXIST = "There is no developer in the system with the ID '%s'.";
+    private static final String ACB_DOES_NOT_EXIST = "There is no ONC-ACB in the system with the ID '%s'.";
     private static final String STATUS_NAME_INVALID = "The change request status name '%s' is not valid.";
     private static final String TYPE_NAME_INVALID = "The change request type name '%s' is not valid.";
     private static final String CURRENT_STATUS_DATE_INVALID_FORMAT = "The \"current status\" date '%s' is not valid. It must be in the format %s.";
@@ -38,6 +41,7 @@ public class ChangeRequestSearchRequestValidatorTest {
 
     private ChangeRequestManager changeRequestManager;
     private DeveloperDAO developerDao;
+    private CertificationBodyDAO acbDao;
     private ErrorMessageUtil msgUtil;
     private ChangeRequestSearchRequestValidator validator;
 
@@ -45,12 +49,15 @@ public class ChangeRequestSearchRequestValidatorTest {
     public void setup() {
         changeRequestManager = Mockito.mock(ChangeRequestManager.class);
         developerDao = Mockito.mock(DeveloperDAO.class);
+        acbDao = Mockito.mock(CertificationBodyDAO.class);
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.changeRequest.developerId.invalidFormat"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(DEVELOPER_ID_INVALID_FORMAT, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.changeRequest.developerId.doesNotExist"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(DEVELOPER_DOES_NOT_EXIST, i.getArgument(1), ""));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.changeRequest.acbId.doesNotExist"), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(ACB_DOES_NOT_EXIST, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.changeRequest.statusName.invalid"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(STATUS_NAME_INVALID, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.changeRequest.typeName.invalid"), ArgumentMatchers.anyString()))
@@ -73,7 +80,7 @@ public class ChangeRequestSearchRequestValidatorTest {
             .thenAnswer(i -> String.format(PAGE_SIZE_OUT_OF_RANGE, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.changeRequest.orderBy.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_ORDER_BY, i.getArgument(1), i.getArgument(2)));
-        validator = new ChangeRequestSearchRequestValidator(changeRequestManager, developerDao, msgUtil);
+        validator = new ChangeRequestSearchRequestValidator(changeRequestManager, developerDao, acbDao, msgUtil);
     }
 
     @Test
@@ -125,6 +132,62 @@ public class ChangeRequestSearchRequestValidatorTest {
             validator.validate(request);
         } catch (ValidationException ex) {
             fail("Should not execute.");
+        }
+    }
+
+    @Test
+    public void validate_acbIdDoesNotExist_addsError() throws EntityRetrievalException {
+        ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
+            .acbIds(Stream.of(1L).collect(Collectors.toSet()))
+            .build();
+
+        Mockito.when(acbDao.getById(ArgumentMatchers.eq(1L)))
+            .thenThrow(EntityRetrievalException.class);
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
+            assertTrue(ex.getErrorMessages().contains(String.format(ACB_DOES_NOT_EXIST, "1", "")));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_acbIdsOneExistsAndOneDoesNotExist_addsError() throws EntityRetrievalException {
+        ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
+            .acbIds(Stream.of(1L, 2L).collect(Collectors.toSet()))
+            .build();
+
+        Mockito.when(acbDao.getById(ArgumentMatchers.eq(1L)))
+            .thenThrow(EntityRetrievalException.class);
+        Mockito.when(acbDao.getById(ArgumentMatchers.eq(2L)))
+            .thenReturn(CertificationBodyDTO.builder().id(2L).build());
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
+            assertTrue(ex.getErrorMessages().contains(String.format(ACB_DOES_NOT_EXIST, "1", "")));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_acbIdsExist_noError() throws EntityRetrievalException {
+        ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
+            .acbIds(Stream.of(1L, 2L).collect(Collectors.toSet()))
+            .build();
+
+        Mockito.when(acbDao.getById(ArgumentMatchers.eq(1L)))
+            .thenReturn(CertificationBodyDTO.builder().id(1L).build());
+        Mockito.when(acbDao.getById(ArgumentMatchers.eq(2L)))
+            .thenReturn(CertificationBodyDTO.builder().id(2L).build());
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail("Should not execute.");
+            return;
         }
     }
 
@@ -227,7 +290,7 @@ public class ChangeRequestSearchRequestValidatorTest {
     @Test
     public void validate_invalidTypeName_addsError() {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
-            .typeNames(Stream.of("Sandwich").collect(Collectors.toSet()))
+            .changeRequestTypeNames(Stream.of("Sandwich").collect(Collectors.toSet()))
             .build();
         Mockito.when(changeRequestManager.getChangeRequestTypes())
             .thenReturn(Stream.of(new KeyValueModel(1L, "Demographic"), new KeyValueModel(2L, "Attestation")).collect(Collectors.toSet()));
@@ -245,7 +308,7 @@ public class ChangeRequestSearchRequestValidatorTest {
     @Test
     public void validate_invalidTypeNames_addsErrors() {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
-            .typeNames(Stream.of("Sandwich", "Horse").collect(Collectors.toSet()))
+            .changeRequestTypeNames(Stream.of("Sandwich", "Horse").collect(Collectors.toSet()))
             .build();
         Mockito.when(changeRequestManager.getChangeRequestTypes())
             .thenReturn(Stream.of(new KeyValueModel(1L, "Demographic"), new KeyValueModel(2L, "Attestation")).collect(Collectors.toSet()));
@@ -264,7 +327,7 @@ public class ChangeRequestSearchRequestValidatorTest {
     @Test
     public void validate_emptyTypeNames_noError() {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
-            .typeNames(Collections.EMPTY_SET)
+            .changeRequestTypeNames(Collections.EMPTY_SET)
             .build();
         Mockito.when(changeRequestManager.getChangeRequestTypes())
             .thenReturn(Stream.of(new KeyValueModel(1L, "Demographic"), new KeyValueModel(2L, "Attestation")).collect(Collectors.toSet()));
@@ -279,7 +342,7 @@ public class ChangeRequestSearchRequestValidatorTest {
     @Test
     public void validate_nullTypeNames_noError() {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder().build();
-        request.setTypeNames(null);
+        request.setChangeRequestTypeNames(null);
         Mockito.when(changeRequestManager.getChangeRequestTypes())
             .thenReturn(Stream.of(new KeyValueModel(1L, "Demographic"), new KeyValueModel(2L, "Attestation")).collect(Collectors.toSet()));
 
@@ -293,7 +356,7 @@ public class ChangeRequestSearchRequestValidatorTest {
     @Test
     public void validate_validTypeName_noError() {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
-                .typeNames(Stream.of("demographic").collect(Collectors.toSet()))
+                .changeRequestTypeNames(Stream.of("demographic").collect(Collectors.toSet()))
                 .build();
         Mockito.when(changeRequestManager.getChangeRequestTypes())
             .thenReturn(Stream.of(new KeyValueModel(1L, "Demographic"), new KeyValueModel(2L, "Attestation")).collect(Collectors.toSet()));
@@ -308,7 +371,7 @@ public class ChangeRequestSearchRequestValidatorTest {
     @Test
     public void validate_validTypeNames_noErrors() {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
-                .typeNames(Stream.of("DemoGRAPHic", "attestaTion").collect(Collectors.toSet()))
+                .changeRequestTypeNames(Stream.of("DemoGRAPHic", "attestaTion").collect(Collectors.toSet()))
                 .build();
         Mockito.when(changeRequestManager.getChangeRequestTypes())
             .thenReturn(Stream.of(new KeyValueModel(1L, "Demographic"), new KeyValueModel(2L, "Attestation")).collect(Collectors.toSet()));

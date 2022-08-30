@@ -34,6 +34,9 @@ public class FormEntity {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "instructions")
+    private String instructions;
+
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
@@ -50,6 +53,7 @@ public class FormEntity {
         return Form.builder()
                 .id(id)
                 .description(description)
+                .instructions(instructions)
                 .build();
     }
 }
