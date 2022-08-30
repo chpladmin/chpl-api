@@ -3,11 +3,9 @@ package gov.healthit.chpl.certifiedproduct.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
@@ -45,12 +43,11 @@ public class CertificationResultService {
     private OptionalStandardDAO optionalStandardDAO;
     private ConformanceMethodDAO conformanceMethodDAO;
     private TestToolDAO testToolDAO;
-    private FF4j ff4j;
 
     @Autowired
     public CertificationResultService(CertificationResultRules certRules, CertificationResultManager certResultManager,
             TestingFunctionalityManager testFunctionalityManager, CertificationResultDetailsDAO certificationResultDetailsDAO,
-            SvapDAO svapDAO, OptionalStandardDAO optionalStandardDAO, TestToolDAO testToolDAO, ConformanceMethodDAO conformanceMethodDAO, FF4j ff4j) {
+            SvapDAO svapDAO, OptionalStandardDAO optionalStandardDAO, TestToolDAO testToolDAO, ConformanceMethodDAO conformanceMethodDAO) {
         this.certRules = certRules;
         this.certResultManager = certResultManager;
         this.testFunctionalityManager = testFunctionalityManager;
@@ -59,7 +56,6 @@ public class CertificationResultService {
         this.optionalStandardDAO = optionalStandardDAO;
         this.conformanceMethodDAO = conformanceMethodDAO;
         this.testToolDAO = testToolDAO;
-        this.ff4j = ff4j;
     }
 
     public List<CertificationResult> getCertificationResults(CertifiedProductSearchDetails searchDetails) throws EntityRetrievalException {
@@ -147,7 +143,7 @@ public class CertificationResultService {
 
     private List<ConformanceMethod> getAvailableConformanceMethodsForCriteria(CertificationResult result, List<ConformanceMethodCriteriaMap> conformanceMethodCriteriaMap) {
         return conformanceMethodCriteriaMap.stream()
-                .filter(cmcm -> ff4j.check(FeatureList.CONFORMANCE_METHOD) && cmcm.getCriterion().getId().equals(result.getCriterion().getId()))
+                .filter(cmcm -> cmcm.getCriterion().getId().equals(result.getCriterion().getId()))
                 .map(cmcm -> cmcm.getConformanceMethod())
                 .collect(Collectors.toList());
     }

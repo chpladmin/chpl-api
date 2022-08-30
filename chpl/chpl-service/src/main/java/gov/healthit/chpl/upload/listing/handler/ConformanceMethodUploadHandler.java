@@ -9,11 +9,9 @@ import java.util.stream.IntStream;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.upload.listing.Headings;
@@ -22,19 +20,13 @@ import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 @Component("conformanceMethodUploadHandler")
 public class ConformanceMethodUploadHandler {
     private ListingUploadHandlerUtil uploadUtil;
-    private FF4j ff4j;
 
     @Autowired
-    public ConformanceMethodUploadHandler(FF4j ff4j, ListingUploadHandlerUtil uploadUtil) {
-        this.ff4j = ff4j;
+    public ConformanceMethodUploadHandler(ListingUploadHandlerUtil uploadUtil) {
         this.uploadUtil = uploadUtil;
     }
 
     public List<CertificationResultConformanceMethod> handle(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        if (!ff4j.check(FeatureList.CONFORMANCE_METHOD)) {
-            return new ArrayList<CertificationResultConformanceMethod>();
-        }
-
         List<CertificationResultConformanceMethod> conformanceMethods = new ArrayList<CertificationResultConformanceMethod>();
         List<String> conformanceMethodNames = parseConformanceMethodNames(certHeadingRecord, certResultRecords);
         List<String> conformanceMethodVersions = parseConformanceMethodVersions(certHeadingRecord, certResultRecords);
