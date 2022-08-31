@@ -12,23 +12,22 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.service.realworldtesting.RealWorldTestingCriteriaService;
 
 @Component
 public class AttestationValidationService {
 
-    private List<CertificationCriterion> realWorldTestingCriteria;
+    private RealWorldTestingCriteriaService realWorldTestingCriteriaService;
     private List<CertificationCriterion> assurancesCriteria;
     private List<CertificationCriterion> apiCriteria;
 
     @Autowired
-    public AttestationValidationService(CertificationCriterionService certificationCriterionService,
-            @Value("${realWorldTestingCriteriaKeys}") String[] realWorldTestingCriteriaKeys,
+    public AttestationValidationService(RealWorldTestingCriteriaService realWorldTestingCriteriaService,
+            CertificationCriterionService certificationCriterionService,
             @Value("${assurancesCriteriaKeys}") String[] assurancesCriteriaKeys,
             @Value("${apiCriteriaKeys}") String[] apiCriteriaKeys) {
 
-        realWorldTestingCriteria = Arrays.asList(realWorldTestingCriteriaKeys).stream()
-                .map(key -> certificationCriterionService.get(key))
-                .collect(Collectors.toList());
+        this.realWorldTestingCriteriaService = realWorldTestingCriteriaService;
 
         assurancesCriteria = Arrays.asList(assurancesCriteriaKeys).stream()
                 .map(key -> certificationCriterionService.get(key))
@@ -43,8 +42,7 @@ public class AttestationValidationService {
         AttestationValidationContext context = AttestationValidationContext.builder()
                 .developer(developer)
                 .listings(listings)
-                .realWorldTestingCriteria(realWorldTestingCriteria)
-                .assuranceCriteria(assurancesCriteria)
+                .realWorldTestingCriteria(realWorldTestingCriteriaService.getEligibleCriteria(year))
                 .apiCriteria(apiCriteria)
                 .build();
 
@@ -56,7 +54,6 @@ public class AttestationValidationService {
         AttestationValidationContext context = AttestationValidationContext.builder()
                 .developer(developer)
                 .listings(listings)
-                .realWorldTestingCriteria(realWorldTestingCriteria)
                 .assuranceCriteria(assurancesCriteria)
                 .build();
 
@@ -69,7 +66,6 @@ public class AttestationValidationService {
                 .developer(developer)
                 .listings(listings)
                 .apiCriteria(apiCriteria)
-                .assuranceCriteria(assurancesCriteria)
                 .build();
 
         ApiValidation apiValidation = new ApiValidation();

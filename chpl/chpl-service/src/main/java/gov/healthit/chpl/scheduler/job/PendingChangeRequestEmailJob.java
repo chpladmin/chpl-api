@@ -103,7 +103,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         try {
             setSecurityContext();
             acbs = getAppropriateAcbs(jobContext);
-            searchResults = getAllChangeRequestSearchResults(getSearchRequest(acbs));
+            searchResults = getPendingChangeRequestSearchResults(getSearchRequest(acbs));
         } catch (ValidationException ex) {
             LOGGER.catching(ex);
         }
@@ -169,7 +169,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
                 .build();
     }
 
-    private List<ChangeRequestSearchResult> getAllChangeRequestSearchResults(ChangeRequestSearchRequest searchRequest)
+    private List<ChangeRequestSearchResult> getPendingChangeRequestSearchResults(ChangeRequestSearchRequest searchRequest)
         throws ValidationException {
         LOGGER.info("Getting all change requests...");
         List<ChangeRequestSearchResult> searchResults = new ArrayList<ChangeRequestSearchResult>();

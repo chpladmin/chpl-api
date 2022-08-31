@@ -18,10 +18,10 @@ import org.apache.logging.log4j.Logger;
 import org.jfree.data.time.DateRange;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.attestation.dao.AttestationDAO;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmission;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
+import gov.healthit.chpl.attestation.manager.AttestationSubmissionService;
 import gov.healthit.chpl.attestation.report.validation.AttestationValidationService;
 import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -64,7 +64,7 @@ public class DeveloperAttestationReportDataCollection {
     private DeveloperDAO developerDAO;
     private UserDeveloperMapDAO userDeveloperMapDao;
     private ListingSearchService listingSearchService;
-    private AttestationDAO attestationDAO;
+    private AttestationSubmissionService attestationSubmissionService;
     private DirectReviewSearchService directReviewService;
     private AttestationValidationService attestationValidationService;
     private CertificationBodyDAO certificationBodyDAO;
@@ -75,13 +75,13 @@ public class DeveloperAttestationReportDataCollection {
 
     public DeveloperAttestationReportDataCollection(DeveloperDAO developerDAO,
             UserDeveloperMapDAO userDeveloperMapDao, ListingSearchService listingSearchService,
-            AttestationDAO attestationDAO,
+            AttestationSubmissionService attestationSubmissionService,
             DirectReviewSearchService directReviewService, AttestationValidationService attestationValidationService, CertificationBodyDAO certificationBodyDAO,
             DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO, AttestationPeriodService attestationPeriodService) {
         this.developerDAO = developerDAO;
         this.userDeveloperMapDao = userDeveloperMapDao;
         this.listingSearchService = listingSearchService;
-        this.attestationDAO = attestationDAO;
+        this.attestationSubmissionService = attestationSubmissionService;
         this.directReviewService = directReviewService;
         this.attestationValidationService = attestationValidationService;
         this.certificationBodyDAO = certificationBodyDAO;
@@ -198,7 +198,7 @@ public class DeveloperAttestationReportDataCollection {
 
     private AttestationSubmission getDeveloperAttestation(Long developerId, Long attestationPeriodId) {
         List<AttestationSubmission> attestations =
-                attestationDAO.getAttestationSubmissionsByDeveloperAndPeriod(developerId, attestationPeriodId);
+                attestationSubmissionService.getAttestationSubmissions(developerId, attestationPeriodId);
 
         if (attestations != null && attestations.size() > 0) {
             return attestations.get(0);
