@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -61,6 +62,8 @@ public abstract class ChangeRequestDetailsService<T> {
     public abstract ChangeRequest create(ChangeRequest cr);
 
     public abstract ChangeRequest update(ChangeRequest cr) throws InvalidArgumentsException;
+
+    public abstract List<CertificationBody> getAssociatedCertificationBodies(ChangeRequest cr);
 
     protected abstract ChangeRequest execute(ChangeRequest cr) throws EntityRetrievalException, EntityCreationException;
     protected abstract void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException;
