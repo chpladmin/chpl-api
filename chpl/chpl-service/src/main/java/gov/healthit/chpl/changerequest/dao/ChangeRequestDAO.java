@@ -14,10 +14,12 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestConverter;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
+import gov.healthit.chpl.changerequest.entity.ChangeRequestCertificationBodyMapEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestTypeEntity;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
@@ -44,7 +46,22 @@ public class ChangeRequestDAO extends BaseDAOImpl {
     public ChangeRequest create(ChangeRequest cr) throws EntityRetrievalException {
         ChangeRequestEntity entity = getNewEntity(cr);
         create(entity);
+        addCertificationBodies(entity.getId(), cr.getCertificationBodies());
         return ChangeRequestConverter.convert(getEntityById(entity.getId()));
+    }
+
+    private void addCertificationBodies(Long changeRequestId, List<CertificationBody> certificationBodies) {
+        certificationBodies.stream()
+                .forEach(acb -> {
+                    ChangeRequestCertificationBodyMapEntity entity = new ChangeRequestCertificationBodyMapEntity();
+                    entity.setCertificationBodyId(acb.getId());
+                    entity.setChangeRequestId(changeRequestId);
+                    entity.setDeleted(false);
+                    entity.setCreationDate(new Date());
+                    entity.setLastModifiedDate(new Date());
+                    entity.setLastModifiedUser(AuthUtil.getAuditId());
+                    create(entity);
+                });
     }
 
     public ChangeRequest get(Long changeRequestId) throws EntityRetrievalException {
@@ -125,9 +142,10 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "LEFT JOIN FETCH dev.contact "
                 + "LEFT JOIN FETCH dev.statusEvents statusEvents "
                 + "LEFT JOIN FETCH statusEvents.developerStatus "
-                + "LEFT JOIN FETCH dev.certificationBodyMaps devAcbMaps "
-                + "LEFT JOIN FETCH devAcbMaps.certificationBody devAcb "
-                + "LEFT JOIN FETCH devAcb.address "
+                + "LEFT JOIN FETCH dev.attestations devAtt "
+                + "LEFT JOIN FETCH devAtt.attestationPeriod per "
+                + "LEFT JOIN FETCH cr.certificationBodies cb "
+                + "LEFT JOIN FETCH cb.address "
                 //Some of the below fields related to crStatus should not be LEFT JOINed...
                 //a change request always has a status. However, during creation of a change request
                 //the change request object tries to be populated before the status is created
@@ -167,9 +185,10 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "LEFT JOIN FETCH dev.contact "
                 + "LEFT JOIN FETCH dev.statusEvents statusEvents "
                 + "LEFT JOIN FETCH statusEvents.developerStatus "
-                + "LEFT JOIN FETCH dev.certificationBodyMaps devAcbMaps "
-                + "LEFT JOIN FETCH devAcbMaps.certificationBody devAcb "
-                + "LEFT JOIN FETCH devAcb.address "
+                + "LEFT JOIN FETCH dev.attestations devAtt "
+                + "LEFT JOIN FETCH devAtt.attestationPeriod per "
+                + "LEFT JOIN FETCH cr.certificationBodies cb "
+                + "LEFT JOIN FETCH cb.address "
                 + "JOIN FETCH cr.statuses crStatus "
                 + "JOIN FETCH crStatus.changeRequestStatusType "
                 + "LEFT JOIN FETCH crStatus.certificationBody acb "
@@ -197,9 +216,10 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "LEFT JOIN FETCH dev.contact "
                 + "LEFT JOIN FETCH dev.statusEvents statusEvents "
                 + "LEFT JOIN FETCH statusEvents.developerStatus "
-                + "LEFT JOIN FETCH dev.certificationBodyMaps devAcbMaps "
-                + "LEFT JOIN FETCH devAcbMaps.certificationBody devAcb "
-                + "LEFT JOIN FETCH devAcb.address "
+                + "LEFT JOIN FETCH dev.attestations devAtt "
+                + "LEFT JOIN FETCH devAtt.attestationPeriod per "
+                + "LEFT JOIN FETCH cr.certificationBodies cb "
+                + "LEFT JOIN FETCH cb.address "
                 + "JOIN FETCH cr.statuses crStatus "
                 + "JOIN FETCH crStatus.changeRequestStatusType "
                 + "LEFT JOIN FETCH crStatus.certificationBody acb "
@@ -254,7 +274,6 @@ public class ChangeRequestDAO extends BaseDAOImpl {
     @Deprecated
     private List<ChangeRequestEntity> getEntities()
             throws EntityRetrievalException {
-
         String hql = "SELECT DISTINCT cr "
                 + "FROM ChangeRequestEntity cr  "
                 + "JOIN FETCH cr.changeRequestType crt "
@@ -263,9 +282,10 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "LEFT JOIN FETCH dev.contact "
                 + "LEFT JOIN FETCH dev.statusEvents statusEvents "
                 + "LEFT JOIN FETCH statusEvents.developerStatus "
-                + "LEFT JOIN FETCH dev.certificationBodyMaps devAcbMaps "
-                + "LEFT JOIN FETCH devAcbMaps.certificationBody devAcb "
-                + "LEFT JOIN FETCH devAcb.address "
+                + "LEFT JOIN FETCH dev.attestations devAtt "
+                + "LEFT JOIN FETCH devAtt.attestationPeriod per "
+                + "LEFT JOIN FETCH cr.certificationBodies cb "
+                + "LEFT JOIN FETCH cb.address "
                 + "JOIN FETCH cr.statuses crStatus "
                 + "JOIN FETCH crStatus.changeRequestStatusType "
                 + "LEFT JOIN FETCH crStatus.certificationBody acb "
@@ -286,8 +306,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "FROM ChangeRequestEntity cr  "
                 + "JOIN FETCH cr.changeRequestType crt "
                 + "JOIN FETCH cr.developer dev "
-                + "LEFT JOIN FETCH dev.certificationBodyMaps devAcbMaps "
-                + "LEFT JOIN FETCH devAcbMaps.certificationBody devAcb "
+                + "LEFT JOIN FETCH cr.certificationBodies cb "
                 + "JOIN FETCH cr.statuses crStatus "
                 + "JOIN FETCH crStatus.changeRequestStatusType "
                 + "LEFT JOIN FETCH crStatus.certificationBody acb "
@@ -307,8 +326,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "FROM ChangeRequestEntity cr  "
                 + "JOIN FETCH cr.changeRequestType crt "
                 + "JOIN FETCH cr.developer dev "
-                + "LEFT JOIN FETCH dev.certificationBodyMaps devAcbMaps "
-                + "LEFT JOIN FETCH devAcbMaps.certificationBody devAcb "
+                + "LEFT JOIN FETCH cr.certificationBodies cb "
                 + "JOIN FETCH cr.statuses crStatus "
                 + "JOIN FETCH crStatus.changeRequestStatusType "
                 + "LEFT JOIN FETCH crStatus.certificationBody acb "
@@ -330,8 +348,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "FROM ChangeRequestEntity cr "
                 + "JOIN FETCH cr.changeRequestType "
                 + "JOIN FETCH cr.developer dev "
-                + "LEFT JOIN FETCH dev.certificationBodyMaps devAcbMaps "
-                + "LEFT JOIN FETCH devAcbMaps.certificationBody devAcb "
+                + "LEFT JOIN FETCH cr.certificationBodies cb "
                 + "JOIN FETCH cr.statuses crStatus "
                 + "JOIN FETCH crStatus.changeRequestStatusType "
                 + "LEFT JOIN FETCH crStatus.certificationBody acb "

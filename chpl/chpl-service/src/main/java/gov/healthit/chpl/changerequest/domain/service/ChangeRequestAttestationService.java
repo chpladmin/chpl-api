@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmission;
+import gov.healthit.chpl.attestation.manager.AttestationCertificationBodyService;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestAttestationDAO;
@@ -23,6 +24,7 @@ import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmission
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.auth.UserDTO;
@@ -45,6 +47,8 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 public class ChangeRequestAttestationService extends ChangeRequestDetailsService<ChangeRequestAttestationSubmission> {
+    private static final Integer MAX_PAGE_SIZE = 100;
+
     private ChangeRequestDAO crDAO;
     private ChangeRequestAttestationDAO crAttestationDAO;
     private AttestationManager attestationManager;
@@ -52,6 +56,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     private UserDAO userDAO;
     private DeveloperDAO developerDAO;
     private ActivityManager activityManager;
+    private AttestationCertificationBodyService attestationCertificationBodyService;
     private FormValidator formValidator;
     private FormService formService;
     private AttestationEmails attestationEmails;
@@ -64,7 +69,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
             UserDeveloperMapDAO userDeveloperMapDAO, AttestationManager attestationManager,
             AttestationPeriodService attestationPeriodService, UserDAO userDAO, DeveloperDAO developerDAO,
             ActivityManager activityManager, FormService formService, FormValidator formValidator,
-            AttestationEmails attestationEmails) {
+            AttestationEmails attestationEmails, AttestationCertificationBodyService atttesAttestationCertificationBodyService) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crAttestationDAO = crAttestationDAO;
@@ -73,6 +78,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         this.userDAO = userDAO;
         this.developerDAO = developerDAO;
         this.activityManager = activityManager;
+        this.attestationCertificationBodyService = atttesAttestationCertificationBodyService;
         this.formService = formService;
         this.formValidator = formValidator;
         this.attestationEmails = attestationEmails;
@@ -180,6 +186,12 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
             LOGGER.error("Error writing activity about attestation submission approval.", ex);
         }
         return cr;
+    }
+
+    @Override
+    public List<CertificationBody> getAssociatedCertificationBodies(ChangeRequest cr) {
+        return attestationCertificationBodyService.getAssociatedCertificationBodies(
+                cr.getDeveloper().getId(), attestationPeriodService.getSubmittableAttestationPeriod(cr.getDeveloper().getId()).getId());
     }
 
     private void sendWithdrawnDetailsEmail(ChangeRequest cr) throws EmailNotSentException {

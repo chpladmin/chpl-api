@@ -78,6 +78,7 @@ public class DeveloperAttestationReportDataCollection {
             AttestationSubmissionService attestationSubmissionService,
             DirectReviewSearchService directReviewService, AttestationValidationService attestationValidationService, CertificationBodyDAO certificationBodyDAO,
             DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO, AttestationPeriodService attestationPeriodService) {
+
         this.developerDAO = developerDAO;
         this.userDeveloperMapDao = userDeveloperMapDao;
         this.listingSearchService = listingSearchService;
@@ -385,9 +386,8 @@ public class DeveloperAttestationReportDataCollection {
     private Map<Pair<Long, Long>, Boolean> getDeveloperAcbMapping(Developer developer, Logger logger) {
         Map<Pair<Long, Long>, Boolean> developerAcbMap = new HashMap<Pair<Long, Long>, Boolean>();
 
-        getListingDataForDeveloper(developer, logger).stream()
-                .filter(listing -> isListingActiveDuringPeriod(listing, attestationPeriodService.getMostRecentPastAttestationPeriod()))
-                .forEach(listing -> developerAcbMap.put(Pair.of(developer.getId(), listing.getCertificationBody().getId()), true));
+        attestationCertificationBodyService.getAssociatedCertificationBodies(developer.getId()).stream()
+            .forEach(acb -> developerAcbMap.put(Pair.of(developer.getId(), acb.getId()), true));
 
         return developerAcbMap;
     }

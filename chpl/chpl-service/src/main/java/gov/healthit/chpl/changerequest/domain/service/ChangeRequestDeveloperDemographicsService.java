@@ -1,6 +1,7 @@
 package gov.healthit.chpl.changerequest.domain.service;
 
 import java.text.DateFormat;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -12,10 +13,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDeveloperDemographicsDAO;
+import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.domain.Address;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.contact.PointOfContact;
@@ -38,6 +41,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     private ChangeRequestDeveloperDemographicsDAO crDeveloperDemographicsDAO;
     private DeveloperManager developerManager;
     private ActivityManager activityManager;
+    private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
     private ChplEmailFactory chplEmailFactory;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
@@ -61,13 +65,14 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
 
     @Autowired
     public ChangeRequestDeveloperDemographicsService(ChangeRequestDAO crDAO, ChangeRequestDeveloperDemographicsDAO crDeveloperDemographicsDAO,
-            DeveloperManager developerManager, UserDeveloperMapDAO userDeveloperMapDAO,
-            ActivityManager activityManager, ChplEmailFactory chplEmailFactory, ChplHtmlEmailBuilder chplHtmlEmailBuilder) {
+            DeveloperManager developerManager, UserDeveloperMapDAO userDeveloperMapDAO, ActivityManager activityManager,
+            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO, ChplEmailFactory chplEmailFactory, ChplHtmlEmailBuilder chplHtmlEmailBuilder) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crDeveloperDemographicsDAO = crDeveloperDemographicsDAO;
         this.developerManager = developerManager;
         this.activityManager = activityManager;
+        this.developerCertificationBodyMapDAO = developerCertificationBodyMapDAO;
         this.chplEmailFactory = chplEmailFactory;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
     }
@@ -112,6 +117,11 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public List<CertificationBody> getAssociatedCertificationBodies(ChangeRequest cr) {
+        return developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(cr.getDeveloper().getId());
     }
 
     @Override
