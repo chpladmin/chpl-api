@@ -16,7 +16,6 @@ import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult;
-import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
@@ -36,17 +35,15 @@ public class DeveloperAttestationCheckInReportDataCollector {
     private AttestationManager attestationManager;
     private ChangeRequestDAO changeRequestDAO;
     private DeveloperAttestationPeriodCalculator developerAttestationPeriodCalculator;
-    private CertificationBodyDAO certificationBodyDAO;
     private DeveloperDAO developerDAO;
     private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
 
     public DeveloperAttestationCheckInReportDataCollector(AttestationManager attestationManager, ChangeRequestDAO changeRequestDAO,
-            DeveloperAttestationPeriodCalculator developerAttestationPeriodCalculator, CertificationBodyDAO certificationBodyDAO,
+            DeveloperAttestationPeriodCalculator developerAttestationPeriodCalculator,
             DeveloperDAO developerDAO, DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO) {
         this.attestationManager = attestationManager;
         this.changeRequestDAO = changeRequestDAO;
         this.developerAttestationPeriodCalculator = developerAttestationPeriodCalculator;
-        this.certificationBodyDAO = certificationBodyDAO;
         this.developerDAO = developerDAO;
         this.developerCertificationBodyMapDAO = developerCertificationBodyMapDAO;
     }
