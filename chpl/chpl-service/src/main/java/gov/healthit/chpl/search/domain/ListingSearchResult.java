@@ -19,6 +19,7 @@ import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -126,6 +127,7 @@ public class ListingSearchResult implements Serializable {
     @SuperBuilder
     @NoArgsConstructor
     @AllArgsConstructor
+    @EqualsAndHashCode
     public static class IdNamePairSearchResult implements Serializable {
         private static final long serialVersionUID = -2377078036832863130L;
         private Long id;

@@ -34,7 +34,7 @@ import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.SplitVersionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -61,7 +61,7 @@ public class ProductVersionController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @DeprecatedResponseFields(responseClass = ProductVersion.class)
+    @DeprecatedApiResponseFields(responseClass = ProductVersion.class, friendlyUrl = "/versions")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ProductVersion> getVersionsByProduct(@RequestParam(required = true) final Long productId)
             throws InvalidArgumentsException {
@@ -91,7 +91,7 @@ public class ProductVersionController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @DeprecatedResponseFields(responseClass = ProductVersion.class)
+    @DeprecatedApiResponseFields(responseClass = ProductVersion.class, friendlyUrl = "/versions/{versionId}")
     @RequestMapping(value = "/{versionId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ProductVersion getProductVersionById(@PathVariable("versionId") final Long versionId)
             throws EntityRetrievalException {
@@ -117,7 +117,7 @@ public class ProductVersionController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = ProductVersion.class)
+    @DeprecatedApiResponseFields(responseClass = ProductVersion.class, httpMethod = "PUT", friendlyUrl = "/versions")
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public ResponseEntity<ProductVersion> updateVersion(
@@ -184,7 +184,7 @@ public class ProductVersionController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedResponseFields(responseClass = SplitVersionResponse.class)
+    @DeprecatedApiResponseFields(responseClass = SplitVersionResponse.class, httpMethod = "POST", friendlyUrl = "/versions/{versionId}/split")
     @RequestMapping(value = "/{versionId}/split", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public ResponseEntity<SplitVersionResponse> splitVersion(@PathVariable("versionId") final Long versionId,

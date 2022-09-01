@@ -28,6 +28,7 @@ public class FormService {
         return Form.builder()
                 .id(formEntity.getId())
                 .description(formEntity.getDescription())
+                .instructions(formEntity.getInstructions())
                 .sectionHeadings(organizeFormItemsIntoSectionHeadings(getFormItems(formEntity.getId(), null)))
                 .build();
     }

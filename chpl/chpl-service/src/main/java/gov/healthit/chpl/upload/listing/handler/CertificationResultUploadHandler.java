@@ -21,7 +21,6 @@ import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 public class CertificationResultUploadHandler {
     private CertificationCriterionUploadHandler criterionHandler;
     private AdditionalSoftwareUploadHandler additionalSoftwareHandler;
-    private TestProcedureUploadHandler testProcedureHandler;
     private ConformanceMethodUploadHandler conformanceMethodHandler;
     private TestToolUploadHandler testToolHandler;
     private TestDataUploadHandler testDataHandler;
@@ -30,14 +29,12 @@ public class CertificationResultUploadHandler {
     @Autowired
     public CertificationResultUploadHandler(CertificationCriterionUploadHandler criterionHandler,
             AdditionalSoftwareUploadHandler additionalSoftwareHandler,
-            TestProcedureUploadHandler testProcedureHandler,
             ConformanceMethodUploadHandler conformanceMethodHandler,
             TestToolUploadHandler testToolHandler,
             TestDataUploadHandler testDataHandler,
             ListingUploadHandlerUtil uploadUtil) {
         this.criterionHandler = criterionHandler;
         this.additionalSoftwareHandler = additionalSoftwareHandler;
-        this.testProcedureHandler = testProcedureHandler;
         this.conformanceMethodHandler = conformanceMethodHandler;
         this.testToolHandler = testToolHandler;
         this.testDataHandler = testDataHandler;
@@ -59,7 +56,6 @@ public class CertificationResultUploadHandler {
                 .optionalStandards(parseOptionalStandards(certHeadingRecord, certResultRecords))
                 .additionalSoftware(additionalSoftwareHandler.handle(certHeadingRecord, certResultRecords))
                 .testDataUsed(testDataHandler.handle(certHeadingRecord, certResultRecords))
-                .testProcedures(testProcedureHandler.handle(certHeadingRecord, certResultRecords))
                 .conformanceMethods(conformanceMethodHandler.handle(certHeadingRecord, certResultRecords))
                 .testToolsUsed(testToolHandler.handle(certHeadingRecord, certResultRecords))
                 .exportDocumentation(parseExportDocumentation(certHeadingRecord, certResultRecords))

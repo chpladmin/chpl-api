@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductDTO;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 
 @Component
@@ -118,14 +117,6 @@ public class CuresUpdateService {
     public Boolean isCuresUpdate(CertifiedProductSearchDetails listing) {
         List<Long> criteriaIds = listing.getCertificationResults().stream()
                 .filter(criterion -> criterion.isSuccess() && !criterion.getCriterion().getRemoved())
-                .map(criterion -> criterion.getCriterion().getId())
-                .collect(Collectors.toList());
-        return isCuresUpdate(criteriaIds);
-    }
-
-    public Boolean isCuresUpdate(PendingCertifiedProductDTO listing) {
-        List<Long> criteriaIds = listing.getCertificationCriterion().stream()
-                .filter(criterion -> criterion.getMeetsCriteria() && !criterion.getCriterion().getRemoved())
                 .map(criterion -> criterion.getCriterion().getId())
                 .collect(Collectors.toList());
         return isCuresUpdate(criteriaIds);
