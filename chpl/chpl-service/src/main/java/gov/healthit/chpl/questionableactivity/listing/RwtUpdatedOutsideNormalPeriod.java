@@ -30,9 +30,11 @@ public abstract class RwtUpdatedOutsideNormalPeriod {
     }
 
     private String getFormatRwtInfo(String url, LocalDate checkDate) {
-        return (checkDate != null ? checkDate.toString() : "")
-                + (checkDate != null ? " : " : "")
-                + (url != null ? url : "");
+        return "{"
+                + (checkDate != null ? checkDate.toString() : "NULL")
+                + "; "
+                + (url != null ? url : "NULL")
+                + "}";
     }
 
     private LocalDate getNormalUpdatePeriodBegin() {
