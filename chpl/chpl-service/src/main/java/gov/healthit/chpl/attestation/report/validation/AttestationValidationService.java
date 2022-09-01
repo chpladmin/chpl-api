@@ -1,6 +1,7 @@
 package gov.healthit.chpl.attestation.report.validation;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,12 +40,11 @@ public class AttestationValidationService {
     }
 
     public Boolean validateRealWorldTesting(Developer developer, List<ListingSearchResult> listings) {
+        Integer currentYear = Calendar.getInstance().get(Calendar.YEAR);
         AttestationValidationContext context = AttestationValidationContext.builder()
                 .developer(developer)
                 .listings(listings)
-                //TODO:
-                //.realWorldTestingCriteria(realWorldTestingCriteriaService.getEligibleCriteria(year))
-                .apiCriteria(apiCriteria)
+                .realWorldTestingCriteria(realWorldTestingCriteriaService.getEligibleCriteria(currentYear))
                 .build();
 
         RealWorldTestingValidation rwtValidation = new RealWorldTestingValidation();
