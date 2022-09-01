@@ -241,7 +241,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "FROM ChangeRequestEntity cr "
                 + "JOIN FETCH cr.changeRequestType crType "
                 + "JOIN FETCH cr.certificationBodies crAcbs "
-                + "JOIN FETCH crAcbs.address "
+                + "LEFT JOIN FETCH crAcbs.address "
                 + "JOIN FETCH cr.developer dev "
                 + "LEFT JOIN FETCH dev.address "
                 + "LEFT JOIN FETCH dev.contact "
