@@ -49,12 +49,12 @@ public abstract class ChangeRequestEmail {
     public String getApprovalBody(ChangeRequest cr) {
         if (cr.getCurrentStatus().getCertificationBody() != null) {
             return cr.getCurrentStatus().getCertificationBody().getName();
-        } else if (cr.getCurrentStatus().getUserPermission().getId().equals(adminPermission)) {
-            return "CHPL Admin";
-        } else if (cr.getCurrentStatus().getUserPermission().getId().equals(oncPermission)) {
+        } else if (cr.getCurrentStatus().getUserPermission().getId().equals(oncPermission)
+                || cr.getCurrentStatus().getUserPermission().getId().equals(adminPermission)) {
             return "ONC";
         } else {
-            return "";
+            LOGGER.warn("Unexpected change request ACB or User Permission. Change Requst ID: " + cr.getId());
+            return "an administrator";
         }
     }
 
