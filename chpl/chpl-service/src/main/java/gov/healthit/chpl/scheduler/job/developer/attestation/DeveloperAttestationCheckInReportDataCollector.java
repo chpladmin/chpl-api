@@ -35,17 +35,17 @@ public class DeveloperAttestationCheckInReportDataCollector {
 
     private AttestationManager attestationManager;
     private ChangeRequestDAO changeRequestDAO;
-    private DeveloperAttestationReportDataCollection developerAttestationReportDataCollection;
+    private DeveloperAttestationPeriodCalculator developerAttestationPeriodCalculator;
     private CertificationBodyDAO certificationBodyDAO;
     private DeveloperDAO developerDAO;
     private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
 
     public DeveloperAttestationCheckInReportDataCollector(AttestationManager attestationManager, ChangeRequestDAO changeRequestDAO,
-            DeveloperAttestationReportDataCollection developerAttestationReportDataCollection, CertificationBodyDAO certificationBodyDAO,
+            DeveloperAttestationPeriodCalculator developerAttestationPeriodCalculator, CertificationBodyDAO certificationBodyDAO,
             DeveloperDAO developerDAO, DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO) {
         this.attestationManager = attestationManager;
         this.changeRequestDAO = changeRequestDAO;
-        this.developerAttestationReportDataCollection = developerAttestationReportDataCollection;
+        this.developerAttestationPeriodCalculator = developerAttestationPeriodCalculator;
         this.certificationBodyDAO = certificationBodyDAO;
         this.developerDAO = developerDAO;
         this.developerCertificationBodyMapDAO = developerCertificationBodyMapDAO;
@@ -99,10 +99,15 @@ public class DeveloperAttestationCheckInReportDataCollector {
                         .map(acb -> acb.getName())
                         .collect(Collectors.joining("; ")))
                 .informationBlockingResponse(getAttestationResponse(cr, INFO_BLOCKING_CONDITION))
+                .informationBlockingNoncompliantResponse(getAttestationOptionalResponse(cr, INFO_BLOCKING_CONDITION))
                 .assurancesResponse(getAttestationResponse(cr, ASSURANCES_CONDITION))
+                .assurancesNoncompliantResponse(getAttestationOptionalResponse(cr, ASSURANCES_CONDITION))
                 .communicationsResponse(getAttestationResponse(cr, COMMUNICATIONS_CONDITION))
+                .communicationsNoncompliantResponse(getAttestationOptionalResponse(cr, COMMUNICATIONS_CONDITION))
                 .rwtResponse(getAttestationResponse(cr, RWT_CONDITION))
+                .rwtNoncompliantResponse(getAttestationOptionalResponse(cr, RWT_CONDITION))
                 .apiResponse(getAttestationResponse(cr, API_CONDITION))
+                .apiNoncompliantResponse(getAttestationOptionalResponse(cr, API_CONDITION))
                 .signature(((ChangeRequestAttestationSubmission) cr.getDetails()).getSignature())
                 .signatureEmail(((ChangeRequestAttestationSubmission) cr.getDetails()).getSignatureEmail())
                 .build();
@@ -127,7 +132,7 @@ public class DeveloperAttestationCheckInReportDataCollector {
 
     private Map<Long, List<ChangeRequestSearchResult>> getDevelopersWithAttestationChangeRequestsForMostRecentAttestationPeriod() throws EntityRetrievalException {
         Map<Long, List<ChangeRequestSearchResult>> map = new HashMap<Long, List<ChangeRequestSearchResult>>();
-        List<Long> developerIds = getDeveloperIdsFromDeveloperAttestationReport();
+        List<Long> developerIds = getDeveloperIdsWithActiveListingsDuringMostRecentPastAttestationPeriod();
         List<ChangeRequestSearchResult> changeRequests = getAllAttestationChangeRequestsForMostRecentPastAttestationPeriod();
 
         developerIds.forEach(developerId -> {
@@ -149,22 +154,19 @@ public class DeveloperAttestationCheckInReportDataCollector {
         return crs;
     }
 
-    private List<Long> getDeveloperIdsFromDeveloperAttestationReport() {
-        return developerAttestationReportDataCollection.collect(certificationBodyDAO.findAll().stream().map(acb -> acb.getId()).toList(), LOGGER).stream()
-                .map(developerAttestationReport -> developerAttestationReport.getDeveloperId())
+    private List<Long> getDeveloperIdsWithActiveListingsDuringMostRecentPastAttestationPeriod() {
+        return developerAttestationPeriodCalculator.getDevelopersWithActiveListingsDuringMostRecentPastAttestationPeriod(LOGGER).stream()
+                .map(developer -> developer.getId())
                 .toList();
     }
 
+    private String getAttestationResponse(ChangeRequest changeRequest, Long conditionId) {
+        ChangeRequestAttestationSubmission details = (ChangeRequestAttestationSubmission) changeRequest.getDetails();
+        return details.formatResponse(conditionId);
+    }
 
-    private String getAttestationResponse(ChangeRequest cr, Long attestationConditionId) {
-       ChangeRequestAttestationSubmission details = (ChangeRequestAttestationSubmission) cr.getDetails();
-       /*
-       return details.getAttestationResponses().stream()
-               .filter(resp -> resp.getAttestation().getCondition().getId().equals(attestationConditionId))
-               .map(resp -> resp.getResponse().getResponse())
-               .findAny()
-               .orElse("");
-        */
-       return null;
+    private String getAttestationOptionalResponse(ChangeRequest changeRequest, Long conditionId) {
+        ChangeRequestAttestationSubmission details = (ChangeRequestAttestationSubmission) changeRequest.getDetails();
+        return details.formatOptionalResponsesForCondition(conditionId);
     }
 }

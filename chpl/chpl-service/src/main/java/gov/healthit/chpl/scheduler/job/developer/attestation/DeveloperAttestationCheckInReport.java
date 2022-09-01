@@ -57,10 +57,15 @@ public class DeveloperAttestationCheckInReport {
                 "Change Request Last Status Change Date",
                 "ONC-ACBs",
                 "Information Blocking Response",
+                "Information Blocking Optional Response",
                 "Assurances Response",
+                "Assurances Optional Response",
                 "Communications Response",
+                "Communications Optional Response",
                 "Real World Testing Response",
+                "Real World Testing Optional Response",
                 "Application Programming Interfaces Response",
+                "Application Programming Interfaces Optional Response",
                 "Submitted by Name",
                 "Submitted by Email");
     }

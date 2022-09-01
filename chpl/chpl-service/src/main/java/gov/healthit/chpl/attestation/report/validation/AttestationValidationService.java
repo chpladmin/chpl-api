@@ -42,7 +42,8 @@ public class AttestationValidationService {
         AttestationValidationContext context = AttestationValidationContext.builder()
                 .developer(developer)
                 .listings(listings)
-                .realWorldTestingCriteria(realWorldTestingCriteriaService.getEligibleCriteria(year))
+                //TODO:
+                //.realWorldTestingCriteria(realWorldTestingCriteriaService.getEligibleCriteria(year))
                 .apiCriteria(apiCriteria)
                 .build();
 

@@ -37,6 +37,7 @@ import gov.healthit.chpl.changerequest.search.OrderByOption;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -69,6 +70,9 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
 
     @Autowired
     private ChangeRequestManager changeRequestManager;
+
+    @Autowired
+    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
     @Autowired
     private ChplEmailFactory chplEmailFactory;
@@ -189,23 +193,30 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
 
     private void sendEmail(JobExecutionContext jobContext, List<ChangeRequestSearchResult> searchResults)
             throws EmailNotSentException {
-        LOGGER.info("Sending email to {} with contents {} and a total of {} pending change requests",
-                getEmailRecipients(jobContext).get(0), getHtmlMessage(searchResults.size(), getAcbNamesAsCommaSeparatedList(jobContext)));
+        LOGGER.info("Sending email to {} with a total of {} pending change requests",
+                getEmailRecipients(jobContext).get(0), searchResults.size());
 
         chplEmailFactory.emailBuilder()
                 .recipients(getEmailRecipients(jobContext))
                 .subject(pendingChangeRequestEmailSubject)
-                .htmlMessage(getHtmlMessage(searchResults.size(), getAcbNamesAsCommaSeparatedList(jobContext)))
+                .htmlMessage(createHtmlMessage(searchResults.size(), getAcbNamesAsCommaSeparatedList(jobContext)))
                 .fileAttachments(Stream.of(tempFile).toList())
                 .sendEmail();
     }
 
-    private String getHtmlMessage(Integer rowCount, String acbList) {
+    private String createHtmlMessage(Integer rowCount, String acbList) {
+        String body = "";
         if (rowCount > 0) {
-            return String.format(pendingChangeRequestHasDataEmailBody, acbList, rowCount);
+            body = String.format(pendingChangeRequestHasDataEmailBody, acbList, rowCount);
         } else {
-            return String.format(pendingChangeRequestNoDataEmailBody, acbList);
+            body = String.format(pendingChangeRequestNoDataEmailBody, acbList);
         }
+
+        return chplHtmlEmailBuilder.initialize()
+                .heading(pendingChangeRequestEmailSubject)
+                .paragraph("", body)
+                .footer(true)
+                .build();
     }
 
     private List<String> getEmailRecipients(JobExecutionContext jobContext) {

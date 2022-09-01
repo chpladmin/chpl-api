@@ -240,16 +240,15 @@ public class ChangeRequestDAO extends BaseDAOImpl {
         String hql = "SELECT DISTINCT cr "
                 + "FROM ChangeRequestEntity cr "
                 + "JOIN FETCH cr.changeRequestType crType "
+                + "JOIN FETCH cr.certificationBodies crAcbs "
+                + "JOIN FETCH crAcbs.address "
                 + "JOIN FETCH cr.developer dev "
                 + "LEFT JOIN FETCH dev.address "
                 + "LEFT JOIN FETCH dev.contact "
                 + "LEFT JOIN FETCH dev.statusEvents statusEvents "
                 + "LEFT JOIN FETCH statusEvents.developerStatus "
                 + "LEFT JOIN FETCH dev.attestations devAtt "
-                + "LEFT JOIN FETCH devAtt.period per "
-                //TODO: In OCD-3985 this needs to be fixed. This method is only used in the Developer Attestation Check-In Report
-                //and it will WORK but it will be WRONG if we leave it like this. The ACB relationship should come from the
-                //change request object itself rather than the developer after OCD-3940 is merged.
+                + "LEFT JOIN FETCH devAtt.attestationPeriod per "
                 + "LEFT JOIN FETCH dev.certificationBodyMaps devAcbMaps "
                 + "LEFT JOIN FETCH devAcbMaps.certificationBody devAcb "
                 + "LEFT JOIN FETCH devAcb.address "
