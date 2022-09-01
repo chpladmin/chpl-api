@@ -70,7 +70,6 @@ public abstract class ChangeRequestDetailsService<T> {
     protected abstract void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException;
     protected abstract void sendRejectedEmail(ChangeRequest cr) throws EmailNotSentException;
 
-
     protected String getApprovalBody(ChangeRequest cr) {
         if (cr.getCurrentStatus().getCertificationBody() != null) {
             return cr.getCurrentStatus().getCertificationBody().getName();

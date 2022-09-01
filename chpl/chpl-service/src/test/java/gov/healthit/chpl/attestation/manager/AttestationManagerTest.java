@@ -40,6 +40,7 @@ public class AttestationManagerTest {
     private FormService formService;
     private AttestationSubmissionService attestationSubmissionService;
     private ChangeRequestDAO changeRequestDAO;
+    private AttestationExceptionEmail exceptionEmail;
     private ErrorMessageUtil errorMessageUtil;
     private static final Integer DEFAULT_EXCEPTION_WINDOW = 3;
 
@@ -50,6 +51,7 @@ public class AttestationManagerTest {
         formService = Mockito.mock(FormService.class);
         attestationSubmissionService = Mockito.mock(AttestationSubmissionService.class);
         changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
+        exceptionEmail = Mockito.mock(AttestationExceptionEmail.class);
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
 
         Mockito.when(formService.getForm(ArgumentMatchers.anyLong())).thenReturn(getFirstPeriodForm());
@@ -77,7 +79,7 @@ public class AttestationManagerTest {
         Mockito.when(attestationPeriodService.getAllPeriods()).thenReturn(
                 List.of(getFirstAttestationPeriod(), getSecondAttestationPeriod()));
 
-        manager = new AttestationManager(attestationDAO, attestationPeriodService, formService, attestationSubmissionService, changeRequestDAO, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW);
+        manager = new AttestationManager(attestationDAO, attestationPeriodService, formService, attestationSubmissionService, changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW);
     }
 
     @Test
@@ -309,7 +311,7 @@ public class AttestationManagerTest {
         //This is so we don't have to mock a bunch of stuff, when just spy on canDeveloperSubmitChangeRequest()
         AttestationManager spyManager = Mockito.spy(
                 new AttestationManager(attestationDAO, attestationPeriodService, formService,
-                        attestationSubmissionService, changeRequestDAO, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
+                        attestationSubmissionService, changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
         Mockito.doReturn(false).when(spyManager).canDeveloperSubmitChangeRequest(ArgumentMatchers.anyLong());
 
         AttestationPeriod period = spyManager.getSubmittablePeriod(1L);
@@ -322,7 +324,7 @@ public class AttestationManagerTest {
         //This is so we don't have to mock a bunch of stuff, when just spy on canDeveloperSubmitChangeRequest()
         AttestationManager spyManager = Mockito.spy(
                 new AttestationManager(attestationDAO, attestationPeriodService, formService,
-                        attestationSubmissionService, changeRequestDAO, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
+                        attestationSubmissionService, changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
         Mockito.doReturn(true).when(spyManager).canDeveloperSubmitChangeRequest(ArgumentMatchers.anyLong());
         Mockito.when(attestationPeriodService.getSubmittableAttestationPeriod(ArgumentMatchers.anyLong())).thenReturn(getFirstAttestationPeriod());
 
@@ -361,7 +363,7 @@ public class AttestationManagerTest {
         /////use a spy to mock getSubmittablePeriod()
         AttestationManager spyManager = Mockito.spy(
                 new AttestationManager(attestationDAO, attestationPeriodService, formService,
-                        attestationSubmissionService, changeRequestDAO, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
+                        attestationSubmissionService, changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
 
         Mockito.doReturn(null).when(spyManager).getSubmittablePeriod(ArgumentMatchers.anyLong());
 
@@ -393,7 +395,7 @@ public class AttestationManagerTest {
         /////use a spy to mock getSubmittablePeriod()
         AttestationManager spyManager = Mockito.spy(
                 new AttestationManager(attestationDAO, attestationPeriodService, formService,
-                        attestationSubmissionService, changeRequestDAO, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
+                        attestationSubmissionService, changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
 
         Mockito.doReturn(getFirstAttestationPeriod()).when(spyManager).getSubmittablePeriod(ArgumentMatchers.anyLong());
 
@@ -433,7 +435,7 @@ public class AttestationManagerTest {
         /////use a spy to mock canCreateException()
         AttestationManager spyManager = Mockito.spy(
                 new AttestationManager(attestationDAO, attestationPeriodService, formService,
-                        attestationSubmissionService, changeRequestDAO, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
+                        attestationSubmissionService, changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
 
         Mockito.doReturn(false).when(spyManager).canCreateException(ArgumentMatchers.anyLong());
 
