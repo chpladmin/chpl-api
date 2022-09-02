@@ -1,10 +1,13 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -12,18 +15,21 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmission;
 import gov.healthit.chpl.attestation.manager.AttestationCertificationBodyService;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.attestation.manager.AttestationSubmissionService;
-import gov.healthit.chpl.attestation.report.validation.AttestationValidationService;
 import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
@@ -35,7 +41,10 @@ import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ListingSearchResponse;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.SearchRequest;
+import gov.healthit.chpl.search.domain.SearchSetOperator;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.DirectReviewSearchService;
+import gov.healthit.chpl.service.realworldtesting.RealWorldTestingCriteriaService;
 
 @Component
 public class DeveloperAttestationReportDataCollector {
@@ -59,38 +68,64 @@ public class DeveloperAttestationReportDataCollector {
     private ListingSearchService listingSearchService;
     private AttestationSubmissionService attestationSubmissionService;
     private DirectReviewSearchService directReviewService;
-    private AttestationValidationService attestationValidationService;
     private CertificationBodyDAO certificationBodyDAO;
     private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
     private AttestationPeriodService attestationPeriodService;
     private AttestationCertificationBodyService attestationCertificationBodyService;
+    private FF4j ff4j;
 
+    private List<CertificationCriterion> assurancesCriteria;
+    private List<CertificationCriterion> assurancesCriteriaPreErdPhase2;
+    private List<CertificationCriterion> apiCriteria;
+    private List<CertificationCriterion> rwtCriteria;
     private Map<Long, List<ListingSearchResult>> developerListings = new HashMap<Long, List<ListingSearchResult>>();
 
     public DeveloperAttestationReportDataCollector(DeveloperAttestationPeriodCalculator devAttestationPeriodCalculator,
             UserDeveloperMapDAO userDeveloperMapDao, ListingSearchService listingSearchService,
             AttestationSubmissionService attestationSubmissionService,
-            DirectReviewSearchService directReviewService, AttestationValidationService attestationValidationService, CertificationBodyDAO certificationBodyDAO,
+            DirectReviewSearchService directReviewService,
+            CertificationBodyDAO certificationBodyDAO,
             DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO,
             AttestationPeriodService attestationPeriodService,
-            AttestationCertificationBodyService attestationCertificationBodyService) {
+            AttestationCertificationBodyService attestationCertificationBodyService,
+            RealWorldTestingCriteriaService realWorldTestingCriteriaService,
+            CertificationCriterionService certificationCriterionService,
+            @Value("${apiCriteriaKeysPreErdPhase2}") String[] assurancesCriteriaKeysPreErdPhase2,
+            @Value("${assurancesCriteriaKeys}") String[] assurancesCriteriaKeys,
+            @Value("${apiCriteriaKeys}") String[] apiCriteriaKeys,
+            FF4j ff4j) {
 
         this.devAttestationPeriodCalculator = devAttestationPeriodCalculator;
         this.userDeveloperMapDao = userDeveloperMapDao;
         this.listingSearchService = listingSearchService;
         this.attestationSubmissionService = attestationSubmissionService;
         this.directReviewService = directReviewService;
-        this.attestationValidationService = attestationValidationService;
         this.certificationBodyDAO = certificationBodyDAO;
         this.developerCertificationBodyMapDAO = developerCertificationBodyMapDAO;
         this.attestationPeriodService = attestationPeriodService;
         this.attestationCertificationBodyService = attestationCertificationBodyService;
+        this.ff4j = ff4j;
+
+        Integer currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        rwtCriteria = realWorldTestingCriteriaService.getEligibleCriteria(currentYear);
+
+        assurancesCriteria = Arrays.asList(assurancesCriteriaKeys).stream()
+                .map(key -> certificationCriterionService.get(key))
+                .collect(Collectors.toList());
+
+        assurancesCriteriaPreErdPhase2 = Arrays.asList(assurancesCriteriaKeysPreErdPhase2).stream()
+                .map(key -> certificationCriterionService.get(key))
+                .collect(Collectors.toList());
+
+        apiCriteria = Arrays.asList(apiCriteriaKeys).stream()
+                .map(key -> certificationCriterionService.get(key))
+                .collect(Collectors.toList());
     }
 
-    private List<String> activeStatuses = Stream.of(CertificationStatusType.Active.getName(),
+    private Set<String> activeStatuses = Stream.of(CertificationStatusType.Active.getName(),
             CertificationStatusType.SuspendedByAcb.getName(),
             CertificationStatusType.SuspendedByOnc.getName())
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
 
     public List<DeveloperAttestationReport> collect(List<Long> selectedAcbIds, Logger logger) {
         AttestationPeriod mostRecentPastPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
@@ -152,26 +187,6 @@ public class DeveloperAttestationReportDataCollector {
             .build();
     }
 
-    private List<ListingSearchResult> getListingDataForDeveloper(Developer developer, Logger logger) {
-        if (!developerListings.containsKey(developer.getId())) {
-            SearchRequest request = SearchRequest.builder()
-                    .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
-                    .developer(developer.getName())
-                    .pageSize(MAX_PAGE_SIZE)
-                    .build();
-
-            try {
-                ListingSearchResponse response = listingSearchService.findListings(request);
-                developerListings.put(developer.getId(), response.getResults());
-            } catch (ValidationException e) {
-                logger.error("Could not retrieve listings for developer {}.", developer.getName());
-                logger.error(e);
-                developerListings.put(developer.getId(), new ArrayList<ListingSearchResult>());
-            }
-        }
-        return developerListings.get(developer.getId());
-    }
-
     private AttestationSubmission getDeveloperAttestation(Long developerId, Long attestationPeriodId) {
         List<AttestationSubmission> attestations =
                 attestationSubmissionService.getAttestationSubmissions(developerId, attestationPeriodId);
@@ -222,39 +237,18 @@ public class DeveloperAttestationReportDataCollector {
         return userContactText;
     }
 
-    private String getAttestationResponse(AttestationSubmission attestation, Long conditionId) {
-        if (attestation == null) {
+    private String getAttestationResponse(AttestationSubmission attestationSubmission, Long conditionId) {
+        if (attestationSubmission == null) {
             return "";
-        } else {
-            String attestationResponse = attestation.getForm().getSectionHeadings().stream()
-                    .filter(section -> conditionId.equals(section.getId()))
-                    .flatMap(section -> section.getFormItems().get(0).getSubmittedResponses().stream())
-                    .map(submittedResponse -> submittedResponse.getResponse())
-                    .collect(Collectors.joining("; "));
-            if (attestationResponse == null) {
-                return "";
-            }
-            return attestationResponse;
         }
+        return attestationSubmission.getForm().formatResponse(conditionId);
     }
 
-    private String getAttestationOptionalResponse(AttestationSubmission attestation, Long conditionId) {
-        if (attestation == null) {
+    private String getAttestationOptionalResponse(AttestationSubmission attestationSubmission, Long conditionId) {
+        if (attestationSubmission == null) {
             return "";
-        } else {
-            String attestationResponse = attestation.getForm().getSectionHeadings().stream()
-                    .filter(section -> conditionId.equals(section.getId()))
-                    .map(section -> section.getFormItems().get(0))
-                    .filter(formItem -> !CollectionUtils.isEmpty(formItem.getChildFormItems()))
-                    .map(formItem -> formItem.getChildFormItems().get(0))
-                    .flatMap(childFormItem -> childFormItem.getSubmittedResponses().stream())
-                    .map(submittedResponse -> submittedResponse.getResponse())
-                    .collect(Collectors.joining("; "));
-                if (attestationResponse == null) {
-                    return "";
-                }
-                return attestationResponse;
         }
+        return attestationSubmission.getForm().formatOptionalResponsesForCondition(conditionId);
     }
 
     private String getSubmitterName(AttestationSubmission attestation) {
@@ -266,15 +260,13 @@ public class DeveloperAttestationReportDataCollector {
     }
 
     private Long getTotalSurveillances(Developer developer, Logger logger) {
-        return getListingDataForDeveloper(developer, logger).stream()
-                .filter(listing -> activeStatuses.contains(listing.getCertificationStatus().getName()))
+        return getActiveListingDataForDeveloper(developer, logger).stream()
                 .map(listing -> addSurveillanceCount(listing))
                 .collect(Collectors.summingLong(Long::longValue));
     }
 
     private Long getTotalSurveillanceNonconformities(Developer developer, Logger logger) {
-        return getListingDataForDeveloper(developer, logger).stream()
-                .filter(listing -> activeStatuses.contains(listing.getCertificationStatus().getName()))
+        return getActiveListingDataForDeveloper(developer, logger).stream()
                 .map(listing -> addOpenAndClosedNonconformityCount(listing))
                 .collect(Collectors.summingLong(Long::longValue));
     }
@@ -290,8 +282,7 @@ public class DeveloperAttestationReportDataCollector {
     }
 
     private Long getOpenSurveillanceNonconformities(Developer developer, Logger logger) {
-        return getListingDataForDeveloper(developer, logger).stream()
-                .filter(listing -> activeStatuses.contains(listing.getCertificationStatus().getName()))
+        return getActiveListingDataForDeveloper(developer, logger).stream()
                 .map(listing -> listing.getOpenSurveillanceNonConformityCount())
                 .collect(Collectors.summingLong(Long::longValue));
     }
@@ -310,7 +301,8 @@ public class DeveloperAttestationReportDataCollector {
     }
 
     private String getRealWorldTestingValidation(Developer developer, Logger logger) {
-        if (attestationValidationService.validateRealWorldTesting(developer, getListingDataForDeveloper(developer, logger))) {
+        List<ListingSearchResult> apiEligibleListings = getActiveListingDataWithAnyCriteriaForDeveloper(developer, rwtCriteria, logger);
+        if (!CollectionUtils.isEmpty(apiEligibleListings)) {
             return RWT_VALIDATION_TRUE;
         } else {
             return RWT_VALIDATION_FALSE;
@@ -318,7 +310,9 @@ public class DeveloperAttestationReportDataCollector {
     }
 
     private String getAssurancesValidation(Developer developer, Logger logger) {
-        if (attestationValidationService.validateAssurances(developer, getListingDataForDeveloper(developer, logger))) {
+        List<CertificationCriterion> assurancesCriteriaFromFlag = ff4j.check(FeatureList.ERD_PHASE_2) ? assurancesCriteria : assurancesCriteriaPreErdPhase2;
+        List<ListingSearchResult> apiEligibleListings = getActiveListingDataWithAnyCriteriaForDeveloper(developer, assurancesCriteriaFromFlag, logger);
+        if (!CollectionUtils.isEmpty(apiEligibleListings)) {
             return ASSURANCES_VALIDATION_TRUE;
         } else {
             return ASSURANCES_VALIDATION_FALSE;
@@ -326,11 +320,63 @@ public class DeveloperAttestationReportDataCollector {
     }
 
     private String getApiValidation(Developer developer, Logger logger) {
-        if (attestationValidationService.validateApi(developer, getListingDataForDeveloper(developer, logger))) {
+        List<ListingSearchResult> apiEligibleListings = getActiveListingDataWithAnyCriteriaForDeveloper(developer, apiCriteria, logger);
+        if (!CollectionUtils.isEmpty(apiEligibleListings)) {
             return API_VALIDATION_TRUE;
         } else {
             return API_VALIDATION_FALSE;
         }
+    }
+
+    private List<ListingSearchResult> getActiveListingDataForDeveloper(Developer developer, Logger logger) {
+        if (developerListings.get(developer.getId()) != null) {
+            return developerListings.get(developer.getId());
+        } else {
+            SearchRequest searchRequest = SearchRequest.builder()
+                    .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
+                    .developer(developer.getName())
+                    .certificationStatuses(activeStatuses)
+                    .pageSize(MAX_PAGE_SIZE)
+                    .pageNumber(0)
+                    .build();
+            List<ListingSearchResult> searchResults = getAllPagesOfSearchResults(searchRequest, logger);
+            developerListings.put(developer.getId(), searchResults);
+            return searchResults;
+        }
+    }
+
+    private List<ListingSearchResult> getActiveListingDataWithAnyCriteriaForDeveloper(Developer developer, List<CertificationCriterion> criteria,
+            Logger logger) {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
+                .developer(developer.getName())
+                .certificationStatuses(activeStatuses)
+                .certificationCriteriaIds(criteria.stream().map(criterion -> criterion.getId()).collect(Collectors.toSet()))
+                .certificationCriteriaOperator(SearchSetOperator.OR)
+                .pageSize(MAX_PAGE_SIZE)
+                .pageNumber(0)
+                .build();
+        return getAllPagesOfSearchResults(searchRequest, logger);
+    }
+
+    private List<ListingSearchResult> getAllPagesOfSearchResults(SearchRequest searchRequest, Logger logger) {
+        List<ListingSearchResult> searchResults = new ArrayList<ListingSearchResult>();
+        try {
+            logger.info(searchRequest.toString());
+            ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+            searchResults.addAll(searchResponse.getResults());
+            while (searchResponse.getRecordCount() > searchResults.size()) {
+                searchRequest.setPageSize(searchResponse.getPageSize());
+                searchRequest.setPageNumber(searchResponse.getPageNumber() + 1);
+                logger.info(searchRequest.toString());
+                searchResponse = listingSearchService.findListings(searchRequest);
+                searchResults.addAll(searchResponse.getResults());
+            }
+            logger.info("Found {} total listings matching the search request.", searchResults.size());
+        } catch (ValidationException ex) {
+            logger.error("Could not retrieve listings from search request.", ex);
+        }
+        return searchResults;
     }
 
     private Map<Pair<Long, Long>, Boolean> getDeveloperAcbMapping(Developer developer, Logger logger) {

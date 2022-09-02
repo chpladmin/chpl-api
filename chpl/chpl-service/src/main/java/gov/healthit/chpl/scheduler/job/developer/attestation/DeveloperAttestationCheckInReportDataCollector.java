@@ -158,12 +158,18 @@ public class DeveloperAttestationCheckInReportDataCollector {
     }
 
     private String getAttestationResponse(ChangeRequest changeRequest, Long conditionId) {
+        if (changeRequest == null || changeRequest.getDetails() == null) {
+            return "";
+        }
         ChangeRequestAttestationSubmission details = (ChangeRequestAttestationSubmission) changeRequest.getDetails();
-        return details.formatResponse(conditionId);
+        return details.getForm().formatResponse(conditionId);
     }
 
     private String getAttestationOptionalResponse(ChangeRequest changeRequest, Long conditionId) {
+        if (changeRequest == null || changeRequest.getDetails() == null) {
+            return "";
+        }
         ChangeRequestAttestationSubmission details = (ChangeRequestAttestationSubmission) changeRequest.getDetails();
-        return details.formatOptionalResponsesForCondition(conditionId);
+        return details.getForm().formatOptionalResponsesForCondition(conditionId);
     }
 }

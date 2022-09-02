@@ -85,11 +85,17 @@ public class DownloadableAttestationPresenter extends ChangeRequestCsvPresenter 
     }
 
     private String getParentResponse(ChangeRequestAttestationSubmission attestation, String conditionName) {
-        return attestation.formatResponse(conditionName);
+        if (attestation == null) {
+            return "";
+        }
+        return attestation.getForm().formatResponse(conditionName);
     }
 
     private String getFirstChildResponse(ChangeRequestAttestationSubmission attestation, String conditionName) {
-        return attestation.formatOptionalResponsesForCondition(conditionName);
+        if (attestation == null) {
+            return "";
+        }
+        return attestation.getForm().formatOptionalResponsesForCondition(conditionName);
     }
 
 }

@@ -1,7 +1,6 @@
 package gov.healthit.chpl.changerequest.domain;
 
 import java.io.Serializable;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -35,59 +34,5 @@ public class ChangeRequestAttestationSubmission implements Serializable, ChangeR
                         form.extractFlatFormItems(),
                         check.getForm().extractFlatFormItems(),
                         new FormItem.FormItemByIdEquator());
-    }
-
-    public String formatResponse(Long conditionId) {
-        String attestationResponse = getForm().getSectionHeadings().stream()
-                .filter(section -> conditionId.equals(section.getId()))
-                .flatMap(section -> section.getFormItems().get(0).getSubmittedResponses().stream())
-                .map(submittedResponse -> submittedResponse.getResponse())
-                .collect(Collectors.joining("; "));
-        if (attestationResponse == null) {
-            return "";
-        }
-        return attestationResponse;
-    }
-
-    public String formatResponse(String conditionName) {
-        String attestationResponse = getForm().getSectionHeadings().stream()
-                .filter(section -> conditionName.startsWith(section.getName()))
-                .flatMap(section -> section.getFormItems().get(0).getSubmittedResponses().stream())
-                .map(submittedResponse -> submittedResponse.getResponse())
-                .collect(Collectors.joining("; "));
-        if (attestationResponse == null) {
-            return "";
-        }
-        return attestationResponse;
-    }
-
-    public String formatOptionalResponsesForCondition(Long conditionId) {
-        String optionalResponse = getForm().getSectionHeadings().stream()
-                .filter(section -> conditionId.equals(section.getId()))
-                .map(section -> section.getFormItems().get(0))
-                .filter(formItem -> !CollectionUtils.isEmpty(formItem.getChildFormItems()))
-                .map(formItem -> formItem.getChildFormItems().get(0))
-                .flatMap(childFormItem -> childFormItem.getSubmittedResponses().stream())
-                .map(submittedResponse -> submittedResponse.getResponse())
-                .collect(Collectors.joining("; "));
-        if (optionalResponse == null) {
-            return "";
-        }
-        return optionalResponse;
-    }
-
-    public String formatOptionalResponsesForCondition(String conditionName) {
-        String optionalResponse = getForm().getSectionHeadings().stream()
-                .filter(section -> conditionName.startsWith(section.getName()))
-                .map(section -> section.getFormItems().get(0))
-                .filter(formItem -> !CollectionUtils.isEmpty(formItem.getChildFormItems()))
-                .map(formItem -> formItem.getChildFormItems().get(0))
-                .flatMap(childFormItem -> childFormItem.getSubmittedResponses().stream())
-                .map(submittedResponse -> submittedResponse.getResponse())
-                .collect(Collectors.joining("; "));
-        if (optionalResponse == null) {
-            return "";
-        }
-        return optionalResponse;
     }
 }
