@@ -362,17 +362,17 @@ public class DeveloperAttestationReportDataCollector {
     private List<ListingSearchResult> getAllPagesOfSearchResults(SearchRequest searchRequest, Logger logger) {
         List<ListingSearchResult> searchResults = new ArrayList<ListingSearchResult>();
         try {
-            logger.info(searchRequest.toString());
+            logger.debug(searchRequest.toString());
             ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
             searchResults.addAll(searchResponse.getResults());
             while (searchResponse.getRecordCount() > searchResults.size()) {
                 searchRequest.setPageSize(searchResponse.getPageSize());
                 searchRequest.setPageNumber(searchResponse.getPageNumber() + 1);
-                logger.info(searchRequest.toString());
+                logger.debug(searchRequest.toString());
                 searchResponse = listingSearchService.findListings(searchRequest);
                 searchResults.addAll(searchResponse.getResults());
             }
-            logger.info("Found {} total listings matching the search request.", searchResults.size());
+            logger.info("Found {} total listings for developer {}.", searchResults.size(), searchRequest.getDeveloper());
         } catch (ValidationException ex) {
             logger.error("Could not retrieve listings from search request.", ex);
         }
