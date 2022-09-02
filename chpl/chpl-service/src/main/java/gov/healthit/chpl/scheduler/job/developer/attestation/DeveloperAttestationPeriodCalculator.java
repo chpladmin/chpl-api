@@ -4,9 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -114,23 +112,32 @@ public class DeveloperAttestationPeriodCalculator {
     }
 
     private List<ListingSearchResult> getListingDataForDeveloper(Developer developer, Logger logger) {
-        Map<Long, List<ListingSearchResult>> developerListings = new LinkedHashMap<Long, List<ListingSearchResult>>();
-        if (!developerListings.containsKey(developer.getId())) {
-            SearchRequest request = SearchRequest.builder()
-                    .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
-                    .developer(developer.getName())
-                    .pageSize(MAX_PAGE_SIZE)
-                    .build();
+        SearchRequest searchRequest = SearchRequest.builder()
+                .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
+                .developer(developer.getName())
+                .pageSize(MAX_PAGE_SIZE)
+                .pageNumber(0)
+                .build();
+        return getAllPagesOfSearchResults(searchRequest, logger);
+    }
 
-            try {
-                ListingSearchResponse response = listingSearchService.findListings(request);
-                developerListings.put(developer.getId(), response.getResults());
-            } catch (ValidationException e) {
-                logger.error("Could not retrieve listings for developer {}.", developer.getName());
-                logger.error(e);
-                developerListings.put(developer.getId(), new ArrayList<ListingSearchResult>());
+    private List<ListingSearchResult> getAllPagesOfSearchResults(SearchRequest searchRequest, Logger logger) {
+        List<ListingSearchResult> searchResults = new ArrayList<ListingSearchResult>();
+        try {
+            logger.debug(searchRequest.toString());
+            ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+            searchResults.addAll(searchResponse.getResults());
+            while (searchResponse.getRecordCount() > searchResults.size()) {
+                searchRequest.setPageSize(searchResponse.getPageSize());
+                searchRequest.setPageNumber(searchResponse.getPageNumber() + 1);
+                logger.debug(searchRequest.toString());
+                searchResponse = listingSearchService.findListings(searchRequest);
+                searchResults.addAll(searchResponse.getResults());
             }
+            logger.info("Found {} total listings for developer {}.", searchResults.size(), searchRequest.getDeveloper());
+        } catch (ValidationException ex) {
+            logger.error("Could not retrieve listings from search request.", ex);
         }
-        return developerListings.get(developer.getId());
+        return searchResults;
     }
 }

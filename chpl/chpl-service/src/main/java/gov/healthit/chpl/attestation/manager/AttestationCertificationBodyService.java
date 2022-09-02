@@ -1,6 +1,7 @@
 package gov.healthit.chpl.attestation.manager;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +26,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.search.ListingSearchService;
+import gov.healthit.chpl.search.domain.ListingSearchResponse;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.util.DateUtil;
@@ -82,7 +84,24 @@ public class AttestationCertificationBodyService {
                 .developer(developer.getName())
                 .pageSize(MAX_PAGE_SIZE)
                 .build();
-        return listingSearchService.findListings(request).getResults();
+        return getAllPagesOfSearchResults(request);
+
+    }
+
+    private List<ListingSearchResult> getAllPagesOfSearchResults(SearchRequest searchRequest)  throws ValidationException {
+        List<ListingSearchResult> searchResults = new ArrayList<ListingSearchResult>();
+        LOGGER.debug(searchRequest.toString());
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+        searchResults.addAll(searchResponse.getResults());
+        while (searchResponse.getRecordCount() > searchResults.size()) {
+            searchRequest.setPageSize(searchResponse.getPageSize());
+            searchRequest.setPageNumber(searchResponse.getPageNumber() + 1);
+            LOGGER.debug(searchRequest.toString());
+            searchResponse = listingSearchService.findListings(searchRequest);
+            searchResults.addAll(searchResponse.getResults());
+        }
+        LOGGER.info("Found {} total listings for developer {}.", searchResults.size(), searchRequest.getDeveloper());
+        return searchResults;
     }
 
     private Boolean isListingActiveDuringPeriod(ListingSearchResult listing, AttestationPeriod period) {
