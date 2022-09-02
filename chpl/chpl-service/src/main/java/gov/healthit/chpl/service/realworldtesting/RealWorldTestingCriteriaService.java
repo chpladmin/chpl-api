@@ -32,7 +32,6 @@ public class RealWorldTestingCriteriaService {
 
     public List<CertificationCriterion> getEligibleCriteria(Integer year) {
         try {
-            System.out.println("Getting RWT criteria from year " + year);
             return getRwtEligibleCriteria(eligibleCriteriaKeysMap.get(getYearOrMostRecentPastYear(year)));
         } catch (InvalidArgumentsException e) {
             LOGGER.error("Could not determine list of RWT Criteria for year {}", year);
