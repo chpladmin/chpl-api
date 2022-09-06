@@ -10,11 +10,9 @@ import java.util.Optional;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
@@ -47,14 +45,13 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
     private ValidationUtils validationUtils;
     private CertificationResultRules certResultRules;
     private CertificationCriterion f3;
-    private FF4j ff4j;
 
     @Autowired
     public ConformanceMethodReviewer(ConformanceMethodDAO conformanceMethodDao, CertificationResultDAO certResultDao,
             ErrorMessageUtil msgUtil,
             ValidationUtils validationUtils, CertificationResultRules certResultRules,
             CertificationCriterionService criteriaService,
-            ResourcePermissions resourcePermissions, FF4j ff4j) {
+            ResourcePermissions resourcePermissions) {
         super(msgUtil, resourcePermissions);
         this.msgUtil = msgUtil;
         this.certResultDao = certResultDao;
@@ -62,7 +59,6 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
         this.certResultRules = certResultRules;
         this.resourcePermissions = resourcePermissions;
         f3 = criteriaService.get(Criteria2015.F_3);
-        this.ff4j = ff4j;
 
         try {
             this.conformanceMethodCriteriaMap = conformanceMethodDao.getAllConformanceMethodCriteriaMap();
@@ -73,19 +69,11 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
-        if (listing.getCertificationResults().stream()
-                .filter(cr -> BooleanUtils.isTrue(cr.isSuccess())
-                        && !CollectionUtils.isEmpty(cr.getConformanceMethods()))
-                .count() > 0
-                && !ff4j.check(FeatureList.CONFORMANCE_METHOD)) {
-            listing.getErrorMessages().add("Conformance Methods are not implemented yet");
-        } else {
-            listing.getCertificationResults().stream()
-                    .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
-                    .forEach(certResult -> reviewCertificationResult(listing, certResult));
-            listing.getCertificationResults().stream()
-                .forEach(certResult -> removeConformanceMethodsIfNotApplicable(certResult));
-        }
+        listing.getCertificationResults().stream()
+                .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
+                .forEach(certResult -> reviewCertificationResult(listing, certResult));
+        listing.getCertificationResults().stream()
+            .forEach(certResult -> removeConformanceMethodsIfNotApplicable(certResult));
     }
 
     private void reviewCertificationResult(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -174,8 +162,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
     }
 
     private void reviewConformanceMethodsRequired(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (ff4j.check(FeatureList.CONFORMANCE_METHOD)
-                && certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.CONFORMANCE_METHOD)
+        if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.CONFORMANCE_METHOD)
                 && CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
             if (CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
                 addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.conformanceMethod.missingConformanceMethod",

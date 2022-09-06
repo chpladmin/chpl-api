@@ -1,5 +1,6 @@
 package gov.healthit.chpl.api.deprecatedUsage;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -36,13 +37,20 @@ public class DeprecatedApiUsageEntity {
     @Where(clause = " deleted = false ")
     private ApiKeyEntity apiKey;
 
-    @Column(name = "deprecated_api_id")
-    private Long deprecatedApiId;
+    @Column(name = "http_method")
+    private String httpMethod;
 
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "deprecated_api_id", insertable = false, updatable = false)
-    @Where(clause = " deleted = false ")
-    private DeprecatedApiEntity deprecatedApi;
+    @Column(name = "api_operation")
+    private String apiOperation;
+
+    @Column(name = "response_field")
+    private String responseField;
+
+    @Column(name = "removal_date")
+    private LocalDate removalDate;
+
+    @Column(name = "message")
+    private String message;
 
     @Column(name = "api_call_count")
     private Long apiCallCount;
@@ -72,10 +80,15 @@ public class DeprecatedApiUsageEntity {
     public DeprecatedApiUsage toDomain() {
         return DeprecatedApiUsage.builder()
                 .id(this.getId())
-                .api(this.getDeprecatedApi() != null ? this.getDeprecatedApi().toDomain() : null)
                 .apiKey(this.getApiKey() != null ? this.getApiKey().toDomain() : null)
+                .httpMethod(this.getHttpMethod())
+                .apiOperation(this.getApiOperation())
+                .responseField(this.getResponseField())
+                .removalDate(this.getRemovalDate())
+                .message(this.getMessage())
                 .callCount(this.getApiCallCount())
                 .lastAccessedDate(this.getLastAccessedDate())
+                .notificationSent(this.getNotificationSent())
                 .build();
     }
 }

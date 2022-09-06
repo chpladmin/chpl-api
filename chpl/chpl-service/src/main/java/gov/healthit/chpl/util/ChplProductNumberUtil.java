@@ -2,22 +2,14 @@ package gov.healthit.chpl.util;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.ChplProductNumberDAO;
-import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.dao.TestingLabDAO;
-import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.TestingLab;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.TestingLabDTO;
-import gov.healthit.chpl.dto.listing.pending.PendingCertifiedProductTestingLabDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -58,25 +50,14 @@ public class ChplProductNumberUtil {
     public static final String CERTIFIED_DATE_CODE_REGEX = "^[0-9]{" + ChplProductNumberUtil.CERTIFIED_DATE_CODE_LENGTH + "}$";
     public static final int CHPL_PRODUCT_ID_PARTS = 9;
 
-    private static final int CERTIFICATION_EDITION_BEGIN_INDEX = 2;
-    private static final int CERTIFICATION_EDITION_END_INDEX = 4;
     private static final int LEGACY_ID_LENGTH = 10;
 
-    private TestingLabDAO testingLabDAO;
-    private CertificationBodyDAO certBodyDAO;
-    private DeveloperDAO developerDAO;
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     private ChplProductNumberDAO chplProductNumberDAO;
 
     @Autowired
-    public ChplProductNumberUtil(TestingLabDAO testingLabDAO,
-            CertificationBodyDAO certBodyDAO,
-            DeveloperDAO developerDAO,
-            CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
+    public ChplProductNumberUtil(CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
             ChplProductNumberDAO chplProductNumberDAO) {
-        this.testingLabDAO = testingLabDAO;
-        this.certBodyDAO = certBodyDAO;
-        this.developerDAO = developerDAO;
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.chplProductNumberDAO = chplProductNumberDAO;
     }
@@ -91,40 +72,6 @@ public class ChplProductNumberUtil {
     @Transactional
     public String generate(final Long certifiedProductId) {
         return chplProductNumberDAO.getChplProductNumber(certifiedProductId);
-    }
-
-    /**
-     * Determines what the derived CHPL Product Number will be based on the values passed.
-     *
-     * @param uniqueId
-     *            - Unique ID from the product
-     * @param certificationEdition
-     *            4 character year, i.e. "2015"
-     * @param testingLabs
-     *            the testing Labs used for the Listing
-     * @param certificationBodyId
-     *            Id (not code) for the certification body
-     * @param developerId
-     *            Id (not code) for the developer
-     * @return String representing the derived CHPL Product Number
-     */
-    public String generate(final String uniqueId, final String certificationEdition,
-            final List<PendingCertifiedProductTestingLabDTO> testingLabs, final Long certificationBodyId,
-            final Long developerId) {
-
-        String[] uniqueIdParts = splitUniqueIdParts(uniqueId);
-        ChplProductNumberParts parts = new ChplProductNumberParts();
-        parts.editionCode = certificationEdition.substring(CERTIFICATION_EDITION_BEGIN_INDEX, CERTIFICATION_EDITION_END_INDEX);
-        parts.atlCode = getTestingLabCode(testingLabs);
-        parts.acbCode = getCertificationBodyCode(certificationBodyId);
-        parts.developerCode = getDeveloperCode(developerId);
-        parts.productCode = uniqueIdParts[ChplProductNumberUtil.PRODUCT_CODE_INDEX];
-        parts.versionCode = uniqueIdParts[ChplProductNumberUtil.VERSION_CODE_INDEX];
-        parts.icsCode = uniqueIdParts[ChplProductNumberUtil.ICS_CODE_INDEX];
-        parts.additionalSoftwareCode = uniqueIdParts[ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_INDEX];
-        parts.certifiedDateCode = uniqueIdParts[ChplProductNumberUtil.CERTIFIED_DATE_CODE_INDEX];
-
-        return concatParts(parts);
     }
 
     /**
@@ -315,47 +262,6 @@ public class ChplProductNumberUtil {
             return year;
         } else {
             return year.substring(2);
-        }
-    }
-
-    private String getTestingLabCode(final List<PendingCertifiedProductTestingLabDTO> testingLabs) {
-        if (testingLabs.size() > 1) {
-            return TestingLab.MULTIPLE_TESTING_LABS_CODE;
-        } else {
-            TestingLabDTO dto = testingLabDAO.getByName(testingLabs.get(0).getTestingLabName());
-            if (dto != null) {
-                return dto.getTestingLabCode();
-            } else {
-                return null; // Throw excepotion?
-            }
-        }
-    }
-
-    private String getDeveloperCode(final Long developerId) {
-        Developer dev = null;
-        try {
-            dev = developerDAO.getById(developerId);
-        } catch (EntityRetrievalException e) {
-            return null; // Throw Exception??
-        }
-        if (dev != null) {
-            return dev.getDeveloperCode();
-        } else {
-            return null; // Throw exception?
-        }
-    }
-
-    private String getCertificationBodyCode(final Long certificationBodyId) {
-        CertificationBodyDTO dto = null;
-        try {
-            dto = certBodyDAO.getById(certificationBodyId);
-        } catch (EntityRetrievalException e) {
-            return null; // Throw exception?
-        }
-        if (dto != null) {
-            return dto.getAcbCode();
-        } else {
-            return null; // Throw exception?
         }
     }
 

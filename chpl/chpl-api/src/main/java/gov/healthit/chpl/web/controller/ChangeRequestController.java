@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,13 +25,15 @@ import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchManager;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchRequest;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResponse;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedResponseFields;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.ChangeRequestResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -62,7 +65,7 @@ public class ChangeRequestController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/{changeRequestId:^-?\\d+$}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = ChangeRequest.class)
+    @DeprecatedApiResponseFields(responseClass = ChangeRequest.class, friendlyUrl = "/change-requests/{changeRequestId}")
     public @ResponseBody ChangeRequest getChangeRequest(@PathVariable final Long changeRequestId) throws EntityRetrievalException {
         return changeRequestManager.getChangeRequest(changeRequestId);
     }
@@ -121,7 +124,7 @@ public class ChangeRequestController {
                 .searchTerm(searchTerm.trim())
                 .developerIdString(developerId)
                 .currentStatusNames(convertToSetWithDelimeter(currentStatusNamesDelimited, ","))
-                .typeNames(convertToSetWithDelimeter(changeRequestTypeNamesDelimited, ","))
+                .changeRequestTypeNames(convertToSetWithDelimeter(changeRequestTypeNamesDelimited, ","))
                 .currentStatusChangeDateTimeStart(currentStatusChangeDateTimeStart.trim())
                 .currentStatusChangeDateTimeEnd(currentStatusChangeDateTimeEnd.trim())
                 .submittedDateTimeStart(submittedDateTimeStart)
@@ -134,6 +137,24 @@ public class ChangeRequestController {
         return changeRequestSearchManager.searchChangeRequests(searchRequest);
     }
 
+    @Operation(summary = "Create a report with change requests that is emailed to the logged-in user based on a set of filters.",
+            description = "Security Restrictions: ROLE_ADMIN & ROLE_ONC can get all change requests. ROLE_ACB can get change requests "
+                    + "for developers where they manage at least one certified product for the developer. ROLE_DEVELOPER can get "
+                    + "change requests where they have administrative authority based on the developer.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/report-request", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    public @ResponseBody ChplOneTimeTrigger triggerChangeRequestsReport(@RequestBody ChangeRequestSearchRequest searchRequest)
+                    throws EntityRetrievalException, ValidationException, SchedulerException {
+        return changeRequestSearchManager.triggerChangeRequestsReport(searchRequest);
+    }
+
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/change-requests",
+        removalDate = "2023-01-01",
+        message = "This endpoint is deprecated and will be removed in a future release. Please use /change-requests/search.")
     @Operation(summary = "Get details about all change requests.",
             description = "Security Restrictions: ROLE_ADMIN & ROLE_ONC can get all change requests.  ROLE_ACB can get change requests "
                     + "for developers where they manage at least one certified product for the developer.  ROLE_DEVELOPER can get "
@@ -143,7 +164,6 @@ public class ChangeRequestController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @Deprecated
     public @ResponseBody List<ChangeRequest> getAllChangeRequests() throws EntityRetrievalException {
         return changeRequestManager.getAllChangeRequestsForUser();
     }
@@ -156,7 +176,7 @@ public class ChangeRequestController {
             })
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = ChangeRequestResults.class)
+    @DeprecatedApiResponseFields(responseClass = ChangeRequestResults.class, httpMethod = "POST", friendlyUrl = "/change-requests")
     public ChangeRequestResults createChangeRequest(@RequestBody final ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException,
             InvalidArgumentsException {
@@ -176,7 +196,7 @@ public class ChangeRequestController {
             })
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    @DeprecatedResponseFields(responseClass = ChangeRequest.class)
+    @DeprecatedApiResponseFields(responseClass = ChangeRequest.class, httpMethod = "PUT", friendlyUrl = "/change-requests")
     public ChangeRequest updateChangeRequest(@RequestBody final ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException, EmailNotSentException {

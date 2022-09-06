@@ -26,7 +26,6 @@ public class CertificationResultReviewer {
     private GapAllowedReviewer gapAllowedReviewer;
     private TestToolReviewer testToolReviewer;
     private TestDataReviewer testDataReviewer;
-    private TestProcedureReviewer testProcedureReviewer;
     private ConformanceMethodReviewer conformanceMethodReviewer;
     private TestFunctionalityReviewer testFunctionalityReviewer;
     private TestStandardReviewer testStandardReviewer;
@@ -48,7 +47,6 @@ public class CertificationResultReviewer {
             @Qualifier("gapAllowedReviewer") GapAllowedReviewer gapAllowedReviewer,
             @Qualifier("listingUploadTestToolReviewer") TestToolReviewer testToolReviewer,
             @Qualifier("listingUploadTestDataReviewer") TestDataReviewer testDataReviewer,
-            @Qualifier("listingUploadTestProcedureReviewer") TestProcedureReviewer testProcedureReviewer,
             @Qualifier("conformanceMethodReviewer") ConformanceMethodReviewer conformanceMethodReviewer,
             @Qualifier("listingUploadTestFunctionalityReviewer") TestFunctionalityReviewer testFunctionalityReviewer,
             @Qualifier("listingUploadTestStandardReviewer") TestStandardReviewer testStandardReviewer,
@@ -65,7 +63,6 @@ public class CertificationResultReviewer {
         this.gapAllowedReviewer = gapAllowedReviewer;
         this.testToolReviewer = testToolReviewer;
         this.testDataReviewer = testDataReviewer;
-        this.testProcedureReviewer = testProcedureReviewer;
         this.conformanceMethodReviewer = conformanceMethodReviewer;
         this.testFunctionalityReviewer = testFunctionalityReviewer;
         this.testStandardReviewer = testStandardReviewer;
@@ -102,7 +99,6 @@ public class CertificationResultReviewer {
         privacyAndSecurityFrameworkReviewer.review(listing);
         additionalSoftwareReviewer.review(listing);
         gapAllowedReviewer.review(listing);
-        testProcedureReviewer.review(listing);
         conformanceMethodReviewer.review(listing);
         testToolReviewer.review(listing);
         testDataReviewer.review(listing);

@@ -38,7 +38,6 @@ import gov.healthit.chpl.service.CertificationCriterionService;
 public class CertifiedProductDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
     private static final Logger LOGGER = LogManager.getLogger("certifiedProductDownloadableResourceCreatorJobLogger");
     private static final int MILLIS_PER_SECOND = 1000;
-    private static final String TEMP_DIR_NAME = "temp";
     private String edition;
     private File tempDirectory, tempCsvFile, tempXmlFile;
     private ExecutorService executorService;

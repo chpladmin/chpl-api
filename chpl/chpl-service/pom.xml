@@ -69,7 +69,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.3.3</version>
+            <version>42.4.1</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -303,6 +303,13 @@
             <groupId>org.jfree</groupId>
             <artifactId>jfreechart</artifactId>
             <version>1.5.3</version>
+        </dependency>
+
+        <!-- Convert Markdown -> HTML -->
+        <dependency>
+            <groupId>org.commonmark</groupId>  
+            <artifactId>commonmark</artifactId>
+            <version>0.18.1</version>
         </dependency>
 
         <!-- jars provided by the system and not included in the packaged jar -->

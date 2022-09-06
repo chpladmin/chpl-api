@@ -23,6 +23,7 @@ import gov.healthit.chpl.search.domain.ListingSearchResponse;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchResponse;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -165,8 +166,12 @@ public class SearchController {
         return searchService.findListings(searchRequest);
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/search/beta",
+        removalDate = "2022-09-07",
+        message = "This endpoint is deprecated and will be removed in a future release. Please use /search/v2 to perform searches.")
     @SuppressWarnings({
-            "checkstyle:methodlength", "checkstyle:parameternumber"
+        "checkstyle:methodlength", "checkstyle:parameternumber"
     })
     @Operation(summary = "Search the CHPL",
             description = "If paging parameters are not specified, the first 20 records are returned by default. "
@@ -179,7 +184,6 @@ public class SearchController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @Deprecated
     @RequestMapping(value = "/search/beta", method = RequestMethod.GET, produces = {
             "application/json; charset=utf-8", "application/xml"
     })
@@ -281,6 +285,11 @@ public class SearchController {
 
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/search/beta",
+        httpMethod = "POST",
+        removalDate = "2022-09-07",
+        message = "This endpoint is deprecated and will be removed in a future release. Please use /search/v2 to perform searches.")
     @Operation(summary = "Search the CHPL with an HTTP POST Request.",
             description = "Search the CHPL by specifycing multiple fields of the data to search. "
                     + "If paging fields are not specified, the first 20 records are returned by default.",
@@ -288,7 +297,6 @@ public class SearchController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @Deprecated
     @RequestMapping(value = "/search/beta", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public @ResponseBody SearchResponse searchCertifiedProducts(@RequestBody SearchRequest searchRequest)

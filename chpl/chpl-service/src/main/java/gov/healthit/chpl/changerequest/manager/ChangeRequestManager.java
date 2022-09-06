@@ -133,8 +133,8 @@ public class ChangeRequestManager {
     @Transactional(readOnly = true)
     public Set<KeyValueModel> getChangeRequestTypes() {
         return changeRequestTypeDAO.getChangeRequestTypes().stream()
-                .filter(entity -> entity.getName().equals("Developer Attestation Change Request")
-                        || (entity.getName().equals("Developer Demographics Change Request")
+                .filter(entity -> entity.getName().equals(ChangeRequestType.ATTESTATION_TYPE)
+                        || (entity.getName().equals(ChangeRequestType.DEMOGRAPHICS_TYPE)
                                 && ff4j.check(FeatureList.DEMOGRAPHIC_CHANGE_REQUEST)))
                 .map(crType -> new KeyValueModel(crType.getId(), crType.getName()))
                 .collect(Collectors.<KeyValueModel>toSet());
@@ -276,8 +276,11 @@ public class ChangeRequestManager {
     }
 
     private ChangeRequest createBaseChangeRequest(ChangeRequest cr) throws EntityRetrievalException {
+        cr.setCertificationBodies(crDetailsFactory.get(cr.getChangeRequestType().getId()).getAssociatedCertificationBodies(cr));
+
         ChangeRequest newCr = changeRequestDAO.create(cr);
         newCr.getStatuses().add(crStatusService.saveInitialStatus(newCr));
+
         return newCr;
     }
 

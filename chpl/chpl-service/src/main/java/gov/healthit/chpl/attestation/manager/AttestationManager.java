@@ -18,6 +18,7 @@ import gov.healthit.chpl.attestation.domain.AttestationSubmission;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.form.FormService;
@@ -34,18 +35,22 @@ public class AttestationManager {
     private FormService formService;
     private AttestationSubmissionService attestationSubmissionService;
     private ChangeRequestDAO changeRequestDAO;
+    private AttestationExceptionEmail exceptionEmail;
     private ErrorMessageUtil errorMessageUtil;
     private Integer attestationExceptionWindowInDays;
 
     @Autowired
     public AttestationManager(AttestationDAO attestationDAO, AttestationPeriodService attestationPeriodService, FormService formService,
-            AttestationSubmissionService attestationSubmissionService, ChangeRequestDAO changeRequestDAO, ErrorMessageUtil errorMessageUtil,
+            AttestationSubmissionService attestationSubmissionService, ChangeRequestDAO changeRequestDAO,
+            AttestationExceptionEmail exceptionEmail,
+            ErrorMessageUtil errorMessageUtil,
             @Value("${attestationExceptionWindowInDays}") Integer attestationExceptionWindowInDays) {
         this.attestationDAO = attestationDAO;
         this.attestationPeriodService = attestationPeriodService;
         this.formService = formService;
         this.attestationSubmissionService = attestationSubmissionService;
         this.changeRequestDAO = changeRequestDAO;
+        this.exceptionEmail = exceptionEmail;
         this.errorMessageUtil = errorMessageUtil;
         this.attestationExceptionWindowInDays = attestationExceptionWindowInDays;
     }
@@ -145,13 +150,25 @@ public class AttestationManager {
             throw new ValidationException(errorMessageUtil.getMessage("attestation.submissionPeriodException.cannotCreate"));
         }
 
-        return attestationDAO.createAttestationPeriodDeveloperException(AttestationPeriodDeveloperException.builder()
+        AttestationPeriodDeveloperException attestationException = attestationDAO.createAttestationPeriodDeveloperException(AttestationPeriodDeveloperException.builder()
                 .developer(Developer.builder()
                         .id(developerId)
                         .build())
                 .period(attestationPeriod)
                 .exceptionEnd(getNewExceptionDate())
                 .build());
+
+        try {
+            sendExceptionEmail(attestationException);
+        } catch (EmailNotSentException ex) {
+            LOGGER.error("Attestation exception email could not be sent.", ex);
+        }
+
+        return attestationException;
+    }
+
+    private void sendExceptionEmail(AttestationPeriodDeveloperException attestationException) throws EmailNotSentException {
+        exceptionEmail.send(attestationException);
     }
 
     @Transactional

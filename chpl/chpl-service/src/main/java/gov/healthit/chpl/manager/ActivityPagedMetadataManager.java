@@ -172,15 +172,6 @@ public class ActivityPagedMetadataManager extends SecuredManager {
         return getActivityMetadataByConcept(ActivityConcept.PENDING_SURVEILLANCE, startMillis, endMillis, pageNum, pageSize);
     }
 
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
-            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_PENDING_LISTING_METADATA)")
-    @Transactional
-    public ActivityMetadataPage getPendingListingActivityMetadata(Long startMillis, Long endMillis,
-            Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
-        return getActivityMetadataByConcept(ActivityConcept.PENDING_CERTIFIED_PRODUCT,
-                startMillis, endMillis, pageNum, pageSize);
-    }
-
     private ActivityMetadataPage getActivityMetadataPageByConcept(ActivityConcept concept,
             Long startMillis, Long endMillis, Integer pageNumParam, Integer pageSizeParam)
                     throws JsonParseException, IOException {

@@ -1,19 +1,23 @@
 package gov.healthit.chpl.api.deprecatedUsage;
 
-import java.time.LocalDate;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+@Target({ ElementType.FIELD, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+public @interface DeprecatedResponseField {
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class DeprecatedResponseField {
-    private Long id;
-    private String responseField;
-    private String changeDescription;
-    private LocalDate removalDate;
+    /**
+     *  The targeted date of removal of the field in yyyy-MM-dd format.
+     *  The field shall not be removed before this date but may be removed at any point after.
+     */
+    String removalDate() default "";
+
+    /**
+     * A message to the user indicating how they may want to retrieve this data instead, if at all.
+     */
+    String message() default "";
 }
+

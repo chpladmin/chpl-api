@@ -9,10 +9,17 @@
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
         <delete-job>
+          <name>conformanceMethodConversionJob</name>
+          <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>removeCriteriaJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
           <name>addMissingMeasuresToListingsJob</name>
           <group>systemJobs</group>
         </delete-job>
-
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
@@ -755,7 +762,7 @@
         <job>
             <name>removeCriteriaJob</name>
             <group>systemJobs</group>
-            <description>One time job to remove 3 criteria</description>
+            <description>One time job to remove specific criteria</description>
             <job-class>gov.healthit.chpl.scheduler.job.onetime.criteriaremoval.RemoveCriteriaJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
@@ -852,6 +859,15 @@
         </job>
 
         <job>
+            <name>changeRequestsReport</name>
+            <group>chplBackgroundJobs</group>
+            <description>Sends the Change Requests Report</description>
+            <job-class>gov.healthit.chpl.scheduler.job.changerequest.ChangeRequestReportEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
+        <job>
             <name>Developer Attestations Report Email</name>
             <group>chplJobs</group>
             <description>Sends the Developer Attestations Report</description>
@@ -883,15 +899,6 @@
                     <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value>
                 </entry>
             </job-data-map>
-        </job>
-
-        <job>
-            <name>conformanceMethodConversionJob</name>
-            <group>systemJobs</group>
-            <description>One time job to Convert Test Procedures to Conformance Methods</description>
-            <job-class>gov.healthit.chpl.scheduler.job.onetime.conformancemethodconversion.ConformanceMethodConversionJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
         </job>
     </schedule>
 </job-scheduling-data>

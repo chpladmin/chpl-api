@@ -3,10 +3,11 @@ package gov.healthit.chpl.changerequest.domain.service.email;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.commonmark.node.Node;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -19,7 +20,9 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.form.FormItem;
 import gov.healthit.chpl.form.SectionHeading;
 import gov.healthit.chpl.util.NullSafeEvaluator;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public abstract class ChangeRequestEmail {
     private UserDeveloperMapDAO userDeveloperMapDAO;
 
@@ -46,12 +49,12 @@ public abstract class ChangeRequestEmail {
     public String getApprovalBody(ChangeRequest cr) {
         if (cr.getCurrentStatus().getCertificationBody() != null) {
             return cr.getCurrentStatus().getCertificationBody().getName();
-        } else if (cr.getCurrentStatus().getUserPermission().getId().equals(adminPermission)) {
-            return "CHPL Admin";
-        } else if (cr.getCurrentStatus().getUserPermission().getId().equals(oncPermission)) {
+        } else if (cr.getCurrentStatus().getUserPermission().getId().equals(oncPermission)
+                || cr.getCurrentStatus().getUserPermission().getId().equals(adminPermission)) {
             return "ONC";
         } else {
-            return "";
+            LOGGER.warn("Unexpected change request ACB or User Permission. Change Requst ID: " + cr.getId());
+            return "an administrator";
         }
     }
 
@@ -62,7 +65,7 @@ public abstract class ChangeRequestEmail {
                 .sorted(Comparator.comparing(SectionHeading::getSortOrder))
                 .map(sh -> Arrays.asList(
                         sh.getName(),
-                        convertPsuedoMarkdownToHtmlLink(NullSafeEvaluator.eval(() -> sh.getFormItems().get(0).getQuestion().getQuestion(), "Unknown")),
+                        convertMarkdownToHtml(NullSafeEvaluator.eval(() -> sh.getFormItems().get(0).getQuestion().getQuestion(), "Unknown")),
                         NullSafeEvaluator.eval(() -> sh.getFormItems().get(0).getSubmittedResponses().get(0).getResponse(), "")
                         + getNoncompliantCapResponses(NullSafeEvaluator.eval(() -> sh.getFormItems().get(0), null))))
                 .toList();
@@ -84,17 +87,11 @@ public abstract class ChangeRequestEmail {
         return responses.toString();
     }
 
-    private String convertPsuedoMarkdownToHtmlLink(String toConvert) {
-        String regex = "^(.*)\\[(.*)\\]\\((.*)\\)(.*)$";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(toConvert);
-        String converted = "";
-
-        if (matcher.find() && matcher.groupCount() == 4) {
-            converted = matcher.group(1) + "<a href=" + matcher.group(3) + ">" + matcher.group(2) + "</a>" + matcher.group(4);
-        } else {
-          converted = toConvert;
-        }
+    private String convertMarkdownToHtml(String toConvert) {
+        Parser parser  = Parser.builder().build();
+        Node document = parser.parse(toConvert);
+        HtmlRenderer renderer = HtmlRenderer.builder().build();
+        String converted = renderer.render(document);
         return converted;
     }
 }
