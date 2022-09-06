@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.NonconformityType;
+import gov.healthit.chpl.domain.surveillance.RequirementDetailType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
@@ -20,12 +21,13 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
-import gov.healthit.chpl.entity.NonconformityTypeEntity;
 import gov.healthit.chpl.entity.ValidationMessageType;
+import gov.healthit.chpl.entity.surveillance.NonconformityTypeEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceRequirementEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceValidationEntity;
+import gov.healthit.chpl.entity.surveillance.RequirementDetailTypeEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
@@ -738,6 +740,12 @@ public class SurveillanceDAO extends BaseDAOImpl {
                 .toList();
     }
 
+    public List<RequirementDetailType> getRequirementDetailTypes() {
+        return getRequirementDetailTypeEntities().stream()
+                .map(e -> e.toDomain())
+                .toList();
+    }
+
     private PendingSurveillanceEntity fetchPendingSurveillanceById(Long id, Boolean includeDeleted)
             throws EntityRetrievalException {
         PendingSurveillanceEntity entity = null;
@@ -778,6 +786,15 @@ public class SurveillanceDAO extends BaseDAOImpl {
                 "FROM NonconformityTypeEntity e "
                 + "LEFT JOIN FETCH e.certificationEdition",
                 NonconformityTypeEntity.class);
+        return query.getResultList();
+    }
+
+    private List<RequirementDetailTypeEntity> getRequirementDetailTypeEntities() {
+        Query query = entityManager.createQuery(
+                "FROM RequirementDetailTypeEntity e "
+                + "LEFT JOIN FETCH e.certificationEdition ce "
+                + "LEFT JOIN FETCH e.surveillanceRequirementType srt",
+            RequirementDetailTypeEntity.class);
         return query.getResultList();
     }
 
@@ -842,12 +859,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
 
     private void populateSurveillanceNonconformityEntity(SurveillanceNonconformityEntity to,
             SurveillanceNonconformity from) {
-        //if (from.getCriterion() != null) {
-        //    to.setCertificationCriterionId(from.getCriterion().getId());
-        //} else if (from.getNonconformityType() != null) {
-        //    to.setNonconformityType(from.getNonconformityType());
-        //    to.setCertificationCriterionId(null);
-        //}
         to.setType(NonconformityTypeEntity.builder()
                 .id(from.getType().getId())
                 .number(from.getType().getNumber())

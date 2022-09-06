@@ -19,7 +19,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
-import gov.healthit.chpl.entity.NonconformityTypeEntity;
 import lombok.Getter;
 import lombok.Setter;
 

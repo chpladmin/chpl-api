@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.surveillance;
 
 import java.io.Serializable;
 
@@ -15,6 +15,7 @@ import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
+import gov.healthit.chpl.entity.CertificationEditionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

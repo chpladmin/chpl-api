@@ -49,6 +49,7 @@ import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
+import gov.healthit.chpl.domain.surveillance.RequirementDetailType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
@@ -328,6 +329,14 @@ public class DimensionalDataManager {
         result.getAttestationsSubmissionOptions().add(new Removable<String>(RequirementTypeEnum.SEMIANNUAL_ATTESTATIONS_SUBMISSION.getName(), RequirementTypeEnum.SEMIANNUAL_ATTESTATIONS_SUBMISSION.getRemoved()));
 
         return result;
+    }
+
+    @Transactional
+    public Set<RequirementDetailType> getRequirementDetailTypes() {
+        LOGGER.debug("Getting all requirement detail types from the database (not cached).");
+
+        return survDao.getRequirementDetailTypes().stream()
+                .collect(Collectors.toSet());
     }
 
     @Deprecated

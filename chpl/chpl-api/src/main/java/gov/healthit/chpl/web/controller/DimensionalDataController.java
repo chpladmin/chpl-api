@@ -512,6 +512,21 @@ public class DimensionalDataController {
         return result;
     }
 
+    //TODO: Update the description (OCD-4029) 
+    @Operation(summary = "Get all possible surveillance requirement type options in the CHPL",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/surveillance-requirement-detail-types", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SearchOption getRequirementDetailTypes() {
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        result.setData(dimensionalDataManager.getRequirementDetailTypes());
+        return result;
+    }
+
     @Operation(summary = "Get all possible surveillance requirement options in the CHPL",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
