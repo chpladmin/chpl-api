@@ -1,5 +1,22 @@
 # Release Notes
 
+## Version 37.0.0
+_6 September 2022_
+
+### Breaking Changes
+* Remove all legacy pending listing endpoints, upload template versions, and related code
+
+### Features
+* Revise logic for "Associated ONC-ACBs" on change requests to be determined by the type of change request
+* Update Developer Attestations submission instructions
+* Send email to developer user(s) when attestation submission is re-opened
+* Track "Leidos" Cures Update data in progress reports
+* Set "attestation exception window" to five calendar days
+* Create POST /change-requests/report-request endpoint to allow users to download all of their change requests
+* Update removeCriteriaJob for ERD Phase 2 requirements
+
+---
+
 ## Version 36.0.0
 _22 August 2022_
 

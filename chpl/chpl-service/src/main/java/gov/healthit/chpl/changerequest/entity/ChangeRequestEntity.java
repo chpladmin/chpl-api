@@ -12,12 +12,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import lombok.Getter;
 import lombok.Setter;
@@ -53,6 +55,12 @@ public class ChangeRequestEntity {
     @Column(name = "change_request_id", nullable = false)
     @Where(clause = "deleted <> 'true'")
     private Set<ChangeRequestStatusEntity> statuses = new LinkedHashSet<ChangeRequestStatusEntity>();
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "change_request_certification_body_map",
+            joinColumns = @JoinColumn(name = "change_request_id"),
+            inverseJoinColumns = @JoinColumn(name = "certification_body_id"))
+    private Set<CertificationBodyEntity> certificationBodies;
 
     @Column(name = "creation_date", nullable = false)
     private Date creationDate;

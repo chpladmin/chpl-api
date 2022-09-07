@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.caching.HttpStatusAwareCache;
 import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Ehcache;
@@ -23,6 +22,7 @@ import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
 @EnableCaching
 @Log4j2
 public class ChplCacheConfig {
+
     private static final int MAX_ENTRIES_LOCAL_HEAP = 10000;
     private static final int MAX_ENTRIES_LOCAL_HEAP_LISTING_COLLECTION = 300000;
     private static final int MAX_ENTRIES_LOCAL_DISK = 10000000;
@@ -44,8 +44,6 @@ public class ChplCacheConfig {
     public CacheManager cacheManager() {
         EhCacheCacheManager cacheManager = new EhCacheCacheManager(ehCacheCacheManager().getObject());
         net.sf.ehcache.CacheManager backingManager = cacheManager.getCacheManager();
-        backingManager.addCacheIfAbsent(createEternalCache(CacheNames.ALL_CERT_IDS));
-        backingManager.addCacheIfAbsent(createEternalCache(CacheNames.ALL_CERT_IDS_WITH_PRODUCTS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.ALL_DEVELOPERS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.CERTIFICATION_CRITERION_NUMBERS));
@@ -57,17 +55,7 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.CQM_CRITERION));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.CQM_CRITERION_NUMBERS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.DEVELOPER_NAMES));
-
-        //this looks a little weird to me but it's done according to ehcache documentation
-        //so that the decorated cache gets properly initialized
-        //https://www.ehcache.org/documentation/2.8/apis/cache-decorators.html#creating-a-decorator
-        Ehcache drCache = backingManager.getEhcache(CacheNames.DIRECT_REVIEWS);
-        if (drCache == null) {
-            drCache = createEternalCache(CacheNames.DIRECT_REVIEWS);
-            backingManager.addCacheIfAbsent(drCache);
-        }
-        Ehcache decoratedDrCache = createDirectReviewCache(drCache, CacheNames.DIRECT_REVIEWS);
-        backingManager.replaceCacheWithDecoratedCache(drCache, decoratedDrCache);
+        backingManager.addCacheIfAbsent(createEternalCache(CacheNames.DIRECT_REVIEWS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.EDITIONS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.EDITION_NAMES));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.FIND_SURVEILLANCE_REQ_TYPE));
@@ -85,14 +73,6 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.UPLOADED_LISTING_DETAILS));
 
         return cacheManager;
-    }
-
-    private Ehcache createDirectReviewCache(Ehcache drCache, String name) {
-        //return createCache(name, SIX_HOURS_IN_SECONDS);
-        //TODO: not sure if we need to change maxEntriesLocalDisk for this cache.
-        //Setting it to 0 could cause us to run out of space IF there were tons of DRs
-        //but setting to any other number might not make the cache work in the way we want to use it.
-        return new HttpStatusAwareCache(drCache);
     }
 
     private Ehcache createEternalCache(String name) {

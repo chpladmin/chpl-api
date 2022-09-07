@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Loggers>
-    <Logger name="net.sf.ehcache" level="INFO" additivity="false">
+    <Logger name="net.sf.ehcache" level="DEBUG" additivity="false">
         <AppenderRef ref="cacheListenerActivity" />
-        <AppenderRef ref="cacheListenerActivity" />
+        <AppenderRef ref="cacheListenerActivityJson" />
     </Logger>
-    <Logger name="org.springframework.cache" level="INFO">
+    <Logger name="org.springframework.cache" level="DEBUG">
         <AppenderRef ref="cacheListenerActivity" />
-        <AppenderRef ref="cacheListenerActivity" />
+        <AppenderRef ref="cacheListenerActivityJson" />
     </Logger>
     <Logger name="sharedDataStoreLogger" level="INFO">
         <AppenderRef ref="sharedDataStore" />
@@ -27,6 +27,10 @@
     <Logger name="curesStatisticsEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="curesStatisticsEmailJob" />
         <AppenderRef ref="curesStatisticsEmailJobJson" />
+    </Logger>
+    <Logger name="certificationIdEmailJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="certificationIdEmailJob" />
+        <AppenderRef ref="certificationIdEmailJobJson" />
     </Logger>
     <Logger name="urlStatusDataCollectorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="urlStatusDataCollectorJob" />

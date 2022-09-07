@@ -276,8 +276,11 @@ public class ChangeRequestManager {
     }
 
     private ChangeRequest createBaseChangeRequest(ChangeRequest cr) throws EntityRetrievalException {
+        cr.setCertificationBodies(crDetailsFactory.get(cr.getChangeRequestType().getId()).getAssociatedCertificationBodies(cr));
+
         ChangeRequest newCr = changeRequestDAO.create(cr);
         newCr.getStatuses().add(crStatusService.saveInitialStatus(newCr));
+
         return newCr;
     }
 

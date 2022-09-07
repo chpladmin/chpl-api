@@ -42,7 +42,6 @@ public class CertificationResultReviewerTest {
                 Mockito.mock(GapAllowedReviewer.class),
                 Mockito.mock(TestToolReviewer.class),
                 Mockito.mock(TestDataReviewer.class),
-                Mockito.mock(TestProcedureReviewer.class),
                 Mockito.mock(ConformanceMethodReviewer.class),
                 Mockito.mock(TestFunctionalityReviewer.class),
                 Mockito.mock(TestStandardReviewer.class),
