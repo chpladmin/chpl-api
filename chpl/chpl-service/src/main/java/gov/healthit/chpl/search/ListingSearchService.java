@@ -104,7 +104,7 @@ public class ListingSearchService {
         response.setRecordCount(matchedListings.size());
         response.setPageNumber(searchRequest.getPageNumber());
         response.setPageSize(searchRequest.getPageSize());
-        response.setDirectReviewsAvailable(drService.getDirectReviewsAvailable());
+        response.setDirectReviewsAvailable(drService.doesCacheHaveAnyOkData());
 
         sort(matchedListings, searchRequest.getOrderBy(), searchRequest.getSortDescending());
         List<ListingSearchResult> pageOfListings
