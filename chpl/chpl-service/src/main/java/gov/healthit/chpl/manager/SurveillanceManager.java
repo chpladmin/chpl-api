@@ -33,11 +33,9 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
-import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
@@ -303,18 +301,6 @@ public class SurveillanceManager extends SecuredManager {
                 "^" + env.getProperty("surveillanceNonconformitiesReportName") + "-.+\\.csv$");
     }
 
-    private SurveillanceNonconformityDocument convertToDomain(final SurveillanceNonconformityDocumentationEntity entity,
-            final boolean getContents) {
-        SurveillanceNonconformityDocument doc = new SurveillanceNonconformityDocument();
-        doc.setId(entity.getId());
-        doc.setFileType(entity.getFileType());
-        doc.setFileName(entity.getFileName());
-        if (getContents) {
-            doc.setFileContents(entity.getFileData());
-        }
-        return doc;
-    }
-
     private Surveillance convertToDomain(SurveillanceEntity entity) {
         Surveillance surv = new Surveillance();
         surv.setId(entity.getId());
@@ -386,42 +372,8 @@ public class SurveillanceManager extends SecuredManager {
 
                 if (reqEntity.getNonconformities() != null) {
                     for (SurveillanceNonconformityEntity ncEntity : reqEntity.getNonconformities()) {
-                        SurveillanceNonconformity nc = new SurveillanceNonconformity();
-                        nc.setCapApprovalDay(ncEntity.getCapApproval());
-                        nc.setCapEndDay(ncEntity.getCapEndDate());
-                        nc.setCapMustCompleteDay(ncEntity.getCapMustCompleteDate());
-                        nc.setCapStartDay(ncEntity.getCapStart());
-                        nc.setDateOfDeterminationDay(ncEntity.getDateOfDetermination());
-                        nc.setNonconformityCloseDay(ncEntity.getNonconformityCloseDate());
-                        nc.setDeveloperExplanation(ncEntity.getDeveloperExplanation());
-                        nc.setFindings(ncEntity.getFindings());
-                        nc.setId(ncEntity.getId());
-                        nc.setType(ncEntity.getType().toDomain());
-                        if (nc.getType().getClassification().equals(NonconformityClassification.REQUIREMENT)) {
-                            nc.setNonconformityType(ncEntity.getType().getNumber());
-                        } else if (nc.getType().getClassification().equals(NonconformityClassification.CRITERION)) {
-                            nc.setCriterion(certificationCriterionService.get(nc.getType().getId()));
-                        }
-                        nc.setResolution(ncEntity.getResolution());
-                        nc.setSitesPassed(ncEntity.getSitesPassed());
-                        nc.setSummary(ncEntity.getSummary());
-                        nc.setTotalSites(ncEntity.getTotalSites());
-                        nc.setLastModifiedDate(ncEntity.getLastModifiedDate());
-
-                        if (ncEntity.getNonconformityCloseDate() == null) {
-                            nc.setNonconformityStatus(SurveillanceNonconformityStatus.OPEN);
-                        } else {
-                            nc.setNonconformityStatus(SurveillanceNonconformityStatus.CLOSED);
-                        }
-
+                        SurveillanceNonconformity nc =  ncEntity.toDomain();
                         req.getNonconformities().add(nc);
-
-                        if (ncEntity.getDocuments() != null && ncEntity.getDocuments().size() > 0) {
-                            for (SurveillanceNonconformityDocumentationEntity docEntity : ncEntity.getDocuments()) {
-                                SurveillanceNonconformityDocument doc = convertToDomain(docEntity, false);
-                                nc.getDocuments().add(doc);
-                            }
-                        }
                     }
                 }
                 surv.getRequirements().add(req);

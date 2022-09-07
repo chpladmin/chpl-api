@@ -24,6 +24,12 @@ public class SurveillanceRequirementType implements Serializable {
     public static final String TRANS_DISCLOSURE_REQ = "Transparency or Disclosure Requirement";
     public static final String OTHER = "Other Requirement";
 
+    public static final Integer CERTIFIED_CAPABILITY_ID = 1;
+    public static final Integer TRANS_DISCLOSURE_ID = 2;
+    public static final Integer OTHER_ID = 3;
+    public static final Integer RWT_SUBMISSION_ID = 4;
+    public static final Integer ATTESTATION_SUBMISSION_ID = 5;
+
     /**
      * Surveillance requirement type internal ID
      */

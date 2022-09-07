@@ -42,12 +42,14 @@ public class SurveillanceRequirement implements Serializable {
      * surveilled. Allowable values include: "Certified Capability";
      * "Transparency or Disclosure Requirement", or "Other Requirement"
      */
+    @Deprecated
     @XmlElement(required = true)
     private SurveillanceRequirementType type;
 
     /**
      * Name of the surveilled requirement (ex: 170.314 (a)(1))
      */
+    @Deprecated
     @XmlElement(required = true)
     private String requirement;
 
@@ -55,8 +57,21 @@ public class SurveillanceRequirement implements Serializable {
      * If the surveilled requirement is a certified capability
      * then this field will have the criterion details (number, title, etc).
      */
+    @Deprecated
     @XmlElement(required = false)
     private CertificationCriterion criterion;
+
+    /**
+     * TODO - Need to add description (OCD-4029)
+     */
+    @XmlElement
+    private RequirementDetailType requirementDetailType;
+
+    /**
+     * TODO - Need to add description (OCD-4029)
+     */
+    @XmlElement
+    private String requirementDetailOther;
 
     /**
      * The result for surveillance conducted on each surveillance requirement.
@@ -174,28 +189,50 @@ public class SurveillanceRequirement implements Serializable {
         this.id = id;
     }
 
+    @Deprecated
     public SurveillanceRequirementType getType() {
         return type;
     }
 
+    @Deprecated
     public void setType(SurveillanceRequirementType type) {
         this.type = type;
     }
 
+    @Deprecated
     public String getRequirement() {
         return requirement;
     }
 
+    @Deprecated
     public void setRequirement(String requirement) {
         this.requirement = requirement;
     }
 
+    @Deprecated
     public CertificationCriterion getCriterion() {
         return criterion;
     }
 
+    @Deprecated
     public void setCriterion(CertificationCriterion criterion) {
         this.criterion = criterion;
+    }
+
+    public RequirementDetailType getRequirementDetailType() {
+        return requirementDetailType;
+    }
+
+    public void setRequirementDetailType(RequirementDetailType requirementDetailType) {
+        this.requirementDetailType = requirementDetailType;
+    }
+
+    public String getRequirementDetailOther() {
+        return requirementDetailOther;
+    }
+
+    public void setRequirementDetailOther(String requirementDetailOther) {
+        this.requirementDetailOther = requirementDetailOther;
     }
 
     public SurveillanceResultType getResult() {

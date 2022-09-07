@@ -19,6 +19,9 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -97,4 +100,38 @@ public class SurveillanceNonconformityEntity {
     @Where(clause = "deleted <> 'true'")
     private Set<SurveillanceNonconformityDocumentationEntity> documents = new HashSet<SurveillanceNonconformityDocumentationEntity>();
 
+    public SurveillanceNonconformity toDomain() {
+        SurveillanceNonconformity nc = SurveillanceNonconformity.builder()
+                .capApprovalDay(this.getCapApproval())
+                .capEndDay(this.getCapEndDate())
+                .capMustCompleteDay(this.getCapMustCompleteDate())
+                .capStartDay(this.getCapStart())
+                .dateOfDeterminationDay(this.getDateOfDetermination())
+                .nonconformityCloseDay(this.getNonconformityCloseDate())
+                .developerExplanation(this.getDeveloperExplanation())
+                .findings(this.getFindings())
+                .id(this.getId())
+                .type(this.getType().toDomain())
+                .resolution(this.getResolution())
+                .sitesPassed(this.getSitesPassed())
+                .summary(this.getSummary())
+                .totalSites(this.getTotalSites())
+                .lastModifiedDate(this.getLastModifiedDate())
+                .nonconformityStatus(this.getNonconformityCloseDate() == null ? SurveillanceNonconformityStatus.OPEN : SurveillanceNonconformityStatus.CLOSED)
+                .nonconformityType(this.getType().getClassification().equals(NonconformityClassification.REQUIREMENT) ? this.getType().getNumber() : null)
+                .build();
+
+        //TODO - need to figure this out OCD_4029
+        //if (nc.getType().getClassification().equals(NonconformityClassification.CRITERION)) {
+        //    nc.setCriterion(certificationCriterionService.get(nc.getType().getId()));
+        //}
+
+        if (this.getDocuments() != null && this.getDocuments().size() > 0) {
+            nc.setDocuments(this.getDocuments().stream()
+                    .map(e -> e.toDomain())
+                    .toList());
+        }
+
+        return nc;
+    }
 }
