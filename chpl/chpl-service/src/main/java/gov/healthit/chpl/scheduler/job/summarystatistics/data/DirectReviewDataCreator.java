@@ -22,7 +22,7 @@ public class DirectReviewDataCreator extends StatisticsDataCreator  {
     }
 
     public Long getTotalDirectReviews() {
-        if (directReviewSearchService.getDirectReviewsAvailable()) {
+        if (directReviewSearchService.doesCacheHaveAnyOkData()) {
             return Long.valueOf(directReviewSearchService.getAll().size());
         } else {
             return null;
@@ -30,8 +30,9 @@ public class DirectReviewDataCreator extends StatisticsDataCreator  {
     }
 
     public Long getOpenDirectReviews() {
-        if (directReviewSearchService.getDirectReviewsAvailable()) {
+        if (directReviewSearchService.doesCacheHaveAnyOkData()) {
             return directReviewSearchService.getAll().stream()
+                    .flatMap(drContainer -> drContainer.getDirectReviews().stream())
                     .filter(dr -> isDirectReviewOpen(dr))
                     .collect(Collectors.counting());
         } else {
@@ -40,8 +41,9 @@ public class DirectReviewDataCreator extends StatisticsDataCreator  {
     }
 
     public Long getClosedDirectReviews() {
-        if (directReviewSearchService.getDirectReviewsAvailable()) {
+        if (directReviewSearchService.doesCacheHaveAnyOkData()) {
             return directReviewSearchService.getAll().stream()
+                    .flatMap(drContainer -> drContainer.getDirectReviews().stream())
                     .filter(dr -> !isDirectReviewOpen(dr))
                     .collect(Collectors.counting());
         } else {
@@ -50,8 +52,9 @@ public class DirectReviewDataCreator extends StatisticsDataCreator  {
     }
 
     public Long getAverageTimeToCloseDirectReview() {
-        if (directReviewSearchService.getDirectReviewsAvailable()) {
+        if (directReviewSearchService.doesCacheHaveAnyOkData()) {
             return directReviewSearchService.getAll().stream()
+                    .flatMap(drContainer -> drContainer.getDirectReviews().stream())
                     .filter(dr -> !isDirectReviewOpen(dr))
                     .collect(Collectors.averagingLong(dr -> getDirectReviewDaysOpen(dr)))
                     .longValue();
@@ -61,8 +64,9 @@ public class DirectReviewDataCreator extends StatisticsDataCreator  {
     }
 
     public Long getTotalNonConformities() {
-        if (directReviewSearchService.getDirectReviewsAvailable()) {
+        if (directReviewSearchService.doesCacheHaveAnyOkData()) {
         return directReviewSearchService.getAll().stream()
+                .flatMap(drContainer -> drContainer.getDirectReviews().stream())
                 .flatMap(dr -> dr.getNonConformities().stream())
                 .count();
         } else {
@@ -71,8 +75,9 @@ public class DirectReviewDataCreator extends StatisticsDataCreator  {
     }
 
     public Long getOpenNonConformities() {
-        if (directReviewSearchService.getDirectReviewsAvailable()) {
+        if (directReviewSearchService.doesCacheHaveAnyOkData()) {
         return directReviewSearchService.getAll().stream()
+                .flatMap(drContainer -> drContainer.getDirectReviews().stream())
                 .flatMap(dr -> dr.getNonConformities().stream())
                 .filter(nc -> nc.getNonConformityStatus().equalsIgnoreCase(DirectReviewNonConformity.STATUS_OPEN))
                 .count();
@@ -82,8 +87,9 @@ public class DirectReviewDataCreator extends StatisticsDataCreator  {
     }
 
     public Long getClosedNonConformities() {
-        if (directReviewSearchService.getDirectReviewsAvailable()) {
+        if (directReviewSearchService.doesCacheHaveAnyOkData()) {
             return directReviewSearchService.getAll().stream()
+                    .flatMap(drContainer -> drContainer.getDirectReviews().stream())
                     .flatMap(dr -> dr.getNonConformities().stream())
                     .filter(nc -> nc.getNonConformityStatus().equalsIgnoreCase(DirectReviewNonConformity.STATUS_CLOSED))
                     .count();
@@ -93,8 +99,9 @@ public class DirectReviewDataCreator extends StatisticsDataCreator  {
     }
 
     public Long getOpenCaps() {
-        if (directReviewSearchService.getDirectReviewsAvailable()) {
+        if (directReviewSearchService.doesCacheHaveAnyOkData()) {
             return directReviewSearchService.getAll().stream()
+                    .flatMap(drContainer -> drContainer.getDirectReviews().stream())
                     .flatMap(dr -> dr.getNonConformities().stream())
                     .filter(nc -> nc.getCapApprovalDate() != null && nc.getCapEndDate() == null)
                     .count();
@@ -104,8 +111,9 @@ public class DirectReviewDataCreator extends StatisticsDataCreator  {
     }
 
     public Long getClosedCaps() {
-        if (directReviewSearchService.getDirectReviewsAvailable()) {
+        if (directReviewSearchService.doesCacheHaveAnyOkData()) {
             return directReviewSearchService.getAll().stream()
+                    .flatMap(drContainer -> drContainer.getDirectReviews().stream())
                     .flatMap(dr -> dr.getNonConformities().stream())
                     .filter(nc -> nc.getCapApprovalDate() != null && nc.getCapEndDate() != null)
                     .count();

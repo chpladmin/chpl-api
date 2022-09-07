@@ -20,6 +20,9 @@
     <Logger name="curesStatisticsEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="curesStatisticsEmailJob" />
     </Logger>
+    <Logger name="certificationIdEmailJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="certificationIdEmailJob" />
+    </Logger>
     <Logger name="urlStatusDataCollectorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="urlStatusDataCollectorJob" />
     </Logger>

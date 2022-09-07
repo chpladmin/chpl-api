@@ -136,7 +136,7 @@ public class DeveloperController {
     public @ResponseBody ResponseEntity<List<DirectReview>> getDirectReviews(
             @PathVariable("developerId") Long developerId) throws JiraRequestFailedException {
         return new ResponseEntity<List<DirectReview>>(
-                directReviewService.getDirectReviews(developerId), HttpStatus.OK);
+                directReviewService.getDirectReviews(developerId).getDirectReviews(), HttpStatus.OK);
     }
 
     @Operation(summary = "Update a developer.",
