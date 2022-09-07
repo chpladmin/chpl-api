@@ -188,6 +188,7 @@ public class ComplaintManager extends SecuredManager {
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.ACB_COMPLAINT_ID));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.SUMMARY));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.LISTINGS));
+        rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.SURVEILLANCE));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.CLOSED_DATE));
         return runValidations(rules, complaint);
     }
@@ -200,6 +201,7 @@ public class ComplaintManager extends SecuredManager {
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.ACB_COMPLAINT_ID));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.SUMMARY));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.LISTINGS));
+        rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.SURVEILLANCE));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.CLOSED_DATE));
 
         return runValidations(rules, complaint);
