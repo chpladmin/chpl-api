@@ -1,29 +1,32 @@
 package gov.healthit.chpl.web.controller;
 
-import java.util.List;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.caching.CacheInitializer;
 import gov.healthit.chpl.domain.status.CacheStatusName;
 import gov.healthit.chpl.domain.status.ServerStatusName;
 import gov.healthit.chpl.domain.status.SystemStatus;
+import gov.healthit.chpl.service.DirectReviewSearchService;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
+import lombok.extern.log4j.Log4j2;
 
 @Tag(name = "status", description = "Gives insight into system status.")
 @RestController
+@Log4j2
 public class StatusController {
-    private static final Logger LOGGER = LogManager.getLogger(StatusController.class);
+
+    private DirectReviewSearchService drService;
+
+    @Autowired
+    public StatusController(DirectReviewSearchService drService) {
+        this.drService = drService;
+    }
 
     @Operation(summary = "Check that the rest services are up and running and indicate whether "
             + "the pre-loaded caches are initializing or have completed."
@@ -45,21 +48,6 @@ public class StatusController {
     }
 
     private CacheStatusName determineCacheStatus() {
-        CacheManager manager = CacheManager.getInstance();
-        boolean anyPending = false;
-        List<String> cacheNames = CacheInitializer.getPreInitializedCaches();
-        for (int i = 0; i < cacheNames.size(); i++) {
-            Cache currCache = manager.getCache(cacheNames.get(i));
-            if (currCache == null || currCache.getKeysNoDuplicateCheck().size() == 0) {
-                if (currCache != null) {
-                    LOGGER.warn("Cache " + currCache.getName() + " is not yet initialized.");
-                } else {
-                    LOGGER.warn("Cache " + cacheNames.get(i) + " is null and not initialized.");
-                }
-                anyPending = true;
-            }
-        }
-
-        return anyPending ? CacheStatusName.INITIALIZING : CacheStatusName.OK;
+        return drService.areDirectReviewsLoading() ? CacheStatusName.INITIALIZING : CacheStatusName.OK;
     }
 }

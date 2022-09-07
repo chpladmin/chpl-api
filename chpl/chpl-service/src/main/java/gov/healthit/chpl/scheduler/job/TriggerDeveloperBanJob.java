@@ -178,7 +178,7 @@ public class TriggerDeveloperBanJob implements Job {
                 (openDirectReviewNcs != 1 ? "were" : "was"), openDirectReviewNcs, (openDirectReviewNcs != 1 ? "ies" : "y"), // formatted counts of open
                 closedDirectReviewNcs, (closedDirectReviewNcs != 1 ? "ies" : "y")); // and closed direct review nonconformities, with English word endings
 
-        if (!drSearchService.getDirectReviewsAvailable()) {
+        if (!drSearchService.doesCacheHaveAnyOkData()) {
             htmlMessage += drsNotAvailableEmailBody;
         }
 
