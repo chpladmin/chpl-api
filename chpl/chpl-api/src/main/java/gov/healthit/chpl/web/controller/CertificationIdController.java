@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,6 +24,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.certificationId.Validator;
 import gov.healthit.chpl.certificationId.ValidatorFactory;
 import gov.healthit.chpl.domain.SimpleCertificationId;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
@@ -31,10 +33,12 @@ import gov.healthit.chpl.exception.CertificationIdException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.results.CertificationIdLookupResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdVerifyResults;
@@ -64,6 +68,10 @@ public class CertificationIdController {
         this.validatorFactory = validatorFactory;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/certification_ids",
+        removalDate = "2023-03-15",
+        message = "This endpoint is deprecated and will be removed in a future release. Please use /certification_ids/report-request to receive all certification IDs in an emailed report.")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ONC_STAFF', 'ROLE_CMS_STAFF')")
     @Operation(summary = "Retrieves a list of all CMS EHR Certification IDs along with the date they were created.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_CMS_STAFF",
@@ -78,12 +86,24 @@ public class CertificationIdController {
         List<SimpleCertificationId> results = null;
         if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()
                 || resourcePermissions.isUserRoleOncStaff()) {
-            results = certificationIdManager.getAllWithProductsCached();
+            results = certificationIdManager.getAllWithProducts();
         } else {
-            results = certificationIdManager.getAllCached();
+            results = certificationIdManager.getAll();
         }
 
         return results;
+    }
+
+    @Operation(summary = "Generate the CMS EHR Certification ID Report and email the results to the logged-in user.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_CMS_STAFF",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/report-request", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    public @ResponseBody ChplOneTimeTrigger triggerCmsIdReport() throws SchedulerException, ValidationException {
+        ChplOneTimeTrigger jobTrigger = certificationIdManager.triggerCmsIdReport();
+        return jobTrigger;
     }
 
     @Operation(summary = "Retrieves a CMS EHR Certification ID for a collection of products.",

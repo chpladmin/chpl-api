@@ -61,7 +61,7 @@ public class DirectReviewUpdateEmailService {
         List<DirectReview> originalDeveloperDrs = new ArrayList<DirectReview>();
         for (Developer originalDeveloper : originalDevelopers) {
             try {
-                originalDeveloperDrs.addAll(directReviewService.getDirectReviews(originalDeveloper.getId(), logger));
+                originalDeveloperDrs.addAll(directReviewService.getDirectReviews(originalDeveloper.getId(), logger).getDirectReviews());
             } catch (Exception ex) {
                 logger.error("Error querying Jira for direct reviews related to developer ID " + originalDeveloper.getId());
                 originalDeveloperDrs = null;
