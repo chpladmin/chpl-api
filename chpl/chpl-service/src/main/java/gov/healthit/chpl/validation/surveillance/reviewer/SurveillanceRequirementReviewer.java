@@ -18,6 +18,7 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 
 @Component
 public class SurveillanceRequirementReviewer implements Reviewer {
@@ -108,7 +109,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
                     msgUtil.getMessage("surveillance.requirementInvalidForRequirementType", req.getRequirement(), req.getType().getName()));
             return;
         }
-        req.setRequirement(req.getCriterion().getNumber());
+        req.setRequirement(Util.formatCriteriaNumber(req.getCriterion()));
 
         // see if the requirement type is a criterion that the product has attested to
         if (certResults != null && certResults.size() > 0) {
