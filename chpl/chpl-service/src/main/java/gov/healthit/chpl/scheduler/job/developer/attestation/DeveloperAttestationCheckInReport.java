@@ -41,10 +41,10 @@ public class DeveloperAttestationCheckInReport {
                 assurancesNoncompliantResponse != null ? assurancesNoncompliantResponse : "",
                 communicationsResponse != null ? communicationsResponse : "",
                 communicationsNoncompliantResponse != null ? communicationsNoncompliantResponse : "",
-                rwtResponse != null ? rwtResponse : "",
-                rwtNoncompliantResponse != null ? rwtNoncompliantResponse : "",
                 apiResponse != null ? apiResponse : "",
                 apiNoncompliantResponse != null ? apiNoncompliantResponse : "",
+                rwtResponse != null ? rwtResponse : "",
+                rwtNoncompliantResponse != null ? rwtNoncompliantResponse : "",
                 signature != null ? signature : "",
                 signatureEmail != null ? signatureEmail : "");
     }
@@ -62,10 +62,10 @@ public class DeveloperAttestationCheckInReport {
                 "Assurances Optional Response",
                 "Communications Response",
                 "Communications Optional Response",
-                "Real World Testing Response",
-                "Real World Testing Optional Response",
                 "Application Programming Interfaces Response",
                 "Application Programming Interfaces Optional Response",
+                "Real World Testing Response",
+                "Real World Testing Optional Response",
                 "Submitted by Name",
                 "Submitted by Email");
     }
