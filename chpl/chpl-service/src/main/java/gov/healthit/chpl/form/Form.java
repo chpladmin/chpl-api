@@ -50,10 +50,11 @@ public class Form implements Serializable {
         return accumulatedFormItems;
     }
 
-    public String formatResponse(Long sectionHeadingId) {
+    public String formatResponse(Long questionId) {
         String attestationResponse = getSectionHeadings().stream()
-                .filter(section -> sectionHeadingId.equals(section.getId()))
-                .flatMap(section -> section.getFormItems().get(0).getSubmittedResponses().stream())
+                .flatMap(section -> section.getFormItems().stream())
+                .filter(formItem -> formItem.getQuestion().getId().equals(questionId))
+                .flatMap(formItem -> formItem.getSubmittedResponses().stream())
                 .map(submittedResponse -> submittedResponse.getResponse())
                 .collect(Collectors.joining("; "));
         if (attestationResponse == null) {
@@ -74,11 +75,11 @@ public class Form implements Serializable {
         return attestationResponse;
     }
 
-    public String formatOptionalResponsesForCondition(Long sectionHeadingId) {
+    public String formatOptionalResponsesForCondition(Long questionId) {
         String optionalResponse = getSectionHeadings().stream()
-                .filter(section -> sectionHeadingId.equals(section.getId()))
-                .map(section -> section.getFormItems().get(0))
-                .filter(formItem -> !CollectionUtils.isEmpty(formItem.getChildFormItems()))
+                .flatMap(section -> section.getFormItems().stream())
+                .filter(formItem -> formItem.getQuestion().getId().equals(questionId)
+                        && !CollectionUtils.isEmpty(formItem.getChildFormItems()))
                 .map(formItem -> formItem.getChildFormItems().get(0))
                 .flatMap(childFormItem -> childFormItem.getSubmittedResponses().stream())
                 .map(submittedResponse -> submittedResponse.getResponse())
