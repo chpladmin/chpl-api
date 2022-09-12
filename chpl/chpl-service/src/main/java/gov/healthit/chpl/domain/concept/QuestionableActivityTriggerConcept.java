@@ -40,7 +40,9 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
     REPLACED_SVAP_ADDED("Replaced SVAP Added"),
     PROMOTING_INTEROPERABILITY_UPDATED_BY_ACB("Promoting Interoperability Updated by ONC-ACB"),
     REMOVED_NONCONFORMITY_ADDED("Removed Non-Conformity added to Surveillance"),
-    REMOVED_REQUIREMENT_ADDED("Removed Requirement added to Surveillance");
+    REMOVED_REQUIREMENT_ADDED("Removed Requirement added to Surveillance"),
+    RWT_PLANS_UPDATED_OUTSIDE_NORMAL_PERIOD("Real World Testing Plans URL or Check Date updated outside normal update period"),
+    RWT_RESULTS_UPDATED_OUTSIDE_NORMAL_PERIOD("Real World Testing Results URL or Check Date updated outside normal update period");
 
     private final String name;
 
