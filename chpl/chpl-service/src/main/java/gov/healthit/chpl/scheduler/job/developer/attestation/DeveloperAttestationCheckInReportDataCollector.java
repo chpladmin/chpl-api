@@ -29,8 +29,8 @@ public class DeveloperAttestationCheckInReportDataCollector {
     private static final Long INFO_BLOCKING_CONDITION = 1L;
     private static final Long ASSURANCES_CONDITION = 2L;
     private static final Long COMMUNICATIONS_CONDITION = 3L;
-    private static final Long RWT_CONDITION = 4L;
-    private static final Long API_CONDITION = 5L;
+    private static final Long API_CONDITION = 4L;
+    private static final Long RWT_CONDITION = 5L;
 
     private AttestationManager attestationManager;
     private ChangeRequestDAO changeRequestDAO;
