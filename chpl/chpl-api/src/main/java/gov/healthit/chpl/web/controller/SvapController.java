@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,6 +17,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.manager.SvapManager;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -58,6 +60,11 @@ public class SvapController {
         return svapManager.create(svap);
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/svaps",
+       httpMethod = "DELETE",
+       removalDate = "2023-04-01",
+       message = "This endpoint is deprecated and will be removed in a future release. Please use DELETE /svaps/{svapId} instead.")
     @Operation(summary = "Delete an Standards Version Advancement Process.",
             description = "Provides functionality to delete an existing SVAP and the Criteria associated with it. "
                     + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.",
@@ -67,8 +74,20 @@ public class SvapController {
             })
     @RequestMapping(value = "", method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public void deleteSvap(@RequestBody(required = true) Svap svap) throws EntityRetrievalException, ValidationException {
+    public void deleteSvapDeprecated(@RequestBody(required = true) Svap svap) throws EntityRetrievalException, ValidationException {
         svapManager.delete(svap);
+    }
+
+    @Operation(summary = "Delete an Standards Version Advancement Process.",
+            description = "Provides functionality to delete an existing SVAP and the Criteria associated with it. "
+                    + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/{svapId}", method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
+    public void delete(@PathVariable("svapId") Long svapId) throws EntityRetrievalException, ValidationException {
+        svapManager.delete(svapId);
     }
 
     @Operation(summary = "Retrieve all current Standards Version Advancement Processes. ",

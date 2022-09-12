@@ -103,11 +103,19 @@ public class SvapManager {
         return getSvap(newSvap.getSvapId());
     }
 
+    @Deprecated
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SVAP, "
             + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).DELETE)")
     @Transactional
     public void delete(Svap svap) throws EntityRetrievalException, ValidationException {
-        Svap originalSvap = getSvap(svap.getSvapId());
+        delete(svap.getSvapId());
+    }
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SVAP, "
+            + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).DELETE)")
+    @Transactional
+    public void delete(Long svapId) throws EntityRetrievalException, ValidationException {
+        Svap originalSvap = getSvap(svapId);
         validateForDelete(originalSvap);
         deleteAllCriteriaFromSvap(originalSvap);
         deleteSvap(originalSvap);
