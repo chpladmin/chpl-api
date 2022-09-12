@@ -75,7 +75,7 @@ public class DeveloperAttestationReportDataCollector {
     private FF4j ff4j;
 
     private List<CertificationCriterion> assurancesCriteria;
-    private List<CertificationCriterion> assurancesCriteriaPreErdPhase2;
+    private List<CertificationCriterion> apiCriteriaPreErdPhase2;
     private List<CertificationCriterion> apiCriteria;
     private List<CertificationCriterion> rwtCriteria;
     private Map<Long, List<ListingSearchResult>> developerListings = new HashMap<Long, List<ListingSearchResult>>();
@@ -90,8 +90,8 @@ public class DeveloperAttestationReportDataCollector {
             AttestationCertificationBodyService attestationCertificationBodyService,
             RealWorldTestingCriteriaService realWorldTestingCriteriaService,
             CertificationCriterionService certificationCriterionService,
-            @Value("${apiCriteriaKeysPreErdPhase2}") String[] assurancesCriteriaKeysPreErdPhase2,
             @Value("${assurancesCriteriaKeys}") String[] assurancesCriteriaKeys,
+            @Value("${apiCriteriaKeysPreErdPhase2}") String[] apiCriteriaKeysPreErdPhase2,
             @Value("${apiCriteriaKeys}") String[] apiCriteriaKeys,
             FF4j ff4j) {
 
@@ -113,7 +113,7 @@ public class DeveloperAttestationReportDataCollector {
                 .map(key -> certificationCriterionService.get(key))
                 .collect(Collectors.toList());
 
-        assurancesCriteriaPreErdPhase2 = Arrays.asList(assurancesCriteriaKeysPreErdPhase2).stream()
+        apiCriteriaPreErdPhase2 = Arrays.asList(apiCriteriaKeysPreErdPhase2).stream()
                 .map(key -> certificationCriterionService.get(key))
                 .collect(Collectors.toList());
 
@@ -310,9 +310,8 @@ public class DeveloperAttestationReportDataCollector {
     }
 
     private String getAssurancesValidation(Developer developer, Logger logger) {
-        List<CertificationCriterion> assurancesCriteriaFromFlag = ff4j.check(FeatureList.ERD_PHASE_2) ? assurancesCriteria : assurancesCriteriaPreErdPhase2;
-        List<ListingSearchResult> apiEligibleListings = getActiveListingDataWithAnyCriteriaForDeveloper(developer, assurancesCriteriaFromFlag, logger);
-        if (!CollectionUtils.isEmpty(apiEligibleListings)) {
+        List<ListingSearchResult> assurancesEligibleListings = getActiveListingDataWithAnyCriteriaForDeveloper(developer, assurancesCriteria, logger);
+        if (!CollectionUtils.isEmpty(assurancesEligibleListings)) {
             return ASSURANCES_VALIDATION_TRUE;
         } else {
             return ASSURANCES_VALIDATION_FALSE;
@@ -320,7 +319,8 @@ public class DeveloperAttestationReportDataCollector {
     }
 
     private String getApiValidation(Developer developer, Logger logger) {
-        List<ListingSearchResult> apiEligibleListings = getActiveListingDataWithAnyCriteriaForDeveloper(developer, apiCriteria, logger);
+        List<CertificationCriterion> apiCriteriaFromFlag = ff4j.check(FeatureList.ERD_PHASE_2) ? apiCriteria : apiCriteriaPreErdPhase2;
+        List<ListingSearchResult> apiEligibleListings = getActiveListingDataWithAnyCriteriaForDeveloper(developer, apiCriteriaFromFlag, logger);
         if (!CollectionUtils.isEmpty(apiEligibleListings)) {
             return API_VALIDATION_TRUE;
         } else {
