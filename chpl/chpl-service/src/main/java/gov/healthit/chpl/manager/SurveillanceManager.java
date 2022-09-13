@@ -3,7 +3,6 @@ package gov.healthit.chpl.manager;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,27 +26,14 @@ import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
-import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
-import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
-import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
-import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
-import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
-import gov.healthit.chpl.domain.surveillance.SurveillanceType;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.entity.CertificationCriterionEntity;
-import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
-import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity;
-import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
-import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -111,24 +97,18 @@ public class SurveillanceManager extends SecuredManager {
 
     @Transactional(readOnly = true)
     public Surveillance getById(final Long survId) throws EntityRetrievalException {
-        SurveillanceEntity surv = survDao.getSurveillanceById(survId);
-        Surveillance result = convertToDomain(surv);
+        Surveillance result = survDao.getSurveillanceById(survId).toDomain(cpDao, certificationCriterionService);
         survReadValidator.validate(result);
         return result;
     }
 
     @Transactional(readOnly = true)
     public List<Surveillance> getByCertifiedProduct(final Long cpId) {
-        List<SurveillanceEntity> survResults = survDao.getSurveillanceByCertifiedProductId(cpId);
-        List<Surveillance> results = new ArrayList<Surveillance>();
-        if (survResults != null) {
-            for (SurveillanceEntity survResult : survResults) {
-                Surveillance surv = convertToDomain(survResult);
-                survReadValidator.validate(surv);
-                results.add(surv);
-            }
-        }
-        return results;
+        List<Surveillance> surveillances = survDao.getSurveillanceByCertifiedProductId(cpId).stream()
+                .map(survEntity -> survEntity.toDomain(cpDao, certificationCriterionService))
+                .toList();
+        surveillances.forEach(surv -> survReadValidator.validate(surv));
+        return surveillances;
     }
 
     @Deprecated
@@ -301,97 +281,16 @@ public class SurveillanceManager extends SecuredManager {
                 "^" + env.getProperty("surveillanceNonconformitiesReportName") + "-.+\\.csv$");
     }
 
-    private Surveillance convertToDomain(SurveillanceEntity entity) {
-        Surveillance surv = new Surveillance();
-        surv.setId(entity.getId());
-        surv.setFriendlyId(entity.getFriendlyId());
-        surv.setStartDay(entity.getStartDate());
-        surv.setEndDay(entity.getEndDate());
-        surv.setRandomizedSitesUsed(entity.getNumRandomizedSites());
-        surv.setLastModifiedDate(entity.getLastModifiedDate());
-
-        if (entity.getCertifiedProduct() != null) {
-            CertifiedProductEntity cpEntity = entity.getCertifiedProduct();
-            try {
-                CertifiedProductDetailsDTO cpDto = cpDao.getDetailsById(cpEntity.getId());
-                surv.setCertifiedProduct(new CertifiedProduct(cpDto));
-            } catch (final EntityRetrievalException ex) {
-                LOGGER.error("Could not find details for certified product " + cpEntity.getId());
-            }
-        } else {
-            CertifiedProduct cp = new CertifiedProduct();
-            cp.setId(entity.getCertifiedProductId());
-            surv.setCertifiedProduct(cp);
+    private SurveillanceNonconformityDocument convertToDomain(final SurveillanceNonconformityDocumentationEntity entity,
+            final boolean getContents) {
+        SurveillanceNonconformityDocument doc = new SurveillanceNonconformityDocument();
+        doc.setId(entity.getId());
+        doc.setFileType(entity.getFileType());
+        doc.setFileName(entity.getFileName());
+        if (getContents) {
+            doc.setFileContents(entity.getFileData());
         }
-
-        if (entity.getSurveillanceType() != null) {
-            SurveillanceType survType = new SurveillanceType();
-            survType.setId(entity.getSurveillanceType().getId());
-            survType.setName(entity.getSurveillanceType().getName());
-            surv.setType(survType);
-        } else {
-            SurveillanceType survType = new SurveillanceType();
-            survType.setId(entity.getSurveillanceTypeId());
-            surv.setType(survType);
-        }
-
-        if (entity.getSurveilledRequirements() != null) {
-            for (SurveillanceRequirementEntity reqEntity : entity.getSurveilledRequirements()) {
-                SurveillanceRequirement req = new SurveillanceRequirement();
-                req.setId(reqEntity.getId());
-                if (reqEntity.getCertificationCriterionEntity() != null) {
-                    CertificationCriterionEntity criterionEntity = reqEntity.getCertificationCriterionEntity();
-                    req.setRequirement(criterionEntity.getNumber());
-                    CertificationCriterion criterion = convertToDomain(criterionEntity);
-                    req.setCriterion(criterion);
-                } else {
-                    req.setRequirement(reqEntity.getSurveilledRequirement());
-                }
-
-                if (reqEntity.getSurveillanceResultTypeEntity() != null) {
-                    SurveillanceResultType result = new SurveillanceResultType();
-                    result.setId(reqEntity.getSurveillanceResultTypeEntity().getId());
-                    result.setName(reqEntity.getSurveillanceResultTypeEntity().getName());
-                    req.setResult(result);
-                } else {
-                    SurveillanceResultType result = new SurveillanceResultType();
-                    result.setId(reqEntity.getSurveillanceResultTypeId());
-                    req.setResult(result);
-                }
-
-                if (reqEntity.getSurveillanceRequirementType() != null) {
-                    SurveillanceRequirementType result = new SurveillanceRequirementType();
-                    result.setId(reqEntity.getSurveillanceRequirementType().getId());
-                    result.setName(reqEntity.getSurveillanceRequirementType().getName());
-                    req.setType(result);
-                } else {
-                    SurveillanceRequirementType result = new SurveillanceRequirementType();
-                    result.setId(reqEntity.getSurveillanceRequirementTypeId());
-                    req.setType(result);
-                }
-
-                if (reqEntity.getNonconformities() != null) {
-                    for (SurveillanceNonconformityEntity ncEntity : reqEntity.getNonconformities()) {
-                        SurveillanceNonconformity nc =  ncEntity.toDomain();
-                        req.getNonconformities().add(nc);
-                    }
-                }
-                surv.getRequirements().add(req);
-            }
-        }
-        return surv;
-    }
-
-    private CertificationCriterion convertToDomain(CertificationCriterionEntity criterionEntity) {
-        CertificationCriterion criterion = new CertificationCriterion();
-        criterion.setId(criterionEntity.getId());
-        criterion.setCertificationEditionId(criterionEntity.getCertificationEditionId());
-        criterion.setCertificationEdition(criterionEntity.getCertificationEdition().getYear());
-        criterion.setDescription(criterionEntity.getDescription());
-        criterion.setNumber(criterionEntity.getNumber());
-        criterion.setRemoved(criterionEntity.getRemoved());
-        criterion.setTitle(criterionEntity.getTitle());
-        return criterion;
+        return doc;
     }
 
     private void logSurveillanceUpdateActivity(CertifiedProductSearchDetails existingListing)

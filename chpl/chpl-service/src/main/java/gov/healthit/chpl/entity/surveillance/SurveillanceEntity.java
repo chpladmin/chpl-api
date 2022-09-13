@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -19,7 +20,13 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -77,4 +84,27 @@ public class SurveillanceEntity {
     @Column(name = "surveillance_id", nullable = false)
     @Where(clause = "deleted <> 'true'")
     private Set<SurveillanceRequirementEntity> surveilledRequirements = new HashSet<SurveillanceRequirementEntity>();
+
+    public Surveillance toDomain(CertifiedProductDAO certifiedProductDAO, CertificationCriterionService certificationCriterionService) {
+        try {
+            return Surveillance.builder()
+                    .id(this.getId())
+                    .friendlyId(this.getFriendlyId())
+                    .startDay(this.getStartDate())
+                    .endDay(this.getEndDate())
+                    .randomizedSitesUsed(this.getNumRandomizedSites())
+                    .lastModifiedDate(this.getLastModifiedDate())
+                    .type(SurveillanceType.builder()
+                            .id(this.getSurveillanceType().getId())
+                            .name(this.getSurveillanceType().getName())
+                            .build())
+                    .certifiedProduct(new CertifiedProduct(certifiedProductDAO.getDetailsById(this.getCertifiedProductId())))
+                    .requirements(this.getSurveilledRequirements().stream()
+                            .map(e -> e.toDomain(certificationCriterionService))
+                            .collect(Collectors.toSet()))
+                    .build();
+        } catch (EntityRetrievalException e) {
+            return null;
+        }
+    }
 }

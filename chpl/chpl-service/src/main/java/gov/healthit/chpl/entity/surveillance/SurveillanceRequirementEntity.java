@@ -23,14 +23,20 @@ import org.hibernate.annotations.Where;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
-import gov.healthit.chpl.entity.CertificationCriterionEntity;
+import gov.healthit.chpl.service.CertificationCriterionService;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "surveillance_requirement")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SurveillanceRequirementEntity {
 
     @Id
@@ -59,14 +65,14 @@ public class SurveillanceRequirementEntity {
     //private String surveilledRequirement;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "surveillance_requirement_detail_type", insertable = false, updatable = false)
-    private RequirementDetailTypeEntity requirmentDetailType;
+    @JoinColumn(name = "requirement_detail_type_id", insertable = true, updatable = true)
+    private RequirementDetailTypeEntity requirementDetailType;
 
     @Column(name = "requirement_detail_other")
     private String requirementDetailOther;
 
-    @Column(name = "result_id")
-    private Long surveillanceResultTypeId;
+    //@Column(name = "result_id")
+    //private Long surveillanceResultTypeId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "result_id", insertable = false, updatable = false)
@@ -90,45 +96,35 @@ public class SurveillanceRequirementEntity {
     @Where(clause = "deleted <> 'true'")
     private Set<SurveillanceNonconformityEntity> nonconformities = new HashSet<SurveillanceNonconformityEntity>();
 
-    public SurveillanceRequirement toDomain() {
+    public SurveillanceRequirement toDomain(CertificationCriterionService certificationCriterionService) {
         SurveillanceRequirement req = SurveillanceRequirement.builder()
                 .id(this.getId())
                 .nonconformities(Optional.ofNullable(this.getNonconformities()).orElse(Collections.emptySet()).stream()
                         .map(e -> e.toDomain())
                         .toList())
-                .requirementDetailType(this.requirmentDetailType.toDomain())
+                .requirementDetailType(this.requirementDetailType.toDomain())
                 .requirementDetailOther(this.requirementDetailOther)
                 .result(this.getSurveillanceResultTypeEntity().toDomain())
+                .nonconformities(this.nonconformities.stream()
+                        .map(e -> e.toDomain())
+                        .toList())
+                .type(SurveillanceRequirementType.builder()
+                        .id(this.requirementDetailType.getSurveillanceRequirementType().getId())
+                        .name(this.requirementDetailType.getSurveillanceRequirementType().getName())
+                        .build())
                 .build();
 
-        switch (this.getRequirmentDetailType().getSurveillanceRequirementType().getId().intValue()) {
-            case SurveillanceRequirementType.CERTIFIED_CAPABILITY_ID :
-
-        }
-
-
-
-        if (this.getCertificationCriterionEntity() != null) {
-            CertificationCriterionEntity criterionEntity = this.getCertificationCriterionEntity();
-            req.setRequirement(criterionEntity.getNumber());
-            CertificationCriterion criterion = convertToDomain(criterionEntity);
+        int intValue = this.getRequirementDetailType().getSurveillanceRequirementType().getId().intValue();
+        if (intValue == SurveillanceRequirementType.CERTIFIED_CAPABILITY_ID) {
+            CertificationCriterion criterion = certificationCriterionService.get(req.getRequirementDetailType().getId());
             req.setCriterion(criterion);
-        } else {
-            req.setRequirement(this.getSurveilledRequirement());
+            req.getType();
+        } else if (intValue == SurveillanceRequirementType.TRANS_DISCLOSURE_ID || intValue == SurveillanceRequirementType.RWT_SUBMISSION_ID || intValue == SurveillanceRequirementType.ATTESTATION_SUBMISSION_ID) {
+            req.setRequirement(req.getRequirementDetailType().getTitle());
+        } else if (intValue == SurveillanceRequirementType.OTHER_ID) {
+            req.setRequirement(req.getRequirementDetailOther());
         }
 
-        if (this.getSurveillanceRequirementType() != null) {
-            SurveillanceRequirementType result = new SurveillanceRequirementType();
-            result.setId(this.getSurveillanceRequirementType().getId());
-            result.setName(this.getSurveillanceRequirementType().getName());
-            req.setType(result);
-        } else {
-            SurveillanceRequirementType result = new SurveillanceRequirementType();
-            result.setId(this.getSurveillanceRequirementTypeId());
-            req.setType(result);
-        }
-
-
-
+        return req;
     }
 }

@@ -10,11 +10,17 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "surveillance_result")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SurveillanceResultTypeEntity {
 
     @Id

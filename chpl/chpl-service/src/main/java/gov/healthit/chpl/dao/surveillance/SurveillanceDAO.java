@@ -2,6 +2,7 @@ package gov.healthit.chpl.dao.surveillance;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Query;
 
@@ -49,13 +50,11 @@ public class SurveillanceDAO extends BaseDAOImpl {
             + "JOIN FETCH surv.certifiedProduct "
             + "JOIN FETCH surv.surveillanceType "
             + "LEFT OUTER JOIN FETCH surv.surveilledRequirements reqs "
-            + "LEFT OUTER JOIN FETCH reqs.surveillanceRequirementType "
-            + "LEFT OUTER JOIN FETCH reqs.certificationCriterionEntity cce "
-            + "LEFT JOIN FETCH cce.certificationEdition "
+            + "LEFT OUTER JOIN FETCH reqs.requirementDetailType "
             + "LEFT OUTER JOIN FETCH reqs.surveillanceResultTypeEntity "
             + "LEFT OUTER JOIN FETCH reqs.nonconformities ncs "
             + "LEFT OUTER JOIN FETCH ncs.type nct "
-            + "LEFT JOIN FETCH nct.certificationEdition "
+            //+ "LEFT JOIN FETCH nct.certificationEdition "
             + "LEFT OUTER JOIN FETCH ncs.documents docs "
             + "WHERE surv.deleted <> true ";
 
@@ -78,183 +77,252 @@ public class SurveillanceDAO extends BaseDAOImpl {
         entityManager.persist(toInsert);
         entityManager.flush();
 
-        for (SurveillanceRequirement req : surv.getRequirements()) {
-            SurveillanceRequirementEntity toInsertReq = new SurveillanceRequirementEntity();
-            populateSurveillanceRequirementEntity(toInsertReq, req);
-            toInsertReq.setSurveillanceId(toInsert.getId());
-            toInsertReq.setLastModifiedUser(AuthUtil.getAuditId());
-            toInsertReq.setDeleted(false);
-            entityManager.persist(toInsertReq);
-            entityManager.flush();
-
-            for (SurveillanceNonconformity nc : req.getNonconformities()) {
-                SurveillanceNonconformityEntity toInsertNc = new SurveillanceNonconformityEntity();
-                populateSurveillanceNonconformityEntity(toInsertNc, nc);
-                toInsertNc.setSurveillanceRequirementId(toInsertReq.getId());
-                toInsertNc.setDeleted(false);
-                toInsertNc.setLastModifiedUser(AuthUtil.getAuditId());
-
-                entityManager.persist(toInsertNc);
-                entityManager.flush();
-            }
-        }
+        surv.getRequirements().forEach(req -> {
+            SurveillanceRequirementEntity newRequirement = insertSurveillanceRequirement(req, toInsert.getId());
+            req.getNonconformities().forEach(nc -> {
+                insertSurveillanceNonconformity(nc, newRequirement.getId());
+            });
+        });
         return toInsert.getId();
     }
 
-    @Deprecated
-    public Long insertNonconformityDocument(Long nonconformityId, SurveillanceNonconformityDocument doc)
-            throws EntityRetrievalException {
-        SurveillanceNonconformityEntity nc = entityManager.find(SurveillanceNonconformityEntity.class, nonconformityId);
-        if (nc == null) {
-            String msg = msgUtil.getMessage("surveillance.nonconformity.notFound");
-            throw new EntityRetrievalException(msg);
-        }
-        SurveillanceNonconformityDocumentationEntity docEntity = new SurveillanceNonconformityDocumentationEntity();
-        docEntity.setNonconformityId(nonconformityId);
-        docEntity.setFileData(doc.getFileContents());
-        docEntity.setFileType(doc.getFileType());
-        docEntity.setFileName(doc.getFileName());
-        docEntity.setDeleted(false);
-        docEntity.setLastModifiedUser(AuthUtil.getAuditId());
+    private SurveillanceNonconformityEntity insertSurveillanceNonconformity(SurveillanceNonconformity nonconformity, Long surveillanceRequirementId) {
+        SurveillanceNonconformityEntity toInsertNc  = SurveillanceNonconformityEntity.builder()
+                .surveillanceRequirementId(surveillanceRequirementId)
+                .type(NonconformityTypeEntity.builder()
+                        .id(nonconformity.getType().getId())
+                        .number(nonconformity.getType().getNumber())
+                        .title(nonconformity.getType().getTitle())
+                        .removed(nonconformity.getType().getRemoved())
+                        .build())
+                .capApproval(nonconformity.getCapApprovalDay())
+                .capEndDate(nonconformity.getCapEndDay())
+                .capMustCompleteDate(nonconformity.getCapMustCompleteDay())
+                .capStart(nonconformity.getCapStartDay())
+                .dateOfDetermination(nonconformity.getDateOfDeterminationDay())
+                .developerExplanation(nonconformity.getDeveloperExplanation())
+                .findings(nonconformity.getFindings())
+                .resolution(nonconformity.getResolution())
+                .sitesPassed(nonconformity.getSitesPassed())
+                .nonconformityCloseDate(nonconformity.getNonconformityCloseDay())
+                .summary(nonconformity.getSummary())
+                .totalSites(nonconformity.getTotalSites())
+                .lastModifiedUser(AuthUtil.getAuditId())
+                .deleted(false)
+                .build();
 
-        entityManager.persist(docEntity);
+        entityManager.persist(toInsertNc);
         entityManager.flush();
 
-        return docEntity.getId();
+        return toInsertNc;
     }
 
+    private SurveillanceNonconformityEntity updateSurveillanceNonconformity(SurveillanceNonconformity nonconformity, SurveillanceNonconformityEntity nonconformityEntity) {
+        nonconformityEntity.getType().setId(nonconformity.getType().getId());
+        nonconformityEntity.setCapApproval(nonconformity.getCapApprovalDay());
+        nonconformityEntity.setCapEndDate(nonconformity.getCapEndDay());
+        nonconformityEntity.setCapMustCompleteDate(nonconformity.getCapMustCompleteDay());
+        nonconformityEntity.setCapStart(nonconformity.getCapStartDay());
+        nonconformityEntity.setDateOfDetermination(nonconformity.getDateOfDeterminationDay());
+        nonconformityEntity.setDeveloperExplanation(nonconformity.getDeveloperExplanation());
+        nonconformityEntity.setFindings(nonconformity.getFindings());
+        nonconformityEntity.setResolution(nonconformity.getResolution());
+        nonconformityEntity.setSitesPassed(nonconformity.getSitesPassed());
+        nonconformityEntity.setNonconformityCloseDate(nonconformity.getNonconformityCloseDay());
+        nonconformityEntity.setSummary(nonconformity.getSummary());
+        nonconformityEntity.setTotalSites(nonconformity.getTotalSites());
+        nonconformityEntity.setLastModifiedUser(AuthUtil.getAuditId());
 
-    public Long updateSurveillance(Surveillance newSurv) throws EntityRetrievalException {
-        SurveillanceEntity oldSurv = fetchSurveillanceById(newSurv.getId());
-        populateSurveillanceEntity(oldSurv, newSurv);
-        oldSurv.setLastModifiedUser(AuthUtil.getAuditId());
-        oldSurv.setDeleted(false);
-        entityManager.merge(oldSurv);
+        entityManager.merge(nonconformityEntity);
         entityManager.flush();
 
-        // look for reqs that are in the updateSurv but not the newSurv and mark
-        // as deleted
-        for (SurveillanceRequirementEntity oldReq : oldSurv.getSurveilledRequirements()) {
-            boolean isFoundInUpdate = false;
-            for (SurveillanceRequirement newReq : newSurv.getRequirements()) {
-                if (newReq.getId() != null && newReq.getId().longValue() == oldReq.getId().longValue()) {
-                    isFoundInUpdate = true;
-                }
-            }
+        //Add documents
+        nonconformity.getDocuments().stream()
+                .filter(doc -> !isIdInDocumentEntities(doc.getId(), nonconformityEntity.getDocuments()))
+                .forEach(nc -> insertNonconformityDocument(nonconformityEntity.getId(), nc));
+        //Delete documents
+        nonconformityEntity.getDocuments().stream()
+                .filter(doc -> !isIdInDocuments(doc.getId(), nonconformity.getDocuments()))
+                .forEach(doc -> deleteNonconformityDocument(doc.getId()));
 
-            if (!isFoundInUpdate) {
-                // delete nonconformities and documents for this requirement
-                // first
-                for (SurveillanceNonconformityEntity nc : oldReq.getNonconformities()) {
-                    if (nc.getDocuments() != null) {
-                        for (SurveillanceNonconformityDocumentationEntity ncDoc : nc.getDocuments()) {
-                            ncDoc.setLastModifiedUser(AuthUtil.getAuditId());
-                            ncDoc.setDeleted(true);
-                            entityManager.merge(ncDoc);
-                            entityManager.flush();
-                        }
-                    }
-                    nc.setLastModifiedUser(AuthUtil.getAuditId());
-                    nc.setDeleted(true);
-                    entityManager.merge(nc);
-                    entityManager.flush();
-                }
-                // delete the req
-                oldReq.setLastModifiedUser(AuthUtil.getAuditId());
-                oldReq.setDeleted(true);
-                entityManager.merge(oldReq);
-                entityManager.flush();
+        return nonconformityEntity;
+    }
+
+    private SurveillanceNonconformityEntity deleteSurveillanceNonconformity(SurveillanceNonconformityEntity nonconformityEntity) {
+        nonconformityEntity.setDeleted(true);
+        nonconformityEntity.setLastModifiedUser(AuthUtil.getAuditId());
+
+        entityManager.merge(nonconformityEntity);
+        entityManager.flush();
+
+        nonconformityEntity.getDocuments().forEach(doc -> deleteNonconformityDocument(doc.getId()));
+        return nonconformityEntity;
+    }
+
+    private SurveillanceRequirementEntity insertSurveillanceRequirement(SurveillanceRequirement requirement, Long surveillanceId) {
+        SurveillanceRequirementEntity toInsertReq = SurveillanceRequirementEntity.builder()
+                .surveillanceId(surveillanceId)
+                .surveillanceResultTypeEntity(SurveillanceResultTypeEntity.builder()
+                        .id(requirement.getResult().getId())
+                        .build())
+                .requirementDetailType(RequirementDetailTypeEntity.builder()
+                        .id(requirement.getRequirementDetailType().getId())
+                        .build())
+                .requirementDetailOther(requirement.getRequirementDetailOther())
+                .lastModifiedUser(AuthUtil.getAuditId())
+                .deleted(false)
+                .build();
+
+        entityManager.persist(toInsertReq);
+        entityManager.flush();
+
+        requirement.getNonconformities().forEach(nc -> insertSurveillanceNonconformity(nc, toInsertReq.getId()));
+
+        return toInsertReq;
+    }
+
+    private SurveillanceRequirementEntity updateSurveillanceRequirement(SurveillanceRequirement requirement, SurveillanceRequirementEntity requirementEntity) {
+        requirementEntity.getSurveillanceResultTypeEntity().setId(requirement.getResult().getId());
+        requirementEntity.getRequirementDetailType().setId(requirement.getRequirementDetailType().getId());
+        requirementEntity.setRequirementDetailOther(requirement.getRequirementDetailOther());
+        requirementEntity.setLastModifiedUser(AuthUtil.getAuditId());
+
+        entityManager.merge(requirementEntity);
+        entityManager.flush();
+
+        //Add Nonconformity
+        requirement.getNonconformities().stream()
+                .filter(nc -> !isIdInSurveillanceNonconformityEntities(nc.getId(), requirementEntity.getNonconformities()))
+                .forEach(nc -> insertSurveillanceNonconformity(nc, requirementEntity.getId()));
+        //Delete Nonconformity
+        requirementEntity.getNonconformities().stream()
+                .filter(entity -> !isIdInSurveillanceNonconformities(entity.getId(), requirement.getNonconformities()))
+                .forEach(nc -> deleteSurveillanceNonconformity(nc));
+        //Update Nonconformity
+        requirementEntity.getNonconformities().stream()
+                .filter(entity -> isIdInSurveillanceNonconformities(entity.getId(), requirement.getNonconformities()))
+                .forEach(nc -> updateSurveillanceNonconformity(getSurveillanceNonconformity(nc.getId(), requirement.getNonconformities()), nc));
+
+        return requirementEntity;
+    }
+
+    private SurveillanceRequirementEntity deleteSurveillanceRequirement(SurveillanceRequirementEntity requirementEntity) {
+        requirementEntity.setDeleted(true);
+        requirementEntity.setLastModifiedUser(AuthUtil.getAuditId());
+
+        entityManager.merge(requirementEntity);
+        entityManager.flush();
+
+        requirementEntity.getNonconformities().forEach(nc -> deleteSurveillanceNonconformity(nc));
+
+        return requirementEntity;
+    }
+
+    @Deprecated
+    public Long insertNonconformityDocument(Long nonconformityId, SurveillanceNonconformityDocument doc) {
+        try {
+            SurveillanceNonconformityEntity nc = entityManager.find(SurveillanceNonconformityEntity.class, nonconformityId);
+            if (nc == null) {
+                String msg = msgUtil.getMessage("surveillance.nonconformity.notFound");
+                throw new EntityRetrievalException(msg);
             }
+            SurveillanceNonconformityDocumentationEntity docEntity = new SurveillanceNonconformityDocumentationEntity();
+            docEntity.setNonconformityId(nonconformityId);
+            docEntity.setFileData(doc.getFileContents());
+            docEntity.setFileType(doc.getFileType());
+            docEntity.setFileName(doc.getFileName());
+            docEntity.setDeleted(false);
+            docEntity.setLastModifiedUser(AuthUtil.getAuditId());
+
+            entityManager.persist(docEntity);
+            entityManager.flush();
+
+            return docEntity.getId();
+        } catch (EntityRetrievalException e) {
+            LOGGER.error("Error adding Document to Nonconformity: {}", nonconformityId);
+            return null;
         }
+    }
 
-        // look through the incoming reqs and add or update as necessary
-        for (SurveillanceRequirement newReq : newSurv.getRequirements()) {
-            if (newReq.getId() != null && newReq.getId().longValue() > 0) {
-                // update existing req
-                for (SurveillanceRequirementEntity oldReq : oldSurv.getSurveilledRequirements()) {
-                    if (oldReq.getId().longValue() == newReq.getId().longValue()) {
-                        populateSurveillanceRequirementEntity(oldReq, newReq);
-                        oldReq.setLastModifiedUser(AuthUtil.getAuditId());
-                        oldReq.setDeleted(false);
-                        entityManager.merge(oldReq);
-                        entityManager.flush();
+    private SurveillanceNonconformity getSurveillanceNonconformity(Long id, List<SurveillanceNonconformity> nonconformities) {
+        return nonconformities.stream()
+                .filter(nc -> nc.getId().equals(id))
+                .findAny()
+                .orElse(null);
+    }
 
-                        // look for nonconformites that are in updateReq but not
-                        // in newReq and mark as deleted
-                        for (SurveillanceNonconformityEntity oldNc : oldReq.getNonconformities()) {
-                            boolean isFoundInUpdate = false;
-                            for (SurveillanceNonconformity newNc : newReq.getNonconformities()) {
-                                if (newNc.getId() != null && newNc.getId().longValue() == oldNc.getId().longValue()) {
-                                    isFoundInUpdate = true;
-                                }
-                            }
-                            if (!isFoundInUpdate) {
-                                if (oldNc.getDocuments() != null) {
-                                    for (SurveillanceNonconformityDocumentationEntity ncDoc : oldNc.getDocuments()) {
-                                        ncDoc.setLastModifiedUser(AuthUtil.getAuditId());
-                                        ncDoc.setDeleted(true);
-                                        entityManager.merge(ncDoc);
-                                        entityManager.flush();
-                                    }
-                                }
-                                oldNc.setLastModifiedUser(AuthUtil.getAuditId());
-                                oldNc.setDeleted(true);
-                                entityManager.merge(oldNc);
-                                entityManager.flush();
-                            }
-                        }
+    private SurveillanceRequirement getSurveillanceRequirement(Long id, Set<SurveillanceRequirement> requirements) {
+        return requirements.stream()
+                .filter(nc -> nc.getId().equals(id))
+                .findAny()
+                .orElse(null);
+    }
 
-                        // look through newReq nonconformities and add or update
-                        // as necessary
-                        for (SurveillanceNonconformity newNc : newReq.getNonconformities()) {
-                            if (newNc.getId() != null && newNc.getId().longValue() > 0) {
-                                // update existing nonconformity
-                                for (SurveillanceNonconformityEntity oldNc : oldReq.getNonconformities()) {
-                                    if (oldNc.getId().longValue() == newNc.getId().longValue()) {
-                                        populateSurveillanceNonconformityEntity(oldNc, newNc);
-                                        oldNc.setLastModifiedUser(AuthUtil.getAuditId());
-                                        oldNc.setDeleted(false);
-                                        entityManager.merge(oldNc);
-                                        entityManager.flush();
-                                    }
-                                }
-                            } else {
-                                // add new nonconformity
-                                SurveillanceNonconformityEntity toInsertNc = new SurveillanceNonconformityEntity();
-                                populateSurveillanceNonconformityEntity(toInsertNc, newNc);
-                                toInsertNc.setSurveillanceRequirementId(oldReq.getId());
-                                toInsertNc.setDeleted(false);
-                                toInsertNc.setLastModifiedUser(AuthUtil.getAuditId());
-                                entityManager.persist(toInsertNc);
-                                entityManager.flush();
-                            }
-                        }
-                    }
-                }
-            } else {
-                // add new req
-                SurveillanceRequirementEntity toInsertReq = new SurveillanceRequirementEntity();
-                populateSurveillanceRequirementEntity(toInsertReq, newReq);
-                toInsertReq.setSurveillanceId(oldSurv.getId());
-                toInsertReq.setLastModifiedUser(AuthUtil.getAuditId());
-                toInsertReq.setDeleted(false);
-                entityManager.persist(toInsertReq);
-                entityManager.flush();
-                // add new nonconformities
-                for (SurveillanceNonconformity nc : newReq.getNonconformities()) {
-                    SurveillanceNonconformityEntity toInsertNc = new SurveillanceNonconformityEntity();
-                    populateSurveillanceNonconformityEntity(toInsertNc, nc);
-                    toInsertNc.setSurveillanceRequirementId(toInsertReq.getId());
-                    toInsertNc.setDeleted(false);
-                    toInsertNc.setLastModifiedUser(AuthUtil.getAuditId());
+    private Boolean isIdInSurveillanceRequirements(Long id, Set<SurveillanceRequirement> requirements) {
+        return requirements.stream()
+                .filter(req -> req.getId().equals(id))
+                .findAny()
+                .isPresent();
+    }
 
-                    entityManager.persist(toInsertNc);
-                    entityManager.flush();
-                }
-            }
-        }
+    private Boolean isIdInSurveillanceRequirementEntities(Long id, Set<SurveillanceRequirementEntity> requirements) {
+        return requirements.stream()
+                .filter(req -> req.getId().equals(id))
+                .findAny()
+                .isPresent();
+    }
 
-        return newSurv.getId();
+    private Boolean isIdInSurveillanceNonconformities(Long id, List<SurveillanceNonconformity> nonconformities) {
+        return nonconformities.stream()
+                .filter(nc -> nc.getId().equals(id))
+                .findAny()
+                .isPresent();
+    }
+
+    private Boolean isIdInSurveillanceNonconformityEntities(Long id, Set<SurveillanceNonconformityEntity> nonconformities) {
+        return nonconformities.stream()
+                .filter(nc -> nc.getId().equals(id))
+                .findAny()
+                .isPresent();
+    }
+
+    private Boolean isIdInDocuments(Long id, List<SurveillanceNonconformityDocument> documents) {
+        return documents.stream()
+                .filter(nc -> nc.getId().equals(id))
+                .findAny()
+                .isPresent();
+    }
+
+    private Boolean isIdInDocumentEntities(Long id, Set<SurveillanceNonconformityDocumentationEntity> documents) {
+        return documents.stream()
+                .filter(nc -> nc.getId().equals(id))
+                .findAny()
+                .isPresent();
+    }
+
+    public Long updateSurveillance(Surveillance updatedSurveillance) throws EntityRetrievalException {
+        SurveillanceEntity originalSurveillance = fetchSurveillanceById(updatedSurveillance.getId());
+        populateSurveillanceEntity(originalSurveillance, updatedSurveillance);
+        originalSurveillance.setLastModifiedUser(AuthUtil.getAuditId());
+        originalSurveillance.setDeleted(false);
+        entityManager.merge(originalSurveillance);
+        entityManager.flush();
+
+        // Add requirements
+        updatedSurveillance.getRequirements().stream()
+                .filter(originalRequirement -> !isIdInSurveillanceRequirementEntities(originalRequirement.getId(), originalSurveillance.getSurveilledRequirements()))
+                .forEach(originalRequirement -> insertSurveillanceRequirement(originalRequirement, originalSurveillance.getId()));
+        // Delete requirements
+        originalSurveillance.getSurveilledRequirements().stream()
+                .filter(originalRequirement -> !isIdInSurveillanceRequirements(originalRequirement.getId(), updatedSurveillance.getRequirements()))
+                .forEach(originalRequirement -> deleteSurveillanceRequirement(originalRequirement));
+        // Update requirements
+        originalSurveillance.getSurveilledRequirements().stream()
+            .filter(originalRequirement -> isIdInSurveillanceRequirements(originalRequirement.getId(), updatedSurveillance.getRequirements()))
+            .forEach(originalRequirement -> updateSurveillanceRequirement(
+                    getSurveillanceRequirement(originalRequirement.getId(), updatedSurveillance.getRequirements()), originalRequirement));
+
+        return updatedSurveillance.getId();
     }
 
 
@@ -422,12 +490,13 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
     @Deprecated
-    public void deleteNonconformityDocument(Long documentId) throws EntityRetrievalException {
+    public void deleteNonconformityDocument(Long documentId) {
+
         SurveillanceNonconformityDocumentationEntity doc = entityManager
                 .find(SurveillanceNonconformityDocumentationEntity.class, documentId);
         if (doc == null) {
-            String msg = msgUtil.getMessage("surveillance.document.notFound");
-            throw new EntityRetrievalException(msg);
+            LOGGER.error(msgUtil.getMessage("surveillance.document.notFound"));
+            return;
         }
         doc.setDeleted(true);
         doc.setLastModifiedUser(AuthUtil.getAuditId());
@@ -840,42 +909,42 @@ public class SurveillanceDAO extends BaseDAOImpl {
         }
     }
 
-    private void populateSurveillanceRequirementEntity(SurveillanceRequirementEntity to,
-            SurveillanceRequirement from) {
-        if (from.getCriterion() != null) {
-            to.setCertificationCriterionId(from.getCriterion().getId());
-        } else if (from.getRequirement() != null) {
-            to.setSurveilledRequirement(from.getRequirement());
-            to.setCertificationCriterionId(null);
-        }
+//    private void populateSurveillanceRequirementEntity(SurveillanceRequirementEntity to,
+//            SurveillanceRequirement from) {
+//        if (from.getCriterion() != null) {
+//            to.setCertificationCriterionId(from.getCriterion().getId());
+//        } else if (from.getRequirement() != null) {
+//            to.setSurveilledRequirement(from.getRequirement());
+//            to.setCertificationCriterionId(null);
+//        }
+//
+//        if (from.getType() != null) {
+//            to.setSurveillanceRequirementTypeId(from.getType().getId());
+//        }
+//        if (from.getResult() != null) {
+//            to.setSurveillanceResultTypeId(from.getResult().getId());
+//        }
+//    }
 
-        if (from.getType() != null) {
-            to.setSurveillanceRequirementTypeId(from.getType().getId());
-        }
-        if (from.getResult() != null) {
-            to.setSurveillanceResultTypeId(from.getResult().getId());
-        }
-    }
-
-    private void populateSurveillanceNonconformityEntity(SurveillanceNonconformityEntity to,
-            SurveillanceNonconformity from) {
-        to.setType(NonconformityTypeEntity.builder()
-                .id(from.getType().getId())
-                .number(from.getType().getNumber())
-                .title(from.getType().getTitle())
-                .removed(from.getType().getRemoved())
-                .build());
-        to.setCapApproval(from.getCapApprovalDay());
-        to.setCapEndDate(from.getCapEndDay());
-        to.setCapMustCompleteDate(from.getCapMustCompleteDay());
-        to.setCapStart(from.getCapStartDay());
-        to.setDateOfDetermination(from.getDateOfDeterminationDay());
-        to.setDeveloperExplanation(from.getDeveloperExplanation());
-        to.setFindings(from.getFindings());
-        to.setResolution(from.getResolution());
-        to.setSitesPassed(from.getSitesPassed());
-        to.setNonconformityCloseDate(from.getNonconformityCloseDay());
-        to.setSummary(from.getSummary());
-        to.setTotalSites(from.getTotalSites());
-    }
+//    private void populateSurveillanceNonconformityEntity(SurveillanceNonconformityEntity to,
+//            SurveillanceNonconformity from) {
+//        to.setType(NonconformityTypeEntity.builder()
+//                .id(from.getType().getId())
+//                .number(from.getType().getNumber())
+//                .title(from.getType().getTitle())
+//                .removed(from.getType().getRemoved())
+//                .build());
+//        to.setCapApproval(from.getCapApprovalDay());
+//        to.setCapEndDate(from.getCapEndDay());
+//        to.setCapMustCompleteDate(from.getCapMustCompleteDay());
+//        to.setCapStart(from.getCapStartDay());
+//        to.setDateOfDetermination(from.getDateOfDeterminationDay());
+//        to.setDeveloperExplanation(from.getDeveloperExplanation());
+//        to.setFindings(from.getFindings());
+//        to.setResolution(from.getResolution());
+//        to.setSitesPassed(from.getSitesPassed());
+//        to.setNonconformityCloseDate(from.getNonconformityCloseDay());
+//        to.setSummary(from.getSummary());
+//        to.setTotalSites(from.getTotalSites());
+//    }
 }

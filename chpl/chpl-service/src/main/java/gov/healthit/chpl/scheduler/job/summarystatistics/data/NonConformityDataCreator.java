@@ -147,9 +147,9 @@ public class NonConformityDataCreator {
 
         List<SurveillanceNonconformityEntity> nonconformities = surveillances.stream()
                 .filter(surv -> surv.getStartDate() != null
-                && surv.getEndDate() != null)
+                        && surv.getEndDate() != null)
                 .flatMap(surv -> surv.getSurveilledRequirements().stream())
-                .filter(req -> req.getSurveillanceResultTypeId().equals(NONCONFORMITY_SURVEILLANCE_RESULT))
+                .filter(req -> req.getSurveillanceResultTypeEntity().getId().equals(NONCONFORMITY_SURVEILLANCE_RESULT))
                 .flatMap(req -> req.getNonconformities().stream())
                 .distinct()
                 .collect(Collectors.toList());

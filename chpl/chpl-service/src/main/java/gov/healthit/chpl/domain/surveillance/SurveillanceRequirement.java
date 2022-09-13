@@ -261,49 +261,4 @@ public class SurveillanceRequirement implements Serializable {
         }
         return Util.formatCriteriaNumber(getCriterion());
     }
-
-    @Override
-    public boolean equals(Object anotherObject) {
-        // If the object is compared with itself then return true
-        if (anotherObject == this) {
-            return true;
-        }
-
-        // check if anotherObject is the same type of class as this
-        if (!(anotherObject instanceof SurveillanceRequirement)) {
-            return false;
-        }
-
-        // typecast anotherObject to this type so that we can compare data
-        // members
-        SurveillanceRequirement anotherReq = (SurveillanceRequirement) anotherObject;
-
-        // Compare the data members and return accordingly
-        if ((this.getRequirement() == null && anotherReq.getRequirement() != null)
-                || (this.getRequirement() != null && anotherReq.getRequirement() == null)) {
-            return false;
-        }
-        if ((this.getCriterion() == null && anotherReq.getCriterion() != null)
-                || (this.getCriterion() != null && anotherReq.getCriterion() == null)) {
-            return false;
-        }
-
-        boolean requirementsMatch = this.getRequirement().equals(anotherReq.getRequirement());
-        if (this.getCriterion() != null && anotherReq.getCriterion() != null) {
-            requirementsMatch = requirementsMatch
-                    && this.getCriterion().getId().equals(anotherReq.getCriterion().getId());
-        }
-        return requirementsMatch;
-    }
-
-    @Override
-    public int hashCode() {
-        if (this.getRequirement() == null) {
-            return -1;
-        }
-        if (this.getCriterion() == null) {
-            return this.getRequirement().hashCode();
-        }
-        return this.getCriterion().getId().hashCode();
-    }
 }

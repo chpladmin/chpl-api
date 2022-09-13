@@ -22,13 +22,19 @@ import org.hibernate.annotations.Where;
 import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "surveillance_nonconformity")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SurveillanceNonconformityEntity {
 
     @Id

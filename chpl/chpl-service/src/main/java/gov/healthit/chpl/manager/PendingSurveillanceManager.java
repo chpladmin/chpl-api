@@ -50,19 +50,15 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceUploadResult;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.ValidationMessageType;
-import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceRequirementEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceValidationEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity;
-import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
-import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
@@ -73,6 +69,7 @@ import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
 import gov.healthit.chpl.scheduler.job.SurveillanceUploadJob;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.FileUtils;
@@ -96,6 +93,7 @@ public class PendingSurveillanceManager extends SecuredManager {
     private SurveillanceUpdateValidator survUpdateValidator;
     private CertifiedProductDAO cpDAO;
     private Integer surveillanceThresholdToProcessAsJob;
+    private CertificationCriterionService certificationCriterionService;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -106,7 +104,8 @@ public class PendingSurveillanceManager extends SecuredManager {
             SurveillanceCreationValidator survCreationValidator,
             @Qualifier("surveillanceUpdateValidator") SurveillanceUpdateValidator survUpdateValidator,
             CertifiedProductDAO cpDAO,
-            @Value("${surveillanceThresholdToProcessAsJob}") Integer surveillanceThresholdToProcessAsJob) {
+            @Value("${surveillanceThresholdToProcessAsJob}") Integer surveillanceThresholdToProcessAsJob,
+            CertificationCriterionService certificationCriterionService) {
         this.fileUtils = fileUtils;
         this.survUploadHelper = survUploadManager;
         this.schedulerManager = schedulerManager;
@@ -120,6 +119,7 @@ public class PendingSurveillanceManager extends SecuredManager {
         this.survUpdateValidator = survUpdateValidator;
         this.cpDAO = cpDAO;
         this.surveillanceThresholdToProcessAsJob = surveillanceThresholdToProcessAsJob;
+        this.certificationCriterionService = certificationCriterionService;
     }
 
     @Transactional
@@ -274,8 +274,7 @@ public class PendingSurveillanceManager extends SecuredManager {
 
         // query the inserted surveillance
         SurveillanceEntity insertedSurv = survDao.getSurveillanceById(insertedSurvId);
-        Surveillance result = convertToDomain(insertedSurv);
-        return result;
+        return insertedSurv.toDomain(cpDAO, certificationCriterionService);
     }
 
     private ChplOneTimeTrigger processUploadAsJob(String data) throws EntityCreationException,
@@ -504,108 +503,7 @@ public class PendingSurveillanceManager extends SecuredManager {
             throw new EntityNotFoundException("Could not find surveillance for certified product " + certifiedProductId
                     + " with friendly id " + survFriendlyId);
         }
-        Surveillance result = convertToDomain(surv);
-        return result;
-    }
-
-    private Surveillance convertToDomain(SurveillanceEntity entity) {
-        Surveillance surv = new Surveillance();
-        surv.setId(entity.getId());
-        surv.setFriendlyId(entity.getFriendlyId());
-        surv.setStartDay(entity.getStartDate());
-        surv.setEndDay(entity.getEndDate());
-        surv.setRandomizedSitesUsed(entity.getNumRandomizedSites());
-        surv.setLastModifiedDate(entity.getLastModifiedDate());
-
-        if (entity.getCertifiedProduct() != null) {
-            CertifiedProductEntity cpEntity = entity.getCertifiedProduct();
-            try {
-                CertifiedProductDetailsDTO cpDto = cpDAO.getDetailsById(cpEntity.getId());
-                surv.setCertifiedProduct(new CertifiedProduct(cpDto));
-            } catch (EntityRetrievalException ex) {
-                LOGGER.error("Could not find details for certified product " + cpEntity.getId());
-            }
-        } else {
-            CertifiedProduct cp = new CertifiedProduct();
-            cp.setId(entity.getCertifiedProductId());
-            surv.setCertifiedProduct(cp);
-        }
-
-        if (entity.getSurveillanceType() != null) {
-            SurveillanceType survType = new SurveillanceType();
-            survType.setId(entity.getSurveillanceType().getId());
-            survType.setName(entity.getSurveillanceType().getName());
-            surv.setType(survType);
-        } else {
-            SurveillanceType survType = new SurveillanceType();
-            survType.setId(entity.getSurveillanceTypeId());
-            surv.setType(survType);
-        }
-
-        if (entity.getSurveilledRequirements() != null) {
-            for (SurveillanceRequirementEntity reqEntity : entity.getSurveilledRequirements()) {
-                SurveillanceRequirement req = new SurveillanceRequirement();
-                req.setId(reqEntity.getId());
-                if (reqEntity.getCertificationCriterionEntity() != null) {
-                    req.setRequirement(reqEntity.getCertificationCriterionEntity().getNumber());
-                } else {
-                    req.setRequirement(reqEntity.getSurveilledRequirement());
-                }
-
-                if (reqEntity.getSurveillanceResultTypeEntity() != null) {
-                    SurveillanceResultType result = new SurveillanceResultType();
-                    result.setId(reqEntity.getSurveillanceResultTypeEntity().getId());
-                    result.setName(reqEntity.getSurveillanceResultTypeEntity().getName());
-                    req.setResult(result);
-                } else {
-                    SurveillanceResultType result = new SurveillanceResultType();
-                    result.setId(reqEntity.getSurveillanceResultTypeId());
-                    req.setResult(result);
-                }
-
-                if (reqEntity.getSurveillanceRequirementType() != null) {
-                    SurveillanceRequirementType result = new SurveillanceRequirementType();
-                    result.setId(reqEntity.getSurveillanceRequirementType().getId());
-                    result.setName(reqEntity.getSurveillanceRequirementType().getName());
-                    req.setType(result);
-                } else {
-                    SurveillanceRequirementType result = new SurveillanceRequirementType();
-                    result.setId(reqEntity.getSurveillanceRequirementTypeId());
-                    req.setType(result);
-                }
-
-                if (reqEntity.getNonconformities() != null) {
-                    for (SurveillanceNonconformityEntity ncEntity : reqEntity.getNonconformities()) {
-                        SurveillanceNonconformity nc = new SurveillanceNonconformity();
-                        nc.setCapApprovalDay(ncEntity.getCapApproval());
-                        nc.setCapEndDay(ncEntity.getCapEndDate());
-                        nc.setCapMustCompleteDay(ncEntity.getCapMustCompleteDate());
-                        nc.setCapStartDay(ncEntity.getCapStart());
-                        nc.setDateOfDeterminationDay(ncEntity.getDateOfDetermination());
-                        nc.setDeveloperExplanation(ncEntity.getDeveloperExplanation());
-                        nc.setFindings(ncEntity.getFindings());
-                        nc.setId(ncEntity.getId());
-                        nc.setType(ncEntity.getType().toDomain());
-                        nc.setResolution(ncEntity.getResolution());
-                        nc.setSitesPassed(ncEntity.getSitesPassed());
-                        nc.setSummary(ncEntity.getSummary());
-                        nc.setTotalSites(ncEntity.getTotalSites());
-                        nc.setLastModifiedDate(ncEntity.getLastModifiedDate());
-                        nc.setNonconformityCloseDay(ncEntity.getNonconformityCloseDate());
-                        req.getNonconformities().add(nc);
-
-                        if (ncEntity.getDocuments() != null && ncEntity.getDocuments().size() > 0) {
-                            for (SurveillanceNonconformityDocumentationEntity docEntity : ncEntity.getDocuments()) {
-                                SurveillanceNonconformityDocument doc = convertToDomain(docEntity, false);
-                                nc.getDocuments().add(doc);
-                            }
-                        }
-                    }
-                }
-                surv.getRequirements().add(req);
-            }
-        }
-        return surv;
+        return surv.toDomain(cpDAO, certificationCriterionService);
     }
 
     private SurveillanceNonconformityDocument convertToDomain(SurveillanceNonconformityDocumentationEntity entity,

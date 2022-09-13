@@ -14,13 +14,19 @@ import gov.healthit.chpl.domain.surveillance.RequirementDetailType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.entity.CertificationEditionEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "surveillance_requirement_detail_type")
+@Table(name = "requirement_detail_type")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RequirementDetailTypeEntity {
 
     @Id
