@@ -2,12 +2,14 @@ package gov.healthit.chpl.svap.manager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -158,10 +160,17 @@ public class SvapManager {
     }
 
     private void validateForDelete(Svap svap) throws ValidationException {
-        List<CertifiedProductDetailsDTO> listings = svapDao.getCertifiedProductsBySvap(svap);
-        if (listings.size() > 0) {
+        List<CertifiedProductDetailsDTO> listings = new ArrayList<CertifiedProductDetailsDTO>();
+        try {
+            listings = svapDao.getCertifiedProductsBySvap(svap);
+        } catch (EntityRetrievalException ex) {
+            throw new ValidationException(ex.getMessage());
+        }
+
+        if (!CollectionUtils.isEmpty(listings)) {
             String message = errorMessageUtil.getMessage("svap.delete.listingsExist",
                     listings.size(),
+                    listings.size() > 1 ? "s" : "",
                     listings.stream()
                             .map(listing -> listing.getChplProductNumber())
                             .collect(Collectors.joining(", ")));
@@ -192,11 +201,18 @@ public class SvapManager {
         //If there are removed criteria, make sure there are no listings attesting to SVAP/criteria
         getCriteriaRemovedFromSvap(updatedSvap, originalSvap).stream()
                 .forEach(crit -> {
-                    List<CertifiedProductDetailsDTO> listings = svapDao.getCertifiedProductsBySvapAndCriteria(originalSvap, crit);
-                    if (listings.size() > 0) {
+                    List<CertifiedProductDetailsDTO> listings = new ArrayList<CertifiedProductDetailsDTO>();
+                    try {
+                        listings = svapDao.getCertifiedProductsBySvapAndCriteria(originalSvap, crit);
+                    } catch (EntityRetrievalException ex) {
+                        messages.add(ex.getMessage());
+                    }
+
+                    if (!CollectionUtils.isEmpty(listings)) {
                         messages.add(errorMessageUtil.getMessage("svap.edit.deletedCriteria.listingsExist",
                                 CertificationCriterionService.formatCriteriaNumber(crit),
                                 listings.size(),
+                                listings.size() > 1 ? "s" : "",
                                 listings.stream()
                                         .map(listing -> listing.getChplProductNumber())
                                         .collect(Collectors.joining(", "))));
