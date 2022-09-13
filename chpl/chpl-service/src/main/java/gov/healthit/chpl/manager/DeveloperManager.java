@@ -490,6 +490,7 @@ public class DeveloperManager extends SecuredManager {
         return duplicatedChplProductNumbers;
     }
 
+    @Deprecated
     @Transactional(readOnly = true)
     @Cacheable(CacheNames.GET_DECERTIFIED_DEVELOPERS)
     public List<DecertifiedDeveloper> getDecertifiedDeveloperCollection() {

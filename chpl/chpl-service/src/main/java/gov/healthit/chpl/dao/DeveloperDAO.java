@@ -415,6 +415,7 @@ public class DeveloperDAO extends BaseDAOImpl {
                 .toList();
     }
 
+    @Deprecated
     public List<DecertifiedDeveloper> getDecertifiedDeveloperCollection() {
         Query query = entityManager.createQuery("FROM ListingsFromBannedDevelopersEntity ",
                 ListingsFromBannedDevelopersEntity.class);

@@ -21,6 +21,7 @@ import gov.healthit.chpl.entity.developer.DeveloperEntity;
  * @author kekey
  *
  */
+@Deprecated
 @Entity
 @Immutable
 @Table(name = "listings_from_banned_developers")
