@@ -13,6 +13,8 @@ import java.util.stream.StreamSupport;
 import org.apache.commons.validator.routines.EmailValidator;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.NonconformityType;
+import gov.healthit.chpl.domain.surveillance.RequirementDetailType;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import lombok.extern.log4j.Log4j2;
 
@@ -66,8 +68,28 @@ public final class Util {
         }
     }
 
+    private static boolean isCures(String title) {
+        return title != null && title.contains(CURES_TITLE);
+    }
+
     public static boolean isCures(CertificationCriterion criterion) {
-        return criterion.getTitle() != null && criterion.getTitle().contains(CURES_TITLE);
+        return isCures(criterion.getTitle());
+    }
+
+    public static String formatCriteriaNumber(NonconformityType nonconformityType) {
+        String result = nonconformityType.getNumber();
+        if (isCures(nonconformityType.getTitle())) {
+            result += CURES_SUFFIX;
+        }
+        return result;
+    }
+
+    public static String formatCriteriaNumber(RequirementDetailType requirementDetailType) {
+        String result = requirementDetailType.getNumber();
+        if (isCures(requirementDetailType.getTitle())) {
+            result += CURES_SUFFIX;
+        }
+        return result;
     }
 
     public static String formatCriteriaNumber(CertificationCriterion criterion) {

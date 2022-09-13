@@ -5,7 +5,8 @@ import lombok.Getter;
 @Getter
 public enum NonconformityClassification {
     CRITERION("CRITERION"),
-    REQUIREMENT("REQUIREMENT");
+    REQUIREMENT("REQUIREMENT"),
+    UNKNOWN("UNKNOWN");
 
     private String name;
 
