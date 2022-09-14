@@ -18,8 +18,10 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.NullSafeEvaluator;
+import gov.healthit.chpl.util.Util;
 
 public class SurveillanceCsvPresenter {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceCsvPresenter.class);
@@ -179,23 +181,15 @@ public class SurveillanceCsvPresenter {
     protected List<String> generateSurveilledRequirementRowValues(final SurveillanceRequirement req) {
         List<String> reqRow = new ArrayList<String>();
 
-        if (req.getType() != null) {
-            reqRow.add(req.getType().getName());
+        reqRow.add(NullSafeEvaluator.eval(() -> req.getRequirementDetailType().getSurveillanceRequirementType().getName(), ""));
+
+        if (req.getRequirementDetailType().getSurveillanceRequirementType().getId().equals(SurveillanceRequirementType.CERTIFIED_CAPABILITY_ID)) {
+            reqRow.add(Util.formatCriteriaNumber(req.getRequirementDetailType()));
         } else {
-            reqRow.add("");
+            reqRow.add(req.getRequirementDetailType().getTitle());
         }
-        if (req.getCriterion() != null) {
-            reqRow.add(CertificationCriterionService.formatCriteriaNumber(req.getCriterion()));
-        } else if (req.getRequirement() != null) {
-            reqRow.add(req.getRequirement());
-        } else {
-            reqRow.add("");
-        }
-        if (req.getResult() != null) {
-            reqRow.add(req.getResult().getName());
-        } else {
-            reqRow.add("");
-        }
+
+        reqRow.add(NullSafeEvaluator.eval(() -> req.getResult().getName(), ""));
         return reqRow;
     }
 
