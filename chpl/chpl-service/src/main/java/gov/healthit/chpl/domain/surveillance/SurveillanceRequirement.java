@@ -8,12 +8,13 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-
-import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
+import gov.healthit.chpl.util.NullSafeEvaluator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -147,34 +148,9 @@ public class SurveillanceRequirement implements Serializable {
                 && this.id.longValue() != anotherRequirement.id.longValue()) {
             return false;
         }
-        if (StringUtils.isEmpty(this.requirement) && !StringUtils.isEmpty(anotherRequirement.requirement)
-                || !StringUtils.isEmpty(this.requirement) && StringUtils.isEmpty(anotherRequirement.requirement)) {
-            return false;
-        } else if (!StringUtils.isEmpty(this.requirement) && !StringUtils.isEmpty(anotherRequirement.requirement)
-                && !this.requirement.equalsIgnoreCase(anotherRequirement.requirement)) {
-            return false;
-        }
 
-        if ((this.getCriterion() == null && anotherRequirement.getCriterion() != null)
-                || (this.getCriterion() != null && anotherRequirement.getCriterion() == null)) {
-            return false;
-        } else if (this.getCriterion() != null && anotherRequirement.getCriterion() != null
-                && !this.getCriterion().getId().equals(anotherRequirement.getCriterion().getId())) {
-            return false;
-        }
-
-        if (this.type == null && anotherRequirement.type != null
-                || this.type != null && anotherRequirement.type == null) {
-            return false;
-        } else if (this.type != null && anotherRequirement.type != null
-                && !this.type.matches(anotherRequirement.type)) {
-            return false;
-        }
-        if (this.result == null && anotherRequirement.result != null
-                || this.result != null && anotherRequirement.result == null) {
-            return false;
-        } else if (this.result != null && anotherRequirement.result != null
-                && !this.result.matches(anotherRequirement.result)) {
+        if (!NullSafeEvaluator.eval(() -> this.getRequirementDetailType().getId(), 0L).equals(
+                NullSafeEvaluator.eval(() -> anotherRequirement.getRequirementDetailType().getId(), 0L))) {
             return false;
         }
         return true;
@@ -254,17 +230,12 @@ public class SurveillanceRequirement implements Serializable {
         this.nonconformities = nonconformities;
     }
 
-    //TODO - Need to uncomment (OCD-4029)
-    /*
     @XmlTransient
     @Deprecated //this field should be removed from Json responses but left in the API code
     @DeprecatedResponseField(removalDate = "2023-01-01",
         message = "This field is deprecated and will be removed from the response data in a future release.")
     public String getRequirementName() {
-        if (getCriterion() == null) {
-            return getRequirement();
-        }
-        return Util.formatCriteriaNumber(getCriterion());
+        return NullSafeEvaluator.eval(() -> getRequirementDetailType().getFormattedTitle(), "");
     }
-    */
+
 }
