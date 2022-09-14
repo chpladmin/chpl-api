@@ -174,7 +174,8 @@ public class SurveillanceUploadJob implements Job {
             if (surv != null && surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getId() != null) {
                 try {
                     owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
-                    pendingSurvManager.createPendingSurveillance(surv);
+                    //TODO - OCD-4029
+                    //pendingSurvManager.createPendingSurveillance(surv);
                 } catch (AccessDeniedException denied) {
                     String permissionErrorMessage = "";
                     if (owningCp != null && owningCp.getCertificationBodyId() != null) {

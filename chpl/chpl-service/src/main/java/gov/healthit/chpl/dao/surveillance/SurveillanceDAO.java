@@ -22,7 +22,6 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
-import gov.healthit.chpl.entity.ValidationMessageType;
 import gov.healthit.chpl.entity.surveillance.NonconformityTypeEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceNonconformityEntity;
@@ -410,6 +409,8 @@ public class SurveillanceDAO extends BaseDAOImpl {
             return results;
     }
 
+    /*
+    //TODO - OCD-4029
     public Long insertPendingSurveillance(Surveillance surv) throws UserPermissionRetrievalException {
         PendingSurveillanceEntity toInsert = new PendingSurveillanceEntity();
         toInsert.setSurvFriendlyIdToReplace(surv.getSurveillanceIdToReplace());
@@ -488,6 +489,8 @@ public class SurveillanceDAO extends BaseDAOImpl {
         }
         return toInsert.getId();
     }
+
+    */
 
     @Deprecated
     public void deleteNonconformityDocument(Long documentId) {

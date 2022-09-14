@@ -4,74 +4,39 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
-import javax.persistence.EntityNotFoundException;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpHeaders;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
-import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.domain.CertifiedProduct;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.domain.auth.User;
-import gov.healthit.chpl.domain.schedule.ChplJob;
-import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
-import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
-import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
-import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
-import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
-import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
-import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceUploadResult;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.entity.CertificationCriterionEntity;
-import gov.healthit.chpl.entity.ValidationMessageType;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
-import gov.healthit.chpl.entity.surveillance.PendingSurveillanceNonconformityEntity;
-import gov.healthit.chpl.entity.surveillance.PendingSurveillanceRequirementEntity;
-import gov.healthit.chpl.entity.surveillance.PendingSurveillanceValidationEntity;
-import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
-import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
-import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
-import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
-import gov.healthit.chpl.scheduler.job.SurveillanceUploadJob;
 import gov.healthit.chpl.service.CertificationCriterionService;
-import gov.healthit.chpl.util.AuthUtil;
-import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceCreationValidator;
 import gov.healthit.chpl.validation.surveillance.SurveillanceUpdateValidator;
@@ -142,6 +107,8 @@ public class PendingSurveillanceManager extends SecuredManager {
         String data = fileUtils.readFileAsString(file);
         checkFileCanBeReadAndMultipleRowsExist(data);
 
+        //TODO OCD-4029
+        /*
         // This is a container used for 2 different result types...
         SurveillanceUploadResult uploadResult = new SurveillanceUploadResult();
         int numSurveillance = survUploadHelper.countSurveillanceRecords(data);
@@ -152,6 +119,8 @@ public class PendingSurveillanceManager extends SecuredManager {
             uploadResult.setTrigger(scheduledTrigger);
         }
         return uploadResult;
+        */
+        return null;
     }
 
     private void checkFileCanBeReadAndMultipleRowsExist(String fileContents) throws IOException, ValidationException  {
@@ -177,11 +146,14 @@ public class PendingSurveillanceManager extends SecuredManager {
     public void rejectPendingSurveillance(Long pendingSurveillanceId) throws ObjectMissingValidationException,
             JsonProcessingException, EntityRetrievalException, EntityCreationException {
 
+        //TODO OCD-4029
+        /*
         PendingSurveillanceEntity entity = survDao.getPendingSurveillanceById(pendingSurveillanceId, true);
         if (entity.getDeleted()) {
             throw createdObjectMissingValidationException(entity);
         }
         deletePendingSurveillance(pendingSurveillanceId, false);
+        */
     }
 
     @Transactional(readOnly = true)
@@ -194,8 +166,9 @@ public class PendingSurveillanceManager extends SecuredManager {
         List<Surveillance> results = new ArrayList<Surveillance>();
         if (pendingResults != null) {
             for (PendingSurveillanceEntity pr : pendingResults) {
-                Surveillance surv = convertToDomain(pr);
-                results.add(surv);
+                //TODO - OCD-4029
+                //Surveillance surv = convertToDomain(pr);
+                //results.add(surv);
             }
         }
         return results;
@@ -209,6 +182,8 @@ public class PendingSurveillanceManager extends SecuredManager {
             throws ValidationException, EntityRetrievalException, UserPermissionRetrievalException,
             EntityCreationException, JsonProcessingException {
 
+        //TODO OCD-4029
+        /*
         if (survToInsert == null || survToInsert.getId() == null) {
             throw new ValidationException("A valid pending surveillance id must be provided.");
         } else {
@@ -275,8 +250,12 @@ public class PendingSurveillanceManager extends SecuredManager {
         // query the inserted surveillance
         SurveillanceEntity insertedSurv = survDao.getSurveillanceById(insertedSurvId);
         return insertedSurv.toDomain(cpDAO, certificationCriterionService);
+        */
+        return null;
     }
 
+    //TODO OCD-4029
+    /*
     private ChplOneTimeTrigger processUploadAsJob(String data) throws EntityCreationException,
         EntityRetrievalException, ValidationException, SchedulerException {
         UserDTO jobUser = null;
@@ -554,4 +533,5 @@ public class PendingSurveillanceManager extends SecuredManager {
         }
         return alreadyDeletedEx;
     }
+    */
 }

@@ -3,9 +3,7 @@ package gov.healthit.chpl.upload.surveillance;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
@@ -18,13 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
-import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
-import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
-import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
-import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -198,6 +191,8 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 
     public void parseSurveilledRequirements(CSVRecord csvRecord, Surveillance surv,
             List<CertificationResultDetailsDTO> certResults) {
+        //TODO OCD-4029
+        /*
         SurveillanceRequirement req = new SurveillanceRequirement();
 
         int colIndex = 7;
@@ -231,9 +226,12 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
             req.setResult(resultType);
         }
         surv.getRequirements().add(req);
+        */
     }
 
     public void parseNonconformities(CSVRecord record, Surveillance surv, List<CertificationResultDetailsDTO> certResults) {
+        //TODO OCD-4029
+        /*
         int ncBeginIndex = 10;
         // if the first nonconformity cell is blank, forget it
         if (StringUtils.isEmpty(record.get(ncBeginIndex).trim())) {
@@ -370,6 +368,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         if (req != null) {
             req.getNonconformities().add(nc);
         }
+        */
     }
 
     private boolean isCriteriaAttestedTo(CertificationResultDetailsDTO certResult, String criterionNumber) {
