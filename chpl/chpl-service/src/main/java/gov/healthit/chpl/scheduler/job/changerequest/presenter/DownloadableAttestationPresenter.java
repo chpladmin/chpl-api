@@ -67,7 +67,7 @@ public class DownloadableAttestationPresenter extends ChangeRequestCsvPresenter 
         result.add(DateUtil.formatInEasternTime(changeRequest.getCurrentStatus().getStatusChangeDate()));
         result.add(changeRequest.getCertificationBodies().stream()
                 .map(acb -> acb.getName())
-                .collect(Collectors.joining(",")));
+                .collect(Collectors.joining("; ")));
         ChangeRequestAttestationSubmission details = (ChangeRequestAttestationSubmission) changeRequest.getDetails();
         result.add(getParentResponse(details, CR_QUESTION1_RESPONSE_HEADING));
         result.add(getFirstChildResponse(details, CR_QUESTION1_OPTIONAL_RESPONSE_HEADING));
