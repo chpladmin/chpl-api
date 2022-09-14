@@ -120,7 +120,7 @@ public class DeveloperController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @DeprecatedApiResponseFields(responseClass = Developer.class, friendlyUrl = "/developers/{developerId}")
-    @RequestMapping(value = "/{developerId}", method = RequestMethod.GET,
+    @RequestMapping(value = "/{developerId:^-?\\d+$}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody Developer getDeveloperById(@PathVariable("developerId") Long developerId)
             throws EntityRetrievalException {
