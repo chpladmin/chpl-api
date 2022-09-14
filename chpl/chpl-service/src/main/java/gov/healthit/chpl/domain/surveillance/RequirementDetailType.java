@@ -3,6 +3,7 @@ package gov.healthit.chpl.domain.surveillance;
 import org.apache.commons.lang3.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationEdition;
+import gov.healthit.chpl.util.Util;
 import lombok.Builder;
 import lombok.Data;
 
@@ -17,10 +18,10 @@ public class RequirementDetailType {
     private SurveillanceRequirementType surveillanceRequirementType;
 
     public String getFormattedTitle() {
-        String formattedTitle = title;
         if (StringUtils.isNotEmpty(number)) {
-            formattedTitle = number + " " + title;
+            return Util.formatCriteriaNumber(this);
+        } else {
+            return title;
         }
-        return formattedTitle;
     }
 }

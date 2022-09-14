@@ -2,9 +2,12 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
+import gov.healthit.chpl.util.Util;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -23,4 +26,12 @@ public class NonconformityType implements Serializable {
 
     @JsonIgnore
     private NonconformityClassification classification;
+
+    public String getFormattedTitle() {
+        if (StringUtils.isNotEmpty(number)) {
+            return Util.formatCriteriaNumber(this);
+        } else {
+            return title;
+        }
+    }
 }
