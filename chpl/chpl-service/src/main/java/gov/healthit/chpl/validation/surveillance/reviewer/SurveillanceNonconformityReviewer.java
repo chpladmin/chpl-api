@@ -76,9 +76,6 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
 
     private void checkNonconformityTypeValidity(Surveillance surv, SurveillanceRequirement req,
             SurveillanceNonconformity nc, List<CertificationResultDetailsDTO> certResults) {
-        //TODO - TMY - Need to determine if we still need this (OCD-4029)
-
-
         if (NullSafeEvaluator.eval(() -> nc.getType().getId(), -1).equals(-1)) {
             surv.getErrorMessages().add(
                     msgUtil.getMessage("surveillance.nonConformityTypeRequired",
