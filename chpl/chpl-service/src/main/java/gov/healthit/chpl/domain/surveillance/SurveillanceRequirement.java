@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,32 +35,29 @@ public class SurveillanceRequirement implements Serializable {
     @XmlElement(required = true)
     private Long id;
 
-    //TODO - Need to uncomment (OCD-4029)
     /**
      * For a given surveillance activity, the type of requirement being
      * surveilled. Allowable values include: "Certified Capability";
      * "Transparency or Disclosure Requirement", or "Other Requirement"
      */
-    //@Deprecated
-    //@XmlElement(required = true)
-    //private SurveillanceRequirementType type;
+    @Deprecated
+    @XmlElement(required = true)
+    private SurveillanceRequirementType type;
 
-    //TODO - Need to uncomment (OCD-4029)
     /**
      * Name of the surveilled requirement (ex: 170.314 (a)(1))
      */
-    //@Deprecated
-    //@XmlElement(required = true)
-    //private String requirement;
+    @Deprecated
+    @XmlElement(required = true)
+    private String requirement;
 
-    //TODO - Need to uncomment (OCD-4029)
     /**
      * If the surveilled requirement is a certified capability
      * then this field will have the criterion details (number, title, etc).
      */
-    //@Deprecated
-    //@XmlElement(required = false)
-    //private CertificationCriterion criterion;
+    @Deprecated
+    @XmlElement(required = false)
+    private CertificationCriterion criterion;
 
     /**
      * TODO - Need to add description (OCD-4029)
@@ -164,8 +162,6 @@ public class SurveillanceRequirement implements Serializable {
         this.id = id;
     }
 
-    //TODO - Need to uncomment (OCD-4029)
-    /*
     @Deprecated
     public SurveillanceRequirementType getType() {
         return type;
@@ -196,7 +192,7 @@ public class SurveillanceRequirement implements Serializable {
     public void setCriterion(CertificationCriterion criterion) {
         this.criterion = criterion;
     }
-    */
+
     public RequirementDetailType getRequirementDetailType() {
         return requirementDetailType;
     }

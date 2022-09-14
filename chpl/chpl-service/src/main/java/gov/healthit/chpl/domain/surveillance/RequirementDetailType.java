@@ -9,11 +9,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import gov.healthit.chpl.util.Util;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class RequirementDetailType {
     private Long id;
     private String number;
