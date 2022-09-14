@@ -127,6 +127,7 @@ public class DeveloperManager extends SecuredManager {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(CacheNames.COLLECTIONS_DEVELOPERS)
     public List<DeveloperSearchResult> getDeveloperSearchResults() {
         Map<Developer, Set<CertificationBody>> allDevelopersWithAcbs = developerDao.findAllDevelopersWithAcbs();
         return allDevelopersWithAcbs.keySet().stream()
@@ -242,6 +243,7 @@ public class DeveloperManager extends SecuredManager {
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
+            CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#updatedDev.id")
@@ -326,7 +328,8 @@ public class DeveloperManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).CREATE)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
+            CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
     public Long create(Developer developer)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
@@ -353,6 +356,7 @@ public class DeveloperManager extends SecuredManager {
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
+            CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
     public ChplOneTimeTrigger merge(List<Long> developerIdsToMerge, Developer developerToCreate)
