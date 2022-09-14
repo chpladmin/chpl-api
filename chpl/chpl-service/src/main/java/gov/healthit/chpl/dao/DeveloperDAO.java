@@ -2,7 +2,10 @@ package gov.healthit.chpl.dao;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.attestation.dao.AttestationDAO;
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
@@ -28,6 +32,7 @@ import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
 import gov.healthit.chpl.entity.developer.DeveloperStatusEntity;
 import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
+import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.listing.ListingsFromBannedDevelopersEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -47,6 +52,18 @@ public class DeveloperDAO extends BaseDAOImpl {
             + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
             + "LEFT OUTER JOIN FETCH v.attestations attestations "
             + "LEFT OUTER JOIN FETCH attestations.attestationPeriod ";
+
+    private static final String DEVELOPERS_WITH_ACBS_HQL = "SELECT DISTINCT dev, cpd "
+            + "FROM DeveloperEntity dev "
+            + "LEFT JOIN FETCH CertifiedProductDetailsEntity cpd ON cpd.developerId = dev.id "
+            + "LEFT OUTER JOIN FETCH dev.address "
+            + "LEFT OUTER JOIN FETCH dev.contact "
+            + "LEFT OUTER JOIN FETCH dev.statusEvents statusEvents "
+            + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
+            + "LEFT OUTER JOIN FETCH dev.developerCertificationStatuses "
+            + "LEFT OUTER JOIN FETCH dev.attestations attestations "
+            + "LEFT OUTER JOIN FETCH attestations.attestationPeriod "
+            + "WHERE dev.deleted <> true ";
 
     private static final DeveloperStatusType DEFAULT_STATUS = DeveloperStatusType.Active;
     private AddressDAO addressDao;
@@ -258,6 +275,40 @@ public class DeveloperDAO extends BaseDAOImpl {
         return entities.stream()
                 .map(entity -> new KeyValueModelStatuses(entity.getId(), entity.getName(), createStatuses(entity)))
                 .collect(Collectors.toSet());
+    }
+
+    public Map<Developer, Set<CertificationBody>> findAllDevelopersWithAcbs() {
+        Map<Developer, Set<CertificationBody>> developerAcbMaps = new HashMap<Developer, Set<CertificationBody>>();
+        List<Object[]> results = entityManager.createQuery(DEVELOPERS_WITH_ACBS_HQL)
+                .getResultList();
+
+        results.stream()
+            .forEach(result -> {
+                Developer developer = ((DeveloperEntity) result[0]).toDomain();
+                CertifiedProductDetailsEntity listing = (CertifiedProductDetailsEntity) result[1];
+
+                if (developerAcbMaps.get(developer) != null
+                        && listing != null && listing.getCertificationBodyId() != null) {
+                    developerAcbMaps.get(developer).add(CertificationBody.builder()
+                            .id(listing.getCertificationBodyId())
+                            .name(listing.getCertificationBodyName())
+                            .acbCode(listing.getCertificationBodyCode())
+                            .build());
+                } else {
+                    Set<CertificationBody> acbMaps = new HashSet<CertificationBody>();
+                    if (listing != null && listing.getCertificationBodyId() != null) {
+                        acbMaps.add(
+                            CertificationBody.builder()
+                                .id(listing.getCertificationBodyId())
+                                .name(listing.getCertificationBodyName())
+                                .acbCode(listing.getCertificationBodyCode())
+                                .build());
+                    }
+                    developerAcbMaps.put(developer, acbMaps);
+                }
+            });
+
+        return developerAcbMaps;
     }
 
     private Statuses createStatuses(DeveloperEntity entity) {
