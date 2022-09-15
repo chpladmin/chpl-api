@@ -19,6 +19,7 @@ import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.concept.PublicAttestationStatus;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import lombok.extern.log4j.Log4j2;
 
@@ -88,6 +89,7 @@ public class DeveloperAttestationCheckInReportDataCollector {
                 .submittedDate(cr.getSubmittedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
                 .published(cr.getDeveloper().getAttestations().stream()
                         .filter(pa -> pa.getAttestationPeriod().getId().equals(((ChangeRequestAttestationSubmission) cr.getDetails()).getAttestationPeriod().getId()))
+                        .filter(pa -> pa.getStatus().equals(PublicAttestationStatus.ATTESTATIONS_SUBMITTED))
                         .findAny()
                         .isPresent())
                 .currentStatusName(cr.getCurrentStatus().getChangeRequestStatusType().getName())
