@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
@@ -68,7 +67,7 @@ public class DownloadableAttestationPresenter extends ChangeRequestCsvPresenter 
         result.add(DateUtil.formatInEasternTime(changeRequest.getCurrentStatus().getStatusChangeDate()));
         result.add(changeRequest.getCertificationBodies().stream()
                 .map(acb -> acb.getName())
-                .collect(Collectors.joining(",")));
+                .collect(Collectors.joining("; ")));
         ChangeRequestAttestationSubmission details = (ChangeRequestAttestationSubmission) changeRequest.getDetails();
         result.add(getParentResponse(details, CR_QUESTION1_RESPONSE_HEADING));
         result.add(getFirstChildResponse(details, CR_QUESTION1_OPTIONAL_RESPONSE_HEADING));
@@ -86,30 +85,17 @@ public class DownloadableAttestationPresenter extends ChangeRequestCsvPresenter 
     }
 
     private String getParentResponse(ChangeRequestAttestationSubmission attestation, String conditionName) {
-        String attestationResponse = attestation.getForm().getSectionHeadings().stream()
-            .filter(section -> conditionName.startsWith(section.getName()))
-            .flatMap(section -> section.getFormItems().get(0).getSubmittedResponses().stream())
-            .map(submittedResponse -> submittedResponse.getResponse())
-            .collect(Collectors.joining("; "));
-        if (attestationResponse == null) {
+        if (attestation == null) {
             return "";
         }
-        return attestationResponse;
+        return attestation.getForm().formatResponse(conditionName);
     }
 
     private String getFirstChildResponse(ChangeRequestAttestationSubmission attestation, String conditionName) {
-        String attestationResponse = attestation.getForm().getSectionHeadings().stream()
-            .filter(section -> conditionName.startsWith(section.getName()))
-            .map(section -> section.getFormItems().get(0))
-            .filter(formItem -> !CollectionUtils.isEmpty(formItem.getChildFormItems()))
-            .map(formItem -> formItem.getChildFormItems().get(0))
-            .flatMap(childFormItem -> childFormItem.getSubmittedResponses().stream())
-            .map(submittedResponse -> submittedResponse.getResponse())
-            .collect(Collectors.joining("; "));
-        if (attestationResponse == null) {
+        if (attestation == null) {
             return "";
         }
-        return attestationResponse;
+        return attestation.getForm().formatOptionalResponsesForCondition(conditionName);
     }
 
 }

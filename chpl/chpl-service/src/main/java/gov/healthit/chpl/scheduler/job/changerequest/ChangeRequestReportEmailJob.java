@@ -171,6 +171,7 @@ public class ChangeRequestReportEmailJob  extends QuartzJob {
                 .currentStatusNames(updatableStatusTypeNames)
                 .build();
     }
+
     private List<ChangeRequestSearchResult> getAllChangeRequestSearchResults(ChangeRequestSearchRequest searchRequest)
         throws ValidationException {
         LOGGER.info("Getting all change requests...");
@@ -315,7 +316,6 @@ public class ChangeRequestReportEmailJob  extends QuartzJob {
         }
         return html;
     }
-
 
     private void initializeTempFiles() throws IOException {
         File downloadFolder = getDownloadFolder();

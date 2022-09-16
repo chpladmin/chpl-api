@@ -1,40 +1,50 @@
 package gov.healthit.chpl.scheduler.job;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
-import java.text.DateFormat;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
-import java.util.function.Predicate;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
-import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
+import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
+import gov.healthit.chpl.changerequest.search.ChangeRequestSearchManager;
+import gov.healthit.chpl.changerequest.search.ChangeRequestSearchRequest;
+import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResponse;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult;
+import gov.healthit.chpl.changerequest.search.OrderByOption;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
+import gov.healthit.chpl.scheduler.job.changerequest.presenter.ChangeRequestCsvPresenter;
+import gov.healthit.chpl.scheduler.job.changerequest.presenter.ChangeRequestDetailsPresentationService;
+import gov.healthit.chpl.scheduler.job.changerequest.presenter.PendingChangeRequestPresenter;
 
 /**
  * The PendingChangeRequestEmailJob implements a Quartz job and is available to ROLE_ADMIN and ROLE_ONC. When invoked it
@@ -43,34 +53,44 @@ import gov.healthit.chpl.manager.SchedulerManager;
 public class PendingChangeRequestEmailJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("pendingChangeRequestEmailJobLogger");
 
+    private File tempDirectory, tempFile;
+    private ChangeRequestDetailsPresentationService crPresentationService;
+
     @Autowired
     private CertificationBodyDAO certificationBodyDAO;
 
     @Autowired
-    private ChangeRequestDAO changeRequestDAO;
+    private ChangeRequestDAO changeRequestDao;
 
     @Autowired
-    private Environment env;
+    private ChangeRequestStatusTypeDAO changeRequestStatusTypeDao;
+
+    @Autowired
+    private ChangeRequestSearchManager changeRequestSearchManager;
+
+    @Autowired
+    private ChangeRequestManager changeRequestManager;
+
+    @Autowired
+    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
     @Autowired
     private ChplEmailFactory chplEmailFactory;
 
-    private static final int DEVELOPER_NAME = 0;
-    private static final int DEVELOPER_CODE = 1;
-    private static final int DEVELOPER_CONTACT_NAME = 2;
-    private static final int DEVELOPER_CONTACT_EMAIL = 3;
-    private static final int DEVELOPER_CONTACT_PHONE_NUMBER = 4;
-    private static final int CR_TYPE = 5;
-    private static final int CR_STATUS = 6;
-    private static final int CR_DATE = 7;
-    private static final int CHANGE_REQUEST_DAYS_OPEN = 8;
-    private static final int CR_LATEST_DATE = 9;
-    private static final int CHANGE_REQUEST_LATEST_DAYS_OPEN = 10;
-    private static final int CR_LATEST_COMMENT = 11;
-    private static final int ONC_ACB_START = 12;
-    private static final int NUM_REPORT_COLS = 12;
+    @Value("${executorThreadCountForQuartzJobs}")
+    private String executorThreadCountForQuartzJobs;
 
-    private static final long MILLIS_PER_DAY = 1000 * 60 * 60 * 24;
+    @Value("${pendingChangeRequestReportFilename}")
+    private String reportFilename;
+
+    @Value("${pendingChangeRequestEmailSubject}")
+    private String pendingChangeRequestEmailSubject;
+
+    @Value("${pendingChangeRequestHasDataEmailBody}")
+    private String pendingChangeRequestHasDataEmailBody;
+
+    @Value("${pendingChangeRequestNoDataEmailBody}")
+    private String pendingChangeRequestNoDataEmailBody;
 
     public PendingChangeRequestEmailJob() throws Exception {
         super();
@@ -82,14 +102,42 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         LOGGER.info("********* Starting the Pending Change Request job. *********");
         LOGGER.info("Creating pending change request email for: " + jobContext.getMergedJobDataMap().getString("email"));
 
+        List<ChangeRequestSearchResult> searchResults = null;
+        List<CertificationBodyDTO> acbs = null;
         try {
-            List<CertificationBodyDTO> acbs = getAppropriateAcbs(jobContext);
-            Date currentDate = new Date();
-            List<List<String>> csvRows = getAppropriateActivities(acbs, currentDate);
-            sendEmail(jobContext, csvRows, acbs);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            setSecurityContext();
+            acbs = getAppropriateAcbs(jobContext);
+            searchResults = getPendingChangeRequestSearchResults(getSearchRequest(acbs));
+        } catch (ValidationException ex) {
+            LOGGER.catching(ex);
         }
+
+        LOGGER.info("Found " + searchResults.size() + " pending change requests.");
+        List<String> acbNames = acbs.stream().map(acb -> acb.getName()).collect(Collectors.toList());
+        try (ChangeRequestCsvPresenter pendingCrPresenter = new PendingChangeRequestPresenter(LOGGER, acbNames);) {
+            initializeTempFiles();
+            pendingCrPresenter.open(tempFile);
+
+            Integer threadCount = 1;
+            try {
+                threadCount = Integer.parseInt(executorThreadCountForQuartzJobs);
+            } catch (NumberFormatException ex) {
+                LOGGER.error("Could not initialize thread count from '" + executorThreadCountForQuartzJobs + "'. Defaulting to 1.");
+            }
+            crPresentationService = new ChangeRequestDetailsPresentationService(changeRequestManager, threadCount, LOGGER);
+            crPresentationService.present(searchResults,
+                    Stream.of(pendingCrPresenter).toList());
+
+        } catch (Exception e) {
+            LOGGER.catching(e);
+        }
+
+        try {
+            sendEmail(jobContext, searchResults);
+        } catch (Exception ex) {
+            LOGGER.error("Unable to send email.", ex);
+        }
+
         LOGGER.info("********* Completed the Pending Change Request Email job. *********");
     }
 
@@ -110,187 +158,65 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
                 .collect(Collectors.toList());
     }
 
-    private List<List<String>> getAppropriateActivities(final List<CertificationBodyDTO> activeAcbs,
-            final Date currentDate) throws EntityRetrievalException {
-        List<List<String>> activities = new ArrayList<List<String>>();
-        activities.addAll(createChangeRequestRows(activeAcbs, currentDate));
-        return activities;
+    private ChangeRequestSearchRequest getSearchRequest(List<CertificationBodyDTO> acbs) {
+        List<ChangeRequestStatusType> statusTypes = changeRequestStatusTypeDao.getChangeRequestStatusTypes();
+        List<Long> updatableStatusIds = changeRequestDao.getUpdatableStatusIds();
+        Set<String> updatableStatusTypeNames = statusTypes.stream()
+                .filter(statusType -> updatableStatusIds.contains(statusType.getId()))
+                .map(statusType -> statusType.getName())
+                .collect(Collectors.toSet());
+        return ChangeRequestSearchRequest.builder()
+                .currentStatusNames(updatableStatusTypeNames)
+                .acbIds(acbs.stream().map(acb -> acb.getId()).collect(Collectors.toSet()))
+                .orderBy(OrderByOption.SUBMITTED_DATE_TIME)
+                .sortDescending(Boolean.TRUE)
+                .build();
     }
 
-    private File getOutputFile(final List<List<String>> rows, final String reportFilename,
-            final List<CertificationBodyDTO> activeAcbs) {
-        File temp = null;
-        try {
-            temp = File.createTempFile(reportFilename, ".csv");
-            temp.deleteOnExit();
-
-            try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(temp),
-                    Charset.forName("UTF-8").newEncoder());
-                    CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
-                writer.write('\ufeff');
-                csvPrinter.printRecord(getHeaderRow(activeAcbs));
-                for (List<String> rowValue : rows) {
-                    csvPrinter.printRecord(rowValue);
-                }
-            } catch (IOException e) {
-                LOGGER.error(e.getMessage(), e);
-            }
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
+    private List<ChangeRequestSearchResult> getPendingChangeRequestSearchResults(ChangeRequestSearchRequest searchRequest)
+        throws ValidationException {
+        LOGGER.info("Getting all change requests...");
+        List<ChangeRequestSearchResult> searchResults = new ArrayList<ChangeRequestSearchResult>();
+        LOGGER.info(searchRequest.toString());
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        searchResults.addAll(searchResponse.getResults());
+        while (searchResponse.getRecordCount() > searchResults.size()) {
+            searchRequest.setPageSize(searchResponse.getPageSize());
+            searchRequest.setPageNumber(searchResponse.getPageNumber() + 1);
+            LOGGER.info(searchRequest.toString());
+            searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+            searchResults.addAll(searchResponse.getResults());
         }
-        return temp;
+        LOGGER.info("Got " + searchResults.size() + " total change requests.");
+        return searchResults;
     }
 
-    private List<String> getHeaderRow(final List<CertificationBodyDTO> activeAcbs) {
-        List<String> row = createEmptyRow(activeAcbs);
-        row.set(DEVELOPER_NAME, "Developer Name");
-        row.set(DEVELOPER_CODE, "Developer Code");
-        row.set(DEVELOPER_CONTACT_NAME, "Developer Contact Name");
-        row.set(DEVELOPER_CONTACT_EMAIL, "Developer Contact Email");
-        row.set(DEVELOPER_CONTACT_PHONE_NUMBER, "Developer Contact Phone Number");
-        row.set(CR_TYPE, "Change Request Type");
-        row.set(CR_STATUS, "Change Request Status");
-        row.set(CR_DATE, "Change Request Open Date");
-        row.set(CHANGE_REQUEST_DAYS_OPEN, "Change Request Days Open");
-        row.set(CR_LATEST_DATE, "Change Request Latest Change Date");
-        row.set(CHANGE_REQUEST_LATEST_DAYS_OPEN, "Change Request Days In Current State");
-        row.set(CR_LATEST_COMMENT, "Change Request Latest Comment");
-        for (int i = 0; i < activeAcbs.size(); i++) {
-            row.set(ONC_ACB_START + i, activeAcbs.get(i).getName());
-        }
-        return row;
-    }
-
-    private List<List<String>> createChangeRequestRows(final List<CertificationBodyDTO> activeAcbs,
-            final Date currentDate)
-                    throws EntityRetrievalException {
-        LOGGER.debug("Getting pending change requests");
-        List<ChangeRequestSearchResult> requests = getChangeRequestsFilteredByACBs(activeAcbs);
-        LOGGER.debug("Found " + requests.size() + "pending change requests");
-
-        List<List<String>> activityCsvRows = new ArrayList<List<String>>();
-        for (ChangeRequestSearchResult changeRequest : requests) {
-            List<String> currRow = createEmptyRow(activeAcbs);
-            putChangeRequestActivityInRow(changeRequest, currRow, activeAcbs, currentDate);
-            activityCsvRows.add(currRow);
-        }
-        return activityCsvRows;
-    }
-
-    private List<ChangeRequestSearchResult> getChangeRequestsFilteredByACBs(List<CertificationBodyDTO> acbs) throws EntityRetrievalException {
-        List<Long> activeAcbIds = acbs.stream()
-                .map(CertificationBodyDTO::getId)
-                .collect(Collectors.toList());
-
-        Predicate<ChangeRequestSearchResult> doesCrHaveAppropriateAcb = cr -> cr.getCertificationBodies().stream()
-                .anyMatch(acb -> activeAcbIds.contains(acb.getId()));
-
-        return changeRequestDAO.getAllPending().stream()
-                .filter(doesCrHaveAppropriateAcb)
-                .sorted((cr1, cr2) -> cr1.getSubmittedDateTime().compareTo(cr2.getSubmittedDateTime()))
-                .collect(Collectors.<ChangeRequestSearchResult>toList());
-    }
-
-    private void putChangeRequestActivityInRow(ChangeRequestSearchResult crSearchResult,
-            List<String> currRow, List<CertificationBodyDTO> activeAcbs, Date currentDate) {
-        ChangeRequest cr = null;
-        try {
-            cr = changeRequestDAO.get(crSearchResult.getId());
-        } catch (EntityRetrievalException ex) {
-            LOGGER.error("Cannot find change request with ID " + crSearchResult.getId());
-            return;
-        }
-
-        // Straightforward data
-        currRow.set(DEVELOPER_NAME, cr.getDeveloper().getName());
-        currRow.set(DEVELOPER_CODE, cr.getDeveloper().getDeveloperCode());
-        currRow.set(DEVELOPER_CONTACT_NAME, cr.getDeveloper().getContact().getFullName());
-        currRow.set(DEVELOPER_CONTACT_EMAIL, cr.getDeveloper().getContact().getEmail());
-        currRow.set(DEVELOPER_CONTACT_PHONE_NUMBER, cr.getDeveloper().getContact().getPhoneNumber());
-        currRow.set(CR_TYPE, cr.getChangeRequestType().getName());
-        currRow.set(CR_STATUS, cr.getCurrentStatus().getChangeRequestStatusType().getName());
-        currRow.set(CR_DATE, getTimestampFormatter().format(cr.getSubmittedDate()));
-        currRow.set(CR_LATEST_DATE, getTimestampFormatter().format(cr.getCurrentStatus().getStatusChangeDate()));
-        currRow.set(CR_LATEST_COMMENT, cr.getCurrentStatus().getComment());
-
-        // Calculated time open & time in current status
-        Date changeRequestDate = cr.getSubmittedDate();
-        long daysOpen = ((currentDate.getTime() - changeRequestDate.getTime()) / MILLIS_PER_DAY);
-        currRow.set(CHANGE_REQUEST_DAYS_OPEN, Double.toString(daysOpen));
-        Date changeRequestLatestDate = cr.getCurrentStatus().getStatusChangeDate();
-        long daysLatestOpen = ((currentDate.getTime() - changeRequestLatestDate.getTime()) / MILLIS_PER_DAY);
-        currRow.set(CHANGE_REQUEST_LATEST_DAYS_OPEN, Double.toString(daysLatestOpen));
-
-        // Is the CR relevant for each ONC-ACB?
-        for (int i = 0; i < activeAcbs.size(); i++) {
-            boolean isRelevant = false;
-            for (CertificationBody acb : cr.getCertificationBodies()) {
-                if (activeAcbs.get(i).getId().equals(acb.getId())) {
-                    isRelevant = true;
-                }
-            }
-            currRow.set(ONC_ACB_START + i, isRelevant ? "Applicable" : "Not Applicable");
-        }
-    }
-
-    private List<String> createEmptyRow(final List<CertificationBodyDTO> activeAcbs) {
-        List<String> row = new ArrayList<String>(NUM_REPORT_COLS);
-        for (int i = 0; i < NUM_REPORT_COLS + activeAcbs.size(); i++) {
-            row.add("");
-        }
-        return row;
-    }
-
-    private DateFormat getTimestampFormatter() {
-        return DateFormat.getDateTimeInstance(
-                DateFormat.LONG,
-                DateFormat.LONG,
-                Locale.US);
-    }
-
-    private void sendEmail(JobExecutionContext jobContext, List<List<String>> csvRows, List<CertificationBodyDTO> acbs)
+    private void sendEmail(JobExecutionContext jobContext, List<ChangeRequestSearchResult> searchResults)
             throws EmailNotSentException {
-        LOGGER.info("Sending email to {} with contents {} and a total of {} pending change requests",
-                getEmailRecipients(jobContext).get(0), getHtmlMessage(csvRows.size(), getAcbNamesAsCommaSeparatedList(jobContext)));
+        LOGGER.info("Sending email to {} with a total of {} pending change requests",
+                getEmailRecipients(jobContext).get(0), searchResults.size());
 
         chplEmailFactory.emailBuilder()
                 .recipients(getEmailRecipients(jobContext))
-                .subject(getSubject(jobContext))
-                .htmlMessage(getHtmlMessage(csvRows.size(), getAcbNamesAsCommaSeparatedList(jobContext)))
-                .fileAttachments(getAttachments(csvRows, acbs))
+                .subject(pendingChangeRequestEmailSubject)
+                .htmlMessage(createHtmlMessage(searchResults.size(), getAcbNamesAsCommaSeparatedList(jobContext)))
+                .fileAttachments(Stream.of(tempFile).toList())
                 .sendEmail();
     }
 
-    private String getSubject(JobExecutionContext jobContext) {
-        return env.getProperty("pendingChangeRequestEmailSubject");
-    }
-
-    private List<File> getAttachments(List<List<String>> csvRows, List<CertificationBodyDTO> acbs) {
-        List<File> attachments = new ArrayList<File>();
-        File csvFile = getCsvFile(csvRows, acbs);
-        if (csvFile != null) {
-            attachments.add(csvFile);
-        }
-        return attachments;
-    }
-
-    private File getCsvFile(List<List<String>> csvRows, List<CertificationBodyDTO> acbs) {
-        File csvFile = null;
-        if (csvRows.size() > 0) {
-            String filename = env.getProperty("pendingChangeRequestReportFilename");
-            if (csvRows.size() > 0) {
-                csvFile = getOutputFile(csvRows, filename, acbs);
-            }
-        }
-        return csvFile;
-    }
-
-    private String getHtmlMessage(Integer rowCount, String acbList) {
+    private String createHtmlMessage(Integer rowCount, String acbList) {
+        String body = "";
         if (rowCount > 0) {
-            return String.format(env.getProperty("pendingChangeRequestHasDataEmailBody"), acbList, rowCount);
+            body = String.format(pendingChangeRequestHasDataEmailBody, acbList, rowCount);
         } else {
-            return String.format(env.getProperty("pendingChangeRequestNoDataEmailBody"), acbList);
+            body = String.format(pendingChangeRequestNoDataEmailBody, acbList);
         }
+
+        return chplHtmlEmailBuilder.initialize()
+                .heading(pendingChangeRequestEmailSubject)
+                .paragraph("", body)
+                .footer(true)
+                .build();
     }
 
     private List<String> getEmailRecipients(JobExecutionContext jobContext) {
@@ -313,5 +239,29 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         } else {
             return "";
         }
+    }
+
+    private void initializeTempFiles() throws IOException {
+        File downloadFolder = getDownloadFolder();
+        Path tempDirBasePath = Paths.get(downloadFolder.getAbsolutePath());
+        Path tempDir = Files.createTempDirectory(tempDirBasePath, TEMP_DIR_NAME);
+
+        this.tempDirectory = tempDir.toFile();
+        this.tempDirectory.deleteOnExit();
+
+        Path tempFilePath = Files.createTempFile(tempDir, reportFilename, ".csv");
+        tempFile = tempFilePath.toFile();
+    }
+
+    private void setSecurityContext() {
+        JWTAuthenticatedUser adminUser = new JWTAuthenticatedUser();
+        adminUser.setFullName("Administrator");
+        adminUser.setId(User.ADMIN_USER_ID);
+        adminUser.setFriendlyName("Admin");
+        adminUser.setSubjectName("admin");
+        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 }
