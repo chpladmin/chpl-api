@@ -15,6 +15,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.attestation.domain.AttestationSubmission;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -72,6 +73,7 @@ public class AttestationSubmissionEntity {
                 .attestationPeriod(attestationPeriod.toDomain())
                 .signature(signature)
                 .signatureEmail(signatureEmail)
+                .datePublished(DateUtil.toLocalDate(lastModifiedDate.getTime()))
                 .build();
     }
 }

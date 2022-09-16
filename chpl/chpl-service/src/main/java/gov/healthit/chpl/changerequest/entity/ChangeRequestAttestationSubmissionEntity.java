@@ -14,6 +14,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Where;
+
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import lombok.AllArgsConstructor;
@@ -40,6 +42,7 @@ public class ChangeRequestAttestationSubmissionEntity {
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "change_request_id", nullable = false, insertable = true,
             updatable = false)
+    @Where(clause = " deleted <> true ")
     private ChangeRequestEntity changeRequest;
 
     @OneToOne(fetch = FetchType.LAZY)

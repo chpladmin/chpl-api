@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestConverter;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
+import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestCertificationBodyMapEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestTypeEntity;
@@ -71,25 +72,25 @@ public class ChangeRequestDAO extends BaseDAOImpl {
 
     public List<ChangeRequestSearchResult> getAll() {
         return getSearchResultEntities().stream()
-                .map(entity -> ChangeRequestConverter.convertSearchResult(entity))
+                .map(entity -> ChangeRequestConverter.toSearchResult(entity))
                 .collect(Collectors.<ChangeRequestSearchResult>toList());
     }
 
     public List<ChangeRequestSearchResult> getAllForAcbs(List<Long> acbIds) {
         return getSearchResultEntitiesByAcbs(acbIds).stream()
-                .map(entity -> ChangeRequestConverter.convertSearchResult(entity))
+                .map(entity -> ChangeRequestConverter.toSearchResult(entity))
                 .collect(Collectors.<ChangeRequestSearchResult>toList());
     }
 
     public List<ChangeRequestSearchResult> getAllForDevelopers(List<Long> developerIds) {
         return getSearchResultEntitiesByDevelopers(developerIds).stream()
-                .map(entity -> ChangeRequestConverter.convertSearchResult(entity))
+                .map(entity -> ChangeRequestConverter.toSearchResult(entity))
                 .collect(Collectors.<ChangeRequestSearchResult>toList());
     }
 
     public List<ChangeRequestSearchResult> getAttestationChangeRequestsForPeriod(Long periodId) {
         return getSearchResultEntitiesByTypeAndPeriod(attestationTypeId, periodId).stream()
-                .map(entity -> ChangeRequestConverter.convertSearchResult(entity))
+                .map(entity -> ChangeRequestConverter.toSearchResult(entity))
                 .collect(Collectors.<ChangeRequestSearchResult>toList());
     }
 
@@ -115,12 +116,6 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 .map(entity -> ChangeRequestConverter.convert(entity))
                 .map(cr -> populateDependentObjects(cr))
                 .collect(Collectors.<ChangeRequest>toList());
-    }
-
-    public List<ChangeRequestSearchResult> getAllPending() throws EntityRetrievalException {
-        return getAll().stream()
-                .filter(cr -> getUpdatableStatusIds().contains(cr.getCurrentStatus().getId()))
-                .collect(Collectors.<ChangeRequestSearchResult>toList());
     }
 
     public List<Long> getUpdatableStatusIds() {
@@ -242,34 +237,24 @@ public class ChangeRequestDAO extends BaseDAOImpl {
         return results;
     }
 
-    private List<ChangeRequestEntity> getSearchResultEntitiesByTypeAndPeriod(Long crTypeId, Long periodId) {
-        String hql = "SELECT DISTINCT cr "
-                + "FROM ChangeRequestEntity cr "
+    private List<ChangeRequestAttestationSubmissionEntity> getSearchResultEntitiesByTypeAndPeriod(Long crTypeId, Long periodId) {
+        String hql = "SELECT DISTINCT cras "
+                + "FROM ChangeRequestAttestationSubmissionEntity cras "
+                + "JOIN FETCH cras.changeRequest cr "
                 + "JOIN FETCH cr.changeRequestType crType "
                 + "JOIN FETCH cr.developer dev "
-                + "LEFT JOIN FETCH dev.address "
-                + "LEFT JOIN FETCH dev.contact "
-                + "LEFT JOIN FETCH dev.statusEvents statusEvents "
-                + "LEFT JOIN FETCH statusEvents.developerStatus "
-                + "LEFT JOIN FETCH dev.attestations devAtt "
-                + "LEFT JOIN FETCH devAtt.period per "
-                //TODO: In OCD-3985 this needs to be fixed. This method is only used in the Developer Attestation Check-In Report
-                //and it will WORK but it will be WRONG if we leave it like this. The ACB relationship should come from the
-                //change request object itself rather than the developer after OCD-3940 is merged.
-                + "LEFT JOIN FETCH dev.certificationBodyMaps devAcbMaps "
-                + "LEFT JOIN FETCH devAcbMaps.certificationBody devAcb "
-                + "LEFT JOIN FETCH devAcb.address "
+                + "LEFT JOIN FETCH cr.certificationBodies crAcbs "
                 + "JOIN FETCH cr.statuses crStatus "
                 + "JOIN FETCH crStatus.changeRequestStatusType "
-                + "LEFT JOIN FETCH crStatus.certificationBody acb "
-                + "LEFT JOIN FETCH acb.address "
+                + "LEFT JOIN FETCH crStatus.certificationBody crStatusAcbs "
                 + "JOIN FETCH crStatus.userPermission "
-                + "WHERE cr.deleted = false "
-                + "AND crType.id = :crTypeId "
-                + "AND per.id = :periodId";
+                + "LEFT JOIN FETCH cras.attestationPeriod per "
+                + "WHERE crType.id = :crTypeId "
+                + "AND per.id = :periodId "
+                + "AND cras.deleted = false ";
 
-        List<ChangeRequestEntity> results = entityManager
-                .createQuery(hql, ChangeRequestEntity.class)
+        List<ChangeRequestAttestationSubmissionEntity> results = entityManager
+                .createQuery(hql, ChangeRequestAttestationSubmissionEntity.class)
                 .setParameter("crTypeId", crTypeId)
                 .setParameter("periodId", periodId)
                 .getResultList();
