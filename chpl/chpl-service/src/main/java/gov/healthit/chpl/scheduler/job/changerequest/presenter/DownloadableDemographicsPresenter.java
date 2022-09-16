@@ -54,7 +54,7 @@ public class DownloadableDemographicsPresenter extends ChangeRequestCsvPresenter
         result.add(DateUtil.formatInEasternTime(changeRequest.getCurrentStatus().getStatusChangeDate()));
         result.add(changeRequest.getCertificationBodies().stream()
                 .map(acb -> acb.getName())
-                .collect(Collectors.joining(",")));
+                .collect(Collectors.joining("; ")));
         return result;
     }
 

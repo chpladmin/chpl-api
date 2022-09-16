@@ -32,7 +32,7 @@ public class DeveloperAttestationReportJob implements Job {
     private JpaTransactionManager txManager;
 
     @Autowired
-    private DeveloperAttestationReportDataCollection developerAttestationReportDataCollection;
+    private DeveloperAttestationReportDataCollector developerAttestationReportDataCollection;
 
     @Autowired
     private DeveloperAttestationReportCsvWriter developerAttestationReportCsvWriter;
