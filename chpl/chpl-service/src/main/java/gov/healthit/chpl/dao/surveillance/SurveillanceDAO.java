@@ -117,7 +117,9 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
     private SurveillanceNonconformityEntity updateSurveillanceNonconformity(SurveillanceNonconformity nonconformity, SurveillanceNonconformityEntity nonconformityEntity) {
-        nonconformityEntity.getType().setId(nonconformity.getType().getId());
+        nonconformityEntity.setType(NonconformityTypeEntity.builder()
+                .id(nonconformity.getType().getId())
+                .build());
         nonconformityEntity.setCapApproval(nonconformity.getCapApprovalDay());
         nonconformityEntity.setCapEndDate(nonconformity.getCapEndDay());
         nonconformityEntity.setCapMustCompleteDate(nonconformity.getCapMustCompleteDay());
@@ -182,7 +184,11 @@ public class SurveillanceDAO extends BaseDAOImpl {
 
     private SurveillanceRequirementEntity updateSurveillanceRequirement(SurveillanceRequirement requirement, SurveillanceRequirementEntity requirementEntity) {
         requirementEntity.getSurveillanceResultTypeEntity().setId(requirement.getResult().getId());
-        requirementEntity.getRequirementDetailType().setId(requirement.getRequirementDetailType().getId());
+
+        requirementEntity.setRequirementDetailType(RequirementDetailTypeEntity.builder()
+                .id(requirement.getRequirementDetailType().getId())
+                .build());
+
         requirementEntity.setRequirementDetailOther(requirement.getRequirementDetailOther());
         requirementEntity.setLastModifiedUser(AuthUtil.getAuditId());
 

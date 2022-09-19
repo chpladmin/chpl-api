@@ -47,32 +47,12 @@ public class SurveillanceRequirementEntity {
     @Column(name = "surveillance_id")
     private Long surveillanceId;
 
-    //@Column(name = "type_id")
-    //private Long surveillanceRequirementTypeId;
-
-    //@OneToOne(optional = true, fetch = FetchType.LAZY)
-    //@JoinColumn(name = "type_id", insertable = false, updatable = false)
-    //private SurveillanceRequirementTypeEntity surveillanceRequirementType;
-
-    //@Column(name = "certification_criterion_id")
-    //private Long certificationCriterionId;
-
-    //@OneToOne(optional = true, fetch = FetchType.LAZY)
-    //@JoinColumn(name = "certification_criterion_id", insertable = false, updatable = false)
-    //private CertificationCriterionEntity certificationCriterionEntity;
-
-    //@Column(name = "requirement")
-    //private String surveilledRequirement;
-
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "requirement_detail_type_id", insertable = true, updatable = true)
+    @JoinColumn(name = "requirement_detail_type_id", insertable = false, updatable = false)
     private RequirementDetailTypeEntity requirementDetailType;
 
     @Column(name = "requirement_detail_other")
     private String requirementDetailOther;
-
-    //@Column(name = "result_id")
-    //private Long surveillanceResultTypeId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "result_id", insertable = false, updatable = false)
