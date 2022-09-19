@@ -3,6 +3,9 @@ package gov.healthit.chpl.form;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,5 +48,60 @@ public class Form implements Serializable {
         });
 
         return accumulatedFormItems;
+    }
+
+    public String formatResponse(Long questionId) {
+        String attestationResponse = getSectionHeadings().stream()
+                .flatMap(section -> section.getFormItems().stream())
+                .filter(formItem -> formItem.getQuestion().getId().equals(questionId))
+                .flatMap(formItem -> formItem.getSubmittedResponses().stream())
+                .map(submittedResponse -> submittedResponse.getResponse())
+                .collect(Collectors.joining("; "));
+        if (attestationResponse == null) {
+            return "";
+        }
+        return attestationResponse;
+    }
+
+    public String formatResponse(String sectionHeadingName) {
+        String attestationResponse = getSectionHeadings().stream()
+                .filter(section -> sectionHeadingName.startsWith(section.getName()))
+                .flatMap(section -> section.getFormItems().get(0).getSubmittedResponses().stream())
+                .map(submittedResponse -> submittedResponse.getResponse())
+                .collect(Collectors.joining("; "));
+        if (attestationResponse == null) {
+            return "";
+        }
+        return attestationResponse;
+    }
+
+    public String formatOptionalResponsesForCondition(Long questionId) {
+        String optionalResponse = getSectionHeadings().stream()
+                .flatMap(section -> section.getFormItems().stream())
+                .filter(formItem -> formItem.getQuestion().getId().equals(questionId)
+                        && !CollectionUtils.isEmpty(formItem.getChildFormItems()))
+                .map(formItem -> formItem.getChildFormItems().get(0))
+                .flatMap(childFormItem -> childFormItem.getSubmittedResponses().stream())
+                .map(submittedResponse -> submittedResponse.getResponse())
+                .collect(Collectors.joining("; "));
+        if (optionalResponse == null) {
+            return "";
+        }
+        return optionalResponse;
+    }
+
+    public String formatOptionalResponsesForCondition(String sectionHeadingName) {
+        String optionalResponse = getSectionHeadings().stream()
+                .filter(section -> sectionHeadingName.startsWith(section.getName()))
+                .map(section -> section.getFormItems().get(0))
+                .filter(formItem -> !CollectionUtils.isEmpty(formItem.getChildFormItems()))
+                .map(formItem -> formItem.getChildFormItems().get(0))
+                .flatMap(childFormItem -> childFormItem.getSubmittedResponses().stream())
+                .map(submittedResponse -> submittedResponse.getResponse())
+                .collect(Collectors.joining("; "));
+        if (optionalResponse == null) {
+            return "";
+        }
+        return optionalResponse;
     }
 }

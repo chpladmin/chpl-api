@@ -34,6 +34,15 @@ public class AttestationSubmissionService {
                 .toList();
     }
 
+    public List<AttestationSubmission> getAttestationSubmissions(Long developerId, Long attestationPeriodId) {
+        return attestationDAO.getAttestationSubmissionsByDeveloperAndPeriod(developerId, attestationPeriodId).stream()
+                .map(sub -> {
+                    sub.setForm(getPopulatedForm(sub));
+                    return sub;
+                })
+                .toList();
+    }
+
     private Form getPopulatedForm(AttestationSubmission submission) {
         try {
             List<AttestationSubmissionResponseEntity> submittedResponses = attestationDAO.getAttestationSubmissionResponseEntities(submission.getId());

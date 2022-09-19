@@ -18,6 +18,7 @@ import org.springframework.core.env.Environment;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
+import gov.healthit.chpl.domain.compliance.DirectReviewContainer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.service.DirectReviewSearchService;
@@ -41,24 +42,26 @@ public class DirectReviewCsvPresenter {
     }
 
     public void presentAsFile(File file) {
-        List<DirectReview> allDirectReviews = drService.getAll();
+        List<DirectReviewContainer> allDirectReviewContainers = drService.getAll();
 
         try (FileWriter writer = new FileWriter(file);
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
             csvPrinter.printRecord(generateHeaderValues());
-            for (DirectReview directReview : allDirectReviews) {
-                if (directReview.getDeveloperId() != null) {
-                    try {
-                        Developer developer = developerManager.getById(directReview.getDeveloperId());
-                        List<List<String>> rowValues = generateMultiRowValue(developer, directReview);
-                        for (List<String> rowValue : rowValues) {
-                            csvPrinter.printRecord(rowValue);
+            for (DirectReviewContainer directReviewContainer : allDirectReviewContainers) {
+                for (DirectReview directReview : directReviewContainer.getDirectReviews()) {
+                    if (directReview.getDeveloperId() != null) {
+                        try {
+                            Developer developer = developerManager.getById(directReview.getDeveloperId());
+                            List<List<String>> rowValues = generateMultiRowValue(developer, directReview, directReviewContainer.getFetched());
+                            for (List<String> rowValue : rowValues) {
+                                csvPrinter.printRecord(rowValue);
+                            }
+                        } catch (EntityRetrievalException ex) {
+                            LOGGER.error("Could not find developer with ID " + directReview.getDeveloperId() + ". Not writing its direct review " + directReview.getJiraKey() + ".");
                         }
-                    } catch (EntityRetrievalException ex) {
-                        LOGGER.error("Could not find developer with ID " + directReview.getDeveloperId() + ". Not writing its direct review " + directReview.getJiraKey() + ".");
+                    } else {
+                        LOGGER.error("Developer ID for direct review " + directReview.getJiraKey() + " was null.");
                     }
-                } else {
-                    LOGGER.error("Developer ID for direct review " + directReview.getJiraKey() + " was null.");
                 }
             }
         } catch (IOException ex) {
@@ -83,21 +86,21 @@ public class DirectReviewCsvPresenter {
         return result;
     }
 
-    protected List<List<String>> generateMultiRowValue(Developer developer, DirectReview directReview) {
+    protected List<List<String>> generateMultiRowValue(Developer developer, DirectReview directReview, LocalDateTime fetched) {
         List<List<String>> csvRows = new ArrayList<List<String>>();
         if (directReview.getNonConformities() != null && directReview.getNonConformities().size() > 0) {
             for (DirectReviewNonConformity nc : directReview.getNonConformities()) {
                 List<String> csvRow = new ArrayList<String>();
                 addDeveloperFields(csvRow, developer);
                 addNonconformityDirectReviewFields(csvRow, nc);
-                csvRow.add(dateTimeFormatter.format(directReview.getFetched()));
+                csvRow.add(dateTimeFormatter.format(fetched));
                 csvRows.add(csvRow);
             }
         } else {
             List<String> csvRow = new ArrayList<String>();
             addDeveloperFields(csvRow, developer);
             addNonconformityDirectReviewFields(csvRow, null);
-            csvRow.add(dateTimeFormatter.format(directReview.getFetched()));
+            csvRow.add(dateTimeFormatter.format(fetched));
             csvRows.add(csvRow);
         }
         return csvRows;

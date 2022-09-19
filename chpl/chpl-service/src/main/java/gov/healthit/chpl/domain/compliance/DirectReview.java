@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -76,10 +75,6 @@ public class DirectReview implements Serializable {
     @XmlElementWrapper(name = "nonConformities", nillable = true, required = false)
     @XmlElement(name = "nonConformity")
     private List<DirectReviewNonConformity> nonConformities = new ArrayList<DirectReviewNonConformity>();
-
-    @JsonIgnore
-    @XmlTransient
-    private LocalDateTime fetched;
 
     @XmlTransient
     @JsonIgnore

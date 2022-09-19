@@ -43,7 +43,7 @@ public class ListingSearchServiceTest {
     public void setup() {
         SearchRequestValidator searchRequestValidator = Mockito.mock(SearchRequestValidator.class);
         DirectReviewSearchService drService = Mockito.mock(DirectReviewSearchService.class);
-        Mockito.when(drService.getDirectReviewsAvailable()).thenReturn(true);
+        Mockito.when(drService.doesCacheHaveAnyOkData()).thenReturn(true);
         listingSearchManager = Mockito.mock(ListingSearchManager.class);
 
         listingSearchService = new ListingSearchService(searchRequestValidator,

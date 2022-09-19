@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.jfree.data.time.DateRange;
@@ -14,20 +15,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.caching.HttpStatusAwareCache;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertificationStatusEventComparator;
 import gov.healthit.chpl.domain.compliance.DirectReview;
+import gov.healthit.chpl.domain.compliance.DirectReviewContainer;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Ehcache;
 import one.util.streamex.StreamEx;
 
 @Component("directReviewSearchService")
 @NoArgsConstructor
+@Log4j2
 public class DirectReviewSearchService {
     private DirectReviewCachingService drCacheService;
 
@@ -36,35 +39,39 @@ public class DirectReviewSearchService {
         this.drCacheService = drCacheService;
     }
 
-    public boolean getDirectReviewsAvailable() {
-        boolean directReviewsAvailable = false;
-        Ehcache drCache = getDirectReviewsCache();
-        if (drCache instanceof HttpStatusAwareCache) {
-            HttpStatusAwareCache drStatusAwareCache = (HttpStatusAwareCache) drCache;
-            directReviewsAvailable = drStatusAwareCache.getHttpStatus() != null
-                    && drStatusAwareCache.getHttpStatus().is2xxSuccessful();
-        }
-        return directReviewsAvailable;
+    public boolean doesCacheHaveAnyOkData() {
+        //DRs are available if there is at least one developer with a 2xx http status code for it's dr list
+        return drCacheService.doesCacheHaveAnyOkData();
     }
 
-    public List<DirectReview> getAll() {
-        List<DirectReview> drs = new ArrayList<DirectReview>();
+    public boolean areDirectReviewsLoading() {
+        //if there are any entries in the cache with "null" http status then it's still loading
+        List<DirectReviewContainer> drContainers = getAll();
+        return CollectionUtils.isEmpty(drContainers)
+                || drContainers.stream()
+                    .filter(drResponse -> drResponse.getHttpStatus() == null)
+                    .findAny().isPresent();
+    }
 
-        Ehcache drCache = getDirectReviewsCache();
-        drs = drCache.getAll(drCache.getKeys()).values().stream()
+    public List<DirectReviewContainer> getAll() {
+        List<DirectReviewContainer> drContainers = new ArrayList<DirectReviewContainer>();
+
+        Cache drCache = getDirectReviewsCache();
+        drContainers = drCache.getAll(drCache.getKeys()).values().stream()
             .map(value -> value.getObjectValue())
-            .filter(objValue -> objValue != null && (objValue instanceof List<?>))
-            .map(objValue -> ((List<?>) objValue))
-            .filter(listValue -> listValue.size() > 0)
-            .flatMap(listValue -> listValue.stream())
-            .map(listItemAsObject -> (DirectReview) listItemAsObject)
-            .collect(Collectors.toList());
+            .filter(objValue -> objValue != null && (objValue instanceof DirectReviewContainer))
+            .map(objValue -> (DirectReviewContainer) objValue)
+            .toList();
 
-        return drs;
+        return drContainers;
     }
 
     public List<DirectReview> getDeveloperDirectReviews(Long developerId, Logger logger) {
-        return drCacheService.getDeveloperDirectReviewsFromCache(developerId, logger);
+        DirectReviewContainer drContainer = drCacheService.getDeveloperDirectReviewsFromCache(developerId, logger);
+        if (CollectionUtils.isEmpty(drContainer.getDirectReviews())) {
+            return new ArrayList<DirectReview>();
+        }
+        return drContainer.getDirectReviews();
     }
 
     /**
@@ -114,8 +121,9 @@ public class DirectReviewSearchService {
     }
 
     private List<DirectReview> getDirectReviewsWithDeveloperAssociatedListingId(Long listingId) {
-        List<DirectReview> allDirectReviews = getAll();
-        return allDirectReviews.stream()
+        List<DirectReviewContainer> allDirectReviewContainers = getAll();
+        return allDirectReviewContainers.stream()
+                .flatMap(container -> container.getDirectReviews().stream())
                 .filter(dr -> isAssociatedWithListing(dr, listingId))
                 .collect(Collectors.toList());
     }
@@ -163,9 +171,7 @@ public class DirectReviewSearchService {
             .collect(Collectors.toList());
     }
 
-    private Ehcache getDirectReviewsCache() {
-        CacheManager manager = CacheManager.getInstance();
-        Ehcache drCache = manager.getEhcache(CacheNames.DIRECT_REVIEWS);
-        return drCache;
+    private Cache getDirectReviewsCache() {
+        return CacheManager.getInstance().getCache(CacheNames.DIRECT_REVIEWS);
     }
 }

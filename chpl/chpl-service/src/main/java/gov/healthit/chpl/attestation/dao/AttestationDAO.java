@@ -41,6 +41,12 @@ public class AttestationDAO extends BaseDAOImpl{
                 .collect(Collectors.toList());
     }
 
+    public List<AttestationSubmission> getAttestationSubmissionsByDeveloperAndPeriod(Long developerId, Long periodId) {
+        return getAttestationSubmissionEntitiesByDeveloperAndPeriod(developerId, periodId).stream()
+                .map(ent -> ent.toDomain())
+                .collect(Collectors.toList());
+    }
+
     public List<AttestationSubmissionResponseEntity> getAttestationSubmissionResponseEntities(Long attestationSubmissionId) {
         String hql = "SELECT DISTINCT asre "
                 + "FROM AttestationSubmissionResponseEntity asre "
@@ -189,6 +195,30 @@ public class AttestationDAO extends BaseDAOImpl{
         List<AttestationSubmissionEntity> result = entityManager
                 .createQuery(hql, AttestationSubmissionEntity.class)
                 .setParameter("developerId", developerId)
+                .getResultList();
+
+        return result;
+    }
+
+    private List<AttestationSubmissionEntity> getAttestationSubmissionEntitiesByDeveloperAndPeriod(Long developerId, Long periodId) {
+        String hql = "SELECT DISTINCT ase "
+                + "FROM AttestationSubmissionEntity ase "
+                + "JOIN FETCH ase.attestationPeriod per "
+                + "LEFT JOIN FETCH per.form "
+                + "LEFT JOIN FETCH ase.responses resp "
+                + "LEFT JOIN FETCH resp.formItem fi "
+                + "LEFT JOIN FETCH fi.question "
+                + "LEFT JOIN FETCH resp.response "
+                + "WHERE (NOT ase.deleted = true) "
+                + "AND (NOT resp.deleted = true) "
+                + "AND (NOT per.deleted = true) "
+                + "AND (ase.developerId = :developerId) "
+                + "AND (per.id = :periodId)";
+
+        List<AttestationSubmissionEntity> result = entityManager
+                .createQuery(hql, AttestationSubmissionEntity.class)
+                .setParameter("developerId", developerId)
+                .setParameter("periodId", periodId)
                 .getResultList();
 
         return result;

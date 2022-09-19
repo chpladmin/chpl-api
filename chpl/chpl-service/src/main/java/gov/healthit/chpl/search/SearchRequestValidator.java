@@ -285,7 +285,7 @@ public class SearchRequestValidator {
 
     private Set<String> getComplianceActivityErrors(ComplianceSearchFilter complianceFilter) {
         Set<String> errors = new LinkedHashSet<String>();
-        if (hasAnyComplianceFilters(complianceFilter) && !drService.getDirectReviewsAvailable()) {
+        if (hasAnyComplianceFilters(complianceFilter) && !drService.doesCacheHaveAnyOkData()) {
             errors.add(msgUtil.getMessage("search.complianceFilter.unavailable"));
         }
         errors.addAll(getNonConformityOperatorErrors(complianceFilter));

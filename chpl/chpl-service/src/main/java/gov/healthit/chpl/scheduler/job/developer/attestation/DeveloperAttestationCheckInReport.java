@@ -41,10 +41,10 @@ public class DeveloperAttestationCheckInReport {
                 assurancesNoncompliantResponse != null ? assurancesNoncompliantResponse : "",
                 communicationsResponse != null ? communicationsResponse : "",
                 communicationsNoncompliantResponse != null ? communicationsNoncompliantResponse : "",
-                rwtResponse != null ? rwtResponse : "",
-                rwtNoncompliantResponse != null ? rwtNoncompliantResponse : "",
                 apiResponse != null ? apiResponse : "",
                 apiNoncompliantResponse != null ? apiNoncompliantResponse : "",
+                rwtResponse != null ? rwtResponse : "",
+                rwtNoncompliantResponse != null ? rwtNoncompliantResponse : "",
                 signature != null ? signature : "",
                 signatureEmail != null ? signatureEmail : "");
     }
@@ -57,10 +57,15 @@ public class DeveloperAttestationCheckInReport {
                 "Change Request Last Status Change Date",
                 "ONC-ACBs",
                 "Information Blocking Response",
+                "Information Blocking Optional Response",
                 "Assurances Response",
+                "Assurances Optional Response",
                 "Communications Response",
-                "Real World Testing Response",
+                "Communications Optional Response",
                 "Application Programming Interfaces Response",
+                "Application Programming Interfaces Optional Response",
+                "Real World Testing Response",
+                "Real World Testing Optional Response",
                 "Submitted by Name",
                 "Submitted by Email");
     }
