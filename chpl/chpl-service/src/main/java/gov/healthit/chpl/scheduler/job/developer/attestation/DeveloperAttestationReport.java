@@ -26,11 +26,16 @@ public class DeveloperAttestationReport {
     private String attestationStatus;
     private LocalDate attestationPublishDate;
     private String attestationPeriod;
-    private String informationBlocking;
-    private String assurances;
-    private String communications;
-    private String applicationProgrammingInterfaces;
-    private String realWorldTesting;
+    private String informationBlockingResponse;
+    private String informationBlockingNoncompliantResponse;
+    private String assurancesResponse;
+    private String assurancesNoncompliantResponse;
+    private String communicationsResponse;
+    private String communicationsNoncompliantResponse;
+    private String rwtResponse;
+    private String rwtNoncompliantResponse;
+    private String apiResponse;
+    private String apiNoncompliantResponse;
     private String submitterName;
     private String submitterEmail;
     private Long totalSurveillances;
@@ -55,11 +60,16 @@ public class DeveloperAttestationReport {
                 attestationPeriod,
                 attestationStatus,
                 attestationPublishDate != null ? attestationPublishDate.toString() : "",
-                informationBlocking,
-                assurances,
-                communications,
-                applicationProgrammingInterfaces,
-                realWorldTesting,
+                informationBlockingResponse,
+                informationBlockingNoncompliantResponse,
+                assurancesResponse,
+                assurancesNoncompliantResponse,
+                communicationsResponse,
+                communicationsNoncompliantResponse,
+                apiResponse,
+                apiNoncompliantResponse,
+                rwtResponse,
+                rwtNoncompliantResponse,
                 submitterName,
                 submitterEmail,
                 totalSurveillances != null ? totalSurveillances.toString() : "",
@@ -98,11 +108,16 @@ public class DeveloperAttestationReport {
                 "Attestations Period",
                 "Attestations Status",
                 "Last Activity",
-                "Information Blocking",
-                "Assurances",
-                "Communications",
-                "Application Programming Interfaces (APIs)",
-                "Real World Testing",
+                "Information Blocking Response",
+                "Information Blocking Optional Response",
+                "Assurances Response",
+                "Assurances Optional Response",
+                "Communications Response",
+                "Communications Optional Response",
+                "Application Programming Interfaces Response",
+                "Application Programming Interfaces Optional Response",
+                "Real World Testing Response",
+                "Real World Testing Optional Response",
                 "Submitter Name",
                 "Submitter Email",
                 "Total Surveillance",
