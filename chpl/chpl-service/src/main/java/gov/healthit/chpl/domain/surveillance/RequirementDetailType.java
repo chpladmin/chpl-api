@@ -36,6 +36,7 @@ public class RequirementDetailType {
         return NullSafeEvaluator.eval(() -> certificationEdition.getYear(), null);
     }
 
+    @JsonIgnore
     public String getFormattedTitle() {
         if (StringUtils.isNotEmpty(number)) {
             return Util.formatCriteriaNumber(this);

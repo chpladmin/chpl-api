@@ -36,10 +36,12 @@ public class NonconformityType implements Serializable {
     @JsonIgnore
     private NonconformityClassification classification;
 
+    @JsonIgnore
     public String getEdition() {
         return NullSafeEvaluator.eval(() -> certificationEdition.getYear(), null);
     }
 
+    @JsonIgnore
     public String getFormattedTitle() {
         if (StringUtils.isNotEmpty(number)) {
             return Util.formatCriteriaNumber(this);
