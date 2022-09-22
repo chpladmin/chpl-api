@@ -5,10 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+
 import gov.healthit.chpl.SpecialProperties;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -30,11 +32,12 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
     @Before
     public void before() throws EntityRetrievalException {
         certificationCriterionService = Mockito.mock(CertificationCriterionService.class);
-        Mockito.when(certificationCriterionService.get(1L)).thenReturn(getCriterion(1L, "170.315 (a)(1)"));
-        Mockito.when(certificationCriterionService.get(2L)).thenReturn(getCriterion(2L, "170.315 (a)(2)"));
-        Mockito.when(certificationCriterionService.get(3L)).thenReturn(getCriterion(3L, "170.315 (a)(3)"));
-        Mockito.when(certificationCriterionService.get(166L)).thenReturn(getCriterion(166L, "170.315 (d)(12)"));
-        Mockito.when(certificationCriterionService.get(167L)).thenReturn(getCriterion(167L, "170.315 (d)(13)"));
+        Mockito.when(certificationCriterionService.get(1L)).thenReturn(getCriterion(1L, "170.315 (a)(1)", false));
+        Mockito.when(certificationCriterionService.get(2L)).thenReturn(getCriterion(2L, "170.315 (a)(2)", false));
+        Mockito.when(certificationCriterionService.get(3L)).thenReturn(getCriterion(3L, "170.315 (a)(3)", false));
+        Mockito.when(certificationCriterionService.get(17L)).thenReturn(getCriterion(17L, "170.315 (b)(2)", true));
+        Mockito.when(certificationCriterionService.get(166L)).thenReturn(getCriterion(166L, "170.315 (d)(12)", false));
+        Mockito.when(certificationCriterionService.get(167L)).thenReturn(getCriterion(167L, "170.315 (d)(13)", false));
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.dependentCriteriaRequired"),
@@ -60,20 +63,34 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
     }
 
     @Test
+    public void review_attestsOnlyRemovedCriteriaAndMissingPAndSCriteriaAfterCuresEffectiveDate_noErrorNoWarnings() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(System.currentTimeMillis())
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(getCriterion(17L, "170.315 (b)(2)", true))
+                        .build())
+                .build();
+        reviewer.review(listing);
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(0, listing.getWarningMessages().size());
+    }
+
+    @Test
     public void review_missingPAndSCriteriaAfterCuresEffectiveDate_hasErrorMessages() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationDate(System.currentTimeMillis())
                 .certificationResult(CertificationResult.builder()
                         .success(true)
-                        .criterion(getCriterion(1L, "170.315 (a)(1)"))
+                        .criterion(getCriterion(1L, "170.315 (a)(1)", false))
                         .build())
                 .certificationResult(CertificationResult.builder()
                         .success(true)
-                        .criterion(getCriterion(2L, "170.315 (a)(2)"))
+                        .criterion(getCriterion(2L, "170.315 (a)(2)", false))
                         .build())
                 .certificationResult(CertificationResult.builder()
                         .success(true)
-                        .criterion(getCriterion(166L, "170.315 (d)(12)"))
+                        .criterion(getCriterion(166L, "170.315 (d)(12)", false))
                         .build())
                 .build();
         reviewer.review(listing);
@@ -88,15 +105,15 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
                 .certificationDate(new GregorianCalendar(2019, Calendar.MARCH, 01).getTime().getTime())
                 .certificationResult(CertificationResult.builder()
                         .success(true)
-                        .criterion(getCriterion(1L, "170.315 (a)(1)"))
+                        .criterion(getCriterion(1L, "170.315 (a)(1)", false))
                         .build())
                 .certificationResult(CertificationResult.builder()
                         .success(true)
-                        .criterion(getCriterion(2L, "170.315 (a)(2)"))
+                        .criterion(getCriterion(2L, "170.315 (a)(2)", false))
                         .build())
                 .certificationResult(CertificationResult.builder()
                         .success(true)
-                        .criterion(getCriterion(166L, "170.315 (d)(12)"))
+                        .criterion(getCriterion(166L, "170.315 (d)(12)", false))
                         .build())
                 .build();
         reviewer.review(listing);
@@ -109,29 +126,30 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
                 .certificationDate(System.currentTimeMillis())
                 .certificationResult(CertificationResult.builder()
                         .success(true)
-                        .criterion(getCriterion(1L, "170.315 (a)(1)"))
+                        .criterion(getCriterion(1L, "170.315 (a)(1)", false))
                         .build())
                 .certificationResult(CertificationResult.builder()
                         .success(true)
-                        .criterion(getCriterion(2L, "170.315 (a)(2)"))
+                        .criterion(getCriterion(2L, "170.315 (a)(2)", false))
                         .build())
                 .certificationResult(CertificationResult.builder()
                         .success(true)
-                        .criterion(getCriterion(166L, "170.315 (d)(12)"))
+                        .criterion(getCriterion(166L, "170.315 (d)(12)", false))
                         .build())
                 .certificationResult(CertificationResult.builder()
                         .success(true)
-                        .criterion(getCriterion(167L, "170.315 (d)(13)"))
+                        .criterion(getCriterion(167L, "170.315 (d)(13)", false))
                         .build())
                 .build();
         reviewer.review(listing);
         assertEquals(0, listing.getErrorMessages().size());
     }
 
-    private CertificationCriterion getCriterion(Long id, String number) {
+    private CertificationCriterion getCriterion(Long id, String number, boolean removed) {
         return CertificationCriterion.builder()
                 .id(id)
                 .number(number)
+                .removed(removed)
                 .build();
     }
 

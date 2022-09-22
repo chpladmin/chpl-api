@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -37,6 +38,7 @@ public class PrivacyAndSecurityCriteriaReviewer implements ComparisonReviewer {
     public void postConstruct() {
         privacyAndSecurityCriteria = Arrays.asList(env.getProperty("privacyAndSecurityCriteria").split(",")).stream()
                 .map(id -> getCertificationCriterion(Long.parseLong(id)))
+                .filter(criteria -> BooleanUtils.isFalse(criteria.getRemoved()))
                 .collect(Collectors.toList());
 
         privacyAndSecurityRequiredCriteria = Arrays

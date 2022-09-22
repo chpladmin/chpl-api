@@ -39,6 +39,7 @@ public class PrivacyAndSecurityCriteriaReviewer {
 
         this.privacyAndSecurityCriteria = Arrays.asList(privacyAndSecurityCriteria.split(",")).stream()
                 .map(id -> criterionService.get(Long.parseLong(id)))
+                .filter(criteria -> BooleanUtils.isFalse(criteria.getRemoved()))
                 .collect(Collectors.toList());
 
         this.privacyAndSecurityRequiredCriteria = Arrays
