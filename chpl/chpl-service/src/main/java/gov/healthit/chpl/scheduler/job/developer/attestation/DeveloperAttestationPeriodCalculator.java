@@ -1,4 +1,4 @@
-package gov.healthit.chpl.attestation.manager;
+package gov.healthit.chpl.scheduler.job.developer.attestation;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -10,37 +10,33 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Logger;
 import org.jfree.data.time.DateRange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
-import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.CertificationBodyManager;
-import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ListingSearchResponse;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.util.DateUtil;
-import lombok.extern.log4j.Log4j2;
 
 @Component
-@Log4j2
-public class AttestationCertificationBodyService {
+public class DeveloperAttestationPeriodCalculator {
     private static final Integer MAX_PAGE_SIZE = 100;
 
-    private ListingSearchService listingSearchService;
+    private DeveloperDAO developerDao;
     private AttestationPeriodService attestationPeriodService;
-    private DeveloperManager developerManager;
-    private CertificationBodyManager certificationBodyManager;
+    private ListingSearchService listingSearchService;
 
     private List<String> activeStatuses = Stream.of(CertificationStatusType.Active.getName(),
             CertificationStatusType.SuspendedByAcb.getName(),
@@ -48,60 +44,32 @@ public class AttestationCertificationBodyService {
             .collect(Collectors.toList());
 
     @Autowired
-    public AttestationCertificationBodyService(ListingSearchService listingSearchService, AttestationPeriodService attestationPeriodService,
-            DeveloperManager developerManager, CertificationBodyManager certificationBodyManager) {
-        this.listingSearchService = listingSearchService;
+    public DeveloperAttestationPeriodCalculator(DeveloperDAO developerDao,
+            AttestationPeriodService attestationPeriodService,
+            ListingSearchService listingSearchService) {
+        this.developerDao = developerDao;
         this.attestationPeriodService = attestationPeriodService;
-        this.developerManager = developerManager;
-        this.certificationBodyManager = certificationBodyManager;
+        this.listingSearchService = listingSearchService;
     }
 
-    public List<CertificationBody> getAssociatedCertificationBodies(Long developerId) {
-        return getAssociatedCertificationBodies(developerId, attestationPeriodService.getMostRecentPastAttestationPeriod().getId());
-    }
+    public List<Developer> getDevelopersWithActiveListingsDuringMostRecentPastAttestationPeriod(Logger logger) {
+        AttestationPeriod mostRecentPastPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
+        logger.info("Most recent past attestation period: {} - {} ", mostRecentPastPeriod.getPeriodStart().toString(), mostRecentPastPeriod.getPeriodEnd().toString());
 
-    public List<CertificationBody> getAssociatedCertificationBodies(Long developerId, Long attestationPeriodId) {
-        try {
-            AttestationPeriod period = attestationPeriodService.getAllPeriods().stream()
-                    .filter(per -> per.getId().equals(attestationPeriodId))
-                    .findAny()
-                    .get();
-            return getListingDataForDeveloper(developerManager.getById(developerId)).stream()
-                .filter(listing -> isListingActiveDuringPeriod(listing, period))
-                .map(listing -> listing.getCertificationBody())
-                .collect(Collectors.toSet()).stream()
-                .map(pair -> getCertificationBody(pair.getId()))
+        return getAllDevelopers().stream()
+                .filter(dev -> doesActiveListingExistDuringAttestationPeriod(getListingDataForDeveloper(dev, logger), mostRecentPastPeriod))
                 .toList();
-        } catch (ValidationException | EntityRetrievalException e) {
-            LOGGER.error("Could not identify Certification Body for Developer with id: {}", developerId);
-            return null;
-        }
     }
 
-    private List<ListingSearchResult> getListingDataForDeveloper(Developer developer) throws ValidationException {
-        SearchRequest request = SearchRequest.builder()
-                .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
-                .developer(developer.getName())
-                .pageSize(MAX_PAGE_SIZE)
-                .build();
-        return getAllPagesOfSearchResults(request);
-
+    private List<Developer> getAllDevelopers() {
+        return developerDao.findAll();
     }
 
-    private List<ListingSearchResult> getAllPagesOfSearchResults(SearchRequest searchRequest)  throws ValidationException {
-        List<ListingSearchResult> searchResults = new ArrayList<ListingSearchResult>();
-        LOGGER.debug(searchRequest.toString());
-        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
-        searchResults.addAll(searchResponse.getResults());
-        while (searchResponse.getRecordCount() > searchResults.size()) {
-            searchRequest.setPageSize(searchResponse.getPageSize());
-            searchRequest.setPageNumber(searchResponse.getPageNumber() + 1);
-            LOGGER.debug(searchRequest.toString());
-            searchResponse = listingSearchService.findListings(searchRequest);
-            searchResults.addAll(searchResponse.getResults());
-        }
-        LOGGER.info("Found {} total listings for developer {}.", searchResults.size(), searchRequest.getDeveloper());
-        return searchResults;
+    private Boolean doesActiveListingExistDuringAttestationPeriod(List<ListingSearchResult> listingsForDeveloper, AttestationPeriod period) {
+        return listingsForDeveloper.stream()
+                .filter(listing -> isListingActiveDuringPeriod(listing, period))
+                .findAny()
+                .isPresent();
     }
 
     private Boolean isListingActiveDuringPeriod(ListingSearchResult listing, AttestationPeriod period) {
@@ -139,16 +107,37 @@ public class AttestationCertificationBodyService {
             .collect(Collectors.toList());
     }
 
-    private CertificationBody getCertificationBody(Long acbId) {
-        try {
-            return new CertificationBody(certificationBodyManager.getById(acbId));
-        } catch (Exception e) {
-            LOGGER.error("Could not identify Certification Body with id: {}", acbId);
-            return null;
-        }
-    }
-
     private Date toDate(LocalDate localDate) {
         return  DateUtil.toDate(localDate);
+    }
+
+    private List<ListingSearchResult> getListingDataForDeveloper(Developer developer, Logger logger) {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
+                .developer(developer.getName())
+                .pageSize(MAX_PAGE_SIZE)
+                .pageNumber(0)
+                .build();
+        return getAllPagesOfSearchResults(searchRequest, logger);
+    }
+
+    private List<ListingSearchResult> getAllPagesOfSearchResults(SearchRequest searchRequest, Logger logger) {
+        List<ListingSearchResult> searchResults = new ArrayList<ListingSearchResult>();
+        try {
+            logger.debug(searchRequest.toString());
+            ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+            searchResults.addAll(searchResponse.getResults());
+            while (searchResponse.getRecordCount() > searchResults.size()) {
+                searchRequest.setPageSize(searchResponse.getPageSize());
+                searchRequest.setPageNumber(searchResponse.getPageNumber() + 1);
+                logger.debug(searchRequest.toString());
+                searchResponse = listingSearchService.findListings(searchRequest);
+                searchResults.addAll(searchResponse.getResults());
+            }
+            logger.info("Found {} total listings for developer {}.", searchResults.size(), searchRequest.getDeveloper());
+        } catch (ValidationException ex) {
+            logger.error("Could not retrieve listings from search request.", ex);
+        }
+        return searchResults;
     }
 }

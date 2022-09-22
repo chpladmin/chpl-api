@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version 37.1.0
+_19 September 2022_
+
+### Features
+* Re-enable Developer Attestation Reports
+* Changes to RWT URLs or Check Dates outside normal dates generate Questionable Activity
+* Deprecate GET /certification_ids and replace with POST /certification_ids/report-request
+
+### Bug Fix
+* Add validation connecting complaint surveillances to listings
+
+---
+
 ## Version 37.0.0
 _6 September 2022_
 

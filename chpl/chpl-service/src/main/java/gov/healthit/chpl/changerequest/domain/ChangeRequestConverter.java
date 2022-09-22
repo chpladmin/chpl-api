@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 
+import gov.healthit.chpl.changerequest.entity.ChangeRequestAttestationSubmissionEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDemographicsEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusEntity;
@@ -39,7 +40,12 @@ public final class ChangeRequestConverter {
         return status;
     }
 
-    public static ChangeRequestSearchResult convertSearchResult(ChangeRequestEntity entity) {
+    public static ChangeRequestSearchResult toSearchResult(ChangeRequestAttestationSubmissionEntity entity) {
+        ChangeRequestEntity cr = entity.getChangeRequest();
+        return toSearchResult(cr);
+    }
+
+    public static ChangeRequestSearchResult toSearchResult(ChangeRequestEntity entity) {
         return ChangeRequestSearchResult.builder()
         .id(entity.getId())
         .changeRequestType(IdNamePairSearchResult.builder()
