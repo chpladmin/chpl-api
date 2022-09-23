@@ -9,8 +9,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
-import gov.healthit.chpl.util.EasternToUtcLocalDateTimeDeserializer;
-import gov.healthit.chpl.util.UtcToEasternLocalDateTimeSerializer;
+import gov.healthit.chpl.util.EasternToSystemLocalDateTimeDeserializer;
+import gov.healthit.chpl.util.SystemToEasternLocalDateTimeSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,8 +31,8 @@ public class ChangeRequestSearchResult implements Serializable {
     @Singular
     private List<IdNamePairSearchResult> certificationBodies = new ArrayList<IdNamePairSearchResult>();
     private CurrentStatusSearchResult currentStatus;
-    @JsonDeserialize(using = EasternToUtcLocalDateTimeDeserializer.class)
-    @JsonSerialize(using = UtcToEasternLocalDateTimeSerializer.class)
+    @JsonDeserialize(using = EasternToSystemLocalDateTimeDeserializer.class)
+    @JsonSerialize(using = SystemToEasternLocalDateTimeSerializer.class)
     private LocalDateTime submittedDateTime;
 
     public Boolean isAttestation() {
@@ -57,8 +57,8 @@ public class ChangeRequestSearchResult implements Serializable {
         private static final long serialVersionUID = -2377711036832863130L;
         private Long id;
         private String name;
-        @JsonDeserialize(using = EasternToUtcLocalDateTimeDeserializer.class)
-        @JsonSerialize(using = UtcToEasternLocalDateTimeSerializer.class)
+        @JsonDeserialize(using = EasternToSystemLocalDateTimeDeserializer.class)
+        @JsonSerialize(using = SystemToEasternLocalDateTimeSerializer.class)
         private LocalDateTime statusChangeDateTime;
     }
 }
