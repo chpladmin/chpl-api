@@ -80,6 +80,7 @@ public final class ChangeRequestConverter {
         cr.setId(entity.getId());
         cr.setChangeRequestType(convert(entity.getChangeRequestType()));
         cr.setDeveloper(entity.getDeveloper().toDomain());
+        cr.setSubmittedDateTime(DateUtil.toLocalDateTime(entity.getCreationDate().getTime()));
         cr.setSubmittedDate(entity.getCreationDate());
         entity.getStatuses().stream()
             .map(statusEntity -> convert(statusEntity))
@@ -97,7 +98,7 @@ public final class ChangeRequestConverter {
         }
         ChangeRequestStatus newest = statuses.get(0);
         for (ChangeRequestStatus event : statuses) {
-            if (event.getStatusChangeDate().after(newest.getStatusChangeDate())) {
+            if (event.getStatusChangeDateTime().isAfter(newest.getStatusChangeDateTime())) {
                 newest = event;
             }
         }
@@ -124,6 +125,7 @@ public final class ChangeRequestConverter {
         status.setId(entity.getId());
         status.setChangeRequestStatusType(convert(entity.getChangeRequestStatusType()));
         status.setComment(entity.getComment());
+        status.setStatusChangeDateTime(DateUtil.toLocalDateTime(entity.getStatusChangeDate().getTime()));
         status.setStatusChangeDate(entity.getStatusChangeDate());
         if (entity.getCertificationBody() != null) {
             status.setCertificationBody(new CertificationBody(new CertificationBodyDTO(entity.getCertificationBody())));
