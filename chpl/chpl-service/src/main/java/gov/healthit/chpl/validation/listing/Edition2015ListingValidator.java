@@ -47,6 +47,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecur
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaTestTaskComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaUcdComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaPreErdPhase2Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
@@ -82,6 +83,10 @@ public class Edition2015ListingValidator extends Validator {
     @Autowired
     @Qualifier("requiredAndRelatedCriteriaPreErdPhase2Reviewer")
     private RequiredAndRelatedCriteriaPreErdPhase2Reviewer requiredAndRelatedCriteriaPreErdPhase2Reviewer;
+
+    @Autowired
+    @Qualifier("requiredAndRelatedCriteriaErdPhase2GracePeriodReviewer")
+    private RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewer requiredAndRelatedCriteriaErdPhase2GracePeriodReviewer;
 
     @Autowired
     @Qualifier("requiredAndRelatedCriteriaReviewer")
@@ -244,7 +249,9 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(unsupportedCharacterReviewer);
         reviewers.add(fieldLengthReviewer);
         reviewers.add(requiredDataReviewer);
-        if (ff4j.check(FeatureList.ERD_PHASE_2)) {
+        if (ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD)) {
+            reviewers.add(requiredAndRelatedCriteriaErdPhase2GracePeriodReviewer);
+        } else if (ff4j.check(FeatureList.ERD_PHASE_2)) {
             reviewers.add(requiredAndRelatedCriteriaReviewer);
         } else {
             reviewers.add(requiredAndRelatedCriteriaPreErdPhase2Reviewer);

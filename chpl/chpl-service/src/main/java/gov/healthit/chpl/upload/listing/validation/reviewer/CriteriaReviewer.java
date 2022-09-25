@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.InvalidCriteriaCombinationReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaPreErdPhase2Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaReviewer;
 
@@ -17,6 +18,7 @@ public class CriteriaReviewer {
     private PrivacyAndSecurityCriteriaReviewer privacyAndSecurityCriteriaReviewer;
     private InvalidCriteriaCombinationReviewer invalidCriteriaCombinationReviewer;
     private RequiredAndRelatedCriteriaPreErdPhase2Reviewer requiredAndRelatedCriteriaPreErdPhase2Reviewer;
+    private RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewer requiredAndRelatedCriteriaErdPhase2GracePeriodReviewer;
     private RequiredAndRelatedCriteriaReviewer requiredAndRelatedCriteriaReviewer;
     private SedRelatedCriteriaReviewer sedRelatedCriteriaReviewer;
     private FF4j ff4j;
@@ -25,12 +27,14 @@ public class CriteriaReviewer {
     public CriteriaReviewer(@Qualifier("listingUploadPrivacyAndSecurityCriteriaReviewer") PrivacyAndSecurityCriteriaReviewer privacyAndSecurityCriteriaReviewer,
             @Qualifier("invalidCriteriaCombinationReviewer") InvalidCriteriaCombinationReviewer invalidCriteriaCombinationReviewer,
             @Qualifier("requiredAndRelatedCriteriaPreErdPhase2Reviewer") RequiredAndRelatedCriteriaPreErdPhase2Reviewer requiredAndRelatedCriteriaPreErdPhase2Reviewer,
+            @Qualifier("requiredAndRelatedCriteriaErdPhase2GracePeriodReviewer") RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewer requiredAndRelatedCriteriaErdPhase2GracePeriodReviewer,
             @Qualifier("requiredAndRelatedCriteriaReviewer") RequiredAndRelatedCriteriaReviewer requiredAndRelatedCriteriaReviewer,
             SedRelatedCriteriaReviewer sedRelatedCriteriaReviewer,
             FF4j ff4j) {
         this.privacyAndSecurityCriteriaReviewer = privacyAndSecurityCriteriaReviewer;
         this.invalidCriteriaCombinationReviewer = invalidCriteriaCombinationReviewer;
         this.requiredAndRelatedCriteriaPreErdPhase2Reviewer = requiredAndRelatedCriteriaPreErdPhase2Reviewer;
+        this.requiredAndRelatedCriteriaErdPhase2GracePeriodReviewer = requiredAndRelatedCriteriaErdPhase2GracePeriodReviewer;
         this.requiredAndRelatedCriteriaReviewer = requiredAndRelatedCriteriaReviewer;
         this.sedRelatedCriteriaReviewer = sedRelatedCriteriaReviewer;
         this.ff4j = ff4j;
@@ -39,7 +43,9 @@ public class CriteriaReviewer {
     public void review(CertifiedProductSearchDetails listing) {
         privacyAndSecurityCriteriaReviewer.review(listing);
         invalidCriteriaCombinationReviewer.review(listing);
-        if (ff4j.check(FeatureList.ERD_PHASE_2)) {
+        if (ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD)) {
+            requiredAndRelatedCriteriaErdPhase2GracePeriodReviewer.review(listing);
+        } else if (ff4j.check(FeatureList.ERD_PHASE_2)) {
             requiredAndRelatedCriteriaReviewer.review(listing);
         } else {
             requiredAndRelatedCriteriaPreErdPhase2Reviewer.review(listing);
