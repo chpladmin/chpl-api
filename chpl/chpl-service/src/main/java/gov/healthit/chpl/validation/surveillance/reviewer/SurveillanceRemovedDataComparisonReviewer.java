@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
@@ -172,10 +173,9 @@ public class SurveillanceRemovedDataComparisonReviewer implements ComparisonRevi
      */
     private boolean hasRemovedCriteria(SurveillanceRequirement req) {
         if (req.getType() != null && !StringUtils.isEmpty(req.getType().getName())) {
-            if (req.getType().getName().equalsIgnoreCase(SurveillanceRequirementType.CERTIFIED_CAPABILITY)) {
-                String requirementCriteria = criterionService.coerceToCriterionNumberFormat(req.getRequirement());
-                CertificationCriterionDTO criterion = criterionDao.getAllByNumber(requirementCriteria).get(0);
-                // TODO Fix this as part of OCD-3220
+            if (req.getType().getName().equalsIgnoreCase(SurveillanceRequirementType.CERTIFIED_CAPABILITY)
+                    && req.getCriterion() != null) {
+                CertificationCriterion criterion = criterionService.get(req.getCriterion().getId());
                 if (criterion != null && criterion.getRemoved() != null
                         && criterion.getRemoved().booleanValue()) {
                     return true;

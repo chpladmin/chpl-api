@@ -51,23 +51,25 @@ public class CertificationCriterionUploadHandler {
             return null;
         }
 
-        Optional<CertificationCriterionDTO> criterion = null;
-        if (isCures) {
-            criterion = criteriaWithNumber.stream()
+        Optional<CertificationCriterionDTO> criterionOpt = null;
+        if (criteriaWithNumber.size() == 1) {
+            criterionOpt = Optional.of(criteriaWithNumber.get(0));
+        } else if (isCures) {
+            criterionOpt = criteriaWithNumber.stream()
                     .filter(criterionWithNumber -> !StringUtils.isEmpty(criterionWithNumber.getTitle())
                     && criterionWithNumber.getTitle().contains(CURES_TITLE_KEY))
                     .findFirst();
         } else {
-            criterion = criteriaWithNumber.stream()
+            criterionOpt = criteriaWithNumber.stream()
                     .filter(criterionWithNumber -> !StringUtils.isEmpty(criterionWithNumber.getTitle())
                     && !criterionWithNumber.getTitle().contains(CURES_TITLE_KEY))
                     .findFirst();
         }
 
-        if (criterion == null || !criterion.isPresent()) {
+        if (criterionOpt == null || !criterionOpt.isPresent()) {
             LOGGER.warn("Could not find a certification criterion (cures=" + isCures + ") matching " + criterionNumber);
             return null;
         }
-        return new CertificationCriterion(criterion.get());
+        return new CertificationCriterion(criterionOpt.get());
     }
 }

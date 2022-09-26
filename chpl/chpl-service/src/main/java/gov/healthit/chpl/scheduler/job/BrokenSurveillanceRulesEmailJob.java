@@ -34,6 +34,7 @@ import gov.healthit.chpl.dao.scheduler.BrokenSurveillanceRulesDAO;
 import gov.healthit.chpl.domain.surveillance.SurveillanceOversightRule;
 import gov.healthit.chpl.dto.scheduler.BrokenSurveillanceRulesDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
@@ -51,6 +52,9 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private ChplHtmlEmailBuilder htmlEmailBuider;
 
     @Autowired
     private ChplEmailFactory chplEmailFactory;
@@ -112,6 +116,12 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
         try {
             List<String> addresses = new ArrayList<String>();
             addresses.add(to);
+
+            htmlMessage = htmlEmailBuider.initialize()
+                .heading(subject)
+                .paragraph(null, htmlMessage)
+                .footer(false)
+                .build();
 
             chplEmailFactory.emailBuilder().recipients(addresses)
                     .subject(subject)

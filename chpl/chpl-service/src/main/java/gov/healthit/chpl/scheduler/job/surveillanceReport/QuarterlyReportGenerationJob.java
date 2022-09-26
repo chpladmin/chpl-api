@@ -58,6 +58,12 @@ public class QuarterlyReportGenerationJob implements Job {
     @Value("${footer.acbatlUrl}")
     private String acbatlFeedbackUrl;
 
+    @Value("${surveillance.quarterlyReport.success.subject}")
+    private String quarterlyReportSubject;
+
+    @Value("${surveillance.quarterlyReport.failure.subject}")
+    private String quarterlyReportFailureSubject;
+
     @Autowired
     private JpaTransactionManager txManager;
 
@@ -103,19 +109,19 @@ public class QuarterlyReportGenerationJob implements Job {
                     } catch (EntityRetrievalException ex) {
                         String msg = msgUtil.getMessage("report.quarterlySurveillance.export.badId", quarterlyReportId);
                         LOGGER.error(msg, ex);
-                        sendEmail(user.getEmail(), env.getProperty("surveillance.quarterlyReport.failure.subject"),
+                        sendEmail(user.getEmail(), quarterlyReportFailureSubject,
                                 env.getProperty("surveillance.quarterlyReport.reportNotFound.htmlBody"), null);
                     }
 
                     if (report != null) {
                         SurveillanceReportWorkbookWrapper workbookWrapper = createWorkbook(report);
                         if (workbookWrapper == null) {
-                            sendEmail(user.getEmail(), env.getProperty("surveillance.quarterlyReport.failure.subject"),
+                            sendEmail(user.getEmail(), quarterlyReportFailureSubject,
                                     env.getProperty("surveillance.quarterlyReport.fileError.htmlBody"), null);
                         } else {
                             File writtenFile = writeWorkbookAsFile(report, workbookWrapper);
                             if (writtenFile == null) {
-                                sendEmail(user.getEmail(), env.getProperty("surveillance.quarterlyReport.failure.subject"),
+                                sendEmail(user.getEmail(), quarterlyReportFailureSubject,
                                         env.getProperty("surveillance.quarterlyReport.fileError.htmlBody"), null);
                             } else {
                                 List<File> fileAttachments = new ArrayList<File>();
@@ -123,7 +129,8 @@ public class QuarterlyReportGenerationJob implements Job {
                                     fileAttachments.add(writtenFile);
                                 }
                                 LOGGER.info("Sending success email to " + user.getEmail());
-                                sendEmail(user.getEmail(), env.getProperty("surveillance.quarterlyReport.success.subject"),
+                                sendEmail(user.getEmail(),
+                                        String.format(quarterlyReportSubject, report.getQuarter().getName()),
                                         env.getProperty("surveillance.quarterlyReport.success.htmlBody"), fileAttachments);
                                 try {
                                     activityManager.addActivity(ActivityConcept.QUARTERLY_REPORT, quarterlyReportId,
@@ -140,7 +147,7 @@ public class QuarterlyReportGenerationJob implements Job {
         } else {
             UserDTO user = (UserDTO) jobDataMap.get(USER_KEY);
             if (user != null && user.getEmail() != null) {
-                sendEmail(user.getEmail(), env.getProperty("surveillance.quarterlyReport.failure.subject"),
+                sendEmail(user.getEmail(), quarterlyReportFailureSubject,
                         env.getProperty("surveillance.quarterlyReport.badJobData.htmlBody"), null);
             }
         }

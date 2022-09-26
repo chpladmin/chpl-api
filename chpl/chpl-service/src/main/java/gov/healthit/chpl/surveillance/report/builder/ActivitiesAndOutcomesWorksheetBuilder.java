@@ -52,6 +52,7 @@ import gov.healthit.chpl.surveillance.report.dto.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;
 import gov.healthit.chpl.util.DateUtil;
+import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -1142,7 +1143,9 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             if (req.getResult() != null
                     && req.getResult().getName().equalsIgnoreCase(SurveillanceResultType.NON_CONFORMITY)) {
                 for (SurveillanceNonconformity nc : req.getNonconformities()) {
-                    if (!StringUtils.isEmpty(nc.getNonconformityType())) {
+                    if (nc.getCriterion() != null) {
+                        nonconformityTypes.add(Util.formatCriteriaNumber(nc.getCriterion()));
+                    } else if (!StringUtils.isEmpty(nc.getNonconformityType())) {
                         nonconformityTypes.add(nc.getNonconformityType());
                     }
                 }
