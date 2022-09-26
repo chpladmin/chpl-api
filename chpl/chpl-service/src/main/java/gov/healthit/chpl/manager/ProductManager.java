@@ -229,6 +229,8 @@ public class ProductManager extends SecuredManager {
         }
 
         Long createdProductId = productDao.create(toCreate.getOwner().getId(), toCreate);
+        //must set the ID otherwise the "toCreate.id" passed into the shared store is null
+        toCreate.setId(createdProductId);
 
         // search for any versions assigned to the list of products passed in
         List<ProductVersionDTO> assignedVersions = versionDao.getByProductIds(productIdsToMerge);
@@ -269,6 +271,8 @@ public class ProductManager extends SecuredManager {
         // this method checks that the related developer is Active and will
         // throw an exception if they aren't
         Product createdProduct = createProduct(productToCreate);
+        //must set the ID otherwise the "productToCreate.id" passed into the shared store is null
+        productToCreate.setId(createdProduct.getId());
 
         // re-assign versions to the new product and log activity for each
         List<Long> affectedVersionIds = new ArrayList<Long>();
