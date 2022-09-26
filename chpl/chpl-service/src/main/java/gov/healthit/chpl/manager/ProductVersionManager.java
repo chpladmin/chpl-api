@@ -231,6 +231,8 @@ public class ProductVersionManager extends SecuredManager {
         }
 
         ProductVersionDTO createdVersion = versionDao.create(toCreate);
+        //must set the ID otherwise the "toCreate.id" passed into the shared store is null
+        toCreate.setId(createdVersion.getId());
 
         // search for any certified products assigned to the list of versions
         // passed in
@@ -275,6 +277,8 @@ public class ProductVersionManager extends SecuredManager {
         // this method checks that the related developer is Active and will
         // throw an exception if they aren't
         ProductVersionDTO createdVersion = create(newVersion);
+        //must set the ID otherwise the "newVersion.id" passed into the shared store is null
+        newVersion.setId(createdVersion.getId());
 
         // re-assign listings to the new version and
         //update their version codes and log activity for each
