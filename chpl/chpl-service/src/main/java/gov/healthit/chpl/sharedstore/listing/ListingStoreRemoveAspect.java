@@ -48,6 +48,12 @@ public class ListingStoreRemoveAspect {
     }
 
     private void removeListingsFromStore(RemoveBy removeBy, Long id) {
+        if (id == null) {
+            LOGGER.error("Attempting to remove listing(s) from the shared store by " + removeBy.name()
+                + " but the 'id' field passed into the removeListingsFromStore method was null. "
+                + "Nothing will be removed from the store.");
+        }
+
         switch (removeBy) {
             case DEVELOPER_ID:
                 removeListingsFromStoreByDeveloperId(id);
