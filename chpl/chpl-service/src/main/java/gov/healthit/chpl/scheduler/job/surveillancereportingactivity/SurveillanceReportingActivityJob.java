@@ -13,12 +13,14 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.excel.SurveillanceActivityReportWorkbook;
@@ -42,7 +44,16 @@ public class SurveillanceReportingActivityJob implements Job {
     private CertificationBodyDAO certificationBodyDAO;
 
     @Autowired
+    private ChplHtmlEmailBuilder htmlEmailBuilder;
+
+    @Autowired
     private ChplEmailFactory chplEmailFactory;
+
+    @Value("${surveillanceActivityReport.subject}")
+    private String surveillanceActvityReportTitle;
+
+    @Value("${surveillanceActivityReport.htmlBody}")
+    private String surveillanceActvityReportBody;
 
     private DateTimeFormatter emailDateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
@@ -73,13 +84,18 @@ public class SurveillanceReportingActivityJob implements Job {
     }
 
     private void sendSuccessEmail(File excelFile, JobExecutionContext context) throws EmailNotSentException, UserRetrievalException {
+        String bodyHtml = htmlEmailBuilder.initialize()
+            .heading(surveillanceActvityReportTitle)
+            .paragraph(null, String.format(surveillanceActvityReportBody, emailDateFormatter.format(getStartDate(context)),
+                        emailDateFormatter.format(getEndDate(context))))
+            .footer(false)
+            .build();
+
         chplEmailFactory.emailBuilder()
                 .recipient(getUserEmail(context))
                 .fileAttachments(Arrays.asList(excelFile))
-                .subject(env.getProperty("surveillanceActivityReport.subject"))
-                .htmlMessage(String.format(env.getProperty("surveillanceActivityReport.htmlBody"),
-                        emailDateFormatter.format(getStartDate(context)),
-                        emailDateFormatter.format(getEndDate(context))))
+                .subject(surveillanceActvityReportTitle)
+                .htmlMessage(bodyHtml)
                 .sendEmail();
     }
 

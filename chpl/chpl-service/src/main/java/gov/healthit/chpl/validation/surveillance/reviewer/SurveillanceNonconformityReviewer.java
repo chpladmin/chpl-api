@@ -17,6 +17,7 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 
 @Component
 public class SurveillanceNonconformityReviewer implements Reviewer {
@@ -84,7 +85,7 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
             if (!attestedCertResult.isPresent()) {
                 surv.getErrorMessages().add(
                         msgUtil.getMessage("surveillance.nonConformityTypeMatchException",
-                                nc.getNonconformityType(),
+                                Util.formatCriteriaNumber(nc.getCriterion()),
                                 NonconformityType.K1.getName(), NonconformityType.K2.getName(),
                                 NonconformityType.L.getName(), NonconformityType.OTHER.getName()));
             }
