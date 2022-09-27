@@ -8,6 +8,7 @@ import java.util.Set;
 import lombok.Data;
 
 @Data
+@Deprecated
 public class DecertifiedDeveloper implements Serializable {
     private static final long serialVersionUID = -6684356941321177859L;
     private Long developerId;

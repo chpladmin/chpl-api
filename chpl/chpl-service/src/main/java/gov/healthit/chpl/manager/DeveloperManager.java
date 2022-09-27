@@ -1,9 +1,11 @@
 package gov.healthit.chpl.manager;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -25,6 +27,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.developer.search.DeveloperSearchResult;
+import gov.healthit.chpl.developer.search.DeveloperSearchResult.IdNamePairSearchResult;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.Developer;
@@ -42,6 +46,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventPair;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
@@ -59,6 +64,7 @@ import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 import lombok.extern.log4j.Log4j2;
@@ -118,6 +124,43 @@ public class DeveloperManager extends SecuredManager {
     @Cacheable(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED)
     public List<Developer> getAllIncludingDeleted() {
         return developerDao.findAllIncludingDeleted();
+    }
+
+    @Transactional(readOnly = true)
+    @Cacheable(CacheNames.COLLECTIONS_DEVELOPERS)
+    public List<DeveloperSearchResult> getDeveloperSearchResults() {
+        Map<Developer, Set<CertificationBody>> allDevelopersWithAcbs = developerDao.findAllDevelopersWithAcbs();
+        return allDevelopersWithAcbs.keySet().stream()
+                .map(developer -> convertToSearchResult(developer, allDevelopersWithAcbs.get(developer)))
+                .collect(Collectors.toList());
+    }
+
+    private DeveloperSearchResult convertToSearchResult(Developer developer, Set<CertificationBody> acbs) {
+        return DeveloperSearchResult.builder()
+                .id(developer.getId())
+                .name(developer.getName())
+                .code(developer.getDeveloperCode())
+                .address(developer.getAddress())
+                .contact(developer.getContact())
+                .associatedAcbs(acbs.stream()
+                        .map(acb -> IdNamePairSearchResult.builder()
+                                .id(acb.getId())
+                                .name(acb.getName())
+                                .build())
+                        .collect(Collectors.toSet()))
+                .status(IdNamePairSearchResult.builder()
+                        .id(developer.getStatus().getId())
+                        .name(developer.getStatus().getStatus())
+                        .build())
+                .decertificationDate(calculateDecertificationDate(developer))
+                .build();
+    }
+
+    private LocalDate calculateDecertificationDate(Developer developer) {
+        if (developer.getStatus().getStatus().equals(DeveloperStatusType.UnderCertificationBanByOnc.getName())) {
+            return DateUtil.toLocalDate(developer.getMostRecentStatusEvent().getStatusDate().getTime());
+        }
+        return null;
     }
 
     @Transactional(readOnly = true)
@@ -200,6 +243,7 @@ public class DeveloperManager extends SecuredManager {
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
+            CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#updatedDev.id")
@@ -284,7 +328,8 @@ public class DeveloperManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).CREATE)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
+            CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
     public Long create(Developer developer)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
@@ -311,6 +356,7 @@ public class DeveloperManager extends SecuredManager {
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
+            CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
     public ChplOneTimeTrigger merge(List<Long> developerIdsToMerge, Developer developerToCreate)
@@ -444,6 +490,7 @@ public class DeveloperManager extends SecuredManager {
         return duplicatedChplProductNumbers;
     }
 
+    @Deprecated
     @Transactional(readOnly = true)
     @Cacheable(CacheNames.GET_DECERTIFIED_DEVELOPERS)
     public List<DecertifiedDeveloper> getDecertifiedDeveloperCollection() {
