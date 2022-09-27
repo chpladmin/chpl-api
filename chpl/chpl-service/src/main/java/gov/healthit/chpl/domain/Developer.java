@@ -224,13 +224,23 @@ public class Developer implements Serializable {
             return null;
         }
 
+        return getMostRecentStatusEvent().getStatus();
+    }
+
+    @JsonIgnore
+    @XmlTransient
+    public DeveloperStatusEvent getMostRecentStatusEvent() {
+        if (CollectionUtils.isEmpty(this.getStatusEvents())) {
+            return null;
+        }
+
         DeveloperStatusEvent newest = this.getStatusEvents().get(0);
         for (DeveloperStatusEvent event : this.getStatusEvents()) {
             if (event.getStatusDate().after(newest.getStatusDate())) {
                 newest = event;
             }
         }
-        return newest.getStatus();
+        return newest;
     }
 
     public List<DeveloperStatusEvent> getStatusEvents() {

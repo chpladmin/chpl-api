@@ -122,6 +122,7 @@ public class ListingConfirmationManager {
             + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CREATE, #listing)")
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
+            CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES, CacheNames.DEVELOPER_NAMES
     }, allEntries = true)
     public CertifiedProductSearchDetails create(CertifiedProductSearchDetails listing)

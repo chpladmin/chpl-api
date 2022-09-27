@@ -51,6 +51,7 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.CERTIFICATION_STATUSES));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.CLASSIFICATION_NAMES));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.COLLECTIONS_LISTINGS));
+        backingManager.addCacheIfAbsent(createEternalCache(CacheNames.COLLECTIONS_DEVELOPERS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.COLLECTIONS_SEARCH));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.CQM_CRITERION));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.CQM_CRITERION_NUMBERS));
