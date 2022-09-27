@@ -321,7 +321,7 @@ public class ProductVersionManager extends SecuredManager {
 
             // do the update and add activity
             cpDao.update(affectedListing);
-            CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetails(affectedListingId);
+            CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetailsNoCache(affectedListingId);
             activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeListing.getId(),
                     "Updated certified product " + afterListing.getChplProductNumber() + ".", beforeListing,
                     afterListing);
