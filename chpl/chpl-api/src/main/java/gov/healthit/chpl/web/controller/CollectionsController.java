@@ -166,6 +166,11 @@ public class CollectionsController {
         return result;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/collections/decertified-developers",
+        removalDate = "2023-03-15",
+        message = "This endpoint is deprecated and will be removed in a future release. "
+                + "Please GET /developers/search to access this data.")
     @Operation(summary = "Get a list of all banned developers.",
             description = "",
             security = {
