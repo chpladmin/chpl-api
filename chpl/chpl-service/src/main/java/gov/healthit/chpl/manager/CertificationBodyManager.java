@@ -87,6 +87,7 @@ public class CertificationBodyManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).UPDATE, #acb)")
     @CacheEvict(value = {
             CacheNames.GET_DECERTIFIED_DEVELOPERS,
+            CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.ACB_ID, id = "#acb.id")
