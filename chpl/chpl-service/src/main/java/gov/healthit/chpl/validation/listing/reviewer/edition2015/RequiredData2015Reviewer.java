@@ -68,7 +68,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         if (cert.isSed()) {
                             if (listing.getSed() == null || listing.getSed().getUcdProcesses() == null
                                     || listing.getSed().getUcdProcesses().size() == 0) {
-                                addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingUcdProcess",
+                                addCriterionError(listing, cert, "listing.criteria.missingUcdProcess",
                                         Util.formatCriteriaNumber(cert.getCriterion()));
                             } else {
 
@@ -81,7 +81,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     }
                                 }
                                 if (!foundCriteria) {
-                                    addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingUcdProcess",
+                                    addCriterionError(listing, cert, "listing.criteria.missingUcdProcess",
                                             Util.formatCriteriaNumber(cert.getCriterion()));
                                 }
                             }
@@ -89,7 +89,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         if (cert.isSed()) {
                             if (listing.getSed() == null || listing.getSed().getTestTasks() == null
                                     || listing.getSed().getTestTasks().size() == 0) {
-                                addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestTask",
+                                addCriterionError(listing, cert, "listing.criteria.missingTestTask",
                                         Util.formatCriteriaNumber(cert.getCriterion()));
                             } else {
 
@@ -102,7 +102,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     }
                                 }
                                 if (!foundCriteria) {
-                                    addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestTask",
+                                    addCriterionError(listing, cert, "listing.criteria.missingTestTask",
                                             Util.formatCriteriaNumber(cert.getCriterion()));
                                 }
                             }
@@ -237,30 +237,30 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.ATTESTATION_ANSWER)
                         && cert.getAttestationAnswer() == null) {
-                    addCriterionErrorOrWarningByPermission(listing, cert,
+                    addCriterionError(listing, cert,
                             "listing.criteria.missingAttestationAnswer", Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.PRIVACY_SECURITY)
                         && StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
-                    addCriterionErrorOrWarningByPermission(listing, cert,
+                    addCriterionError(listing, cert,
                             "listing.criteria.missingPrivacySecurityFramework", Util.formatCriteriaNumber(cert.getCriterion()));
                 }
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.API_DOCUMENTATION)
                         && StringUtils.isEmpty(cert.getApiDocumentation())) {
-                    addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingApiDocumentation",
+                    addCriterionError(listing, cert, "listing.criteria.missingApiDocumentation",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)
                         && StringUtils.isEmpty(cert.getExportDocumentation())) {
-                    addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingExportDocumentation",
+                    addCriterionError(listing, cert, "listing.criteria.missingExportDocumentation",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.USE_CASES)
                         && StringUtils.isEmpty(cert.getUseCases())
                         && cert.getAttestationAnswer() != null && cert.getAttestationAnswer().equals(Boolean.TRUE)) {
-                    addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingUseCases",
+                    addCriterionError(listing, cert, "listing.criteria.missingUseCases",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 } else if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.USE_CASES)
                         && !StringUtils.isEmpty(cert.getUseCases())
@@ -272,7 +272,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)
                         && StringUtils.isEmpty(cert.getServiceBaseUrlList())) {
-                    addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingServiceBaseUrlList",
+                    addCriterionError(listing, cert, "listing.criteria.missingServiceBaseUrlList",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
@@ -282,13 +282,13 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         && (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.TEST_PROCEDURE)
                                 && !certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.CONFORMANCE_METHOD))
                         && (cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
-                    addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingTestProcedure",
+                    addCriterionError(listing, cert, "listing.criteria.missingTestProcedure",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
                 if (certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.CONFORMANCE_METHOD)
                         && (cert.getConformanceMethods() == null || cert.getConformanceMethods().size() == 0)) {
-                    addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.conformanceMethod.missingConformanceMethod",
+                    addCriterionError(listing, cert, "listing.criteria.conformanceMethod.missingConformanceMethod",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
@@ -332,7 +332,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
                         if (crTestData.getTestData() != null && !StringUtils.isEmpty(crTestData.getTestData().getName())
                                 && StringUtils.isEmpty(crTestData.getVersion())) {
-                            addCriterionErrorOrWarningByPermission(listing, cert,
+                            addCriterionError(listing, cert,
                                     "listing.criteria.missingTestDataVersion",  Util.formatCriteriaNumber(cert.getCriterion()));
                         }
                     }

@@ -165,7 +165,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
         if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.CONFORMANCE_METHOD)
                 && CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
             if (CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
-                addCriterionErrorOrWarningByPermission(listing, certResult, "listing.criteria.conformanceMethod.missingConformanceMethod",
+                addCriterionError(listing, certResult, "listing.criteria.conformanceMethod.missingConformanceMethod",
                         Util.formatCriteriaNumber(certResult.getCriterion()));
             }
         }
@@ -185,7 +185,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
     private void reviewConformanceMethodVersionRequirements(CertifiedProductSearchDetails listing, CertificationResult certResult,
         CertificationResultConformanceMethod conformanceMethod) {
         if (isMissingVersionDataWhenItIsRequired(conformanceMethod)) {
-            addCriterionErrorOrWarningByPermission(listing, certResult,
+            addCriterionError(listing, certResult,
                     "listing.criteria.conformanceMethod.missingConformanceMethodVersion",
                     Util.formatCriteriaNumber(certResult.getCriterion()),
                     conformanceMethod.getConformanceMethod().getName());
@@ -199,7 +199,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
                         conformanceMethod.getConformanceMethodVersion()));
                 conformanceMethod.setConformanceMethodVersion(null);
             } else {
-                addCriterionErrorOrWarningByPermission(listing, certResult,
+                addCriterionError(listing, certResult,
                         "listing.criteria.conformanceMethod.unallowedConformanceMethodVersion",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
                         conformanceMethod.getConformanceMethod().getName());

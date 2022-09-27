@@ -51,7 +51,7 @@ public class TestProcedureReviewer extends PermissionBasedReviewer {
     private void checkIfTestProcedureIsAllowedByFlag(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         boolean isAllowed = certResult.getCriterion().getCertificationEdition().equalsIgnoreCase("2014");
             if (!isAllowed) {
-                addCriterionErrorOrWarningByPermission(listing, certResult,
+                addCriterionError(listing, certResult,
                         "listing.criteria.testProcedureNotApplicable",
                         Util.formatCriteriaNumber(certResult.getCriterion()));
             }
@@ -64,7 +64,7 @@ public class TestProcedureReviewer extends PermissionBasedReviewer {
                 .filter(tp -> tp.getId().equals(testProcedure.getTestProcedure().getId()))
                 .findAny();
             if (!allowedTestProcedure.isPresent()) {
-                addCriterionErrorOrWarningByPermission(listing, certResult,
+                addCriterionError(listing, certResult,
                         "listing.criteria.badTestProcedureId",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
                         testProcedure.getTestProcedure().getId());
@@ -80,7 +80,7 @@ public class TestProcedureReviewer extends PermissionBasedReviewer {
                 .filter(tp -> tp.getName().equalsIgnoreCase(testProcedure.getTestProcedure().getName()))
                 .findAny();
             if (!allowedTestProcedure.isPresent()) {
-                addCriterionErrorOrWarningByPermission(listing, certResult,
+                addCriterionError(listing, certResult,
                         "listing.criteria.badTestProcedureName",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
                         testProcedure.getTestProcedure().getName());
@@ -92,7 +92,7 @@ public class TestProcedureReviewer extends PermissionBasedReviewer {
     private void checkIfTestProcedureHasAnId(CertifiedProductSearchDetails listing, CertificationResult certResult,
             CertificationResultTestProcedure testProcedure) {
             if (testProcedure.getTestProcedure() == null || testProcedure.getTestProcedure().getId() == null) {
-                addCriterionErrorOrWarningByPermission(listing, certResult,
+                addCriterionError(listing, certResult,
                         "listing.criteria.missingTestProcedureId",
                         Util.formatCriteriaNumber(certResult.getCriterion()));
             }
@@ -102,7 +102,7 @@ public class TestProcedureReviewer extends PermissionBasedReviewer {
             CertificationResultTestProcedure testProcedure) {
             if (testProcedure.getTestProcedure() == null
                     || StringUtils.isEmpty(testProcedure.getTestProcedure().getName())) {
-                addCriterionErrorOrWarningByPermission(listing, certResult,
+                addCriterionError(listing, certResult,
                         "listing.criteria.missingTestProcedureName",
                         Util.formatCriteriaNumber(certResult.getCriterion()));
             }
@@ -113,7 +113,7 @@ public class TestProcedureReviewer extends PermissionBasedReviewer {
             if (testProcedure.getTestProcedure() != null
                     && !StringUtils.isEmpty(testProcedure.getTestProcedure().getName())
                     && StringUtils.isEmpty(testProcedure.getTestProcedureVersion())) {
-                addCriterionErrorOrWarningByPermission(listing, certResult,
+                addCriterionError(listing, certResult,
                         "listing.criteria.missingTestProcedureVersion",
                         Util.formatCriteriaNumber(certResult.getCriterion()));
             }
