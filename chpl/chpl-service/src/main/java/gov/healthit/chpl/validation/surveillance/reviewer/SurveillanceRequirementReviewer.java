@@ -18,6 +18,7 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 
 @Component
 public class SurveillanceRequirementReviewer implements Reviewer {
@@ -102,13 +103,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
                     msgUtil.getMessage("surveillance.requirementInvalidForRequirementType",
                             req.getRequirement(), req.getType().getName()));
             return;
-        } else if (!StringUtils.isEmpty(req.getRequirement())
-                && !req.getCriterion().getNumber().equalsIgnoreCase(req.getRequirement())) {
-            surv.getErrorMessages().add(
-                    msgUtil.getMessage("surveillance.requirementInvalidForRequirementType", req.getRequirement(), req.getType().getName()));
-            return;
         }
-        req.setRequirement(req.getCriterion().getNumber());
 
         // see if the requirement type is a criterion that the product has attested to
         if (certResults != null && certResults.size() > 0) {
@@ -118,7 +113,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
             if (!attestedCertResult.isPresent()) {
                 surv.getErrorMessages().add(
                         msgUtil.getMessage("surveillance.requirementInvalidForRequirementType",
-                                req.getRequirement(), req.getType().getName()));
+                                Util.formatCriteriaNumber(req.getCriterion()), req.getType().getName()));
             }
         }
     }

@@ -3,8 +3,14 @@ package gov.healthit.chpl.certificationId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
+import gov.healthit.chpl.util.Util;
 
 /**
  * Validator for CMS EHR ID generation for 2015 Edition, post Cures rule.
@@ -13,8 +19,7 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
  */
 public class Validator2015 extends Validator {
 
-    protected static final List<String> REQUIRED_CRITERIA = new ArrayList<String>(Arrays.asList("170.315 (a)(5)",
-            "170.315 (a)(9)", "170.315 (a)(14)", "170.315 (c)(1)", "170.315 (g)(7)", "170.315 (g)(10)"));
+    protected List<CertificationCriterion> requiredCriteria;
 
     protected static final List<String> CURES_REQUIRED_CRITERIA = new ArrayList<String>(Arrays.asList("170.315 (b)(1)",
             "170.315 (g)(9)"));
@@ -28,8 +33,15 @@ public class Validator2015 extends Validator {
     /**
      * Starting data for validator.
      */
-    public Validator2015() {
-        this.counts.put("criteriaRequired", REQUIRED_CRITERIA.size() + CURES_REQUIRED_CRITERIA.size());
+    public Validator2015(CertificationCriterionService certificationCriterionService) {
+        requiredCriteria = Stream.of(certificationCriterionService.get(Criteria2015.A_5),
+                certificationCriterionService.get(Criteria2015.A_9),
+                certificationCriterionService.get(Criteria2015.A_14),
+                certificationCriterionService.get(Criteria2015.C_1),
+                certificationCriterionService.get(Criteria2015.G_7),
+                certificationCriterionService.get(Criteria2015.G_10)).toList();
+
+        this.counts.put("criteriaRequired", requiredCriteria.size() + CURES_REQUIRED_CRITERIA.size());
         this.counts.put("criteriaRequiredMet", 0);
         this.counts.put("criteriaCpoeRequired", 1);
         this.counts.put("criteriaCpoeRequiredMet", 0);
@@ -50,13 +62,17 @@ public class Validator2015 extends Validator {
     }
 
     protected boolean isCriteriaValid() {
-        this.counts.put("criteriaRequired", REQUIRED_CRITERIA.size() + CURES_REQUIRED_CRITERIA.size());
+        this.counts.put("criteriaRequired", requiredCriteria.size() + CURES_REQUIRED_CRITERIA.size());
         boolean criteriaValid = true;
-        for (String crit : REQUIRED_CRITERIA) {
-            if (criteriaMetContainsCriterion(crit)) {
+        for (CertificationCriterion crit : requiredCriteria) {
+            Optional<CertificationCriterionDTO> metRequiredCriterion = criteriaMet.keySet().stream()
+                    .filter(criterionDtoMet -> criterionDtoMet.getId().equals(crit.getId()))
+                    .findAny();
+
+            if (metRequiredCriterion.isPresent()) {
                 this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
             } else {
-                missingAnd.add(crit);
+                missingAnd.add(Util.formatCriteriaNumber(crit));
                 criteriaValid = false;
             }
         }

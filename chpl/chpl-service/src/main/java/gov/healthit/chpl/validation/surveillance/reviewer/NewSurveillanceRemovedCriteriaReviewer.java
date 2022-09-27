@@ -51,8 +51,9 @@ public class NewSurveillanceRemovedCriteriaReviewer implements Reviewer {
 
     private void checkRequirementForRemovedCriteria(Surveillance surv, SurveillanceRequirement req) {
         if (req.getType() != null && !StringUtils.isEmpty(req.getType().getName())
-                && req.getType().getName().equalsIgnoreCase(SurveillanceRequirementType.CERTIFIED_CAPABILITY)) {
-                CertificationCriterionDTO criterion = certDao.getAllByNumber(req.getRequirement()).get(0);
+                && req.getType().getName().equalsIgnoreCase(SurveillanceRequirementType.CERTIFIED_CAPABILITY)
+                && req.getCriterion() != null) {
+                CertificationCriterionDTO criterion = certDao.getAllByNumber(req.getCriterion().getNumber()).get(0);
                 if (criterion != null && criterion.getRemoved() != null
                         && criterion.getRemoved().booleanValue()) {
                     surv.getErrorMessages().add(
