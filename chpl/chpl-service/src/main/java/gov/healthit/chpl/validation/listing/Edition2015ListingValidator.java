@@ -44,6 +44,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.MeasureComparis
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.MeasureValidityReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.OldCriteriaWithoutIcsReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewerPreErdPhase2;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaTestTaskComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaUcdComparisonReviewer;
@@ -185,6 +186,10 @@ public class Edition2015ListingValidator extends Validator {
     private RemovedCriteriaUcdComparisonReviewer ucdCriteriaComparisonReviewer;
 
     @Autowired
+    @Qualifier("privacyAndSecurityCriteriaReviewerPreErdPhase2")
+    private PrivacyAndSecurityCriteriaReviewerPreErdPhase2 privacyAndSecurityCriteriaReviewerPreErdPhase2;
+
+    @Autowired
     @Qualifier("privacyAndSecurityCriteriaReviewer")
     private PrivacyAndSecurityCriteriaReviewer privacyAndSecurityCriteriaReviewer;
 
@@ -239,8 +244,6 @@ public class Edition2015ListingValidator extends Validator {
     @Autowired
     private FF4j ff4j;
 
-    private List<ComparisonReviewer> comparisonReviewers;
-
     @Override
     public synchronized List<Reviewer> getReviewers() {
         List<Reviewer> reviewers = new ArrayList<Reviewer>();
@@ -279,27 +282,32 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(duplicateDataReviewer);
         reviewers.add(gapAllowedReviewer);
         reviewers.add(measureReviewer);
+        if (ff4j.check(FeatureList.ERD_PHASE_2)
+                && !ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD)) {
+            reviewers.add(privacyAndSecurityCriteriaReviewer);
+        }
         return reviewers;
     }
 
     @Override
     public List<ComparisonReviewer> getComparisonReviewers() {
-        if (comparisonReviewers == null) {
-            comparisonReviewers = new ArrayList<ComparisonReviewer>();
-            comparisonReviewers.add(chplNumberComparisonReviewer);
-            comparisonReviewers.add(devBanComparisonReviewer);
-            comparisonReviewers.add(measureComparisonReviewer);
-            comparisonReviewers.add(criteriaComparisonReviewer);
-            comparisonReviewers.add(testTaskCriteriaComparisonReviewer);
-            comparisonReviewers.add(ucdCriteriaComparisonReviewer);
-            comparisonReviewers.add(testFunctionalityAllowedByRoleReviewer);
-            comparisonReviewers.add(listingStatusAndUserRoleReviewer);
-            comparisonReviewers.add(privacyAndSecurityCriteriaReviewer);
-            comparisonReviewers.add(realWorldTestingReviewer);
-            comparisonReviewers.add(svapReviewer);
-            comparisonReviewers.add(inheritanceComparisonReviewer);
-            comparisonReviewers.add(deprecatedFieldReviewer);
+            List<ComparisonReviewer> comparisonReviewers = new ArrayList<ComparisonReviewer>();
+        comparisonReviewers.add(chplNumberComparisonReviewer);
+        comparisonReviewers.add(devBanComparisonReviewer);
+        comparisonReviewers.add(measureComparisonReviewer);
+        comparisonReviewers.add(criteriaComparisonReviewer);
+        comparisonReviewers.add(testTaskCriteriaComparisonReviewer);
+        comparisonReviewers.add(ucdCriteriaComparisonReviewer);
+        comparisonReviewers.add(testFunctionalityAllowedByRoleReviewer);
+        comparisonReviewers.add(listingStatusAndUserRoleReviewer);
+        if (!ff4j.check(FeatureList.ERD_PHASE_2)
+                || (ff4j.check(FeatureList.ERD_PHASE_2) && ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD))) {
+            comparisonReviewers.add(privacyAndSecurityCriteriaReviewerPreErdPhase2);
         }
+        comparisonReviewers.add(realWorldTestingReviewer);
+        comparisonReviewers.add(svapReviewer);
+        comparisonReviewers.add(inheritanceComparisonReviewer);
+        comparisonReviewers.add(deprecatedFieldReviewer);
         return comparisonReviewers;
     }
 }
