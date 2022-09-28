@@ -3,6 +3,7 @@ package gov.healthit.chpl.upload.surveillance;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.csv.CSVRecord;
@@ -17,13 +18,19 @@ import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.NonconformityType;
+import gov.healthit.chpl.domain.surveillance.RequirementDetailType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
+import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.util.NullSafeEvaluator;
 
 @Component("surveillanceUploadHandler2015")
 public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler {
@@ -37,6 +44,9 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
     private CertificationResultDetailsDAO certResultDetailsDao;
     private SurveillanceDAO survDao;
 
+    private List<RequirementDetailType> requirementDetailTypes;
+    private List<NonconformityType> nonconformityTypes;
+
     protected DateTimeFormatter dateFormatter;
     private List<CSVRecord> record;
     private CSVRecord heading;
@@ -49,6 +59,8 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         this.survDao = survDao;
         this.certResultDetailsDao = certResultDetailsDao;
         dateFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
+
+        requirementDetailTypes = survDao.getRequirementDetailTypes();
     }
 
     @Override
@@ -191,32 +203,18 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 
     public void parseSurveilledRequirements(CSVRecord csvRecord, Surveillance surv,
             List<CertificationResultDetailsDTO> certResults) {
-        //TODO OCD-4029
-        /*
         SurveillanceRequirement req = new SurveillanceRequirement();
 
         int colIndex = 7;
-        // requirement type
+        // requirement detail type
         String requirementTypeStr = csvRecord.get(colIndex++).trim();
-        if (!StringUtils.isEmpty(requirementTypeStr)) {
-            SurveillanceRequirementType requirementType = new SurveillanceRequirementType();
-            requirementType.setName(requirementTypeStr);
-            req.setType(requirementType);
-        }
-
-        // the requirement
         String requirementStr = csvRecord.get(colIndex++).trim();
-        req.setRequirement(requirementStr);
-        //look at cert results to determine if/which criterion
-        if (certResults != null && certResults.size() > 0) {
-            Optional<CertificationResultDetailsDTO> attestedCertResult =
-                    certResults.stream()
-                    .filter(certResult -> isCriteriaAttestedTo(certResult, req.getRequirement()))
-                    .findFirst();
-            if (attestedCertResult.isPresent()) {
-                req.setCriterion(new CertificationCriterion(attestedCertResult.get().getCriterion()));
-            }
-        }
+        req.setRequirementDetailType(requirementDetailTypes.stream()
+                .filter(detailType -> (NullSafeEvaluator.eval(() -> detailType.getNumber(), "") .equals(requirementStr)
+                        || NullSafeEvaluator.eval(() -> detailType.getTitle(), "") .equals(requirementStr))
+                        && detailType.getSurveillanceRequirementType().getName().equals(requirementTypeStr))
+                .findAny()
+                .orElse(null));
 
         // surveillance result
         String resultTypeStr = csvRecord.get(colIndex++).trim();
@@ -226,12 +224,12 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
             req.setResult(resultType);
         }
         surv.getRequirements().add(req);
-        */
+
     }
 
     public void parseNonconformities(CSVRecord record, Surveillance surv, List<CertificationResultDetailsDTO> certResults) {
         //TODO OCD-4029
-        /*
+
         int ncBeginIndex = 10;
         // if the first nonconformity cell is blank, forget it
         if (StringUtils.isEmpty(record.get(ncBeginIndex).trim())) {
@@ -258,18 +256,11 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 
         // nonconformity type
         //TODO - TMY - need to figure this out... (OCD-4029)
-        //String ncTypeStr = record.get(colIndex++).trim();
-        //nc.setNonconformityType(ncTypeStr);
-        ////look at cert results to determine if/which criterion
-        //if (certResults != null && certResults.size() > 0) {
-        //    Optional<CertificationResultDetailsDTO> attestedCertResult =
-        //            certResults.stream()
-        //            .filter(certResult -> isCriteriaAttestedTo(certResult, nc.getNonconformityType()))
-        //            .findFirst();
-        //    if (attestedCertResult.isPresent()) {
-        //        nc.setCriterion(new CertificationCriterion(attestedCertResult.get().getCriterion()));
-        //    }
-        //}
+        String ncTypeStr = record.get(colIndex++).trim();
+        nc.setType(nonconformityTypes.stream()
+                .filter(ncType -> ncType.getNumber().equals(ncTypeStr) || ncType.getTitle().equals(ncTypeStr))
+                .findAny()
+                .orElse(null));
 
         // nonconformity status
         String ncStatusStr = record.get(colIndex++).trim();
@@ -368,7 +359,6 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         if (req != null) {
             req.getNonconformities().add(nc);
         }
-        */
     }
 
     private boolean isCriteriaAttestedTo(CertificationResultDetailsDTO certResult, String criterionNumber) {

@@ -45,8 +45,8 @@ public class SurveillanceNonconformityEntity {
     @Column(name = "surveillance_requirement_id")
     private Long surveillanceRequirementId;
 
-    @Column(name = "certification_criterion_id")
-    private Long certificationCriterionId;
+    //@Column(name = "certification_criterion_id")
+    //private Long certificationCriterionId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "nonconformity_type_id", insertable = true, updatable = true)

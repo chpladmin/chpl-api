@@ -79,4 +79,5 @@ public class PendingSurveillanceEntity {
     @Basic(optional = false)
     @Column(name = "pending_surveillance_id", nullable = false)
     private Set<PendingSurveillanceValidationEntity> validation = new HashSet<PendingSurveillanceValidationEntity>();
+
 }

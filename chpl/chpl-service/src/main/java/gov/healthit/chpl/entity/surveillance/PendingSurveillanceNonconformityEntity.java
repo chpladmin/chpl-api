@@ -38,16 +38,13 @@ public class PendingSurveillanceNonconformityEntity {
     @Column(name = "nonconformity_type")
     private String type;
 
-    @Column(name = "certification_criterion_id")
-    private Long certificationCriterionId;
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "nonconformity_type_id", insertable = false, updatable = false)
+    private NonconformityTypeEntity ncType;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "certification_criterion_id", insertable = false, updatable = false)
     private CertificationCriterionEntity certificationCriterionEntity;
-
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "nonconformity_type_id", insertable = false, updatable = false)
-    private NonconformityTypeEntity ncType;
 
     @Column(name = "non_conformity_close_date")
     private LocalDate nonconformityCloseDate;

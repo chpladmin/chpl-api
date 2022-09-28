@@ -43,7 +43,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
     }
 
     private void checkRequirementExists(Surveillance surv, SurveillanceRequirement req) {
-        if (NullSafeEvaluator.eval(() -> req.getRequirementDetailType().getId(), -1L).equals(-1L)) {
+        if (!NullSafeEvaluator.eval(() -> req.getRequirementDetailType().getId(), -1L).equals(-1L)) {
             Optional<RequirementDetailType> reqDetailTypeFound = requirementDetailTypes.stream()
                     .filter(rdt -> rdt.getId().equals(req.getRequirementDetailType().getId()))
                     .findAny();

@@ -23,10 +23,6 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.entity.surveillance.NonconformityTypeEntity;
-import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
-import gov.healthit.chpl.entity.surveillance.PendingSurveillanceNonconformityEntity;
-import gov.healthit.chpl.entity.surveillance.PendingSurveillanceRequirementEntity;
-import gov.healthit.chpl.entity.surveillance.PendingSurveillanceValidationEntity;
 import gov.healthit.chpl.entity.surveillance.RequirementDetailTypeEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity;
@@ -53,20 +49,8 @@ public class SurveillanceDAO extends BaseDAOImpl {
             + "LEFT OUTER JOIN FETCH reqs.surveillanceResultTypeEntity "
             + "LEFT OUTER JOIN FETCH reqs.nonconformities ncs "
             + "LEFT OUTER JOIN FETCH ncs.type nct "
-            //+ "LEFT JOIN FETCH nct.certificationEdition "
             + "LEFT OUTER JOIN FETCH ncs.documents docs "
             + "WHERE surv.deleted <> true ";
-
-    private static String PENDING_SURVEILLANCE_FULL_HQL = "SELECT DISTINCT surv "
-            + "FROM PendingSurveillanceEntity surv "
-            + "JOIN FETCH surv.certifiedProduct "
-            + "LEFT OUTER JOIN FETCH surv.surveilledRequirements reqs "
-            + "LEFT OUTER JOIN FETCH reqs.certificationCriterionEntity cce "
-            + "LEFT OUTER JOIN FETCH cce.certificationEdition "
-            + "LEFT OUTER JOIN FETCH reqs.nonconformities ncs "
-            + "LEFT OUTER JOIN FETCH ncs.certificationCriterionEntity cce2 "
-            + "LEFT OUTER JOIN FETCH cce2.certificationEdition "
-            + "LEFT OUTER JOIN FETCH surv.validation ";
 
     public Long insertSurveillance(Surveillance surv) throws UserPermissionRetrievalException {
         SurveillanceEntity toInsert = new SurveillanceEntity();
@@ -415,88 +399,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
             return results;
     }
 
-    /*
-    //TODO - OCD-4029
-    public Long insertPendingSurveillance(Surveillance surv) throws UserPermissionRetrievalException {
-        PendingSurveillanceEntity toInsert = new PendingSurveillanceEntity();
-        toInsert.setSurvFriendlyIdToReplace(surv.getSurveillanceIdToReplace());
-        if (surv.getCertifiedProduct() != null) {
-            toInsert.setCertifiedProductId(surv.getCertifiedProduct().getId());
-            toInsert.setCertifiedProductUniqueId(surv.getCertifiedProduct().getChplProductNumber());
-        }
-        toInsert.setNumRandomizedSites(surv.getRandomizedSitesUsed());
-        toInsert.setEndDate(surv.getEndDay());
-        toInsert.setStartDate(surv.getStartDay());
-        if (surv.getType() != null) {
-            toInsert.setSurveillanceType(surv.getType().getName());
-        }
-        toInsert.setLastModifiedUser(AuthUtil.getAuditId());
-        toInsert.setDeleted(false);
-
-        entityManager.persist(toInsert);
-        entityManager.flush();
-
-        for (String errorMessage : surv.getErrorMessages()) {
-            PendingSurveillanceValidationEntity valEntity = new PendingSurveillanceValidationEntity();
-            valEntity.setMessageType(ValidationMessageType.Error);
-            valEntity.setPendingSurveillanceId(toInsert.getId());
-            valEntity.setMessage(errorMessage);
-            valEntity.setDeleted(false);
-            valEntity.setLastModifiedUser(AuthUtil.getAuditId());
-            entityManager.persist(valEntity);
-            entityManager.flush();
-        }
-
-        for (SurveillanceRequirement req : surv.getRequirements()) {
-            PendingSurveillanceRequirementEntity toInsertReq = new PendingSurveillanceRequirementEntity();
-            if (req.getResult() != null) {
-                toInsertReq.setResult(req.getResult().getName());
-            }
-            if (req.getType() != null) {
-                toInsertReq.setRequirementType(req.getType().getName());
-            }
-            if (req.getCriterion() != null) {
-                toInsertReq.setCertificationCriterionId(req.getCriterion().getId());
-            }
-            toInsertReq.setSurveilledRequirement(req.getRequirement());
-            toInsertReq.setPendingSurveillanceId(toInsert.getId());
-            toInsertReq.setLastModifiedUser(AuthUtil.getAuditId());
-            toInsertReq.setDeleted(false);
-
-            entityManager.persist(toInsertReq);
-            entityManager.flush();
-
-            for (SurveillanceNonconformity nc : req.getNonconformities()) {
-                PendingSurveillanceNonconformityEntity toInsertNc = new PendingSurveillanceNonconformityEntity();
-
-                toInsertNc.setCapApproval(nc.getCapApprovalDay());
-                toInsertNc.setCapEndDate(nc.getCapEndDay());
-                toInsertNc.setCapMustCompleteDate(nc.getCapMustCompleteDay());
-                toInsertNc.setCapStart(nc.getCapStartDay());
-                toInsertNc.setDateOfDetermination(nc.getDateOfDeterminationDay());
-                toInsertNc.setDeveloperExplanation(nc.getDeveloperExplanation());
-                toInsertNc.setFindings(nc.getFindings());
-                toInsertNc.setPendingSurveillanceRequirementId(toInsertReq.getId());
-                toInsertNc.setResolution(nc.getResolution());
-                toInsertNc.setSitesPassed(nc.getSitesPassed());
-                toInsertNc.setNonconformityCloseDate(nc.getNonconformityCloseDay());
-                toInsertNc.setSummary(nc.getSummary());
-                toInsertNc.setTotalSites(nc.getTotalSites());
-                //.setType(nc.getNonconformityType());
-                //if (nc.getCriterion() != null) {
-                //    toInsertNc.setCertificationCriterionId(nc.getCriterion().getId());
-                //}
-                toInsertNc.setDeleted(false);
-                toInsertNc.setLastModifiedUser(AuthUtil.getAuditId());
-
-                entityManager.persist(toInsertNc);
-                entityManager.flush();
-            }
-        }
-        return toInsert.getId();
-    }
-
-    */
 
     @Deprecated
     public void deleteNonconformityDocument(Long documentId) {
@@ -546,61 +448,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
         entityManager.merge(toDelete);
         entityManager.flush();
     }
-
-
-    public void deletePendingSurveillance(Surveillance surv) throws EntityRetrievalException {
-        PendingSurveillanceEntity toDelete = fetchPendingSurveillanceById(surv.getId(), false);
-
-        if (toDelete.getValidation() != null) {
-            for (PendingSurveillanceValidationEntity val : toDelete.getValidation()) {
-                val.setDeleted(true);
-                val.setLastModifiedUser(AuthUtil.getAuditId());
-                entityManager.merge(val);
-                entityManager.flush();
-            }
-        }
-
-        if (toDelete.getSurveilledRequirements() != null) {
-            for (PendingSurveillanceRequirementEntity reqToDelete : toDelete.getSurveilledRequirements()) {
-                if (reqToDelete.getNonconformities() != null) {
-                    for (PendingSurveillanceNonconformityEntity ncToDelete : reqToDelete.getNonconformities()) {
-                        ncToDelete.setDeleted(true);
-                        ncToDelete.setLastModifiedUser(AuthUtil.getAuditId());
-                        entityManager.merge(ncToDelete);
-                        entityManager.flush();
-                    }
-                }
-                reqToDelete.setDeleted(true);
-                reqToDelete.setLastModifiedUser(AuthUtil.getAuditId());
-                entityManager.merge(reqToDelete);
-                entityManager.flush();
-            }
-        }
-        toDelete.setDeleted(true);
-        toDelete.setLastModifiedUser(AuthUtil.getAuditId());
-        entityManager.merge(toDelete);
-        entityManager.flush();
-    }
-
-
-    public PendingSurveillanceEntity getPendingSurveillanceById(Long id) throws EntityRetrievalException {
-        PendingSurveillanceEntity entity = fetchPendingSurveillanceById(id, false);
-        return entity;
-    }
-
-
-    public PendingSurveillanceEntity getPendingSurveillanceById(Long id, Boolean includeDeleted)
-            throws EntityRetrievalException {
-        PendingSurveillanceEntity entity = fetchPendingSurveillanceById(id, includeDeleted);
-        return entity;
-    }
-
-
-    public List<PendingSurveillanceEntity> getPendingSurveillanceByAcb(Long acbId) {
-        List<PendingSurveillanceEntity> results = fetchPendingSurveillanceByAcbId(acbId);
-        return results;
-    }
-
 
     public List<SurveillanceType> getAllSurveillanceTypes() {
         Query query = entityManager.createQuery("from SurveillanceTypeEntity where deleted <> true",
@@ -786,16 +633,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
         return result;
     }
 
-
-
-    @Transactional(readOnly = true)
-    public List<PendingSurveillanceEntity> getAllPendingSurveillance() {
-        Query query = entityManager.createQuery(PENDING_SURVEILLANCE_FULL_HQL
-                + " WHERE surv.deleted <> true ",
-                PendingSurveillanceEntity.class);
-        return query.getResultList();
-    }
-
     private SurveillanceEntity fetchSurveillanceById(Long id) throws EntityRetrievalException {
         entityManager.clear();
         Query query = entityManager.createQuery(SURVEILLANCE_FULL_HQL
@@ -822,41 +659,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
         return getRequirementDetailTypeEntities().stream()
                 .map(e -> e.toDomain())
                 .toList();
-    }
-
-    private PendingSurveillanceEntity fetchPendingSurveillanceById(Long id, Boolean includeDeleted)
-            throws EntityRetrievalException {
-        PendingSurveillanceEntity entity = null;
-        String hql = PENDING_SURVEILLANCE_FULL_HQL
-                + " WHERE surv.id = :entityid ";
-        if (!includeDeleted) {
-            hql = hql + " AND surv.deleted <> true ";
-        }
-
-        entityManager.clear();
-        Query query = entityManager.createQuery(hql, PendingSurveillanceEntity.class);
-        query.setParameter("entityid", id);
-
-        List<PendingSurveillanceEntity> results = query.getResultList();
-        if (results == null || results.size() == 0) {
-            String msg = msgUtil.getMessage("surveillance.pending.notFound");
-            throw new EntityRetrievalException(msg);
-        } else {
-            entity = results.get(0);
-        }
-        return entity;
-    }
-
-    private List<PendingSurveillanceEntity> fetchPendingSurveillanceByAcbId(Long acbId) {
-        entityManager.clear();
-        Query query = entityManager.createQuery(PENDING_SURVEILLANCE_FULL_HQL
-                + " WHERE surv.deleted <> true "
-                + " AND cp.certificationBodyId = :acbId",
-                PendingSurveillanceEntity.class);
-        query.setParameter("acbId", acbId);
-
-        List<PendingSurveillanceEntity> results = query.getResultList();
-        return results;
     }
 
     private List<NonconformityTypeEntity> getNonconformityTypeEntities() {
@@ -917,43 +719,4 @@ public class SurveillanceDAO extends BaseDAOImpl {
             to.setSurveillanceTypeId(from.getType().getId());
         }
     }
-
-//    private void populateSurveillanceRequirementEntity(SurveillanceRequirementEntity to,
-//            SurveillanceRequirement from) {
-//        if (from.getCriterion() != null) {
-//            to.setCertificationCriterionId(from.getCriterion().getId());
-//        } else if (from.getRequirement() != null) {
-//            to.setSurveilledRequirement(from.getRequirement());
-//            to.setCertificationCriterionId(null);
-//        }
-//
-//        if (from.getType() != null) {
-//            to.setSurveillanceRequirementTypeId(from.getType().getId());
-//        }
-//        if (from.getResult() != null) {
-//            to.setSurveillanceResultTypeId(from.getResult().getId());
-//        }
-//    }
-
-//    private void populateSurveillanceNonconformityEntity(SurveillanceNonconformityEntity to,
-//            SurveillanceNonconformity from) {
-//        to.setType(NonconformityTypeEntity.builder()
-//                .id(from.getType().getId())
-//                .number(from.getType().getNumber())
-//                .title(from.getType().getTitle())
-//                .removed(from.getType().getRemoved())
-//                .build());
-//        to.setCapApproval(from.getCapApprovalDay());
-//        to.setCapEndDate(from.getCapEndDay());
-//        to.setCapMustCompleteDate(from.getCapMustCompleteDay());
-//        to.setCapStart(from.getCapStartDay());
-//        to.setDateOfDetermination(from.getDateOfDeterminationDay());
-//        to.setDeveloperExplanation(from.getDeveloperExplanation());
-//        to.setFindings(from.getFindings());
-//        to.setResolution(from.getResolution());
-//        to.setSitesPassed(from.getSitesPassed());
-//        to.setNonconformityCloseDate(from.getNonconformityCloseDay());
-//        to.setSummary(from.getSummary());
-//        to.setTotalSites(from.getTotalSites());
-//    }
 }
