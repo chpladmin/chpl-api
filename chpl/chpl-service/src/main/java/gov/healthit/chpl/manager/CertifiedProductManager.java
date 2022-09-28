@@ -345,7 +345,7 @@ public class CertifiedProductManager extends SecuredManager {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.GET_DECERTIFIED_DEVELOPERS
+            CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
     // listings collection is not evicted here because it's pre-fetched and
     // handled in a listener
@@ -435,7 +435,8 @@ public class CertifiedProductManager extends SecuredManager {
     })
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH,
+            CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#updateRequest.listing.id")
     public CertifiedProductDTO update(ListingUpdateRequest updateRequest)

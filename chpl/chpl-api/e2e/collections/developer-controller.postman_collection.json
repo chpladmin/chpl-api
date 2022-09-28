@@ -830,7 +830,78 @@
                           }
                       },
                       "response": []
-                  }
+                  },
+				  {
+					"name": "GET /developers/search - developer schema and response validation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const developerSearchResponseSchema =",
+									"{",
+									"  \"recordCount\": 0,",
+									"  \"pageSize\": 0,",
+									"  \"pageNumber\": 0,",
+									"  \"results\": [",
+									"    {",
+									"      \"id\": 0,",
+									"      \"name\": \"string\",",
+									"      \"status\": {",
+									"        \"id\": 0,",
+									"        \"name\": \"string\"",
+									"      }",
+									"    }",
+									"  ]",
+									"}",
+									"",
+									"var jsonResponse = pm.response.json();",
+									"pm.test('developer search response schema is valid', function() {",
+									"  pm.expect(tv4.validate(jsonResponse, developerSearchResponseSchema)).to.be.true;  ",
+									"});",
+									"",
+									"pm.test(\"developer search endpoint should return 200 status and response body should not be empty\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonResponse.response).not.eq(null);",
+									"});",
+									"",
+									"pm.test('developer search results should include developer name and status fields', function() {",
+									"    pm.expect(jsonResponse.results[0]).to.have.property('name');",
+									"    pm.expect(jsonResponse.results[0]).to.have.property('status');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/developers/search",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"developers",
+								"search"
+							]
+						}
+					},
+					"response": []
+				}
   			],
   			"protocolProfileBehavior": {}
   		},
