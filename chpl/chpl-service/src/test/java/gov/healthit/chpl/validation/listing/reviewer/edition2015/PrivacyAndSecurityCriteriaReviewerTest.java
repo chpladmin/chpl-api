@@ -44,13 +44,9 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(PANDS_MISSING_CRITERIA_ERROR, i.getArgument(1), i.getArgument(2)));
 
-        specialProperties = Mockito.mock(SpecialProperties.class);
-        Mockito.when(specialProperties.getEffectiveRuleDate())
-                .thenReturn(new GregorianCalendar(2020, Calendar.MARCH, 01).getTime());
-
         validationUtil = new ValidationUtils(certificationCriterionService);
 
-        reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionService, msgUtil, specialProperties, validationUtil, "1,2", "166,167");
+        reviewer = new PrivacyAndSecurityCriteriaReviewer(certificationCriterionService, msgUtil, validationUtil, "1,2", "166,167");
     }
 
     @Test
@@ -100,7 +96,7 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
     }
 
     @Test
-    public void review_missingPAndSCriteriaBeforeCuresEffectiveDate_noErrorMessages() {
+    public void review_missingPAndSCriteriaBeforeCuresEffectiveDate_hasErrorMessages() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationDate(new GregorianCalendar(2019, Calendar.MARCH, 01).getTime().getTime())
                 .certificationResult(CertificationResult.builder()
@@ -117,7 +113,9 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
                         .build())
                 .build();
         reviewer.review(listing);
-        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(2, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(PANDS_MISSING_CRITERIA_ERROR, "170.315 (a)(1)", "170.315 (d)(13)")));
+        assertTrue(listing.getErrorMessages().contains(String.format(PANDS_MISSING_CRITERIA_ERROR, "170.315 (a)(2)", "170.315 (d)(13)")));
     }
 
     @Test
