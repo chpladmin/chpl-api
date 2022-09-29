@@ -97,14 +97,14 @@ public final class DateUtil {
         return Instant.ofEpochMilli(epochMillis).atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
-    public static LocalDateTime fromEasternToUtc(LocalDateTime input) {
+    public static LocalDateTime fromEasternToSystem(LocalDateTime input) {
         ZonedDateTime easternZoned = ZonedDateTime.of(input, ZoneId.of(ET_ZONE_ID));
-        ZonedDateTime utc = easternZoned.withZoneSameInstant(ZoneId.of(UTC_ZONE_ID));
+        ZonedDateTime utc = easternZoned.withZoneSameInstant(ZoneId.systemDefault());
         return utc.toLocalDateTime();
     }
 
-    public static LocalDateTime fromUtcToEastern(LocalDateTime input) {
-        ZonedDateTime utcZoned = ZonedDateTime.of(input, ZoneId.of(UTC_ZONE_ID));
+    public static LocalDateTime fromSystemToEastern(LocalDateTime input) {
+        ZonedDateTime utcZoned = ZonedDateTime.of(input, ZoneId.systemDefault());
         ZonedDateTime eastern = utcZoned.withZoneSameInstant(ZoneId.of(ET_ZONE_ID));
         return eastern.toLocalDateTime();
     }
