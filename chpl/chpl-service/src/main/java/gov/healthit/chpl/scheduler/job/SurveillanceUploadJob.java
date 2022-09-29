@@ -11,6 +11,7 @@ import java.util.Set;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -20,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
@@ -174,8 +174,7 @@ public class SurveillanceUploadJob implements Job {
             if (surv != null && surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getId() != null) {
                 try {
                     owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
-                    //TODO - OCD-4029
-                    //pendingSurvManager.createPendingSurveillance(surv);
+                    pendingSurvManager.createPendingSurveillance(surv);
                 } catch (AccessDeniedException denied) {
                     String permissionErrorMessage = "";
                     if (owningCp != null && owningCp.getCertificationBodyId() != null) {

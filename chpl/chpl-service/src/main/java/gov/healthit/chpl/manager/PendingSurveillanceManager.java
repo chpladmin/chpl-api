@@ -12,12 +12,14 @@ import javax.persistence.EntityNotFoundException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
@@ -34,6 +37,8 @@ import gov.healthit.chpl.dao.surveillance.PendingSurveillanceDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.schedule.ChplJob;
@@ -66,6 +71,8 @@ import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.scheduler.job.SurveillanceUploadJob;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
+import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.FileUtils;
@@ -94,6 +101,7 @@ public class PendingSurveillanceManager extends SecuredManager {
     private CertificationCriterionService certificationCriterionService;
 
     private List<RequirementDetailType> requirementDetailTypes;
+    private List<NonconformityType> nonconformityTypes;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -122,6 +130,7 @@ public class PendingSurveillanceManager extends SecuredManager {
         this.certificationCriterionService = certificationCriterionService;
 
         this.requirementDetailTypes = surveillanceDAO.getRequirementDetailTypes();
+        this.nonconformityTypes = surveillanceDAO.getNonconformityTypes();
     }
 
     @Transactional
@@ -179,14 +188,11 @@ public class PendingSurveillanceManager extends SecuredManager {
     public void rejectPendingSurveillance(Long pendingSurveillanceId) throws ObjectMissingValidationException,
             JsonProcessingException, EntityRetrievalException, EntityCreationException {
 
-        //TODO OCD-4029
-        /*
-        PendingSurveillanceEntity entity = survDao.getPendingSurveillanceById(pendingSurveillanceId, true);
+        PendingSurveillanceEntity entity = pendingSurveillanceDAO.getPendingSurveillanceById(pendingSurveillanceId, true);
         if (entity.getDeleted()) {
             throw createdObjectMissingValidationException(entity);
         }
         deletePendingSurveillance(pendingSurveillanceId, false);
-        */
     }
 
     @Transactional(readOnly = true)
@@ -199,9 +205,8 @@ public class PendingSurveillanceManager extends SecuredManager {
         List<Surveillance> results = new ArrayList<Surveillance>();
         if (pendingResults != null) {
             for (PendingSurveillanceEntity pr : pendingResults) {
-                //TODO - OCD-4029
-                //Surveillance surv = convertToDomain(pr);
-                //results.add(surv);
+                Surveillance surv = convertToDomain(pr);
+                results.add(surv);
             }
         }
         return results;
@@ -211,12 +216,11 @@ public class PendingSurveillanceManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).CONFIRM, "
             + "#survToInsert)")
+    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#survToInsert.certifiedProduct.id")
     public Surveillance confirmPendingSurveillance(Surveillance survToInsert)
             throws ValidationException, EntityRetrievalException, UserPermissionRetrievalException,
             EntityCreationException, JsonProcessingException {
 
-        //TODO OCD-4029
-        /*
         if (survToInsert == null || survToInsert.getId() == null) {
             throw new ValidationException("A valid pending surveillance id must be provided.");
         } else {
@@ -224,7 +228,7 @@ public class PendingSurveillanceManager extends SecuredManager {
         }
 
         // the confirmation could be an update to an existing surveillance.
-        //if so, find the existing surveillane that's being updated
+        //if so, find the existing surveillance that's being updated
         Surveillance existingSurveillance = null;
         if (!StringUtils.isEmpty(survToInsert.getSurveillanceIdToReplace())) {
             existingSurveillance = getByFriendlyIdAndListing(
@@ -274,17 +278,15 @@ public class PendingSurveillanceManager extends SecuredManager {
         }
 
         CertifiedProductSearchDetails afterCp = cpDetailsManager
-                .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
+                .getCertifiedProductDetailsNoCache(survToInsert.getCertifiedProduct().getId());
 
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, afterCp.getId(),
                 "Surveillance upload was confirmed for certified product " + afterCp.getChplProductNumber(), beforeCp,
                 afterCp);
 
         // query the inserted surveillance
-        SurveillanceEntity insertedSurv = survDao.getSurveillanceById(insertedSurvId);
+        SurveillanceEntity insertedSurv = surveillanceDAO.getSurveillanceById(insertedSurvId);
         return insertedSurv.toDomain(cpDAO, certificationCriterionService);
-        */
-        return null;
     }
 
     private ChplOneTimeTrigger processUploadAsJob(String data) throws EntityCreationException,
@@ -378,9 +380,9 @@ public class PendingSurveillanceManager extends SecuredManager {
                 SurveillanceRequirement req = SurveillanceRequirement.builder()
                         .id(preq.getId())
                         .requirement(preq.getSurveilledRequirement())
-                        .type(getRequirementDetailType(preq.getSurveilledRequirement(), preq.getRequirementType()).getSurveillanceRequirementType())
+                        .type(getRequirementDetailType(preq.getSurveilledRequirement(), preq.getRequirementType(), pr.getCertifiedProductId()).getSurveillanceRequirementType())
                         .criterion(preq.getCertificationCriterionEntity() != null ? preq.getCertificationCriterionEntity().toDomain() : null)
-                        .requirementDetailType(getRequirementDetailType(preq.getSurveilledRequirement(), preq.getRequirementType()))
+                        .requirementDetailType(getRequirementDetailType(preq.getSurveilledRequirement(), preq.getRequirementType(), pr.getCertifiedProductId()))
                         .result(SurveillanceResultType.builder()
                                 .name(preq.getResult())
                                 .build())
@@ -399,7 +401,7 @@ public class PendingSurveillanceManager extends SecuredManager {
                                 .id(pnc.getId())
                                 .nonconformityType(pnc.getType())
                                 .criterion(pnc.getCertificationCriterionEntity() != null ? pnc.getCertificationCriterionEntity().toDomain() : null)
-                                .type(pnc.getNcType().toDomain())
+                                .type(getNonconformityType(pnc.getType(), pr.getCertifiedProductId()))
                                 .resolution(pnc.getResolution())
                                 .sitesPassed(pnc.getSitesPassed())
                                 .summary(pnc.getSummary())
@@ -424,13 +426,41 @@ public class PendingSurveillanceManager extends SecuredManager {
         return surv;
     }
 
-    private RequirementDetailType getRequirementDetailType(String requirement, String requirementType) {
+    private RequirementDetailType getRequirementDetailType(String requirement, String requirementType, Long listingId) {
+        //Need to use the listing to determine if the requirementDetailType (when it's a Certified Capability)
+        //relates to the "old" or the "Cures" version of the criterion.  When detailType is a Certified Capability
+        //the detailType.id is the cert criterion id.
         return requirementDetailTypes.stream()
-                .filter(detailType -> (NullSafeEvaluator.eval(() -> detailType.getNumber(), "") .equals(requirement)
+                .filter(detailType -> ((NullSafeEvaluator.eval(() -> detailType.getNumber(), "") .equals(requirement)
+                                            && isCriterionAttestedTo(listingId, detailType.getId()))
                                         || NullSafeEvaluator.eval(() -> detailType.getTitle(), "") .equals(requirement))
-                                        && detailType.getSurveillanceRequirementType().getName().equals(requirementType))
+                                    && detailType.getSurveillanceRequirementType().getName().equals(requirementType))
+                    .findAny()
+                    .orElse(null);
+    }
+
+    private NonconformityType getNonconformityType(String nonconformityString, Long listingId) {
+        //Need to use the listing to determine if the nonconformityType (when it's a Certified Capability)
+        //relates to the "old" or the "Cures" version of the criterion.  When nonconformityType is a Certified
+        //Capability the nc.id is the cert criterion id.
+        return nonconformityTypes.stream()
+                .filter(nc -> (NullSafeEvaluator.eval(() -> nc.getNumber(), "").equals(nonconformityString)
+                            && isCriterionAttestedTo(listingId, nc.getId()))
+                        || NullSafeEvaluator.eval(() -> nc.getTitle(), "").equals(nonconformityString))
                 .findAny()
                 .orElse(null);
+    }
+
+    private Boolean isCriterionAttestedTo(Long listingId, Long criterionId) {
+        try {
+            CertifiedProductSearchDetails listing = cpDetailsManager.getCertifiedProductDetails(listingId);
+            return listing.getCertificationResults().stream()
+                    .filter(cr -> cr.isSuccess() && cr.getCriterion().getId().equals(criterionId))
+                    .findAny()
+                    .isPresent();
+        } catch (EntityRetrievalException e) {
+            return null;
+        }
     }
 
     private void deletePendingSurveillance(Long pendingSurveillanceId, boolean isConfirmed)

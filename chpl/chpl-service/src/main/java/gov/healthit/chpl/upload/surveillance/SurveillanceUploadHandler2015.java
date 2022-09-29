@@ -3,7 +3,6 @@ package gov.healthit.chpl.upload.surveillance;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.csv.CSVRecord;
@@ -14,10 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.surveillance.RequirementDetailType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
@@ -25,7 +25,6 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
-import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -41,8 +40,8 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
     private static final String SUBSEQUENT_ROW = "SUBELEMENT";
 
     private CertifiedProductDAO cpDao;
-    private CertificationResultDetailsDAO certResultDetailsDao;
     private SurveillanceDAO survDao;
+    private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
     private List<RequirementDetailType> requirementDetailTypes;
     private List<NonconformityType> nonconformityTypes;
@@ -54,13 +53,14 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 
     @Autowired
     public SurveillanceUploadHandler2015(CertifiedProductDAO cpDao, SurveillanceDAO survDao,
-            CertificationResultDetailsDAO certResultDetailsDao) {
+            CertifiedProductDetailsManager certifiedProductDetailsManager) {
         this.cpDao = cpDao;
         this.survDao = survDao;
-        this.certResultDetailsDao = certResultDetailsDao;
+        this.certifiedProductDetailsManager = certifiedProductDetailsManager;
         dateFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
 
         requirementDetailTypes = survDao.getRequirementDetailTypes();
+        nonconformityTypes = survDao.getNonconformityTypes();
     }
 
     @Override
@@ -76,9 +76,6 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
             }
         }
 
-        List<CertificationResultDetailsDTO> certResults =
-                certResultDetailsDao.getCertificationResultsForSurveillanceListing(surv);
-
         // if we got errors here, don't parse the rest of it
         if (surv.getErrorMessages() == null || surv.getErrorMessages().size() == 0) {
             // get surveilled requirements
@@ -86,7 +83,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
                 String statusStr = csvRecord.get(0).trim();
                 if (!StringUtils.isEmpty(statusStr) && (statusStr.toUpperCase().matches(FIRST_ROW_REGEX)
                         || statusStr.toUpperCase().equalsIgnoreCase(SUBSEQUENT_ROW))) {
-                    parseSurveilledRequirements(csvRecord, surv, certResults);
+                    parseSurveilledRequirements(csvRecord, surv);
                 }
             }
 
@@ -95,7 +92,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
                 String statusStr = csvRecord.get(0).trim();
                 if (!StringUtils.isEmpty(statusStr) && (statusStr.toUpperCase().matches(FIRST_ROW_REGEX)
                         || statusStr.toUpperCase().equalsIgnoreCase(SUBSEQUENT_ROW))) {
-                    parseNonconformities(csvRecord, surv, certResults);
+                    parseNonconformities(csvRecord, surv);
                 }
             }
         }
@@ -201,16 +198,19 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         }
     }
 
-    public void parseSurveilledRequirements(CSVRecord csvRecord, Surveillance surv,
-            List<CertificationResultDetailsDTO> certResults) {
+    public void parseSurveilledRequirements(CSVRecord csvRecord, Surveillance surv) {
         SurveillanceRequirement req = new SurveillanceRequirement();
 
         int colIndex = 7;
         // requirement detail type
+        //Need to use the listing to determine if the requirementDetailType (when it's a Certified Capability)
+        //relates to the "old" or the "Cures" version of the criterion.  When detailType is a Certified Capability
+        //the detailType.id is the cert criterion id.
         String requirementTypeStr = csvRecord.get(colIndex++).trim();
         String requirementStr = csvRecord.get(colIndex++).trim();
         req.setRequirementDetailType(requirementDetailTypes.stream()
-                .filter(detailType -> (NullSafeEvaluator.eval(() -> detailType.getNumber(), "") .equals(requirementStr)
+                .filter(detailType -> ((NullSafeEvaluator.eval(() -> detailType.getNumber(), "") .equals(requirementStr)
+                                        && isCriterionAttestedTo(surv.getCertifiedProduct().getId(), detailType.getId()))
                         || NullSafeEvaluator.eval(() -> detailType.getTitle(), "") .equals(requirementStr))
                         && detailType.getSurveillanceRequirementType().getName().equals(requirementTypeStr))
                 .findAny()
@@ -227,49 +227,46 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 
     }
 
-    public void parseNonconformities(CSVRecord record, Surveillance surv, List<CertificationResultDetailsDTO> certResults) {
-        //TODO OCD-4029
-
+    public void parseNonconformities(CSVRecord csvRecord, Surveillance surv) {
         int ncBeginIndex = 10;
         // if the first nonconformity cell is blank, forget it
-        if (StringUtils.isEmpty(record.get(ncBeginIndex).trim())) {
+        if (StringUtils.isEmpty(csvRecord.get(ncBeginIndex).trim())) {
             return;
         }
 
         // find the requirement this nonconformity belongs to
         int colIndex = 8;
-        SurveillanceRequirement req = null;
-        String requirementStr = record.get(colIndex).trim();
-        if (!StringUtils.isEmpty(requirementStr)) {
-            Iterator<SurveillanceRequirement> reqIter = surv.getRequirements().iterator();
-            while (reqIter.hasNext() && req == null) {
-                SurveillanceRequirement currReq = reqIter.next();
-                if (currReq.getRequirement() != null && currReq.getRequirement().equalsIgnoreCase(requirementStr)) {
-                    req = currReq;
-                }
-            }
-        }
+        String requirementStr = csvRecord.get(colIndex).trim();
+        SurveillanceRequirement req = surv.getRequirements().stream()
+                .filter(r -> NullSafeEvaluator.eval(() -> r.getRequirementDetailType().getNumber(), "").equals(requirementStr)
+                        || NullSafeEvaluator.eval(() -> r.getRequirementDetailType().getTitle(), "").equals(requirementStr))
+                .findAny()
+                .orElse(null);
 
         // parse out all nonconformity data
         colIndex = 10;
         SurveillanceNonconformity nc = new SurveillanceNonconformity();
 
         // nonconformity type
-        //TODO - TMY - need to figure this out... (OCD-4029)
-        String ncTypeStr = record.get(colIndex++).trim();
+        //Need to use the listing to determine if the nonconformityType (when it's a Certified Capability)
+        //relates to the "old" or the "Cures" version of the criterion.  When nonconformityType is a Certified
+        //Capability the nc.id is the cert criterion id.
+        String ncTypeStr = csvRecord.get(colIndex++).trim();
         nc.setType(nonconformityTypes.stream()
-                .filter(ncType -> ncType.getNumber().equals(ncTypeStr) || ncType.getTitle().equals(ncTypeStr))
+                .filter(ncType -> (NullSafeEvaluator.eval(() -> ncType.getNumber(), "").equals(ncTypeStr)
+                                    && isCriterionAttestedTo(surv.getCertifiedProduct().getId(), ncType.getId()))
+                        || NullSafeEvaluator.eval(() -> ncType.getTitle(), "").equals(ncTypeStr))
                 .findAny()
                 .orElse(null));
 
         // nonconformity status
-        String ncStatusStr = record.get(colIndex++).trim();
+        String ncStatusStr = csvRecord.get(colIndex++).trim();
         if (!StringUtils.isEmpty(ncStatusStr)) {
             nc.setNonconformityStatus(ncStatusStr);
         }
 
         // date of determination
-        String determinationDateStr = record.get(colIndex++).trim();
+        String determinationDateStr = csvRecord.get(colIndex++).trim();
         if (!StringUtils.isEmpty(determinationDateStr)) {
             try {
                 nc.setDateOfDeterminationDay(LocalDate.parse(determinationDateStr, dateFormatter));
@@ -279,7 +276,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         }
 
         // CAP approval date
-        String capApprovalDateStr = record.get(colIndex++).trim();
+        String capApprovalDateStr = csvRecord.get(colIndex++).trim();
         if (!StringUtils.isEmpty(capApprovalDateStr)) {
             try {
                 nc.setCapApprovalDay(LocalDate.parse(capApprovalDateStr, dateFormatter));
@@ -289,7 +286,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         }
 
         // action begin date
-        String actionBeginDateStr = record.get(colIndex++).trim();
+        String actionBeginDateStr = csvRecord.get(colIndex++).trim();
         if (!StringUtils.isEmpty(actionBeginDateStr)) {
             try {
                 nc.setCapStartDay(LocalDate.parse(actionBeginDateStr, dateFormatter));
@@ -299,7 +296,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         }
 
         // must complete date
-        String mustCompleteDateStr = record.get(colIndex++).trim();
+        String mustCompleteDateStr = csvRecord.get(colIndex++).trim();
         if (!StringUtils.isEmpty(mustCompleteDateStr)) {
             try {
                 nc.setCapMustCompleteDay(LocalDate.parse(mustCompleteDateStr, dateFormatter));
@@ -309,7 +306,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         }
 
         // was complete date
-        String wasCompleteDateStr = record.get(colIndex++).trim();
+        String wasCompleteDateStr = csvRecord.get(colIndex++).trim();
         if (!StringUtils.isEmpty(wasCompleteDateStr)) {
             try {
                 nc.setCapEndDay(LocalDate.parse(wasCompleteDateStr, dateFormatter));
@@ -319,15 +316,15 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         }
 
         // summary
-        String summary = record.get(colIndex++).trim();
+        String summary = csvRecord.get(colIndex++).trim();
         nc.setSummary(summary);
 
         // findings
-        String findings = record.get(colIndex++).trim();
+        String findings = csvRecord.get(colIndex++).trim();
         nc.setFindings(findings);
 
         // sites passed
-        String sitesPassedStr = record.get(colIndex++).trim();
+        String sitesPassedStr = csvRecord.get(colIndex++).trim();
         if (!StringUtils.isEmpty(sitesPassedStr)) {
             try {
                 Integer sitesPassed = Integer.parseInt(sitesPassedStr);
@@ -338,7 +335,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         }
 
         // total sites used
-        String totalSitesUsedStr = record.get(colIndex++).trim();
+        String totalSitesUsedStr = csvRecord.get(colIndex++).trim();
         if (!StringUtils.isEmpty(totalSitesUsedStr)) {
             try {
                 Integer totalSitesUsed = Integer.parseInt(totalSitesUsedStr);
@@ -349,11 +346,11 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         }
 
         // developer explanation
-        String devExplanationStr = record.get(colIndex++).trim();
+        String devExplanationStr = csvRecord.get(colIndex++).trim();
         nc.setDeveloperExplanation(devExplanationStr);
 
         // resolution
-        String resolutionStr = record.get(colIndex++).trim();
+        String resolutionStr = csvRecord.get(colIndex++).trim();
         nc.setResolution(resolutionStr);
 
         if (req != null) {
@@ -361,12 +358,18 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         }
     }
 
-    private boolean isCriteriaAttestedTo(CertificationResultDetailsDTO certResult, String criterionNumber) {
-        return !StringUtils.isEmpty(certResult.getNumber())
-                && certResult.getSuccess() != null
-                && certResult.getSuccess().booleanValue()
-                && certResult.getNumber().equals(criterionNumber);
+    private Boolean isCriterionAttestedTo(Long listingId, Long criterionId) {
+        try {
+            CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(listingId);
+            return listing.getCertificationResults().stream()
+                    .filter(cr -> cr.isSuccess() && cr.getCriterion().getId().equals(criterionId))
+                    .findAny()
+                    .isPresent();
+        } catch (EntityRetrievalException e) {
+            return null;
+        }
     }
+
     @Override
     public List<CSVRecord> getRecord() {
         return record;

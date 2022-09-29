@@ -135,17 +135,10 @@ public class PendingSurveillanceDAO extends BaseDAOImpl {
         if (req.getResult() != null) {
             toInsertReq.setResult(req.getResult().getName());
         }
-//        if (req.getType() != null) {
-//            toInsertReq.setRequirementType(req.getType().getName());
-//        }
-//        if (req.getCriterion() != null) {
-//            toInsertReq.setCertificationCriterionId(req.getCriterion().getId());
-//        }
-//        toInsertReq.setSurveilledRequirement(req.getRequirement());
 
-        String requirementType = req.getRequirementDetailType().getNumber() != null ? req.getRequirementDetailType().getNumber() : req.getRequirementDetailType().getTitle();
-        toInsertReq.setRequirementType(requirementType);
+        String requirement = req.getRequirementDetailType().getNumber() != null ? req.getRequirementDetailType().getNumber() : req.getRequirementDetailType().getTitle();
         toInsertReq.setRequirementType(req.getRequirementDetailType().getSurveillanceRequirementType().getName());
+        toInsertReq.setSurveilledRequirement(requirement);
         toInsertReq.setPendingSurveillanceId(surveillanceId);
         toInsertReq.setLastModifiedUser(AuthUtil.getAuditId());
         toInsertReq.setDeleted(false);

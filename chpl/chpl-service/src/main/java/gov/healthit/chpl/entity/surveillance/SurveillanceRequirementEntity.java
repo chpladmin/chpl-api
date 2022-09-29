@@ -48,14 +48,14 @@ public class SurveillanceRequirementEntity {
     private Long surveillanceId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "requirement_detail_type_id", insertable = false, updatable = false)
+    @JoinColumn(name = "requirement_detail_type_id", insertable = true, updatable = true)
     private RequirementDetailTypeEntity requirementDetailType;
 
     @Column(name = "requirement_detail_other")
     private String requirementDetailOther;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "result_id", insertable = false, updatable = false)
+    @JoinColumn(name = "result_id", insertable = true, updatable = true)
     private SurveillanceResultTypeEntity surveillanceResultTypeEntity;
 
     @Column(name = "deleted")
