@@ -11,14 +11,14 @@ public class DateUtilTest {
     @Test
     public void convertEasternLocalDateTimeToUtc_hasCorrectValue() {
         LocalDateTime input = LocalDateTime.parse("2022-04-06T11:20:00");
-        LocalDateTime output = DateUtil.fromEasternToUtc(input);
+        LocalDateTime output = DateUtil.fromEasternToSystem(input);
         assertEquals(output.toString(), "2022-04-06T15:20");
     }
 
     @Test
     public void convertUtcLocalDateTimeToEastern_hasCorrectValue() {
         LocalDateTime input = LocalDateTime.parse("2022-04-06T15:20:00");
-        LocalDateTime output = DateUtil.fromUtcToEastern(input);
+        LocalDateTime output = DateUtil.fromSystemToEastern(input);
         assertEquals(output.toString(), "2022-04-06T11:20");
     }
 }

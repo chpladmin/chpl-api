@@ -306,6 +306,7 @@ public class DimensionalDataManager {
         return results;
     }
 
+    @Deprecated
     public SurveillanceRequirementOptions getSurveillanceRequirementOptions() {
         LOGGER.debug("Getting all surveillance requirements from the database (not cached).");
 
