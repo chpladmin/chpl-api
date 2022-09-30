@@ -1,10 +1,108 @@
 package gov.healthit.chpl.util;
 
-public class DeprecatedFieldExplorerTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-    //TODO - TMY - Will we still have this test? - YES (OCD-4029)
-    /*
-    private DeprecatedFieldExplorer deprecatedFieldExplorer;
+import java.util.Map;
+import java.util.Set;
+
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import gov.healthit.chpl.api.domain.ApiKey;
+import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResponse;
+import gov.healthit.chpl.domain.Announcement;
+import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.CertifiedProductSearchBasicDetails;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
+import gov.healthit.chpl.domain.DecertifiedDeveloper;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.DimensionalData;
+import gov.healthit.chpl.domain.Filter;
+import gov.healthit.chpl.domain.FuzzyChoices;
+import gov.healthit.chpl.domain.IcsFamilyTreeNode;
+import gov.healthit.chpl.domain.KeyValueModel;
+import gov.healthit.chpl.domain.KeyValueModelStatuses;
+import gov.healthit.chpl.domain.ListingUpload;
+import gov.healthit.chpl.domain.Measure;
+import gov.healthit.chpl.domain.MeasureType;
+import gov.healthit.chpl.domain.ParticipantGenderStatistics;
+import gov.healthit.chpl.domain.PermissionDeletedResponse;
+import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.domain.ProductVersion;
+import gov.healthit.chpl.domain.SearchOption;
+import gov.healthit.chpl.domain.SimpleCertificationId;
+import gov.healthit.chpl.domain.TestFunctionality;
+import gov.healthit.chpl.domain.TestStandard;
+import gov.healthit.chpl.domain.TestingLab;
+import gov.healthit.chpl.domain.activity.ActivityDetails;
+import gov.healthit.chpl.domain.activity.ActivityMetadata;
+import gov.healthit.chpl.domain.activity.ActivityMetadataPage;
+import gov.healthit.chpl.domain.auth.UpdatePasswordResponse;
+import gov.healthit.chpl.domain.auth.UserInvitation;
+import gov.healthit.chpl.domain.auth.UsersResponse;
+import gov.healthit.chpl.domain.complaint.Complaint;
+import gov.healthit.chpl.domain.compliance.DirectReview;
+import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
+import gov.healthit.chpl.domain.status.SystemStatus;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
+import gov.healthit.chpl.dto.CHPLFileDTO;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
+import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUploadResponse;
+import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResponse;
+import gov.healthit.chpl.search.domain.SearchResponse;
+import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
+import gov.healthit.chpl.surveillance.report.domain.PrivilegedSurveillance;
+import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
+import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
+import gov.healthit.chpl.svap.domain.Svap;
+import gov.healthit.chpl.web.controller.results.AnnouncementResults;
+import gov.healthit.chpl.web.controller.results.BooleanResult;
+import gov.healthit.chpl.web.controller.results.CQMResultDetailResults;
+import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
+import gov.healthit.chpl.web.controller.results.CertificationCriterionResults;
+import gov.healthit.chpl.web.controller.results.CertificationIdLookupResults;
+import gov.healthit.chpl.web.controller.results.CertificationIdResults;
+import gov.healthit.chpl.web.controller.results.CertificationIdVerifyResults;
+import gov.healthit.chpl.web.controller.results.CertificationResults;
+import gov.healthit.chpl.web.controller.results.ChangeRequestResults;
+import gov.healthit.chpl.web.controller.results.ChplJobsResults;
+import gov.healthit.chpl.web.controller.results.ComplaintResults;
+import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
+import gov.healthit.chpl.web.controller.results.DeveloperAttestationSubmissionResults;
+import gov.healthit.chpl.web.controller.results.DeveloperResults;
+import gov.healthit.chpl.web.controller.results.FilterResults;
+import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
+import gov.healthit.chpl.web.controller.results.ListingCountStatisticsResult;
+import gov.healthit.chpl.web.controller.results.ListingUploadResponse;
+import gov.healthit.chpl.web.controller.results.MeasureResults;
+import gov.healthit.chpl.web.controller.results.NonconformityTypeStatisticsResult;
+import gov.healthit.chpl.web.controller.results.ParticipantAgeStatisticsResult;
+import gov.healthit.chpl.web.controller.results.ParticipantEducationStatisticsResult;
+import gov.healthit.chpl.web.controller.results.ParticipantExperienceStatisticsResult;
+import gov.healthit.chpl.web.controller.results.ProductResults;
+import gov.healthit.chpl.web.controller.results.ScheduleOneTimeTriggersResults;
+import gov.healthit.chpl.web.controller.results.ScheduleTriggersResults;
+import gov.healthit.chpl.web.controller.results.SedParticipantStatisticsCountResults;
+import gov.healthit.chpl.web.controller.results.SplitProductResponse;
+import gov.healthit.chpl.web.controller.results.SplitVersionResponse;
+import gov.healthit.chpl.web.controller.results.SurveillanceResults;
+import gov.healthit.chpl.web.controller.results.SvapResults;
+import gov.healthit.chpl.web.controller.results.SystemTriggerResults;
+import gov.healthit.chpl.web.controller.results.TestingLabResults;
+
+@SuppressWarnings("checkstyle:magicnumber")
+public class DeprecatedFieldExplorerTest {
 
     private DeprecatedResponseFieldExplorer deprecatedFieldExplorer;
 
@@ -17,23 +115,28 @@ public class DeprecatedFieldExplorerTest {
     public void findDeprecatedFields_CertifiedProductSearchDetails() {
         Map<String, Object> deprecatedItems = deprecatedFieldExplorer.getUniqueDeprecatedItemsForClass(CertifiedProductSearchDetails.class);
         assertNotNull(deprecatedItems);
-        assertEquals(8, deprecatedItems.keySet().size());
+        assertEquals(13, deprecatedItems.keySet().size());
         Set<String> deprecatedItemNames = deprecatedItems.keySet();
         assertTrue(deprecatedItemNames.contains("developer" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedItemNames.contains("product" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "productId"));
         assertTrue(deprecatedItemNames.contains("product" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "owner" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedItemNames.contains("product" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "ownerHistory" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR  + "developer" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedItemNames.contains("version" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "versionId"));
-        assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "documents"));
         assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirementName"));
+        assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirement"));
+        assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "criterion"));
         assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformityTypeName"));
+        assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "documents"));
+        assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformityType"));
+        assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "criterion"));
+        assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "documents"));
     }
 
     @Test
     public void findDeprecatedFields_CertifiedProductSearchBasicDetails() {
         Map<String, Object> deprecatedItems = deprecatedFieldExplorer.getUniqueDeprecatedItemsForClass(CertifiedProductSearchBasicDetails.class);
         assertNotNull(deprecatedItems);
-        assertEquals(8, deprecatedItems.size());
+        assertEquals(13, deprecatedItems.size());
         Set<String> deprecatedItemNames = deprecatedItems.keySet();
         assertTrue(deprecatedItemNames.contains("developer" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedItemNames.contains("product" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "productId"));
@@ -41,7 +144,12 @@ public class DeprecatedFieldExplorerTest {
         assertTrue(deprecatedItemNames.contains("product" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "ownerHistory" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR  + "developer" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedItemNames.contains("version" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "versionId"));
         assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirementName"));
+        assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirement"));
+        assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "criterion"));
         assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformityTypeName"));
+        assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "documents"));
+        assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformityType"));
+        assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "criterion"));
         assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "documents"));
     }
 
@@ -58,11 +166,16 @@ public class DeprecatedFieldExplorerTest {
         Map<String, Object> deprecatedItems = deprecatedFieldExplorer.getUniqueDeprecatedItemsForClass(SurveillanceResults.class);
 
         assertNotNull(deprecatedItems);
-        assertEquals(3, deprecatedItems.size());
+        assertEquals(8, deprecatedItems.size());
         Set<String> deprecatedItemNames = deprecatedItems.keySet();
         assertTrue(deprecatedItemNames.contains("pendingSurveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirementName"));
+        assertTrue(deprecatedItemNames.contains("pendingSurveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "type"));
+        assertTrue(deprecatedItemNames.contains("pendingSurveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirement"));
+        assertTrue(deprecatedItemNames.contains("pendingSurveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "criterion"));
         assertTrue(deprecatedItemNames.contains("pendingSurveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformityTypeName"));
         assertTrue(deprecatedItemNames.contains("pendingSurveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "documents"));
+        assertTrue(deprecatedItemNames.contains("pendingSurveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformityType"));
+        assertTrue(deprecatedItemNames.contains("pendingSurveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "criterion"));
     }
 
     @Test
@@ -70,11 +183,16 @@ public class DeprecatedFieldExplorerTest {
         Map<String, Object> deprecatedItems = deprecatedFieldExplorer.getUniqueDeprecatedItemsForClass(Surveillance.class);
 
         assertNotNull(deprecatedItems);
-        assertEquals(3, deprecatedItems.size());
+        assertEquals(8, deprecatedItems.size());
         Set<String> deprecatedItemNames = deprecatedItems.keySet();
         assertTrue(deprecatedItemNames.contains("requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirementName"));
+        assertTrue(deprecatedItemNames.contains("requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "type"));
+        assertTrue(deprecatedItemNames.contains("requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirement"));
+        assertTrue(deprecatedItemNames.contains("requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "criterion"));
         assertTrue(deprecatedItemNames.contains("requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformityTypeName"));
         assertTrue(deprecatedItemNames.contains("requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "documents"));
+        assertTrue(deprecatedItemNames.contains("requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformityType"));
+        assertTrue(deprecatedItemNames.contains("requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "criterion"));
     }
 
     @Test
@@ -750,5 +868,4 @@ public class DeprecatedFieldExplorerTest {
         assertTrue(deprecatedItemNames.contains("canSubmitAttestationChangeRequest"));
         assertTrue(deprecatedItemNames.contains("developerAttestations" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developer" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developerId"));
     }
-    */
 }
