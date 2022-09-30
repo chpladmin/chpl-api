@@ -60,13 +60,14 @@ public class SurveillanceRequirement implements Serializable {
     private CertificationCriterion criterion;
 
     /**
-     * TODO - Need to add description (OCD-4029)
+     * For a given surveillance activity, details about the requirement and
+     * the type of requirement being surveilled
      */
     @XmlElement
     private RequirementDetailType requirementDetailType;
 
     /**
-     * TODO - Need to add description (OCD-4029)
+     * When the requirement type is "Other", the value of the requirement type
      */
     @XmlElement
     private String requirementDetailOther;

@@ -11,13 +11,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import gov.healthit.chpl.util.Util;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
-@SuperBuilder
+@Builder
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class NonconformityType implements Serializable {
     private static final long serialVersionUID = -7437221753188417890L;
 

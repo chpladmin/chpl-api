@@ -1,7 +1,5 @@
 package gov.healthit.chpl.permissions.domains.surveillance;
 
-import java.util.Objects;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
@@ -47,17 +45,11 @@ public class DeleteDocumentActionPermissions extends ActionPermissions {
                 SurveillanceEntity surv = survDao.getSurveillanceByDocumentId(documentId);
                 if (isAcbValidForCurrentUser(surv.getCertifiedProduct().getCertificationBodyId())) {
                     SurveillanceNonconformityEntity nonconformity = findNonconformityWithDocumentId(surv, documentId);
-                    if (isNonconformityForRemovedCriteria(nonconformity)) {
+                    if (isNonconformityForRemoved(nonconformity)) {
                         //done instead of returning false to get a more customized message than
                         //Access is denied.
                         throw new AccessDeniedException(msgUtil.getMessage(
-                                "surveillance.nonconformityDocNotDeletedForRemovedCriteria",
-                                nonconformity.getType().getNumber()));
-                    } else if (isNonconformityForRemovedRequirement(nonconformity)) {
-                        //done instead of returning false to get a more customized message than
-                        //Access is denied.
-                        throw new AccessDeniedException(msgUtil.getMessage(
-                                "surveillance.nonconformityDocNotDeletedForRemovedRequirement",
+                                "surveillance.nonconformityDocNotDeletedForRemoved",
                                 nonconformity.getType().getNumber()));
                     } else if (isListing2014Edition(surv)) {
                         //done instead of returning false to get a more customized message than
@@ -79,7 +71,6 @@ public class DeleteDocumentActionPermissions extends ActionPermissions {
         }
     }
 
-
     private SurveillanceNonconformityEntity findNonconformityWithDocumentId(SurveillanceEntity surv, Long documentId) {
         SurveillanceNonconformityEntity nonconformity = null;
         for (SurveillanceRequirementEntity req : surv.getSurveilledRequirements()) {
@@ -94,20 +85,8 @@ public class DeleteDocumentActionPermissions extends ActionPermissions {
         return nonconformity;
     }
 
-    private boolean isNonconformityForRemovedCriteria(SurveillanceNonconformityEntity nonconformity) {
-        //return nonconformity != null
-        //        && nonconformity.getCertificationCriterionEntity() != null
-        //        && nonconformity.getCertificationCriterionEntity().getRemoved() != null
-        //        && nonconformity.getCertificationCriterionEntity().getRemoved().booleanValue();
+    private boolean isNonconformityForRemoved(SurveillanceNonconformityEntity nonconformity) {
         return NullSafeEvaluator.eval(() -> nonconformity.getType().getRemoved().booleanValue(), false);
-    }
-
-    private boolean isNonconformityForRemovedRequirement(SurveillanceNonconformityEntity nonconformity) {
-        //return nonconformity != null
-        //        && nonconformity.getType().equalsIgnoreCase(NonconformityType.K2.getName());
-        return Objects.equals(
-                NullSafeEvaluator.eval(() -> nonconformity.getType().getTitle(), null),
-                "170.523 (k)(2)");
     }
 
     private boolean isListing2014Edition(SurveillanceEntity surv) {

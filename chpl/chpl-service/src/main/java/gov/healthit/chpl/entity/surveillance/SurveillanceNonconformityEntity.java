@@ -22,6 +22,7 @@ import org.hibernate.annotations.Where;
 import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,9 +45,6 @@ public class SurveillanceNonconformityEntity {
 
     @Column(name = "surveillance_requirement_id")
     private Long surveillanceRequirementId;
-
-    //@Column(name = "certification_criterion_id")
-    //private Long certificationCriterionId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "nonconformity_type_id", insertable = true, updatable = true)
@@ -106,7 +104,7 @@ public class SurveillanceNonconformityEntity {
     @Where(clause = "deleted <> 'true'")
     private Set<SurveillanceNonconformityDocumentationEntity> documents = new HashSet<SurveillanceNonconformityDocumentationEntity>();
 
-    public SurveillanceNonconformity toDomain() {
+    public SurveillanceNonconformity toDomain(CertificationCriterionService certificationCriterionService) {
         SurveillanceNonconformity nc = SurveillanceNonconformity.builder()
                 .capApprovalDay(this.getCapApproval())
                 .capEndDay(this.getCapEndDate())
@@ -127,10 +125,9 @@ public class SurveillanceNonconformityEntity {
                 .nonconformityType(this.getType().getClassification().equals(NonconformityClassification.REQUIREMENT) ? this.getType().getNumber() : null)
                 .build();
 
-        //TODO - need to figure this out OCD_4029
-        //if (nc.getType().getClassification().equals(NonconformityClassification.CRITERION)) {
-        //    nc.setCriterion(certificationCriterionService.get(nc.getType().getId()));
-        //}
+        if (nc.getType().getClassification().equals(NonconformityClassification.CRITERION)) {
+            nc.setCriterion(certificationCriterionService.get(nc.getType().getId()));
+        }
 
         if (this.getDocuments() != null && this.getDocuments().size() > 0) {
             nc.setDocuments(this.getDocuments().stream()

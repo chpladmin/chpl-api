@@ -6,27 +6,17 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.domain.surveillance.RequirementDetailType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
-import gov.healthit.chpl.manager.DimensionalDataManager;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
 public class AddedRemovedSurveillanceRequirementActivity implements ListingActivity {
-    //private List<Removable<String>> surveillanceRequirementOptions;
-    private List<RequirementDetailType> requirementDetailTypes;
-
-    @Autowired
-    public AddedRemovedSurveillanceRequirementActivity(DimensionalDataManager dimensionalDataManager) {
-        requirementDetailTypes = dimensionalDataManager.getRequirementDetailTypes().stream().toList();
-    }
 
     @Override
     public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {

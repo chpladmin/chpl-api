@@ -1,7 +1,5 @@
 package gov.healthit.chpl.permissions.domains.surveillance;
 
-import java.util.Objects;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
@@ -46,17 +44,11 @@ public class AddDocumentActionPermissions extends ActionPermissions {
                 SurveillanceEntity surv = survDao.getSurveillanceByNonconformityId(nonconformityId);
                 if (isAcbValidForCurrentUser(surv.getCertifiedProduct().getCertificationBodyId())) {
                     SurveillanceNonconformityEntity nonconformity = findNonconformityWithId(surv, nonconformityId);
-                    if (isNonconformityForRemovedCriteria(nonconformity)) {
+                    if (isNonconformityForRemoved(nonconformity)) {
                         //done instead of returning false to get a more customized message than
                         //Access is denied.
                         throw new AccessDeniedException(msgUtil.getMessage(
-                                "surveillance.nonconformityDocNotAddedForRemovedCriteria",
-                                nonconformity.getType().getNumber()));
-                    } else if (isNonconformityForRemovedRequirement(nonconformity)) {
-                        //done instead of returning false to get a more customized message than
-                        //Access is denied.
-                        throw new AccessDeniedException(msgUtil.getMessage(
-                                "surveillance.nonconformityDocNotAddedForRemovedRequirement",
+                                "surveillance.nonconformityDocNotAddedForRemoved",
                                 nonconformity.getType().getNumber()));
                     } else if (isListing2014Edition(surv)) {
                         //done instead of returning false to get a more customized message than
@@ -90,20 +82,8 @@ public class AddDocumentActionPermissions extends ActionPermissions {
         return nonconformity;
     }
 
-    private boolean isNonconformityForRemovedCriteria(SurveillanceNonconformityEntity nonconformity) {
-        //return nonconformity != null
-        //        && nonconformity.getCertificationCriterionEntity() != null
-        //        && nonconformity.getCertificationCriterionEntity().getRemoved() != null
-        //        && nonconformity.getCertificationCriterionEntity().getRemoved().booleanValue();
+    private boolean isNonconformityForRemoved(SurveillanceNonconformityEntity nonconformity) {
         return NullSafeEvaluator.eval(() -> nonconformity.getType().getRemoved().booleanValue(), false);
-    }
-
-    private boolean isNonconformityForRemovedRequirement(SurveillanceNonconformityEntity nonconformity) {
-        return Objects.equals(
-                NullSafeEvaluator.eval(() -> nonconformity.getType().getTitle(), null),
-                "170.523 (k)(2)");
-        //return nonconformity != null
-        //        && nonconformity.getType().equalsIgnoreCase(NonconformityType.K2.getName());
     }
 
     private boolean isListing2014Edition(SurveillanceEntity surv) {

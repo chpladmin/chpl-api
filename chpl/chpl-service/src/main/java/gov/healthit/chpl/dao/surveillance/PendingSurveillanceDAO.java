@@ -27,10 +27,7 @@ public class PendingSurveillanceDAO extends BaseDAOImpl {
             + "FROM PendingSurveillanceEntity surv "
             + "JOIN FETCH surv.certifiedProduct "
             + "LEFT OUTER JOIN FETCH surv.surveilledRequirements reqs "
-            + "LEFT OUTER JOIN FETCH reqs.certificationCriterionEntity cce "
-            + "LEFT OUTER JOIN FETCH cce.certificationEdition "
             + "LEFT OUTER JOIN FETCH reqs.nonconformities ncs "
-            + "LEFT OUTER JOIN FETCH ncs.certificationCriterionEntity cce2 "
             + "LEFT OUTER JOIN FETCH surv.validation ";
 
     @Transactional(readOnly = true)

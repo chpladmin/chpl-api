@@ -38,14 +38,14 @@ public class SurveillanceRemovedDataComparisonReviewer implements ComparisonRevi
                     .filter(existingSurvReq -> doRequirementsMatch(updatedReq, existingSurvReq))
                     .findFirst();
 
-            if (!existingReq.isPresent() && hasRemovedRequirementDetail(updatedReq)) {
+            if (!existingReq.isPresent() && hasRemovedRequirementDetailType(updatedReq)) {
                 // if it's a new requirement it can't have any removed criteria
                 updatedSurveillance.getErrorMessages().add(
                         msgUtil.getMessage("surveillance.requirementNotAddedForRemoved",
                                 updatedReq.getRequirementDetailType().getFormattedTitle()));
                 checkForRemovedNonconformities(updatedSurveillance, null, updatedReq.getNonconformities());
             } else if (existingReq.isPresent()) {
-                if (hasRemovedRequirementDetail(updatedReq) && !updatedReq.matches(existingReq.get())) {
+                if (hasRemovedRequirementDetailType(updatedReq) && !updatedReq.matches(existingReq.get())) {
                     // if it's an existing requirement with a removed criteria then it can't be edited
                     updatedSurveillance.getErrorMessages().add(
                             msgUtil.getMessage("surveillance.requirementNotEditedForRemoved",
@@ -70,13 +70,13 @@ public class SurveillanceRemovedDataComparisonReviewer implements ComparisonRevi
                             .filter(existingSurvNonconformity -> doNonconformitiesMatch(updatedNonconformity, existingSurvNonconformity))
                             .findFirst();
 
-            if (!existingNonconformity.isPresent() && hasRemovedNonconformity(updatedNonconformity)) {
+            if (!existingNonconformity.isPresent() && hasRemovedNonconformityType(updatedNonconformity)) {
                 // if it's a new nonconformity it can't have any removed nonconformity
                 updatedSurveillance.getErrorMessages().add(
                         msgUtil.getMessage("surveillance.nonconformityNotAddedForRemoved",
                                 updatedNonconformity.getType().getFormattedTitle()));
             } else if (existingNonconformity.isPresent()
-                    && hasRemovedNonconformity(updatedNonconformity)
+                    && hasRemovedNonconformityType(updatedNonconformity)
                     && !updatedNonconformity.matches(existingNonconformity.get())) {
                 // if it's an existing nonconformity with a removed nonconformity then it can't be edited
                 updatedSurveillance.getErrorMessages().add(
@@ -96,11 +96,11 @@ public class SurveillanceRemovedDataComparisonReviewer implements ComparisonRevi
                 && updatedNonconformity.getId().equals(existingNonconformity.getId());
     }
 
-    private boolean hasRemovedRequirementDetail(SurveillanceRequirement requirement) {
+    private boolean hasRemovedRequirementDetailType(SurveillanceRequirement requirement) {
         return NullSafeEvaluator.eval(() -> requirement.getRequirementDetailType().getRemoved(), false);
     }
 
-    private boolean hasRemovedNonconformity(SurveillanceNonconformity nonconformity) {
+    private boolean hasRemovedNonconformityType(SurveillanceNonconformity nonconformity) {
         return NullSafeEvaluator.eval(() -> nonconformity.getType().getRemoved(), false);
     }
 }

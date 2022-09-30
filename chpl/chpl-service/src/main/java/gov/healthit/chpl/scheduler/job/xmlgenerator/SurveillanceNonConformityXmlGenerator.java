@@ -42,8 +42,6 @@ public class SurveillanceNonConformityXmlGenerator extends XmlGenerator {
             createSimpleElement(snc.getSummary(), "summary", sw);
             createSimpleElement(snc.getTotalSites(), "totalSites", sw);
             NonconformityTypeXmlGenerator.add(snc.getType(), "type", sw);
-
-
             sw.writeEndElement();
         }
     }

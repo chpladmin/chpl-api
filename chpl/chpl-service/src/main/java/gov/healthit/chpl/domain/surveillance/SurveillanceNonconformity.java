@@ -519,10 +519,6 @@ public class SurveillanceNonconformity implements Serializable {
     @DeprecatedResponseField(removalDate = "2023-01-01",
         message = "This field is deprecated and will be removed from the response data in a future release.")
     public String getNonconformityTypeName() {
-        //if (getCriterion() == null) {
-        //    return getNonconformityType();
-        //}
-        //return Util.formatCriteriaNumber(getCriterion());
-        return "";
+        return NullSafeEvaluator.eval(() -> type.getFormattedTitle(), "");
     }
 }

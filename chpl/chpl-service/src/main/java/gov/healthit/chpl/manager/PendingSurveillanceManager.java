@@ -43,6 +43,7 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
+import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
 import gov.healthit.chpl.domain.surveillance.RequirementDetailType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
@@ -400,7 +401,6 @@ public class PendingSurveillanceManager extends SecuredManager {
                                 .findings(pnc.getFindings())
                                 .id(pnc.getId())
                                 .nonconformityType(pnc.getType())
-                                .criterion(pnc.getCertificationCriterionEntity() != null ? pnc.getCertificationCriterionEntity().toDomain() : null)
                                 .type(getNonconformityType(pnc.getType(), pr.getCertifiedProductId()))
                                 .resolution(pnc.getResolution())
                                 .sitesPassed(pnc.getSitesPassed())
@@ -409,6 +409,12 @@ public class PendingSurveillanceManager extends SecuredManager {
                                 .nonconformityCloseDay(pnc.getNonconformityCloseDate())
                                 .nonconformityStatus(pnc.getNonconformityCloseDate() == null ? "Open" : "Closed")
                                 .build();
+                        if (nc.getType() != null && nc.getType().getClassification().equals(NonconformityClassification.CRITERION)) {
+                            nc.setCriterion(certificationCriterionService.getByNumber(nc.getType().getNumber()).stream()
+                                    .filter(criterion -> isCriterionAttestedTo(pr.getCertifiedProductId(), criterion.getId()))
+                                    .findAny()
+                                    .orElse(null));
+                        }
                         req.getNonconformities().add(nc);
                     }
                 }

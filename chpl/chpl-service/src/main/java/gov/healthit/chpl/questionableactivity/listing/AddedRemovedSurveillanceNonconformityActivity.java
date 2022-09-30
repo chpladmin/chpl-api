@@ -79,16 +79,6 @@ public class AddedRemovedSurveillanceNonconformityActivity implements ListingAct
     }
 
     private Boolean isNonconformityTypeRemoved(NonconformityType nonconformityType) {
-        //Optional<NonconformityType> ncType = NonconformityType.getByName(nonconformity);
-        //if (ncType.isPresent()) {
-        //    return ncType.get().getRemoved();
-        //} else {
-        //    return certificationCriterionService.getByNumber(nonconformity).stream()
-        //            .filter(crit -> crit.getRemoved()
-        //                    && !CertificationCriterionService.hasCuresInTitle(crit))
-        //            .findAny()
-        //            .isPresent();
-        //}
         return nonconformityType.getRemoved();
     }
 
