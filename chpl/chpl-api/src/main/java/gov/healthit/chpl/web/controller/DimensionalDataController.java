@@ -46,6 +46,7 @@ import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.results.CertificationCriterionResults;
 import gov.healthit.chpl.web.controller.results.SvapResults;
 import io.swagger.v3.oas.annotations.Operation;
@@ -512,8 +513,7 @@ public class DimensionalDataController {
         return result;
     }
 
-    //TODO: Update the description (OCD-4029) 
-    @Operation(summary = "Get all possible surveillance requirement type options in the CHPL",
+    @Operation(summary = "Get all possible surveillance requirement detail type options in the CHPL",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
@@ -534,6 +534,10 @@ public class DimensionalDataController {
     @RequestMapping(value = "/surveillance-requirements", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    @DeprecatedApi(friendlyUrl = "/data/surveillance-requirements",
+    removalDate = "2023-05-01",
+    message = "This endpoint is deprecated and will be removed in a future release. Please use /data/surveillance-requirement-detail-types "
+            + "to get the Surveillance Requirement types.")
     public @ResponseBody SurveillanceRequirementOptions getSurveillanceRequirementOptions() {
         SurveillanceRequirementOptions data = dimensionalDataManager.getSurveillanceRequirementOptions();
         return data;
@@ -561,6 +565,9 @@ public class DimensionalDataController {
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/nonconformity-types",
+        removalDate = "2023-05-01",
+        message = "This endpoint is deprecated and will be removed in a future release. Please use /data/nonconformity-types/v2 to get the Non-conformity types.")
     public @ResponseBody SearchOption getNonconformityTypeOptions() {
         Set<CertificationCriterion> data = dimensionalDataManager.getNonconformityTypeOptions();
         SearchOption result = new SearchOption();

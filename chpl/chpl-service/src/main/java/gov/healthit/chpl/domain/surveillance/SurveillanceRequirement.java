@@ -41,6 +41,9 @@ public class SurveillanceRequirement implements Serializable {
      * "Transparency or Disclosure Requirement", or "Other Requirement"
      */
     @Deprecated
+    @DeprecatedResponseField(removalDate = "2023-05-01",
+    message = "This field is deprecated and will be removed from the response data in a future release. "
+            + "Please replace usage of the 'type' field with 'requirementDetailType'.")
     @XmlElement(required = true)
     private SurveillanceRequirementType type;
 
@@ -48,6 +51,9 @@ public class SurveillanceRequirement implements Serializable {
      * Name of the surveilled requirement (ex: 170.314 (a)(1))
      */
     @Deprecated
+    @DeprecatedResponseField(removalDate = "2023-05-01",
+    message = "This field is deprecated and will be removed from the response data in a future release. "
+            + "Please replace usage of the 'requirement' field with 'requirementDetailType'.")
     @XmlElement(required = true)
     private String requirement;
 
@@ -57,6 +63,9 @@ public class SurveillanceRequirement implements Serializable {
      */
     @Deprecated
     @XmlElement(required = false)
+    @DeprecatedResponseField(removalDate = "2023-05-01",
+    message = "This field is deprecated and will be removed from the response data in a future release. "
+            + "Please replace usage of the 'criterion' field with 'requirementDetailType'.")
     private CertificationCriterion criterion;
 
     /**

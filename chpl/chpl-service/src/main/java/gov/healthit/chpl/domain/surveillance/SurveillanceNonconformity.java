@@ -58,6 +58,9 @@ public class SurveillanceNonconformity implements Serializable {
      * a textual description
      */
     @Deprecated
+    @DeprecatedResponseField(removalDate = "2023-05-01",
+        message = "This field is deprecated and will be removed from the response data in a future release. "
+                + "Please replace usage of the 'nonconformityType' field with 'type'.")
     @XmlTransient
     private String nonconformityType;
 
@@ -66,6 +69,9 @@ public class SurveillanceNonconformity implements Serializable {
      * then this field will have the criterion details (number, title, etc).
      */
     @Deprecated
+    @DeprecatedResponseField(removalDate = "2023-05-01",
+    message = "This field is deprecated and will be removed from the response data in a future release. "
+            + "Please replace usage of the 'criterion' field with 'type'.")
     @XmlTransient
     private CertificationCriterion criterion;
 
