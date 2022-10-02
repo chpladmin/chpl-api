@@ -8,8 +8,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
-import gov.healthit.chpl.util.EasternToUtcLocalDateTimeDeserializer;
-import gov.healthit.chpl.util.UtcToEasternLocalDateTimeSerializer;
+import gov.healthit.chpl.util.EasternToSystemLocalDateTimeDeserializer;
+import gov.healthit.chpl.util.SystemToEasternLocalDateTimeSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,11 +24,11 @@ public class Announcement implements Serializable {
     private Long id;
     private String title;
     private String text;
-    @JsonDeserialize(using = EasternToUtcLocalDateTimeDeserializer.class)
-    @JsonSerialize(using = UtcToEasternLocalDateTimeSerializer.class)
+    @JsonDeserialize(using = EasternToSystemLocalDateTimeDeserializer.class)
+    @JsonSerialize(using = SystemToEasternLocalDateTimeSerializer.class)
     private LocalDateTime startDateTime;
-    @JsonDeserialize(using = EasternToUtcLocalDateTimeDeserializer.class)
-    @JsonSerialize(using = UtcToEasternLocalDateTimeSerializer.class)
+    @JsonDeserialize(using = EasternToSystemLocalDateTimeDeserializer.class)
+    @JsonSerialize(using = SystemToEasternLocalDateTimeSerializer.class)
     private LocalDateTime endDateTime;
     @Deprecated
     @DeprecatedResponseField(removalDate = "2022-10-15",

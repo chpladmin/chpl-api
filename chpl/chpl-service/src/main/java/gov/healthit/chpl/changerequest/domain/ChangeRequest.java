@@ -1,12 +1,19 @@
 package gov.healthit.chpl.changerequest.domain;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.util.EasternToSystemLocalDateTimeDeserializer;
+import gov.healthit.chpl.util.SystemToEasternLocalDateTimeSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,6 +36,15 @@ public class ChangeRequest implements Serializable {
     @Singular
     private List<ChangeRequestStatus> statuses = new ArrayList<ChangeRequestStatus>();
     private Object details;
+
+    @JsonDeserialize(using = EasternToSystemLocalDateTimeDeserializer.class)
+    @JsonSerialize(using = SystemToEasternLocalDateTimeSerializer.class)
+    private LocalDateTime submittedDateTime;
+
+    @DeprecatedResponseField(
+            removalDate = "2023-03-15",
+            message = "This field is deprecated and will be removed from the response data in a future release. Please replace usage of the 'submittedDate' field with 'submittedDateTime'.")
+    @Deprecated
     private Date submittedDate;
 
 }
