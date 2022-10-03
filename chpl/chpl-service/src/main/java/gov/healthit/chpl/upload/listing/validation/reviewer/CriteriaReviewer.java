@@ -44,11 +44,15 @@ public class CriteriaReviewer {
     public void review(CertifiedProductSearchDetails listing) {
         privacyAndSecurityCriteriaReviewer.review(listing);
         invalidCriteriaCombinationReviewer.review(listing);
-        if (ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD)) {
+        if (ff4j.check(FeatureList.ERD_PHASE_2)
+                && !ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD_END)) {
+            //use this reviewer during the grace period
             requiredAndRelatedCriteriaErdPhase2GracePeriodReviewer.review(listing);
         } else if (ff4j.check(FeatureList.ERD_PHASE_2)) {
+            //use this reviewer after the grace period
             requiredAndRelatedCriteriaReviewer.review(listing);
         } else {
+            //use this reviewer before ERD-Phase-2
             requiredAndRelatedCriteriaPreErdPhase2Reviewer.review(listing);
         }
 

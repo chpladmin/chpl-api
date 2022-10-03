@@ -252,11 +252,15 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(unsupportedCharacterReviewer);
         reviewers.add(fieldLengthReviewer);
         reviewers.add(requiredDataReviewer);
-        if (ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD)) {
+        if (ff4j.check(FeatureList.ERD_PHASE_2)
+                && !ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD_END)) {
+            //use this reviewer during the grace period
             reviewers.add(requiredAndRelatedCriteriaErdPhase2GracePeriodReviewer);
         } else if (ff4j.check(FeatureList.ERD_PHASE_2)) {
+            //use this reviewer after the grace period
             reviewers.add(requiredAndRelatedCriteriaReviewer);
         } else {
+            //use this reviewer before ERD-Phase-2
             reviewers.add(requiredAndRelatedCriteriaPreErdPhase2Reviewer);
         }
         reviewers.add(testingLabReviewer);
@@ -282,8 +286,9 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(duplicateDataReviewer);
         reviewers.add(gapAllowedReviewer);
         reviewers.add(measureReviewer);
+        //after the grace period this reviewer should be included
         if (ff4j.check(FeatureList.ERD_PHASE_2)
-                && !ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD)) {
+                && ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD_END)) {
             reviewers.add(privacyAndSecurityCriteriaReviewer);
         }
         return reviewers;
@@ -300,8 +305,9 @@ public class Edition2015ListingValidator extends Validator {
         comparisonReviewers.add(ucdCriteriaComparisonReviewer);
         comparisonReviewers.add(testFunctionalityAllowedByRoleReviewer);
         comparisonReviewers.add(listingStatusAndUserRoleReviewer);
+        //before ERD-Phase-2 and during the grace period the comparison reviewer should be included
         if (!ff4j.check(FeatureList.ERD_PHASE_2)
-                || (ff4j.check(FeatureList.ERD_PHASE_2) && ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD))) {
+                || (ff4j.check(FeatureList.ERD_PHASE_2) && !ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD_END))) {
             comparisonReviewers.add(privacyAndSecurityCriteriaReviewerPreErdPhase2);
         }
         comparisonReviewers.add(realWorldTestingReviewer);
