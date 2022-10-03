@@ -12,7 +12,6 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.NonconformityType;
-import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
@@ -71,7 +70,6 @@ public class AddedRemovedSurveillanceNonconformityActivityTest {
         CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
                 .surveillance(Arrays.asList(Surveillance.builder()
                         .requirements(Sets.newHashSet(SurveillanceRequirement.builder()
-                                .requirement("170.315(a)(1)")
                                 .nonconformities(Arrays.asList(SurveillanceNonconformity.builder()
                                         .id(1L)
                                         .type(NonconformityType.builder()
@@ -85,7 +83,6 @@ public class AddedRemovedSurveillanceNonconformityActivityTest {
         CertifiedProductSearchDetails newListing = CertifiedProductSearchDetails.builder()
                 .surveillance(Arrays.asList(Surveillance.builder()
                         .requirements(Sets.newHashSet(SurveillanceRequirement.builder()
-                                .requirement("170.315(a)(1)")
                                 .nonconformities(Arrays.asList(SurveillanceNonconformity.builder()
                                         .id(1L)
                                         .type(NonconformityType.builder()
@@ -95,7 +92,6 @@ public class AddedRemovedSurveillanceNonconformityActivityTest {
                                         .build()))
                                 .build(),
                                 SurveillanceRequirement.builder()
-                                .requirement("170.315(a)(2)")
                                 .nonconformities(Arrays.asList(SurveillanceNonconformity.builder()
                                         .id(2L)
                                         .type(NonconformityType.builder()
@@ -117,7 +113,6 @@ public class AddedRemovedSurveillanceNonconformityActivityTest {
         CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
                 .surveillance(Arrays.asList(Surveillance.builder()
                         .requirements(Sets.newHashSet(SurveillanceRequirement.builder()
-                                .requirement("170.315(a)(1)")
                                 .nonconformities(Arrays.asList(SurveillanceNonconformity.builder()
                                         .id(1L)
                                         .type(NonconformityType.builder()
@@ -131,7 +126,6 @@ public class AddedRemovedSurveillanceNonconformityActivityTest {
         CertifiedProductSearchDetails newListing = CertifiedProductSearchDetails.builder()
                 .surveillance(Arrays.asList(Surveillance.builder()
                         .requirements(Sets.newHashSet(SurveillanceRequirement.builder()
-                                .requirement("170.315(a)(1)")
                                 .nonconformities(Arrays.asList(SurveillanceNonconformity.builder()
                                         .id(1L)
                                         .type(NonconformityType.builder()
@@ -141,7 +135,6 @@ public class AddedRemovedSurveillanceNonconformityActivityTest {
                                         .build()))
                                 .build(),
                                 SurveillanceRequirement.builder()
-                                .requirement("170.315(a)(6)")
                                 .nonconformities(Arrays.asList(SurveillanceNonconformity.builder()
                                         .id(2L)
                                         .type(NonconformityType.builder()
@@ -163,7 +156,6 @@ public class AddedRemovedSurveillanceNonconformityActivityTest {
         CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
                 .surveillance(Arrays.asList(Surveillance.builder()
                         .requirements(Sets.newHashSet(SurveillanceRequirement.builder()
-                                .requirement("170.315(a)(1)")
                                 .nonconformities(Arrays.asList(SurveillanceNonconformity.builder()
                                         .id(1L)
                                         .type(NonconformityType.builder()
@@ -173,7 +165,6 @@ public class AddedRemovedSurveillanceNonconformityActivityTest {
                                         .build()))
                                 .build(),
                                 SurveillanceRequirement.builder()
-                                .requirement("170.315(a)(6)")
                                 .nonconformities(Arrays.asList(SurveillanceNonconformity.builder()
                                         .id(2L)
                                         .type(NonconformityType.builder()
@@ -187,7 +178,6 @@ public class AddedRemovedSurveillanceNonconformityActivityTest {
         CertifiedProductSearchDetails newListing = CertifiedProductSearchDetails.builder()
                 .surveillance(Arrays.asList(Surveillance.builder()
                         .requirements(Sets.newHashSet(SurveillanceRequirement.builder()
-                                .requirement("170.315(a)(1)")
                                 .nonconformities(Arrays.asList(SurveillanceNonconformity.builder()
                                         .id(1L)
                                         .type(NonconformityType.builder()
@@ -197,7 +187,6 @@ public class AddedRemovedSurveillanceNonconformityActivityTest {
                                         .build()))
                                 .build(),
                                 SurveillanceRequirement.builder()
-                                .requirement(RequirementTypeEnum.K2.getName())
                                 .nonconformities(Arrays.asList(SurveillanceNonconformity.builder()
                                         .id(2L)
                                         .type(NonconformityType.builder()
