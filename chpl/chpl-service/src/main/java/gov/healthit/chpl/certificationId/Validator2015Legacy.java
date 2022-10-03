@@ -3,8 +3,15 @@ package gov.healthit.chpl.certificationId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
+import gov.healthit.chpl.util.Util;
 
 /**
  * Validator for CMS EHR ID generation for 2015 Edition, post Cures rule.
@@ -19,8 +26,7 @@ public class Validator2015Legacy extends Validator {
     protected static final List<String> CURES_REQUIRED_CRITERIA = new ArrayList<String>(Arrays.asList("170.315 (b)(1)",
             "170.315 (g)(9)"));
 
-    protected static final List<String> AA_CRITERIA_OR = new ArrayList<String>(Arrays.asList("170.315 (g)(8)",
-            "170.315 (g)(10)"));
+    protected List<CertificationCriterion> aaCriteriaOr;
 
     protected static final List<String> CPOE_CRITERIA_OR = new ArrayList<String>(Arrays.asList("170.315 (a)(1)",
             "170.315 (a)(2)", "170.315 (a)(3)"));
@@ -31,7 +37,11 @@ public class Validator2015Legacy extends Validator {
     /**
      * Starting data for validator.
      */
-    public Validator2015Legacy() {
+    public Validator2015Legacy(CertificationCriterionService certificationCriterionService) {
+
+        aaCriteriaOr = Stream.of(certificationCriterionService.get(Criteria2015.G_8),
+                certificationCriterionService.get(Criteria2015.G_10)).toList();
+
         this.counts.put("criteriaRequired", REQUIRED_CRITERIA.size() + CURES_REQUIRED_CRITERIA.size());
         this.counts.put("criteriaRequiredMet", 0);
         this.counts.put("criteriaAaRequired", 1);
@@ -102,13 +112,18 @@ public class Validator2015Legacy extends Validator {
     }
 
     protected boolean isAAValid() {
-        for (String crit : AA_CRITERIA_OR) {
-            if (criteriaMetContainsCriterion(crit)) {
+        for (CertificationCriterion crit : aaCriteriaOr) {
+            Optional<CertificationCriterionDTO> metAaCriterion = criteriaMet.keySet().stream()
+                .filter(criterionMetDto -> criterionMetDto.getId().equals(crit.getId()))
+                .findAny();
+            if (metAaCriterion.isPresent()) {
                 this.counts.put("criteriaAaRequiredMet", 1);
                 return true;
             }
         }
-        missingOr.add(new ArrayList<String>(AA_CRITERIA_OR));
+        missingOr.add(aaCriteriaOr.stream()
+                .map(criterion -> Util.formatCriteriaNumber(criterion))
+                .collect(Collectors.toCollection(ArrayList::new)));
         return false;
     }
 

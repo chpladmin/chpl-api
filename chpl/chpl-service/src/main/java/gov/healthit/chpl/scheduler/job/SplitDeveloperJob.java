@@ -167,7 +167,7 @@ public class SplitDeveloperJob implements Job {
             // need to get details for affected listings now before the product is re-assigned
             // so that any listings with a generated new-style CHPL ID have the old developer code
             List<Future<CertifiedProductSearchDetails>> beforeListingFutures
-                = getCurrentCertifiedProductSearchDetailsFutures(affectedListings);
+                = getCertifiedProductSearchDetailsFutures(affectedListings, true);
             for (Future<CertifiedProductSearchDetails> future : beforeListingFutures) {
                 CertifiedProductSearchDetails details = future.get();
                 LOGGER.info("Complete retrieving details for id: " + details.getId());
@@ -190,7 +190,7 @@ public class SplitDeveloperJob implements Job {
 
             // get the listing details again - this time they will have the new developer code
             List<Future<CertifiedProductSearchDetails>> afterListingFutures
-                = getCurrentCertifiedProductSearchDetailsFutures(affectedListings);
+                = getCertifiedProductSearchDetailsFutures(affectedListings, false);
             for (Future<CertifiedProductSearchDetails> future : afterListingFutures) {
                 CertifiedProductSearchDetails details = future.get();
                 LOGGER.info("Complete retrieving details for id: " + details.getId());
@@ -220,15 +220,15 @@ public class SplitDeveloperJob implements Job {
         return afterDeveloper;
     }
 
-    private List<Future<CertifiedProductSearchDetails>> getCurrentCertifiedProductSearchDetailsFutures(
-            List<CertifiedProductDetailsDTO> listings) throws Exception {
+    private List<Future<CertifiedProductSearchDetails>> getCertifiedProductSearchDetailsFutures(
+            List<CertifiedProductDetailsDTO> listings, boolean fromCache) throws Exception {
 
         List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
         for (CertifiedProductDetailsDTO currListing : listings) {
             try {
                 LOGGER.info("Getting details for affected listing " + currListing.getChplProductNumber());
                 futures.add(new AsyncResult<CertifiedProductSearchDetails>(
-                        cpdManager.getCertifiedProductDetails(currListing.getId())));
+                        getDetails(currListing.getId(), fromCache)));
             } catch (EntityRetrievalException e) {
                 LOGGER.error("Could not retrieve certified product details for id: " + currListing.getId(), e);
             }
@@ -236,10 +236,19 @@ public class SplitDeveloperJob implements Job {
         return futures;
     }
 
+    private CertifiedProductSearchDetails getDetails(Long listingId, boolean fromCache) throws EntityRetrievalException {
+        if (fromCache) {
+            return cpdManager.getCertifiedProductDetails(listingId);
+        } else {
+            return cpdManager.getCertifiedProductDetailsNoCache(listingId);
+        }
+    }
+
     private void clearCachesRelatedToDevelopers() {
         CacheManager.getInstance().getCache(CacheNames.DEVELOPER_NAMES).removeAll();
         CacheManager.getInstance().getCache(CacheNames.ALL_DEVELOPERS).removeAll();
         CacheManager.getInstance().getCache(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED).removeAll();
+        CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_DEVELOPERS).removeAll();
         CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_LISTINGS).removeAll();
         CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).removeAll();
         CacheManager.getInstance().getCache(CacheNames.GET_DECERTIFIED_DEVELOPERS).removeAll();

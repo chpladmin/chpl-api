@@ -15,6 +15,7 @@ import com.fasterxml.classmate.Filter;
 
 import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResponse;
 import gov.healthit.chpl.domain.Announcement;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -436,9 +437,12 @@ public class DeprecatedFieldExplorerTest {
     public void findDeprecatedFields_ChangeRequest() {
         Map<String, Object> deprecatedItems = deprecatedFieldExplorer.getUniqueDeprecatedItemsForClass(ChangeRequest.class);
         assertNotNull(deprecatedItems);
-        assertEquals(1, deprecatedItems.size());
+        assertEquals(4, deprecatedItems.size());
         Set<String> deprecatedItemNames = deprecatedItems.keySet();
         assertTrue(deprecatedItemNames.contains("developer" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developerId"));
+        assertTrue(deprecatedItemNames.contains("submittedDate"));
+        assertTrue(deprecatedItemNames.contains("currentStatus" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "statusChangeDate"));
+        assertTrue(deprecatedItemNames.contains("statuses" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "statusChangeDate"));
     }
 
     @Test
@@ -446,9 +450,20 @@ public class DeprecatedFieldExplorerTest {
         Map<String, Object> deprecatedItems = deprecatedFieldExplorer.getUniqueDeprecatedItemsForClass(ChangeRequestResults.class);
 
         assertNotNull(deprecatedItems);
-        assertEquals(1, deprecatedItems.size());
+        assertEquals(4, deprecatedItems.size());
         Set<String> deprecatedItemNames = deprecatedItems.keySet();
         assertTrue(deprecatedItemNames.contains("results" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developer" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developerId"));
+        assertTrue(deprecatedItemNames.contains("results" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "submittedDate"));
+        assertTrue(deprecatedItemNames.contains("results" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "currentStatus" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "statusChangeDate"));
+        assertTrue(deprecatedItemNames.contains("results" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "statuses" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "statusChangeDate"));
+    }
+
+    @Test
+    public void findDeprecatedFields_ChangeRequestSearchResponse() {
+        Map<String, Object> deprecatedItems = deprecatedFieldExplorer.getUniqueDeprecatedItemsForClass(ChangeRequestSearchResponse.class);
+
+        assertNotNull(deprecatedItems);
+        assertEquals(0, deprecatedItems.size());
     }
 
     @Test

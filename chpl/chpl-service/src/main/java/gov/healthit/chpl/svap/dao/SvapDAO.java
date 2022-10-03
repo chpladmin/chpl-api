@@ -7,14 +7,14 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
-import gov.healthit.chpl.svap.entity.CertificationResultSvapEntity;
 import gov.healthit.chpl.svap.entity.SvapCriteriaMapEntity;
 import gov.healthit.chpl.svap.entity.SvapEntity;
 import gov.healthit.chpl.util.AuthUtil;
@@ -23,11 +23,11 @@ import lombok.extern.log4j.Log4j2;
 @Repository
 @Log4j2
 public class SvapDAO extends BaseDAOImpl {
-    private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
+    private CertifiedProductDAO certifiedProductDao;
 
     @Autowired
-    public SvapDAO(CertifiedProductSearchResultDAO certifiedProductSearchResultDAO) {
-        this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
+    public SvapDAO(CertifiedProductDAO certifiedProductDao) {
+        this.certifiedProductDao = certifiedProductDao;
     }
 
     public Svap getById(Long id) throws EntityRetrievalException {
@@ -118,24 +118,16 @@ public class SvapDAO extends BaseDAOImpl {
         }
     }
 
-    public List<CertifiedProductDetailsDTO> getCertifiedProductsBySvap(Svap svap) {
-        return getCertificationResultSvapBySvapId(svap.getSvapId()).stream()
-                .map(crs -> getCertifiedProductDetails(crs.getCertificationResult().getCertifiedProductId()))
-                .collect(Collectors.toList());
+    public List<CertifiedProductDetailsDTO> getCertifiedProductsBySvap(Svap svap)
+        throws EntityRetrievalException {
+        List<Long> certifiedProductIds = getCertifiedProductIdsUsingSvapId(svap.getSvapId());
+        return certifiedProductDao.getDetailsByIds(certifiedProductIds);
     }
 
-    public List<CertifiedProductDetailsDTO> getCertifiedProductsBySvapAndCriteria(Svap svap, CertificationCriterion criterion) {
-        return getCertificationResultSvapBySvapIdAndCriterionId(svap.getSvapId(), criterion.getId()).stream()
-                .map(crs -> getCertifiedProductDetails(crs.getCertificationResult().getCertifiedProductId()))
-                .collect(Collectors.toList());
-    }
-
-    private CertifiedProductDetailsDTO getCertifiedProductDetails(Long certifiedProductId) {
-        try {
-            return certifiedProductSearchResultDAO.getById(certifiedProductId);
-        } catch (EntityRetrievalException e) {
-            throw new RuntimeException(e);
-        }
+    public List<CertifiedProductDetailsDTO> getCertifiedProductsBySvapAndCriteria(Svap svap, CertificationCriterion criterion)
+            throws EntityRetrievalException {
+        List<Long> certifiedProductIds = getCertifiedProductIdsUsingSvapIdWithCriterion(svap.getSvapId(), criterion.getId());
+        return certifiedProductDao.getDetailsByIds(certifiedProductIds);
     }
 
     private SvapEntity getSvapEntityById(Long id) throws EntityRetrievalException {
@@ -206,31 +198,42 @@ public class SvapDAO extends BaseDAOImpl {
         return result.get(0);
     }
 
-    private List<CertificationResultSvapEntity> getCertificationResultSvapBySvapId(Long svapId) {
-        return entityManager.createQuery("SELECT crs "
-                        + "FROM CertificationResultSvapEntity crs "
-                        + "JOIN FETCH crs.certificationResult cr "
-                        + "WHERE crs.svapId = :svapId "
+    private List<Long> getCertifiedProductIdsUsingSvapId(Long svapId) {
+        List<CertificationResultEntity> certResultsWithSvap =
+                entityManager.createQuery("SELECT cr "
+                        + "FROM CertificationResultSvapEntity crs, CertificationResultEntity cr "
+                        + "WHERE crs.certificationResultId = cr.id "
+                        + "AND crs.svapId = :svapId "
                         + "AND crs.deleted <> true "
                         + "AND cr.deleted <> true ",
-                        CertificationResultSvapEntity.class)
+                        CertificationResultEntity.class)
                 .setParameter("svapId", svapId)
                 .getResultList();
 
+        return certResultsWithSvap.stream()
+                .map(certResult -> certResult.getCertifiedProductId())
+                .distinct()
+                .collect(Collectors.toList());
     }
 
-    private List<CertificationResultSvapEntity> getCertificationResultSvapBySvapIdAndCriterionId(Long svapId, Long criterionId) {
-        return entityManager.createQuery("SELECT crs "
-                        + "FROM CertificationResultSvapEntity crs "
-                        + "JOIN FETCH crs.certificationResult cr "
-                        + "WHERE crs.svapId = :svapId "
+    private List<Long> getCertifiedProductIdsUsingSvapIdWithCriterion(Long svapId, Long criterionId) {
+        List<CertificationResultEntity> certResultsWithSvap =
+                entityManager.createQuery("SELECT cr "
+                        + "FROM CertificationResultSvapEntity crs, CertificationResultEntity cr "
+                        + "WHERE crs.certificationResultId = cr.id "
+                        + "AND crs.svapId = :svapId "
                         + "AND cr.certificationCriterionId= :criterionId "
                         + "AND crs.deleted <> true "
                         + "AND cr.deleted <> true ",
-                        CertificationResultSvapEntity.class)
+                        CertificationResultEntity.class)
                 .setParameter("svapId", svapId)
                 .setParameter("criterionId", criterionId)
                 .getResultList();
+
+        return certResultsWithSvap.stream()
+                .map(certResult -> certResult.getCertifiedProductId())
+                .distinct()
+                .collect(Collectors.toList());
     }
 
  }
