@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springdoc.core.customizers.OpenApiCustomiser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -34,6 +35,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.filter.APIKeyAuthenticationFilter;
 import gov.healthit.chpl.registration.RateLimitingInterceptor;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -75,15 +82,35 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
     private String feedbackFormUrl;
     private Boolean tryItOutEnabled;
 
+    @Autowired
+    private Environment env;
+
     @Override
-    public void setEnvironment(Environment env) {
-        this.chplServiceUrl = env.getProperty("chplUrlBegin") + env.getProperty("basePath");
-        this.apiLicenseUrl = env.getProperty("api.licenseUrl");
-        this.apiVersion = env.getProperty("api.version");
-        this.apiDescriptionHtml = env.getProperty("api.description");
-        this.feedbackFormUrl = env.getProperty("footer.publicUrl");
-        this.tryItOutEnabled = BooleanUtils.toBooleanObject(env.getProperty("api.tryItOutEnabled"));
+    public void setEnvironment(Environment e) {
+        this.chplServiceUrl = e.getProperty("chplUrlBegin") + e.getProperty("basePath");
+        this.apiLicenseUrl = e.getProperty("api.licenseUrl");
+        this.apiVersion = e.getProperty("api.version");
+        this.apiDescriptionHtml = e.getProperty("api.description");
+        this.feedbackFormUrl = e.getProperty("footer.publicUrl");
+        this.tryItOutEnabled = BooleanUtils.toBooleanObject(e.getProperty("api.tryItOutEnabled"));
     }
+
+    @Autowired
+    void configureObjectMapper(ObjectMapper mapper) {
+        mapper.setAnnotationIntrospector(new JacksonAnnotationIntrospector() {
+            private static final long serialVersionUID = 2803278488940499378L;
+
+            @Override
+            public boolean hasIgnoreMarker(AnnotatedMember m) {
+                Boolean returnDeprecatedFields = Boolean.valueOf(env.getProperty("response.returnDeprecatedFields"));
+                if (_findAnnotation(m, JsonIgnore.class) != null) {
+                    return true;
+                } else {
+                    return _findAnnotation(m, DeprecatedResponseField.class) != null && !returnDeprecatedFields;
+                }
+            }
+        });
+   }
 
     @Bean
     public MappingJackson2HttpMessageConverter jsonConverter() {
