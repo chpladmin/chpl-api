@@ -61,13 +61,7 @@ public class PointOfContact extends Person {
         if (!(obj instanceof PointOfContact)) {
             return false;
         }
-        PointOfContact anotherContact = (PointOfContact) obj;
-        if ((this.contactId != null && anotherContact.contactId != null
-                && this.contactId.longValue() == anotherContact.contactId.longValue())
-                || (this.contactId == null && anotherContact.contactId == null)) {
-            return super.equals(obj);
-        }
-        return false;
+        return super.equals(obj);
     }
 
     @Override

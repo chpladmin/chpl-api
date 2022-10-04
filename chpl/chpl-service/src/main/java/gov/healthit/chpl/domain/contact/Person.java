@@ -74,10 +74,14 @@ public class Person implements Serializable {
             return false;
         }
         Person anotherPerson = (Person) obj;
-        return ObjectUtils.equals(this.fullName, anotherPerson.fullName)
-                && ObjectUtils.equals(this.email, anotherPerson.email)
-                && ObjectUtils.equals(this.phoneNumber, anotherPerson.phoneNumber)
-                && ObjectUtils.equals(this.title, anotherPerson.title);
+        return (StringUtils.isAllEmpty(this.fullName, anotherPerson.fullName)
+                    || StringUtils.equals(this.fullName, anotherPerson.fullName))
+                && (StringUtils.isAllEmpty(this.email, anotherPerson.email)
+                    || StringUtils.equals(this.email, anotherPerson.email))
+                && (StringUtils.isAllEmpty(this.phoneNumber, anotherPerson.phoneNumber)
+                    || StringUtils.equals(this.phoneNumber, anotherPerson.phoneNumber))
+                && (StringUtils.isAllEmpty(this.title, anotherPerson.title)
+                    || StringUtils.equals(this.title, anotherPerson.title));
     }
 
     @Override
