@@ -1,5 +1,23 @@
 # Release Notes
 
+## Version 37.2.0
+_3 October 2022_
+
+### Features
+* Add (Cures Update) title to relevant criteria in CSV definitions and sort order
+* Use ET for change request search result timezone
+* Create GET /developers/search endpoint
+* Deprecate GET /collections/decertified-developers
+* Create DELETE endpoint for SVAPs using just the ID
+
+### Bug Fixes
+* Record listing activity on dev/prod/ver merge and split
+* Set product id on split/merge for shared store update
+* Set version id on split/merge for shared store update
+* Display correct error on DELETE of SVAP if its used in any listings
+
+---
+
 ## Version 37.1.0
 _19 September 2022_
 
