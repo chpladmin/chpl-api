@@ -20,9 +20,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
-import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -82,15 +80,16 @@ public class SurveillanceRequirementEntity {
                 .nonconformities(Optional.ofNullable(this.getNonconformities()).orElse(Collections.emptySet()).stream()
                         .map(e -> e.toDomain(certificationCriterionService))
                         .toList())
-                .requirementDetailType(this.requirementDetailType.toDomain())
+                .requirementDetailType(this.requirementDetailType != null ? this.requirementDetailType.toDomain() : null)
                 .requirementDetailOther(this.requirementDetailOther)
                 .result(this.getSurveillanceResultTypeEntity().toDomain())
-                .type(SurveillanceRequirementType.builder()
-                        .id(this.requirementDetailType.getSurveillanceRequirementType().getId())
-                        .name(this.requirementDetailType.getSurveillanceRequirementType().getName())
-                        .build())
+                //.type(SurveillanceRequirementType.builder()
+                //        .id(this.requirementDetailType.getSurveillanceRequirementType().getId())
+                //        .name(this.requirementDetailType.getSurveillanceRequirementType().getName())
+                //        .build())
                 .build();
 
+        /*
         int intValue = this.getRequirementDetailType().getSurveillanceRequirementType().getId().intValue();
         if (intValue == SurveillanceRequirementType.CERTIFIED_CAPABILITY_ID) {
             CertificationCriterion criterion = certificationCriterionService.get(req.getRequirementDetailType().getId());
@@ -101,7 +100,7 @@ public class SurveillanceRequirementEntity {
         } else if (intValue == SurveillanceRequirementType.OTHER_ID) {
             req.setRequirement(req.getRequirementDetailOther());
         }
-
+        */
         return req;
     }
 }
