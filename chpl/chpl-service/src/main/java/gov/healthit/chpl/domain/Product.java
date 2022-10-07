@@ -18,6 +18,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
+import org.apache.commons.lang3.StringUtils;
+
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import lombok.AllArgsConstructor;
@@ -230,4 +232,92 @@ public class Product implements Serializable {
         this.contact = contact;
     }
 
+    // Not all attributes have been included. The attributes being used were selected so the ProductManager could
+    // determine equality when updating a Product
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((reportFileLocation == null) ? 0 : reportFileLocation.hashCode());
+        result = prime * result + ((contact == null) ? 0 : contact.hashCode());
+        result = prime * result + ((owner == null) ? 0 : owner.hashCode());
+        result = prime * result + ((ownerHistory == null) ? 0 : ownerHistory.hashCode());
+        return result;
+    }
+
+    // Not all attributes have been included. The attributes being used were selected so the ProductManager could
+    // determine equality when updating a Product
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Product other = (Product) obj;
+        if (id == null) {
+            if (other.id != null) {
+                return false;
+            }
+        } else if (!id.equals(other.id)) {
+            return false;
+        }
+        if (StringUtils.isEmpty(name)) {
+            if (!StringUtils.isEmpty(other.name)) {
+                return false;
+            }
+        } else if (!name.equals(name)) {
+            return false;
+        }
+        if (StringUtils.isEmpty(reportFileLocation)) {
+            if (!StringUtils.isEmpty(other.reportFileLocation)) {
+                return false;
+            }
+        } else if (!reportFileLocation.equals(other.reportFileLocation)) {
+            return false;
+        }
+        if (contact == null) {
+            if (other.contact != null) {
+                return false;
+            }
+        } else if (!contact.equals(other.contact)) {
+            return false;
+        }
+        if (owner == null) {
+            if (other.owner != null) {
+                return false;
+            }
+        } else if (!owner.equals(other.owner)) {
+            return false;
+        }
+        if (ownerHistory == null) {
+            if (other.ownerHistory != null) {
+                return false;
+            }
+        } else if (!isOwnerHistoryListEqual(other.ownerHistory)) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isOwnerHistoryListEqual(List<ProductOwner> other) {
+        if (ownerHistory.size() != other.size()) {
+            return false;
+        } else {
+            // Make copies of both lists and order them
+            List<ProductOwner> clonedThis = ownerHistory.stream()
+                    .sorted(Comparator.comparing(ProductOwner::getTransferDate))
+                    .toList();
+            List<ProductOwner> clonedOther = other.stream()
+                    .sorted(Comparator.comparing(ProductOwner::getTransferDate))
+                    .toList();
+            return clonedThis.equals(clonedOther);
+        }
+    }
 }
