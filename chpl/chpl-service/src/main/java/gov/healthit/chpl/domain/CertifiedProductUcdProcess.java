@@ -10,6 +10,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
@@ -27,17 +29,17 @@ import lombok.Singular;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
-public class UcdProcess implements Serializable {
+public class CertifiedProductUcdProcess implements Serializable {
     private static final long serialVersionUID = 7248865611086710891L;
 
     /**
-     * UCD process to certification result internal mapping ID
+     * The internal ID of the UCD process.
      */
     @XmlElement(required = true)
     private Long id;
 
     /**
-     * The user-centered design (UCD) process applied for the corresponding
+     * The name of the user-centered design (UCD) process applied for the corresponding
      * certification criteria
      */
     @XmlElement(required = true)
@@ -60,22 +62,22 @@ public class UcdProcess implements Serializable {
     @Singular("criterion")
     private Set<CertificationCriterion> criteria;
 
-    public UcdProcess() {
+    public CertifiedProductUcdProcess() {
         super();
         this.criteria = new HashSet<CertificationCriterion>();
     }
 
-    public UcdProcess(CertificationResultUcdProcessDTO dto) {
+    public CertifiedProductUcdProcess(CertificationResultUcdProcessDTO dto) {
         this();
         this.id = dto.getUcdProcessId();
         this.name = dto.getUcdProcessName();
         this.details = dto.getUcdProcessDetails();
     }
 
-    public boolean matches(final UcdProcess anotherUcd) {
+    public boolean matches(CertifiedProductUcdProcess anotherUcd) {
         boolean result = false;
-        if (this.getId() != null && anotherUcd.getId() != null
-                && this.getId().longValue() == anotherUcd.getId().longValue()) {
+        if (ObjectUtils.allNotNull(this.getId(), anotherUcd.getId())
+                && this.getId().equals(anotherUcd.getId())) {
             result = true;
         }
         return result;
@@ -85,7 +87,7 @@ public class UcdProcess implements Serializable {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -93,7 +95,7 @@ public class UcdProcess implements Serializable {
         return name;
     }
 
-    public void setName(final String ucdProcessName) {
+    public void setName(String ucdProcessName) {
         this.name = ucdProcessName;
     }
 
@@ -101,7 +103,7 @@ public class UcdProcess implements Serializable {
         return details;
     }
 
-    public void setDetails(final String ucdProcessDetails) {
+    public void setDetails(String ucdProcessDetails) {
         this.details = ucdProcessDetails;
     }
 
@@ -109,7 +111,7 @@ public class UcdProcess implements Serializable {
         return criteria;
     }
 
-    public void setCriteria(final Set<CertificationCriterion> criteria) {
+    public void setCriteria(Set<CertificationCriterion> criteria) {
         this.criteria = criteria;
     }
 }

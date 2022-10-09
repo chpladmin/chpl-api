@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -27,7 +28,6 @@ import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
-import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CertificationBody;
@@ -64,7 +64,6 @@ import gov.healthit.chpl.dto.TestDataCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestProcedureCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
-import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
@@ -73,6 +72,8 @@ import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.entity.OptionalStandardEntity;
 import gov.healthit.chpl.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.surveillance.report.domain.Quarter;
+import gov.healthit.chpl.ucdProcess.UcdProcess;
+import gov.healthit.chpl.ucdProcess.UcdProcessDAO;
 import gov.healthit.chpl.util.Removable;
 import lombok.extern.log4j.Log4j2;
 
@@ -246,13 +247,10 @@ public class DimensionalDataManager {
     public Set<KeyValueModel> getUcdProcesses() {
         LOGGER.debug("Getting all ucd processesfrom the database (not cached).");
 
-        List<UcdProcessDTO> dtos = this.ucdDao.findAll();
-        Set<KeyValueModel> ucds = new HashSet<KeyValueModel>();
-
-        for (UcdProcessDTO dto : dtos) {
-            ucds.add(new KeyValueModel(dto.getId(), dto.getName()));
-        }
-        return ucds;
+        List<UcdProcess> ucdProcesses = this.ucdDao.getAll();
+        return ucdProcesses.stream()
+                .map(ucdProcess -> new KeyValueModel(ucdProcess.getId(), ucdProcess.getName()))
+                .collect(Collectors.toSet());
     }
 
     public Set<KeyValueModel> getQmsStandards() {

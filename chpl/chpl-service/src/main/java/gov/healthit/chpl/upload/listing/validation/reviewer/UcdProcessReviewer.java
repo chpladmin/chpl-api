@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.UcdProcess;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -54,9 +54,9 @@ public class UcdProcessReviewer {
     }
 
     private void removeUcdProcessesNotFound(CertifiedProductSearchDetails listing) {
-        List<UcdProcess> ucdProcesses = listing.getSed().getUcdProcesses();
+        List<CertifiedProductUcdProcess> ucdProcesses = listing.getSed().getUcdProcesses();
         if (!CollectionUtils.isEmpty(ucdProcesses)) {
-            List<UcdProcess> ucdProcessesWithoutIds = ucdProcesses.stream()
+            List<CertifiedProductUcdProcess> ucdProcessesWithoutIds = ucdProcesses.stream()
                         .filter(currUcdProc -> doesUcdProcessHaveAnyNonRemovedCriteria(currUcdProc))
                         .filter(currUcdProc -> currUcdProc.getId() == null)
                         .collect(Collectors.toList());
@@ -66,15 +66,16 @@ public class UcdProcessReviewer {
 
                 ucdProcessesWithoutIds.stream()
                     .forEach(ucdProcWithoutId -> listing.getWarningMessages().add(
-                            msgUtil.getMessage("listing.criteria.ucdProcessNotFoundAndRemoved", ucdProcWithoutId.getName(),
+                            msgUtil.getMessage("listing.criteria.ucdProcessNotFoundAndRemoved",
+                                    ucdProcWithoutId.getName(),
                                     ucdProcWithoutId.getCriteria().stream()
-                                    .map(criterion -> Util.formatCriteriaNumber(criterion))
-                                    .collect(Collectors.joining(",")))));
+                                        .map(criterion -> Util.formatCriteriaNumber(criterion))
+                                        .collect(Collectors.joining(",")))));
             }
         }
     }
 
-    private boolean doesUcdProcessHaveAnyNonRemovedCriteria(UcdProcess ucdProcess) {
+    private boolean doesUcdProcessHaveAnyNonRemovedCriteria(CertifiedProductUcdProcess ucdProcess) {
         if (CollectionUtils.isEmpty(ucdProcess.getCriteria())) {
             return false;
         }
@@ -131,13 +132,6 @@ public class UcdProcessReviewer {
         return listing.getSed().getUcdProcesses().stream()
             .flatMap(ucdProcess -> ucdProcess.getCriteria().stream())
             .filter(ucdProcessCriterion -> ucdProcessCriterion.getId().equals(criterion.getId()))
-            .count() > 0;
-    }
-
-    private boolean doesListingAttestToCriterion(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
-        return listing.getCertificationResults().stream()
-            .filter(certResult -> certResult.getCriterion() != null && BooleanUtils.isTrue(certResult.isSuccess())
-                && certResult.getCriterion().getId().equals(criterion.getId()))
             .count() > 0;
     }
 }

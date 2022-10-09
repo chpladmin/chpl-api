@@ -10,12 +10,12 @@ import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestData;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -73,7 +73,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             } else {
 
                                 boolean foundCriteria = false;
-                                for (UcdProcess ucd : listing.getSed().getUcdProcesses()) {
+                                for (CertifiedProductUcdProcess ucd : listing.getSed().getUcdProcesses()) {
                                     for (CertificationCriterion criteria : ucd.getCriteria()) {
                                         if (criteria.getId().equals(cert.getCriterion().getId())) {
                                             foundCriteria = true;

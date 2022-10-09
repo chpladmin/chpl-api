@@ -4,10 +4,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.UcdProcess;
-import gov.healthit.chpl.dto.UcdProcessDTO;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
+import gov.healthit.chpl.ucdProcess.UcdProcess;
+import gov.healthit.chpl.ucdProcess.UcdProcessDAO;
 
 @Component
 public class UcdProcessNormalizer {
@@ -26,11 +26,12 @@ public class UcdProcessNormalizer {
         }
     }
 
-    private void populateUcdProcessId(UcdProcess ucdProcess) {
+    private void populateUcdProcessId(CertifiedProductUcdProcess ucdProcess) {
+        //TODO: Add some fuzzy matching
         if (!StringUtils.isEmpty(ucdProcess.getName())) {
-            UcdProcessDTO ucdProcessDto = ucdDao.getByName(ucdProcess.getName());
-            if (ucdProcessDto != null) {
-                ucdProcess.setId(ucdProcessDto.getId());
+            UcdProcess foundUcdProcess = ucdDao.getByName(ucdProcess.getName());
+            if (foundUcdProcess != null) {
+                ucdProcess.setId(foundUcdProcess.getId());
             }
         }
     }

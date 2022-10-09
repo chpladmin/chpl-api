@@ -23,6 +23,7 @@ import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
@@ -30,7 +31,6 @@ import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestProcedure;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class FieldLengthReviewerTest {
@@ -830,7 +830,8 @@ public class FieldLengthReviewerTest {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
+                .id(1L)
                 .name("name")
                 .details("some details")
                 .build());
@@ -843,7 +844,8 @@ public class FieldLengthReviewerTest {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
+                .id(1L)
                 .name(createStringLongerThan(20, "A"))
                 .details("some details")
                 .build());

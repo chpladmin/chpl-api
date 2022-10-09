@@ -34,13 +34,13 @@ import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CuresUpdateEventDTO;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
@@ -353,7 +353,7 @@ public class ListingConfirmationManager {
         }
     }
 
-    private void addUcdProcessToFuzzyChoices(UcdProcess ucdProcess, List<String> fuzzyChoices) {
+    private void addUcdProcessToFuzzyChoices(CertifiedProductUcdProcess ucdProcess, List<String> fuzzyChoices) {
         fuzzyChoices.add(ucdProcess.getName());
         FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
         dto.setFuzzyType(FuzzyType.UCD_PROCESS);
@@ -365,7 +365,7 @@ public class ListingConfirmationManager {
         }
     }
 
-    private void saveUcdProcess(CertifiedProductSearchDetails listing, UcdProcess ucdProcess) throws EntityCreationException {
+    private void saveUcdProcess(CertifiedProductSearchDetails listing, CertifiedProductUcdProcess ucdProcess) throws EntityCreationException {
         List<Long> certResultIds = ucdProcess.getCriteria().stream()
             .map(criterion -> getCertificationResultId(listing, criterion))
             .collect(Collectors.toList());

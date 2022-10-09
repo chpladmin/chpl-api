@@ -9,8 +9,8 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -125,9 +125,9 @@ public class RequiredData2014Reviewer extends RequiredDataReviewer {
         }
     }
 
-    private boolean certHasUcdProcess(final CertificationResult cert, final List<UcdProcess> ucdProcesses) {
+    private boolean certHasUcdProcess(final CertificationResult cert, final List<CertifiedProductUcdProcess> ucdProcesses) {
         boolean hasUcd = false;
-        for (UcdProcess ucdProcess : ucdProcesses) {
+        for (CertifiedProductUcdProcess ucdProcess : ucdProcesses) {
             for (CertificationCriterion ucdCriteria : ucdProcess.getCriteria()) {
                 if (ucdCriteria.getId().equals(cert.getCriterion().getId())) {
                     hasUcd = true;

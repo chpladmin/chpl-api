@@ -15,7 +15,7 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSed;
-import gov.healthit.chpl.domain.UcdProcess;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -104,7 +104,7 @@ public class UcdProcessReviewerTest {
                         .build())
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                 .id(1L)
                 .criterion(a3)
                 .name("UCD Name")
@@ -127,7 +127,7 @@ public class UcdProcessReviewerTest {
                         .build())
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                                 .id(1L)
                                 .criterion(a3)
                                 .name("UCD Name")
@@ -150,7 +150,7 @@ public class UcdProcessReviewerTest {
                         .build())
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                                 .id(1L)
                                 .criterion(a3)
                                 .name("UCD Name")
@@ -173,7 +173,7 @@ public class UcdProcessReviewerTest {
                         .build())
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                 .id(1L)
                 .criterion(a6)
                 .name("UCD Name")
@@ -195,7 +195,7 @@ public class UcdProcessReviewerTest {
                         .build())
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                                 .id(1L)
                                 .criterion(a6)
                                 .name("UCD Name")
@@ -217,7 +217,7 @@ public class UcdProcessReviewerTest {
                         .build())
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                                 .id(1L)
                                 .criterion(a6)
                                 .name("UCD Name")
@@ -240,7 +240,7 @@ public class UcdProcessReviewerTest {
                 .sed(CertifiedProductSed.builder()
                         .build())
                 .build();
-        UcdProcess ucdNotFound = UcdProcess.builder()
+        CertifiedProductUcdProcess ucdNotFound = CertifiedProductUcdProcess.builder()
                 .criterion(a1)
                 .name("UCD Name")
                 .details("some details")
@@ -266,7 +266,7 @@ public class UcdProcessReviewerTest {
                 .sed(CertifiedProductSed.builder()
                         .build())
                 .build();
-        UcdProcess ucdNotFound = UcdProcess.builder()
+        CertifiedProductUcdProcess ucdNotFound = CertifiedProductUcdProcess.builder()
                 .criterion(a1)
                 .name("UCD Name")
                 .details("some details")
@@ -296,7 +296,7 @@ public class UcdProcessReviewerTest {
                 .sed(CertifiedProductSed.builder()
                         .build())
                 .build();
-        UcdProcess ucdNotFound = UcdProcess.builder()
+        CertifiedProductUcdProcess ucdNotFound = CertifiedProductUcdProcess.builder()
                 .criterion(a1)
                 .criterion(a2)
                 .name("UCD Name")
@@ -324,7 +324,7 @@ public class UcdProcessReviewerTest {
                 .sed(CertifiedProductSed.builder()
                         .build())
                 .build();
-        UcdProcess ucdNotFound = UcdProcess.builder()
+        CertifiedProductUcdProcess ucdNotFound = CertifiedProductUcdProcess.builder()
                 .criterion(a3)
                 .name("UCD Name")
                 .details("some details")
@@ -349,7 +349,7 @@ public class UcdProcessReviewerTest {
                 .sed(CertifiedProductSed.builder()
                         .build())
                 .build();
-        UcdProcess ucdNotFound = UcdProcess.builder()
+        CertifiedProductUcdProcess ucdNotFound = CertifiedProductUcdProcess.builder()
                 .criterion(a6)
                 .name("UCD Name")
                 .details("some details")
@@ -371,7 +371,7 @@ public class UcdProcessReviewerTest {
                         .build())
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                             .id(1L)
                             .name("UCD Name")
                             .details("some details")
@@ -398,7 +398,7 @@ public class UcdProcessReviewerTest {
                         .build())
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                             .id(1L)
                             .criterion(a1)
                             .name("UCD Name")
@@ -430,14 +430,14 @@ public class UcdProcessReviewerTest {
                         .build())
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                                 .id(1L)
                                 .criterion(a1)
                                 .criterion(a2)
                                 .name("UCD Name 1")
                                 .details("some details")
                                 .build());
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                                 .id(2L)
                                 .criterion(a2)
                                 .name("UCD Name 2")

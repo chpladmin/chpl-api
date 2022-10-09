@@ -35,13 +35,12 @@ public class CertifiedProductSed implements Serializable {
     /**
      * The user-centered design (UCD) process applied for the corresponding
      * certification criteria. This variable is applicable for 2014 and 2015
-     * Edition, and a string variable that does not take any restrictions on
-     * formatting or values.
+     * Edition.
      */
     @XmlElementWrapper(name = "ucdProcesses", nillable = true, required = false)
     @XmlElement(name = "ucdProcess")
     @Builder.Default
-    private List<UcdProcess> ucdProcesses = new ArrayList<UcdProcess>();
+    private List<CertifiedProductUcdProcess> ucdProcesses = new ArrayList<CertifiedProductUcdProcess>();
 
     /**
      * Tasks used for SED testing
@@ -63,15 +62,15 @@ public class CertifiedProductSed implements Serializable {
 
     public CertifiedProductSed() {
         super();
-        this.ucdProcesses = new ArrayList<UcdProcess>();
+        this.ucdProcesses = new ArrayList<CertifiedProductUcdProcess>();
         this.testTasks = new ArrayList<TestTask>();
     }
 
-    public List<UcdProcess> getUcdProcesses() {
+    public List<CertifiedProductUcdProcess> getUcdProcesses() {
         return ucdProcesses;
     }
 
-    public void setUcdProcesses(final List<UcdProcess> ucdProcesses) {
+    public void setUcdProcesses(List<CertifiedProductUcdProcess> ucdProcesses) {
         this.ucdProcesses = ucdProcesses;
     }
 
@@ -79,7 +78,7 @@ public class CertifiedProductSed implements Serializable {
         return testTasks;
     }
 
-    public void setTestTasks(final List<TestTask> testTasks) {
+    public void setTestTasks(List<TestTask> testTasks) {
         this.testTasks = testTasks;
     }
 
