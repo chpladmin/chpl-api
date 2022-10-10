@@ -11,7 +11,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -261,7 +260,7 @@ public class DeveloperManager extends SecuredManager {
         if (doUpdateValidations) {
             // update validations are not done during listing update -> developer ban
             // but should be done at other times, with some possible exceptions
-            errors = runUpdateValidations(updatedDev);
+            errors = runUpdateValidations(updatedDev, beforeDev);
         }
         if (errors == null) {
             errors = new HashSet<String>();
@@ -334,14 +333,7 @@ public class DeveloperManager extends SecuredManager {
     public Long create(Developer developer)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
-        //Check to see that the Developer's website is valid.
-        if (!StringUtils.isEmpty(developer.getWebsite())) {
-            if (!validationUtils.isWellFormedUrl(developer.getWebsite())) {
-                String msg = msgUtil.getMessage("developer.websiteIsInvalid");
-                throw new EntityCreationException(msg);
-            }
-        }
-
+        runCreateValidations(developer, null);
         Long developerId = developerDao.create(developer);
         developer.setId(developerId);
 
@@ -362,15 +354,14 @@ public class DeveloperManager extends SecuredManager {
     public ChplOneTimeTrigger merge(List<Long> developerIdsToMerge, Developer developerToCreate)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
             SchedulerException, ValidationException {
-        // merging doesn't require developer address so runUpdateValidations is used here
-        Set<String> errors = runUpdateValidations(developerToCreate);
-        if (errors != null && errors.size() > 0) {
-            throw new ValidationException(errors);
-        }
-
         List<Developer> beforeDevelopers = new ArrayList<Developer>();
         for (Long developerId : developerIdsToMerge) {
             beforeDevelopers.add(developerDao.getById(developerId));
+        }
+
+        Set<String> errors = runCreateValidations(developerToCreate, beforeDevelopers);
+        if (errors != null && errors.size() > 0) {
+            throw new ValidationException(errors);
         }
 
         // Check to see if the merge will create any duplicate chplProductNumbers
@@ -412,7 +403,7 @@ public class DeveloperManager extends SecuredManager {
     public ChplOneTimeTrigger split(Developer oldDeveloper, Developer developerToCreate,
             List<Long> productIdsToMove) throws ValidationException, SchedulerException {
         // check developer fields for all valid values
-        Set<String> devErrors = runCreateValidations(developerToCreate);
+        Set<String> devErrors = runCreateValidations(developerToCreate, null);
         if (devErrors != null && devErrors.size() > 0) {
             throw new ValidationException(devErrors);
         }
@@ -497,13 +488,13 @@ public class DeveloperManager extends SecuredManager {
         return developerDao.getDecertifiedDeveloperCollection();
     }
 
-    private Set<String> runUpdateValidations(Developer developer) {
+    private Set<String> runUpdateValidations(Developer developer, Developer beforeDev) {
         List<ValidationRule<DeveloperValidationContext>> rules = new ArrayList<ValidationRule<DeveloperValidationContext>>();
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.NAME));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.WEBSITE_WELL_FORMED));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.CONTACT));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.STATUS_EVENTS));
-        return runValidations(rules, developer);
+        return runChangeValidations(rules, developer, beforeDev);
     }
 
     private Set<String> runChangeValidations(Developer afterDev, Developer beforeDev) {
@@ -513,37 +504,40 @@ public class DeveloperManager extends SecuredManager {
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.PRIOR_STATUS_ACTIVE));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.EDIT_STATUS_HISTORY));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.STATUS_CHANGED));
-        return runValidations(rules, afterDev, beforeDev);
+        return runChangeValidations(rules, afterDev, beforeDev);
     }
 
-    public Set<String> runCreateValidations(Developer developer) {
+    public Set<String> runCreateValidations(Developer developer, List<Developer> beforeDevelopers) {
         List<ValidationRule<DeveloperValidationContext>> rules = new ArrayList<ValidationRule<DeveloperValidationContext>>();
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.NAME));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.WEBSITE_WELL_FORMED));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.CONTACT));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.ADDRESS));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.ACTIVE_STATUS));
-        return runValidations(rules, developer);
+        return runValidations(rules, developer, beforeDevelopers);
     }
 
-    public Set<String> runSystemValidations(Developer developer) {
-        List<ValidationRule<DeveloperValidationContext>> rules = new ArrayList<ValidationRule<DeveloperValidationContext>>();
-        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.NAME));
-        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.WEBSITE_REQUIRED));
-        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.CONTACT));
-        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.ADDRESS));
-        return runValidations(rules, developer);
+    private Set<String> runValidations(List<ValidationRule<DeveloperValidationContext>> rules, Developer developer) {
+        return runChangeValidations(rules, developer, null);
     }
 
-    private Set<String> runValidations(List<ValidationRule<DeveloperValidationContext>> rules,
-            Developer developer) {
-        return runValidations(rules, developer, null);
-    }
-
-    private Set<String> runValidations(List<ValidationRule<DeveloperValidationContext>> rules,
+    private Set<String> runChangeValidations(List<ValidationRule<DeveloperValidationContext>> rules,
             Developer developer, Developer beforeDev) {
         Set<String> errorMessages = new HashSet<String>();
         DeveloperValidationContext context = new DeveloperValidationContext(developer, msgUtil, beforeDev);
+
+        for (ValidationRule<DeveloperValidationContext> rule : rules) {
+            if (!rule.isValid(context)) {
+                errorMessages.addAll(rule.getMessages());
+            }
+        }
+        return errorMessages;
+    }
+
+    private Set<String> runValidations(List<ValidationRule<DeveloperValidationContext>> rules,
+            Developer developer, List<Developer> beforeDevs) {
+        Set<String> errorMessages = new HashSet<String>();
+        DeveloperValidationContext context = new DeveloperValidationContext(developer, msgUtil, beforeDevs);
 
         for (ValidationRule<DeveloperValidationContext> rule : rules) {
             if (!rule.isValid(context)) {
