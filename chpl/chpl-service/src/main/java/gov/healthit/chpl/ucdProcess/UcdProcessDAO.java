@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
@@ -42,14 +44,14 @@ public class UcdProcessDAO extends BaseDAOImpl {
         return entity.toDomain();
     }
 
-    public UcdProcess update(UcdProcess dto) throws EntityRetrievalException {
-        UcdProcessEntity entity = this.getEntityById(dto.getId());
+    public UcdProcess update(UcdProcess ucdProcess) throws EntityRetrievalException {
+        UcdProcessEntity entity = this.getEntityById(ucdProcess.getId());
 
         if (entity == null) {
-            throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
+            throw new EntityRetrievalException("Entity with id " + ucdProcess.getId() + " does not exist");
         }
 
-        entity.setName(dto.getName());
+        entity.setName(ucdProcess.getName());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setLastModifiedDate(new Date());
 
@@ -88,6 +90,24 @@ public class UcdProcessDAO extends BaseDAOImpl {
         return entities.stream()
             .map(entity -> entity.toDomain())
             .collect(Collectors.toList());
+    }
+
+    public List<CertifiedProduct> getCertifiedProductsByUcdProcess(UcdProcess ucdProcess) {
+        Query query = entityManager.createQuery("SELECT cpd "
+                        + "FROM CertificationResultUcdProcessEntity crUcd, CertificationResultEntity cr, "
+                        + "CertifiedProductDetailsEntity cpd "
+                        + "WHERE cr.certifiedProductId = cpd.id "
+                        + "AND crUcd.certificationResultId = cr.id "
+                        + "AND crUcd.ucdProcessId = :ucdProcessId "
+                        + "AND crUcd.deleted <> true "
+                        + "AND cr.deleted <> true "
+                        + "AND cpd.deleted <> true");
+        query.setParameter("ucdProcessId", ucdProcess.getId());
+        List<CertifiedProductDetailsEntity> results = query.getResultList();
+
+        return results.stream()
+            .map(entity -> entity.toCertifiedProduct())
+            .toList();
     }
 
     private List<UcdProcessEntity> getAllEntities() {

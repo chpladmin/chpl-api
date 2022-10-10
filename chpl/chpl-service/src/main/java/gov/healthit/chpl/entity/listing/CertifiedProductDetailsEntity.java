@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.entity.ProductEntity;
 import lombok.Data;
 
@@ -259,5 +260,17 @@ public class CertifiedProductDetailsEntity {
 
     @Column(name = "svap_notice_url")
     private String svapNoticeUrl;
+
+    public CertifiedProduct toCertifiedProduct() {
+        return CertifiedProduct.builder()
+                .id(this.getId())
+                .certificationDate(this.getCertificationDate().getTime())
+                .certificationStatus(this.getCertificationStatusName())
+                .chplProductNumber(this.getChplProductNumber())
+                .curesUpdate(this.getCuresUpdate())
+                .edition(this.getYear())
+                .lastModifiedDate(this.getLastModifiedDate().getTime())
+                .build();
+    }
 }
 
