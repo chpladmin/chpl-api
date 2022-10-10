@@ -244,6 +244,7 @@ public class DimensionalDataManager {
         return standards;
     }
 
+    @Deprecated
     public Set<KeyValueModel> getUcdProcesses() {
         LOGGER.debug("Getting all ucd processesfrom the database (not cached).");
 

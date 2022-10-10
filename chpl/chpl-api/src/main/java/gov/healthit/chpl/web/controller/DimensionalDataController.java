@@ -46,6 +46,7 @@ import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.results.CertificationCriterionResults;
 import gov.healthit.chpl.web.controller.results.SvapResults;
 import io.swagger.v3.oas.annotations.Operation;
@@ -388,6 +389,10 @@ public class DimensionalDataController {
         return result;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/ucd_processes",
+        message = "This endpoint is deprecated and will be removed. Please GET from /ucd-processes.",
+        removalDate = "2023-04-30")
     @Operation(summary = "Get all possible UCD process options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {
