@@ -65,7 +65,7 @@ public class AddedRemovedSurveillanceRequirementActivity implements ListingActiv
 
     private Boolean hasSurveillanceRequirementBeenUpdatedToRemovedRequirement(SurveillanceRequirement origRequirement, List<SurveillanceRequirement> newRequirements) {
         Optional<SurveillanceRequirement> updatedRequirement = getMatchingSurveillanceRequirement(origRequirement, newRequirements);
-        if (updatedRequirement.isPresent()) {
+        if (updatedRequirement.isPresent() && updatedRequirement.get().getRequirementDetailType() != null) {
             return !updatedRequirement.get().getRequirementDetailType().getId().equals(origRequirement.getRequirementDetailType().getId())
                     && isSurveillanceRequirementRemoved(updatedRequirement.get());
         }
@@ -79,7 +79,11 @@ public class AddedRemovedSurveillanceRequirementActivity implements ListingActiv
     }
 
     private Boolean isSurveillanceRequirementRemoved(SurveillanceRequirement requirement) {
-        return requirement.getRequirementDetailType().getRemoved();
+        if (requirement.getRequirementDetailType() != null) {
+            return requirement.getRequirementDetailType().getRemoved();
+        } else {
+            return false;
+        }
     }
 
     private List<SurveillanceRequirement> subtractRequirementLists(List<SurveillanceRequirement> listA, List<SurveillanceRequirement> listB) {

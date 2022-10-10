@@ -157,11 +157,17 @@ public class SurveillanceRequirement implements Serializable {
             return false;
         }
 
-        if (!NullSafeEvaluator.eval(() -> this.getRequirementDetailType().getId(), 0L).equals(
-                NullSafeEvaluator.eval(() -> anotherRequirement.getRequirementDetailType().getId(), 0L))) {
+        if (!doRequirementRetailsMatch(anotherRequirement)) {
             return false;
         }
         return true;
+    }
+
+    public boolean doRequirementRetailsMatch(SurveillanceRequirement anotherRequirement) {
+        return NullSafeEvaluator.eval(() -> this.getRequirementDetailType().getId(), 0L).equals(
+                NullSafeEvaluator.eval(() -> anotherRequirement.getRequirementDetailType().getId(), 0L))
+                && NullSafeEvaluator.eval(() -> this.getRequirementDetailOther(), "").equals(
+                        NullSafeEvaluator.eval(() -> anotherRequirement.getRequirementDetailOther(), ""));
     }
 
     public Long getId() {

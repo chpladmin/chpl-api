@@ -150,9 +150,9 @@ public class SurveillanceDAO extends BaseDAOImpl {
                 .surveillanceResultTypeEntity(SurveillanceResultTypeEntity.builder()
                         .id(requirement.getResult().getId())
                         .build())
-                .requirementDetailType(RequirementDetailTypeEntity.builder()
-                        .id(requirement.getRequirementDetailType().getId())
-                        .build())
+                .requirementDetailType(requirement.getRequirementDetailType() != null
+                        ? getRequirementDetailTypeEntityById(requirement.getRequirementDetailType().getId())
+                        : null)
                 .requirementDetailOther(requirement.getRequirementDetailOther())
                 .lastModifiedUser(AuthUtil.getAuditId())
                 .deleted(false)
@@ -168,11 +168,11 @@ public class SurveillanceDAO extends BaseDAOImpl {
 
     private SurveillanceRequirementEntity updateSurveillanceRequirement(SurveillanceRequirement requirement, SurveillanceRequirementEntity requirementEntity) {
         requirementEntity.getSurveillanceResultTypeEntity().setId(requirement.getResult().getId());
-
-        requirementEntity.setRequirementDetailType(RequirementDetailTypeEntity.builder()
-                .id(requirement.getRequirementDetailType().getId())
-                .build());
-
+        if (requirement.getRequirementDetailType() != null) {
+            requirementEntity.setRequirementDetailType(RequirementDetailTypeEntity.builder()
+                    .id(requirement.getRequirementDetailType().getId())
+                    .build());
+        }
         requirementEntity.setRequirementDetailOther(requirement.getRequirementDetailOther());
         requirementEntity.setLastModifiedUser(AuthUtil.getAuditId());
 
@@ -676,6 +676,13 @@ public class SurveillanceDAO extends BaseDAOImpl {
                 + "LEFT JOIN FETCH e.surveillanceRequirementType srt",
             RequirementDetailTypeEntity.class);
         return query.getResultList();
+    }
+
+    private RequirementDetailTypeEntity getRequirementDetailTypeEntityById(Long requirementDetailTypeId) {
+        return getRequirementDetailTypeEntities().stream()
+               .filter(rdt -> rdt.getId().equals(requirementDetailTypeId))
+               .findAny()
+               .orElse(null);
     }
 
     private SurveillanceType convert(SurveillanceTypeEntity entity) {
