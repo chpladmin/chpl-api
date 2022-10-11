@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,7 +117,7 @@ public class CuresUpdateService {
 
     public Boolean isCuresUpdate(CertifiedProductSearchDetails listing) {
         List<Long> criteriaIds = listing.getCertificationResults().stream()
-                .filter(criterion -> criterion.isSuccess() && !criterion.getCriterion().getRemoved())
+                .filter(criterion -> BooleanUtils.isTrue(criterion.isSuccess()))
                 .map(criterion -> criterion.getCriterion().getId())
                 .collect(Collectors.toList());
         return isCuresUpdate(criteriaIds);
@@ -162,11 +163,7 @@ public class CuresUpdateService {
 
     private Boolean passNeedsToBeUpdatedCriteriaRequirement(List<Long> criteriaIds) throws Exception {
         if (hasCriteriaRequiringUpdate(criteriaIds)) {
-            if (isPast24Months()) {
-                throw new Exception("Listing is not valid; has revised criteria past 24 months");
-            } else {
-                return false;
-            }
+            return false;
         }
         return true;
     }
@@ -193,11 +190,7 @@ public class CuresUpdateService {
 
     private Boolean hasAnyCriteriaRequiringPnS(List<Long> criteriaIds) throws Exception {
         if (hasCriterionThatRequiresPnS(criteriaIds)) {
-            if (isPast24Months()) {
-                throw new Exception("Listing is not valid; doesn't have d12/d13 and is past 24 months");
-            } else {
-                return true;
-            }
+            return true;
         }
         return false;
     }
@@ -220,10 +213,6 @@ public class CuresUpdateService {
         return criteriaIds.stream()
                 .filter(id -> !dependentCriteriaIds.contains(id))
                 .count() == 0L;
-    }
-
-    private Boolean isPast24Months() {
-        return false;
     }
 
     private Boolean isPast36Months() {
