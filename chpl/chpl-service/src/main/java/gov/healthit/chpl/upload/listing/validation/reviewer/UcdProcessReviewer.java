@@ -21,9 +21,10 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
-@Component("listingUploadUcdProcessReviewer")
-public class UcdProcessReviewer {
+@Component("ucdProcessReviewer")
+public class UcdProcessReviewer implements Reviewer {
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
@@ -57,7 +58,6 @@ public class UcdProcessReviewer {
         List<CertifiedProductUcdProcess> ucdProcesses = listing.getSed().getUcdProcesses();
         if (!CollectionUtils.isEmpty(ucdProcesses)) {
             List<CertifiedProductUcdProcess> ucdProcessesWithoutIds = ucdProcesses.stream()
-                        .filter(currUcdProc -> doesUcdProcessHaveAnyNonRemovedCriteria(currUcdProc))
                         .filter(currUcdProc -> currUcdProc.getId() == null)
                         .collect(Collectors.toList());
 
@@ -73,16 +73,6 @@ public class UcdProcessReviewer {
                                         .collect(Collectors.joining(",")))));
             }
         }
-    }
-
-    private boolean doesUcdProcessHaveAnyNonRemovedCriteria(CertifiedProductUcdProcess ucdProcess) {
-        if (CollectionUtils.isEmpty(ucdProcess.getCriteria())) {
-            return false;
-        }
-
-        return ucdProcess.getCriteria().stream()
-                .filter(criterion -> BooleanUtils.isFalse(criterion.getRemoved()))
-                .findAny().isPresent();
     }
 
     private void reviewAllUcdProcessCriteriaAreAllowed(CertifiedProductSearchDetails listing) {

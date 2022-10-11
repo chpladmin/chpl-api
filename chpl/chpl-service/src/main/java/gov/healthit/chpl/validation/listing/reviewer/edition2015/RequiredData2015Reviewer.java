@@ -10,7 +10,6 @@ import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestData;
-import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestData;
@@ -64,28 +63,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 for (CertificationResult cert : listing.getCertificationResults()) {
                     if (cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE)
                             && cert.getCriterion().getNumber().equals(UCD_RELATED_CERTS[i])) {
-                        // make sure at least one UCD process has this criteria number
-                        if (cert.isSed()) {
-                            if (listing.getSed() == null || listing.getSed().getUcdProcesses() == null
-                                    || listing.getSed().getUcdProcesses().size() == 0) {
-                                addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingUcdProcess",
-                                        Util.formatCriteriaNumber(cert.getCriterion()));
-                            } else {
-
-                                boolean foundCriteria = false;
-                                for (CertifiedProductUcdProcess ucd : listing.getSed().getUcdProcesses()) {
-                                    for (CertificationCriterion criteria : ucd.getCriteria()) {
-                                        if (criteria.getId().equals(cert.getCriterion().getId())) {
-                                            foundCriteria = true;
-                                        }
-                                    }
-                                }
-                                if (!foundCriteria) {
-                                    addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingUcdProcess",
-                                            Util.formatCriteriaNumber(cert.getCriterion()));
-                                }
-                            }
-                        }
                         if (cert.isSed()) {
                             if (listing.getSed() == null || listing.getSed().getTestTasks() == null
                                     || listing.getSed().getTestTasks().size() == 0) {

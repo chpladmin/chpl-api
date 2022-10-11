@@ -807,54 +807,6 @@ public class FieldLengthReviewerTest {
     }
 
     @Test
-    public void review_nullUcdProcesses_noError() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder().build())
-                .build();
-        listing.getSed().setUcdProcesses(null);
-        reviewer.review(listing);
-        assertEquals(0, listing.getErrorMessages().size());
-    }
-
-    @Test
-    public void review_emptyUcdProcesses_noError() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder().build())
-                .build();
-        reviewer.review(listing);
-        assertEquals(0, listing.getErrorMessages().size());
-    }
-
-    @Test
-    public void review_shortUcdProcessName_noError() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder().build())
-                .build();
-        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
-                .id(1L)
-                .name("name")
-                .details("some details")
-                .build());
-        reviewer.review(listing);
-        assertEquals(0, listing.getErrorMessages().size());
-    }
-
-    @Test
-    public void review_longUcdProcessName_hasError() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder().build())
-                .build();
-        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
-                .id(1L)
-                .name(createStringLongerThan(20, "A"))
-                .details("some details")
-                .build());
-        reviewer.review(listing);
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "UCD Process Name", "placeholder")));
-    }
-
-    @Test
     public void review_nullTestTasks_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .sed(CertifiedProductSed.builder().build())
