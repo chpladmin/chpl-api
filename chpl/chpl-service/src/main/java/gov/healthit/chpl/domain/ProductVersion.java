@@ -147,7 +147,7 @@ public class ProductVersion implements Serializable {
             if (!StringUtils.isEmpty(other.version)) {
                 return false;
             }
-        } else if (!version.equals(version)) {
+        } else if (!version.equals(other.version)) {
             return false;
         }
         if (StringUtils.isEmpty(details)) {

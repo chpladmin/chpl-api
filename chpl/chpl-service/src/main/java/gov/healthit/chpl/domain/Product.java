@@ -272,7 +272,7 @@ public class Product implements Serializable {
             if (!StringUtils.isEmpty(other.name)) {
                 return false;
             }
-        } else if (!name.equals(name)) {
+        } else if (!name.equals(other.name)) {
             return false;
         }
         if (StringUtils.isEmpty(reportFileLocation)) {
