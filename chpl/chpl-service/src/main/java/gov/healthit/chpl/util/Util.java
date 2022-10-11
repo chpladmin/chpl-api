@@ -14,7 +14,7 @@ import org.apache.commons.validator.routines.EmailValidator;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.NonconformityType;
-import gov.healthit.chpl.domain.surveillance.RequirementDetailType;
+import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import lombok.extern.log4j.Log4j2;
 
@@ -84,9 +84,9 @@ public final class Util {
         return result;
     }
 
-    public static String formatCriteriaNumber(RequirementDetailType requirementDetailType) {
-        String result = requirementDetailType.getNumber();
-        if (isCures(requirementDetailType.getTitle())) {
+    public static String formatCriteriaNumber(RequirementType requirementType) {
+        String result = requirementType.getNumber();
+        if (isCures(requirementType.getTitle())) {
             result += CURES_SUFFIX;
         }
         return result;

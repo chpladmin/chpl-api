@@ -19,7 +19,7 @@ import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.NonconformityType;
-import gov.healthit.chpl.domain.surveillance.RequirementDetailType;
+import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
@@ -43,7 +43,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
     private SurveillanceDAO survDao;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
-    private List<RequirementDetailType> requirementDetailTypes;
+    private List<RequirementType> requirementTypes;
     private List<NonconformityType> nonconformityTypes;
 
     protected DateTimeFormatter dateFormatter;
@@ -59,7 +59,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
         dateFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
 
-        requirementDetailTypes = survDao.getRequirementDetailTypes();
+        requirementTypes = survDao.getRequirementTypes();
         nonconformityTypes = survDao.getNonconformityTypes();
     }
 
@@ -203,16 +203,16 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 
         int colIndex = 7;
         // requirement detail type
-        //Need to use the listing to determine if the requirementDetailType (when it's a Certified Capability)
-        //relates to the "old" or the "Cures" version of the criterion.  When detailType is a Certified Capability
-        //the detailType.id is the cert criterion id.
+        //Need to use the listing to determine if the requirementType (when it's a Certified Capability)
+        //relates to the "old" or the "Cures" version of the criterion.  When requirementType is a Certified Capability
+        //the requirementType.id is the cert criterion id.
         String requirementTypeStr = csvRecord.get(colIndex++).trim();
         String requirementStr = csvRecord.get(colIndex++).trim();
-        req.setRequirementDetailType(requirementDetailTypes.stream()
+        req.setRequirementType(requirementTypes.stream()
                 .filter(detailType -> ((NullSafeEvaluator.eval(() -> detailType.getNumber(), "") .equals(requirementStr)
                                         && isCriterionAttestedTo(surv.getCertifiedProduct().getId(), detailType.getId()))
                         || NullSafeEvaluator.eval(() -> detailType.getTitle(), "") .equals(requirementStr))
-                        && detailType.getSurveillanceRequirementType().getName().equals(requirementTypeStr))
+                        && detailType.getRequirementGroupType().getName().equals(requirementTypeStr))
                 .findAny()
                 .orElse(null));
 
@@ -238,8 +238,8 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         int colIndex = 8;
         String requirementStr = csvRecord.get(colIndex).trim();
         SurveillanceRequirement req = surv.getRequirements().stream()
-                .filter(r -> NullSafeEvaluator.eval(() -> r.getRequirementDetailType().getNumber(), "").equals(requirementStr)
-                        || NullSafeEvaluator.eval(() -> r.getRequirementDetailType().getTitle(), "").equals(requirementStr))
+                .filter(r -> NullSafeEvaluator.eval(() -> r.getRequirementType().getNumber(), "").equals(requirementStr)
+                        || NullSafeEvaluator.eval(() -> r.getRequirementType().getTitle(), "").equals(requirementStr))
                 .findAny()
                 .orElse(null);
 

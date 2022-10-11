@@ -33,17 +33,17 @@ public class NewSurveillanceRemovedCriteriaReviewer implements Reviewer {
         }
 
         for (SurveillanceRequirement req : surv.getRequirements()) {
-            checkRequirementForRemovedDetailType(surv, req);
+            checkRequirementForRemovedRequirementType(surv, req);
             for (SurveillanceNonconformity nc : req.getNonconformities()) {
                 checkForRemovedNonconformity(surv, nc);
             }
         }
     }
 
-    private void checkRequirementForRemovedDetailType(Surveillance surv, SurveillanceRequirement req) {
-        if (NullSafeEvaluator.eval(() -> req.getRequirementDetailType().getRemoved(), false)) {
+    private void checkRequirementForRemovedRequirementType(Surveillance surv, SurveillanceRequirement req) {
+        if (NullSafeEvaluator.eval(() -> req.getRequirementType().getRemoved(), false)) {
             surv.getErrorMessages().add(
-                    msgUtil.getMessage("surveillance.requirementNotAddedForRemoved", req.getRequirementDetailType().getFormattedTitle()));
+                    msgUtil.getMessage("surveillance.requirementNotAddedForRemoved", req.getRequirementType().getFormattedTitle()));
         }
     }
 

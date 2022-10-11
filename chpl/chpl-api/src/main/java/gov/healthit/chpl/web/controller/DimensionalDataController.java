@@ -498,15 +498,35 @@ public class DimensionalDataController {
         return result;
     }
 
-    @Operation(summary = "Get all possible surveillance requirement type options in the CHPL",
+    @Operation(summary = "Get all possible requirement group type options in the CHPL",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/surveillance_requirement_types", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/surveillance_requirements_types",
+    removalDate = "2023-05-01",
+    message = "This endpoint is deprecated and will be removed in a future release. Please use /data/requirement-group-types "
+            + "to get the Requirement Group types.")
     public @ResponseBody SearchOption getSurveillanceRequirementTypes() {
-        Set<KeyValueModel> data = dimensionalDataManager.getSurveillanceRequirementTypes();
+        Set<KeyValueModel> data = dimensionalDataManager.getRequirementGroupTypes();
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        result.setData(data);
+        return result;
+    }
+
+    @Operation(summary = "Get all possible requirement group type options in the CHPL",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/requirement-group-types", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SearchOption getRequirementGroupTypes() {
+        Set<KeyValueModel> data = dimensionalDataManager.getRequirementGroupTypes();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
@@ -517,13 +537,13 @@ public class DimensionalDataController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/surveillance-requirement-detail-types", method = RequestMethod.GET,
+    @RequestMapping(value = "/requirement-types", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchOption getRequirementDetailTypes() {
+    public @ResponseBody SearchOption getRequirementTypes() {
         SearchOption result = new SearchOption();
         result.setExpandable(false);
-        result.setData(dimensionalDataManager.getRequirementDetailTypes());
+        result.setData(dimensionalDataManager.getRequirementTypes());
         return result;
     }
 
@@ -534,6 +554,7 @@ public class DimensionalDataController {
     @RequestMapping(value = "/surveillance-requirements", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    @Deprecated
     @DeprecatedApi(friendlyUrl = "/data/surveillance-requirements",
     removalDate = "2023-05-01",
     message = "This endpoint is deprecated and will be removed in a future release. Please use /data/surveillance-requirement-detail-types "

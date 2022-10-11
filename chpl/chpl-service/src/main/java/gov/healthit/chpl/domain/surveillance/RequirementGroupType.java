@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SurveillanceRequirementType implements Serializable {
+public class RequirementGroupType implements Serializable {
     private static final long serialVersionUID = -5865384642096284604L;
     public static final String CERTIFIED_CAPABILITY = "Certified Capability";
     public static final String TRANS_DISCLOSURE_REQ = "Transparency or Disclosure Requirement";
@@ -31,13 +31,13 @@ public class SurveillanceRequirementType implements Serializable {
     public static final Long ATTESTATION_SUBMISSION_ID = 5L;
 
     /**
-     * Surveillance requirement type internal ID
+     * Requirement group type internal ID
      */
     @XmlElement(required = true)
     private Long id;
 
     /**
-     * Surveillance requirement type name
+     * Requirement group type name
      */
     @XmlElement(required = true)
     private String name;
@@ -49,7 +49,7 @@ public class SurveillanceRequirementType implements Serializable {
      * @param anotherType
      * @return whether the two objects are the same
      */
-    public boolean matches(final SurveillanceRequirementType anotherType) {
+    public boolean matches(final RequirementGroupType anotherType) {
         if (this.id != null && anotherType.id != null
                 && this.id.longValue() == anotherType.id.longValue()) {
             return true;

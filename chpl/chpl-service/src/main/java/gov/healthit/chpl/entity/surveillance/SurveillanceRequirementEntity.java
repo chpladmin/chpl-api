@@ -20,8 +20,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
-import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import lombok.AllArgsConstructor;
@@ -48,11 +48,11 @@ public class SurveillanceRequirementEntity {
     private Long surveillanceId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "requirement_detail_type_id")
-    private RequirementDetailTypeEntity requirementDetailType;
+    @JoinColumn(name = "requirement_type_id")
+    private RequirementTypeEntity requirementType;
 
-    @Column(name = "requirement_detail_other")
-    private String requirementDetailOther;
+    @Column(name = "requirement_type_other")
+    private String requirementTypeOther;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "result_id", insertable = true, updatable = true)
@@ -81,30 +81,30 @@ public class SurveillanceRequirementEntity {
                 .nonconformities(Optional.ofNullable(this.getNonconformities()).orElse(Collections.emptySet()).stream()
                         .map(e -> e.toDomain(certificationCriterionService))
                         .toList())
-                .requirementDetailType(this.requirementDetailType != null ? this.requirementDetailType.toDomain() : null)
-                .requirementDetailOther(this.requirementDetailOther)
+                .requirementType(this.requirementType != null ? this.requirementType.toDomain() : null)
+                .requirementTypeOther(this.requirementTypeOther)
                 .result(this.getSurveillanceResultTypeEntity().toDomain())
                 .build();
 
-        if (NullSafeEvaluator.eval(() -> this.requirementDetailType.getSurveillanceRequirementType(), null) != null) {
-            req.setType(SurveillanceRequirementType.builder()
-                    .id(this.requirementDetailType.getSurveillanceRequirementType().getId())
-                    .name(this.requirementDetailType.getSurveillanceRequirementType().getName())
+        if (NullSafeEvaluator.eval(() -> this.requirementType.getRequirementGroupType(), null) != null) {
+            req.setType(RequirementGroupType.builder()
+                    .id(this.requirementType.getRequirementGroupType().getId())
+                    .name(this.requirementType.getRequirementGroupType().getName())
                     .build());
 
-            int intValue = this.getRequirementDetailType().getSurveillanceRequirementType().getId().intValue();
-            if (intValue == SurveillanceRequirementType.CERTIFIED_CAPABILITY_ID) {
-                CertificationCriterion criterion = certificationCriterionService.get(req.getRequirementDetailType().getId());
+            int intValue = this.getRequirementType().getRequirementGroupType().getId().intValue();
+            if (intValue == RequirementGroupType.CERTIFIED_CAPABILITY_ID) {
+                CertificationCriterion criterion = certificationCriterionService.get(req.getRequirementType().getId());
                 req.setCriterion(criterion);
-            } else if (intValue == SurveillanceRequirementType.TRANS_DISCLOSURE_ID || intValue == SurveillanceRequirementType.RWT_SUBMISSION_ID || intValue == SurveillanceRequirementType.ATTESTATION_SUBMISSION_ID) {
-                req.setRequirement(req.getRequirementDetailType().getTitle());
+            } else if (intValue == RequirementGroupType.TRANS_DISCLOSURE_ID || intValue == RequirementGroupType.RWT_SUBMISSION_ID || intValue == RequirementGroupType.ATTESTATION_SUBMISSION_ID) {
+                req.setRequirement(req.getRequirementType().getTitle());
             }
-        } else if (this.requirementDetailOther != null) {
-            req.setType(SurveillanceRequirementType.builder()
-                    .id(SurveillanceRequirementType.OTHER_ID)
-                    .name(SurveillanceRequirementType.OTHER)
+        } else if (this.requirementTypeOther != null) {
+            req.setType(RequirementGroupType.builder()
+                    .id(RequirementGroupType.OTHER_ID)
+                    .name(RequirementGroupType.OTHER)
                     .build());
-            req.setRequirement(req.getRequirementDetailOther());
+            req.setRequirement(req.getRequirementTypeOther());
         }
 
         return req;

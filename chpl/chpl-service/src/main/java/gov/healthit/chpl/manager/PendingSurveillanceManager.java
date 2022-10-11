@@ -44,7 +44,7 @@ import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
-import gov.healthit.chpl.domain.surveillance.RequirementDetailType;
+import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
@@ -101,7 +101,7 @@ public class PendingSurveillanceManager extends SecuredManager {
     private Integer surveillanceThresholdToProcessAsJob;
     private CertificationCriterionService certificationCriterionService;
 
-    private List<RequirementDetailType> requirementDetailTypes;
+    private List<RequirementType> requirementTypes;
     private List<NonconformityType> nonconformityTypes;
 
     @Autowired
@@ -130,7 +130,7 @@ public class PendingSurveillanceManager extends SecuredManager {
         this.surveillanceThresholdToProcessAsJob = surveillanceThresholdToProcessAsJob;
         this.certificationCriterionService = certificationCriterionService;
 
-        this.requirementDetailTypes = surveillanceDAO.getRequirementDetailTypes();
+        this.requirementTypes = surveillanceDAO.getRequirementTypes();
         this.nonconformityTypes = surveillanceDAO.getNonconformityTypes();
     }
 
@@ -381,9 +381,9 @@ public class PendingSurveillanceManager extends SecuredManager {
                 SurveillanceRequirement req = SurveillanceRequirement.builder()
                         .id(preq.getId())
                         .requirement(preq.getSurveilledRequirement())
-                        .type(getRequirementDetailType(preq.getSurveilledRequirement(), preq.getRequirementType(), pr.getCertifiedProductId()).getSurveillanceRequirementType())
+                        .type(getRequirementType(preq.getSurveilledRequirement(), preq.getRequirementType(), pr.getCertifiedProductId()).getRequirementGroupType())
                         .criterion(preq.getCertificationCriterionEntity() != null ? preq.getCertificationCriterionEntity().toDomain() : null)
-                        .requirementDetailType(getRequirementDetailType(preq.getSurveilledRequirement(), preq.getRequirementType(), pr.getCertifiedProductId()))
+                        .requirementType(getRequirementType(preq.getSurveilledRequirement(), preq.getRequirementType(), pr.getCertifiedProductId()))
                         .result(SurveillanceResultType.builder()
                                 .name(preq.getResult())
                                 .build())
@@ -432,15 +432,15 @@ public class PendingSurveillanceManager extends SecuredManager {
         return surv;
     }
 
-    private RequirementDetailType getRequirementDetailType(String requirement, String requirementType, Long listingId) {
-        //Need to use the listing to determine if the requirementDetailType (when it's a Certified Capability)
-        //relates to the "old" or the "Cures" version of the criterion.  When detailType is a Certified Capability
-        //the detailType.id is the cert criterion id.
-        return requirementDetailTypes.stream()
+    private RequirementType getRequirementType(String requirement, String requirementType, Long listingId) {
+        //Need to use the listing to determine if the requirementType (when it's a Certified Capability)
+        //relates to the "old" or the "Cures" version of the criterion.  When requirementType is a Certified Capability
+        //the requirementType.id is the cert criterion id.
+        return requirementTypes.stream()
                 .filter(detailType -> ((NullSafeEvaluator.eval(() -> detailType.getNumber(), "") .equals(requirement)
                                             && isCriterionAttestedTo(listingId, detailType.getId()))
                                         || NullSafeEvaluator.eval(() -> detailType.getTitle(), "") .equals(requirement))
-                                    && detailType.getSurveillanceRequirementType().getName().equals(requirementType))
+                                    && detailType.getRequirementGroupType().getName().equals(requirementType))
                     .findAny()
                     .orElse(null);
     }

@@ -43,9 +43,9 @@ public class SurveillanceRequirement implements Serializable {
     @Deprecated
     @DeprecatedResponseField(removalDate = "2023-05-01",
     message = "This field is deprecated and will be removed from the response data in a future release. "
-            + "Please replace usage of the 'type' field with 'requirementDetailType'.")
+            + "Please replace usage of the 'type' field with 'requirementType'.")
     @XmlElement(required = true)
-    private SurveillanceRequirementType type;
+    private RequirementGroupType type;
 
     /**
      * Name of the surveilled requirement (ex: 170.314 (a)(1))
@@ -53,7 +53,7 @@ public class SurveillanceRequirement implements Serializable {
     @Deprecated
     @DeprecatedResponseField(removalDate = "2023-05-01",
     message = "This field is deprecated and will be removed from the response data in a future release. "
-            + "Please replace usage of the 'requirement' field with 'requirementDetailType'.")
+            + "Please replace usage of the 'requirement' field with 'requirementType'.")
     @XmlElement(required = true)
     private String requirement;
 
@@ -65,7 +65,7 @@ public class SurveillanceRequirement implements Serializable {
     @XmlElement(required = false)
     @DeprecatedResponseField(removalDate = "2023-05-01",
     message = "This field is deprecated and will be removed from the response data in a future release. "
-            + "Please replace usage of the 'criterion' field with 'requirementDetailType'.")
+            + "Please replace usage of the 'criterion' field with 'requirementType'.")
     private CertificationCriterion criterion;
 
     /**
@@ -73,13 +73,13 @@ public class SurveillanceRequirement implements Serializable {
      * the type of requirement being surveilled
      */
     @XmlElement
-    private RequirementDetailType requirementDetailType;
+    private RequirementType requirementType;
 
     /**
      * When the requirement type is "Other", the value of the requirement type
      */
     @XmlElement
-    private String requirementDetailOther;
+    private String requirementTypeOther;
 
     /**
      * The result for surveillance conducted on each surveillance requirement.
@@ -157,17 +157,17 @@ public class SurveillanceRequirement implements Serializable {
             return false;
         }
 
-        if (!doRequirementRetailsMatch(anotherRequirement)) {
+        if (!doRequirementTypesMatch(anotherRequirement)) {
             return false;
         }
         return true;
     }
 
-    public boolean doRequirementRetailsMatch(SurveillanceRequirement anotherRequirement) {
-        return NullSafeEvaluator.eval(() -> this.getRequirementDetailType().getId(), 0L).equals(
-                NullSafeEvaluator.eval(() -> anotherRequirement.getRequirementDetailType().getId(), 0L))
-                && NullSafeEvaluator.eval(() -> this.getRequirementDetailOther(), "").equals(
-                        NullSafeEvaluator.eval(() -> anotherRequirement.getRequirementDetailOther(), ""));
+    public boolean doRequirementTypesMatch(SurveillanceRequirement anotherRequirement) {
+        return NullSafeEvaluator.eval(() -> this.getRequirementType().getId(), 0L).equals(
+                NullSafeEvaluator.eval(() -> anotherRequirement.getRequirementType().getId(), 0L))
+                && NullSafeEvaluator.eval(() -> this.getRequirementTypeOther(), "").equals(
+                        NullSafeEvaluator.eval(() -> anotherRequirement.getRequirementTypeOther(), ""));
     }
 
     public Long getId() {
@@ -179,13 +179,13 @@ public class SurveillanceRequirement implements Serializable {
     }
 
     @Deprecated
-    public SurveillanceRequirementType getType() {
+    public RequirementGroupType getType() {
         return type;
     }
 
 
     @Deprecated
-    public void setType(SurveillanceRequirementType type) {
+    public void setType(RequirementGroupType type) {
         this.type = type;
     }
 
@@ -209,20 +209,20 @@ public class SurveillanceRequirement implements Serializable {
         this.criterion = criterion;
     }
 
-    public RequirementDetailType getRequirementDetailType() {
-        return requirementDetailType;
+    public RequirementType getRequirementType() {
+        return requirementType;
     }
 
-    public void setRequirementDetailType(RequirementDetailType requirementDetailType) {
-        this.requirementDetailType = requirementDetailType;
+    public void setRequirementType(RequirementType requirementType) {
+        this.requirementType = requirementType;
     }
 
-    public String getRequirementDetailOther() {
-        return requirementDetailOther;
+    public String getRequirementTypeOther() {
+        return requirementTypeOther;
     }
 
-    public void setRequirementDetailOther(String requirementDetailOther) {
-        this.requirementDetailOther = requirementDetailOther;
+    public void setRequirementTypeOther(String requirementTypeOther) {
+        this.requirementTypeOther = requirementTypeOther;
     }
 
     public SurveillanceResultType getResult() {
@@ -247,7 +247,7 @@ public class SurveillanceRequirement implements Serializable {
     @DeprecatedResponseField(removalDate = "2023-01-01",
         message = "This field is deprecated and will be removed from the response data in a future release.")
     public String getRequirementName() {
-        return NullSafeEvaluator.eval(() -> getRequirementDetailType().getFormattedTitle(), "");
+        return NullSafeEvaluator.eval(() -> getRequirementType().getFormattedTitle(), "");
     }
 
 }

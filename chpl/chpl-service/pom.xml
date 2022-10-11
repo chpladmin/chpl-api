@@ -433,7 +433,7 @@
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceNonconformityDocument.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceNonconformityStatus.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceRequirement.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceRequirementType.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/surveillance/RequirementGroupType.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceResultType.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceType.java</source>
                         <source>src/main/java/gov/healthit/chpl/optionalStandard/domain/CertificationResultOptionalStandard.java</source>

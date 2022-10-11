@@ -49,9 +49,9 @@ import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
-import gov.healthit.chpl.domain.surveillance.RequirementDetailType;
+import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
+import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
-import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
@@ -333,10 +333,10 @@ public class DimensionalDataManager {
     }
 
     @Transactional
-    public Set<RequirementDetailType> getRequirementDetailTypes() {
+    public Set<RequirementType> getRequirementTypes() {
         LOGGER.debug("Getting all requirement detail types from the database (not cached).");
 
-        return survDao.getRequirementDetailTypes().stream()
+        return survDao.getRequirementTypes().stream()
                 .collect(Collectors.toSet());
     }
 
@@ -400,13 +400,13 @@ public class DimensionalDataManager {
                 .collect(Collectors.toSet());
     }
 
-    public Set<KeyValueModel> getSurveillanceRequirementTypes() {
-        LOGGER.debug("Getting all surveillance requirement types from the database (not cached).");
+    public Set<KeyValueModel> getRequirementGroupTypes() {
+        LOGGER.debug("Getting all requirement group types from the database (not cached).");
 
-        List<SurveillanceRequirementType> daoResults = survDao.getAllSurveillanceRequirementTypes();
+        List<RequirementGroupType> daoResults = survDao.getAllRequirementGroupTypes();
         Set<KeyValueModel> results = new HashSet<KeyValueModel>();
 
-        for (SurveillanceRequirementType result : daoResults) {
+        for (RequirementGroupType result : daoResults) {
             results.add(new KeyValueModel(result.getId(), result.getName()));
         }
         return results;

@@ -43,10 +43,10 @@ public class AddedRemovedSurveillanceRequirementActivity implements ListingActiv
     private List<QuestionableActivityListingDTO> checkForRemovedSurveillanceRequirementTypeAdded(
             List<SurveillanceRequirement> origRequirements, List<SurveillanceRequirement> newRequirements) {
         return subtractRequirementLists(newRequirements, origRequirements).stream()
-                .filter(req -> isSurveillanceRequirementRemoved(req))
+                .filter(req -> isRequirementTypeRemoved(req))
                 .map(req -> QuestionableActivityListingDTO.builder()
                         .after(String.format("Surveillance Requirement of type %s is removed and was added to surveillance.",
-                                req.getRequirementDetailType().getFormattedTitle()))
+                                req.getRequirementType().getFormattedTitle()))
                         .build())
                 .collect(Collectors.toList());
     }
@@ -55,19 +55,19 @@ public class AddedRemovedSurveillanceRequirementActivity implements ListingActiv
     private List<QuestionableActivityListingDTO> checkForSurveillanceRequirementsUpdatedwithRemoved(
             List<SurveillanceRequirement> origRequirements, List<SurveillanceRequirement> newRequirements) {
         return origRequirements.stream()
-                .filter(req -> hasSurveillanceRequirementBeenUpdatedToRemovedRequirement(req, newRequirements))
+                .filter(req -> hasSurveillanceRequirementBeenUpdatedToRemovedRequirementType(req, newRequirements))
                 .map(req -> QuestionableActivityListingDTO.builder()
                         .after(String.format("Surveillance Requirement of type %s is removed and was added to surveillance.",
-                                getMatchingSurveillanceRequirement(req, newRequirements).get().getRequirementDetailType().getFormattedTitle()))
+                                getMatchingSurveillanceRequirement(req, newRequirements).get().getRequirementType().getFormattedTitle()))
                         .build())
                 .collect(Collectors.toList());
     }
 
-    private Boolean hasSurveillanceRequirementBeenUpdatedToRemovedRequirement(SurveillanceRequirement origRequirement, List<SurveillanceRequirement> newRequirements) {
+    private Boolean hasSurveillanceRequirementBeenUpdatedToRemovedRequirementType(SurveillanceRequirement origRequirement, List<SurveillanceRequirement> newRequirements) {
         Optional<SurveillanceRequirement> updatedRequirement = getMatchingSurveillanceRequirement(origRequirement, newRequirements);
-        if (updatedRequirement.isPresent() && updatedRequirement.get().getRequirementDetailType() != null) {
-            return !updatedRequirement.get().getRequirementDetailType().getId().equals(origRequirement.getRequirementDetailType().getId())
-                    && isSurveillanceRequirementRemoved(updatedRequirement.get());
+        if (updatedRequirement.isPresent() && updatedRequirement.get().getRequirementType() != null) {
+            return !updatedRequirement.get().getRequirementType().getId().equals(origRequirement.getRequirementType().getId())
+                    && isRequirementTypeRemoved(updatedRequirement.get());
         }
         return false;
     }
@@ -78,9 +78,9 @@ public class AddedRemovedSurveillanceRequirementActivity implements ListingActiv
                 .findAny();
     }
 
-    private Boolean isSurveillanceRequirementRemoved(SurveillanceRequirement requirement) {
-        if (requirement.getRequirementDetailType() != null) {
-            return requirement.getRequirementDetailType().getRemoved();
+    private Boolean isRequirementTypeRemoved(SurveillanceRequirement requirement) {
+        if (requirement.getRequirementType() != null) {
+            return requirement.getRequirementType().getRemoved();
         } else {
             return false;
         }

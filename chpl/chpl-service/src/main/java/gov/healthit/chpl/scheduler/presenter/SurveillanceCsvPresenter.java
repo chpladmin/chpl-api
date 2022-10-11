@@ -15,10 +15,10 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.core.env.Environment;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
-import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import gov.healthit.chpl.util.Util;
@@ -181,12 +181,12 @@ public class SurveillanceCsvPresenter {
     protected List<String> generateSurveilledRequirementRowValues(final SurveillanceRequirement req) {
         List<String> reqRow = new ArrayList<String>();
 
-        reqRow.add(NullSafeEvaluator.eval(() -> req.getRequirementDetailType().getSurveillanceRequirementType().getName(), ""));
+        reqRow.add(NullSafeEvaluator.eval(() -> req.getRequirementType().getRequirementGroupType().getName(), ""));
 
-        if (req.getRequirementDetailType().getSurveillanceRequirementType().getId().equals(SurveillanceRequirementType.CERTIFIED_CAPABILITY_ID)) {
-            reqRow.add(Util.formatCriteriaNumber(req.getRequirementDetailType()));
+        if (req.getRequirementType().getRequirementGroupType().getId().equals(RequirementGroupType.CERTIFIED_CAPABILITY_ID)) {
+            reqRow.add(Util.formatCriteriaNumber(req.getRequirementType()));
         } else {
-            reqRow.add(req.getRequirementDetailType().getTitle());
+            reqRow.add(req.getRequirementType().getTitle());
         }
 
         reqRow.add(NullSafeEvaluator.eval(() -> req.getResult().getName(), ""));

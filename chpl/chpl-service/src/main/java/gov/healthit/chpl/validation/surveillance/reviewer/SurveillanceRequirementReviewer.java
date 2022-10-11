@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
-import gov.healthit.chpl.domain.surveillance.RequirementDetailType;
+import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
@@ -19,13 +19,13 @@ import gov.healthit.chpl.util.NullSafeEvaluator;
 public class SurveillanceRequirementReviewer implements Reviewer {
     private SurveillanceDAO survDao;
     private ErrorMessageUtil msgUtil;
-    private Set<RequirementDetailType> requirementDetailTypes;
+    private Set<RequirementType> requirementTypes;
 
     @Autowired
     public SurveillanceRequirementReviewer(SurveillanceDAO survDao, ErrorMessageUtil msgUtil, DimensionalDataManager dimensionalDataManager) {
         this.survDao = survDao;
         this.msgUtil = msgUtil;
-        this.requirementDetailTypes = dimensionalDataManager.getRequirementDetailTypes();
+        this.requirementTypes = dimensionalDataManager.getRequirementTypes();
     }
 
     @Override
@@ -43,9 +43,9 @@ public class SurveillanceRequirementReviewer implements Reviewer {
     }
 
     private void checkRequirementExists(Surveillance surv, SurveillanceRequirement req) {
-        if (!NullSafeEvaluator.eval(() -> req.getRequirementDetailType().getId(), -1L).equals(-1L)) {
-            Optional<RequirementDetailType> reqDetailTypeFound = requirementDetailTypes.stream()
-                    .filter(rdt -> rdt.getId().equals(req.getRequirementDetailType().getId()))
+        if (!NullSafeEvaluator.eval(() -> req.getRequirementType().getId(), -1L).equals(-1L)) {
+            Optional<RequirementType> reqDetailTypeFound = requirementTypes.stream()
+                    .filter(rdt -> rdt.getId().equals(req.getRequirementType().getId()))
                     .findAny();
             if (reqDetailTypeFound.isEmpty()) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.requirementIsRequired"));
@@ -57,7 +57,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
         if (surv.getEndDay() != null) {
             if (req.getResult() == null) {
                 surv.getErrorMessages()
-                        .add(msgUtil.getMessage("surveillance.resultNotFound", req.getRequirementDetailType().getFormattedTitle()));
+                        .add(msgUtil.getMessage("surveillance.resultNotFound", req.getRequirementType().getFormattedTitle()));
             }
         }
     }
@@ -68,7 +68,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
             SurveillanceResultType resType = survDao.findSurveillanceResultType(req.getResult().getName());
             if (resType == null) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.resultWithNameNotFound",
-                        req.getResult().getName(), req.getRequirementDetailType().getFormattedTitle()));
+                        req.getResult().getName(), req.getRequirementType().getFormattedTitle()));
             } else {
                 req.setResult(resType);
             }
@@ -76,7 +76,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
             SurveillanceResultType resType = survDao.findSurveillanceResultType(req.getResult().getId());
             if (resType == null) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.resultWithIdNotFound",
-                        req.getResult().getId(), req.getRequirementDetailType().getFormattedTitle()));
+                        req.getResult().getId(), req.getRequirementType().getFormattedTitle()));
             } else {
                 req.setResult(resType);
             }

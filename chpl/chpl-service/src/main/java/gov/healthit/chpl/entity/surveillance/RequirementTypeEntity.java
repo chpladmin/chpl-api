@@ -10,8 +10,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.CertificationEdition;
-import gov.healthit.chpl.domain.surveillance.RequirementDetailType;
-import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
+import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
+import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.entity.CertificationEditionEntity;
 import lombok.AllArgsConstructor;
@@ -23,11 +23,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "requirement_detail_type")
+@Table(name = "requirement_type")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RequirementDetailTypeEntity {
+public class RequirementTypeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,19 +48,19 @@ public class RequirementDetailTypeEntity {
     private CertificationEditionEntity certificationEdition;
 
     @OneToOne(optional = true)
-    @JoinColumn(name = "surveillance_requirement_type_id", insertable = false, updatable = false)
-    private SurveillanceRequirementTypeEntity surveillanceRequirementType;
+    @JoinColumn(name = "requirement_group_type_id", insertable = false, updatable = false)
+    private RequirementGroupTypeEntity requirementGroupType;
 
-    public RequirementDetailType toDomain() {
-        return RequirementDetailType.builder()
+    public RequirementType toDomain() {
+        return RequirementType.builder()
                 .id(this.id)
                 .number(this.number)
                 .title(this.title)
                 .removed(this.removed)
                 .certificationEdition(this.getCertificationEdition() != null ? new CertificationEdition(new CertificationEditionDTO(this.getCertificationEdition())) : null)
-                .surveillanceRequirementType(SurveillanceRequirementType.builder()
-                        .id(this.surveillanceRequirementType.getId())
-                        .name(this.surveillanceRequirementType.getName())
+                .requirementGroupType(RequirementGroupType.builder()
+                        .id(this.requirementGroupType.getId())
+                        .name(this.requirementGroupType.getName())
                         .build())
                 .build();
     }

@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.surveillance.RequirementDetailType;
+import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
@@ -30,7 +30,7 @@ public class AddedRemovedSurveillanceRequirementActivityTest {
                 .surveillance(Arrays.asList(Surveillance.builder()
                         .requirements(Sets.newHashSet(SurveillanceRequirement.builder()
                                 .id(1L)
-                                .requirementDetailType(RequirementDetailType.builder()
+                                .requirementType(RequirementType.builder()
                                         .id(1L)
                                         .removed(false)
                                         .build())
@@ -41,7 +41,7 @@ public class AddedRemovedSurveillanceRequirementActivityTest {
                 .surveillance(Arrays.asList(Surveillance.builder()
                         .requirements(Sets.newHashSet(SurveillanceRequirement.builder()
                                 .id(1L)
-                                .requirementDetailType(RequirementDetailType.builder()
+                                .requirementType(RequirementType.builder()
                                         .id(1L)
                                         .removed(false)
                                         .build())
@@ -60,7 +60,7 @@ public class AddedRemovedSurveillanceRequirementActivityTest {
                 .surveillance(Arrays.asList(Surveillance.builder()
                         .requirements(Sets.newHashSet(SurveillanceRequirement.builder()
                                 .id(1L)
-                                .requirementDetailType(RequirementDetailType.builder()
+                                .requirementType(RequirementType.builder()
                                         .id(1L)
                                         .removed(false)
                                         .build())
@@ -71,14 +71,14 @@ public class AddedRemovedSurveillanceRequirementActivityTest {
                 .surveillance(Arrays.asList(Surveillance.builder()
                         .requirements(Sets.newHashSet(SurveillanceRequirement.builder()
                                 .id(1L)
-                                .requirementDetailType(RequirementDetailType.builder()
+                                .requirementType(RequirementType.builder()
                                         .id(1L)
                                         .removed(false)
                                         .build())
                                 .build(),
                                 SurveillanceRequirement.builder()
                                 .id(2L)
-                                .requirementDetailType(RequirementDetailType.builder()
+                                .requirementType(RequirementType.builder()
                                         .id(2L)
                                         .removed(false)
                                         .build())
@@ -92,12 +92,12 @@ public class AddedRemovedSurveillanceRequirementActivityTest {
     }
 
     @Test
-    public void check_NewRequirementsAsRemovedRequirementDetailsTypeAdded_ListPopulated() {
+    public void check_NewRequirementsAsRemovedRequirementTypeAdded_ListPopulated() {
         CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
                 .surveillance(Arrays.asList(Surveillance.builder()
                         .requirements(Sets.newHashSet(SurveillanceRequirement.builder()
                                 .id(1L)
-                                .requirementDetailType(RequirementDetailType.builder()
+                                .requirementType(RequirementType.builder()
                                         .id(1L)
                                         .removed(false)
                                         .build())
@@ -109,7 +109,7 @@ public class AddedRemovedSurveillanceRequirementActivityTest {
                 .surveillance(Arrays.asList(Surveillance.builder()
                         .requirements(Sets.newHashSet(SurveillanceRequirement.builder()
                                 .id(1L)
-                                .requirementDetailType(RequirementDetailType.builder()
+                                .requirementType(RequirementType.builder()
                                         .id(1L)
                                         .removed(false)
                                         .build())
@@ -117,7 +117,7 @@ public class AddedRemovedSurveillanceRequirementActivityTest {
                                 .build(),
                                 SurveillanceRequirement.builder()
                                 .id(2L)
-                                .requirementDetailType(RequirementDetailType.builder()
+                                .requirementType(RequirementType.builder()
                                         .id(2L)
                                         .removed(true)
                                         .build())
@@ -137,7 +137,7 @@ public class AddedRemovedSurveillanceRequirementActivityTest {
                 .surveillance(Arrays.asList(Surveillance.builder()
                         .requirements(Sets.newHashSet(SurveillanceRequirement.builder()
                                 .id(1L)
-                                .requirementDetailType(RequirementDetailType.builder()
+                                .requirementType(RequirementType.builder()
                                         .id(1L)
                                         .removed(false)
                                         .build())
@@ -145,7 +145,7 @@ public class AddedRemovedSurveillanceRequirementActivityTest {
                                 .build(),
                                 SurveillanceRequirement.builder()
                                 .id(2L)
-                                .requirementDetailType(RequirementDetailType.builder()
+                                .requirementType(RequirementType.builder()
                                         .id(2L)
                                         .removed(false)
                                         .build())
@@ -157,7 +157,7 @@ public class AddedRemovedSurveillanceRequirementActivityTest {
                 .surveillance(Arrays.asList(Surveillance.builder()
                         .requirements(Sets.newHashSet(SurveillanceRequirement.builder()
                                 .id(1L)
-                                .requirementDetailType(RequirementDetailType.builder()
+                                .requirementType(RequirementType.builder()
                                         .id(1L)
                                         .removed(false)
                                         .build())
@@ -165,7 +165,7 @@ public class AddedRemovedSurveillanceRequirementActivityTest {
                                 .build(),
                                 SurveillanceRequirement.builder()
                                 .id(2L)
-                                .requirementDetailType(RequirementDetailType.builder()
+                                .requirementType(RequirementType.builder()
                                         .id(3L)
                                         .removed(true)
                                         .build())

@@ -38,18 +38,18 @@ public class SurveillanceRemovedDataComparisonReviewer implements ComparisonRevi
                     .filter(existingSurvReq -> doRequirementsMatch(updatedReq, existingSurvReq))
                     .findFirst();
 
-            if (!existingReq.isPresent() && hasRemovedRequirementDetailType(updatedReq)) {
+            if (!existingReq.isPresent() && hasRemovedRequirementType(updatedReq)) {
                 // if it's a new requirement it can't have any removed criteria
                 updatedSurveillance.getErrorMessages().add(
                         msgUtil.getMessage("surveillance.requirementNotAddedForRemoved",
-                                updatedReq.getRequirementDetailType().getFormattedTitle()));
+                                updatedReq.getRequirementType().getFormattedTitle()));
                 checkForRemovedNonconformities(updatedSurveillance, null, updatedReq.getNonconformities());
             } else if (existingReq.isPresent()) {
-                if (hasRemovedRequirementDetailType(updatedReq) && !updatedReq.matches(existingReq.get())) {
+                if (hasRemovedRequirementType(updatedReq) && !updatedReq.matches(existingReq.get())) {
                     // if it's an existing requirement with a removed criteria then it can't be edited
                     updatedSurveillance.getErrorMessages().add(
                             msgUtil.getMessage("surveillance.requirementNotEditedForRemoved",
-                                    updatedReq.getRequirementDetailType().getFormattedTitle()));
+                                    updatedReq.getRequirementType().getFormattedTitle()));
                 }
                 checkForRemovedNonconformities(updatedSurveillance, existingReq.get().getNonconformities(), updatedReq.getNonconformities());
             }
@@ -96,8 +96,8 @@ public class SurveillanceRemovedDataComparisonReviewer implements ComparisonRevi
                 && updatedNonconformity.getId().equals(existingNonconformity.getId());
     }
 
-    private boolean hasRemovedRequirementDetailType(SurveillanceRequirement requirement) {
-        return NullSafeEvaluator.eval(() -> requirement.getRequirementDetailType().getRemoved(), false);
+    private boolean hasRemovedRequirementType(SurveillanceRequirement requirement) {
+        return NullSafeEvaluator.eval(() -> requirement.getRequirementType().getRemoved(), false);
     }
 
     private boolean hasRemovedNonconformityType(SurveillanceNonconformity nonconformity) {

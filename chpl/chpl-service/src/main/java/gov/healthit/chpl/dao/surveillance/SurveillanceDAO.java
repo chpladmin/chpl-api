@@ -14,21 +14,21 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.NonconformityType;
-import gov.healthit.chpl.domain.surveillance.RequirementDetailType;
+import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
+import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
-import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.entity.surveillance.NonconformityTypeEntity;
-import gov.healthit.chpl.entity.surveillance.RequirementDetailTypeEntity;
+import gov.healthit.chpl.entity.surveillance.RequirementGroupTypeEntity;
+import gov.healthit.chpl.entity.surveillance.RequirementTypeEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
-import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementTypeEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceResultTypeEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceTypeEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -45,7 +45,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
             + "JOIN FETCH surv.certifiedProduct "
             + "JOIN FETCH surv.surveillanceType "
             + "LEFT OUTER JOIN FETCH surv.surveilledRequirements reqs "
-            + "LEFT OUTER JOIN FETCH reqs.requirementDetailType "
+            + "LEFT OUTER JOIN FETCH reqs.requirementType "
             + "LEFT OUTER JOIN FETCH reqs.surveillanceResultTypeEntity "
             + "LEFT OUTER JOIN FETCH reqs.nonconformities ncs "
             + "LEFT OUTER JOIN FETCH ncs.type nct "
@@ -150,10 +150,10 @@ public class SurveillanceDAO extends BaseDAOImpl {
                 .surveillanceResultTypeEntity(SurveillanceResultTypeEntity.builder()
                         .id(requirement.getResult().getId())
                         .build())
-                .requirementDetailType(requirement.getRequirementDetailType() != null
-                        ? getRequirementDetailTypeEntityById(requirement.getRequirementDetailType().getId())
+                .requirementType(requirement.getRequirementType() != null
+                        ? getRequirementTypeEntityById(requirement.getRequirementType().getId())
                         : null)
-                .requirementDetailOther(requirement.getRequirementDetailOther())
+                .requirementTypeOther(requirement.getRequirementTypeOther())
                 .lastModifiedUser(AuthUtil.getAuditId())
                 .deleted(false)
                 .build();
@@ -168,12 +168,12 @@ public class SurveillanceDAO extends BaseDAOImpl {
 
     private SurveillanceRequirementEntity updateSurveillanceRequirement(SurveillanceRequirement requirement, SurveillanceRequirementEntity requirementEntity) {
         requirementEntity.getSurveillanceResultTypeEntity().setId(requirement.getResult().getId());
-        if (requirement.getRequirementDetailType() != null) {
-            requirementEntity.setRequirementDetailType(RequirementDetailTypeEntity.builder()
-                    .id(requirement.getRequirementDetailType().getId())
+        if (requirement.getRequirementType() != null) {
+            requirementEntity.setRequirementType(RequirementTypeEntity.builder()
+                    .id(requirement.getRequirementType().getId())
                     .build());
         }
-        requirementEntity.setRequirementDetailOther(requirement.getRequirementDetailOther());
+        requirementEntity.setRequirementTypeOther(requirement.getRequirementTypeOther());
         requirementEntity.setLastModifiedUser(AuthUtil.getAuditId());
 
         entityManager.merge(requirementEntity);
@@ -520,13 +520,13 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
 
-    public List<SurveillanceRequirementType> getAllSurveillanceRequirementTypes() {
-        Query query = entityManager.createQuery("from SurveillanceRequirementTypeEntity where deleted <> true",
-                SurveillanceRequirementTypeEntity.class);
-        List<SurveillanceRequirementTypeEntity> resultEntities = query.getResultList();
-        List<SurveillanceRequirementType> results = new ArrayList<SurveillanceRequirementType>();
-        for (SurveillanceRequirementTypeEntity resultEntity : resultEntities) {
-            SurveillanceRequirementType result = convert(resultEntity);
+    public List<RequirementGroupType> getAllRequirementGroupTypes() {
+        Query query = entityManager.createQuery("from RequirementGroupTypeEntity where deleted <> true",
+                RequirementGroupTypeEntity.class);
+        List<RequirementGroupTypeEntity> resultEntities = query.getResultList();
+        List<RequirementGroupType> results = new ArrayList<RequirementGroupType>();
+        for (RequirementGroupTypeEntity resultEntity : resultEntities) {
+            RequirementGroupType result = convert(resultEntity);
             results.add(result);
         }
         return results;
@@ -534,46 +534,45 @@ public class SurveillanceDAO extends BaseDAOImpl {
 
 
     @Cacheable(CacheNames.FIND_SURVEILLANCE_REQ_TYPE)
-    public SurveillanceRequirementType findSurveillanceRequirementType(String type) {
-        LOGGER.debug("Searching for surveillance requirement type '" + type + "'.");
+    public RequirementGroupType findRequirementGroupType(String type) {
+        LOGGER.debug("Searching for requirement group type '" + type + "'.");
         if (StringUtils.isEmpty(type)) {
             return null;
         }
         Query query = entityManager.createQuery(
-                "from SurveillanceRequirementTypeEntity where UPPER(name) LIKE :name and deleted <> true",
-                SurveillanceRequirementTypeEntity.class);
+                "from RequirementTypeGroupEntity where UPPER(name) LIKE :name and deleted <> true",
+                RequirementGroupTypeEntity.class);
         query.setParameter("name", type.toUpperCase());
-        List<SurveillanceRequirementTypeEntity> matches = query.getResultList();
+        List<RequirementGroupTypeEntity> matches = query.getResultList();
 
-        SurveillanceRequirementTypeEntity resultEntity = null;
+        RequirementGroupTypeEntity resultEntity = null;
         if (matches != null && matches.size() > 0) {
             resultEntity = matches.get(0);
             LOGGER.debug(
-                    "Found surveillance requirement type '" + type + "' having id '" + resultEntity.getId() + "'.");
+                    "Found requirement group type '" + type + "' having id '" + resultEntity.getId() + "'.");
         }
 
-        SurveillanceRequirementType result = convert(resultEntity);
+        RequirementGroupType result = convert(resultEntity);
         return result;
     }
 
 
-    public SurveillanceRequirementType findSurveillanceRequirementType(Long id) {
-        LOGGER.debug("Searching for surveillance requirement type by id '" + id + "'.");
+    public RequirementGroupType findRequirementGroupType(Long id) {
         if (id == null) {
             return null;
         }
         Query query = entityManager.createQuery(
-                "from SurveillanceRequirementTypeEntity where id = :id and deleted <> true",
-                SurveillanceRequirementTypeEntity.class);
+                "from RequirementGroupTypeEntity where id = :id and deleted <> true",
+                RequirementGroupTypeEntity.class);
         query.setParameter("id", id);
-        List<SurveillanceRequirementTypeEntity> matches = query.getResultList();
+        List<RequirementGroupTypeEntity> matches = query.getResultList();
 
-        SurveillanceRequirementTypeEntity resultEntity = null;
+        RequirementGroupTypeEntity resultEntity = null;
         if (matches != null && matches.size() > 0) {
             resultEntity = matches.get(0);
         }
 
-        SurveillanceRequirementType result = convert(resultEntity);
+        RequirementGroupType result = convert(resultEntity);
         return result;
     }
 
@@ -655,8 +654,8 @@ public class SurveillanceDAO extends BaseDAOImpl {
                 .toList();
     }
 
-    public List<RequirementDetailType> getRequirementDetailTypes() {
-        return getRequirementDetailTypeEntities().stream()
+    public List<RequirementType> getRequirementTypes() {
+        return getRequirementTypeEntities().stream()
                 .map(e -> e.toDomain())
                 .toList();
     }
@@ -669,18 +668,18 @@ public class SurveillanceDAO extends BaseDAOImpl {
         return query.getResultList();
     }
 
-    private List<RequirementDetailTypeEntity> getRequirementDetailTypeEntities() {
+    private List<RequirementTypeEntity> getRequirementTypeEntities() {
         Query query = entityManager.createQuery(
-                "FROM RequirementDetailTypeEntity e "
+                "FROM RequirementTypeEntity e "
                 + "LEFT JOIN FETCH e.certificationEdition ce "
-                + "LEFT JOIN FETCH e.surveillanceRequirementType srt",
-            RequirementDetailTypeEntity.class);
+                + "LEFT JOIN FETCH e.requirementGroupType rgt",
+            RequirementTypeEntity.class);
         return query.getResultList();
     }
 
-    private RequirementDetailTypeEntity getRequirementDetailTypeEntityById(Long requirementDetailTypeId) {
-        return getRequirementDetailTypeEntities().stream()
-               .filter(rdt -> rdt.getId().equals(requirementDetailTypeId))
+    private RequirementTypeEntity getRequirementTypeEntityById(Long requirementTypeId) {
+        return getRequirementTypeEntities().stream()
+               .filter(rdt -> rdt.getId().equals(requirementTypeId))
                .findAny()
                .orElse(null);
     }
@@ -695,10 +694,10 @@ public class SurveillanceDAO extends BaseDAOImpl {
         return result;
     }
 
-    private SurveillanceRequirementType convert(SurveillanceRequirementTypeEntity entity) {
-        SurveillanceRequirementType result = null;
+    private RequirementGroupType convert(RequirementGroupTypeEntity entity) {
+        RequirementGroupType result = null;
         if (entity != null) {
-            result = new SurveillanceRequirementType();
+            result = new RequirementGroupType();
             result.setId(entity.getId());
             result.setName(entity.getName());
         }

@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RequirementDetailType {
+public class RequirementType {
     private Long id;
     private String number;
     private String title;
@@ -30,7 +30,7 @@ public class RequirementDetailType {
     @JsonIgnore
     private String edition;
 
-    private SurveillanceRequirementType surveillanceRequirementType;
+    private RequirementGroupType requirementGroupType;
 
     public String getEdition() {
         return NullSafeEvaluator.eval(() -> certificationEdition.getYear(), null);
