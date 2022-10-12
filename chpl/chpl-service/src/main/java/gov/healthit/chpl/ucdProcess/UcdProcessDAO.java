@@ -93,7 +93,7 @@ public class UcdProcessDAO extends BaseDAOImpl {
     }
 
     public List<CertifiedProduct> getCertifiedProductsByUcdProcess(UcdProcess ucdProcess) {
-        Query query = entityManager.createQuery("SELECT cpd "
+        Query query = entityManager.createQuery("SELECT DISTINCT cpd "
                         + "FROM CertificationResultUcdProcessEntity crUcd, CertificationResultEntity cr, "
                         + "CertifiedProductDetailsEntity cpd "
                         + "WHERE cr.certifiedProductId = cpd.id "
