@@ -8,10 +8,12 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.ObjectUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
@@ -44,6 +46,10 @@ public class CertifiedProductUcdProcess implements Serializable {
      */
     @XmlElement(required = true)
     private String name;
+
+    @XmlTransient
+    @JsonIgnore
+    private String userEnteredName;
 
     /**
      * A description of the UCD process used. This variable is applicable for
@@ -97,6 +103,14 @@ public class CertifiedProductUcdProcess implements Serializable {
 
     public void setName(String ucdProcessName) {
         this.name = ucdProcessName;
+    }
+
+    public String getUserEnteredName() {
+        return userEnteredName;
+    }
+
+    public void setUserEnteredName(String userEnteredName) {
+        this.userEnteredName = userEnteredName;
     }
 
     public String getDetails() {
