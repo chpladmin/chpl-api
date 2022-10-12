@@ -188,6 +188,7 @@ public class ListingConfirmationManager {
         }
     }
 
+    //TODO: Remove as part of OCD-4041
     private void addQmsStandardToFuzzyChoices(CertifiedProductQmsStandard qmsStandard, List<String> fuzzyChoices) {
         fuzzyChoices.add(qmsStandard.getQmsStandardName());
         FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
@@ -216,6 +217,7 @@ public class ListingConfirmationManager {
         }
     }
 
+    //TODO: Remove as part of OCD-4040
     private void addAccessibilityStandardToFuzzyChoices(CertifiedProductAccessibilityStandard accessibilityStandard,
             List<String> fuzzyChoices) {
         fuzzyChoices.add(accessibilityStandard.getAccessibilityStandardName());

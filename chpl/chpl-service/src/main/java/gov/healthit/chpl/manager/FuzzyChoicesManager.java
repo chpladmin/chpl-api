@@ -22,6 +22,7 @@ import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
+import gov.healthit.chpl.ucdProcess.UcdProcessDAO;
 import lombok.extern.log4j.Log4j2;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 import me.xdrop.fuzzywuzzy.model.ExtractedResult;
@@ -30,11 +31,16 @@ import me.xdrop.fuzzywuzzy.model.ExtractedResult;
 @Log4j2
 public class FuzzyChoicesManager extends SecuredManager {
 
+    private UcdProcessDAO ucdProcessDao;
+    //TODO: After OCD-4040 and OCD-4041 we should no longer need this DAO, Entity, or Table
     private FuzzyChoicesDAO fuzzyChoicesDao;
     private Environment env;
 
     @Autowired
-    public FuzzyChoicesManager(FuzzyChoicesDAO fuzzyChoicesDao, Environment env) {
+    public FuzzyChoicesManager(UcdProcessDAO ucdProcessDao,
+            FuzzyChoicesDAO fuzzyChoicesDao, Environment env) {
+        this.ucdProcessDao = ucdProcessDao;
+        //TODO: After OCD-4040 and OCD-4041 we should no longer need this DAO, Entity, or Table
         this.fuzzyChoicesDao = fuzzyChoicesDao;
         this.env = env;
     }
@@ -60,8 +66,16 @@ public class FuzzyChoicesManager extends SecuredManager {
 
     public List<String> getFuzzyChoicesByType(FuzzyType type)
             throws JsonParseException, JsonMappingException, EntityRetrievalException, IOException {
-        FuzzyChoicesDTO choices = getByType(type);
-        return choices.getChoices();
+        if (type.equals(FuzzyType.UCD_PROCESS)) {
+            return ucdProcessDao.getAll().stream()
+                .map(ucdProcess -> ucdProcess.getName())
+                .toList();
+        } else {
+            //TODO: convert to use accessibility standard dao with OCD-4040
+            //TODO: convert to use qms standard dao with OCD-4041
+            FuzzyChoicesDTO choices = getByType(type);
+            return choices.getChoices();
+        }
     }
 
     @Transactional(readOnly = true)
@@ -84,6 +98,9 @@ public class FuzzyChoicesManager extends SecuredManager {
         return results;
     }
 
+    //TODO: AFter OCD-4040 and OCD-4041 we should no longer need this method.
+    //Fuzzy options will be gotten on-demand from a type-specific DAO and we do not need
+    //to keep a fuzzy choice table updated
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).FUZZY_MATCH, "
             + "T(gov.healthit.chpl.permissions.domains.FuzzyMatchPermissions).UPDATE)")
