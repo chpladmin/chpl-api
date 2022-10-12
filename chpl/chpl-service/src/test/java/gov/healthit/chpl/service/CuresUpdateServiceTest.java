@@ -1,6 +1,7 @@
 package gov.healthit.chpl.service;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -17,21 +18,29 @@ import org.mockito.Mockito;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 
 public class CuresUpdateServiceTest {
-    private static final String DETAILS_JSON = "";
     private CuresUpdateService curesUpdateService;
     private ObjectMapper jsonMapper;
+
+    private CertificationCriterion b1Old, b1Cures, d12, d13, g4, g5;
 
     @Before
     public void setup() {
         CertificationCriterionService ccs = Mockito.mock(CertificationCriterionService.class);
+        b1Old = buildCriterion(16L, "170.315 (b)(1)", "B1", true);
+        b1Cures = buildCriterion(165L, "170.315 (b)(1)", "b1 title (Cures Update)", false);
+        d12 = buildCriterion(176L, "170.315 (d)(12)", "D12 (Cures Update)");
+        d13 = buildCriterion(177L, "170.315 (d)(13)", "D13 (Cures Update)");
+        g4 = buildCriterion(53L, "170.315 (g)(4)", "G4");
+        g5 = buildCriterion(54L, "170.315 (g)(5)", "G5");
+
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.B_6)))
             .thenReturn(buildCriterion(21L, "170.315 (b)(6)", "B6"));
-        Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.B_1_OLD)))
-            .thenReturn(buildCriterion(16L, "170.315 (b)(1)", "B1"));
+        Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.B_1_OLD))).thenReturn(b1Old);
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.B_2_OLD)))
             .thenReturn(buildCriterion(17L, "170.315 (b)(2)", "B2"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.B_3_OLD)))
@@ -60,10 +69,8 @@ public class CuresUpdateServiceTest {
             .thenReturn(buildCriterion(57L, "170.315 (g)(8)", "G8"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.G_9_OLD)))
             .thenReturn(buildCriterion(58L, "170.315 (g)(9)", "G9"));
-        Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.D_12)))
-            .thenReturn(buildCriterion(176L, "170.315 (d)(12)", "D12 (Cures Update)"));
-        Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.D_13)))
-            .thenReturn(buildCriterion(177L, "170.315 (d)(13)", "D13 (Cures Update)"));
+        Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.D_12))).thenReturn(d12);
+        Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.D_13))).thenReturn(d13);
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.A_1)))
             .thenReturn(buildCriterion(1L, "170.315 (a)(1)", "A1"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.A_2)))
@@ -82,8 +89,7 @@ public class CuresUpdateServiceTest {
             .thenReturn(buildCriterion(14L, "170.315 (a)(14)", "A14"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.A_15)))
             .thenReturn(buildCriterion(15L, "170.315 (a)(15)", "A15"));
-        Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.B_1_CURES)))
-            .thenReturn(buildCriterion(165L, "170.315 (b)(1)", "B1 (Cures Update)"));
+        Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.B_1_CURES))).thenReturn(b1Cures);
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.B_2_CURES)))
             .thenReturn(buildCriterion(166L, "170.315 (b)(2)", "B2 (Cures Update)"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.B_3_CURES)))
@@ -162,10 +168,8 @@ public class CuresUpdateServiceTest {
             .thenReturn(buildCriterion(51L, "170.315 (g)(2)", "G2"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.G_3)))
             .thenReturn(buildCriterion(52L, "170.315 (g)(3)", "G3"));
-        Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.G_4)))
-            .thenReturn(buildCriterion(53L, "170.315 (g)(4)", "G4"));
-        Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.G_5)))
-            .thenReturn(buildCriterion(54L, "170.315 (g)(5)", "G5"));
+        Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.G_4))).thenReturn(g4);
+        Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.G_5))).thenReturn(g5);
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.G_6_CURES)))
             .thenReturn(buildCriterion(180L, "170.315 (g)(6)", "G6 (Cures Update)"));
 
@@ -200,11 +204,107 @@ public class CuresUpdateServiceTest {
         assertTrue(isCuresUpdate);
     }
 
+    @Test
+    public void listingWithB1Removed_ReturnsNotCuresUpdate() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(b1Old)
+                        .build())
+                .build();
+        assertFalse(curesUpdateService.isCuresUpdate(listing));
+    }
+
+    @Test
+    public void listingWithB1Cures_ReturnsNotCuresUpdate() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(b1Cures)
+                        .build())
+                .build();
+        assertFalse(curesUpdateService.isCuresUpdate(listing));
+    }
+
+    @Test
+    public void listingWithB1CuresD12_ReturnsNotCuresUpdate() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(b1Cures)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(d12)
+                        .build())
+                .build();
+        assertFalse(curesUpdateService.isCuresUpdate(listing));
+    }
+
+    @Test
+    public void listingWithB1CuresD13_ReturnsNotCuresUpdate() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(b1Cures)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(d13)
+                        .build())
+                .build();
+        assertFalse(curesUpdateService.isCuresUpdate(listing));
+    }
+
+    @Test
+    public void listingWithB1CuresD12D13_ReturnsCuresUpdate() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(b1Cures)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(d12)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(d13)
+                        .build())
+                .build();
+        assertTrue(curesUpdateService.isCuresUpdate(listing));
+    }
+
+    @Test
+    public void listingHasDependentCriteriaG4G5_ReturnsCuresUpdate() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(g4)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(g5)
+                        .build())
+                .build();
+        assertTrue(curesUpdateService.isCuresUpdate(listing));
+    }
+
     private CertificationCriterion buildCriterion(Long id, String number, String title) {
         return CertificationCriterion.builder()
                 .id(id)
                 .number(number)
                 .title(title)
+                .removed(false)
+                .build();
+    }
+
+    private CertificationCriterion buildCriterion(Long id, String number, String title, boolean removed) {
+        return CertificationCriterion.builder()
+                .id(id)
+                .number(number)
+                .title(title)
+                .removed(removed)
                 .build();
     }
 }

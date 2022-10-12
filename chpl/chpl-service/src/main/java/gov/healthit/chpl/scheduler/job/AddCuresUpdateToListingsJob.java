@@ -83,6 +83,7 @@ public class AddCuresUpdateToListingsJob extends CertifiedProduct2015Gatherer im
                     LOGGER.info("************************** Updating " + listing.getId() + " as Cures Updated **************************");
                     updateListingAsCuresUpdated(listing);
                 } else if (!isCuresUpdate && !isCuresUpdate.equals(listing.getCuresUpdate())) {
+                    LOGGER.info("************************** Updating " + listing.getId() + " as NOT Cures Updated **************************");
                     updateListingAsNotCuresUpdated(listing);
                 }
             }
