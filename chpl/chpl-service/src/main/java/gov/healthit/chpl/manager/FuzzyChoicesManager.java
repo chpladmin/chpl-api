@@ -73,6 +73,7 @@ public class FuzzyChoicesManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).FUZZY_MATCH, "
             + "T(gov.healthit.chpl.permissions.domains.FuzzyMatchPermissions).GET_ALL)")
+    @Deprecated
     public Set<FuzzyChoices> getFuzzyChoices() throws EntityRetrievalException, JsonParseException,
     JsonMappingException, IOException {
         List<FuzzyChoicesDTO> fuzzyChoices = fuzzyChoicesDao.findAllTypes();
