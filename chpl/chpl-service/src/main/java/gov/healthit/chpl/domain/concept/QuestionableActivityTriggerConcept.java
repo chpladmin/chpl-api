@@ -42,7 +42,8 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
     REMOVED_NONCONFORMITY_ADDED("Removed Non-Conformity added to Surveillance"),
     REMOVED_REQUIREMENT_ADDED("Removed Requirement added to Surveillance"),
     RWT_PLANS_UPDATED_OUTSIDE_NORMAL_PERIOD("Real World Testing Plans URL or Check Date updated outside normal update period"),
-    RWT_RESULTS_UPDATED_OUTSIDE_NORMAL_PERIOD("Real World Testing Results URL or Check Date updated outside normal update period");
+    RWT_RESULTS_UPDATED_OUTSIDE_NORMAL_PERIOD("Real World Testing Results URL or Check Date updated outside normal update period"),
+    NON_ACTIVE_LISTING_EDITED("Non Active Listing Edited");
 
     private final String name;
 
