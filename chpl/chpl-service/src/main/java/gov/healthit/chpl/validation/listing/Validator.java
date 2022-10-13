@@ -30,7 +30,7 @@ public abstract class Validator {
     }
 
     public void validate(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
-        if (updatedListing.isListingActive()) {
+        if (updatedListing.isCertificateActive()) {
             validate(updatedListing);
             for (ComparisonReviewer reviewer : getComparisonReviewers()) {
                 reviewer.review(existingListing, updatedListing);
