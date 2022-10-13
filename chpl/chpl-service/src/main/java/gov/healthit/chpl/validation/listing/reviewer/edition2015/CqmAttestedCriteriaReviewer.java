@@ -13,6 +13,7 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
@@ -39,7 +40,27 @@ public class CqmAttestedCriteriaReviewer implements Reviewer {
         List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
         listing.getCqmResults().stream()
             .filter(cqmResult -> BooleanUtils.isTrue(cqmResult.isSuccess()))
+            .forEach(cqmResult -> removeValuesThatAreNotCriteria(cqmResult, listing));
+
+        listing.getCqmResults().stream()
+            .filter(cqmResult -> BooleanUtils.isTrue(cqmResult.isSuccess()))
             .forEach(cqmResult -> reviewListingHasAllCriteriaForCqmResult(cqmResult, listing, attestedCriteria));
+    }
+
+    private void removeValuesThatAreNotCriteria(CQMResultDetails cqm, CertifiedProductSearchDetails listing) {
+        List<CQMResultCertification> cqmCriteriaToRemove = cqm.getCriteria().stream()
+            .filter(cqmCriterion -> !criteriaService.isCriteriaNumber(cqmCriterion.getCertificationNumber()))
+            .toList();
+        cqmCriteriaToRemove.stream()
+            .forEach(cqmCriterion -> removeAssociatedCriterion(cqm, cqmCriterion, listing));
+    }
+
+    private void removeAssociatedCriterion(CQMResultDetails cqm, CQMResultCertification cqmCriterionToRemove,
+            CertifiedProductSearchDetails listing) {
+        cqm.getCriteria().remove(cqmCriterionToRemove);
+        listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.removedCriteriaForCqm",
+                cqmCriterionToRemove.getCertificationNumber(),
+                cqm.getCmsId()));
     }
 
     private void reviewListingHasAllCriteriaForCqmResult(CQMResultDetails cqm,
@@ -55,7 +76,13 @@ public class CqmAttestedCriteriaReviewer implements Reviewer {
             listing.getErrorMessages().add(
                     msgUtil.getMessage("listing.criteria.missingCriteriaForCqm",
                             cqm.getCmsId(), cqmCriterion.getCertificationNumber()));
-        } else if (!validationUtils.hasAnyCriteria(criteriaWithNumber, attestedCriteria)) {
+        } else if (cqmCriterion.getCriterion() != null
+                && !validationUtils.hasCriterion(cqmCriterion.getCriterion(), attestedCriteria)) {
+            listing.getErrorMessages().add(
+                    msgUtil.getMessage("listing.criteria.missingCriteriaForCqm",
+                            cqm.getCmsId(), Util.formatCriteriaNumber(cqmCriterion.getCriterion())));
+        } else if (cqmCriterion.getCriterion() == null
+                && !validationUtils.hasAnyCriteria(criteriaWithNumber, attestedCriteria)) {
             listing.getErrorMessages().add(
                     msgUtil.getMessage("listing.criteria.missingCriteriaForCqm",
                             cqm.getCmsId(), cqmCriterion.getCertificationNumber()));
