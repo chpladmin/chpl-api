@@ -14,7 +14,7 @@ public abstract class Validator {
 
     public abstract List<ComparisonReviewer> getComparisonReviewers();
 
-    public synchronized void validate(final CertifiedProductSearchDetails listing) {
+    public synchronized void validate(CertifiedProductSearchDetails listing) {
         for (Reviewer reviewer : getReviewers()) {
             try {
                 if (reviewer != null) {
@@ -29,11 +29,12 @@ public abstract class Validator {
         }
     }
 
-    public void validate(final CertifiedProductSearchDetails existingListing,
-            final CertifiedProductSearchDetails updatedListing) {
-        validate(updatedListing);
-        for (ComparisonReviewer reviewer : getComparisonReviewers()) {
-            reviewer.review(existingListing, updatedListing);
+    public void validate(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
+        if (updatedListing.isListingActive()) {
+            validate(updatedListing);
+            for (ComparisonReviewer reviewer : getComparisonReviewers()) {
+                reviewer.review(existingListing, updatedListing);
+            }
         }
     }
 }

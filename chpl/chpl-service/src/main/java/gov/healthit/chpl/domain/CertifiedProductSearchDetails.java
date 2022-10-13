@@ -901,6 +901,13 @@ public class CertifiedProductSearchDetails implements Serializable {
         return result;
     }
 
+    public boolean isListingActive() {
+        String currentStatus = getCurrentStatus().getStatus().getName();
+        return  currentStatus.equalsIgnoreCase(CertificationStatusType.Active.getName())
+                || currentStatus.equalsIgnoreCase(CertificationStatusType.SuspendedByAcb.getName())
+                || currentStatus.equalsIgnoreCase(CertificationStatusType.SuspendedByOnc.getName());
+    }
+
     public LegacyCertificationStatus getCertificationStatus() {
         return certificationStatus;
     }
