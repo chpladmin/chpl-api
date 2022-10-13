@@ -101,6 +101,9 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @DeprecatedApiResponseFields(responseClass = SurveillanceResults.class, friendlyUrl = "/surveillance/pending")
+    @DeprecatedApi(friendlyUrl = "/surveillance/pending",
+        removalDate = "2022-11-01",
+        message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this functionality.")
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody SurveillanceResults getAllPendingSurveillance() throws AccessDeniedException {
 
@@ -355,6 +358,9 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
+    @DeprecatedApi(friendlyUrl = "/surveillance/pending/{pendingSurvId}",
+        removalDate = "2022-11-01",
+        message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this functionality.")
     @RequestMapping(value = "/pending/{pendingSurvId}", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingSurveillance(@PathVariable("pendingSurvId") Long id)
@@ -373,6 +379,9 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
+    @DeprecatedApi(friendlyUrl = "/surveillance/pending",
+        removalDate = "2022-11-01",
+        message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this functionality.")
     @RequestMapping(value = "/pending", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingSurveillance(@RequestBody IdListContainer idList)
@@ -419,6 +428,9 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @DeprecatedApiResponseFields(responseClass = Surveillance.class, httpMethod = "POST", friendlyUrl = "/surveillance/pending/confirm")
+    @DeprecatedApi(friendlyUrl = "/surveillance/pending/confirm",
+        removalDate = "2022-11-01",
+        message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this functionality.")
     @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     public ResponseEntity<Surveillance> confirmPendingSurveillance(@RequestBody(required = true) Surveillance survToInsert)
@@ -443,6 +455,9 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @DeprecatedApiResponseFields(responseClass = SurveillanceResults.class, httpMethod = "POST", friendlyUrl = "/surveillance/upload")
+    @DeprecatedApi(friendlyUrl = "/surveillance/upload",
+        removalDate = "2022-11-01",
+        message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this functionality.")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ResponseEntity<?> upload(@RequestParam("file") MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException, EntityRetrievalException,

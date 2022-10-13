@@ -106,6 +106,7 @@ public class PendingSurveillanceManager extends SecuredManager {
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
+    @Deprecated
     public PendingSurveillanceManager(Environment env, FileUtils fileUtils,
             SurveillanceUploadManager survUploadManager, SchedulerManager schedulerManager,
             UserManager userManager, CertifiedProductManager cpManager, PendingSurveillanceDAO pendingSurveillanceDAO,
@@ -134,6 +135,7 @@ public class PendingSurveillanceManager extends SecuredManager {
         this.nonconformityTypes = surveillanceDAO.getNonconformityTypes();
     }
 
+    @Deprecated
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).UPLOAD)")
@@ -182,6 +184,7 @@ public class PendingSurveillanceManager extends SecuredManager {
         }
     }
 
+    @Deprecated
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).REJECT, "
@@ -196,6 +199,7 @@ public class PendingSurveillanceManager extends SecuredManager {
         deletePendingSurveillance(pendingSurveillanceId, false);
     }
 
+    @Deprecated
     @Transactional(readOnly = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).GET_ALL)")
@@ -213,6 +217,7 @@ public class PendingSurveillanceManager extends SecuredManager {
         return results;
     }
 
+    @Deprecated
     @Transactional(readOnly = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PENDING_SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions).CONFIRM, "
