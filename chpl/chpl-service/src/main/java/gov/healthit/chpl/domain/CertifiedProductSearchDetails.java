@@ -34,7 +34,7 @@ import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
-import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -92,11 +92,20 @@ public class CertifiedProductSearchDetails implements Serializable {
     @XmlElement(required = false, nillable = true)
     private String sedIntendedUserDescription;
 
+    @XmlTransient
+    @Deprecated
+    @DeprecatedResponseField(removalDate = "2023-04-30",
+        message = "This field is deprecated and will be removed from the response data in a future release. Please use sedTestingEndDay")
+    private Date sedTestingEndDate;
+
     /**
      * Date all SED testing was concluded for the Health IT. The format for the date is YYYMMDD
      */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     @XmlElement(required = false, nillable = true)
-    private Date sedTestingEndDate;
+    private LocalDate sedTestingEndDay;
 
     @XmlTransient
     @JsonIgnore
@@ -695,12 +704,22 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.sedIntendedUserDescription = sedIntendedUserDescription;
     }
 
+    @Deprecated
     public Date getSedTestingEndDate() {
-        return Util.getNewDate(sedTestingEndDate);
+        return sedTestingEndDate;
     }
 
+    @Deprecated
     public void setSedTestingEndDate(Date sedTestingEndDate) {
-        this.sedTestingEndDate = Util.getNewDate(sedTestingEndDate);
+        this.sedTestingEndDate = sedTestingEndDate;
+    }
+
+    public LocalDate getSedTestingEndDay() {
+        return sedTestingEndDay;
+    }
+
+    public void setSedTestingEndDay(LocalDate sedTestingEndDay) {
+        this.sedTestingEndDay = sedTestingEndDay;
     }
 
     public String getSedTestingEndDateStr() {

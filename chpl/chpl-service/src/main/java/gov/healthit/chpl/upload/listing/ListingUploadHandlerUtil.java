@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -30,6 +31,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -263,6 +265,12 @@ public class ListingUploadHandlerUtil {
         return parseDate(fieldValue);
     }
 
+    public LocalDate parseSingleRowFieldAsLocalDate(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
+            throws ValidationException {
+        String fieldValue = parseSingleRowField(field, headingRecord, listingRecords);
+        return parseLocalDate(fieldValue);
+    }
+
     public List<String> parseMultiRowField(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
             throws ValidationException {
             List<String> fieldValues = new ArrayList<String>();
@@ -411,5 +419,26 @@ public class ListingUploadHandlerUtil {
             }
         }
         return parsedDate;
+    }
+
+    public LocalDate parseLocalDate(String value) throws ValidationException {
+        if (value == null || StringUtils.isEmpty(value.trim())) {
+            return null;
+        }
+
+        LocalDate result = null;
+        try {
+            result = LocalDate.parse(value);
+        } catch (Exception ex) {
+            LOGGER.debug("LocalDateTime.parse did not work for " + value, ex);
+        }
+
+        if (result == null) {
+            Date parsedDate = parseDate(value);
+            if (parsedDate != null) {
+                result = DateUtil.toLocalDate(parsedDate.getTime());
+            }
+        }
+        return result;
     }
 }

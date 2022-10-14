@@ -792,6 +792,7 @@ public class CertifiedProductController {
                 .sed(e.getSed())
                 .sedIntendedUserDescription(e.getSedIntendedUserDescription())
                 .sedReportFileLocation(e.getSedReportFileLocation())
+                .sedTestingEndDay(e.getSedTestingEndDay())
                 .sedTestingEndDate(e.getSedTestingEndDate())
                 .svapNoticeUrl(e.getSvapNoticeUrl())
                 .surveillance(e.getSurveillance())
