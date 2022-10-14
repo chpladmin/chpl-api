@@ -46,7 +46,7 @@ public class UcdProcessController {
         return ucdProcessManager.update(ucdProcess);
     }
 
-    @Operation(summary = "Create a User-Centered Design PRocess.",
+    @Operation(summary = "Create a User-Centered Design Process.",
             description = "Provides functionality to add a new UCD Process. "
                     + "Security Restrictions: To create: ROLE_ADMIN or ROLE_ONC.",
             security = {
@@ -59,7 +59,7 @@ public class UcdProcessController {
         return ucdProcessManager.create(ucdProcess);
     }
 
-    @Operation(summary = "Delete a User-Centered Design PRocess.",
+    @Operation(summary = "Delete a User-Centered Design Process.",
             description = "Provides functionality to delete an existing UCD Process. "
                     + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.",
             security = {
