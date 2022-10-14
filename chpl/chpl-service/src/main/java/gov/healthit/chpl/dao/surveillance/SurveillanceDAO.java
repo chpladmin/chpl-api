@@ -60,12 +60,8 @@ public class SurveillanceDAO extends BaseDAOImpl {
         entityManager.persist(toInsert);
         entityManager.flush();
 
-        surv.getRequirements().forEach(req -> {
-            SurveillanceRequirementEntity newRequirement = insertSurveillanceRequirement(req, toInsert.getId());
-            req.getNonconformities().forEach(nc -> {
-                insertSurveillanceNonconformity(nc, newRequirement.getId());
-            });
-        });
+        surv.getRequirements().forEach(req -> insertSurveillanceRequirement(req, toInsert.getId()));
+
         return toInsert.getId();
     }
 
