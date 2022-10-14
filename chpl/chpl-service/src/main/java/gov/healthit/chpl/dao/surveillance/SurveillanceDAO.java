@@ -39,7 +39,7 @@ import lombok.extern.log4j.Log4j2;
 @Repository("surveillanceDAO")
 @Log4j2
 public class SurveillanceDAO extends BaseDAOImpl {
-    private static String SURVEILLANCE_FULL_HQL =
+    private static final String SURVEILLANCE_FULL_HQL =
             "SELECT DISTINCT surv "
             + "FROM SurveillanceEntity surv "
             + "JOIN FETCH surv.certifiedProduct "
