@@ -42,10 +42,10 @@ public class NonconformityTypeEntity implements Serializable {
     @JoinColumn(name = "certification_edition_id", insertable = false, updatable = false)
     private CertificationEditionEntity certificationEdition;
 
-    @Column(length = 15)
+    @Column(name = "number")
     private String number;
 
-    @Column(length = 250)
+    @Column(name = "title")
     private String title;
 
     @Column(name = "removed")
