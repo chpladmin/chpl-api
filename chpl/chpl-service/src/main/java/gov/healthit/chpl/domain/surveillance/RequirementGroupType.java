@@ -29,6 +29,7 @@ public class RequirementGroupType implements Serializable {
     public static final Long OTHER_ID = 3L;
     public static final Long RWT_SUBMISSION_ID = 4L;
     public static final Long ATTESTATION_SUBMISSION_ID = 5L;
+    public static final Long DEVELOPER_SUBMISSION_REQUIREMENT_ID = 6L;
 
     /**
      * Requirement group type internal ID
