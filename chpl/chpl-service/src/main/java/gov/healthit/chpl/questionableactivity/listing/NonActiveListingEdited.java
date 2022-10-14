@@ -18,7 +18,7 @@ public class NonActiveListingEdited implements ListingActivity {
 
     @Override
     public QuestionableActivityTriggerConcept getTriggerType() {
-        return QuestionableActivityTriggerConcept.NON_ACTIVE_LISTING_EDITED;
+        return QuestionableActivityTriggerConcept.NON_ACTIVE_CERTIFIFCATE_EDITED;
     }
 
 }
