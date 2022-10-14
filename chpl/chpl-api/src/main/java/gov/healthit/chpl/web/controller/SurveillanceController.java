@@ -117,8 +117,8 @@ public class SurveillanceController {
     @DeprecatedApi(friendlyUrl = "/surveillance/document/{documentId}",
         removalDate = "2023-01-01",
         message = "This endpoint is deprecated and will be removed in a future release.")
-    @Operation(summary = "Download nonconformity supporting documentation.",
-            description = "Download a specific file that was previously uploaded to a surveillance nonconformity.",
+    @Operation(summary = "Download non-conformity supporting documentation.",
+            description = "Download a specific file that was previously uploaded to a surveillance non-conformity.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
@@ -193,9 +193,9 @@ public class SurveillanceController {
         httpMethod = "POST",
         removalDate = "2023-01-01",
         message = "This endpoint is deprecated and will be removed in a future release.")
-    @Operation(summary = "Add documentation to an existing nonconformity.",
+    @Operation(summary = "Add documentation to an existing non-conformity.",
             description = "Upload a file of any kind (current size limit 5MB) as supporting "
-                    + " documentation to an existing nonconformity. Security Restrictions: ROLE_ADMIN, ROLE_ONC, or "
+                    + " documentation to an existing non-conformity. Security Restrictions: ROLE_ADMIN, ROLE_ONC, or "
                     + "ROLE_ACB and administrative authority on the associated ONC-ACB.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -236,14 +236,14 @@ public class SurveillanceController {
 
         Long insertedDocId = survManager.addDocumentToNonconformity(nonconformityId, toInsert);
         if (insertedDocId == null) {
-            throw new EntityCreationException("Error adding a document to nonconformity with id " + nonconformityId);
+            throw new EntityCreationException("Error adding a document to non-conformity with id " + nonconformityId);
         }
 
         CertifiedProductSearchDetails afterCp = cpdetailsManager
                 .getCertifiedProductDetails(surv.getCertifiedProduct().getId());
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT,
                 beforeCp.getId(), "Documentation " + toInsert.getFileName()
-                        + " was added to a nonconformity for certified product " + afterCp.getChplProductNumber(),
+                        + " was added to a non-conformity for certified product " + afterCp.getChplProductNumber(),
                 beforeCp, afterCp);
         return "{\"success\": \"true\"}";
     }
@@ -348,7 +348,7 @@ public class SurveillanceController {
         CertifiedProductSearchDetails afterCp = cpdetailsManager
                 .getCertifiedProductDetails(surv.getCertifiedProduct().getId());
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeCp.getId(),
-                "A document was removed from a nonconformity for certified product " + afterCp.getChplProductNumber(),
+                "A document was removed from a non-conformity for certified product " + afterCp.getChplProductNumber(),
                 beforeCp, afterCp);
         return "{\"success\": \"true\"}";
     }
@@ -446,7 +446,7 @@ public class SurveillanceController {
         }
     }
 
-    @Operation(summary = "Upload a file with surveillance and nonconformities for certified products.",
+    @Operation(summary = "Upload a file with surveillance and non-conformities for certified products.",
             description = "Accepts a CSV file with very specific fields to create pending surveillance items. "
                     + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
                     + "on the ACB(s) responsible for the product(s) in the file.",
