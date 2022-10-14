@@ -28,7 +28,7 @@ import gov.healthit.chpl.questionableactivity.listing.DeletedRwtPlanActivity;
 import gov.healthit.chpl.questionableactivity.listing.DeletedRwtResultsActivity;
 import gov.healthit.chpl.questionableactivity.listing.DeletedSurveillanceActivity;
 import gov.healthit.chpl.questionableactivity.listing.ListingActivity;
-import gov.healthit.chpl.questionableactivity.listing.NonActiveListingEdited;
+import gov.healthit.chpl.questionableactivity.listing.NonActiveCertificateEdited;
 import gov.healthit.chpl.questionableactivity.listing.RwtPlansUpdatedOutsideNormalPeriod;
 import gov.healthit.chpl.questionableactivity.listing.RwtResultsUpdatedOutsideNormalPeriod;
 import gov.healthit.chpl.questionableactivity.listing.UpdateCurrentCertificationStatusActivity;
@@ -86,7 +86,7 @@ public class ListingQuestionableActivityService {
         processListingActivity(AddedRemovedSurveillanceRequirementActivity.class.getName(), origListing, newListing, activityReason);
         processListingActivity(RwtResultsUpdatedOutsideNormalPeriod.class.getName(), origListing, newListing, activityReason);
         processListingActivity(RwtPlansUpdatedOutsideNormalPeriod.class.getName(), origListing, newListing, activityReason);
-        processListingActivity(NonActiveListingEdited.class.getName(), origListing, newListing, activityReason);
+        processListingActivity(NonActiveCertificateEdited.class.getName(), origListing, newListing, activityReason);
 
         // finally check for other changes that are only questionable
         // outside of the acceptable activity threshold
