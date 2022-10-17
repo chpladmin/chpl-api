@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 37.3.0
+_17 October 2022_
+
+### Features
+* Include removed criteria in Cures Update calculation
+
+---
+
 ## Version 37.2.0
 _3 October 2022_
 
