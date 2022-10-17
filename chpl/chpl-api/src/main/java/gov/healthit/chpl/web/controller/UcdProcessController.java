@@ -72,7 +72,7 @@ public class UcdProcessController {
     }
 
     @Operation(summary = "Retrieve all current User-Centered Design Processes. ",
-            description = "Returns all of the UCD Processes that are currenty in the CHPL.",
+            description = "Returns all of the UCD Processes that are currently in the CHPL.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
