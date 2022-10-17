@@ -63,7 +63,7 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
     private String sedIntendedUserDescription;
 
     @Deprecated
-    @DeprecatedResponseField(removalDate = "2023-04-30",
+    @DeprecatedResponseField(removalDate = "2023-05-01",
         message = "This field is deprecated and will be removed from the response data in a future release. Please use sedTestingEndDay")
     private Date sedTestingEndDate;
 
