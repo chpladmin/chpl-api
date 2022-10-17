@@ -1,29 +1,70 @@
 package gov.healthit.chpl.validation.listing;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import lombok.extern.log4j.Log4j2;
 
 @Service
-@Log4j2
 public class ListingValidatorFactoryImpl implements ListingValidatorFactory {
 
+    private static final Logger LOGGER = LogManager.getLogger(ListingValidatorFactoryImpl.class);
 
-    private AllowedListingValidator allowedValidator;
-    private Edition2015ListingValidator edition2015Validator;
-    private ErrorMessageUtil msgUtil;
+    private static final String PRACTICE_TYPE_AMBULATORY = "AMBULATORY";
+    private static final String PRACTICE_TYPE_INPATIENT = "INPATIENT";
+    private static final String PRODUCT_CLASSIFICATION_MODULAR = "Modular EHR";
+    private static final String PRODUCT_CLASSIFICATION_COMPLETE = "Complete EHR";
 
     @Autowired
-    public ListingValidatorFactoryImpl(AllowedListingValidator allowedValidator, Edition2015ListingValidator edition2015Validator,
-            ErrorMessageUtil msgUtil) {
-        this.allowedValidator = allowedValidator;
-        this.edition2015Validator = edition2015Validator;
-        this.msgUtil = msgUtil;
-    }
+    private AllowedListingValidator allowedValidator;
+
+    //legacy validators (for update of CHP- listings)
+    @Autowired
+    @Qualifier("ambulatoryModular2014LegacyListingValidator")
+    private AmbulatoryModular2014LegacyListingValidator ambulatoryModularLegacyValidator;
+
+    @Autowired
+    @Qualifier("ambulatoryComplete2014LegacyListingValidator")
+    private AmbulatoryComplete2014LegacyListingValidator ambulatoryCompleteLegacyValidator;
+
+    @Autowired
+    @Qualifier("inpatientModular2014LegacyListingValidator")
+    private InpatientModular2014LegacyListingValidator inpatientModularLegacyValidator;
+
+    @Autowired
+    @Qualifier("inpatientComplete2014LegacyListingValidator")
+    private InpatientComplete2014LegacyListingValidator inpatientCompleteLegacyValidator;
+
+    //listing validators (for update of listings with new-style IDs)
+    @Autowired
+    @Qualifier("ambulatoryModular2014ListingValidator")
+    private AmbulatoryModular2014ListingValidator ambulatoryModularValidator;
+
+    @Autowired
+    @Qualifier("ambulatoryComplete2014ListingValidator")
+    private AmbulatoryComplete2014ListingValidator ambulatoryCompleteValidator;
+
+    @Autowired
+    @Qualifier("inpatientModular2014ListingValidator")
+    private InpatientModular2014ListingValidator inpatientModularValidator;
+
+    @Autowired
+    @Qualifier("inpatientComplete2014ListingValidator")
+    private InpatientComplete2014ListingValidator inpatientCompleteValidator;
+
+    @Autowired
+    private Edition2015ListingValidator edition2015Validator;
+
+    @Autowired
+    private ErrorMessageUtil msgUtil;
+    @Autowired
+    private ChplProductNumberUtil chplProductNumberUtil;
 
     @Override
     public Validator getValidator(final CertifiedProductSearchDetails listing) {
@@ -36,14 +77,96 @@ public class ListingValidatorFactoryImpl implements ListingValidatorFactory {
             return null;
         }
 
-        if (edition.equals("2011") || edition.equals("2014")) {
-            return allowedValidator;
-        } else if (edition.equals("2015")) {
-            return edition2015Validator;
+        if (chplProductNumberUtil.isLegacyChplProductNumberStyle(listing.getChplProductNumber())) {
+            //legacy must be a 2011 or 2014 listing
+            if (edition.equals("2011")) {
+                return allowedValidator;
+            } else if (edition.equals("2014")) {
+                String practiceTypeName = listing.getPracticeType().get("name").toString();
+                String productClassificationName = listing.getClassificationType().get("name").toString();
+
+                if (StringUtils.isEmpty(practiceTypeName) || StringUtils.isEmpty(productClassificationName)) {
+                    String errMsg = msgUtil.getMessage("listing.validator.2014PracticeTypeOrClassificationNotFound");
+                    listing.getErrorMessages().add(errMsg);
+                    LOGGER.error(errMsg);
+                    return null;
+                }
+
+                if (practiceTypeName.equalsIgnoreCase(PRACTICE_TYPE_AMBULATORY)) {
+                    if (productClassificationName.equalsIgnoreCase(PRODUCT_CLASSIFICATION_MODULAR)) {
+                        return ambulatoryModularLegacyValidator;
+                    } else if (productClassificationName.equalsIgnoreCase(PRODUCT_CLASSIFICATION_COMPLETE)) {
+                        return ambulatoryCompleteLegacyValidator;
+                    } else {
+                        String errMsg = msgUtil.getMessage("listing.validator.2014AmbulatoryClassificationNotFound");
+                        listing.getErrorMessages().add(errMsg);
+                        LOGGER.error(errMsg);
+                    }
+                } else if (practiceTypeName.equalsIgnoreCase(PRACTICE_TYPE_INPATIENT)) {
+                    if (productClassificationName.equalsIgnoreCase(PRODUCT_CLASSIFICATION_MODULAR)) {
+                        return inpatientModularLegacyValidator;
+                    } else if (productClassificationName.equalsIgnoreCase(PRODUCT_CLASSIFICATION_COMPLETE)) {
+                        return inpatientCompleteLegacyValidator;
+                    } else {
+                        String errMsg = msgUtil.getMessage("listing.validator.2014InpatientClassificationNotFound");
+                        listing.getErrorMessages().add(errMsg);
+                        LOGGER.error(errMsg);
+                    }
+                } else {
+                    String errMsg = msgUtil.getMessage("listing.validator.2014PracticeTypeNotFound");
+                    listing.getErrorMessages().add(errMsg);
+                    LOGGER.error(errMsg);
+                }
+            } else {
+                String errMsg = msgUtil.getMessage("listing.validator.certificationEditionNotFound", edition);
+                listing.getErrorMessages().add(errMsg);
+                LOGGER.error(errMsg);
+            }
         } else {
-            String errMsg = msgUtil.getMessage("listing.validator.certificationEditionNotFound", edition);
-            listing.getErrorMessages().add(errMsg);
-            LOGGER.error(errMsg);
+            //new-style ID could be 2014 or 2015 listing
+            if (edition.equals("2015")) {
+                return edition2015Validator;
+            } else if (edition.equals("2014")) {
+                String practiceTypeName = listing.getPracticeType().get("name").toString();
+                String productClassificationName = listing.getClassificationType().get("name").toString();
+
+                if (StringUtils.isEmpty(practiceTypeName) || StringUtils.isEmpty(productClassificationName)) {
+                    String errMsg = msgUtil.getMessage("listing.validator.2014PracticeTypeOrClassificationNotFound");
+                    listing.getErrorMessages().add(errMsg);
+                    LOGGER.error(errMsg);
+                    return null;
+                }
+
+                if (practiceTypeName.equalsIgnoreCase(PRACTICE_TYPE_AMBULATORY)) {
+                    if (productClassificationName.equalsIgnoreCase(PRODUCT_CLASSIFICATION_MODULAR)) {
+                        return ambulatoryModularValidator;
+                    } else if (productClassificationName.equalsIgnoreCase(PRODUCT_CLASSIFICATION_COMPLETE)) {
+                        return ambulatoryCompleteValidator;
+                    } else {
+                        String errMsg = msgUtil.getMessage("listing.validator.2014AmbulatoryClassificationNotFound");
+                        listing.getErrorMessages().add(errMsg);
+                        LOGGER.error(errMsg);
+                    }
+                } else if (practiceTypeName.equalsIgnoreCase(PRACTICE_TYPE_INPATIENT)) {
+                    if (productClassificationName.equalsIgnoreCase(PRODUCT_CLASSIFICATION_MODULAR)) {
+                        return inpatientModularValidator;
+                    } else if (productClassificationName.equalsIgnoreCase(PRODUCT_CLASSIFICATION_COMPLETE)) {
+                        return inpatientCompleteValidator;
+                    } else {
+                        String errMsg = msgUtil.getMessage("listing.validator.2014InpatientClassificationNotFound");
+                        listing.getErrorMessages().add(errMsg);
+                        LOGGER.error(errMsg);
+                    }
+                } else {
+                    String errMsg = msgUtil.getMessage("listing.validator.2014PracticeTypeNotFound");
+                    listing.getErrorMessages().add(errMsg);
+                    LOGGER.error(errMsg);
+                }
+            } else {
+                String errMsg = msgUtil.getMessage("listing.validator.certificationEditionNotFound", edition);
+                listing.getErrorMessages().add(errMsg);
+                LOGGER.error(errMsg);
+            }
         }
         return null;
     }
