@@ -325,14 +325,14 @@
 			"response": []
 		},
 		{
-			"name": "GET /surveillance-requirement-detail-types - return 200 status",
+			"name": "GET /requirement-types - return 200 status",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
 							"var jsonResponse = pm.response.json();\r",
-							"pm.test(\"surveillance-requirement-detail-types endpoint should return 200 status and response body should not be empty\", function () {\r",
+							"pm.test(\"requirement-types endpoint should return 200 status and response body should not be empty\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
 							"    pm.expect(jsonResponse.response).not.eq(null);\r",
 							"});"
@@ -356,14 +356,14 @@
 					}
 				],
 				"url": {
-					"raw": "{{url}}/rest/data/surveillance-requirement-detail-types",
+					"raw": "{{url}}/rest/data/requirement-types",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"rest",
 						"data",
-						"surveillance-requirement-detail-types"
+						"requirement-types"
 					]
 				},
 				"description": "surveillance-requirement-detail-types endpoint should return 200 status and response body should not be empty"
@@ -414,6 +414,51 @@
 					]
 				},
 				"description": "nonconformity-types/v2 endpoint should return 200 status and response body should not be empty"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /requirement-group-types - returns 200 status and response is not null",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonResponse = pm.response.json();\r",
+							"pm.test(\"requirement-group-types endpoint should return 200 status and response body should not be empty\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(jsonResponse.response).not.eq(null);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/data/requirement-group-types",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"data",
+						"requirement-group-types"
+					]
+				}
 			},
 			"response": []
 		}
