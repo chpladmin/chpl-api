@@ -196,7 +196,6 @@ public class SurveillanceNonconformity implements Serializable {
     @XmlElement(required = true)
     private Date lastModifiedDate;
 
-    @XmlTransient
     public boolean matches(SurveillanceNonconformity anotherNonconformity) {
         if (!propertiesMatch(anotherNonconformity)) {
             return false;
@@ -251,7 +250,6 @@ public class SurveillanceNonconformity implements Serializable {
         return true;
     }
 
-    @XmlTransient
     public boolean propertiesMatch(SurveillanceNonconformity anotherNonconformity) {
         if (this.id == null && anotherNonconformity.id != null
                 || this.id != null && anotherNonconformity.id == null) {
@@ -517,7 +515,6 @@ public class SurveillanceNonconformity implements Serializable {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
-    @XmlTransient
     @Deprecated //this field should be removed from Json responses but left in the API code
     @DeprecatedResponseField(removalDate = "2023-01-01",
         message = "This field is deprecated and will be removed from the response data in a future release.")
