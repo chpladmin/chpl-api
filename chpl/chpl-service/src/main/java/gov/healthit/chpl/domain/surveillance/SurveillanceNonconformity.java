@@ -196,11 +196,7 @@ public class SurveillanceNonconformity implements Serializable {
     @XmlElement(required = true)
     private Date lastModifiedDate;
 
-    /**
-     * Determines if this non-conformity matches another non-conformity.
-     * @param anotherNonconformity
-     * @return whether the two non-conformity objects are the same
-     */
+    @XmlTransient
     public boolean matches(SurveillanceNonconformity anotherNonconformity) {
         if (!propertiesMatch(anotherNonconformity)) {
             return false;
@@ -255,6 +251,7 @@ public class SurveillanceNonconformity implements Serializable {
         return true;
     }
 
+    @XmlTransient
     public boolean propertiesMatch(SurveillanceNonconformity anotherNonconformity) {
         if (this.id == null && anotherNonconformity.id != null
                 || this.id != null && anotherNonconformity.id == null) {

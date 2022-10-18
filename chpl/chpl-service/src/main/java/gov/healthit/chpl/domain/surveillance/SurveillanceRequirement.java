@@ -96,6 +96,7 @@ public class SurveillanceRequirement implements Serializable {
     @Builder.Default
     private List<SurveillanceNonconformity> nonconformities = new ArrayList<SurveillanceNonconformity>();
 
+    @XmlTransient
     public boolean matches(SurveillanceRequirement anotherRequirement) {
         if (!propertiesMatch(anotherRequirement)) {
             return false;
@@ -148,6 +149,7 @@ public class SurveillanceRequirement implements Serializable {
         return true;
     }
 
+    @XmlTransient
     public boolean propertiesMatch(SurveillanceRequirement anotherRequirement) {
         if (this.id == null && anotherRequirement.id != null
                 || this.id != null && anotherRequirement.id == null) {
@@ -163,6 +165,7 @@ public class SurveillanceRequirement implements Serializable {
         return true;
     }
 
+    @XmlTransient
     public boolean doRequirementTypesMatch(SurveillanceRequirement anotherRequirement) {
         return NullSafeEvaluator.eval(() -> this.getRequirementType().getId(), 0L).equals(
                 NullSafeEvaluator.eval(() -> anotherRequirement.getRequirementType().getId(), 0L))
