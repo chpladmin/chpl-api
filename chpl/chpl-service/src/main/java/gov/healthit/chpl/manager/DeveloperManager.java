@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +29,14 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.developer.search.DeveloperSearchResult.IdNamePairSearchResult;
+import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
 import gov.healthit.chpl.domain.developer.hierarchy.ProductTree;
 import gov.healthit.chpl.domain.developer.hierarchy.SimpleListing;
@@ -249,6 +252,7 @@ public class DeveloperManager extends SecuredManager {
     public Developer update(Developer updatedDev, boolean doUpdateValidations)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
         Developer beforeDev = getById(updatedDev.getId());
+        normalizeSpaces(updatedDev);
 
         if (updatedDev.equals(beforeDev)) {
             LOGGER.info("Developer did not change - not saving");
@@ -332,7 +336,7 @@ public class DeveloperManager extends SecuredManager {
     }, allEntries = true)
     public Long create(Developer developer)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-
+        normalizeSpaces(developer);
         runCreateValidations(developer, null);
         Long developerId = developerDao.create(developer);
         developer.setId(developerId);
@@ -359,6 +363,7 @@ public class DeveloperManager extends SecuredManager {
             beforeDevelopers.add(developerDao.getById(developerId));
         }
 
+        normalizeSpaces(developerToCreate);
         Set<String> errors = runCreateValidations(developerToCreate, beforeDevelopers);
         if (errors != null && errors.size() > 0) {
             throw new ValidationException(errors);
@@ -402,6 +407,7 @@ public class DeveloperManager extends SecuredManager {
     @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#oldDeveloper.id")
     public ChplOneTimeTrigger split(Developer oldDeveloper, Developer developerToCreate,
             List<Long> productIdsToMove) throws ValidationException, SchedulerException {
+        normalizeSpaces(developerToCreate);
         // check developer fields for all valid values
         Set<String> devErrors = runCreateValidations(developerToCreate, null);
         if (devErrors != null && devErrors.size() > 0) {
@@ -486,6 +492,18 @@ public class DeveloperManager extends SecuredManager {
     @Cacheable(CacheNames.GET_DECERTIFIED_DEVELOPERS)
     public List<DecertifiedDeveloper> getDecertifiedDeveloperCollection() {
         return developerDao.getDecertifiedDeveloperCollection();
+    }
+
+    private void normalizeSpaces(Developer developer) {
+        developer.setName(StringUtils.normalizeSpace(developer.getName()));
+        Address address = developer.getAddress();
+        if (address != null) {
+            address.normalizeSpaces();
+        }
+        PointOfContact contact = developer.getContact();
+        if (contact != null) {
+            contact.normalizeSpaces();
+        }
     }
 
     private Set<String> runUpdateValidations(Developer developer, Developer beforeDev) {

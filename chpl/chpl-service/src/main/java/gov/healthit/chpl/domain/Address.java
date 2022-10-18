@@ -116,6 +116,15 @@ public class Address implements Serializable {
         }
     }
 
+    public void normalizeSpaces() {
+        this.line1 = StringUtils.normalizeSpace(this.getLine1());
+        this.line2 = StringUtils.normalizeSpace(this.getLine2());
+        this.city = StringUtils.normalizeSpace(this.getCity());
+        this.state = StringUtils.normalizeSpace(this.getState());
+        this.zipcode = StringUtils.normalizeSpace(this.getZipcode());
+        this.country = StringUtils.normalizeSpace(this.getCountry());
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Address)) {
