@@ -1,14 +1,23 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
+import gov.healthit.chpl.util.LocalDateAdapter;
+import gov.healthit.chpl.util.LocalDateDeserializer;
+import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -36,8 +45,17 @@ public class ProductOwner implements Serializable {
      * Date product owner was transferred to the associated developer. Given in
      * milliseconds since epoch.
      */
-    @XmlElement(required = true)
+    @XmlTransient
+    @Deprecated
+    @DeprecatedResponseField(removalDate = "2022-05-01",
+        message = "This field is deprecated and will be removed from the response data in a future release. Please replace usage of the 'transferDate' field with 'transferDay'.")
     private Long transferDate;
+
+    @XmlElement(required = true, nillable = false)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    private LocalDate transferDay;
 
     public ProductOwner() {
 
@@ -59,10 +77,20 @@ public class ProductOwner implements Serializable {
         this.id = id;
     }
 
+    public LocalDate getTransferDay() {
+        return transferDay;
+    }
+
+    public void setTransferDay(LocalDate transferDay) {
+        this.transferDay = transferDay;
+    }
+
+    @Deprecated
     public Long getTransferDate() {
         return transferDate;
     }
 
+    @Deprecated
     public void setTransferDate(Long transferDate) {
         this.transferDate = transferDate;
     }
@@ -73,7 +101,7 @@ public class ProductOwner implements Serializable {
         int result = 1;
         result = prime * result + ((developer == null) ? 0 : developer.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((transferDate == null) ? 0 : transferDate.hashCode());
+        result = prime * result + ((transferDay == null) ? 0 : transferDay.hashCode());
         return result;
     }
 
@@ -103,11 +131,11 @@ public class ProductOwner implements Serializable {
         } else if (!id.equals(other.id)) {
             return false;
         }
-        if (transferDate == null) {
-            if (other.transferDate != null) {
+        if (transferDay == null) {
+            if (other.transferDay != null) {
                 return false;
             }
-        } else if (!transferDate.equals(other.transferDate)) {
+        } else if (!transferDay.equals(other.transferDay)) {
             return false;
         }
         return true;
