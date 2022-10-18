@@ -77,7 +77,7 @@ public class CqmAttestedCriteriaReviewer implements Reviewer {
                     msgUtil.getMessage("listing.criteria.missingCriteriaForCqm",
                             cqm.getCmsId(), cqmCriterion.getCertificationNumber()));
         } else if (cqmCriterion.getCriterion() != null
-                && !validationUtils.hasCriterion(cqmCriterion.getCriterion(), attestedCriteria)) {
+                && !validationUtils.hasAnyCriteria(criteriaWithNumber, attestedCriteria)) {
             listing.getErrorMessages().add(
                     msgUtil.getMessage("listing.criteria.missingCriteriaForCqm",
                             cqm.getCmsId(), Util.formatCriteriaNumber(cqmCriterion.getCriterion())));
