@@ -416,6 +416,7 @@
                         <source>src/main/java/gov/healthit/chpl/domain/Developer.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/DeveloperStatus.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/DeveloperStatusEvent.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/NonconformityType.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/Product.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/ProductOwner.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/ProductVersion.java</source>
@@ -428,6 +429,7 @@
                         <source>src/main/java/gov/healthit/chpl/domain/UcdProcess.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/concept/PublicAttestationStatus.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/RequirementGroupType.java</source>
+                        <source>src/main/java/gov/healthit/chpl/domain/surveillance/RequirementType.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/Surveillance.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceNonconformity.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceNonconformityDocument.java</source>
