@@ -54,7 +54,7 @@ public class SurveillanceRequirement implements Serializable {
     @DeprecatedResponseField(removalDate = "2023-05-01",
     message = "This field is deprecated and will be removed from the response data in a future release. "
             + "Please replace usage of the 'requirement' field with 'requirementType'.")
-    @XmlElement(required = true)
+    @XmlElement(required = false)
     private String requirement;
 
     /**
@@ -78,7 +78,7 @@ public class SurveillanceRequirement implements Serializable {
     /**
      * When the requirement type is "Other", the value of the requirement type
      */
-    @XmlElement
+    @XmlElement(required = false, nillable = true)
     private String requirementTypeOther;
 
     /**
