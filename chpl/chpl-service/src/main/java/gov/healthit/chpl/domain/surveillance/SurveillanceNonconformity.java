@@ -11,7 +11,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -61,7 +60,6 @@ public class SurveillanceNonconformity implements Serializable {
     @DeprecatedResponseField(removalDate = "2023-05-01",
         message = "This field is deprecated and will be removed from the response data in a future release. "
                 + "Please replace usage of the 'nonconformityType' field with 'type'.")
-    @XmlTransient
     private String nonconformityType;
 
     /**
@@ -72,7 +70,6 @@ public class SurveillanceNonconformity implements Serializable {
     @DeprecatedResponseField(removalDate = "2023-05-01",
     message = "This field is deprecated and will be removed from the response data in a future release. "
             + "Please replace usage of the 'criterion' field with 'type'.")
-    @XmlTransient
     private CertificationCriterion criterion;
 
     /**
