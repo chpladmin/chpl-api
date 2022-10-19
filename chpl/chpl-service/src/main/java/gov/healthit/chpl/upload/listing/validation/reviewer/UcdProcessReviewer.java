@@ -69,6 +69,7 @@ public class UcdProcessReviewer implements Reviewer {
                 ucdProcesses.removeAll(ucdProcessesWithoutFuzzyMatchesOrIds);
 
                 ucdProcessesWithoutFuzzyMatchesOrIds.stream()
+                    .filter(ucdProc -> doesUcdProcessHaveAnyNonRemovedCriteria(ucdProc))
                     .forEach(ucdProcWithoutId -> listing.getWarningMessages().add(
                             msgUtil.getMessage("listing.criteria.ucdProcessNotFoundAndRemoved",
                                     ucdProcWithoutId.getName(),
@@ -89,6 +90,16 @@ public class UcdProcessReviewer implements Reviewer {
                 .forEach(notAllowedUcdCriterion ->
                     listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.ucdProcessNotApplicable", Util.formatCriteriaNumber(notAllowedUcdCriterion))));
         }
+    }
+
+    private boolean doesUcdProcessHaveAnyNonRemovedCriteria(CertifiedProductUcdProcess ucdProcess) {
+        if (CollectionUtils.isEmpty(ucdProcess.getCriteria())) {
+            return false;
+        }
+
+        return ucdProcess.getCriteria().stream()
+                .filter(criterion -> BooleanUtils.isFalse(criterion.getRemoved()))
+                .findAny().isPresent();
     }
 
     private void reviewCertResultsHaveUcdProcessesIfRequired(CertifiedProductSearchDetails listing) {
