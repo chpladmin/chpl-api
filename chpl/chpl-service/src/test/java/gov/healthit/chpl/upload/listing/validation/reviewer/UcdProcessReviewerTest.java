@@ -344,7 +344,7 @@ public class UcdProcessReviewerTest {
     }
 
     @Test
-    public void review_ucdProcessWithoutId_criteriaRemovedAndDoesNotAllowUcd_hasWarnings() {
+    public void review_ucdProcessWithoutId_criteriaRemovedAndDoesNotAllowUcd_noWarnings() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .success(true)
@@ -362,8 +362,7 @@ public class UcdProcessReviewerTest {
         listing.getSed().setUcdProcesses(Stream.of(ucdNotFound).collect(Collectors.toList()));
         reviewer.review(listing);
 
-        assertEquals(1, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(UCD_NOT_FOUND_AND_REMOVED, "UCD Name", "170.315 (a)(6)")));
+        assertEquals(0, listing.getWarningMessages().size());
         assertEquals(0, listing.getErrorMessages().size());
         assertEquals(0, listing.getSed().getUcdProcesses().size());
     }
