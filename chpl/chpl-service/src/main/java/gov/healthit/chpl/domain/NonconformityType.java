@@ -40,6 +40,7 @@ public class NonconformityType implements Serializable {
     private Boolean removed;
 
     @JsonIgnore
+    @XmlTransient
     private NonconformityClassification classification;
 
     public Long getId() {
