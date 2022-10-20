@@ -470,8 +470,8 @@ public class CertifiedProductManager extends SecuredManager {
 
             return result;
         } catch (EntityRetrievalException | EntityCreationException ex) {
-            String msg = msgUtil.getMessage("listing.badListingData", existingListing.getChplProductNumber(), ex.getMessage());
-            CertifiedProductUpdateException exception = new CertifiedProductUpdateException(msg, ex);
+            String msg = msgUtil.getMessage("listing.badListingData", existingListing.getChplProductNumber());
+            CertifiedProductUpdateException exception = new CertifiedProductUpdateException(msg);
             LOGGER.error(msg, ex);
             throw exception;
         }
