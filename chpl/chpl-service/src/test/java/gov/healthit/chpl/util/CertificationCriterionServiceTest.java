@@ -197,6 +197,27 @@ public class CertificationCriterionServiceTest {
         assertEquals(false, result.startsWith("Removed | "));
     }
 
+    @Test
+    public void coerceToCriteriaNumber_ValidCriteriaNumber_DoesNotChange() {
+        String criterionNumber = "170.315 (a)(6)";
+        String result = service.coerceToCriterionNumberFormat(criterionNumber);
+        assertEquals(criterionNumber, result);
+    }
+
+    @Test
+    public void coerceToCriteriaNumber_MissingSpaceBeforeParen_AddsSpace() {
+        String criterionNumber = "170.315(a)(6)";
+        String result = service.coerceToCriterionNumberFormat(criterionNumber);
+        assertEquals("170.315 (a)(6)", result);
+    }
+
+    @Test
+    public void coerceToCriteriaNumber_ExtraSpacesBeforeParen_RemovesSpace() {
+        String criterionNumber = "170.315   (a)(6)";
+        String result = service.coerceToCriterionNumberFormat(criterionNumber);
+        assertEquals("170.315 (a)(6)", result);
+    }
+
     private String sortOrderFromProperty() {
         return "170.302 (a),170.302 (b),170.302 (c),170.302 (d),170.302 (e),170.302 (f)(1),170.302 (f)(2),170.302 (f)(3),"
                 + "170.302 (g),170.302 (h),170.302 (i),170.302 (j),170.302 (k),170.302 (l),170.302 (m),170.302 (n),170.302 (o),"

@@ -82,6 +82,7 @@ public class MeasureNormalizer {
                 && !StringUtils.isEmpty(listingMeasure.getMeasureType().getName())) {
             MeasureType foundType = getMeasureTypeByName(listingMeasure.getMeasureType().getName());
             if (foundType != null) {
+                listingMeasure.getMeasureType().setName(listingMeasure.getMeasureType().getName().toUpperCase());
                 listingMeasure.getMeasureType().setId(foundType.getId());
             }
         }
@@ -109,6 +110,12 @@ public class MeasureNormalizer {
     }
 
     private void populateAssociatedCriterionFields(CertificationCriterion criterion) {
+        String formattedCriterionNumber = criteriaService.coerceToCriterionNumberFormat(criterion.getNumber());
+        if (!formattedCriterionNumber.equals(criterion.getNumber())) {
+            LOGGER.debug("Formatted " + criterion.getNumber() + " as " + formattedCriterionNumber);
+            criterion.setNumber(formattedCriterionNumber);
+        }
+
         List<CertificationCriterion> matchingCriteria = criteriaService.getByNumber(criterion.getNumber());
         if (!CollectionUtils.isEmpty(matchingCriteria)) {
             CertificationCriterion matchingCriterion = matchingCriteria.get(0);
