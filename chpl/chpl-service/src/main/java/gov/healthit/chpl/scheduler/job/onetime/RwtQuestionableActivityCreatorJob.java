@@ -24,12 +24,17 @@ import gov.healthit.chpl.activity.history.query.ListingActivityQuery;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.QuestionableActivityDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
+import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
+import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.questionableactivity.listing.RwtPlansUpdatedOutsideNormalPeriod;
 import gov.healthit.chpl.scheduler.job.CertifiedProduct2015Gatherer;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.NullSafeEvaluator;
@@ -49,6 +54,13 @@ public class RwtQuestionableActivityCreatorJob extends CertifiedProduct2015Gathe
     @Autowired
     private ListingActivityUtil activityUtil;
 
+    @Autowired
+    private QuestionableActivityDAO questionableActivityDAO;
+
+    @Autowired
+    private RwtPlansUpdatedOutsideNormalPeriod rwtPlansUpdatedOutsideNormalPeriod;
+
+    private List<QuestionableActivityTriggerDTO> triggerTypes;
     private SimpleDateFormat formatter = new SimpleDateFormat("YYYY MMM dd");
 
     @Override
@@ -56,6 +68,8 @@ public class RwtQuestionableActivityCreatorJob extends CertifiedProduct2015Gathe
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         LOGGER.info("********* Starting RWT Questionable Activity Creator job. *********");
+        triggerTypes = questionableActivityDAO.getAllTriggers();
+
         LOGGER.info("Retrieving all 2015 listings");
         List<CertifiedProductDetailsDTO> listings = certifiedProductDAO.findByEdition(
                 CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
@@ -65,22 +79,29 @@ public class RwtQuestionableActivityCreatorJob extends CertifiedProduct2015Gathe
                 .map(dto -> getCertifiedProductSearchDetails(dto.getId()))
                 //.peek(listing -> LOGGER.info("Checking: {}", listing.getId()))
                 .flatMap(listing -> rwtActivityExplorer.getActivities(new ListingActivityQuery(listing.getId())).stream())
-                .forEach(activity -> LOGGER.info("Listing: {} - On {} - RWT Plan updated {} -> {} ",
+                .peek(activity -> LOGGER.info("Listing: {} - On {} - RWT Plan updated {} -> {} ",
                         activity.getActivityObjectId(),
                         formatter.format(activity.getActivityDate()),
                         NullSafeEvaluator.eval(() -> activityUtil.getListing(activity.getOriginalData()).getRwtPlansUrl(), "NULL"),
-                        NullSafeEvaluator.eval(() -> activityUtil.getListing(activity.getNewData()).getRwtPlansUrl(), "NULL")));
+                        NullSafeEvaluator.eval(() -> activityUtil.getListing(activity.getNewData()).getRwtPlansUrl(), "NULL")))
+                .forEach(activity -> {
+                    getQuestionableActivityListingDTO(activity).stream()
+                            .forEach(qal ->  createListingActivity(
+                                    qal,
+                                    qal.getListingId(),
+                                    -1L,
+                                    QuestionableActivityTriggerConcept.RWT_PLANS_UPDATED_OUTSIDE_NORMAL_PERIOD,
+                                    ""));
+
+                });
 
         LOGGER.info("********* Completed RWT Questionable Activity Creator job. *********");
     }
 
     private CertifiedProductSearchDetails getCertifiedProductSearchDetails(Long certifiedProductId) {
         try {
-            long start = (new Date()).getTime();
             CertifiedProductSearchDetails listing = null;
             listing = certifiedProductDetailsManager.getCertifiedProductDetails(certifiedProductId);
-
-            //LOGGER.info("Completed details for listing(" + ((new Date()).getTime() - start) + "ms): " + certifiedProductId);
             return listing;
         } catch (EntityRetrievalException e) {
             LOGGER.error("Could not retrieve details for listing id: " + certifiedProductId);
@@ -88,6 +109,38 @@ public class RwtQuestionableActivityCreatorJob extends CertifiedProduct2015Gathe
             return null;
         }
     }
+
+    private List<QuestionableActivityListingDTO> getQuestionableActivityListingDTO(ActivityDTO activity) {
+        List<QuestionableActivityListingDTO> questionableActivityListings = rwtPlansUpdatedOutsideNormalPeriod.check(activityUtil.getListing(activity.getOriginalData()), activityUtil.getListing(activity.getNewData()));
+        if (CollectionUtils.isEmpty(questionableActivityListings)) {
+            return Collections.emptyList();
+        } else {
+            return questionableActivityListings;
+        }
+    }
+
+    private void createListingActivity(QuestionableActivityListingDTO activity, Long listingId, Long activityUser,
+            QuestionableActivityTriggerConcept trigger, String activityReason) {
+
+        activity.setListingId(listingId);
+        activity.setActivityDate(new Date());
+        activity.setUserId(activityUser);
+        activity.setReason(activityReason);
+        QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
+        activity.setTriggerId(triggerDto.getId());
+        questionableActivityDAO.create(activity);
+    }
+
+    private QuestionableActivityTriggerDTO getTrigger(QuestionableActivityTriggerConcept trigger) {
+        QuestionableActivityTriggerDTO result = null;
+        for (QuestionableActivityTriggerDTO currTrigger : triggerTypes) {
+            if (trigger.getName().equalsIgnoreCase(currTrigger.getName())) {
+                result = currTrigger;
+            }
+        }
+        return result;
+    }
+
 
     @Service
     private static class RwtActivityExplorer extends ListingActivityExplorer {
