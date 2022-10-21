@@ -688,7 +688,7 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
-    
+
     <RollingFile name="rwtQuestionableActivityCreatorJob"
         fileName="${logDir}/scheduler/rwtQuestionableActivityCreatorJob.log"
         filePattern="${logDir}/scheduler/history/rwtQuestionableActivityCreatorJob-%d{yyyy-MM-dd}.log"
