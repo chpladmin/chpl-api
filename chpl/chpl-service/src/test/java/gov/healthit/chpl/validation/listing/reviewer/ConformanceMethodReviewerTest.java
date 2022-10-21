@@ -335,6 +335,36 @@ public class ConformanceMethodReviewerTest {
     }
 
     @Test
+    public void review_nullConformanceMethodForCriterionNoDefault_hasError() {
+        CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
+                .conformanceMethod(null)
+                .conformanceMethodVersion("version")
+                .build();
+
+        List<CertificationResultConformanceMethod> crcms = new ArrayList<CertificationResultConformanceMethod>();
+        crcms.add(crcm);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (a)(1)")
+                                .id(1L)
+                                .removed(false)
+                                .build())
+                        .conformanceMethods(crcms)
+                        .build())
+                .certificationEdition(get2015CertificationEdition())
+                .build();
+
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CM_REQUIRED_MSG, "170.315 (a)(1)")));
+    }
+
+    @Test
     public void review_invalidConformanceMethodForCriterionHasDefault_hasWarningAndReplacesConformanceMethodKeepingVersion() {
         CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
                 .conformanceMethod(ConformanceMethod.builder()
@@ -361,8 +391,6 @@ public class ConformanceMethodReviewerTest {
 
         conformanceMethodReviewer.review(listing);
 
-        listing.getWarningMessages().stream()
-            .forEach(msg -> System.out.println(msg));
         assertEquals(2, listing.getWarningMessages().size());
         assertTrue(listing.getWarningMessages().contains(String.format(INVALID_FOR_CRITERIA_REPLACED_MSG, "bad CM", "170.315 (a)(2)", "Attestation")));
         assertTrue(listing.getWarningMessages().contains(String.format(UNALLOWED_CM_VERSION_REMOVED_MSG, "170.315 (a)(2)", "Attestation", "version")));
@@ -1099,6 +1127,7 @@ public class ConformanceMethodReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(2L)
                                 .number("170.315 (a)(2)")
+                                .removed(false)
                                 .build())
                         .conformanceMethods(new ArrayList<CertificationResultConformanceMethod>())
                         .build())

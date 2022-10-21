@@ -78,13 +78,12 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
 
     private void reviewCertificationResult(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewCriteriaCanHaveConformanceMethods(listing, certResult);
-        if (BooleanUtils.isTrue(certResult.isSuccess())) {
-            fillInDefaultConformanceMethods(listing, certResult);
-        }
+        fillInDefaultConformanceMethods(listing, certResult);
         removeOrReplaceConformanceMethodsInvalidForCriterion(listing, certResult);
         reviewConformanceMethodsRequired(listing, certResult);
         if (!CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
             certResult.getConformanceMethods().stream()
+                .filter(conformanceMethod -> conformanceMethod.getConformanceMethod() != null)
                 .filter(conformanceMethod -> conformanceMethod.getConformanceMethod().getRemoved())
                 .forEach(removedConformanceMethod -> reviewRemovedConformanceMethodForIcsRequirement(listing, certResult, removedConformanceMethod));
             certResult.getConformanceMethods().stream()
@@ -133,16 +132,16 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
         ConformanceMethod defaultConformanceMethod = getDefaultConformanceMethodForCriteria(certResult.getCriterion());
         if (defaultConformanceMethod != null) {
             conformanceMethod.setConformanceMethod(defaultConformanceMethod);
-            //I don't want to add warnings outside of reviewers, but this is a special case due to the upload template not having
-            //a field for conformance method and/or having a field for CM version when none is allowed
-            //for some of the criteria.
-            //So we will add a default CM for the cert result here if there is only one possible choice for
+            //The upload file doesn't have fields for conformance methods for all the criteria that need them.
+            //We will add a default CM for the cert result here if there is only one possible choice for
             //conformance method but we have to tell the user that we did it.
             //This code can't go in the reviewer otherwise during Test Procedure -> Conformance Method conversion
             //a default CM gets added to the listing and may make the converter think that the listing already has a CM.
-            listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.conformanceMethod.addedDefaultForCriterion",
+            if (BooleanUtils.isFalse(certResult.getCriterion().getRemoved())) {
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.conformanceMethod.addedDefaultForCriterion",
                     Util.formatCriteriaNumber(certResult.getCriterion()),
                     defaultConformanceMethod.getName()));
+            }
         }
     }
 
@@ -154,7 +153,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
         Iterator<CertificationResultConformanceMethod> conformanceMethodIter = certResult.getConformanceMethods().iterator();
         while (conformanceMethodIter.hasNext()) {
             CertificationResultConformanceMethod conformanceMethod = conformanceMethodIter.next();
-            if (!isConformanceMethodAllowed(certResult, conformanceMethod)) {
+            if (conformanceMethod.getConformanceMethod() != null && !isConformanceMethodAllowed(certResult, conformanceMethod)) {
                 ConformanceMethod defaultConformanceMethodForCriterion = getDefaultConformanceMethodForCriteria(certResult.getCriterion());
                 if (defaultConformanceMethodForCriterion != null) {
                     CertificationResultConformanceMethod toAdd = CertificationResultConformanceMethod.builder()
@@ -224,7 +223,16 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
 
     private void reviewConformanceMethodFields(CertifiedProductSearchDetails listing, CertificationResult certResult,
             CertificationResultConformanceMethod conformanceMethod) {
+        reviewConformanceMethodNotNullAndHasId(listing, certResult, conformanceMethod);
         reviewConformanceMethodVersionRequirements(listing, certResult, conformanceMethod);
+    }
+
+    private void reviewConformanceMethodNotNullAndHasId(CertifiedProductSearchDetails listing, CertificationResult certResult,
+            CertificationResultConformanceMethod conformanceMethod) {
+        if (conformanceMethod.getConformanceMethod() == null || conformanceMethod.getConformanceMethod().getId() == null) {
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.conformanceMethod.missingConformanceMethod",
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
+        }
     }
 
     private void reviewConformanceMethodVersionRequirements(CertifiedProductSearchDetails listing, CertificationResult certResult,
