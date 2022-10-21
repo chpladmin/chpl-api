@@ -39,7 +39,7 @@ import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "rwtQuestionableActivityCreatorJobLogger")
 public class RwtQuestionableActivityCreatorJob extends CertifiedProduct2015Gatherer implements Job {
     @Autowired
     private RwtPlanActivityExplorer rwtPlanActivityExplorer;
