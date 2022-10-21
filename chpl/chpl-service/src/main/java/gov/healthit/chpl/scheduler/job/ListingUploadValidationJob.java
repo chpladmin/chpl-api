@@ -1,13 +1,26 @@
 package gov.healthit.chpl.scheduler.job;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.TransactionDefinition;
@@ -20,10 +33,13 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.email.ChplEmailFactory;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.upload.listing.ListingUploadDao;
 import gov.healthit.chpl.upload.listing.ListingUploadManager;
 import gov.healthit.chpl.upload.listing.ListingUploadStatus;
+import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
@@ -41,6 +57,15 @@ public class ListingUploadValidationJob implements Job {
 
     @Autowired
     private ListingUploadManager listingUploadManager;
+
+    @Value("${uploadErrorEmailRecipients}")
+    private String uploadErrorEmailRecipients;
+
+    @Value("${uploadErrorEmailSubject}")
+    private String uploadErrorEmailSubject;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
@@ -67,7 +92,7 @@ public class ListingUploadValidationJob implements Job {
                         } catch (Exception ex) {
                             LOGGER.error("Unexpected exception calculating error/warning counts for listing upload with ID " + listingUploadId);
                             LOGGER.catching(ex);
-                            saveValidationFailed(listingUploadId);
+                            saveValidationFailed(listingUploadId, ex);
                         }
                     }
                 }
@@ -98,7 +123,7 @@ public class ListingUploadValidationJob implements Job {
                     try {
                         listingDetails = listingUploadManager.getDetailsById(listingUpload.getId());
                     } catch (Exception ex) {
-                        LOGGER.error("Unable to get listing upload details with id " + listingUpload.getId(), ex);
+                        throw new RuntimeException(ex);
                     }
 
                     if (listingDetails != null) {
@@ -119,7 +144,7 @@ public class ListingUploadValidationJob implements Job {
         });
     }
 
-    private void saveValidationFailed(Long listingUploadId) {
+    private void saveValidationFailed(Long listingUploadId, Exception ex) {
         TransactionTemplate txTemplate = new TransactionTemplate(txManager);
         txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         txTemplate.execute(new TransactionCallbackWithoutResult() {
@@ -130,8 +155,78 @@ public class ListingUploadValidationJob implements Job {
                 } catch (Exception ex) {
                     LOGGER.error("The pending listing with ID " + listingUploadId + " could not be updated. No updates were made to its status.");
                 }
+
+                try {
+                    sendUploadError(createCsv(listingUploadId), ex);
+                } catch (IOException ex) {
+                    LOGGER.error("Error creating CSV file from upload failure.", ex);
+                } catch (Exception ex) {
+                    LOGGER.error("Unexpected problem sending upload error email.", ex);
+                }
             }
         });
+    }
+
+    private void sendUploadError(File file, Exception ex) {
+        if (StringUtils.isEmpty(uploadErrorEmailRecipients)) {
+            return;
+        }
+        List<String> recipients = Arrays.asList(uploadErrorEmailRecipients.split(","));
+
+        //attach the file the user tried to upload
+        List<File> attachments = new ArrayList<File>();
+        attachments.add(file);
+
+        //create the email body
+        String htmlBody = "<p>Upload attempted at " + new Date()
+                + "<br/>Uploaded by " + AuthUtil.getUsername() + "</p>";
+        StringWriter writer = new StringWriter();
+        ex.printStackTrace(new PrintWriter(writer));
+        htmlBody += "<pre>" + writer.toString() + "</pre>";
+
+        //build and send the email
+        try {
+            chplEmailFactory.emailBuilder()
+                    .recipients(recipients)
+                    .subject(uploadErrorEmailSubject)
+                    .fileAttachments(attachments)
+                    .htmlMessage(htmlBody)
+                    .sendEmail();
+        } catch (EmailNotSentException msgEx) {
+            LOGGER.error("Could not send email about failed listing upload: " + msgEx.getMessage(), msgEx);
+        }
+    }
+
+    private File createCsv(Long listingUploadId) throws IOException {
+        ListingUpload listingUpload = null;
+        try {
+            listingUpload = listingUploadDao.getById(listingUploadId);
+        } catch (EntityRetrievalException ex) {
+            LOGGER.error("Unable to get listing upload with id " + listingUploadId + ".", ex);
+        }
+
+        List<CSVRecord> csvRecords = listingUpload.getRecords();
+        CSVFormat csvFileFormat = CSVFormat.DEFAULT.builder()
+                .setRecordSeparator(System.lineSeparator())
+                .build();
+
+        File csvFile = File.createTempFile("listing-upload-failure-" + listingUpload.getId() + "-", ".csv");
+        try (FileWriter fileWriter = new FileWriter(csvFile);
+                CSVPrinter csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat)) {
+
+            fileWriter.write('\ufeff');
+            csvRecords.stream()
+                .forEach(csvRecord -> printRow(csvFilePrinter, csvRecord));
+        }
+        return csvFile;
+    }
+
+    private void printRow(CSVPrinter csvFilePrinter, CSVRecord csvRecord) {
+        try {
+            csvFilePrinter.printRecord(csvRecord);
+        } catch (IOException e) {
+            LOGGER.catching(e);
+        }
     }
 
     private void setSecurityContext(UserDTO user) {

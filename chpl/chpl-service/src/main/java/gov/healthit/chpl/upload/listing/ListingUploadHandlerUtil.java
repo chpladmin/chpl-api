@@ -122,8 +122,10 @@ public class ListingUploadHandlerUtil {
     }
 
     public CSVRecord convertToCsvRecord(List<String> values) {
-        CSVFormat csvFormat = CSVFormat.EXCEL.withRecordSeparator(System.lineSeparator())
-                .withQuoteMode(QuoteMode.ALL);
+        CSVFormat csvFormat = CSVFormat.EXCEL.builder()
+                .setRecordSeparator(System.lineSeparator())
+                .setQuoteMode(QuoteMode.ALL)
+                .build();
         CSVRecord csvRecord = null;
         final StringWriter out = new StringWriter();
         try (CSVPrinter csvPrinter = new CSVPrinter(out, csvFormat)) {
@@ -139,7 +141,7 @@ public class ListingUploadHandlerUtil {
     public List<String> convertToList(CSVRecord record) {
         List<String> items = new ArrayList<String>();
         Iterator<String> recordIter = record.iterator();
-        while(recordIter.hasNext()) {
+        while (recordIter.hasNext()) {
             items.add(recordIter.next());
         }
         return items;
