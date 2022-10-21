@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job.onetime;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -60,6 +61,7 @@ public class RwtQuestionableActivityCreatorJob extends CertifiedProduct2015Gathe
     private QuestionableActivityExtDAO questionableActivityExtDAO;
 
     private List<QuestionableActivityTriggerDTO> triggerTypes;
+    private SimpleDateFormat sdf = new SimpleDateFormat("dd MMM YYYY");
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -104,9 +106,15 @@ public class RwtQuestionableActivityCreatorJob extends CertifiedProduct2015Gathe
 
                 if (!questionableActivityExtDAO.questionableActivtyExists(qal)) {
                     questionableActivityDAO.create(qal);
-                    LOGGER.info("    Added: {}", qal.toString());
+                    LOGGER.info("Added Questionable Activity for listing: {}, {} updated on {}",
+                            qal.getListingId(),
+                            triggerDto.getName().equals(QuestionableActivityTriggerConcept.RWT_PLANS_UPDATED_OUTSIDE_NORMAL_PERIOD.getName()) ? "Plan" : "Results",
+                            sdf.format(qal.getActivityDate()));
                 } else {
-                    LOGGER.info("    Already Exists: {}", qal.toString());
+                    LOGGER.info("Questionable Activity already exists for listing : {}, {} updated on {}",
+                            qal.getListingId(),
+                            triggerDto.getName().equals(QuestionableActivityTriggerConcept.RWT_PLANS_UPDATED_OUTSIDE_NORMAL_PERIOD.getName()) ? "Plan" : "Results",
+                            sdf.format(qal.getActivityDate()));
                 }
 
         });
@@ -161,7 +169,6 @@ public class RwtQuestionableActivityCreatorJob extends CertifiedProduct2015Gathe
         public List<ActivityDTO> getActivities(ListingActivityQuery query) {
             return getSortedActivities(query).stream()
                     .filter(activity -> hasRwtPlanInformationBeenUpdated(activity) && !isPlanUpdatedInStandardWindow(activity))
-                    .peek(activity -> LOGGER.info("Found activity for {}", activity.getActivityObjectId()))
                     .toList();
         }
 
