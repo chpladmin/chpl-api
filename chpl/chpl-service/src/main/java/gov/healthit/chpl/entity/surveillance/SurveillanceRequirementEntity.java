@@ -55,7 +55,7 @@ public class SurveillanceRequirementEntity {
     private String requirementTypeOther;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "result_id", insertable = false, updatable = false)
+    @JoinColumn(name = "result_id")
     private SurveillanceResultTypeEntity surveillanceResultTypeEntity;
 
     @Column(name = "deleted")
@@ -83,7 +83,7 @@ public class SurveillanceRequirementEntity {
                         .toList())
                 .requirementType(this.requirementType != null ? this.requirementType.toDomain() : null)
                 .requirementTypeOther(this.requirementTypeOther)
-                .result(this.getSurveillanceResultTypeEntity().toDomain())
+                .result(this.getSurveillanceResultTypeEntity() != null ? this.getSurveillanceResultTypeEntity().toDomain() : null)
                 .build();
 
         if (NullSafeEvaluator.eval(() -> this.requirementType.getRequirementGroupType(), null) != null) {

@@ -34,6 +34,7 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceTypeEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.NullSafeEvaluator;
 import lombok.extern.log4j.Log4j2;
 
 @Repository("surveillanceDAO")
@@ -143,9 +144,7 @@ public class SurveillanceDAO extends BaseDAOImpl {
     private SurveillanceRequirementEntity insertSurveillanceRequirement(SurveillanceRequirement requirement, Long surveillanceId) {
         SurveillanceRequirementEntity toInsertReq = SurveillanceRequirementEntity.builder()
                 .surveillanceId(surveillanceId)
-                .surveillanceResultTypeEntity(SurveillanceResultTypeEntity.builder()
-                        .id(requirement.getResult().getId())
-                        .build())
+                .surveillanceResultTypeEntity(getSurveillanceResultTypeEntityById(requirement.getResult().getId()))
                 .requirementType(requirement.getRequirementType() != null
                         ? getRequirementTypeEntityById(requirement.getRequirementType().getId())
                         : null)
@@ -228,45 +227,69 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
     private SurveillanceNonconformity getSurveillanceNonconformity(Long id, List<SurveillanceNonconformity> nonconformities) {
-        return nonconformities.stream()
-                .filter(nc -> nc.getId().equals(id))
-                .findAny()
-                .orElse(null);
+        if (id == null) {
+            return null;
+        } else {
+            return nonconformities.stream()
+                    .filter(req -> NullSafeEvaluator.eval(() -> req.getId(), -1).equals(id))
+                    .findAny()
+                    .orElse(null);
+        }
     }
 
     private SurveillanceRequirement getSurveillanceRequirement(Long id, Set<SurveillanceRequirement> requirements) {
-        return requirements.stream()
-                .filter(nc -> nc.getId().equals(id))
-                .findAny()
-                .orElse(null);
+        if (id == null) {
+            return null;
+        } else {
+            return requirements.stream()
+                    .filter(req -> NullSafeEvaluator.eval(() -> req.getId(), -1).equals(id))
+                    .findAny()
+                    .orElse(null);
+        }
     }
 
     private Boolean isIdInSurveillanceRequirements(Long id, Set<SurveillanceRequirement> requirements) {
-        return requirements.stream()
-                .filter(req -> req.getId().equals(id))
-                .findAny()
-                .isPresent();
+        if (id == null) {
+            return false;
+        } else {
+            return requirements.stream()
+                    .filter(req -> NullSafeEvaluator.eval(() -> req.getId(), -1).equals(id))
+                    .findAny()
+                    .isPresent();
+        }
     }
 
     private Boolean isIdInSurveillanceRequirementEntities(Long id, Set<SurveillanceRequirementEntity> requirements) {
-        return requirements.stream()
-                .filter(req -> req.getId().equals(id))
-                .findAny()
-                .isPresent();
+        if (id == null) {
+            return false;
+        } else {
+            return requirements.stream()
+                    .filter(req -> NullSafeEvaluator.eval(() -> req.getId(), -1).equals(id))
+                    .findAny()
+                    .isPresent();
+        }
     }
 
     private Boolean isIdInSurveillanceNonconformities(Long id, List<SurveillanceNonconformity> nonconformities) {
-        return nonconformities.stream()
-                .filter(nc -> nc.getId().equals(id))
-                .findAny()
-                .isPresent();
+        if (id == null) {
+            return false;
+        } else {
+            return nonconformities.stream()
+                    .filter(req -> NullSafeEvaluator.eval(() -> req.getId(), -1).equals(id))
+                    .findAny()
+                    .isPresent();
+        }
     }
 
     private Boolean isIdInSurveillanceNonconformityEntities(Long id, Set<SurveillanceNonconformityEntity> nonconformities) {
-        return nonconformities.stream()
-                .filter(nc -> nc.getId().equals(id))
-                .findAny()
-                .isPresent();
+        if (id == null) {
+            return false;
+        } else {
+            return nonconformities.stream()
+                    .filter(req -> NullSafeEvaluator.eval(() -> req.getId(), -1).equals(id))
+                    .findAny()
+                    .isPresent();
+        }
     }
 
     private Boolean isIdInDocuments(Long id, List<SurveillanceNonconformityDocument> documents) {
