@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -20,7 +21,8 @@ import gov.healthit.chpl.domain.ProductOwner;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class ProductOwnerHistoryValidationTest {
-    private static final String PRODUCT_OWNER_HISTORY_INVALID = "Only one product owner change is allowed per day.";
+    private static final String PRODUCT_OWNER_HISTORY_DATE_INVALID = "Only one product owner change is allowed per day.";
+    private static final String PRODUCT_OWNER_HISTORY_OWNER_INVALID = "The same developer cannot have two contiguous product ownership history entries.";
 
     private ErrorMessageUtil msgUtil;
 
@@ -29,7 +31,9 @@ public class ProductOwnerHistoryValidationTest {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
 
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("product.ownerStatusHistory.notSameDay")))
-            .thenReturn(PRODUCT_OWNER_HISTORY_INVALID);
+            .thenReturn(PRODUCT_OWNER_HISTORY_DATE_INVALID);
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("product.ownerStatusHistory.sameOwner")))
+            .thenReturn(PRODUCT_OWNER_HISTORY_OWNER_INVALID);
     }
 
     @Test
@@ -89,7 +93,7 @@ public class ProductOwnerHistoryValidationTest {
                                 .build())
                         .ownerHistory(Stream.of(
                                 getOwnerHistoryEntry(1L, 1L, "owner 1", LocalDate.parse("2022-01-01")))
-                                .toList())
+                                .collect(Collectors.toCollection(ArrayList::new)))
                         .build())
 
                 .build();
@@ -114,7 +118,7 @@ public class ProductOwnerHistoryValidationTest {
                         .ownerHistory(Stream.of(
                                 getOwnerHistoryEntry(1L, 1L, "owner 1", LocalDate.parse("2022-01-01")),
                                 getOwnerHistoryEntry(2L, 2L, "owner 2", LocalDate.parse("2022-02-01")))
-                                .toList())
+                                .collect(Collectors.toCollection(ArrayList::new)))
                         .build())
 
                 .build();
@@ -147,7 +151,7 @@ public class ProductOwnerHistoryValidationTest {
         ProductOwnerHistoryValidation validation = new ProductOwnerHistoryValidation();
         boolean isValid = validation.isValid(context);
         assertFalse(isValid);
-        assertTrue(validation.getMessages().contains(PRODUCT_OWNER_HISTORY_INVALID));
+        assertTrue(validation.getMessages().contains(PRODUCT_OWNER_HISTORY_DATE_INVALID));
     }
 
     @Test
@@ -174,7 +178,58 @@ public class ProductOwnerHistoryValidationTest {
         ProductOwnerHistoryValidation validation = new ProductOwnerHistoryValidation();
         boolean isValid = validation.isValid(context);
         assertFalse(isValid);
-        assertTrue(validation.getMessages().contains(PRODUCT_OWNER_HISTORY_INVALID));
+        assertTrue(validation.getMessages().contains(PRODUCT_OWNER_HISTORY_DATE_INVALID));
+    }
+
+    @Test
+    public void review_productOwnerHistoryTwoEntriesSameOwner_hasError() {
+        DeveloperDAO devDao = Mockito.mock(DeveloperDAO.class);
+        ProductValidationContext context = ProductValidationContext.builder()
+                .developerDao(devDao)
+                .errorMessageUtil(msgUtil)
+                .product(Product.builder()
+                        .name("name")
+                        .owner(Developer.builder()
+                                .id(1L)
+                                .build())
+                        .ownerHistory(Stream.of(
+                                getOwnerHistoryEntry(1L, 1L, "owner 1", LocalDate.parse("2022-01-01")),
+                                getOwnerHistoryEntry(2L, 1L, "owner 1", LocalDate.parse("2022-02-01")))
+                                .collect(Collectors.toCollection(ArrayList::new)))
+                        .build())
+
+                .build();
+
+        ProductOwnerHistoryValidation validation = new ProductOwnerHistoryValidation();
+        boolean isValid = validation.isValid(context);
+        assertFalse(isValid);
+        assertTrue(validation.getMessages().contains(PRODUCT_OWNER_HISTORY_OWNER_INVALID));
+    }
+
+    @Test
+    public void review_productOwnerHistoryMultipleEntriesSameOwner_hasError() {
+        DeveloperDAO devDao = Mockito.mock(DeveloperDAO.class);
+        ProductValidationContext context = ProductValidationContext.builder()
+                .developerDao(devDao)
+                .errorMessageUtil(msgUtil)
+                .product(Product.builder()
+                        .name("name")
+                        .owner(Developer.builder()
+                                .id(1L)
+                                .build())
+                        .ownerHistory(Stream.of(
+                                getOwnerHistoryEntry(1L, 1L, "owner 1", LocalDate.parse("2022-01-01")),
+                                getOwnerHistoryEntry(2L, 1L, "owner 1", LocalDate.parse("2022-02-01")),
+                                getOwnerHistoryEntry(2L, 2L, "owner 2", LocalDate.parse("2022-03-01")))
+                                .collect(Collectors.toCollection(ArrayList::new)))
+                        .build())
+
+                .build();
+
+        ProductOwnerHistoryValidation validation = new ProductOwnerHistoryValidation();
+        boolean isValid = validation.isValid(context);
+        assertFalse(isValid);
+        assertTrue(validation.getMessages().contains(PRODUCT_OWNER_HISTORY_OWNER_INVALID));
     }
 
     private ProductOwner getOwnerHistoryEntry(Long historyEventId, Long ownerId, String ownerName, LocalDate transferDay) {
