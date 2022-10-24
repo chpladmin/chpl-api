@@ -163,11 +163,9 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
     private SurveillanceRequirementEntity updateSurveillanceRequirement(SurveillanceRequirement requirement, SurveillanceRequirementEntity requirementEntity) {
-        requirementEntity.getSurveillanceResultTypeEntity().setId(requirement.getResult().getId());
+        requirementEntity.setSurveillanceResultTypeEntity(getSurveillanceResultTypeEntityById(requirement.getResult().getId()));
         if (requirement.getRequirementType() != null) {
-            requirementEntity.setRequirementType(RequirementTypeEntity.builder()
-                    .id(requirement.getRequirementType().getId())
-                    .build());
+            requirementEntity.setRequirementType(getRequirementTypeEntityById(requirement.getRequirementType().getId()));
         }
         requirementEntity.setRequirementTypeOther(requirement.getRequirementTypeOther());
         requirementEntity.setLastModifiedUser(AuthUtil.getAuditId());
@@ -676,6 +674,18 @@ public class SurveillanceDAO extends BaseDAOImpl {
     private RequirementTypeEntity getRequirementTypeEntityById(Long requirementTypeId) {
         return getRequirementTypeEntities().stream()
                .filter(rdt -> rdt.getId().equals(requirementTypeId))
+               .findAny()
+               .orElse(null);
+    }
+
+    private List<SurveillanceResultTypeEntity> getSurveillanceResultTypeEntities() {
+        Query query = entityManager.createQuery("FROM SurveillanceResultTypeEntity e ", SurveillanceResultTypeEntity.class);
+        return query.getResultList();
+    }
+
+    private SurveillanceResultTypeEntity getSurveillanceResultTypeEntityById(Long resultTypeId) {
+        return getSurveillanceResultTypeEntities().stream()
+               .filter(result -> result.getId().equals(resultTypeId))
                .findAny()
                .orElse(null);
     }

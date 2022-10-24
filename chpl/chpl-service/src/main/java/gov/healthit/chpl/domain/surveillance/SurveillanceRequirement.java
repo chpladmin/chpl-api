@@ -157,7 +157,8 @@ public class SurveillanceRequirement implements Serializable {
             return false;
         }
 
-        if (!doRequirementTypesMatch(anotherRequirement)) {
+        if (!doRequirementTypesMatch(anotherRequirement)
+                || !doResultTypesMatch(anotherRequirement)) {
             return false;
         }
         return true;
@@ -169,6 +170,12 @@ public class SurveillanceRequirement implements Serializable {
                 && NullSafeEvaluator.eval(() -> this.getRequirementTypeOther(), "").equals(
                         NullSafeEvaluator.eval(() -> anotherRequirement.getRequirementTypeOther(), ""));
     }
+
+    public boolean doResultTypesMatch(SurveillanceRequirement anotherRequirement) {
+        return NullSafeEvaluator.eval(() -> this.getResult().getId(), 0L).equals(
+                NullSafeEvaluator.eval(() -> anotherRequirement.getResult().getId(), 0L));
+    }
+
 
     public Long getId() {
         return id;

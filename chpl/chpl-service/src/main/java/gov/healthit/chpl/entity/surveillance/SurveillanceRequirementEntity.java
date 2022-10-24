@@ -55,7 +55,7 @@ public class SurveillanceRequirementEntity {
     private String requirementTypeOther;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "result_id", insertable = true, updatable = true)
+    @JoinColumn(name = "result_id", insertable = false, updatable = false)
     private SurveillanceResultTypeEntity surveillanceResultTypeEntity;
 
     @Column(name = "deleted")
