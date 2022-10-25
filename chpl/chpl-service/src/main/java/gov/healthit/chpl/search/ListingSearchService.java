@@ -35,7 +35,6 @@ import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.RwtSearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
-import gov.healthit.chpl.search.domain.SearchResponse;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.service.DirectReviewSearchService;
 import gov.healthit.chpl.util.DateUtil;
@@ -628,23 +627,6 @@ public class ListingSearchService {
             int sortFactor = descending ? -1 : 1;
             return (listing1.getCertificationStatus().getName().compareTo(listing2.getCertificationStatus().getName())) * sortFactor;
         }
-    }
-
-    @Deprecated
-    public SearchResponse search(SearchRequest searchRequest) throws ValidationException {
-        searchRequestNormalizer.normalize(searchRequest);
-        searchRequestValidator.validate(searchRequest);
-        ListingSearchResponse listingSearchResponse = findListings(searchRequest);
-
-        SearchResponse searchResponse = new SearchResponse();
-        searchResponse.setDirectReviewsAvailable(listingSearchResponse.getDirectReviewsAvailable());
-        searchResponse.setPageNumber(listingSearchResponse.getPageNumber());
-        searchResponse.setPageSize(listingSearchResponse.getPageSize());
-        searchResponse.setRecordCount(listingSearchResponse.getRecordCount());
-        searchResponse.setResults(listingSearchResponse.getResults().stream()
-                .map(listingSearchResult -> convertToBasicSearchResult(listingSearchResult))
-                .collect(Collectors.toList()));
-        return searchResponse;
     }
 
     private CertifiedProductBasicSearchResult convertToBasicSearchResult(ListingSearchResult searchResult) {
