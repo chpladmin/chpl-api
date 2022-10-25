@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
 public class DeveloperStatusEventsValidation extends ValidationRule<DeveloperValidationContext> {
@@ -28,6 +29,13 @@ public class DeveloperStatusEventsValidation extends ValidationRule<DeveloperVal
         } else {
             // sort the status events by date
             statusEvents.sort(new DeveloperStatusEventComparator());
+
+            // now that the list is sorted by date, make sure the first status is 'Active'
+            DeveloperStatusEvent firstStatusEvent = statusEvents.iterator().next();
+            if (!firstStatusEvent.getStatus().getStatus().equals(DeveloperStatusType.Active.getName())) {
+                errors.add(context.getErrorMessageUtil().getMessage("developer.status.notActiveFirst",
+                        firstStatusEvent.getStatus().getStatus()));
+            }
 
             // now that the list is sorted by date, make sure no two statuses
             // next to each other are the same
