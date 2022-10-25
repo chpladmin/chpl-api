@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -208,7 +209,7 @@ public class DeveloperController {
             return new LinkedHashSet<String>();
         }
         return Stream.of(delimitedString.split(delimeter))
-                .map(value -> value.trim())
+                .map(value -> StringUtils.normalizeSpace(value))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 

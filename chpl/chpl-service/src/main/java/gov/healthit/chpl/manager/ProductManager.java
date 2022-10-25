@@ -323,6 +323,11 @@ public class ProductManager extends SecuredManager {
             throws EntityRetrievalException, EntityCreationException, ValidationException, JsonProcessingException {
 
         Product existingProduct = productDao.getById(product.getId());
+        if (product.equals(existingProduct)) {
+            LOGGER.info("Product did not change - not saving");
+            LOGGER.info(product.toString());
+            return existingProduct;
+        }
         runExistingProductValidations(existingProduct);
         runNewProductValidations(product);
 
