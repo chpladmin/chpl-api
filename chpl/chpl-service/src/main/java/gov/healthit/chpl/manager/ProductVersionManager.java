@@ -182,32 +182,42 @@ public class ProductVersionManager extends SecuredManager {
 
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
-            + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).UPDATE, #dto)")
+            + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).UPDATE, #version)")
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
-    @ListingStoreRemove(removeBy = RemoveBy.VERSION_ID, id = "#dto.id")
-    public ProductVersionDTO update(ProductVersionDTO dto)
+    @ListingStoreRemove(removeBy = RemoveBy.VERSION_ID, id = "#version.id")
+    public ProductVersionDTO update(ProductVersionDTO version)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 
-        ProductVersionDTO before = versionDao.getById(dto.getId());
+        ProductVersionDTO beforeVersion = versionDao.getById(version.getId());
+
+        //Needs more work in the future to remove the ProductVersionDTO.
+        ProductVersion versionDomain = new ProductVersion(version);
+        ProductVersion beforeVersionDomain = new ProductVersion(beforeVersion);
+        if (versionDomain.equals(beforeVersionDomain)) {
+            LOGGER.info("Version did not change - not saving");
+            LOGGER.info(versionDomain.toString());
+            return beforeVersion;
+        }
+
         // check that the developer of this version is Active
-        Developer dev = devDao.getByVersion(before.getId());
+        Developer dev = devDao.getByVersion(beforeVersion.getId());
         if (dev == null) {
-            throw new EntityRetrievalException("Cannot find developer of version id " + before.getId());
+            throw new EntityRetrievalException("Cannot find developer of version id " + beforeVersion.getId());
         }
         DeveloperStatus currDevStatus = dev.getStatus();
         if (currDevStatus == null || currDevStatus.getStatus() == null) {
-            String msg = "The version " + before.getVersion() + " cannot be updated since the status of developer "
+            String msg = "The version " + beforeVersion.getVersion() + " cannot be updated since the status of developer "
                     + dev.getName() + " cannot be determined.";
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
         }
 
-        ProductVersionEntity result = versionDao.update(dto);
+        ProductVersionEntity result = versionDao.update(version);
         ProductVersionDTO after = new ProductVersionDTO(result);
         activityManager.addActivity(ActivityConcept.VERSION, after.getId(),
-                "Product Version " + dto.getVersion() + " updated for product " + dto.getProductId(), before, after);
+                "Product Version " + version.getVersion() + " updated for product " + version.getProductId(), beforeVersion, after);
         return after;
     }
 

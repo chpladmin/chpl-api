@@ -124,8 +124,10 @@ public class ListingUploadHandlerUtil {
     }
 
     public CSVRecord convertToCsvRecord(List<String> values) {
-        CSVFormat csvFormat = CSVFormat.EXCEL.withRecordSeparator(System.lineSeparator())
-                .withQuoteMode(QuoteMode.ALL);
+        CSVFormat csvFormat = CSVFormat.EXCEL.builder()
+                .setRecordSeparator(System.lineSeparator())
+                .setQuoteMode(QuoteMode.ALL)
+                .build();
         CSVRecord csvRecord = null;
         final StringWriter out = new StringWriter();
         try (CSVPrinter csvPrinter = new CSVPrinter(out, csvFormat)) {
@@ -141,7 +143,7 @@ public class ListingUploadHandlerUtil {
     public List<String> convertToList(CSVRecord record) {
         List<String> items = new ArrayList<String>();
         Iterator<String> recordIter = record.iterator();
-        while(recordIter.hasNext()) {
+        while (recordIter.hasNext()) {
             items.add(recordIter.next());
         }
         return items;
@@ -152,7 +154,7 @@ public class ListingUploadHandlerUtil {
         if (StringUtils.isEmpty(headingVal)) {
             return null;
         }
-        headingVal = headingVal.trim().toUpperCase();
+        headingVal = StringUtils.normalizeSpace(headingVal).toUpperCase();
         String criterionNumber = null;
         Matcher m = criterionColHeadingPattern.matcher(headingVal);
         if (m.find()) {
@@ -203,7 +205,7 @@ public class ListingUploadHandlerUtil {
             if (StringUtils.isEmpty(fieldValue) && fieldHeadingIndex < listingRecord.size()) {
                 String parsedFieldValue = listingRecord.get(fieldHeadingIndex);
                 if (parsedFieldValue != null) {
-                    fieldValue = parsedFieldValue.trim();
+                    fieldValue = StringUtils.normalizeSpace(parsedFieldValue);
                 }
             }
         }
@@ -227,7 +229,7 @@ public class ListingUploadHandlerUtil {
             if (StringUtils.isEmpty(fieldValue) && fieldHeadingIndex < listingRecord.size()) {
                 String parsedFieldValue = listingRecord.get(fieldHeadingIndex);
                 if (parsedFieldValue != null) {
-                    fieldValue = parsedFieldValue.trim();
+                    fieldValue = StringUtils.normalizeSpace(parsedFieldValue);
                 }
             }
         }
@@ -240,7 +242,7 @@ public class ListingUploadHandlerUtil {
             if (StringUtils.isEmpty(fieldValue) && fieldHeadingIndex < listingRecord.size()) {
                 String parsedFieldValue = listingRecord.get(fieldHeadingIndex);
                 if (parsedFieldValue != null) {
-                    fieldValue = parsedFieldValue.trim();
+                    fieldValue = StringUtils.normalizeSpace(parsedFieldValue);
                 }
             }
         }
@@ -284,7 +286,7 @@ public class ListingUploadHandlerUtil {
                     if (fieldHeadingIndex < listingRecord.size()) {
                         String parsedFieldValue = listingRecord.get(fieldHeadingIndex);
                         if (parsedFieldValue != null) {
-                            fieldValues.add(parsedFieldValue.trim());
+                            fieldValues.add(StringUtils.normalizeSpace(parsedFieldValue));
                         }
                     }
                 }
@@ -344,9 +346,9 @@ public class ListingUploadHandlerUtil {
     private boolean hasHeading(CSVRecord record) {
         Iterator<String> iter = record.iterator();
         while (iter.hasNext()) {
-            String currRecordValue = iter.next();
-            if (currRecordValue != null && !StringUtils.isEmpty(currRecordValue.trim())
-                    && Headings.getHeading(currRecordValue.trim()) != null) {
+            String currRecordValue = StringUtils.normalizeSpace(iter.next());
+            if (currRecordValue != null && !StringUtils.isEmpty(currRecordValue)
+                    && Headings.getHeading(currRecordValue) != null) {
                 return true;
             }
         }
@@ -358,9 +360,10 @@ public class ListingUploadHandlerUtil {
         Iterator<String> iter = headingRecord.iterator();
         while (iter.hasNext()) {
             String currHeadingValue = iter.next();
-            if (currHeadingValue != null && !StringUtils.isEmpty(currHeadingValue.trim())
-                    && Headings.getHeading(currHeadingValue.trim()) != null
-                    && Headings.getHeading(currHeadingValue.trim()).equals(heading)) {
+            String normalizedCurrHeading = StringUtils.normalizeSpace(currHeadingValue);
+            if (normalizedCurrHeading != null
+                    && Headings.getHeading(normalizedCurrHeading) != null
+                    && Headings.getHeading(normalizedCurrHeading).equals(heading)) {
                 return index;
             }
             index++;
@@ -372,7 +375,7 @@ public class ListingUploadHandlerUtil {
         Boolean result = null;
         if (value == null) {
             return result;
-        } else if (StringUtils.isEmpty(value.trim())) {
+        } else if (StringUtils.isBlank(value)) {
             result = false;
         }
 
@@ -404,7 +407,7 @@ public class ListingUploadHandlerUtil {
     }
 
     public Date parseDate(String value) throws ValidationException {
-        if (value == null || StringUtils.isEmpty(value.trim())) {
+        if (value == null || StringUtils.isBlank(value)) {
             return null;
         }
 
