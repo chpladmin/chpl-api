@@ -234,15 +234,6 @@ public class ActivityDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
-    public List<ActivityDTO> findUserActivity(List<Long> userIds, Date startDate, Date endDate) {
-        List<ActivityEntity> entities = getEntitiesByObjectIds(userIds,
-                ActivityConcept.USER, startDate, endDate);
-
-        return entities.stream()
-                .map(entity -> mapEntityToDto(entity))
-                .collect(Collectors.toList());
-    }
-
     public List<ActivityDTO> findByUserId(Long userId, Date startDate, Date endDate) {
         List<ActivityEntity> entities = this.getEntitiesByUserId(userId, startDate, endDate);
         return entities.stream()

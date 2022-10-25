@@ -12,7 +12,6 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -864,56 +863,6 @@ public class ActivityController {
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getApiKeyManagementMetadata(start, end, pageNum, pageSize);
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/activity/users/{id}",
-        removalDate = "2022-10-18",
-        message = "This endpoint is deprecated and will be removed in a future release.")
-    @Operation(summary = "Get auditable data about a specific CHPL user account.",
-            description = "A start and end date may optionally be provided to limit activity results.  "
-                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_CMS_STAFF "
-                    + "(of ROLE_CMS_STAFF Users), ROLE_ACB (of their own), or ROLE_ATL (of their own).",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/users/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityDetails> activityForUsers(@PathVariable("id") final Long id,
-            @RequestParam(required = false) final Long start,
-            @RequestParam(required = false) final Long end)
-            throws JsonParseException, IOException, UserRetrievalException, ValidationException {
-        userManager.getById(id); // throws 404 if bad id
-
-        // if one of start of end is provided then the other must also be
-        // provided.
-        // if neither is provided then query all dates
-        Date startDate = new Date(0);
-        Date endDate = new Date();
-        if (start != null && end != null) {
-            validateActivityDatesAndDateRange(start, end);
-            startDate = new Date(start);
-            endDate = new Date(end);
-        } else if (start == null && end != null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
-        } else if (start != null && end == null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
-        }
-
-        // ROLE_ADMIN can get user activity on any user; other roles must
-        // have some association to the user so check if this request is
-        // allowed.
-        if (!resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-            Set<Long> allowedUserIds = getAllowedUsersForActivitySearch();
-            if (!allowedUserIds.contains(id)) {
-                throw new AccessDeniedException("User " + AuthUtil.getUsername()
-                        + " does not have permission to get activity for user with ID " + id);
-            }
-        }
-        Set<Long> userIdsToSearch = new HashSet<Long>();
-        userIdsToSearch.add(id);
-        return activityManager.getUserActivity(userIdsToSearch, startDate, endDate);
     }
 
     @Deprecated

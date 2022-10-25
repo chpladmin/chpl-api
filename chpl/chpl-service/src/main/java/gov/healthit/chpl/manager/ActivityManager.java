@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -137,23 +136,6 @@ public class ActivityManager extends SecuredManager {
         ActivityDTO result = activityDAO.getById(activityId);
         ActivityDetails event = getActivityDetailsFromDTO(result);
         return event;
-    }
-
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
-            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_USER_ACTIVITY)")
-    public List<ActivityDetails> getUserActivity(Set<Long> userIds, Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-        List<Long> userIdList = new ArrayList<Long>();
-        userIdList.addAll(userIds);
-        List<ActivityDTO> userActivity = activityDAO.findUserActivity(userIdList, startDate, endDate);
-
-        List<ActivityDetails> events = new ArrayList<ActivityDetails>();
-        for (ActivityDTO dto : userActivity) {
-            ActivityDetails event = getActivityDetailsFromDTO(dto);
-            events.add(event);
-        }
-        return events;
     }
 
     @Transactional(readOnly = true)
