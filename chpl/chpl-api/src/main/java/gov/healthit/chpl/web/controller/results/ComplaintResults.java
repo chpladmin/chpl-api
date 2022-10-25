@@ -6,6 +6,7 @@ import java.util.List;
 
 import gov.healthit.chpl.domain.complaint.Complaint;
 
+@Deprecated
 public class ComplaintResults implements Serializable{
     private static final long serialVersionUID = 570551290486119131L;
 

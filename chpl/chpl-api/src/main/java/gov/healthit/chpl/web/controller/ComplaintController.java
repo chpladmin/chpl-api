@@ -21,6 +21,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ComplaintManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.results.ComplaintResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -39,6 +40,10 @@ public class ComplaintController {
         this.errorMessageUtil = errorMessageUtil;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/complaints",
+            message = "This endpoint is deprecated and will be removed. Please use /complaints/search.",
+            removalDate = "2022-06-01")
     @Operation(summary = "List all complaints the current user can view.",
             description = "Security Restrictions: Only complaints owned by the current user's ACB will be returned",
             security = {
