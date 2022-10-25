@@ -2,7 +2,6 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -117,30 +116,37 @@ public class Address implements Serializable {
         }
     }
 
+    public void normalizeSpaces() {
+        this.line1 = StringUtils.normalizeSpace(this.getLine1());
+        this.line2 = StringUtils.normalizeSpace(this.getLine2());
+        this.city = StringUtils.normalizeSpace(this.getCity());
+        this.state = StringUtils.normalizeSpace(this.getState());
+        this.zipcode = StringUtils.normalizeSpace(this.getZipcode());
+        this.country = StringUtils.normalizeSpace(this.getCountry());
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Address)) {
             return false;
         }
         Address anotherAddress = (Address) obj;
-        if ((this.addressId != null && anotherAddress.addressId != null
-                && this.addressId.longValue() == anotherAddress.addressId.longValue())
-                || (this.addressId == null && anotherAddress.addressId == null)) {
-            return Objects.equals(this.line1, anotherAddress.line1)
-                    && Objects.equals(this.line2, anotherAddress.line2)
-                    && Objects.equals(this.city, anotherAddress.city)
-                    && Objects.equals(this.state, anotherAddress.state)
-                    && Objects.equals(this.zipcode, anotherAddress.zipcode)
-                    && Objects.equals(this.country, anotherAddress.country);
-        }
-        return false;
+        return (StringUtils.isAllEmpty(this.line1, anotherAddress.line1)
+                    || StringUtils.equals(this.line1, anotherAddress.line1))
+                && (StringUtils.isAllEmpty(this.line2, anotherAddress.line2)
+                    || StringUtils.equals(this.line2, anotherAddress.line2))
+                && (StringUtils.isAllEmpty(this.city, anotherAddress.city)
+                    || StringUtils.equals(this.city, anotherAddress.city))
+                && (StringUtils.isAllEmpty(this.state, anotherAddress.state)
+                    || StringUtils.equals(this.state, anotherAddress.state))
+                && (StringUtils.isAllEmpty(this.zipcode, anotherAddress.zipcode)
+                    || StringUtils.equals(this.zipcode, anotherAddress.zipcode))
+                && (StringUtils.isAllEmpty(this.country, anotherAddress.country)
+                    || StringUtils.equals(this.country, anotherAddress.country));
     }
 
     @Override
     public int hashCode() {
-        if (this.addressId != null) {
-            return this.addressId.hashCode();
-        }
         int hashCode = 0;
         if (!StringUtils.isEmpty(this.line1)) {
             hashCode += this.line1.hashCode();
