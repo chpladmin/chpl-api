@@ -6,9 +6,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,12 +23,8 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.ActivityMetadataPage;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.TestingLabDTO;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.ActivityMetadataManager;
@@ -42,7 +36,6 @@ import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -863,78 +856,6 @@ public class ActivityController {
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getApiKeyManagementMetadata(start, end, pageNum, pageSize);
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/activity/user_activities/{id}",
-        removalDate = "2022-10-18",
-        message = "This endpoint is deprecated and will be removed in a future release.")
-    @Operation(summary = "Track the actions of a specific user in the system",
-            description = "A start and end date may optionally be provided to limit activity results."
-                    + "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/user_activities/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityDetails> activityByUser(@PathVariable("id") final Long id,
-            @RequestParam(required = false) final Long start,
-            @RequestParam(required = false) final Long end)
-            throws JsonParseException, IOException, UserRetrievalException, ValidationException {
-        userManager.getById(id); // throws 404 if bad id
-
-        // if one of start of end is provided then the other must also be
-        // provided.
-        // if neither is provided then query all dates
-        Date startDate = new Date(0);
-        Date endDate = new Date();
-        if (start != null && end != null) {
-            validateActivityDatesAndDateRange(start, end);
-            startDate = new Date(start);
-            endDate = new Date(end);
-        } else if (start == null && end != null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingStartHasEnd"));
-        } else if (start != null && end == null) {
-            throw new IllegalArgumentException(msgUtil.getMessage("activity.missingEndHasStart"));
-        }
-        return activityManager.getActivityForUserInDateRange(id, startDate, endDate);
-    }
-
-    private Set<Long> getAllowedUsersForActivitySearch() {
-        Set<Long> allowedUserIds = new HashSet<Long>();
-        // user can see their own activity
-        allowedUserIds.add(AuthUtil.getCurrentUser().getId());
-
-        // user can see activity for other users in the same acb
-
-        if (resourcePermissions.isUserRoleAcbAdmin()) {
-            List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-            for (CertificationBodyDTO acb : allowedAcbs) {
-                List<UserDTO> acbUsers = resourcePermissions.getAllUsersOnAcb(acb);
-                for (UserDTO user : acbUsers) {
-                    allowedUserIds.add(user.getId());
-                }
-            }
-        }
-        // user can see activity for other users in the same atl
-        if (resourcePermissions.isUserRoleAtlAdmin()) {
-            List<TestingLabDTO> allowedAtls = atlManager.getAllForUser();
-            for (TestingLabDTO atl : allowedAtls) {
-                List<UserDTO> atlUsers = resourcePermissions.getAllUsersOnAtl(atl);
-                for (UserDTO user : atlUsers) {
-                    allowedUserIds.add(user.getId());
-                }
-            }
-        }
-        // user can see activity for other users with role cms_staff
-        if (resourcePermissions.isUserRoleCmsStaff()) {
-            List<UserDTO> cmsStaffUsers = userManager.getUsersWithPermission("ROLE_CMS_STAFF");
-            for (UserDTO user : cmsStaffUsers) {
-                allowedUserIds.add(user.getId());
-            }
-        }
-        return allowedUserIds;
     }
 
     private void validateActivityDates(final Long startDate, final Long endDate) throws IllegalArgumentException {
