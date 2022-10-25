@@ -18,19 +18,19 @@ public class SearchRequestNormalizer {
 
     private void normalizeSearchTerm(SearchRequest request) {
         if (!StringUtils.isEmpty(request.getSearchTerm())) {
-            request.setSearchTerm(request.getSearchTerm().trim());
+            request.setSearchTerm(StringUtils.normalizeSpace(request.getSearchTerm()));
         }
     }
 
     private void normalizeDeveloperName(SearchRequest request) {
         if (!StringUtils.isEmpty(request.getDeveloperName())) {
-            request.setDeveloperName(request.getDeveloperName().trim());
+            request.setDeveloperName(StringUtils.normalizeSpace(request.getDeveloperName()));
         }
     }
 
     private void normalizeDeveloperCode(SearchRequest request) {
         if (!StringUtils.isEmpty(request.getDeveloperCode())) {
-            request.setDeveloperCode(request.getDeveloperCode().trim());
+            request.setDeveloperCode(StringUtils.normalizeSpace(request.getDeveloperCode()));
         }
     }
 
@@ -38,7 +38,7 @@ public class SearchRequestNormalizer {
         if (request.getStatuses() != null && request.getStatuses().size() > 0) {
             request.setStatuses(request.getStatuses().stream()
                     .filter(status -> !StringUtils.isBlank(status))
-                    .map(status -> status.trim())
+                    .map(status -> StringUtils.normalizeSpace(status))
                     .collect(Collectors.toSet()));
         }
     }
@@ -47,17 +47,17 @@ public class SearchRequestNormalizer {
         if (request.getCertificationBodies() != null && request.getCertificationBodies().size() > 0) {
             request.setCertificationBodies(request.getCertificationBodies().stream()
                     .filter(acb -> !StringUtils.isBlank(acb))
-                    .map(acb -> acb.trim())
+                    .map(acb -> StringUtils.normalizeSpace(acb))
                     .collect(Collectors.toSet()));
         }
     }
 
     private void normalizeDecertificationDates(SearchRequest request) {
         if (!StringUtils.isEmpty(request.getDecertificationDateStart())) {
-            request.setDecertificationDateStart(request.getDecertificationDateStart().trim());
+            request.setDecertificationDateStart(StringUtils.normalizeSpace(request.getDecertificationDateStart()));
         }
         if (!StringUtils.isEmpty(request.getDecertificationDateEnd())) {
-            request.setDecertificationDateEnd(request.getDecertificationDateEnd().trim());
+            request.setDecertificationDateEnd(StringUtils.normalizeSpace(request.getDecertificationDateEnd()));
         }
     }
 
@@ -66,7 +66,7 @@ public class SearchRequestNormalizer {
                 && request.getOrderBy() == null) {
             try {
                 request.setOrderBy(
-                        OrderByOption.valueOf(request.getOrderByString().toUpperCase().trim()));
+                        OrderByOption.valueOf(StringUtils.normalizeSpace(request.getOrderByString().toUpperCase())));
             } catch (Exception ignore) {
             }
         }

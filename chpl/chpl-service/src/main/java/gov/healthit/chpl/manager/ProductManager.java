@@ -346,6 +346,13 @@ public class ProductManager extends SecuredManager {
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
         Product productBefore = productDao.getById(product.getId());
+
+        if (product.equals(productBefore)) {
+            LOGGER.info("Product did not change - not saving");
+            LOGGER.info(product.toString());
+            return productBefore;
+        }
+
         // check that the developer of this product is Active
         if (productBefore.getOwner() == null || productBefore.getOwner().getId() == null) {
             throw new EntityCreationException("Cannot update a product without a developer ID.");
