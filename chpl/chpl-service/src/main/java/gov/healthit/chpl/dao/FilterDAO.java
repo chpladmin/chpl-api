@@ -6,6 +6,7 @@ import gov.healthit.chpl.dto.FilterDTO;
 import gov.healthit.chpl.dto.FilterTypeDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
+@Deprecated
 public interface FilterDAO {
     FilterDTO update(FilterDTO dto) throws EntityRetrievalException;
 

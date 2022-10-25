@@ -12,6 +12,7 @@ import javax.persistence.Table;
 
 import lombok.Data;
 
+@Deprecated
 @Entity
 @Table(name = "filter_type")
 @Data

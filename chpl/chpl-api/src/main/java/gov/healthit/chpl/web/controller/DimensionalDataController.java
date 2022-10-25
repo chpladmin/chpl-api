@@ -611,6 +611,10 @@ public class DimensionalDataController {
         return dimensionalDataManager.getDimensionalData(simple);
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/filter_types",
+        message = "This endpoint is deprecated and will be removed.",
+        removalDate = "2023-06-01")
     @Operation(summary = "Get all available filter type.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
