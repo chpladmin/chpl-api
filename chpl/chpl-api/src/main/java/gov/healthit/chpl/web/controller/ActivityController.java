@@ -39,7 +39,6 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -122,27 +121,6 @@ public class ActivityController {
     @RequestMapping(value = "/metadata/listings", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForListings(@RequestParam(required = false) Long start,
-            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
-        return pagedMetadataManager.getActivityMetadataByConcept(
-                ActivityConcept.CERTIFIED_PRODUCT, start, end, pageNum, pageSize);
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/activity/metadata/beta/listings",
-            removalDate = "2022-10-18",
-            message = "This endpoint is deprecated and will be removed in a future release. Please use /activity/metadata/listings instead.")
-    @Operation(summary = "Get metadata about auditable records in the system for listings.",
-            description = "All parameters are optional and will default to the first page of listing activity "
-                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/metadata/beta/listings", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public ActivityMetadataPage metadataForListingsDeprecated(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getActivityMetadataByConcept(
@@ -269,27 +247,6 @@ public class ActivityController {
                 ActivityConcept.DEVELOPER, start, end, pageNum, pageSize);
     }
 
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/activity/metadata/beta/developers",
-            removalDate = "2022-10-18",
-            message = "This endpoint is deprecated and will be removed in a future release. Please use /activity/metadata/developers instead.")
-    @Operation(summary = "Get metadata about auditable records in the system for developers.",
-            description = "All parameters are optional and will default to the first page of listing activity "
-                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/metadata/beta/developers", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public ActivityMetadataPage metadataForDevelopersDeprecated(@RequestParam(required = false) Long start,
-            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
-        return pagedMetadataManager.getActivityMetadataByConcept(
-                ActivityConcept.DEVELOPER, start, end, pageNum, pageSize);
-    }
-
     @Operation(summary = "Get metadata about auditable records in the system for a specific developer.",
             description = "A start or end date may optionally be provided to limit activity results.",
             security = {
@@ -332,27 +289,6 @@ public class ActivityController {
     @RequestMapping(value = "/metadata/products", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForProducts(@RequestParam(required = false) Long start,
-            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
-        return pagedMetadataManager.getActivityMetadataByConcept(
-                ActivityConcept.PRODUCT, start, end, pageNum, pageSize);
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/activity/metadata/beta/products",
-            removalDate = "2022-10-18",
-            message = "This endpoint is deprecated and will be removed in a future release. Please use /activity/metadata/products instead.")
-    @Operation(summary = "Get metadata about auditable records in the system for products.",
-            description = "All parameters are optional and will default to the first page of product activity "
-                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/metadata/beta/products", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public ActivityMetadataPage metadataForProductsDeprecated(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getActivityMetadataByConcept(
@@ -407,27 +343,6 @@ public class ActivityController {
                 ActivityConcept.VERSION, start, end, pageNum, pageSize);
     }
 
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/activity/metadata/beta/versions",
-        removalDate = "2022-10-18",
-        message = "This endpoint is deprecated and will be removed in a future release. Please use /activity/metadata/versions instead.")
-    @Operation(summary = "Get metadata about auditable records in the system for versions.",
-            description = "All parameters are optional and will default to the first page of version activity "
-                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/metadata/beta/versions", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public ActivityMetadataPage metadataForVersionsDeprecated(@RequestParam(required = false) Long start,
-            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
-        return pagedMetadataManager.getActivityMetadataByConcept(
-                ActivityConcept.VERSION, start, end, pageNum, pageSize);
-    }
-
     @Operation(summary = "Get metadata about auditable records in the system for a specific version.",
             description = "A start or end date may optionally be provided to limit activity results.",
             security = {
@@ -471,27 +386,6 @@ public class ActivityController {
     @RequestMapping(value = "/metadata/acbs", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForAcbs(@RequestParam(required = false) Long start,
-            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
-        return pagedMetadataManager.getCertificationBodyActivityMetadata(start, end, pageNum, pageSize);
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/activity/metadata/beta/acbs",
-        removalDate = "2022-10-18",
-        message = "This endpoint is deprecated and will be removed in a future release. Please use /activity/metadata/acbs instead.")
-    @Operation(summary = "Get metadata about auditable records in the system for certification bodies.",
-            description = "All parameters are optional and will default to the first page of ONC-ACB activity "
-                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/metadata/beta/acbs", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public ActivityMetadataPage metadataForAcbsDeprecated(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getCertificationBodyActivityMetadata(start, end, pageNum, pageSize);
@@ -543,27 +437,6 @@ public class ActivityController {
         return pagedMetadataManager.getTestingLabActivityMetadata(start, end, pageNum, pageSize);
     }
 
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/activity/metadata/beta/atls",
-        removalDate = "2022-10-18",
-        message = "This endpoint is deprecated and will be removed in a future release. Please use /activity/metadata/atls instead.")
-    @Operation(summary = "Get metadata about auditable records in the system for testing labs.",
-            description = "All parameters are optional and will default to the first page of ONC-ATL activity "
-                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/metadata/beta/atls", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public ActivityMetadataPage metadataForAtlsDeprecated(@RequestParam(required = false) Long start,
-            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
-        return pagedMetadataManager.getTestingLabActivityMetadata(start, end, pageNum, pageSize);
-    }
-
     @Operation(summary = "Get metadata about auditable records in the system for a specific testing lab.",
             description = "A start and end date may optionally be provided to limit activity results.",
             security = {
@@ -609,26 +482,6 @@ public class ActivityController {
         return pagedMetadataManager.getUserMaintenanceActivityMetadata(start, end, pageNum, pageSize);
     }
 
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/activity/metadata/beta/users",
-        removalDate = "2022-10-18",
-        message = "This endpoint is deprecated and will be removed in a future release. Please use /activity/metadata/users instead.")
-    @Operation(summary = "Get metadata about auditable records in the system for users.",
-            description = "All parameters are optional and will default to the first page of user activity "
-                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/metadata/beta/users", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public ActivityMetadataPage metadataForUsersDeprecated(@RequestParam(required = false) Long start,
-            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
-        return pagedMetadataManager.getUserMaintenanceActivityMetadata(start, end, pageNum, pageSize);
-    }
-
     @Operation(summary = "Get metadata about auditable records in the system for announcements.",
             description = "All parameters are optional and will default to the first page of announcement activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
@@ -642,29 +495,6 @@ public class ActivityController {
     @RequestMapping(value = "/metadata/announcements", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForAnnouncements(@RequestParam(required = false) Long start,
-            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
-        return pagedMetadataManager.getAnnouncementActivityMetadata(start, end, pageNum, pageSize);
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/activity/metadata/beta/announcements",
-        removalDate = "2022-10-18",
-        message = "This endpoint is deprecated and will be removed in a future release. Please use /activity/metadata/announcements instead.")
-    @Operation(summary = "Get metadata about auditable records in the system for announcements.",
-            description = "All parameters are optional and will default to the first page of announcement activity "
-                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first. "
-                    + "Security Restrictions: Anonymous users are only allowed to see activity for public "
-                    + "announcements. All other roles can see private and public announcements.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/metadata/beta/announcements", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public ActivityMetadataPage metadataForAnnouncementsDeprecated(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getAnnouncementActivityMetadata(start, end, pageNum, pageSize);
@@ -746,26 +576,6 @@ public class ActivityController {
                 ActivityConcept.CORRECTIVE_ACTION_PLAN, start, end, pageNum, pageSize);
     }
 
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/activity/metadata/beta/corrective-action-plans",
-        removalDate = "2022-10-18",
-        message = "This endpoint is deprecated and will be removed in a future release. Please use /activity/metadata/corrective-action-plans instead.")
-    @Operation(summary = "Get metadata about auditable records in the system for corrective action plans.",
-            description = "All parameters are optional and will default to the first page of corrective action plan activity "
-                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/metadata/beta/corrective-action-plans", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public ActivityMetadataPage metadataForCorrectiveActionPlansDeprecated(@RequestParam(required = false) Long start,
-            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
-        return pagedMetadataManager.getActivityMetadataByConcept(
-                ActivityConcept.CORRECTIVE_ACTION_PLAN, start, end, pageNum, pageSize);
-    }
-
     @Operation(summary = "Get metadata about auditable records in the system for pending surveillances.",
             description = "All parameters are optional and will default to the first page of pending surveillance activity "
                     + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
@@ -777,27 +587,6 @@ public class ActivityController {
     @RequestMapping(value = "/metadata/pending-surveillances", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForPendingSurveillances(@RequestParam(required = false) Long start,
-            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
-        return pagedMetadataManager.getPendingSurveillanceActivityMetadata(start, end, pageNum, pageSize);
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/activity/metadata/beta/pending-surveillances",
-        removalDate = "2022-10-18",
-        message = "This endpoint is deprecated and will be removed in a future release. Please use /activity/metadata/pending-surveillances instead.")
-    @Operation(summary = "Get metadata about auditable records in the system for pending surveillances.",
-            description = "All parameters are optional and will default to the first page of pending surveillance activity "
-                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/metadata/beta/pending-surveillances", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public ActivityMetadataPage metadataForPendingSurveillancesDeprecated(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getPendingSurveillanceActivityMetadata(start, end, pageNum, pageSize);
@@ -832,27 +621,6 @@ public class ActivityController {
     @RequestMapping(value = "/metadata/api-keys", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public ActivityMetadataPage metadataForApiKeys(@RequestParam(required = false) Long start,
-            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
-        return pagedMetadataManager.getApiKeyManagementMetadata(start, end, pageNum, pageSize);
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/activity/metadata/beta/api-keys",
-        removalDate = "2022-10-18",
-        message = "This endpoint is deprecated and will be removed in a future release. Please use /activity/metadata/api-keys instead.")
-    @Operation(summary = "Get metadata about auditable records in the system for API Keys.",
-            description = "All parameters are optional and will default to the first page of API Key activity "
-                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.",
-            deprecated = true,
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/metadata/beta/api-keys", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public ActivityMetadataPage metadataForApiKeysDeprecated(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
         return pagedMetadataManager.getApiKeyManagementMetadata(start, end, pageNum, pageSize);
