@@ -20,7 +20,6 @@ public class ProductTree extends Product {
     public ProductTree(Product product) {
         super();
         this.setId(product.getId());
-        this.setProductId(product.getId());
         this.setContact(product.getContact());
         this.setLastModifiedDate(product.getLastModifiedDate());
         this.setName(product.getName());
@@ -29,6 +28,7 @@ public class ProductTree extends Product {
         this.setReportFileLocation(product.getReportFileLocation());
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
@@ -40,6 +40,7 @@ public class ProductTree extends Product {
         return Objects.equals(this.getId(), otherProduct.getId());
     }
 
+    @Override
     public int hashCode() {
         if (this.getId() == null) {
             return -1;

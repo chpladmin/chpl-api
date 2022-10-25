@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,17 +31,6 @@ public class Product implements Serializable {
     private static final long serialVersionUID = 2177195816284265811L;
 
     /**
-     * This property exists solely to be able to deserialize product activity events.
-     * When deserializing the activity we sometimes care about the product ID.
-     * This property should not be visible in the generated XSD (and eventually gone from the JSON).
-     */
-    @XmlTransient
-    @Deprecated
-    @DeprecatedResponseField(removalDate = "2022-10-15",
-        message = "This field is deprecated and will be removed from the response data in a future release. Please replace usage of the 'productId' field with 'id'.")
-    private Long productId;
-
-    /**
      * Product internal ID
      */
     @XmlElement(required = true)
@@ -52,7 +40,7 @@ public class Product implements Serializable {
      * This property exists solely to be able to deserialize product activity events. When deserializing
      * the activity we sometimes care about the developer ID and in older activity it came from this field.
      * In newer activity it comes from the "owner field.
-     * This property should not be visible in the generated XSD or any response from an API call. 
+     * This property should not be visible in the generated XSD or any response from an API call.
      */
     @JsonProperty(access = Access.WRITE_ONLY)
     @XmlTransient
@@ -62,8 +50,8 @@ public class Product implements Serializable {
     /**
      * This property exists solely to be able to deserialize product activity events. When deserializing
      * the activity we sometimes care about the developer name and in older activity it came from this field.
-     * In newer activity it comes from the "owner" field. 
-     * This property should not be visible in the generated XSD or any response from an API call. 
+     * In newer activity it comes from the "owner" field.
+     * This property should not be visible in the generated XSD or any response from an API call.
      */
     @JsonProperty(access = Access.WRITE_ONLY)
     @XmlTransient
@@ -140,16 +128,6 @@ public class Product implements Serializable {
             }
         }
         return result;
-    }
-
-    @Deprecated
-    public Long getProductId() {
-        return productId;
-    }
-
-    @Deprecated
-    public void setProductId(Long productId) {
-        this.productId = productId;
     }
 
     public Long getId() {

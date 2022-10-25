@@ -30,6 +30,7 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
         this.developerDao = developerDao;
     }
 
+    @Override
     protected void addConceptSpecificMetadata(ActivityDTO activity, ActivityMetadata metadata) {
         if (!(metadata instanceof ProductActivityMetadata)) {
             return;
@@ -125,7 +126,7 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
                 productMetadata.setDeveloperName(developer.getName());
             } catch (Exception ex) {
                 LOGGER.error("Unable to find developer with ID " + product.getOwner().getDeveloperId() + " referenced "
-                        + "in activity for product " + (product.getId() != null ? product.getId() : product.getProductId()));
+                        + "in activity for product " + product.getId());
             }
         } else if (product.getOwner() != null && product.getOwner().getId() != null) {
             try {
@@ -133,7 +134,7 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
                 productMetadata.setDeveloperName(developer.getName());
             } catch (Exception ex) {
                 LOGGER.error("Unable to find developer with ID " + product.getOwner().getId() + " referenced "
-                        + "in activity for product " + (product.getId() != null ? product.getId() : product.getProductId()));
+                        + "in activity for product " + product.getId());
             }
         } else if (!StringUtils.isEmpty(product.getDeveloperName())) {
             productMetadata.setDeveloperName(product.getDeveloperName());
@@ -143,7 +144,7 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
                 productMetadata.setDeveloperName(developer.getName());
             } catch (Exception ex) {
                 LOGGER.error("Unable to find developer with ID " + product.getDeveloperId() + " referenced "
-                        + "in activity for product " + (product.getId() != null ? product.getId() : product.getProductId()));
+                        + "in activity for product " + product.getId());
             }
         }
         productMetadata.setProductName(product.getName());
@@ -153,19 +154,10 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
             List<Product> products) {
         Long idToFind = activity.getActivityObjectId();
         for (Product currProduct : products) {
-            if (currProduct != null && idsMatch(currProduct, idToFind)) {
+            if (currProduct != null && currProduct.getId().equals(idToFind)) {
                 parseProductMetadata(productMetadata, currProduct);
                 break;
             }
         }
-    }
-
-    private boolean idsMatch(Product product, Long id) {
-        if (product.getId() != null) {
-            return product.getId().equals(id);
-        } else if (product.getProductId() != null) {
-            return product.getProductId().equals(id);
-        }
-        return false;
     }
 }
