@@ -85,13 +85,6 @@ public class AnnouncementManager extends ApplicationObjectSupport {
     @Transactional(readOnly = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ANNOUNCEMENT, "
             + "T(gov.healthit.chpl.permissions.domains.AnnouncementDomainPermissions).GET_BY_ID, #id)")
-    public Announcement getById(Long id) throws EntityRetrievalException, AccessDeniedException {
-        return getById(id, false);
-    }
-
-    @Transactional(readOnly = true)
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ANNOUNCEMENT, "
-            + "T(gov.healthit.chpl.permissions.domains.AnnouncementDomainPermissions).GET_BY_ID, #id)")
     public Announcement getById(Long id, boolean includeDeleted)
             throws EntityRetrievalException, AccessDeniedException {
         return announcementDAO.getById(id, includeDeleted);
