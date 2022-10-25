@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain.complaint;
+package gov.healthit.chpl.complaint.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

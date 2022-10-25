@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dao;
+package gov.healthit.chpl.complaint;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -11,17 +11,17 @@ import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.complaint.domain.ComplainantType;
+import gov.healthit.chpl.complaint.domain.Complaint;
+import gov.healthit.chpl.complaint.domain.ComplaintCriterionMap;
+import gov.healthit.chpl.complaint.domain.ComplaintListingMap;
+import gov.healthit.chpl.complaint.entity.ComplainantTypeEntity;
+import gov.healthit.chpl.complaint.entity.ComplaintCriterionMapEntity;
+import gov.healthit.chpl.complaint.entity.ComplaintEntity;
+import gov.healthit.chpl.complaint.entity.ComplaintListingMapEntity;
+import gov.healthit.chpl.complaint.entity.ComplaintSurveillanceMapEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
-import gov.healthit.chpl.domain.complaint.ComplainantType;
-import gov.healthit.chpl.domain.complaint.Complaint;
-import gov.healthit.chpl.domain.complaint.ComplaintCriterionMap;
-import gov.healthit.chpl.domain.complaint.ComplaintListingMap;
-import gov.healthit.chpl.entity.ComplainantTypeEntity;
-import gov.healthit.chpl.entity.ComplaintCriterionMapEntity;
-import gov.healthit.chpl.entity.ComplaintEntity;
-import gov.healthit.chpl.entity.ComplaintListingMapEntity;
-import gov.healthit.chpl.entity.ComplaintSurveillanceMapEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;

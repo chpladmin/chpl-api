@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import gov.healthit.chpl.domain.complaint.Complaint;
+import gov.healthit.chpl.complaint.domain.Complaint;
 
 @Deprecated
 public class ComplaintResults implements Serializable{
