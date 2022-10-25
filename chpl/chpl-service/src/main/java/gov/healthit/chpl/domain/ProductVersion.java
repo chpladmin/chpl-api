@@ -10,7 +10,6 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,17 +21,6 @@ import lombok.Builder;
 @AllArgsConstructor
 public class ProductVersion implements Serializable {
     private static final long serialVersionUID = -447822739573816090L;
-
-    /**
-     * This property exists solely to be able to deserialize version activity events.
-     * When deserializing the activity we sometimes care about the version ID.
-     * This property should not be visible in the generated XSD (and eventually gone from the JSON).
-     */
-    @XmlTransient
-    @Deprecated
-    @DeprecatedResponseField(removalDate = "2022-10-15",
-        message = "This field is deprecated and will be removed from the response data in a future release. Please replace usage of the 'versionId' field with 'id'.")
-    private Long versionId;
 
     /**
      * Product version internal ID
@@ -61,19 +49,10 @@ public class ProductVersion implements Serializable {
 
     public ProductVersion(ProductVersionDTO dto) {
         this.id = dto.getId();
-        this.versionId = dto.getId();
         this.version = dto.getVersion();
         if (dto.getLastModifiedDate() != null) {
             this.lastModifiedDate = dto.getLastModifiedDate().getTime() + "";
         }
-    }
-
-    public Long getVersionId() {
-        return versionId;
-    }
-
-    public void setVersionId(final Long versionId) {
-        this.versionId = versionId;
     }
 
     public Long getId() {
