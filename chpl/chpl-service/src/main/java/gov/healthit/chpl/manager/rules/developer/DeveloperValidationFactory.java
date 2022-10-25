@@ -3,6 +3,7 @@ package gov.healthit.chpl.manager.rules.developer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
@@ -22,17 +23,19 @@ public class DeveloperValidationFactory {
     public static final String EDIT_STATUS_HISTORY = "EDIT_STATUS_HISTORY";
     public static final String STATUS_CHANGED = "STATUS_CHANGED";
 
+    private DeveloperDAO developerDao;
     private ResourcePermissions resourcePermissions;
 
     @Autowired
-    public DeveloperValidationFactory(ResourcePermissions resourcePermissions) {
+    public DeveloperValidationFactory(DeveloperDAO developerDao, ResourcePermissions resourcePermissions) {
+        this.developerDao = developerDao;
         this.resourcePermissions = resourcePermissions;
     }
 
     public ValidationRule<DeveloperValidationContext> getRule(String name) {
         switch (name) {
         case NAME:
-            return new DeveloperNameValidation();
+            return new DeveloperNameValidation(developerDao);
         case WEBSITE_REQUIRED:
             return new DeveloperWebsiteRequiredValidation();
         case WEBSITE_WELL_FORMED:

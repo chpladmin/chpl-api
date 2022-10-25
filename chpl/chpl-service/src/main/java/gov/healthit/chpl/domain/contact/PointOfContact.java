@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
@@ -48,6 +50,13 @@ public class PointOfContact extends Person {
         }
     }
 
+    public void normalizeSpaces() {
+        this.setFullName(StringUtils.normalizeSpace(this.getFullName()));
+        this.setEmail(StringUtils.normalizeSpace(this.getEmail()));
+        this.setPhoneNumber(StringUtils.normalizeSpace(this.getPhoneNumber()));
+        this.setTitle(StringUtils.normalizeSpace(this.getTitle()));
+    }
+
     public Long getContactId() {
         return contactId;
     }
@@ -61,13 +70,7 @@ public class PointOfContact extends Person {
         if (!(obj instanceof PointOfContact)) {
             return false;
         }
-        PointOfContact anotherContact = (PointOfContact) obj;
-        if ((this.contactId != null && anotherContact.contactId != null
-                && this.contactId.longValue() == anotherContact.contactId.longValue())
-                || (this.contactId == null && anotherContact.contactId == null)) {
-            return super.equals(obj);
-        }
-        return false;
+        return super.equals(obj);
     }
 
     @Override
