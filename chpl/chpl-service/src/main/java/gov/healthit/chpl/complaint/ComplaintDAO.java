@@ -51,6 +51,8 @@ public class ComplaintDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
+    //TODO: Make this cached
+    //TODO: Evict whenever a complaint is updated/deleted, an ACB is updated, a listing is updated, surveillance updated/deleted
     public List<Complaint> getAllComplaints() {
         Query query = entityManager.createQuery(GET_COMPLAINTS_HQL, ComplaintEntity.class);
         List<ComplaintEntity> results = query.getResultList();
