@@ -94,7 +94,7 @@ public class SedG32015ReviewerTest {
     }
 
     @Test
-    public void review_noG3AndHasRemovedCertificationResultWithSed_adminUser_hasWarnings() {
+    public void review_noG3AndHasRemovedCertificationResultWithSed_adminUser_noWarnings() {
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
@@ -116,12 +116,11 @@ public class SedG32015ReviewerTest {
                 .build();
         reviewer.review(listing);
         assertEquals(0, listing.getErrorMessages().size());
-        assertEquals(1, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(NO_G3_HAS_SED));
+        assertEquals(0, listing.getWarningMessages().size());
     }
 
     @Test
-    public void review_noG3AndHasRemovedCertificationResultWithSed_oncUser_hasWarnings() {
+    public void review_noG3AndHasRemovedCertificationResultWithSed_oncUser_noWarnings() {
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(true);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
@@ -143,8 +142,7 @@ public class SedG32015ReviewerTest {
                 .build();
         reviewer.review(listing);
         assertEquals(0, listing.getErrorMessages().size());
-        assertEquals(1, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(NO_G3_HAS_SED));
+        assertEquals(0, listing.getWarningMessages().size());
     }
 
     @Test
@@ -197,7 +195,7 @@ public class SedG32015ReviewerTest {
     }
 
     @Test
-    public void review_hasG3AndRemovedCertificationResultWithSed_adminUser_hasWarnings() {
+    public void review_hasG3AndRemovedCertificationResultWithSed_adminUser_noWarnings() {
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
@@ -219,12 +217,11 @@ public class SedG32015ReviewerTest {
                 .build();
         reviewer.review(listing);
         assertEquals(0, listing.getErrorMessages().size());
-        assertEquals(1, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(HAS_G3_NO_SED));
+        assertEquals(0, listing.getWarningMessages().size());
     }
 
     @Test
-    public void review_hasG3AndRemovedCertificationResultWithSed_oncUser_hasWarnings() {
+    public void review_hasG3AndRemovedCertificationResultWithSed_oncUser_noWarnings() {
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(true);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
@@ -246,8 +243,7 @@ public class SedG32015ReviewerTest {
                 .build();
         reviewer.review(listing);
         assertEquals(0, listing.getErrorMessages().size());
-        assertEquals(1, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(HAS_G3_NO_SED));
+        assertEquals(0, listing.getWarningMessages().size());
     }
 
     @Test

@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -122,6 +123,11 @@ public class CertificationCriterionService {
 
     public static String formatCriteriaNumber(CertificationCriterionDTO criterion) {
         return formatCriteriaNumber(new CertificationCriterion(criterion));
+    }
+
+    public boolean isCriteriaNumber(String input) {
+        String criteriaNumber = coerceToCriterionNumberFormat(input);
+        return !CollectionUtils.isEmpty(getByNumber(criteriaNumber));
     }
 
     public String coerceToCriterionNumberFormat(String input) {

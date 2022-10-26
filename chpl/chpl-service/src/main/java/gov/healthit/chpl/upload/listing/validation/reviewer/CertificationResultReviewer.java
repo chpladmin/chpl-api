@@ -2,10 +2,12 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -37,6 +39,7 @@ public class CertificationResultReviewer {
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
+    private FF4j ff4j;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -55,7 +58,8 @@ public class CertificationResultReviewer {
             @Qualifier("uploadedListingUnattestedCriteriaWithDataReviewer") UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer,
             @Qualifier("oldCriteriaWithoutIcsReviewer") OldCriteriaWithoutIcsReviewer oldCriteriaWithoutIcsReviewer,
             @Qualifier("sedG32015Reviewer") SedG32015Reviewer sedG3Reviewer,
-            CertificationResultRules certResultRules, ValidationUtils validationUtils, ErrorMessageUtil msgUtil) {
+            CertificationResultRules certResultRules, ValidationUtils validationUtils, ErrorMessageUtil msgUtil,
+            FF4j ff4j) {
         this.removedCriteriaReviewer = removedCriteriaReviewer;
         this.criteriaReviewer = criteriaReviewer;
         this.privacyAndSecurityFrameworkReviewer = privacyAndSecurityFrameworkReviewer;
@@ -74,6 +78,7 @@ public class CertificationResultReviewer {
         this.certResultRules = certResultRules;
         this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
+        this.ff4j = ff4j;
     }
 
     public void review(CertifiedProductSearchDetails listing) {
@@ -106,7 +111,9 @@ public class CertificationResultReviewer {
         testStandardReviewer.review(listing);
         optionalStandardReviewer.review(listing);
         svapReviewer.review(listing);
-        oldCriteriaWithoutIcsReviewer.review(listing);
+        if (!ff4j.check(FeatureList.ERD_PHASE_2)) {
+            oldCriteriaWithoutIcsReviewer.review(listing);
+        }
         sedG3Reviewer.review(listing);
         unattestedCriteriaWithDataReviewer.review(listing);
     }
