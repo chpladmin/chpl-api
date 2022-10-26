@@ -3,9 +3,10 @@ package gov.healthit.chpl.validation.listing.reviewer;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -37,6 +38,7 @@ public class TestToolReviewer extends PermissionBasedReviewer {
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
                 .filter(cr -> isCertificationResultAttestedTo(cr)
+                        && BooleanUtils.isFalse(cr.getCriterion().getRemoved())
                         && doesCertificationResultHaveTestTools(cr))
                 .forEach(cr -> validateTestTools(listing, cr));
     }
