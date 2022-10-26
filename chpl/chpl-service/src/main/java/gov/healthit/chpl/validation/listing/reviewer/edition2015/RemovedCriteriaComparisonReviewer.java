@@ -1,7 +1,6 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -50,8 +49,8 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
         for (CertificationResult updatedCert : updatedListing.getCertificationResults()) {
             for (CertificationResult existingCert : existingListing.getCertificationResults()) {
                 //find matching criteria in existing/updated listings
-                if (!StringUtils.isEmpty(updatedCert.getCriterion().getNumber()) && !StringUtils.isEmpty(existingCert.getCriterion().getNumber())
-                        && updatedCert.getCriterion().getNumber().equals(existingCert.getCriterion().getNumber())) {
+                if (updatedCert.getCriterion().getId() != null && existingCert.getCriterion().getId() != null
+                        && updatedCert.getCriterion().getId().equals(existingCert.getCriterion().getId())) {
                     if (isRemovedCertAdded(existingCert, updatedCert)) {
                         updatedListing.getErrorMessages().add(
                                 msgUtil.getMessage("listing.removedCriteriaAddNotAllowed",

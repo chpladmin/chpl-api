@@ -3,10 +3,12 @@ package gov.healthit.chpl.validation.listing;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.upload.listing.validation.reviewer.UcdProcessReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationStatusReviewer;
@@ -43,9 +45,12 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.MeasureComparis
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.MeasureValidityReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.OldCriteriaWithoutIcsReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewerPreErdPhase2;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaTestTaskComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaUcdComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaPreErdPhase2Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
@@ -76,6 +81,14 @@ public class Edition2015ListingValidator extends Validator {
     @Autowired
     @Qualifier("requiredData2015Reviewer")
     private RequiredData2015Reviewer requiredDataReviewer;
+
+    @Autowired
+    @Qualifier("requiredAndRelatedCriteriaPreErdPhase2Reviewer")
+    private RequiredAndRelatedCriteriaPreErdPhase2Reviewer requiredAndRelatedCriteriaPreErdPhase2Reviewer;
+
+    @Autowired
+    @Qualifier("requiredAndRelatedCriteriaErdPhase2GracePeriodReviewer")
+    private RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewer requiredAndRelatedCriteriaErdPhase2GracePeriodReviewer;
 
     @Autowired
     @Qualifier("requiredAndRelatedCriteriaReviewer")
@@ -174,6 +187,10 @@ public class Edition2015ListingValidator extends Validator {
     private RemovedCriteriaUcdComparisonReviewer ucdCriteriaComparisonReviewer;
 
     @Autowired
+    @Qualifier("privacyAndSecurityCriteriaReviewerPreErdPhase2")
+    private PrivacyAndSecurityCriteriaReviewerPreErdPhase2 privacyAndSecurityCriteriaReviewerPreErdPhase2;
+
+    @Autowired
     @Qualifier("privacyAndSecurityCriteriaReviewer")
     private PrivacyAndSecurityCriteriaReviewer privacyAndSecurityCriteriaReviewer;
 
@@ -229,65 +246,80 @@ public class Edition2015ListingValidator extends Validator {
     @Qualifier("deprecatedFieldReviewer")
     private DeprecatedFieldReviewer deprecatedFieldReviewer;
 
-    private List<Reviewer> reviewers;
-    private List<ComparisonReviewer> comparisonReviewers;
+    @Autowired
+    private FF4j ff4j;
 
     @Override
     public synchronized List<Reviewer> getReviewers() {
-        if (reviewers == null) {
-            reviewers = new ArrayList<Reviewer>();
-            reviewers.add(chplNumberReviewer);
-            reviewers.add(devStatusReviewer);
-            reviewers.add(unsupportedCharacterReviewer);
-            reviewers.add(fieldLengthReviewer);
-            reviewers.add(requiredDataReviewer);
+        List<Reviewer> reviewers = new ArrayList<Reviewer>();
+        reviewers.add(chplNumberReviewer);
+        reviewers.add(devStatusReviewer);
+        reviewers.add(unsupportedCharacterReviewer);
+        reviewers.add(fieldLengthReviewer);
+        reviewers.add(requiredDataReviewer);
+        if (ff4j.check(FeatureList.ERD_PHASE_2)
+                && !ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD_END)) {
+            //use this reviewer during the grace period
+            reviewers.add(requiredAndRelatedCriteriaErdPhase2GracePeriodReviewer);
+        } else if (ff4j.check(FeatureList.ERD_PHASE_2)) {
+            //use this reviewer after the grace period
             reviewers.add(requiredAndRelatedCriteriaReviewer);
-            reviewers.add(testingLabReviewer);
-            reviewers.add(validDataReviewer);
-            reviewers.add(sedG3Reviewer);
-            reviewers.add(ucdProcessReviewer);
-            reviewers.add(oldCriteriaWithoutIcsReviewer);
-            reviewers.add(certStatusReviewer);
-            reviewers.add(certDateReviewer);
-            reviewers.add(unattestedCriteriaWithDataReviewer);
-            reviewers.add(optionalStandardReviewer);
-            reviewers.add(conformanceMethodReviewer);
-            reviewers.add(tsrReviewer);
-            reviewers.add(tsReviewer);
-            reviewers.add(tpReviewer);
-            reviewers.add(inheritanceReviewer);
-            reviewers.add(ttReviewer);
-            reviewers.add(tt2015Reviewer);
-            reviewers.add(urlReviewer);
-            reviewers.add(testFunctionalityReviewer);
-            reviewers.add(invalidCriteriaCombinationReviewer);
-            reviewers.add(attestedCriteriaCqmReviewer);
-            reviewers.add(cqmAttestedCriteriaReviewer);
-            reviewers.add(duplicateDataReviewer);
-            reviewers.add(gapAllowedReviewer);
-            reviewers.add(measureReviewer);
+        } else {
+            //use this reviewer before ERD-Phase-2
+            reviewers.add(requiredAndRelatedCriteriaPreErdPhase2Reviewer);
+        }
+        reviewers.add(testingLabReviewer);
+        reviewers.add(validDataReviewer);
+        reviewers.add(sedG3Reviewer);
+        reviewers.add(ucdProcessReviewer);
+        reviewers.add(oldCriteriaWithoutIcsReviewer);
+        reviewers.add(certStatusReviewer);
+        reviewers.add(certDateReviewer);
+        reviewers.add(unattestedCriteriaWithDataReviewer);
+        reviewers.add(optionalStandardReviewer);
+        reviewers.add(conformanceMethodReviewer);
+        reviewers.add(tsrReviewer);
+        reviewers.add(tsReviewer);
+        reviewers.add(tpReviewer);
+        reviewers.add(inheritanceReviewer);
+        reviewers.add(ttReviewer);
+        reviewers.add(tt2015Reviewer);
+        reviewers.add(urlReviewer);
+        reviewers.add(testFunctionalityReviewer);
+        reviewers.add(invalidCriteriaCombinationReviewer);
+        reviewers.add(attestedCriteriaCqmReviewer);
+        reviewers.add(cqmAttestedCriteriaReviewer);
+        reviewers.add(duplicateDataReviewer);
+        reviewers.add(gapAllowedReviewer);
+        reviewers.add(measureReviewer);
+        //after the grace period this reviewer should be included
+        if (ff4j.check(FeatureList.ERD_PHASE_2)
+                && ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD_END)) {
+            reviewers.add(privacyAndSecurityCriteriaReviewer);
         }
         return reviewers;
     }
 
     @Override
     public List<ComparisonReviewer> getComparisonReviewers() {
-        if (comparisonReviewers == null) {
-            comparisonReviewers = new ArrayList<ComparisonReviewer>();
-            comparisonReviewers.add(chplNumberComparisonReviewer);
-            comparisonReviewers.add(devBanComparisonReviewer);
-            comparisonReviewers.add(measureComparisonReviewer);
-            comparisonReviewers.add(criteriaComparisonReviewer);
-            comparisonReviewers.add(testTaskCriteriaComparisonReviewer);
-            comparisonReviewers.add(ucdCriteriaComparisonReviewer);
-            comparisonReviewers.add(testFunctionalityAllowedByRoleReviewer);
-            comparisonReviewers.add(listingStatusAndUserRoleReviewer);
-            comparisonReviewers.add(privacyAndSecurityCriteriaReviewer);
-            comparisonReviewers.add(realWorldTestingReviewer);
-            comparisonReviewers.add(svapReviewer);
-            comparisonReviewers.add(inheritanceComparisonReviewer);
-            comparisonReviewers.add(deprecatedFieldReviewer);
+            List<ComparisonReviewer> comparisonReviewers = new ArrayList<ComparisonReviewer>();
+        comparisonReviewers.add(chplNumberComparisonReviewer);
+        comparisonReviewers.add(devBanComparisonReviewer);
+        comparisonReviewers.add(measureComparisonReviewer);
+        comparisonReviewers.add(criteriaComparisonReviewer);
+        comparisonReviewers.add(testTaskCriteriaComparisonReviewer);
+        comparisonReviewers.add(ucdCriteriaComparisonReviewer);
+        comparisonReviewers.add(testFunctionalityAllowedByRoleReviewer);
+        comparisonReviewers.add(listingStatusAndUserRoleReviewer);
+        //before ERD-Phase-2 and during the grace period the comparison reviewer should be included
+        if (!ff4j.check(FeatureList.ERD_PHASE_2)
+                || (ff4j.check(FeatureList.ERD_PHASE_2) && !ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD_END))) {
+            comparisonReviewers.add(privacyAndSecurityCriteriaReviewerPreErdPhase2);
         }
+        comparisonReviewers.add(realWorldTestingReviewer);
+        comparisonReviewers.add(svapReviewer);
+        comparisonReviewers.add(inheritanceComparisonReviewer);
+        comparisonReviewers.add(deprecatedFieldReviewer);
         return comparisonReviewers;
     }
 }

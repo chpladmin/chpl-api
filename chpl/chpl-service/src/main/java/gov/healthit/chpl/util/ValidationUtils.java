@@ -161,13 +161,14 @@ public class ValidationUtils {
             List<CertificationCriterion> allCriteriaMet) {
         List<String> errors = new ArrayList<String>();
 
+        criterionToCheck = criterionToCheck.stream()
+                .filter(crit -> !crit.getRemoved())
+                .collect(Collectors.toList());
+        complementaryCriteria = complementaryCriteria.stream()
+                .filter(crit -> !crit.getRemoved())
+                .collect(Collectors.toList());
 
-        boolean hasApplicableCriterion = hasAnyCriteria(
-                criterionToCheck.stream()
-                        .filter(crit -> !crit.getRemoved())
-                        .collect(Collectors.toList()),
-                allCriteriaMet);
-        if (hasApplicableCriterion) {
+        if (hasAnyCriteria(criterionToCheck, allCriteriaMet)) {
             for (CertificationCriterion complementaryCriterion : complementaryCriteria) {
                 boolean hasComplementaryCriterion = hasCriterion(complementaryCriterion, allCriteriaMet);
                 if (!hasComplementaryCriterion) {
@@ -481,6 +482,7 @@ public class ValidationUtils {
     public String getAllCriteriaWithNumber(String criterionNumber) {
         List<CertificationCriterion> allCriteriaWithNumber = criteriaService.getByNumber(criterionNumber);
         List<String> allCriteriaNumbers = allCriteriaWithNumber.stream()
+                .filter(criterion -> BooleanUtils.isFalse(criterion.getRemoved()))
                 .map(criterion -> Util.formatCriteriaNumber(criterion)).collect(Collectors.toList());
         return allCriteriaNumbers.stream().collect(Collectors.joining(" or "));
     }
