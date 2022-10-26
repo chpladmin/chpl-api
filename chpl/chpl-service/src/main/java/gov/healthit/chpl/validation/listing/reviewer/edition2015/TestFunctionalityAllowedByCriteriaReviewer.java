@@ -53,7 +53,7 @@ public class TestFunctionalityAllowedByCriteriaReviewer extends PermissionBasedR
                     for (CertificationResultTestFunctionality crtf : cr.getTestFunctionality()) {
                         Set<String> messages = getTestingFunctionalityErrorMessages(crtf, cr, listing);
                         for (String message : messages) {
-                            addCriterionErrorOrWarningByPermission(listing, cr, message);
+                            addCriterionError(listing, cr, message);
                         }
                     }
                 }

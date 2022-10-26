@@ -52,7 +52,7 @@ public class RequiredDataReviewer extends PermissionBasedReviewer {
             if (BooleanUtils.isTrue(cert.isSuccess())
                     && certRules.hasCertOption(cert.getCriterion().getNumber(), CertificationResultRules.GAP)
                     && cert.isGap() == null) {
-                addCriterionErrorOrWarningByPermission(listing, cert, "listing.criteria.missingGap",
+                addCriterionError(listing, cert, "listing.criteria.missingGap",
                         Util.formatCriteriaNumber(cert.getCriterion()));
             }
         }

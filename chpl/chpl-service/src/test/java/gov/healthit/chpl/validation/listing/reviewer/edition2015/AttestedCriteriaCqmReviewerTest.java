@@ -37,10 +37,10 @@ public class AttestedCriteriaCqmReviewerTest {
 
     @Before
     public void before() throws EntityRetrievalException {
-        c1 = buildCriterion(1L, "170.315 (c)(1)", "C1");
-        c1Cures = buildCriterion(2L, "170.315 (c)(1)", "C1 (Cures Update)");
-        c2 = buildCriterion(3L, "170.315 (c)(2)", "C2");
-        c3 = buildCriterion(4L, "170.315 (c)(3)", "C3");
+        c1 = buildCriterion(1L, "170.315 (c)(1)", "C1", true);
+        c1Cures = buildCriterion(2L, "170.315 (c)(1)", "C1 (Cures Update)", false);
+        c2 = buildCriterion(3L, "170.315 (c)(2)", "C2", false);
+        c3 = buildCriterion(4L, "170.315 (c)(3)", "C3", false);
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         criteriaService = Mockito.mock(CertificationCriterionService.class);
@@ -98,7 +98,7 @@ public class AttestedCriteriaCqmReviewerTest {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .success(true)
-                        .criterion(buildCriterion(5L, "170.315 (a)(1)", "A1"))
+                        .criterion(buildCriterion(5L, "170.315 (a)(1)", "A1", false))
                         .build())
                 .build();
 
@@ -121,7 +121,7 @@ public class AttestedCriteriaCqmReviewerTest {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .success(true)
-                        .criterion(buildCriterion(5L, "170.315 (a)(1)", "A1"))
+                        .criterion(buildCriterion(5L, "170.315 (a)(1)", "A1", false))
                         .build())
                 .cqmResults(Stream.of(cqmResult1).collect(Collectors.toList()))
                 .build();
@@ -165,7 +165,53 @@ public class AttestedCriteriaCqmReviewerTest {
     }
 
     @Test
-    public void review_ListingAttestsC1AndCqmHasC1_noErrors() {
+    public void review_ListingAttestsC1RemovedAndHasNoCqms_noErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(c1)
+                        .build())
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_ListingAttestsC1RemovedAndCqmHasC2_noErrors() {
+        CQMResultDetails cqmResult1 = CQMResultDetails.builder()
+                .success(true)
+                .cmsId("CMS1")
+                .criteria(Stream.of(CQMResultCertification.builder()
+                        .certificationId(c2.getId())
+                        .certificationNumber(c2.getNumber())
+                        .build()).collect(Collectors.toList()))
+                .build();
+        CQMResultDetails cqmResult2 = CQMResultDetails.builder()
+                .success(true)
+                .cmsId("CMS2")
+                .criteria(Stream.of(CQMResultCertification.builder()
+                        .certificationId(c2.getId())
+                        .certificationNumber(c2.getNumber())
+                        .build()).collect(Collectors.toList()))
+                .build();
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(c1)
+                        .build())
+                .cqmResults(Stream.of(cqmResult1, cqmResult2).collect(Collectors.toList()))
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_ListingAttestsC1RemovedAndCqmHasC1_noErrors() {
         CQMResultDetails cqmResult1 = CQMResultDetails.builder()
                 .success(true)
                 .cmsId("CMS1")
@@ -228,11 +274,12 @@ public class AttestedCriteriaCqmReviewerTest {
         assertEquals(0, listing.getErrorMessages().size());
     }
 
-    private CertificationCriterion buildCriterion(Long id, String number, String title) {
+    private CertificationCriterion buildCriterion(Long id, String number, String title, boolean removed) {
         return CertificationCriterion.builder()
                 .id(id)
                 .number(number)
                 .title(title)
+                .removed(removed)
                 .build();
     }
 }
