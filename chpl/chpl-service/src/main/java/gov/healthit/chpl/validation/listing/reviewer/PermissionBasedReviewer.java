@@ -41,22 +41,17 @@ public abstract class PermissionBasedReviewer implements Reviewer {
         }
     }
 
-    public void addCriterionErrorOrWarningByPermission(
+    public void addCriterionError(
             CertifiedProductSearchDetails listing, CertificationResult certResult,
             String errorMessageName, Object... errorMessageArgs) {
         String message = msgUtil.getMessage(errorMessageName, errorMessageArgs);
-        addCriterionErrorOrWarningByPermission(listing, certResult, message);
+        addCriterionError(listing, certResult, message);
     }
 
-    public void addCriterionErrorOrWarningByPermission(
+    public void addCriterionError(
             CertifiedProductSearchDetails listing, CertificationResult certResult,
             String message) {
-        if (certResult.getCriterion() != null && certResult.getCriterion().getRemoved() != null
-                && certResult.getCriterion().getRemoved().equals(Boolean.TRUE)
-                && (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc())) {
-            listing.getWarningMessages().add(message);
-                //ACBs do not get any error or warning about removed criteria validation issues
-        } else if (certResult.getCriterion() != null && (certResult.getCriterion().getRemoved() == null
+        if (certResult.getCriterion() != null && (certResult.getCriterion().getRemoved() == null
                 || certResult.getCriterion().getRemoved().equals(Boolean.FALSE))) {
             listing.getErrorMessages().add(message);
         }

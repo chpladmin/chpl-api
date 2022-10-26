@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -118,8 +119,8 @@ public class CqmNormalizer {
         } else if (criterionNumber.equalsIgnoreCase("c2") || criterionNumber.contains("(c)(2)")) {
             criterionLookupKeys.add(Criteria2015.C_2);
         } else if (criterionNumber.equalsIgnoreCase("c3") || criterionNumber.contains("(c)(3)")) {
-            criterionLookupKeys.add(Criteria2015.C_3_OLD);
             criterionLookupKeys.add(Criteria2015.C_3_CURES);
+            criterionLookupKeys.add(Criteria2015.C_3_OLD);
         } else if (criterionNumber.equalsIgnoreCase("c4") || criterionNumber.contains("(c)(4)")) {
             criterionLookupKeys.add(Criteria2015.C_4);
         }
@@ -135,15 +136,17 @@ public class CqmNormalizer {
 
     private CertificationCriterion determineCqmCriterionByAttestedCriteria(
             CertifiedProductSearchDetails listing, List<String> lookupKeys) {
-        if (lookupKeys != null && lookupKeys.size() == 1) {
+        if (!CollectionUtils.isEmpty(lookupKeys) && lookupKeys.size() == 1) {
             return criterionService.get(lookupKeys.get(0));
-        } else if (lookupKeys != null) {
+        } else if (!CollectionUtils.isEmpty(lookupKeys)) {
             Optional<CertificationCriterion> foundCriterion = lookupKeys.stream()
                 .map(lookupKey -> criterionService.get(lookupKey))
                 .filter(lookupCriterion -> isCriterionAttestedInListing(listing, lookupCriterion))
                 .findAny();
             if (foundCriterion.isPresent()) {
                 return foundCriterion.get();
+            } else {
+                return criterionService.get(lookupKeys.get(0));
             }
         }
         return null;

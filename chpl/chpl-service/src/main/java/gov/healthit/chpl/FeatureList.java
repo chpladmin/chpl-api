@@ -6,4 +6,5 @@ public final class FeatureList {
 
     public static final String DEMOGRAPHIC_CHANGE_REQUEST = "demographic-change-request";
     public static final String ERD_PHASE_2 = "erd-phase-2";
+    public static final String ERD_PHASE_2_GRACE_PERIOD_END = "erd-phase-2-grace-period-end";
 }

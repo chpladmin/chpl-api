@@ -141,7 +141,7 @@ public class OptionalStandardReviewerTest {
     }
 
     @Test
-    public void review_invalidOptionalStandardCriterionCombinationWhenCriteriaRemovedAndRoleAdmin_WarningMessageExists() {
+    public void review_invalidOptionalStandardCriterionCombinationWhenCriteriaRemovedAndRoleAdmin_noWarnings() {
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOncStaff()).thenReturn(false);
@@ -171,7 +171,7 @@ public class OptionalStandardReviewerTest {
 
         optionalStandardReviewer.review(listing);
 
-        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(0, listing.getWarningMessages().size());
     }
 
     private List<OptionalStandardCriteriaMap> getOptionalStandardCriteriaMaps() {
