@@ -375,6 +375,26 @@ public class DeveloperDAO extends BaseDAOImpl {
         return null;
     }
 
+    public List<Developer> getAllByName(String name) {
+        List<Developer> developers = new ArrayList<Developer>();
+        Query query = entityManager
+                .createQuery(DEVELOPER_HQL
+                        + " WHERE (NOT v.deleted = true) "
+                        + "AND (v.name = :name) ", DeveloperEntity.class);
+        query.setParameter("name", name);
+        @SuppressWarnings("unchecked") List<DeveloperEntity> entities = query.getResultList();
+
+        if (entities.size() > 0) {
+            List<AttestationPeriodEntity> attestationPeriodEntities = getAllAttestationPeriodEntities();
+            entities.stream()
+                .forEach(entity -> entity.setPeriods(attestationPeriodEntities));
+            entities.stream()
+                .forEach(entity -> developers.add(entity.toDomain()));
+        }
+
+        return developers;
+    }
+
     public Developer getByCode(String code) {
         DeveloperEntity entity = getEntityByCode(code);
         if (entity != null) {

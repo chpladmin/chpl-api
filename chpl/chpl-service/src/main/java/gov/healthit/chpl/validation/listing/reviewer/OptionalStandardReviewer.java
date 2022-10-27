@@ -54,7 +54,7 @@ public class OptionalStandardReviewer extends PermissionBasedReviewer implements
                 if (!isOptionalStandardValidForCriteria(cros.getOptionalStandardId(), cr.getCriterion().getId(), optionalStandardCriteriaMap)) {
                     String error = errorMessageUtil.getMessage("listing.criteria.optionalStandard.invalidCriteria",
                             cros.getCitation(), CertificationCriterionService.formatCriteriaNumber(cr.getCriterion()));
-                    addCriterionErrorOrWarningByPermission(listing, cr, error);
+                    addCriterionError(listing, cr, error);
                 }
             }
         }

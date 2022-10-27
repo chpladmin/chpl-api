@@ -36,6 +36,7 @@ public class AttestedCriteriaCqmReviewer implements Reviewer {
 
         cqmEligibleCriteria = Arrays.asList(cqmCriteriaIdList.split(",")).stream()
                 .map(id -> criteriaService.get(Long.parseLong(id)))
+                .filter(criterion -> BooleanUtils.isFalse(criterion.getRemoved()))
                 .collect(Collectors.toList());
     }
 

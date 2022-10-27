@@ -56,21 +56,11 @@ public class SedG32015Reviewer extends PermissionBasedReviewer {
                 && !attestsToG3(g3CertificationResult)) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.foundSedCriteriaWithoutAttestingSed"));
         }
-        if (hasRemovedSedCriteria(removedCriteriaWithSed) && !hasPresentSedCriteria(presentCriteriaWithSed)
-                && !attestsToG3(g3CertificationResult)) {
-            //add warning if onc/admin, acb sees nothing
-            addListingWarningByPermission(listing, msgUtil.getMessage("listing.criteria.foundSedCriteriaWithoutAttestingSed"));
-        }
 
         //cases where the listing has attested to g3 but has no sed criteria
         if (!hasRemovedSedCriteria(removedCriteriaWithSed) && !hasPresentSedCriteria(presentCriteriaWithSed)
                 && attestsToG3(g3CertificationResult)) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.foundNoSedCriteriaButAttestingSed"));
-        }
-        if (hasRemovedSedCriteria(removedCriteriaWithSed) && !hasPresentSedCriteria(presentCriteriaWithSed)
-                && attestsToG3(g3CertificationResult)) {
-            //add warning if onc/admin, acb sees nothing
-            addListingWarningByPermission(listing, msgUtil.getMessage("listing.criteria.foundNoSedCriteriaButAttestingSed"));
         }
     }
 
