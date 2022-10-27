@@ -181,9 +181,15 @@ public class SurveillanceCsvPresenter {
     protected List<String> generateSurveilledRequirementRowValues(final SurveillanceRequirement req) {
         List<String> reqRow = new ArrayList<String>();
 
-        reqRow.add(NullSafeEvaluator.eval(() -> req.getRequirementType().getRequirementGroupType().getName(), ""));
+        if (req.getRequirementType() == null) {
+            reqRow.add(RequirementGroupType.OTHER.toString());
+        } else {
+            reqRow.add(NullSafeEvaluator.eval(() -> req.getRequirementType().getRequirementGroupType().getName(), ""));
+        }
 
-        if (req.getRequirementType().getRequirementGroupType().getId().equals(RequirementGroupType.CERTIFIED_CAPABILITY_ID)) {
+        if (req.getRequirementType() == null) {
+            reqRow.add(NullSafeEvaluator.eval(() -> req.getRequirementTypeOther(), ""));
+        } else if (req.getRequirementType().getRequirementGroupType().getId().equals(RequirementGroupType.CERTIFIED_CAPABILITY_ID)) {
             reqRow.add(Util.formatCriteriaNumber(req.getRequirementType()));
         } else {
             reqRow.add(req.getRequirementType().getTitle());
