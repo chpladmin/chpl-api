@@ -33,9 +33,6 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
-import gov.healthit.chpl.manager.TestingLabManager;
-import gov.healthit.chpl.manager.auth.UserManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -54,16 +51,13 @@ public class ActivityController {
     private ActivityManager activityManager;
     private ActivityMetadataManager activityMetadataManager;
     private ActivityPagedMetadataManager pagedMetadataManager;
-    private TestingLabManager atlManager;
     private CertifiedProductManager cpManager;
     private DeveloperManager developerManager;
     private ProductManager productManager;
     private ProductVersionManager versionManager;
-    private UserManager userManager;
     private ChplProductNumberUtil chplProductNumberUtil;
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     private ErrorMessageUtil msgUtil;
-    private ResourcePermissions resourcePermissions;
 
     @Value("${maxActivityRangeInDays}")
     private Integer maxActivityRangeInDays;
@@ -73,24 +67,19 @@ public class ActivityController {
     })
     @Autowired
     public ActivityController(ActivityManager activityManager, ActivityMetadataManager activityMetadataManager,
-            ActivityPagedMetadataManager pagedMetadataManager,
-            TestingLabManager atlManager, CertifiedProductManager cpManager,
-            DeveloperManager developerManager, ProductManager productManager,
-            ProductVersionManager versionManager, UserManager userManager,
+            ActivityPagedMetadataManager pagedMetadataManager, CertifiedProductManager cpManager,
+            DeveloperManager developerManager, ProductManager productManager, ProductVersionManager versionManager,
             ChplProductNumberUtil chplProductNumberUtil, CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
-            ResourcePermissions resourcePermissions, ErrorMessageUtil msgUtil) {
+            ErrorMessageUtil msgUtil) {
         this.activityManager = activityManager;
         this.activityMetadataManager = activityMetadataManager;
         this.pagedMetadataManager = pagedMetadataManager;
-        this.atlManager = atlManager;
         this.cpManager = cpManager;
         this.developerManager = developerManager;
         this.productManager = productManager;
         this.versionManager = versionManager;
-        this.userManager = userManager;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
-        this.resourcePermissions = resourcePermissions;
         this.msgUtil = msgUtil;
         if (maxActivityRangeInDays == null) {
             maxActivityRangeInDays = DEFAULT_MAX_ACTIVITY_RANGE_DAYS;
