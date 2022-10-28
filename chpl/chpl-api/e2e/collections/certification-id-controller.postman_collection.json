@@ -129,7 +129,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "",
+							"value": "{{token}}",
 							"type": "string"
 						}
 					]
