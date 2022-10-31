@@ -58,6 +58,15 @@ public class EmailOverrider {
         return message.toString();
     }
 
+    /**
+     * Determines whether or not an email should remain in the Sent Items account.
+     * Only production-environment emails should be saved.
+     * @return
+     */
+    public Boolean getSaveToSentItems() {
+        return isProductionEmailEnvironment();
+    }
+
     private String getToAddressesAsString(final List<String> toAddresses) {
         String addresses = "";
         for (String address : toAddresses) {

@@ -58,6 +58,7 @@ public class SendEmailJob implements Job {
     private String azureUser;
     private ClientSecretCredential clientSecretCredential;
     private GraphServiceClient<Request> appClient;
+    private EmailOverrider overrider;
 
     @Autowired
     private Environment env;
@@ -67,6 +68,7 @@ public class SendEmailJob implements Job {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         LOGGER.info("********* Starting the Send Email job. *********");
+        overrider = new EmailOverrider(env);
         ChplEmailMessage message = (ChplEmailMessage) context.getMergedJobDataMap().get(MESSAGE_KEY);
         message.setRetryAttempts(message.getRetryAttempts() + 1);
         try {
@@ -132,8 +134,6 @@ public class SendEmailJob implements Job {
     }
 
     private Message getGraphMessage(ChplEmailMessage message) {
-        EmailOverrider overrider = new EmailOverrider(env);
-
         final Message graphMessage = new Message();
         graphMessage.subject = message.getSubject();
         graphMessage.body = new ItemBody();
@@ -177,7 +177,7 @@ public class SendEmailJob implements Job {
         appClient.users(azureUser)
             .sendMail(UserSendMailParameterSet.newBuilder()
                 .withMessage(message)
-                //TODO: we could choose to not have it saved to sent items for non-prod envs (is this useful??)
+                .withSaveToSentItems(overrider.getSaveToSentItems())
                 .build())
             .buildRequest()
             .post();
