@@ -21,6 +21,7 @@ import gov.healthit.chpl.dao.ApiKeyActivityDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ApiKeyActivityDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -38,6 +39,7 @@ public class ApiKeyManager {
     private ActivityManager activityManager;
     private ApiKeyRequestDAO apiKeyRequestDAO;
     private ErrorMessageUtil errorMessages;
+    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
     private ChplEmailFactory chplEmailFactory;
 
 
@@ -50,7 +52,7 @@ public class ApiKeyManager {
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
     public ApiKeyManager(ApiKeyDAO apiKeyDAO, ApiKeyActivityDAO apiKeyActivityDAO, ActivityManager activityManager, ApiKeyRequestDAO apiKeyRequestDAO,
-            ErrorMessageUtil errorMessages, ChplEmailFactory chplEmailFactory,
+            ErrorMessageUtil errorMessages, ChplHtmlEmailBuilder chplHtmlEmailBuilder, ChplEmailFactory chplEmailFactory,
             @Value("${apiKey.request.email.subject}") String requestEmailSubject,
             @Value("${apiKey.request.email.body}") String requestEmailBody,
             @Value("${apiKey.confirm.email.subject}") String confirmEmailSubject,
@@ -62,6 +64,7 @@ public class ApiKeyManager {
         this.activityManager = activityManager;
         this.apiKeyRequestDAO = apiKeyRequestDAO;
         this.errorMessages = errorMessages;
+        this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
         this.chplEmailFactory = chplEmailFactory;
         this.requestEmailSubject = requestEmailSubject;
         this.requestEmailBody = requestEmailBody;
@@ -80,7 +83,11 @@ public class ApiKeyManager {
         EmailBuilder emailBuilder = chplEmailFactory.emailBuilder();
         emailBuilder.recipient(apiKeyRequest.getEmail())
             .subject(requestEmailSubject)
-            .htmlMessage(String.format(requestEmailBody, apiKeyRequest.getNameOrganization(), chplUrl, apiKeyRequest.getApiRequestToken()))
+            .htmlMessage(chplHtmlEmailBuilder.initialize()
+                    .heading(requestEmailSubject)
+                    .paragraph("", String.format(requestEmailBody, apiKeyRequest.getNameOrganization(), chplUrl, apiKeyRequest.getApiRequestToken()))
+                    .footer(true)
+                    .build())
             .sendEmail();
 
         return true;
@@ -112,7 +119,11 @@ public class ApiKeyManager {
         chplEmailFactory.emailBuilder()
             .recipient(apiKey.getEmail())
             .subject(confirmEmailSubject)
-            .htmlMessage(String.format(confirmEmailBody, apiKey.getName(), apiKey.getKey(), chplUrl))
+            .htmlMessage(chplHtmlEmailBuilder.initialize()
+                    .heading(confirmEmailSubject)
+                    .paragraph("", String.format(confirmEmailBody, apiKey.getName(), apiKey.getKey(), chplUrl))
+                    .footer(true)
+                    .build())
             .sendEmail();
 
         return apiKey;
