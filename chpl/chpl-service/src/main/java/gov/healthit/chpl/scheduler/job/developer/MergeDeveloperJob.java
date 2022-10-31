@@ -5,9 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
@@ -97,7 +94,7 @@ public class MergeDeveloperJob implements Job {
                 try {
                     sendJobCompletionEmails(postMergeDeveloper != null ? postMergeDeveloper : newDeveloper,
                             preMergeDevelopers, mergeException, recipients);
-                } catch (IOException | MessagingException e) {
+                } catch (IOException e) {
                     LOGGER.error(e);
                 }
             } else {
@@ -138,7 +135,7 @@ public class MergeDeveloperJob implements Job {
     }
 
     private void sendJobCompletionEmails(Developer newDeveloper, List<Developer> oldDevelopers,
-            Exception mergeException, List<String> recipients) throws IOException, AddressException, MessagingException {
+            Exception mergeException, List<String> recipients) throws IOException {
 
         String subject = getSubject(mergeException == null);
         String htmlMessage = "";

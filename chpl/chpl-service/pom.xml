@@ -94,12 +94,6 @@
           <version>2.0.1.Final</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>javax.mail</artifactId>
-            <version>1.6.2</version>
-        </dependency>
-
         <!-- Microsoft Graph API librariess --> 
        <dependency>
             <groupId>com.microsoft.graph</groupId>

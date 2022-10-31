@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.mail.MessagingException;
-
 import org.springframework.core.env.Environment;
 
 public class EmailOverrider {
@@ -24,9 +22,8 @@ public class EmailOverrider {
      * the list is replaced with the "forward-to" address.
      * @param toAddresses - List of strings representing email addresses
      * @return - List of Address objects
-     * @throws MessagingException - General exception, check message for specific error
      */
-    public List<String> getRecipients(final List<String> toAddresses) throws MessagingException {
+    public List<String> getRecipients(final List<String> toAddresses) {
         List<String> addresses = new ArrayList<String>();
         if (shouldEmailBeRedirected(toAddresses)) {
             String forwardToAddress = getForwardToEmail();
@@ -46,9 +43,8 @@ public class EmailOverrider {
      * @param htmlBody - the original HTML formatted message
      * @param toAddresses - List of Strings representing email addresses
      * @return - String representing the updated (if necessary) HTML message
-     * @throws MessagingException - general exception, check message for specific error
      */
-    public String getBody(String htmlBody, List<String> toAddresses) throws MessagingException {
+    public String getBody(String htmlBody, List<String> toAddresses) {
         StringBuffer message = new StringBuffer();
 
         if (shouldEmailBeRedirected(toAddresses)) {
@@ -74,7 +70,7 @@ public class EmailOverrider {
         return addresses;
     }
 
-    private Boolean shouldEmailBeRedirected(final List<String> toAddresses) throws MessagingException {
+    private Boolean shouldEmailBeRedirected(final List<String> toAddresses) {
         //ASSUMPTION:
         //If any of the recipients are not in the allowed domains, we are going to redirect the email.
 

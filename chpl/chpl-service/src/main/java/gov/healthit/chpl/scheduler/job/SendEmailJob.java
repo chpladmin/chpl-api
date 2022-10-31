@@ -13,8 +13,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
-
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -133,7 +131,7 @@ public class SendEmailJob implements Job {
         }
     }
 
-    private Message getGraphMessage(ChplEmailMessage message) throws MessagingException {
+    private Message getGraphMessage(ChplEmailMessage message) {
         EmailOverrider overrider = new EmailOverrider(env);
 
         final Message graphMessage = new Message();
