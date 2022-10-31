@@ -7,26 +7,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.mail.Authenticator;
-import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
@@ -40,9 +27,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import com.azure.identity.ClientSecretCredential;
+import com.azure.identity.ClientSecretCredentialBuilder;
+import com.microsoft.graph.authentication.TokenCredentialAuthProvider;
+import com.microsoft.graph.models.Attachment;
+import com.microsoft.graph.models.BodyType;
+import com.microsoft.graph.models.EmailAddress;
+import com.microsoft.graph.models.FileAttachment;
+import com.microsoft.graph.models.ItemBody;
+import com.microsoft.graph.models.Message;
+import com.microsoft.graph.models.Recipient;
+import com.microsoft.graph.models.UserSendMailParameterSet;
+import com.microsoft.graph.requests.AttachmentCollectionPage;
+import com.microsoft.graph.requests.AttachmentCollectionResponse;
+import com.microsoft.graph.requests.GraphServiceClient;
+
 import gov.healthit.chpl.email.ChplEmailMessage;
 import gov.healthit.chpl.email.EmailOverrider;
 import lombok.extern.log4j.Log4j2;
+import okhttp3.Request;
 
 @Log4j2(topic = "sendEmailJobLogger")
 @DisallowConcurrentExecution
@@ -51,6 +54,12 @@ public class SendEmailJob implements Job {
     public static final String MESSAGE_KEY = "messageKey";
     private static final Integer UNLIMITED_RETRY_ATTEMPTS = -1;
     private static final String EMAIL_FILES_DIRECTORY = "emailFiles";
+    private static final String GRAPH_DEFAULT_SCOPE = "https://graph.microsoft.com/.default";
+    private static final String ODATA_TYPE = "#microsoft.graph.fileAttachment";
+
+    private String azureUser;
+    private ClientSecretCredential clientSecretCredential;
+    private GraphServiceClient<Request> appClient;
 
     @Autowired
     private Environment env;
@@ -60,12 +69,12 @@ public class SendEmailJob implements Job {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         LOGGER.info("********* Starting the Send Email job. *********");
-
         ChplEmailMessage message = (ChplEmailMessage) context.getMergedJobDataMap().get(MESSAGE_KEY);
         message.setRetryAttempts(message.getRetryAttempts() + 1);
         try {
-            MimeMessage mimeMessage = getMimeMessage(message);
-            Transport.send(mimeMessage);
+            initGraphForAppOnlyAuth();
+            Message graphMessage = getGraphMessage(message);
+            sendMessage(graphMessage);
             LOGGER.info("Email successfully sent to: "
                     + message.getRecipients().stream().
                             map(addr -> addr.toString())
@@ -100,7 +109,81 @@ public class SendEmailJob implements Job {
         LOGGER.info("********* Completed the Send Email job. *********");
     }
 
+    private void initGraphForAppOnlyAuth() {
+        if (azureUser == null) {
+            azureUser = env.getProperty("azure.user");
+        }
 
+        if (clientSecretCredential == null) {
+            clientSecretCredential = new ClientSecretCredentialBuilder()
+                .clientId(env.getProperty("azure.clientId"))
+                .tenantId(env.getProperty("azure.tenantId"))
+                .clientSecret(env.getProperty("azure.clientSecret"))
+                .build();
+        }
+
+        if (appClient == null) {
+            final TokenCredentialAuthProvider authProvider =
+                new TokenCredentialAuthProvider(
+                    List.of(GRAPH_DEFAULT_SCOPE), clientSecretCredential);
+
+            appClient = GraphServiceClient.builder()
+                .authenticationProvider(authProvider)
+                .buildClient();
+        }
+    }
+
+    private Message getGraphMessage(ChplEmailMessage message) throws MessagingException {
+        EmailOverrider overrider = new EmailOverrider(env);
+
+        final Message graphMessage = new Message();
+        graphMessage.subject = message.getSubject();
+        graphMessage.body = new ItemBody();
+        graphMessage.body.content = overrider.getBody(message.getBody(), message.getRecipients());
+        graphMessage.body.contentType = BodyType.HTML;
+        graphMessage.toRecipients = new ArrayList<Recipient>();
+
+        List<String> recipientAddresses = overrider.getRecipients(message.getRecipients());
+        recipientAddresses.stream()
+            .forEach(recipientAddress -> {
+                final Recipient recipient = new Recipient();
+                recipient.emailAddress = new EmailAddress();
+                recipient.emailAddress.address = recipientAddress;
+                graphMessage.toRecipients.add(recipient);
+            });
+
+        if (message.getFileAttachments() != null && message.getFileAttachments().size() > 0) {
+            List<Attachment> attachmentsList = new ArrayList<Attachment>();
+            for (File file : message.getFileAttachments()) {
+                try {
+                    LOGGER.info("Attaching " + file.getAbsolutePath());
+                    //TODO: This does not work for large attachments.
+                    FileAttachment attachment = new FileAttachment();
+                    attachment.name = file.getName();
+                    attachment.contentBytes = Files.readAllBytes(file.toPath());
+                    attachment.oDataType = ODATA_TYPE;
+                    attachmentsList.add(attachment);
+                } catch (Exception ex) {
+                    LOGGER.error("Could not attach file " + file.getAbsolutePath() + " to email.", ex);
+                }
+            }
+            AttachmentCollectionResponse attachmentCollectionResponse = new AttachmentCollectionResponse();
+            attachmentCollectionResponse.value = attachmentsList;
+            AttachmentCollectionPage attachmentCollectionPage = new AttachmentCollectionPage(attachmentCollectionResponse, null);
+            graphMessage.attachments = attachmentCollectionPage;
+        }
+        return graphMessage;
+    }
+
+    private void sendMessage(Message message) {
+        appClient.users(azureUser)
+            .sendMail(UserSendMailParameterSet.newBuilder()
+                .withMessage(message)
+                //TODO: we could choose to not have it saved to sent items for non-prod envs (is this useful??)
+                .build())
+            .buildRequest()
+            .post();
+    }
 
     private void rescheduleEmailToBeSent(JobExecutionContext context, ChplEmailMessage message) {
         message.setFileAttachments(copyFilesOnFirstReschedule(message));
@@ -123,57 +206,6 @@ public class SendEmailJob implements Job {
         } catch (SchedulerException e) {
             LOGGER.error("Could not reschedule trigger due to exception: ", e);
         }
-    }
-
-    private Authenticator getAuthenticator(Properties properties) {
-        return new Authenticator() {
-            @Override
-            public PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(properties.getProperty("smtpUsername"),
-                        properties.getProperty("smtpPassword"));
-            }
-        };
-    }
-
-    private Properties getProperties() {
-        // sets SMTP server properties
-        Properties properties = new Properties();
-        properties.put("mail.smtp.host", env.getProperty("smtpHost"));
-        properties.put("mail.smtp.port", env.getProperty("smtpPort"));
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
-        properties.put("smtpUsername", env.getProperty("smtpUsername"));
-        properties.put("smtpPassword", env.getProperty("smtpPassword"));
-        properties.put("smtpFrom", env.getProperty("smtpFrom"));
-
-        return properties;
-    }
-
-    private MimeMessage getMimeMessage(ChplEmailMessage message) throws MessagingException {
-
-        EmailOverrider overrider = new EmailOverrider(env);
-        Session session = Session.getInstance(getProperties(), getAuthenticator(getProperties()));
-
-        MimeMessage mimeMessage = new MimeMessage(session);
-        mimeMessage.addRecipients(RecipientType.TO, overrider.getRecipients(message.getRecipients()));
-        mimeMessage.setFrom(new InternetAddress(getProperties().getProperty("smtpFrom")));
-        mimeMessage.setSubject(message.getSubject());
-        mimeMessage.setSentDate(new Date());
-
-        Multipart multipart = new MimeMultipart();
-        multipart.addBodyPart(overrider.getBody(message.getBody(), message.getRecipients()));
-        if (message.getFileAttachments() != null && message.getFileAttachments().size() > 0) {
-            // Add file attachments to email
-            for (File file : message.getFileAttachments()) {
-                MimeBodyPart messageBodyPart = new MimeBodyPart();
-                DataSource source = new FileDataSource(file);
-                messageBodyPart.setDataHandler(new DataHandler(source));
-                messageBodyPart.setFileName(file.getName());
-                multipart.addBodyPart(messageBodyPart);
-            }
-        }
-        mimeMessage.setContent(multipart, "text/html; charset=UTF-8");
-        return mimeMessage;
     }
 
     private Date getRetryTime() {
