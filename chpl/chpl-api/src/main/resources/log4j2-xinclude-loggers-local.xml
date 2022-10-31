@@ -164,10 +164,6 @@
     <Logger name="listingsWithCriterionSnapshotCsvCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="listingsWithCriterionSnapshotCsvCreatorJob" />
     </Logger>
-    <Logger name="inviteDevelopersJobLogger" level="INFO"
-        additivity="false">
-        <AppenderRef ref="inviteDevelopersJob" />
-    </Logger>
     <Logger name="sendEmailJobLogger" level="INFO"
         additivity="false">
         <AppenderRef ref="sendEmailJob" />
