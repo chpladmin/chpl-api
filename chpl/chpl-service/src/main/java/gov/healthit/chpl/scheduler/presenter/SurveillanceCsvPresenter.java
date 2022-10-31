@@ -19,7 +19,6 @@ import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
-import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import gov.healthit.chpl.util.Util;
 
@@ -201,7 +200,7 @@ public class SurveillanceCsvPresenter {
 
     protected List<String> generateNonconformityRowValues(final SurveillanceNonconformity nc) {
         List<String> ncRow = new ArrayList<String>();
-        ncRow.add(NullSafeEvaluator.eval(() -> CertificationCriterionService.formatCriteriaNumber(nc.getType().getNumber(), nc.getType().getTitle()), ""));
+        ncRow.add(NullSafeEvaluator.eval(() -> nc.getType().getFormattedTitle(), ""));
 
         // Derive the status
         if (nc.getNonconformityCloseDay() == null) {
