@@ -1,5 +1,23 @@
 # Release Notes
 
+## Version 37.4.0
+_31 October 2022_
+
+### Features
+* Only check active criteria for d12/d13 attestation requirement
+* More leniently parse measure types and criteria numbers
+
+### Flagged Features
+* Stop giving listing validation warnings for removed criteria
+* Update required/related rules based on grace period
+
+### Bug Fixes
+* Do not save Developer, Product and Version updates if no meaningful change is made
+* Do not allow developers to be created with duplicate names
+* Require a developer's first status to be 'Active'.
+
+---
+
 ## Version 37.3.0
 _17 October 2022_
 
