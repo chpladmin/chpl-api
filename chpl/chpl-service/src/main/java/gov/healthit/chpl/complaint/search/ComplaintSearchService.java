@@ -53,7 +53,6 @@ public class ComplaintSearchService {
         normalizer.normalize(searchRequest);
         validator.validate(searchRequest);
 
-        //TODO: cache all complaints
         List<Complaint> allComplaints = complaintDao.getAllComplaints();
         List<Complaint> matchedComplaints = filterResults(allComplaints, searchRequest);
         sort(matchedComplaints, searchRequest.getOrderBy(), searchRequest.getSortDescending());

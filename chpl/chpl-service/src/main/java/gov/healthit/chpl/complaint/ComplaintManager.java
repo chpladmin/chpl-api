@@ -9,6 +9,7 @@ import java.util.Set;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.complaint.domain.ComplainantType;
 import gov.healthit.chpl.complaint.domain.Complaint;
 import gov.healthit.chpl.complaint.rules.ComplaintValidationContext;
@@ -109,6 +111,7 @@ public class ComplaintManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).CREATE, #complaint)")
+    @CacheEvict(value = { CacheNames.COMPLAINTS }, allEntries = true)
     public Complaint create(Complaint complaint)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
         ValidationException validationException = new ValidationException();
@@ -127,6 +130,7 @@ public class ComplaintManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).UPDATE, #complaint)")
+    @CacheEvict(value = { CacheNames.COMPLAINTS }, allEntries = true)
     public Complaint update(Complaint complaint)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
         Complaint originalFromDB = complaintDAO.getComplaint(complaint.getId());
@@ -146,6 +150,7 @@ public class ComplaintManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).DELETE, #complaintId)")
+    @CacheEvict(value = { CacheNames.COMPLAINTS }, allEntries = true)
     public void delete(Long complaintId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         Complaint complaint = complaintDAO.getComplaint(complaintId);

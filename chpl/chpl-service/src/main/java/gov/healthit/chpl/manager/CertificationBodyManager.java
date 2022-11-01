@@ -88,7 +88,9 @@ public class CertificationBodyManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.GET_DECERTIFIED_DEVELOPERS,
             CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
+            CacheNames.COLLECTIONS_LISTINGS,
+            CacheNames.COLLECTIONS_SEARCH,
+            CacheNames.COMPLAINTS
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.ACB_ID, id = "#acb.id")
     // no other caches have ACB data so we do not need to clear all

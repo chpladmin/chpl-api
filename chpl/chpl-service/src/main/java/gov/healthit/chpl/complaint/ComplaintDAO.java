@@ -9,8 +9,10 @@ import javax.persistence.Query;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.complaint.domain.ComplainantType;
 import gov.healthit.chpl.complaint.domain.Complaint;
 import gov.healthit.chpl.complaint.domain.ComplaintCriterionMap;
@@ -51,8 +53,7 @@ public class ComplaintDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
-    //TODO: Make this cached
-    //TODO: Evict whenever a complaint is updated/deleted, an ACB is updated, a listing is updated, surveillance updated/deleted
+    @Cacheable(CacheNames.COMPLAINTS)
     public List<Complaint> getAllComplaints() {
         Query query = entityManager.createQuery(GET_COMPLAINTS_HQL, ComplaintEntity.class);
         List<ComplaintEntity> results = query.getResultList();
