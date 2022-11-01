@@ -54,6 +54,7 @@ public class SendEmailJob implements Job {
     private static final String EMAIL_FILES_DIRECTORY = "emailFiles";
     private static final String GRAPH_DEFAULT_SCOPE = "https://graph.microsoft.com/.default";
     private static final String ODATA_TYPE = "#microsoft.graph.fileAttachment";
+    private static final long MAX_SIMPLE_UPLOAD_FILE_SIZE_IN_BYTES = 3000000;
 
     private String azureUser;
     private ClientSecretCredential clientSecretCredential;
@@ -155,12 +156,15 @@ public class SendEmailJob implements Job {
             for (File file : message.getFileAttachments()) {
                 try {
                     LOGGER.info("Attaching " + file.getAbsolutePath());
-                    //TODO: This does not work for large attachments.
-                    FileAttachment attachment = new FileAttachment();
-                    attachment.name = file.getName();
-                    attachment.contentBytes = Files.readAllBytes(file.toPath());
-                    attachment.oDataType = ODATA_TYPE;
-                    attachmentsList.add(attachment);
+                    if (requiresUploading(file)) {
+
+                    } else {
+                        FileAttachment attachment = new FileAttachment();
+                        attachment.name = file.getName();
+                        attachment.contentBytes = Files.readAllBytes(file.toPath());
+                        attachment.oDataType = ODATA_TYPE;
+                        attachmentsList.add(attachment);
+                    }
                 } catch (Exception ex) {
                     LOGGER.error("Could not attach file " + file.getAbsolutePath() + " to email.", ex);
                 }
@@ -171,6 +175,14 @@ public class SendEmailJob implements Job {
             graphMessage.attachments = attachmentCollectionPage;
         }
         return graphMessage;
+    }
+
+    private boolean requiresUploading(File file) {
+        //https://learn.microsoft.com/en-us/graph/outlook-large-attachments
+        //Files between 3MB - 150MB must be uploaded in chunks before being attached to an email.
+        //Files > 150MB will just fail as a known and documented issue.
+        //https://learn.microsoft.com/en-us/graph/known-issues#attaching-large-files-to-messages-with-delegated-permissions-can-fail
+        return file.length() >= MAX_SIMPLE_UPLOAD_FILE_SIZE_IN_BYTES;
     }
 
     private void sendMessage(Message message) {
