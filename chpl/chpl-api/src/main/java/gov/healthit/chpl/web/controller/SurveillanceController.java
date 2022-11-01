@@ -100,6 +100,7 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
+    @Deprecated
     @DeprecatedApiResponseFields(responseClass = SurveillanceResults.class, friendlyUrl = "/surveillance/pending")
     @DeprecatedApi(friendlyUrl = "/surveillance/pending",
         removalDate = "2022-11-01",
@@ -358,6 +359,7 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
+    @Deprecated
     @DeprecatedApi(friendlyUrl = "/surveillance/pending/{pendingSurvId}",
         removalDate = "2022-11-01",
         message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this functionality.")
@@ -379,6 +381,7 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
+    @Deprecated
     @DeprecatedApi(friendlyUrl = "/surveillance/pending",
         removalDate = "2022-11-01",
         message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this functionality.")
@@ -427,6 +430,7 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
+    @Deprecated
     @DeprecatedApiResponseFields(responseClass = Surveillance.class, httpMethod = "POST", friendlyUrl = "/surveillance/pending/confirm")
     @DeprecatedApi(friendlyUrl = "/surveillance/pending/confirm",
         removalDate = "2022-11-01",
@@ -454,6 +458,7 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
+    @Deprecated
     @DeprecatedApiResponseFields(responseClass = SurveillanceResults.class, httpMethod = "POST", friendlyUrl = "/surveillance/upload")
     @DeprecatedApi(friendlyUrl = "/surveillance/upload",
         removalDate = "2022-11-01",
