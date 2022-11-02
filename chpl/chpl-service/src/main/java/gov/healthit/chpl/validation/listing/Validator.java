@@ -15,16 +15,18 @@ public abstract class Validator {
     public abstract List<ComparisonReviewer> getComparisonReviewers();
 
     public synchronized void validate(CertifiedProductSearchDetails listing) {
-        for (Reviewer reviewer : getReviewers()) {
-            try {
-                if (reviewer != null) {
-                    reviewer.review(listing);
-                } else {
-                    LOGGER.info("Cound not run a NULL reviewer.");
+        if (listing.isCertificateActive()) {
+            for (Reviewer reviewer : getReviewers()) {
+                try {
+                    if (reviewer != null) {
+                        reviewer.review(listing);
+                    } else {
+                        LOGGER.info("Cound not run a NULL reviewer.");
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("There was an exception trying to run the Reviewer: " + reviewer.getClass().getName());
+                    throw e;
                 }
-            } catch (Exception e) {
-                LOGGER.error("There was an exception trying to run the Reviewer: " + reviewer.getClass().getName());
-                throw e;
             }
         }
     }
