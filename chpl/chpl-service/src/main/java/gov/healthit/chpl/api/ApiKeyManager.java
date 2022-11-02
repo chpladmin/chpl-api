@@ -85,7 +85,7 @@ public class ApiKeyManager {
             .subject(requestEmailSubject)
             .htmlMessage(chplHtmlEmailBuilder.initialize()
                     .heading(requestEmailSubject)
-                    .paragraph("", String.format(requestEmailBody, apiKeyRequest.getNameOrganization(), chplUrl, apiKeyRequest.getApiRequestToken()))
+                    .paragraph("", String.format(requestEmailBody, apiKeyRequest.getNameOrganization(), chplUrl, apiKeyRequest.getApiRequestToken(), chplUrl, chplUrl))
                     .footer(true)
                     .build())
             .sendEmail();
