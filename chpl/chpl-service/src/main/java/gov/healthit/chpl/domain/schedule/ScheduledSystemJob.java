@@ -18,12 +18,4 @@ public class ScheduledSystemJob {
     private TriggerSchedule triggerScheduleType;
     private String triggerName;
     private String triggerGroup;
-
-//    public ScheduledSystemJob(String name, String description, Date nextRunDate, TriggerSchedule triggerScheduleType) {
-//        this.name = name;
-//        this.description = description;
-//        this.nextRunDate = nextRunDate;
-//        this.triggerScheduleType = triggerScheduleType;
-//
-//    }
 }
