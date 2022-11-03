@@ -145,7 +145,7 @@ public class CertificationBodyManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
-    @ListingStoreRemove(removeBy = RemoveBy.ACB_ID, id = "#acb.id")
+    @ListingStoreRemove(removeBy = RemoveBy.ACB_ID, id = "#acbId")
     public CertificationBodyDTO unretire(Long acbId) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateCertifiedBodyException {
         CertificationBodyDTO beforeAcb = certificationBodyDao.getById(acbId);
