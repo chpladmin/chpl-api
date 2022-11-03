@@ -15,6 +15,19 @@
         </File>
     </Appenders>
     <Loggers>
+        <Logger name="javax.mail" level="TRACE" additivity="false">
+            <AppenderRef ref="STDOUT"/>
+        </Logger>
+        <Logger name="org.simplejavamail" level="TRACE" additivity="false">
+            <AppenderRef ref="STDOUT"/>
+        </Logger>
+        <!-- in case you're using authenticated proxy -->
+        <Logger name="socks5bridge" level="TRACE" additivity="false">
+            <AppenderRef ref="STDOUT"/>
+        </Logger>
+        <Logger name="org.simplejavamail.internal.authenticatedsockssupport" level="TRACE" additivity="false">
+            <AppenderRef ref="STDOUT"/>
+        </Logger>
         <Logger name="org.jose4j" level="ERROR" additivity="false">
             <AppenderRef ref="STDOUT" />
             <AppenderRef ref="chplServiceJsonLog" />

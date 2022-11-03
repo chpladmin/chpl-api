@@ -4,6 +4,7 @@ import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -73,9 +74,8 @@ public class ListingValidationCreatorJob implements Job {
                     try {
                         // This will control how many threads are used by the parallelStream.  By default parallelStream
                         // will use the # of processors - 1 threads.  We want to be able to limit this.
-                        //ForkJoinPool pool = new ForkJoinPool(threadCount);
-                        //List<CertifiedProductSearchDetails> listingsWithErrors = pool.submit(() -> getListingsWithErrors()).get();
-                        List<CertifiedProductSearchDetails> listingsWithErrors = getListingsWithErrors();
+                        ForkJoinPool pool = new ForkJoinPool(threadCount);
+                        List<CertifiedProductSearchDetails> listingsWithErrors = pool.submit(() -> getListingsWithErrors()).get();
 
                         deleteAllExistingListingValidationReports();
 
@@ -94,7 +94,7 @@ public class ListingValidationCreatorJob implements Job {
     }
 
     private List<CertifiedProductSearchDetails> getListingsWithErrors() {
-        return getAll2015CertifiedProducts().stream()
+        return getAll2015CertifiedProducts().parallelStream()
                 .map(listing -> getCertifiedProductSearchDetails(listing.getId()))
                 .map(detail -> validateListing(detail))
                 .filter(detail -> doValidationErrorsExist(detail))
