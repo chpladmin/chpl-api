@@ -60,6 +60,7 @@ public class ComplaintDAO extends BaseDAOImpl {
         return convertToComplaints(results);
     }
 
+    @Deprecated
     public List<Complaint> getAllComplaintsForAcbs(List<Long> acbIds) {
         Query query = entityManager.createQuery(GET_COMPLAINTS_HQL
                 + " AND c.certificationBodyId IN (:acbIds)",
@@ -69,6 +70,7 @@ public class ComplaintDAO extends BaseDAOImpl {
         return convertToComplaints(results);
     }
 
+    @Deprecated
     public List<Complaint> getAllComplaintsBetweenDates(Long acbId, LocalDate startDate, LocalDate endDate) {
         Query query = entityManager.createQuery(GET_COMPLAINTS_HQL
                 + " AND c.certificationBodyId = :acbId "

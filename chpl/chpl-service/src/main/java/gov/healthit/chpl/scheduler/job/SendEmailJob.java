@@ -138,7 +138,6 @@ public class SendEmailJob implements Job {
     private Properties getProperties() {
         // sets SMTP server properties
         Properties properties = new Properties();
-        properties.put("mail.debug", "true");
         properties.put("mail.smtp.host", env.getProperty("smtpHost"));
         properties.put("mail.smtp.port", env.getProperty("smtpPort"));
         properties.put("mail.smtp.auth", "true");

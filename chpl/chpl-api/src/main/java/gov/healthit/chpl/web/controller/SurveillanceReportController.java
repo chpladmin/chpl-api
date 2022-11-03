@@ -38,6 +38,7 @@ import gov.healthit.chpl.surveillance.report.dto.SurveillanceOutcomeDTO;
 import gov.healthit.chpl.surveillance.report.dto.SurveillanceProcessTypeDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.results.ComplaintResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -245,6 +246,10 @@ public class SurveillanceReportController {
         return relevantListings;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/surveillance-report/quarterly/{quarterlyReportId}/complaints",
+            removalDate = "2023-06-01",
+            message = "This endpoint is deprecated and will be removed. Please use /complaints/search to get the complaints open during  certain date range.")
     @Operation(summary = "Get complaints that are relevant to a specific quarterly report. "
             + "These are complaints that were open during the quarter.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and administrative "
