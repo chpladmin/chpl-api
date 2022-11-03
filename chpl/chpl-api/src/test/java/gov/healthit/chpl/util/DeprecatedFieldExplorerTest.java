@@ -254,7 +254,10 @@ public class DeprecatedFieldExplorerTest {
     public void findDeprecatedFields_QuarterlyReport() {
         Map<String, Object> deprecatedItems = deprecatedFieldExplorer.getUniqueDeprecatedItemsForClass(QuarterlyReport.class);
         assertNotNull(deprecatedItems);
-        assertEquals(0, deprecatedItems.size());
+        assertEquals(2, deprecatedItems.size());
+        Set<String> deprecatedItemNames = deprecatedItems.keySet();
+        assertTrue(deprecatedItemNames.contains("startDate"));
+        assertTrue(deprecatedItemNames.contains("endDate"));
     }
 
     @Test
