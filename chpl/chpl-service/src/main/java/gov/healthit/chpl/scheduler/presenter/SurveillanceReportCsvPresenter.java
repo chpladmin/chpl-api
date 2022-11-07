@@ -14,7 +14,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
-import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 
 public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
@@ -156,13 +155,11 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         return ncFields;
     }
 
-    protected List<String> getNonconformityFields(final CertifiedProductSearchDetails data,
-            final Surveillance surv,
-            final SurveillanceNonconformity nc) {
+    protected List<String> getNonconformityFields(CertifiedProductSearchDetails data, Surveillance surv, SurveillanceNonconformity nc) {
         List<String> ncFields = new ArrayList<String>();
         ncFields.add("Y");
 
-        ncFields.add(NullSafeEvaluator.eval(() -> CertificationCriterionService.formatCriteriaNumber(nc.getType().getNumber(), nc.getType().getTitle()), ""));
+        ncFields.add(NullSafeEvaluator.eval(() -> nc.getType().getFormattedTitle(), ""));
 
         if (nc.getDateOfDeterminationDay() != null) {
             ncFields.add(getDateFormatter().format(nc.getDateOfDeterminationDay()));
