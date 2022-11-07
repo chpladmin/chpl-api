@@ -304,7 +304,7 @@ public class ProductController {
     public ResponseEntity<SplitProductResponse> splitProduct(@PathVariable("productId") final Long productId,
             @RequestBody(required = true) final SplitProductsRequest splitRequest)
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-            JsonProcessingException {
+            ValidationException, JsonProcessingException {
 
         if (splitRequest.getNewProductCode() != null) {
             splitRequest.setNewProductCode(splitRequest.getNewProductCode().trim());
@@ -375,7 +375,8 @@ public class ProductController {
         return new ResponseEntity<SplitProductResponse>(response, responseHeaders, HttpStatus.OK);
     }
 
-    private Product mergeProducts(UpdateProductsRequest productInfo) throws JsonProcessingException, EntityRetrievalException, EntityCreationException {
+    private Product mergeProducts(UpdateProductsRequest productInfo) throws ValidationException,
+        JsonProcessingException, EntityRetrievalException, EntityCreationException {
         return productManager.merge(productInfo.getProductIds(), productInfo.getProduct());
     }
 
