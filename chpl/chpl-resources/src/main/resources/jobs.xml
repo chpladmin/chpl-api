@@ -912,7 +912,7 @@
         </job>
         
         <job>
-            <name>RwtQuestionableActivityCreatorJob</name>
+            <name>rwtQuestionableActivityCreatorJob</name>
             <group>systemJobs</group>
             <description>Back fills RWT Questionable Activity</description>
             <job-class>gov.healthit.chpl.scheduler.job.onetime.RwtQuestionableActivityCreatorJob</job-class>
