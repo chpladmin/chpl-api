@@ -71,18 +71,18 @@ public class CqmAttestedCriteriaReviewer implements Reviewer {
 
     private void reviewListingHasCqmCriterion(CQMResultDetails cqm, CQMResultCertification cqmCriterion,
             CertifiedProductSearchDetails listing, List<CertificationCriterion> attestedCriteria) {
-        List<CertificationCriterion> criteriaWithNumber = criteriaService.getByNumber(cqmCriterion.getCertificationNumber());
-        if (CollectionUtils.isEmpty(criteriaWithNumber)) {
+        CertificationCriterion criterion = criteriaService.get(cqmCriterion.getCertificationId());
+        if (criterion == null) {
             listing.getErrorMessages().add(
                     msgUtil.getMessage("listing.criteria.missingCriteriaForCqm",
                             cqm.getCmsId(), cqmCriterion.getCertificationNumber()));
         } else if (cqmCriterion.getCriterion() != null
-                && !validationUtils.hasAnyCriteria(criteriaWithNumber, attestedCriteria)) {
+                && !validationUtils.hasCriterion(criterion, attestedCriteria)) {
             listing.getErrorMessages().add(
                     msgUtil.getMessage("listing.criteria.missingCriteriaForCqm",
                             cqm.getCmsId(), Util.formatCriteriaNumber(cqmCriterion.getCriterion())));
         } else if (cqmCriterion.getCriterion() == null
-                && !validationUtils.hasAnyCriteria(criteriaWithNumber, attestedCriteria)) {
+                && !validationUtils.hasCriterion(criterion, attestedCriteria)) {
             listing.getErrorMessages().add(
                     msgUtil.getMessage("listing.criteria.missingCriteriaForCqm",
                             cqm.getCmsId(), cqmCriterion.getCertificationNumber()));
