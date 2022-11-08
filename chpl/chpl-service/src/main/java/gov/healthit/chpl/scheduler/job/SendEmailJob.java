@@ -157,7 +157,7 @@ public class SendEmailJob implements Job {
                 try {
                     LOGGER.info("Attaching " + file.getAbsolutePath());
                     if (requiresUploading(file)) {
-
+                        //TODO:
                     } else {
                         FileAttachment attachment = new FileAttachment();
                         attachment.name = file.getName();
