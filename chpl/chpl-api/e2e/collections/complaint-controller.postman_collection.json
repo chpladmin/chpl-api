@@ -184,6 +184,62 @@
 						"description": "Expect ROLE_ONC_STAFF to get an error on delete complaint request"
 					},
 					"response": []
+				},
+				{
+					"name": "GET /complaints/search - 200 status for ONC Staff user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ONC_STAFF users should get 200 status and response is not null for /complaints/search end point\", function () {\r",
+									"    var actualResponseBody = pm.response.json();\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(actualResponseBody).not.eql(null);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/complaints/search",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"complaints",
+								"search"
+							]
+						},
+						"description": "GET /complaints/search - 200 status and valid response for ONC Staff user"
+					},
+					"response": []
 				}
 			],
 			"event": [
@@ -397,6 +453,78 @@
 						"description": "Expect ROLE_ONC to get an error on delete complaint request"
 					},
 					"response": []
+				},
+				{
+					"name": "GET /complaints/search - 200 status for ONC users",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ONC users should get 200 status and response is not null for /complaints/search end point\", function () {\r",
+									"    var actualResponseBody = pm.response.json();\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(actualResponseBody).not.eql(null);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}/rest/complaints/search",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"complaints",
+								"search"
+							]
+						},
+						"description": "GET /complaints/search - 200 status and valid response for ONC users"
+					},
+					"response": []
 				}
 			],
 			"event": [
@@ -529,6 +657,85 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "GET /complaints/search - 200 status for ACB users",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"emailACB\"),password:pm.environment.get(\"passwordACB\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"ACB users should get 200 status and response is not null for /complaints/search end point\", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/complaints/search",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"complaints",
+						"search"
+					]
+				},
+				"description": "GET /complaints/search - 200 status and valid response for ACB users"
+			},
+			"response": []
 		}
 	]
 }
