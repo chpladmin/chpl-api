@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao;
 
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -68,7 +67,7 @@ public class ProductDAO extends BaseDAOImpl {
         if (owner.getDeveloper() != null) {
             entityToAdd.setDeveloperId(owner.getDeveloper().getId());
         }
-        entityToAdd.setTransferDate(new Date(owner.getTransferDate()));
+        entityToAdd.setTransferDay(owner.getTransferDay());
         create(entityToAdd);
     }
 
@@ -164,9 +163,8 @@ public class ProductDAO extends BaseDAOImpl {
                             && existingPrevOwner.getDeveloper().getId().longValue() == updatedProductPreviousOwner
                             .getDeveloper().getId().longValue()) {
 
-                        if (existingPrevOwner.getTransferDate().getTime()
-                                != updatedProductPreviousOwner.getTransferDate().longValue()) {
-                            existingPrevOwner.setTransferDate(new Date(updatedProductPreviousOwner.getTransferDate()));
+                        if (!existingPrevOwner.getTransferDay().equals(updatedProductPreviousOwner.getTransferDay())) {
+                            existingPrevOwner.setTransferDay(updatedProductPreviousOwner.getTransferDay());
                             update(existingPrevOwner);
                         }
                     }

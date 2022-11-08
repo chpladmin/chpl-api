@@ -1,6 +1,7 @@
 package gov.healthit.chpl.entity;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -16,6 +17,7 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.ProductOwner;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -50,7 +52,7 @@ public class ProductActiveOwnerEntity implements Serializable {
     private Long productId;
 
     @Column(name = "transfer_date")
-    private Date transferDate;
+    private LocalDate transferDay;
 
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
     private Date creationDate;
@@ -68,7 +70,8 @@ public class ProductActiveOwnerEntity implements Serializable {
         return ProductOwner.builder()
                 .id(this.getId())
                 .developer(this.getDeveloper() != null ? this.getDeveloper().toDomain() : null)
-                .transferDate(this.getTransferDate().getTime())
+                .transferDay(this.getTransferDay())
+                .transferDate(DateUtil.toDate(this.getTransferDay()).getTime())
                 .build();
     }
 }

@@ -2,6 +2,7 @@ package gov.healthit.chpl.validation.listing.reviewer;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
@@ -51,6 +52,7 @@ public class ConformanceMethodReviewerTest {
     private static final String F3_GAP_MISMATCH_MSG = "Certification %s cannot use Conformance Method \"%s\" since GAP is %s.";
     private static final String F3_TEST_TOOLS_NOT_ALLOWED_MSG = "Certification %s cannot specify test tools when using Conformance Method %s. The test tools have been removed.";
     private static final String F3_TEST_DATA_NOT_ALLOWED_MSG = "Certification %s cannot specify test data when using Conformance Method %s. The test data has been removed.";
+    private static final String DEFAULT_CM_ADDED_MSG = "Criterion %s requires a Conformance Method but none was found. \"%s\" was added.";
 
     private CertificationResultDAO certResultDao;
     private ErrorMessageUtil msgUtil;
@@ -113,6 +115,18 @@ public class ConformanceMethodReviewerTest {
                         .build(),
                     ConformanceMethodCriteriaMap.builder()
                         .criterion(CertificationCriterion.builder()
+                            .number("170.315 (a)(9)")
+                            .id(100L)
+                            .removed(true)
+                            .build())
+                        .conformanceMethod(ConformanceMethod.builder()
+                            .id(1L)
+                            .name("Attestation")
+                            .removalDate(null)
+                            .build())
+                        .build(),
+                    ConformanceMethodCriteriaMap.builder()
+                        .criterion(CertificationCriterion.builder()
                             .number("170.315 (c)(2)")
                             .id(10L)
                             .build())
@@ -156,6 +170,9 @@ public class ConformanceMethodReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.f3RemovedTestData"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(F3_TEST_DATA_NOT_ALLOWED_MSG, i.getArgument(1), i.getArgument(2)));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.addedDefaultForCriterion"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(DEFAULT_CM_ADDED_MSG, i.getArgument(1), i.getArgument(2)));
 
         certResultRules = Mockito.mock(CertificationResultRules.class);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(),
@@ -318,6 +335,36 @@ public class ConformanceMethodReviewerTest {
     }
 
     @Test
+    public void review_nullConformanceMethodForCriterionNoDefault_hasError() {
+        CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
+                .conformanceMethod(null)
+                .conformanceMethodVersion("version")
+                .build();
+
+        List<CertificationResultConformanceMethod> crcms = new ArrayList<CertificationResultConformanceMethod>();
+        crcms.add(crcm);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .id(1L)
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .number("170.315 (a)(1)")
+                                .id(1L)
+                                .removed(false)
+                                .build())
+                        .conformanceMethods(crcms)
+                        .build())
+                .certificationEdition(get2015CertificationEdition())
+                .build();
+
+        conformanceMethodReviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(CM_REQUIRED_MSG, "170.315 (a)(1)")));
+    }
+
+    @Test
     public void review_invalidConformanceMethodForCriterionHasDefault_hasWarningAndReplacesConformanceMethodKeepingVersion() {
         CertificationResultConformanceMethod crcm = CertificationResultConformanceMethod.builder()
                 .conformanceMethod(ConformanceMethod.builder()
@@ -344,8 +391,6 @@ public class ConformanceMethodReviewerTest {
 
         conformanceMethodReviewer.review(listing);
 
-        listing.getWarningMessages().stream()
-            .forEach(msg -> System.out.println(msg));
         assertEquals(2, listing.getWarningMessages().size());
         assertTrue(listing.getWarningMessages().contains(String.format(INVALID_FOR_CRITERIA_REPLACED_MSG, "bad CM", "170.315 (a)(2)", "Attestation")));
         assertTrue(listing.getWarningMessages().contains(String.format(UNALLOWED_CM_VERSION_REMOVED_MSG, "170.315 (a)(2)", "Attestation", "version")));
@@ -1072,6 +1117,45 @@ public class ConformanceMethodReviewerTest {
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getCertificationResults().get(0).getTestDataUsed().size());
         assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_emptyConformanceMethodAndCriteriaHasOneAllowed_DefaultPopulatedWithWarning() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .id(2L)
+                                .number("170.315 (a)(2)")
+                                .removed(false)
+                                .build())
+                        .conformanceMethods(new ArrayList<CertificationResultConformanceMethod>())
+                        .build())
+                .build();
+        conformanceMethodReviewer.review(listing);
+        assertNotNull(listing.getCertificationResults().get(0).getConformanceMethods());
+        assertEquals(1, listing.getCertificationResults().get(0).getConformanceMethods().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(DEFAULT_CM_ADDED_MSG, "170.315 (a)(2)", "Attestation")));
+    }
+
+    @Test
+    public void review_emptyConformanceMethodAndCriteriaHasOneAllowed_RemovedCriteria_NonePopulatedNoWarning() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .id(100L)
+                                .number("170.315 (a)(9)")
+                                .removed(true)
+                                .build())
+                        .conformanceMethods(new ArrayList<CertificationResultConformanceMethod>())
+                        .build())
+                .build();
+        conformanceMethodReviewer.review(listing);
+        assertNotNull(listing.getCertificationResults().get(0).getConformanceMethods());
+        assertEquals(0, listing.getCertificationResults().get(0).getConformanceMethods().size());
+        assertEquals(0, listing.getWarningMessages().size());
     }
 
     @Test

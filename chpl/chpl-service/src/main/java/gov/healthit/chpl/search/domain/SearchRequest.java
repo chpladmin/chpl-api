@@ -55,6 +55,8 @@ public class SearchRequest implements Serializable {
     private String practiceType;
     private String certificationDateStart;
     private String certificationDateEnd;
+    private String decertificationDateStart;
+    private String decertificationDateEnd;
     @Builder.Default
     private ComplianceSearchFilter complianceActivity = new ComplianceSearchFilter();
 

@@ -64,7 +64,7 @@ public enum Headings {
     TASK_TIME_STDDEV("Task Time - Standard Deviation (seconds)", "Task Time Standard Deviation"),
     TASK_TIME_DEV_OBS("Task Time Deviation - Observed Seconds", "Task Time Deviation - Mean Observed Seconds", "Task Time Deviation Observed"),
     TASK_TIME_DEV_OPT("Task Time Deviation - Optimal Seconds", "Task Time Deviation - Mean Optimal Seconds", "Task Time Deviation Optimal"),
-    TASK_ERRORS_MEAN("Task Errors  Mean(%)", "Task Errors Mean"),
+    TASK_ERRORS_MEAN("Task Errors  Mean(%)", "Task Errors Mean(%)", "Task Errors Mean"),
     TASK_ERRORS_STDDEV("Task Errors - Standard Deviation (%)", "Task Errors Standard Deviation"),
     TASK_RATING_SCALE("Task Rating - Scale Type", "Task Rating Scale Type"),
     TASK_RATING("Task Rating"),

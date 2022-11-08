@@ -3,9 +3,12 @@ package gov.healthit.chpl.manager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.AccessDeniedException;
@@ -23,17 +26,18 @@ import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
-import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.manager.rules.ValidationRule;
+import gov.healthit.chpl.manager.rules.product.ProductValidationContext;
+import gov.healthit.chpl.manager.rules.product.ProductValidationFactory;
 import gov.healthit.chpl.service.DirectReviewUpdateEmailService;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
@@ -55,7 +59,7 @@ public class ProductManager extends SecuredManager {
     private ChplProductNumberUtil chplProductNumberUtil;
     private DirectReviewUpdateEmailService drEmailService;
     private ActivityManager activityManager;
-    private ResourcePermissions resourcePermissions;
+    private ProductValidationFactory productValidationFactory;
     private ValidationUtils validationUtils;
 
     @Autowired
@@ -64,7 +68,8 @@ public class ProductManager extends SecuredManager {
             ProductVersionDAO versionDao, DeveloperDAO devDao, CertifiedProductDAO cpDao,
             CertifiedProductDetailsManager cpdManager, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, DirectReviewUpdateEmailService drEmailService,
-            ResourcePermissions resourcePermissions, ValidationUtils validationUtils) {
+            ProductValidationFactory productValidationFactory,
+            ValidationUtils validationUtils) {
         this.msgUtil = msgUtil;
         this.productDao = productDao;
         this.versionDao = versionDao;
@@ -74,7 +79,7 @@ public class ProductManager extends SecuredManager {
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.activityManager = activityManager;
         this.drEmailService = drEmailService;
-        this.resourcePermissions = resourcePermissions;
+        this.productValidationFactory = productValidationFactory;
         this.validationUtils = validationUtils;
     }
 
@@ -114,23 +119,6 @@ public class ProductManager extends SecuredManager {
         return productDao.getByDevelopers(developerIds);
     }
 
-
-    @Transactional(readOnly = false)
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
-            + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).CREATE)")
-    @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES
-    }, allEntries = true)
-    public Product create(Product product)
-            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-        // check that the developer of this product is Active
-        if (product.getOwner() == null || product.getOwner().getId() == null) {
-            throw new EntityCreationException("Cannot create a product without a developer ID.");
-        }
-
-        return createProduct(product);
-    }
-
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).CREATE)")
@@ -139,24 +127,17 @@ public class ProductManager extends SecuredManager {
     }, allEntries = true)
     public Long create(Long developerId, Product product)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-        Developer dev = devDao.getById(developerId);
-        if (dev == null) {
-            throw new EntityRetrievalException("Cannot find developer with id " + developerId);
+        product.setOwner(Developer.builder().id(developerId).build());
+        Product createdProduct = null;
+        try {
+            createdProduct = createProduct(product);
+        } catch (Exception ex) {
+            LOGGER.error("Could not create product.", ex);
+            throw new EntityCreationException(ex);
         }
-        DeveloperStatus currDevStatus = dev.getStatus();
-        if (currDevStatus == null || currDevStatus.getStatus() == null) {
-            String msg = "The product " + product.getName() + " cannot be created since the status of developer "
-                    + dev.getName() + " cannot be determined.";
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
-        }
-
-        Long productId = productDao.create(developerId, product);
-        product.setId(productId);
-        Product createdProduct = productDao.getById(productId);
         String activityMsg = "Product " + product.getName() + " was created.";
-        activityManager.addActivity(ActivityConcept.PRODUCT, productId, activityMsg, null, createdProduct);
-        return productId;
+        activityManager.addActivity(ActivityConcept.PRODUCT, createdProduct.getId(), activityMsg, null, createdProduct);
+        return createdProduct.getId();
     }
 
     @Transactional(readOnly = false)
@@ -167,7 +148,7 @@ public class ProductManager extends SecuredManager {
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#product.id")
     public Product updateProductOwnership(Product product)
-            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+            throws EntityRetrievalException, EntityCreationException, ValidationException, JsonProcessingException {
         Map<Long, CertifiedProductSearchDetails> preUpdateListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
         Map<Long, CertifiedProductSearchDetails> postUpdateListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
 
@@ -209,7 +190,7 @@ public class ProductManager extends SecuredManager {
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#product.id")
     public Product update(Product product)
-            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+            throws EntityRetrievalException, EntityCreationException, ValidationException, JsonProcessingException {
         return updateProduct(product);
     }
 
@@ -221,22 +202,22 @@ public class ProductManager extends SecuredManager {
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#toCreate.id")
     public Product merge(List<Long> productIdsToMerge, Product toCreate)
-            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+            throws EntityRetrievalException, ValidationException, EntityCreationException, JsonProcessingException {
 
         List<Product> beforeProducts = new ArrayList<Product>();
         for (Long productId : productIdsToMerge) {
             beforeProducts.add(productDao.getById(productId));
         }
 
-        Long createdProductId = productDao.create(toCreate.getOwner().getId(), toCreate);
+        Product createdProduct = createProduct(toCreate);
         //must set the ID otherwise the "toCreate.id" passed into the shared store is null
-        toCreate.setId(createdProductId);
+        toCreate.setId(createdProduct.getId());
 
         // search for any versions assigned to the list of products passed in
         List<ProductVersionDTO> assignedVersions = versionDao.getByProductIds(productIdsToMerge);
         // reassign those versions to the new product
         for (ProductVersionDTO version : assignedVersions) {
-            version.setProductId(createdProductId);
+            version.setProductId(createdProduct.getId());
             versionDao.update(version);
         }
 
@@ -245,7 +226,6 @@ public class ProductManager extends SecuredManager {
             productDao.delete(productId);
         }
 
-        Product createdProduct = productDao.getById(createdProductId);
         String activityMsg = "Merged " + productIdsToMerge.size() + " products into new product '"
                 + createdProduct.getName() + "'.";
         activityManager.addActivity(ActivityConcept.PRODUCT, createdProduct.getId(), activityMsg, beforeProducts,
@@ -266,10 +246,7 @@ public class ProductManager extends SecuredManager {
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#productToCreate.id")
     public Product split(Product oldProduct, Product productToCreate, String newProductCode,
             List<ProductVersionDTO> newProductVersions)
-            throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
-        // create the new product and log activity
-        // this method checks that the related developer is Active and will
-        // throw an exception if they aren't
+            throws AccessDeniedException, ValidationException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
         Product createdProduct = createProduct(productToCreate);
         //must set the ID otherwise the "productToCreate.id" passed into the shared store is null
         productToCreate.setId(createdProduct.getId());
@@ -343,57 +320,65 @@ public class ProductManager extends SecuredManager {
     }
 
     private Product updateProduct(Product product)
-            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+            throws EntityRetrievalException, EntityCreationException, ValidationException, JsonProcessingException {
 
-        Product productBefore = productDao.getById(product.getId());
-        // check that the developer of this product is Active
-        if (productBefore.getOwner() == null || productBefore.getOwner().getId() == null) {
-            throw new EntityCreationException("Cannot update a product without a developer ID.");
+        Product existingProduct = productDao.getById(product.getId());
+        if (product.equals(existingProduct)) {
+            LOGGER.info("Product did not change - not saving");
+            LOGGER.info(product.toString());
+            return existingProduct;
         }
-
-        Developer currentProductOwner = devDao.getById(productBefore.getOwner().getId());
-        if (currentProductOwner == null) {
-            throw new EntityRetrievalException("Cannot find developer with id " + productBefore.getOwner().getId());
-        }
-        DeveloperStatus currDevStatus = currentProductOwner.getStatus();
-        if (currDevStatus == null || currDevStatus.getStatus() == null) {
-            String msg = "The product " + product.getName() + " cannot be updated since the status of developer "
-                    + currentProductOwner.getName() + " cannot be determined.";
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
-        } else if (!currDevStatus.getStatus().equals(DeveloperStatusType.Active.toString())
-                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-            String msg = "The product " + product.getName() + " cannot be updated since the developer " + currentProductOwner.getName()
-                    + " has a status of " + currDevStatus.getStatus();
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
-        }
+        runExistingProductValidations(existingProduct);
+        runNewProductValidations(product);
 
         productDao.update(product);
         Product productAfter = productDao.getById(product.getId());
         String activityMsg = "Product " + product.getName() + " was updated.";
-        activityManager.addActivity(ActivityConcept.PRODUCT, productAfter.getId(), activityMsg, productBefore, productAfter);
+        activityManager.addActivity(ActivityConcept.PRODUCT, productAfter.getId(), activityMsg, existingProduct, productAfter);
         return productAfter;
     }
 
     private Product createProduct(Product product)
-            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-        Developer dev = devDao.getById(product.getOwner().getId());
-        if (dev == null) {
-            throw new EntityRetrievalException("Cannot find developer with id " + product.getOwner().getId());
-        }
-        DeveloperStatus currDevStatus = dev.getStatus();
-        if (currDevStatus == null || currDevStatus.getStatus() == null) {
-            String msg = "The product " + product.getName() + " cannot be created since the status of developer "
-                    + dev.getName() + " cannot be determined.";
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
-        }
-
+            throws ValidationException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
+        runNewProductValidations(product);
         Long productId = productDao.create(product.getOwner().getId(), product);
         Product createdProduct = productDao.getById(productId);
         String activityMsg = "Product " + product.getName() + " was created.";
         activityManager.addActivity(ActivityConcept.PRODUCT, createdProduct.getId(), activityMsg, null, createdProduct);
         return createdProduct;
+    }
+
+    public void runNewProductValidations(Product product) throws ValidationException {
+        List<ValidationRule<ProductValidationContext>> rules = new ArrayList<ValidationRule<ProductValidationContext>>();
+        rules.add(productValidationFactory.getRule(ProductValidationFactory.NAME));
+        rules.add(productValidationFactory.getRule(ProductValidationFactory.OWNER));
+        rules.add(productValidationFactory.getRule(ProductValidationFactory.OWNER_HISTORY));
+        Set<String> validationErrors = runValidations(rules, product);
+        if (!CollectionUtils.isEmpty(validationErrors)) {
+            throw new ValidationException(validationErrors);
+        }
+    }
+
+    public void runExistingProductValidations(Product product) throws ValidationException {
+        List<ValidationRule<ProductValidationContext>> rules = new ArrayList<ValidationRule<ProductValidationContext>>();
+        rules.add(productValidationFactory.getRule(ProductValidationFactory.NAME));
+        rules.add(productValidationFactory.getRule(ProductValidationFactory.OWNER));
+        Set<String> validationErrors = runValidations(rules, product);
+        if (!CollectionUtils.isEmpty(validationErrors)) {
+            throw new ValidationException(validationErrors);
+        }
+    }
+
+    private Set<String> runValidations(List<ValidationRule<ProductValidationContext>> rules,
+            Product product) {
+        Set<String> errorMessages = new HashSet<String>();
+        ProductValidationContext context = new ProductValidationContext(product, devDao, msgUtil);
+
+        for (ValidationRule<ProductValidationContext> rule : rules) {
+            if (!rule.isValid(context)) {
+                errorMessages.addAll(rule.getMessages());
+            }
+        }
+        return errorMessages;
     }
 }

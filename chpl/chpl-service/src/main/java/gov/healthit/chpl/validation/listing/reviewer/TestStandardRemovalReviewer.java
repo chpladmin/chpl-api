@@ -37,13 +37,9 @@ public class TestStandardRemovalReviewer extends PermissionBasedReviewer {
                 Util.formatCriteriaNumber(certResult.getCriterion()),
                 testStandardName);
         if ((certResult.getOptionalStandards() != null && certResult.getOptionalStandards().size() > 0) || isListing2015Edition(listing)) {
-            addCriterionErrorOrWarningByPermission(listing, certResult, message);
+            addCriterionError(listing, certResult, message);
         } else {
-            if (certResult.getCriterion().getRemoved()) {
-                addListingWarningByPermission(listing, message);
-            } else {
-                listing.getWarningMessages().add(message);
-            }
+            listing.getWarningMessages().add(message);
         }
     }
 

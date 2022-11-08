@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
@@ -107,4 +109,55 @@ public class ProductVersion implements Serializable {
     public void setLastModifiedDate(final String lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
+
+    // Not all attributes have been included. The attributes being used were selected so the ProductVersionManager could
+    // determine equality when updating a version
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((version == null) ? 0 : version.hashCode());
+        result = prime * result + ((details == null) ? 0 : details.hashCode());
+        return result;
+    }
+
+    // Not all attributes have been included. The attributes being used were selected so the ProductVersionManager could
+    // determine equality when updating a version
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ProductVersion other = (ProductVersion) obj;
+        if (id == null) {
+            if (other.id != null) {
+                return false;
+            }
+        } else if (!id.equals(other.id)) {
+            return false;
+        }
+        if (StringUtils.isEmpty(version)) {
+            if (!StringUtils.isEmpty(other.version)) {
+                return false;
+            }
+        } else if (!version.equals(other.version)) {
+            return false;
+        }
+        if (StringUtils.isEmpty(details)) {
+            if (!StringUtils.isEmpty(other.details)) {
+                return false;
+            }
+        } else if (!details.equals(other.details)) {
+            return false;
+        }
+        return true;
+    }
+
 }
