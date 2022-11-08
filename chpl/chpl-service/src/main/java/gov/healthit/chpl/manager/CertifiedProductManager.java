@@ -4,12 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -29,8 +27,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
-import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
-import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
@@ -56,9 +52,7 @@ import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -109,10 +103,10 @@ import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.TriggerDeveloperBanJob;
-import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CuresUpdateService;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
+import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
@@ -156,11 +150,9 @@ public class CertifiedProductManager extends SecuredManager {
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
     private SchedulerManager schedulerManager;
     private ActivityManager activityManager;
+    private ListingDetailsNormalizer listingNormalizer;
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
-    private CertificationCriterionService criteriaService;
-
-    private List<ConformanceMethod> allConformanceMethods;
 
     public CertifiedProductManager() {
     }
@@ -185,12 +177,11 @@ public class CertifiedProductManager extends SecuredManager {
             CertificationStatusDAO certStatusDao, ListingGraphDAO listingGraphDao,
             FuzzyChoicesDAO fuzzyChoicesDao, ResourcePermissions resourcePermissions,
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
-            ConformanceMethodDAO conformanceMethodDao,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
             SchedulerManager schedulerManager,
-            ActivityManager activityManager, ListingValidatorFactory validatorFactory,
-            CuresUpdateService curesUpdateService,
-            CertificationCriterionService criteriaService) {
+            ActivityManager activityManager, ListingDetailsNormalizer listingNormalizer,
+            ListingValidatorFactory validatorFactory,
+            CuresUpdateService curesUpdateService) {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
@@ -224,11 +215,9 @@ public class CertifiedProductManager extends SecuredManager {
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
         this.schedulerManager = schedulerManager;
         this.activityManager = activityManager;
+        this.listingNormalizer = listingNormalizer;
         this.validatorFactory = validatorFactory;
         this.curesUpdateService = curesUpdateService;
-        this.criteriaService = criteriaService;
-
-        allConformanceMethods = conformanceMethodDao.getAll();
     }
 
     @Transactional(readOnly = true)
@@ -358,75 +347,6 @@ public class CertifiedProductManager extends SecuredManager {
         return cpDao.update(toUpdate);
     }
 
-    private void sanitizeUpdatedListingData(CertifiedProductSearchDetails listing)
-            throws EntityNotFoundException {
-        // make sure the ui didn't send any error or warning messages back
-        listing.setErrorMessages(new HashSet<String>());
-        listing.setWarningMessages(new HashSet<String>());
-
-        // make sure IDs are filled in for all parents for the updated listing
-        if (listing.getIcs() != null && listing.getIcs().getParents() != null
-                && listing.getIcs().getParents().size() > 0) {
-            for (CertifiedProduct parent : listing.getIcs().getParents()) {
-                if (parent.getId() == null && !StringUtils.isEmpty(parent.getChplProductNumber())) {
-                    try {
-                        CertifiedProduct found = searchDao.getByChplProductNumber(parent.getChplProductNumber());
-                        if (found != null) {
-                            parent.setId(found.getId());
-                        }
-                    } catch (Exception ignore) {
-                    }
-                } else if (parent.getId() == null) {
-                    throw new EntityNotFoundException(
-                            "Every ICS parent must have either a CHPL ID or a CHPL Product Number.");
-                }
-            }
-        }
-
-        // make sure IDs are filled in for all children for the updated listing
-        if (listing.getIcs() != null && listing.getIcs().getChildren() != null
-                && listing.getIcs().getChildren().size() > 0) {
-            for (CertifiedProduct child : listing.getIcs().getChildren()) {
-                if (child.getId() == null && !StringUtils.isEmpty(child.getChplProductNumber())) {
-                    CertifiedProduct found = searchDao.getByChplProductNumber(child.getChplProductNumber());
-                    if (found != null) {
-                        child.setId(found.getId());
-                    }
-                } else if (child.getId() == null) {
-                    throw new EntityNotFoundException(
-                            "Every ICS child must have either a CHPL ID or a CHPL Product Number.");
-                }
-            }
-        }
-
-        //make sure removal date is filled in for all Conformance Methods
-        listing.getCertificationResults().stream()
-            .filter(certResult -> !CollectionUtils.isEmpty(certResult.getConformanceMethods()))
-            .flatMap(certResult -> certResult.getConformanceMethods().stream())
-            .forEach(conformanceMethod -> populateConformanceMethodRemovalDate(conformanceMethod));
-
-        listing.getMeasures().stream()
-            .forEach(measure -> associateMeasureWithCuresAndOriginalCriteria(measure));
-    }
-
-    private void populateConformanceMethodRemovalDate(CertificationResultConformanceMethod conformanceMethod) {
-        Optional<ConformanceMethod> conformanceMethodWithId = this.allConformanceMethods.stream()
-            .filter(cm -> cm.getId().equals(conformanceMethod.getConformanceMethod().getId()))
-            .findAny();
-        if (conformanceMethodWithId.isPresent()) {
-            conformanceMethod.getConformanceMethod().setRemovalDate(conformanceMethodWithId.get().getRemovalDate());
-        }
-    }
-
-    private void associateMeasureWithCuresAndOriginalCriteria(ListingMeasure measure) {
-        List<CertificationCriterion> expectedAssociatedCriteriaForMeasure = new ArrayList<CertificationCriterion>();
-        for (CertificationCriterion associatedCriterion : measure.getAssociatedCriteria()) {
-            List<CertificationCriterion> allCriteriaWithNumber = criteriaService.getByNumber(associatedCriterion.getNumber());
-            expectedAssociatedCriteriaForMeasure.addAll(allCriteriaWithNumber);
-        }
-        measure.getAssociatedCriteria().addAll(expectedAssociatedCriteriaForMeasure);
-    }
-
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).UPDATE, #updateRequest)")
     @Transactional(rollbackFor = {
@@ -447,8 +367,7 @@ public class CertifiedProductManager extends SecuredManager {
         CertifiedProductSearchDetails existingListing = certifiedProductDetailsManager
                 .getCertifiedProductDetails(updatedListing.getId());
 
-        // clean up what was sent in - some necessary IDs or other fields may be missing
-        sanitizeUpdatedListingData(updatedListing);
+        listingNormalizer.normalize(updatedListing);
 
         // validate - throws ValidationException if the listing cannot be updated
         validateListingForUpdate(existingListing, updatedListing, updateRequest.isAcknowledgeWarnings());
@@ -903,9 +822,9 @@ public class CertifiedProductManager extends SecuredManager {
 
         for (QmsStandardPair toUpdate : qmsToUpdate) {
             boolean hasChanged = false;
-            if (!ObjectUtils.equals(toUpdate.getOrig().getApplicableCriteria(),
+            if (!Objects.equals(toUpdate.getOrig().getApplicableCriteria(),
                     toUpdate.getUpdated().getApplicableCriteria())
-                    || !ObjectUtils.equals(toUpdate.getOrig().getQmsModification(),
+                    || !Objects.equals(toUpdate.getOrig().getQmsModification(),
                             toUpdate.getUpdated().getQmsModification())) {
                 hasChanged = true;
             }
@@ -1258,12 +1177,12 @@ public class CertifiedProductManager extends SecuredManager {
 
         for (CertificationStatusEventPair toUpdate : statusEventsToUpdate) {
             boolean hasChanged = false;
-            if (!ObjectUtils.equals(toUpdate.getOrig().getEventDate(), toUpdate.getUpdated().getEventDate())
-                    || !ObjectUtils.equals(toUpdate.getOrig().getStatus().getId(),
+            if (!Objects.equals(toUpdate.getOrig().getEventDate(), toUpdate.getUpdated().getEventDate())
+                    || !Objects.equals(toUpdate.getOrig().getStatus().getId(),
                             toUpdate.getUpdated().getStatus().getId())
-                    || !ObjectUtils.equals(toUpdate.getOrig().getStatus().getName(),
+                    || !Objects.equals(toUpdate.getOrig().getStatus().getName(),
                             toUpdate.getUpdated().getStatus().getName())
-                    || !ObjectUtils.equals(toUpdate.getOrig().getReason(), toUpdate.getUpdated().getReason())) {
+                    || !Objects.equals(toUpdate.getOrig().getReason(), toUpdate.getUpdated().getReason())) {
                 hasChanged = true;
             }
 
@@ -1576,7 +1495,7 @@ public class CertifiedProductManager extends SecuredManager {
 
         int numChanges = 0;
         // look for changes in the cqms and update if necessary
-        if (!ObjectUtils.equals(existingCqm.getSuccess(), updatedCqm.getSuccess())) {
+        if (!Objects.equals(existingCqm.getSuccess(), updatedCqm.getSuccess())) {
             CQMResultDTO toUpdate = new CQMResultDTO();
             toUpdate.setId(existingCqm.getId());
             toUpdate.setCertifiedProductId(listing.getId());
