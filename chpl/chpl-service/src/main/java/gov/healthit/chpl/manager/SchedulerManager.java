@@ -202,7 +202,7 @@ public class SchedulerManager extends SecuredManager {
                                 .name(jobName)
                                 .description(jobDescription)
                                 .nextRunDate(nextRunDate)
-                                .triggerScheduleType(TriggerSchedule.ONE_TIME)
+                                .triggerScheduleType(TriggerSchedule.REPEATABLE)
                                 .triggerGroup(curTrigger.getKey().getGroup())
                                 .triggerName(curTrigger.getKey().getName())
                                 .build());
