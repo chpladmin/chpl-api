@@ -11,13 +11,11 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.util.NullSafeEvaluator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -42,21 +40,46 @@ public class SurveillanceRequirement implements Serializable {
      * surveilled. Allowable values include: "Certified Capability";
      * "Transparency or Disclosure Requirement", or "Other Requirement"
      */
+    @Deprecated
+    @DeprecatedResponseField(removalDate = "2023-05-01",
+    message = "This field is deprecated and will be removed from the response data in a future release. "
+            + "Please replace usage of the 'type' field with 'requirementType'.")
     @XmlElement(required = true)
-    private SurveillanceRequirementType type;
+    private RequirementGroupType type;
 
     /**
      * Name of the surveilled requirement (ex: 170.314 (a)(1))
      */
-    @XmlElement(required = true)
+    @Deprecated
+    @DeprecatedResponseField(removalDate = "2023-05-01",
+    message = "This field is deprecated and will be removed from the response data in a future release. "
+            + "Please replace usage of the 'requirement' field with 'requirementType'.")
+    @XmlElement(required = false)
     private String requirement;
 
     /**
      * If the surveilled requirement is a certified capability
      * then this field will have the criterion details (number, title, etc).
      */
+    @Deprecated
     @XmlElement(required = false)
+    @DeprecatedResponseField(removalDate = "2023-05-01",
+    message = "This field is deprecated and will be removed from the response data in a future release. "
+            + "Please replace usage of the 'criterion' field with 'requirementType'.")
     private CertificationCriterion criterion;
+
+    /**
+     * For a given surveillance activity, details about the requirement and
+     * the type of requirement being surveilled
+     */
+    @XmlElement
+    private RequirementType requirementType;
+
+    /**
+     * When the requirement type is "Other", the value of the requirement type
+     */
+    @XmlElement(required = false, nillable = true)
+    private String requirementTypeOther;
 
     /**
      * The result for surveillance conducted on each surveillance requirement.
@@ -133,38 +156,26 @@ public class SurveillanceRequirement implements Serializable {
                 && this.id.longValue() != anotherRequirement.id.longValue()) {
             return false;
         }
-        if (StringUtils.isEmpty(this.requirement) && !StringUtils.isEmpty(anotherRequirement.requirement)
-                || !StringUtils.isEmpty(this.requirement) && StringUtils.isEmpty(anotherRequirement.requirement)) {
-            return false;
-        } else if (!StringUtils.isEmpty(this.requirement) && !StringUtils.isEmpty(anotherRequirement.requirement)
-                && !this.requirement.equalsIgnoreCase(anotherRequirement.requirement)) {
-            return false;
-        }
 
-        if ((this.getCriterion() == null && anotherRequirement.getCriterion() != null)
-                || (this.getCriterion() != null && anotherRequirement.getCriterion() == null)) {
-            return false;
-        } else if (this.getCriterion() != null && anotherRequirement.getCriterion() != null
-                && !this.getCriterion().getId().equals(anotherRequirement.getCriterion().getId())) {
-            return false;
-        }
-
-        if (this.type == null && anotherRequirement.type != null
-                || this.type != null && anotherRequirement.type == null) {
-            return false;
-        } else if (this.type != null && anotherRequirement.type != null
-                && !this.type.matches(anotherRequirement.type)) {
-            return false;
-        }
-        if (this.result == null && anotherRequirement.result != null
-                || this.result != null && anotherRequirement.result == null) {
-            return false;
-        } else if (this.result != null && anotherRequirement.result != null
-                && !this.result.matches(anotherRequirement.result)) {
+        if (!doRequirementTypesMatch(anotherRequirement)
+                || !doResultTypesMatch(anotherRequirement)) {
             return false;
         }
         return true;
     }
+
+    public boolean doRequirementTypesMatch(SurveillanceRequirement anotherRequirement) {
+        return NullSafeEvaluator.eval(() -> this.getRequirementType().getId(), 0L).equals(
+                NullSafeEvaluator.eval(() -> anotherRequirement.getRequirementType().getId(), 0L))
+                && NullSafeEvaluator.eval(() -> this.getRequirementTypeOther(), "").equals(
+                        NullSafeEvaluator.eval(() -> anotherRequirement.getRequirementTypeOther(), ""));
+    }
+
+    public boolean doResultTypesMatch(SurveillanceRequirement anotherRequirement) {
+        return NullSafeEvaluator.eval(() -> this.getResult().getId(), 0L).equals(
+                NullSafeEvaluator.eval(() -> anotherRequirement.getResult().getId(), 0L));
+    }
+
 
     public Long getId() {
         return id;
@@ -174,28 +185,51 @@ public class SurveillanceRequirement implements Serializable {
         this.id = id;
     }
 
-    public SurveillanceRequirementType getType() {
+    @Deprecated
+    public RequirementGroupType getType() {
         return type;
     }
 
-    public void setType(SurveillanceRequirementType type) {
+
+    @Deprecated
+    public void setType(RequirementGroupType type) {
         this.type = type;
     }
 
+    @Deprecated
     public String getRequirement() {
         return requirement;
     }
 
+    @Deprecated
     public void setRequirement(String requirement) {
         this.requirement = requirement;
     }
 
+    @Deprecated
     public CertificationCriterion getCriterion() {
         return criterion;
     }
 
+    @Deprecated
     public void setCriterion(CertificationCriterion criterion) {
         this.criterion = criterion;
+    }
+
+    public RequirementType getRequirementType() {
+        return requirementType;
+    }
+
+    public void setRequirementType(RequirementType requirementType) {
+        this.requirementType = requirementType;
+    }
+
+    public String getRequirementTypeOther() {
+        return requirementTypeOther;
+    }
+
+    public void setRequirementTypeOther(String requirementTypeOther) {
+        this.requirementTypeOther = requirementTypeOther;
     }
 
     public SurveillanceResultType getResult() {
@@ -210,6 +244,7 @@ public class SurveillanceRequirement implements Serializable {
         return nonconformities;
     }
 
+
     public void setNonconformities(List<SurveillanceNonconformity> nonconformities) {
         this.nonconformities = nonconformities;
     }
@@ -219,54 +254,7 @@ public class SurveillanceRequirement implements Serializable {
     @DeprecatedResponseField(removalDate = "2023-01-01",
         message = "This field is deprecated and will be removed from the response data in a future release.")
     public String getRequirementName() {
-        if (getCriterion() == null) {
-            return getRequirement();
-        }
-        return Util.formatCriteriaNumber(getCriterion());
+        return NullSafeEvaluator.eval(() -> getRequirementType().getFormattedTitle(), "");
     }
 
-    @Override
-    public boolean equals(Object anotherObject) {
-        // If the object is compared with itself then return true
-        if (anotherObject == this) {
-            return true;
-        }
-
-        // check if anotherObject is the same type of class as this
-        if (!(anotherObject instanceof SurveillanceRequirement)) {
-            return false;
-        }
-
-        // typecast anotherObject to this type so that we can compare data
-        // members
-        SurveillanceRequirement anotherReq = (SurveillanceRequirement) anotherObject;
-
-        // Compare the data members and return accordingly
-        if ((this.getRequirement() == null && anotherReq.getRequirement() != null)
-                || (this.getRequirement() != null && anotherReq.getRequirement() == null)) {
-            return false;
-        }
-        if ((this.getCriterion() == null && anotherReq.getCriterion() != null)
-                || (this.getCriterion() != null && anotherReq.getCriterion() == null)) {
-            return false;
-        }
-
-        boolean requirementsMatch = this.getRequirement().equals(anotherReq.getRequirement());
-        if (this.getCriterion() != null && anotherReq.getCriterion() != null) {
-            requirementsMatch = requirementsMatch
-                    && this.getCriterion().getId().equals(anotherReq.getCriterion().getId());
-        }
-        return requirementsMatch;
-    }
-
-    @Override
-    public int hashCode() {
-        if (this.getRequirement() == null) {
-            return -1;
-        }
-        if (this.getCriterion() == null) {
-            return this.getRequirement().hashCode();
-        }
-        return this.getCriterion().getId().hashCode();
-    }
 }

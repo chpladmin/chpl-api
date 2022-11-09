@@ -1,6 +1,4 @@
-package gov.healthit.chpl.domain;
-
-import java.io.Serializable;
+package gov.healthit.chpl.domain.surveillance;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -11,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import gov.healthit.chpl.util.Util;
 import lombok.AllArgsConstructor;
@@ -19,15 +17,15 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class NonconformityType implements Serializable {
-
-    private static final long serialVersionUID = -7437221753188417890L;
-
+public class RequirementType {
     private Long id;
+    private String number;
+    private String title;
+    private Boolean removed;
 
     @XmlTransient
     private CertificationEdition certificationEdition;
@@ -35,13 +33,20 @@ public class NonconformityType implements Serializable {
     @JsonIgnore
     private String edition;
 
-    private String number;
-    private String title;
-    private Boolean removed;
+    private RequirementGroupType requirementGroupType;
+
+    public String getEdition() {
+        return NullSafeEvaluator.eval(() -> certificationEdition.getYear(), null);
+    }
 
     @JsonIgnore
-    @XmlTransient
-    private NonconformityClassification classification;
+    public String getFormattedTitle() {
+        if (StringUtils.isNotEmpty(number)) {
+            return Util.formatCriteriaNumber(this);
+        } else {
+            return title;
+        }
+    }
 
     public Long getId() {
         return id;
@@ -49,10 +54,6 @@ public class NonconformityType implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public void setCertificationEdition(CertificationEdition certificationEdition) {
-        this.certificationEdition = certificationEdition;
     }
 
     public String getNumber() {
@@ -79,29 +80,23 @@ public class NonconformityType implements Serializable {
         this.removed = removed;
     }
 
-    public NonconformityClassification getClassification() {
-        return classification;
+    public CertificationEdition getCertificationEdition() {
+        return certificationEdition;
     }
 
-    public void setClassification(NonconformityClassification classification) {
-        this.classification = classification;
+    public void setCertificationEdition(CertificationEdition certificationEdition) {
+        this.certificationEdition = certificationEdition;
+    }
+
+    public RequirementGroupType getRequirementGroupType() {
+        return requirementGroupType;
+    }
+
+    public void setRequirementGroupType(RequirementGroupType requirementGroupType) {
+        this.requirementGroupType = requirementGroupType;
     }
 
     public void setEdition(String edition) {
         this.edition = edition;
-    }
-
-    @JsonIgnore
-    public String getEdition() {
-        return NullSafeEvaluator.eval(() -> certificationEdition.getYear(), null);
-    }
-
-    @JsonIgnore
-    public String getFormattedTitle() {
-        if (StringUtils.isNotEmpty(number)) {
-            return Util.formatCriteriaNumber(this);
-        } else {
-            return title;
-        }
     }
 }

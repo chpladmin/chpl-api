@@ -61,6 +61,7 @@ import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.entity.FuzzyType;
+import gov.healthit.chpl.exception.CertifiedProductUpdateException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -168,7 +169,7 @@ public class CertifiedProductManagerTest {
     @Test(expected = ValidationException.class)
     public void update_HasValidationWarningsAndNoAck_ThrowsValidationException()
             throws EntityRetrievalException, AccessDeniedException, JsonProcessingException, EntityCreationException,
-            InvalidArgumentsException, IOException, ValidationException, MissingReasonException {
+            InvalidArgumentsException, IOException, ValidationException, MissingReasonException, CertifiedProductUpdateException {
 
         Mockito.when(certifiedProductDetailsManager.getCertifiedProductDetails(ArgumentMatchers.anyLong()))
                 .thenReturn(getCertifiedProductSearchDetails());
@@ -198,7 +199,7 @@ public class CertifiedProductManagerTest {
     @Test
     public void update_HasValidationWarningsAndAck_ReturnsUpdatedListing()
             throws EntityRetrievalException, AccessDeniedException, JsonProcessingException, EntityCreationException,
-            InvalidArgumentsException, IOException, ValidationException, MissingReasonException {
+            InvalidArgumentsException, IOException, ValidationException, MissingReasonException, CertifiedProductUpdateException {
 
         Mockito.when(certifiedProductDetailsManager.getCertifiedProductDetails(ArgumentMatchers.anyLong()))
                 .thenReturn(getCertifiedProductSearchDetails());

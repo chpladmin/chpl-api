@@ -12,9 +12,9 @@ import javax.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "surveillance_requirement_type")
+@Table(name = "requirement_group_type")
 @Data
-public class SurveillanceRequirementTypeEntity {
+public class RequirementGroupTypeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

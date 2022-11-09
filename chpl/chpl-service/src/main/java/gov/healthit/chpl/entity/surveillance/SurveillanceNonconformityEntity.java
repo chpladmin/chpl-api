@@ -19,14 +19,23 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
-import gov.healthit.chpl.entity.CertificationCriterionEntity;
+import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
+import gov.healthit.chpl.service.CertificationCriterionService;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "surveillance_nonconformity")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SurveillanceNonconformityEntity {
 
     @Id
@@ -37,15 +46,9 @@ public class SurveillanceNonconformityEntity {
     @Column(name = "surveillance_requirement_id")
     private Long surveillanceRequirementId;
 
-    @Column(name = "certification_criterion_id")
-    private Long certificationCriterionId;
-
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "certification_criterion_id", insertable = false, updatable = false)
-    private CertificationCriterionEntity certificationCriterionEntity;
-
-    @Column(name = "nonconformity_type")
-    private String type;
+    @JoinColumn(name = "nonconformity_type_id", insertable = true, updatable = true)
+    private NonconformityTypeEntity type;
 
     @Column(name = "date_of_determination")
     private LocalDate dateOfDetermination;
@@ -101,4 +104,37 @@ public class SurveillanceNonconformityEntity {
     @Where(clause = "deleted <> 'true'")
     private Set<SurveillanceNonconformityDocumentationEntity> documents = new HashSet<SurveillanceNonconformityDocumentationEntity>();
 
+    public SurveillanceNonconformity toDomain(CertificationCriterionService certificationCriterionService) {
+        SurveillanceNonconformity nc = SurveillanceNonconformity.builder()
+                .capApprovalDay(this.getCapApproval())
+                .capEndDay(this.getCapEndDate())
+                .capMustCompleteDay(this.getCapMustCompleteDate())
+                .capStartDay(this.getCapStart())
+                .dateOfDeterminationDay(this.getDateOfDetermination())
+                .nonconformityCloseDay(this.getNonconformityCloseDate())
+                .developerExplanation(this.getDeveloperExplanation())
+                .findings(this.getFindings())
+                .id(this.getId())
+                .type(this.getType().toDomain())
+                .resolution(this.getResolution())
+                .sitesPassed(this.getSitesPassed())
+                .summary(this.getSummary())
+                .totalSites(this.getTotalSites())
+                .lastModifiedDate(this.getLastModifiedDate())
+                .nonconformityStatus(this.getNonconformityCloseDate() == null ? SurveillanceNonconformityStatus.OPEN : SurveillanceNonconformityStatus.CLOSED)
+                .nonconformityType(this.getType().getClassification().equals(NonconformityClassification.REQUIREMENT) ? this.getType().getNumber() : null)
+                .build();
+
+        if (nc.getType().getClassification().equals(NonconformityClassification.CRITERION)) {
+            nc.setCriterion(certificationCriterionService.get(nc.getType().getId()));
+        }
+
+        if (this.getDocuments() != null && this.getDocuments().size() > 0) {
+            nc.setDocuments(this.getDocuments().stream()
+                    .map(e -> e.toDomain())
+                    .toList());
+        }
+
+        return nc;
+    }
 }
