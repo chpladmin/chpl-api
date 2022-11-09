@@ -25,8 +25,10 @@ public class SurveillanceRequirementXmlGenerator extends XmlGenerator {
             createSimpleElement(sr.getId(), "id", sw);
             SurveillanceNonConformityXmlGenerator.add(sr.getNonconformities(), "nonconformities", sw);
             createSimpleElement(sr.getRequirement(), "requirement", sw);
+            RequirementTypeXmlGenerator.add(sr.getRequirementType(), "requirementType", sw);
+            createSimpleElement(sr.getRequirementTypeOther(), "requirementTypeOther", sw);
             SurveillanceResultTypeXmlGenerator.add(sr.getResult(), "result", sw);
-            SurveillanceRequirementTypeXmlGenerator.addSurveillanceRequirementType(sr.getType(), "type", sw);
+            RequirementGroupTypeXmlGenerator.addRequirementGroupType(sr.getType(), "type", sw);
             sw.writeEndElement();
         }
     }

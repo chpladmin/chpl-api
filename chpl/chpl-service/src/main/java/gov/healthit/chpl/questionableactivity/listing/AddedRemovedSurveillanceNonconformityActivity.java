@@ -54,9 +54,9 @@ public class AddedRemovedSurveillanceNonconformityActivity implements ListingAct
 
     private List<QuestionableActivityListingDTO> checkForRemovedNonconformityTypeAdded(List<SurveillanceNonconformity> origNonconformities, List<SurveillanceNonconformity> newNonconformities) {
         return subtractNonConformityLists(newNonconformities, origNonconformities).stream()
-                .filter(nc -> isNonconformityTypeRemoved(nc.getNonconformityType()))
+                .filter(nc -> isNonconformityTypeRemoved(nc.getType()))
                 .map(nc -> QuestionableActivityListingDTO.builder()
-                        .after(String.format("Non-Conformity of type %s is removed and was added to surveillance.", nc.getNonconformityType()))
+                        .after(String.format("Non-Conformity of type %s is removed and was added to surveillance.", nc.getType().getNumber()))
                         .build())
                 .collect(Collectors.toList());
     }
@@ -65,7 +65,7 @@ public class AddedRemovedSurveillanceNonconformityActivity implements ListingAct
         return origNonconformities.stream()
                 .filter(nc -> hasNonconformityBeenUpdatedToRemovedNonconformity(nc, newNonconformities))
                 .map(nc -> QuestionableActivityListingDTO.builder()
-                        .after(String.format("Non-conformity of type %s is removed and was added to surveillance.", getMatchingNonconformity(nc, newNonconformities).get().getNonconformityType()))
+                        .after(String.format("Non-conformity of type %s is removed and was added to surveillance.", getMatchingNonconformity(nc, newNonconformities).get().getType().getNumber()))
                         .build())
                 .collect(Collectors.toList());
     }
@@ -73,23 +73,13 @@ public class AddedRemovedSurveillanceNonconformityActivity implements ListingAct
     private Boolean hasNonconformityBeenUpdatedToRemovedNonconformity(SurveillanceNonconformity origNonconformity, List<SurveillanceNonconformity> newNoncoformities) {
         Optional<SurveillanceNonconformity> updatedNonconformity = getMatchingNonconformity(origNonconformity, newNoncoformities);
         if (updatedNonconformity.isPresent()) {
-            return !updatedNonconformity.get().getNonconformityType().equals(origNonconformity.getNonconformityType())
-                    && isNonconformityTypeRemoved(updatedNonconformity.get().getNonconformityType());
+            return isNonconformityTypeRemoved(updatedNonconformity.get().getType());
         }
         return false;
     }
 
-    private Boolean isNonconformityTypeRemoved(String nonconformity) {
-        Optional<NonconformityType> ncType = NonconformityType.getByName(nonconformity);
-        if (ncType.isPresent()) {
-            return ncType.get().getRemoved();
-        } else {
-            return certificationCriterionService.getByNumber(nonconformity).stream()
-                    .filter(crit -> crit.getRemoved()
-                            && !CertificationCriterionService.hasCuresInTitle(crit))
-                    .findAny()
-                    .isPresent();
-        }
+    private Boolean isNonconformityTypeRemoved(NonconformityType nonconformityType) {
+        return nonconformityType.getRemoved();
     }
 
     private Optional<SurveillanceNonconformity> getMatchingNonconformity(SurveillanceNonconformity nonconformity, List<SurveillanceNonconformity> nonconformities) {

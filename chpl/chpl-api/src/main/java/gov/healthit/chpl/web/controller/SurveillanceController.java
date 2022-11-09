@@ -100,7 +100,11 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
+    @Deprecated
     @DeprecatedApiResponseFields(responseClass = SurveillanceResults.class, friendlyUrl = "/surveillance/pending")
+    @DeprecatedApi(friendlyUrl = "/surveillance/pending",
+        removalDate = "2022-11-01",
+        message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this functionality.")
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody SurveillanceResults getAllPendingSurveillance() throws AccessDeniedException {
 
@@ -114,8 +118,8 @@ public class SurveillanceController {
     @DeprecatedApi(friendlyUrl = "/surveillance/document/{documentId}",
         removalDate = "2023-01-01",
         message = "This endpoint is deprecated and will be removed in a future release.")
-    @Operation(summary = "Download nonconformity supporting documentation.",
-            description = "Download a specific file that was previously uploaded to a surveillance nonconformity.",
+    @Operation(summary = "Download non-conformity supporting documentation.",
+            description = "Download a specific file that was previously uploaded to a surveillance non-conformity.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
@@ -190,9 +194,9 @@ public class SurveillanceController {
         httpMethod = "POST",
         removalDate = "2023-01-01",
         message = "This endpoint is deprecated and will be removed in a future release.")
-    @Operation(summary = "Add documentation to an existing nonconformity.",
+    @Operation(summary = "Add documentation to an existing non-conformity.",
             description = "Upload a file of any kind (current size limit 5MB) as supporting "
-                    + " documentation to an existing nonconformity. Security Restrictions: ROLE_ADMIN, ROLE_ONC, or "
+                    + " documentation to an existing non-conformity. Security Restrictions: ROLE_ADMIN, ROLE_ONC, or "
                     + "ROLE_ACB and administrative authority on the associated ONC-ACB.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -233,14 +237,14 @@ public class SurveillanceController {
 
         Long insertedDocId = survManager.addDocumentToNonconformity(nonconformityId, toInsert);
         if (insertedDocId == null) {
-            throw new EntityCreationException("Error adding a document to nonconformity with id " + nonconformityId);
+            throw new EntityCreationException("Error adding a document to non-conformity with id " + nonconformityId);
         }
 
         CertifiedProductSearchDetails afterCp = cpdetailsManager
                 .getCertifiedProductDetails(surv.getCertifiedProduct().getId());
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT,
                 beforeCp.getId(), "Documentation " + toInsert.getFileName()
-                        + " was added to a nonconformity for certified product " + afterCp.getChplProductNumber(),
+                        + " was added to a non-conformity for certified product " + afterCp.getChplProductNumber(),
                 beforeCp, afterCp);
         return "{\"success\": \"true\"}";
     }
@@ -345,7 +349,7 @@ public class SurveillanceController {
         CertifiedProductSearchDetails afterCp = cpdetailsManager
                 .getCertifiedProductDetails(surv.getCertifiedProduct().getId());
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeCp.getId(),
-                "A document was removed from a nonconformity for certified product " + afterCp.getChplProductNumber(),
+                "A document was removed from a non-conformity for certified product " + afterCp.getChplProductNumber(),
                 beforeCp, afterCp);
         return "{\"success\": \"true\"}";
     }
@@ -355,6 +359,10 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/surveillance/pending/{pendingSurvId}",
+        removalDate = "2022-11-01",
+        message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this functionality.")
     @RequestMapping(value = "/pending/{pendingSurvId}", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingSurveillance(@PathVariable("pendingSurvId") Long id)
@@ -373,6 +381,10 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/surveillance/pending",
+        removalDate = "2022-11-01",
+        message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this functionality.")
     @RequestMapping(value = "/pending", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingSurveillance(@RequestBody IdListContainer idList)
@@ -418,7 +430,11 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
+    @Deprecated
     @DeprecatedApiResponseFields(responseClass = Surveillance.class, httpMethod = "POST", friendlyUrl = "/surveillance/pending/confirm")
+    @DeprecatedApi(friendlyUrl = "/surveillance/pending/confirm",
+        removalDate = "2022-11-01",
+        message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this functionality.")
     @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     public ResponseEntity<Surveillance> confirmPendingSurveillance(@RequestBody(required = true) Surveillance survToInsert)
@@ -434,7 +450,7 @@ public class SurveillanceController {
         }
     }
 
-    @Operation(summary = "Upload a file with surveillance and nonconformities for certified products.",
+    @Operation(summary = "Upload a file with surveillance and non-conformities for certified products.",
             description = "Accepts a CSV file with very specific fields to create pending surveillance items. "
                     + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
                     + "on the ACB(s) responsible for the product(s) in the file.",
@@ -442,7 +458,11 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
+    @Deprecated
     @DeprecatedApiResponseFields(responseClass = SurveillanceResults.class, httpMethod = "POST", friendlyUrl = "/surveillance/upload")
+    @DeprecatedApi(friendlyUrl = "/surveillance/upload",
+        removalDate = "2022-11-01",
+        message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this functionality.")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody ResponseEntity<?> upload(@RequestParam("file") MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException, EntityRetrievalException,
