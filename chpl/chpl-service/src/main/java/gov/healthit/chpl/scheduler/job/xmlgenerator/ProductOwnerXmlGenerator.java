@@ -25,7 +25,7 @@ public class ProductOwnerXmlGenerator extends XmlGenerator {
             sw.writeStartElement(rootNodeName);
             DeveloperXmlGenerator.addDeveloper(po.getDeveloper(), "developer", sw);
             createSimpleElement(po.getId(), "id", sw);
-            createSimpleElement(po.getTransferDate(), "transferDate", sw);
+            createSimpleElement(po.getTransferDay(), "transferDay", sw);
             sw.writeEndElement();
         }
     }

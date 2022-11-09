@@ -45,6 +45,7 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.service.DirectReviewUpdateEmailService;
+import gov.healthit.chpl.util.DateUtil;
 import net.sf.ehcache.CacheManager;
 
 @DisallowConcurrentExecution
@@ -180,7 +181,7 @@ public class SplitDeveloperJob implements Job {
             productToMove.getOwner().setId(createdDeveloperId);
             ProductOwner newOwner = new ProductOwner();
             newOwner.setDeveloper(preSplitDeveloper);
-            newOwner.setTransferDate(splitDate.getTime());
+            newOwner.setTransferDay(DateUtil.toLocalDate(splitDate.getTime()));
             productToMove.getOwnerHistory().add(newOwner);
             LOGGER.info("Moving product " + productToMove.getName());
             productManager.update(productToMove);

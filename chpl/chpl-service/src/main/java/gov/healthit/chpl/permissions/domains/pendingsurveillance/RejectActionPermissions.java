@@ -4,18 +4,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.auth.UserPermissionDAO;
-import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
+import gov.healthit.chpl.dao.surveillance.PendingSurveillanceDAO;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
 @Component
 public class RejectActionPermissions extends ActionPermissions {
-    private SurveillanceDAO surveillanceDAO;
+    private PendingSurveillanceDAO pendingSurveillanceDAO;
     private UserPermissionDAO userPermissionDAO;
 
     @Autowired
-    public RejectActionPermissions(SurveillanceDAO surveillanceDAO, UserPermissionDAO userPermissionDAO) {
-        this.surveillanceDAO = surveillanceDAO;
+    public RejectActionPermissions(PendingSurveillanceDAO pendingSurveillanceDAO, UserPermissionDAO userPermissionDAO) {
+        this.pendingSurveillanceDAO = pendingSurveillanceDAO;
         this.userPermissionDAO = userPermissionDAO;
     }
 
@@ -33,7 +33,7 @@ public class RejectActionPermissions extends ActionPermissions {
                 return true;
             } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
                 Long pendingSurveillanceId = (Long) obj;
-                PendingSurveillanceEntity entity = surveillanceDAO.getPendingSurveillanceById(pendingSurveillanceId, true);
+                PendingSurveillanceEntity entity = pendingSurveillanceDAO.getPendingSurveillanceById(pendingSurveillanceId, true);
                 // Make sure the user has access to the pendingSurveillance
                 return isAcbValidForCurrentUser(entity.getCertifiedProduct().getCertificationBodyId());
             } else {
