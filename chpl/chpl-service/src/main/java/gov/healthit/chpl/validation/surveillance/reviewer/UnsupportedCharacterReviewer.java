@@ -27,14 +27,10 @@ public class UnsupportedCharacterReviewer implements Reviewer {
         }
 
         for (SurveillanceRequirement req : surv.getRequirements()) {
-            addSurveillanceWarningForInvalidCharacters(surv, req.getRequirement(),
-                    "Requirement '" + req.getRequirement() + "'");
             for (SurveillanceNonconformity nc : req.getNonconformities()) {
                 addSurveillanceWarningForInvalidCharacters(surv, nc.getDeveloperExplanation(),
                         "Developer Explanation '" + nc.getDeveloperExplanation() + "'");
                 addSurveillanceWarningForInvalidCharacters(surv, nc.getFindings(), "Findings '" + nc.getFindings() + "'");
-                addSurveillanceWarningForInvalidCharacters(surv, nc.getNonconformityType(),
-                        "Nonconformity Type '" + nc.getNonconformityType() + "'");
                 addSurveillanceWarningForInvalidCharacters(surv, nc.getResolution(),
                         "Resolution '" + nc.getResolution() + "'");
                 addSurveillanceWarningForInvalidCharacters(surv, nc.getSummary(), "Summary '" + nc.getSummary() + "'");

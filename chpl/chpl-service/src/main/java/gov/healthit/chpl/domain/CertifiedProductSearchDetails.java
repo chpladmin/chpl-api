@@ -34,6 +34,7 @@ import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
+import gov.healthit.chpl.util.NullSafeEvaluator;
 import gov.healthit.chpl.util.Util;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -899,6 +900,14 @@ public class CertifiedProductSearchDetails implements Serializable {
             }
         }
         return result;
+    }
+
+    @JsonIgnore
+    public boolean isCertificateActive() {
+        String currentStatus = NullSafeEvaluator.eval(() -> getCurrentStatus().getStatus().getName(), "");
+        return  currentStatus.equalsIgnoreCase(CertificationStatusType.Active.getName())
+                || currentStatus.equalsIgnoreCase(CertificationStatusType.SuspendedByAcb.getName())
+                || currentStatus.equalsIgnoreCase(CertificationStatusType.SuspendedByOnc.getName());
     }
 
     public LegacyCertificationStatus getCertificationStatus() {
