@@ -70,6 +70,8 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
     /**
      * Date all SED testing was concluded for the Health IT. The format for the date is YYYMMDD
      */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate sedTestingEndDay;
 
     /**
