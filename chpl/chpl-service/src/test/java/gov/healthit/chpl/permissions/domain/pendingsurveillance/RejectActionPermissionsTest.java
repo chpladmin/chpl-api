@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.dao.auth.UserPermissionDAO;
-import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
+import gov.healthit.chpl.dao.surveillance.PendingSurveillanceDAO;
 import gov.healthit.chpl.entity.listing.CertifiedProductSummaryEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -26,7 +26,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
     private ResourcePermissions resourcePermissions;
 
     @Mock
-    private SurveillanceDAO survDAO;
+    private PendingSurveillanceDAO pendingSurveillanceDAO;
 
     @Mock
     private UserPermissionDAO userPermissionDAO;
@@ -39,7 +39,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
         MockitoAnnotations.initMocks(this);
 
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
-        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
+        Mockito.when(pendingSurveillanceDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
                 .thenReturn(getPendingSurveillanceEntity(1L, 1L, 1L));
     }
 
@@ -53,7 +53,7 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
 
         Long id = 1L;
 
-        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
+        Mockito.when(pendingSurveillanceDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong()))
                 .thenReturn(getPendingSurveillanceEntity(1L, 1L, 1L));
         assertTrue(permissions.hasAccess(id));
     }
@@ -88,12 +88,12 @@ public class RejectActionPermissionsTest extends ActionPermissionsBaseTest {
         Long id = 1L;
 
         // The user does not have access to this acb
-        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+        Mockito.when(pendingSurveillanceDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
                 .thenReturn(getPendingSurveillanceEntity(1L, 1L, 3L));
         assertFalse(permissions.hasAccess(id));
 
         // Should work...
-        Mockito.when(survDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+        Mockito.when(pendingSurveillanceDAO.getPendingSurveillanceById(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
                 .thenReturn(getPendingSurveillanceEntity(1L, 1L, 4L));
         assertTrue(permissions.hasAccess(id));
     }

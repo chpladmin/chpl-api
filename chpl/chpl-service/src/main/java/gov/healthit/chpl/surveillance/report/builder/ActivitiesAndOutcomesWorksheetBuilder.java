@@ -8,11 +8,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.BorderExtent;
@@ -40,8 +39,6 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
-import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
-import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -52,7 +49,6 @@ import gov.healthit.chpl.surveillance.report.dto.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;
 import gov.healthit.chpl.util.DateUtil;
-import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -1137,37 +1133,14 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
     }
 
     private String determineNonconformityTypes(Surveillance surv) {
-        Set<String> nonconformityTypes = new HashSet<String>();
-        //get unique set of nonconformity types
-        for (SurveillanceRequirement req : surv.getRequirements()) {
-            if (req.getResult() != null
-                    && req.getResult().getName().equalsIgnoreCase(SurveillanceResultType.NON_CONFORMITY)) {
-                for (SurveillanceNonconformity nc : req.getNonconformities()) {
-                    if (nc.getCriterion() != null) {
-                        nonconformityTypes.add(Util.formatCriteriaNumber(nc.getCriterion()));
-                    } else if (!StringUtils.isEmpty(nc.getNonconformityType())) {
-                        nonconformityTypes.add(nc.getNonconformityType());
-                    }
-                }
-            }
-        }
-
-        //write out the nc types to a string
-        StringBuffer buf = new StringBuffer();
-        int i = 0;
-        for (String ncType : nonconformityTypes) {
-            buf.append(ncType);
-            if (nonconformityTypes.size() == 2 && i == 0) {
-                buf.append(" and ");
-            }
-            if (nonconformityTypes.size() > 2 && i < (nonconformityTypes.size() - 2)) {
-                buf.append(", ");
-            } else if (nonconformityTypes.size() > 2 && i == (nonconformityTypes.size() - 2)) {
-                buf.append(", and ");
-            }
-            i++;
-        }
-        return buf.toString();
+        return surv.getRequirements().stream()
+                .filter(req -> req.getResult() != null  && req.getResult().getName().equalsIgnoreCase(SurveillanceResultType.NON_CONFORMITY))
+                .flatMap(req -> req.getNonconformities().stream())
+                .filter(survNC -> survNC.getType() != null
+                            && survNC.getType().getNumber() != null
+                            && survNC.getType().getNumber().equalsIgnoreCase(SurveillanceResultType.NON_CONFORMITY))
+                .map(nc -> nc.getType().getNumber())
+                .collect(Collectors.joining(" and "));
     }
 
     /**

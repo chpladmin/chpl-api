@@ -43,12 +43,14 @@ import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.domain.NonconformityType;
+import gov.healthit.chpl.domain.NonconformityTypeEnum;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
+import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
+import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
-import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
@@ -302,6 +304,7 @@ public class DimensionalDataManager {
         return results;
     }
 
+    @Deprecated
     public SurveillanceRequirementOptions getSurveillanceRequirementOptions() {
         LOGGER.debug("Getting all surveillance requirements from the database (not cached).");
 
@@ -327,6 +330,15 @@ public class DimensionalDataManager {
         return result;
     }
 
+    @Transactional
+    public Set<RequirementType> getRequirementTypes() {
+        LOGGER.debug("Getting all requirement detail types from the database (not cached).");
+
+        return survDao.getRequirementTypes().stream()
+                .collect(Collectors.toSet());
+    }
+
+    @Deprecated
     public Set<CertificationCriterion> getNonconformityTypeOptions() {
         LOGGER.debug("Getting all nonconformity types from the database (not cached).");
 
@@ -342,50 +354,57 @@ public class DimensionalDataManager {
         }
 
         CertificationCriterion k1Type = new CertificationCriterion();
-        k1Type.setNumber(NonconformityType.K1.getName());
-        k1Type.setRemoved(NonconformityType.K1.getRemoved());
+        k1Type.setNumber(NonconformityTypeEnum.K1.getName());
+        k1Type.setRemoved(NonconformityTypeEnum.K1.getRemoved());
         result.add(k1Type);
 
         CertificationCriterion k2Type = new CertificationCriterion();
-        k2Type.setNumber(NonconformityType.K2.getName());
-        k2Type.setRemoved(NonconformityType.K2.getRemoved());
+        k2Type.setNumber(NonconformityTypeEnum.K2.getName());
+        k2Type.setRemoved(NonconformityTypeEnum.K2.getRemoved());
         result.add(k2Type);
 
         CertificationCriterion lType = new CertificationCriterion();
-        lType.setNumber(NonconformityType.L.getName());
-        lType.setRemoved(NonconformityType.L.getRemoved());
+        lType.setNumber(NonconformityTypeEnum.L.getName());
+        lType.setRemoved(NonconformityTypeEnum.L.getRemoved());
         result.add(lType);
 
         CertificationCriterion rwtPlanType = new CertificationCriterion();
-        rwtPlanType.setNumber(NonconformityType.ANNUAL_RWT_PLAN.getName());
-        rwtPlanType.setRemoved(NonconformityType.ANNUAL_RWT_PLAN.getRemoved());
+        rwtPlanType.setNumber(NonconformityTypeEnum.ANNUAL_RWT_PLAN.getName());
+        rwtPlanType.setRemoved(NonconformityTypeEnum.ANNUAL_RWT_PLAN.getRemoved());
         result.add(rwtPlanType);
 
         CertificationCriterion rwtResultsType = new CertificationCriterion();
-        rwtResultsType.setNumber(NonconformityType.ANNUAL_RWT_RESULTS.getName());
-        rwtResultsType.setRemoved(NonconformityType.ANNUAL_RWT_RESULTS.getRemoved());
+        rwtResultsType.setNumber(NonconformityTypeEnum.ANNUAL_RWT_RESULTS.getName());
+        rwtResultsType.setRemoved(NonconformityTypeEnum.ANNUAL_RWT_RESULTS.getRemoved());
         result.add(rwtResultsType);
 
         CertificationCriterion otherType = new CertificationCriterion();
-        otherType.setNumber(NonconformityType.OTHER.getName());
-        otherType.setRemoved(NonconformityType.OTHER.getRemoved());
+        otherType.setNumber(NonconformityTypeEnum.OTHER.getName());
+        otherType.setRemoved(NonconformityTypeEnum.OTHER.getRemoved());
         result.add(otherType);
 
         CertificationCriterion attestationsSubmissionType = new CertificationCriterion();
-        attestationsSubmissionType.setNumber(NonconformityType.SEMIANNUAL_ATTESTATIONS_SUBMISSION.getName());
-        attestationsSubmissionType.setRemoved(NonconformityType.SEMIANNUAL_ATTESTATIONS_SUBMISSION.getRemoved());
+        attestationsSubmissionType.setNumber(NonconformityTypeEnum.SEMIANNUAL_ATTESTATIONS_SUBMISSION.getName());
+        attestationsSubmissionType.setRemoved(NonconformityTypeEnum.SEMIANNUAL_ATTESTATIONS_SUBMISSION.getRemoved());
         result.add(attestationsSubmissionType);
 
         return result;
     }
 
-    public Set<KeyValueModel> getSurveillanceRequirementTypes() {
-        LOGGER.debug("Getting all surveillance requirement types from the database (not cached).");
+    public Set<NonconformityType> getNonconformityTypes() {
+        LOGGER.debug("Getting all nonconformity types from the database (not cached).");
 
-        List<SurveillanceRequirementType> daoResults = survDao.getAllSurveillanceRequirementTypes();
+        return survDao.getNonconformityTypes().stream()
+                .collect(Collectors.toSet());
+    }
+
+    public Set<KeyValueModel> getRequirementGroupTypes() {
+        LOGGER.debug("Getting all requirement group types from the database (not cached).");
+
+        List<RequirementGroupType> daoResults = survDao.getAllRequirementGroupTypes();
         Set<KeyValueModel> results = new HashSet<KeyValueModel>();
 
-        for (SurveillanceRequirementType result : daoResults) {
+        for (RequirementGroupType result : daoResults) {
             results.add(new KeyValueModel(result.getId(), result.getName()));
         }
         return results;

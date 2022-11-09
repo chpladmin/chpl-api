@@ -100,6 +100,7 @@ import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
+import gov.healthit.chpl.exception.CertifiedProductUpdateException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -352,7 +353,7 @@ public class CertifiedProductManager extends SecuredManager {
     // no other caches have ACB data so we do not need to clear all
     @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#certifiedProductId")
     public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, CertifiedProductUpdateException {
         CertifiedProductDTO toUpdate = cpDao.getById(certifiedProductId);
         toUpdate.setCertificationBodyId(acbId);
         return cpDao.update(toUpdate);
@@ -431,7 +432,7 @@ public class CertifiedProductManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).UPDATE, #updateRequest)")
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
-            AccessDeniedException.class, InvalidArgumentsException.class
+            AccessDeniedException.class, InvalidArgumentsException.class, CertifiedProductUpdateException.class
     })
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
@@ -440,32 +441,40 @@ public class CertifiedProductManager extends SecuredManager {
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#updateRequest.listing.id")
     public CertifiedProductDTO update(ListingUpdateRequest updateRequest)
-            throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, EntityCreationException,
-            InvalidArgumentsException, IOException, ValidationException, MissingReasonException {
+            throws AccessDeniedException, JsonProcessingException, InvalidArgumentsException, IOException,
+            ValidationException, MissingReasonException, CertifiedProductUpdateException {
 
-        CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
-        CertifiedProductSearchDetails existingListing = certifiedProductDetailsManager
-                .getCertifiedProductDetails(updatedListing.getId());
+        CertifiedProductSearchDetails existingListing = null;
+        try {
+            CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
+            existingListing = certifiedProductDetailsManager
+                    .getCertifiedProductDetails(updatedListing.getId());
 
-        // clean up what was sent in - some necessary IDs or other fields may be missing
-        sanitizeUpdatedListingData(updatedListing);
+            // clean up what was sent in - some necessary IDs or other fields may be missing
+            sanitizeUpdatedListingData(updatedListing);
 
-        // validate - throws ValidationException if the listing cannot be updated
-        validateListingForUpdate(existingListing, updatedListing, updateRequest.isAcknowledgeWarnings());
+            // validate - throws ValidationException if the listing cannot be updated
+            validateListingForUpdate(existingListing, updatedListing, updateRequest.isAcknowledgeWarnings());
 
-        // if listing status has changed that may trigger other changes to developer status
-        performSecondaryActionsBasedOnStatusChanges(existingListing, updatedListing, updateRequest.getReason());
+            // if listing status has changed that may trigger other changes to developer status
+            performSecondaryActionsBasedOnStatusChanges(existingListing, updatedListing, updateRequest.getReason());
 
-        // Update the listing
-        CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
-        CertifiedProductDTO result = cpDao.update(dtoToUpdate);
-        updateListingsChildData(existingListing, updatedListing);
-        updateRwtEligibilityForListingAndChildren(result);
+            // Update the listing
+            CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
+            CertifiedProductDTO result = cpDao.update(dtoToUpdate);
+            updateListingsChildData(existingListing, updatedListing);
+            updateRwtEligibilityForListingAndChildren(result);
 
-        // Log the activity
-        logCertifiedProductUpdateActivity(existingListing, updateRequest.getReason());
+            // Log the activity
+            logCertifiedProductUpdateActivity(existingListing, updateRequest.getReason());
 
-        return result;
+            return result;
+        } catch (EntityRetrievalException | EntityCreationException ex) {
+            String msg = msgUtil.getMessage("listing.badListingData", existingListing.getChplProductNumber());
+            CertifiedProductUpdateException exception = new CertifiedProductUpdateException(msg);
+            LOGGER.error(msg, ex);
+            throw exception;
+        }
     }
 
     private void logCertifiedProductUpdateActivity(CertifiedProductSearchDetails existingListing,
