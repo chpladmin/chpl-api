@@ -124,7 +124,10 @@ public class ListingUploadController {
         List<ListingUpload> listingsToAdd = new ArrayList<ListingUpload>();
         try {
            listingsToAdd = listingUploadManager.parseUploadFile(file);
-        } catch (AccessDeniedException | ValidationException | NullPointerException | IndexOutOfBoundsException ex) {
+        } catch (ValidationException ex) {
+            LOGGER.error("Error uploading listing(s) from file " + file.getOriginalFilename() + ". " + ex.getMessage());
+            throw ex;
+        } catch (AccessDeniedException | NullPointerException | IndexOutOfBoundsException ex) {
             LOGGER.error("Error uploading listing(s) from file " + file.getOriginalFilename() + ". " + ex.getMessage());
             //send an email that something weird happened
             sendUploadError(file, ex);
