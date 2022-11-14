@@ -1,7 +1,10 @@
 package gov.healthit.chpl.scheduler.job;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,6 +16,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -28,17 +32,20 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import com.azure.identity.ClientSecretCredential;
 import com.azure.identity.ClientSecretCredentialBuilder;
 import com.microsoft.graph.authentication.TokenCredentialAuthProvider;
-import com.microsoft.graph.models.Attachment;
+import com.microsoft.graph.models.AttachmentCreateUploadSessionParameterSet;
+import com.microsoft.graph.models.AttachmentItem;
+import com.microsoft.graph.models.AttachmentType;
 import com.microsoft.graph.models.BodyType;
 import com.microsoft.graph.models.EmailAddress;
 import com.microsoft.graph.models.FileAttachment;
 import com.microsoft.graph.models.ItemBody;
 import com.microsoft.graph.models.Message;
 import com.microsoft.graph.models.Recipient;
-import com.microsoft.graph.models.UserSendMailParameterSet;
-import com.microsoft.graph.requests.AttachmentCollectionPage;
-import com.microsoft.graph.requests.AttachmentCollectionResponse;
+import com.microsoft.graph.models.UploadSession;
+import com.microsoft.graph.options.HeaderOption;
 import com.microsoft.graph.requests.GraphServiceClient;
+import com.microsoft.graph.tasks.IProgressCallback;
+import com.microsoft.graph.tasks.LargeFileUploadTask;
 
 import gov.healthit.chpl.email.ChplEmailMessage;
 import gov.healthit.chpl.email.EmailOverrider;
@@ -53,8 +60,6 @@ public class SendEmailJob implements Job {
     private static final Integer UNLIMITED_RETRY_ATTEMPTS = -1;
     private static final String EMAIL_FILES_DIRECTORY = "emailFiles";
     private static final String GRAPH_DEFAULT_SCOPE = "https://graph.microsoft.com/.default";
-    private static final String ODATA_TYPE = "#microsoft.graph.fileAttachment";
-    private static final long MAX_SIMPLE_UPLOAD_FILE_SIZE_IN_BYTES = 3000000;
 
     private String azureUser;
     private ClientSecretCredential clientSecretCredential;
@@ -71,40 +76,55 @@ public class SendEmailJob implements Job {
         LOGGER.info("********* Starting the Send Email job. *********");
         overrider = new EmailOverrider(env);
         ChplEmailMessage message = (ChplEmailMessage) context.getMergedJobDataMap().get(MESSAGE_KEY);
-        message.setRetryAttempts(message.getRetryAttempts() + 1);
-        try {
-            initGraphForAppOnlyAuth();
-            Message graphMessage = getGraphMessage(message);
-            sendMessage(graphMessage);
-            LOGGER.info("Email successfully sent to: "
-                    + message.getRecipients().stream().
-                            map(addr -> addr.toString())
-                            .collect(Collectors.joining(", ")));
-            LOGGER.info("With subject: " + message.getSubject());
-            deleteFiles(message);
-        } catch (Exception ex) {
-            String failureMessage = "Error sending email to "
-                    + message.getRecipients().stream()
-                            .map(addr -> addr.toString())
-                            .collect(Collectors.joining(", "));
-            LOGGER.info(failureMessage);
-            LOGGER.info("With subject: " + message.getSubject());
-            LOGGER.info("Number of attempts: " + message.getRetryAttempts());
-            LOGGER.info("Max number of attempts: " + (getMaxRetryAttempts() == -1 ? "unlimited" : getMaxRetryAttempts().toString()));
-
-            LOGGER.catching(ex);
-
-            if (getMaxRetryAttempts().equals(UNLIMITED_RETRY_ATTEMPTS)
-                    || message.getRetryAttempts() < getMaxRetryAttempts()) {
-                rescheduleEmailToBeSent(context, message);
-            } else {
-                // This should trigger a Datadog alert
-                String error = "Email could not be sent to "
+        if (CollectionUtils.isEmpty(message.getRecipients())) {
+            LOGGER.fatal("No recipients found in the message with subject: " + message.getSubject()
+                + ". The message will not be sent.");
+            //TODO: Send email to "Upload Errors Channel"
+        } else {
+            message.setRetryAttempts(message.getRetryAttempts() + 1);
+            Message graphMessage = null;
+            try {
+                initGraphForAppOnlyAuth();
+                graphMessage = getDraftMessage(message);
+                uploadAttachments(graphMessage, message.getFileAttachments());
+                sendMessage(graphMessage);
+                LOGGER.info("Email successfully sent to: "
+                        + message.getRecipients().stream().
+                                map(addr -> addr.toString())
+                                .collect(Collectors.joining(", ")));
+                LOGGER.info("With subject: " + message.getSubject());
+                deleteFiles(message);
+                if (!overrider.getSaveToSentItems()) {
+                    deleteMessage(graphMessage);
+                }
+            } catch (Exception ex) {
+                //at this point the draft wasn't sent so we would be deleting it from the drafts folder
+                deleteMessage(graphMessage);
+                //log the failure
+                String failureMessage = "Error sending email to "
                         + message.getRecipients().stream()
                                 .map(addr -> addr.toString())
                                 .collect(Collectors.joining(", "));
-                LOGGER.error(error);
-                deleteFiles(message);
+                LOGGER.info(failureMessage);
+                LOGGER.info("With subject: " + message.getSubject());
+                LOGGER.info("Number of attempts: " + message.getRetryAttempts());
+                LOGGER.info("Max number of attempts: " + (getMaxRetryAttempts() == -1 ? "unlimited" : getMaxRetryAttempts().toString()));
+
+                LOGGER.catching(ex);
+
+                if (getMaxRetryAttempts().equals(UNLIMITED_RETRY_ATTEMPTS)
+                        || message.getRetryAttempts() < getMaxRetryAttempts()) {
+                    rescheduleEmailToBeSent(context, message);
+                } else {
+                    // This should trigger a Datadog alert
+                    String error = "Email could not be sent to "
+                            + message.getRecipients().stream()
+                                    .map(addr -> addr.toString())
+                                    .collect(Collectors.joining(", "));
+                    LOGGER.error(error);
+                    deleteFiles(message);
+
+                }
             }
         }
         LOGGER.info("********* Completed the Send Email job. *********");
@@ -134,13 +154,18 @@ public class SendEmailJob implements Job {
         }
     }
 
-    private Message getGraphMessage(ChplEmailMessage message) {
-        final Message graphMessage = new Message();
-        graphMessage.subject = message.getSubject();
-        graphMessage.body = new ItemBody();
-        graphMessage.body.content = overrider.getBody(message.getBody(), message.getRecipients());
-        graphMessage.body.contentType = BodyType.HTML;
-        graphMessage.toRecipients = new ArrayList<Recipient>();
+    private Message getDraftMessage(ChplEmailMessage message) {
+        final Message draftMessage = new Message();
+        draftMessage.subject = message.getSubject();
+        draftMessage.body = new ItemBody();
+        draftMessage.body.content = overrider.getBody(message.getBody(), message.getRecipients());
+        draftMessage.body.contentType = BodyType.HTML;
+        draftMessage.toRecipients = new ArrayList<Recipient>();
+
+
+        //TODO: DO we want to keep this code??
+        //IS there a header I can use to tell the message not to stick around in SEnt Items? I can't find a list of available headers.
+
 
         List<String> recipientAddresses = overrider.getRecipients(message.getRecipients());
         recipientAddresses.stream()
@@ -148,51 +173,101 @@ public class SendEmailJob implements Job {
                 final Recipient recipient = new Recipient();
                 recipient.emailAddress = new EmailAddress();
                 recipient.emailAddress.address = recipientAddress;
-                graphMessage.toRecipients.add(recipient);
+                draftMessage.toRecipients.add(recipient);
             });
 
-        if (message.getFileAttachments() != null && message.getFileAttachments().size() > 0) {
-            List<Attachment> attachmentsList = new ArrayList<Attachment>();
-            for (File file : message.getFileAttachments()) {
-                try {
-                    LOGGER.info("Attaching " + file.getAbsolutePath());
-                    if (requiresUploading(file)) {
-                        //TODO:
-                    } else {
-                        FileAttachment attachment = new FileAttachment();
-                        attachment.name = file.getName();
-                        attachment.contentBytes = Files.readAllBytes(file.toPath());
-                        attachment.oDataType = ODATA_TYPE;
-                        attachmentsList.add(attachment);
-                    }
-                } catch (Exception ex) {
-                    LOGGER.error("Could not attach file " + file.getAbsolutePath() + " to email.", ex);
-                }
-            }
-            AttachmentCollectionResponse attachmentCollectionResponse = new AttachmentCollectionResponse();
-            attachmentCollectionResponse.value = attachmentsList;
-            AttachmentCollectionPage attachmentCollectionPage = new AttachmentCollectionPage(attachmentCollectionResponse, null);
-            graphMessage.attachments = attachmentCollectionPage;
-        }
-        return graphMessage;
+        Message savedDraft = appClient.users(azureUser).messages()
+            .buildRequest(new HeaderOption("Prefer", "IdType=\"ImmutableId\""))
+            .post(draftMessage);
+
+        return savedDraft;
     }
 
-    private boolean requiresUploading(File file) {
-        //https://learn.microsoft.com/en-us/graph/outlook-large-attachments
-        //Files between 3MB - 150MB must be uploaded in chunks before being attached to an email.
-        //Files > 150MB will just fail as a known and documented issue.
-        //https://learn.microsoft.com/en-us/graph/known-issues#attaching-large-files-to-messages-with-delegated-permissions-can-fail
-        return file.length() >= MAX_SIMPLE_UPLOAD_FILE_SIZE_IN_BYTES;
+    private void uploadAttachments(Message message, List<File> attachments) {
+        if (CollectionUtils.isEmpty(attachments)) {
+            return;
+        }
+        attachments.stream()
+            .forEach(attachment -> uploadAttachment(message, attachment));
+    }
+
+    private void uploadAttachment(Message message, File attachment) {
+        AttachmentItem attachmentItem = new AttachmentItem();
+        attachmentItem.attachmentType = AttachmentType.FILE;
+        attachmentItem.name = attachment.getName();
+        attachmentItem.size = attachment.length();
+
+        UploadSession uploadSession = appClient.users(azureUser).messages(message.id)
+            .attachments()
+                .createUploadSession(AttachmentCreateUploadSessionParameterSet.newBuilder()
+                    .withAttachmentItem(attachmentItem)
+                    .build())
+            .buildRequest()
+            .post();
+
+        //iteratively upload byte ranges of the file, in order
+        IProgressCallback callback = new IProgressCallback() {
+            @Override
+            // Called after each slice of the file is uploaded
+            public void progress(final long current, final long max) {
+                LOGGER.debug(
+                    String.format("Uploaded %d bytes of %d total bytes", current, max)
+                );
+            }
+        };
+
+        InputStream fileStream = null;
+        LargeFileUploadTask<FileAttachment> uploadTask = null;
+        try {
+            fileStream = new FileInputStream(attachment);
+            uploadTask = new LargeFileUploadTask<FileAttachment>(uploadSession, appClient,
+                        fileStream, attachment.length(), FileAttachment.class);
+
+            // Do the upload
+            uploadTask.upload(0, null, callback);
+        } catch (FileNotFoundException ex) {
+            //the FileInputStream could not be created
+            LOGGER.error("The file " + attachment.getAbsolutePath() + " could not be found and will not be sent as an attachment.", ex);
+        } catch (IOException ex) {
+            //the uploadTask.upload method had an error
+            LOGGER.error("The upload of file attachment " + attachment.getAbsoluteFile() + " to message with ID " + message.id + " failed.", ex);
+        } finally {
+            try {
+                fileStream.close();
+            } catch (IOException io) {
+                LOGGER.warn("Could not close the filestream for the attachment: " + io.getMessage());
+            }
+        }
     }
 
     private void sendMessage(Message message) {
-        appClient.users(azureUser)
-            .sendMail(UserSendMailParameterSet.newBuilder()
-                .withMessage(message)
-                .withSaveToSentItems(overrider.getSaveToSentItems())
-                .build())
+        LOGGER.info("Sending message with ID " + message.id);
+        appClient.users(azureUser).messages(message.id)
+            .send()
             .buildRequest()
-            .post();
+        .post();
+    }
+
+    private void deleteMessage(Message message) {
+        //TODO:
+        //The message object gets moved from Drafts to Sent Items, but it might not be available right away...
+        //It can take time to appear there.
+        //So we can have code to wait, to retry, a separate job perhaps to retry? Don't bother with it?
+        //This will be really hard to test.
+        LOGGER.info("Deleting message with ID " + message.id);
+        try {
+            appClient.users(azureUser).messages(message.id)
+                .buildRequest()
+            .delete();
+        } catch (Exception ex) {
+            LOGGER.error("Error deleting" + (message.isDraft ? " draft " : " ")
+                    + "message with ID '" + message.id + "'. Message had subject '"
+                    + message.subject + "' and is addressed to "
+                    + message.toRecipients.stream()
+                        .map(recip -> recip.emailAddress.address)
+                        .collect(Collectors.joining(",")));
+            LOGGER.catching(ex);
+        }
     }
 
     private void rescheduleEmailToBeSent(JobExecutionContext context, ChplEmailMessage message) {
@@ -263,7 +338,7 @@ public class SendEmailJob implements Job {
                     .forEach(file -> {
                         try {
                             Files.deleteIfExists(file.toPath());
-                            LOGGER.info("Deleting file: " + file.getPath());
+                            LOGGER.info("Deleted file: " + file.getPath());
                         } catch (IOException e) {
                             LOGGER.info("Could not delete file after sending: " + file.getPath());
                             LOGGER.catching(e);
