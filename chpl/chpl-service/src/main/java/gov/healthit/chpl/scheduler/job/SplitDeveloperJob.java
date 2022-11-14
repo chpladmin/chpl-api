@@ -18,6 +18,7 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.security.access.AccessDeniedException;
@@ -80,6 +81,9 @@ public class SplitDeveloperJob implements Job {
 
     @Autowired
     private ChplEmailFactory chplEmailFactory;
+
+    @Value("${internalErrorEmailRecipients}")
+    private String internalErrorEmailRecipients;
 
     private Developer preSplitDeveloper;
     private Developer postSplitDeveloper;
@@ -260,7 +264,7 @@ public class SplitDeveloperJob implements Job {
         if (splitException == null) {
             htmlMessage = createHtmlEmailBodySuccess(newDeveloper, productIds);
         } else {
-            String[] errorEmailRecipients = env.getProperty("splitDeveloperErrorEmailRecipients").split(",");
+            String[] errorEmailRecipients = internalErrorEmailRecipients.split(",");
             for (int i = 0; i < errorEmailRecipients.length; i++) {
                 recipients.add(errorEmailRecipients[i].trim());
             }

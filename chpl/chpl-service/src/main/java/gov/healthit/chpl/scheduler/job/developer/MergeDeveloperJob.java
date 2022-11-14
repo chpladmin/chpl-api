@@ -13,6 +13,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -46,6 +47,9 @@ public class MergeDeveloperJob implements Job {
 
     @Autowired
     private DeveloperDAO devDao;
+
+    @Value("${internalErrorEmailRecipients}")
+    private String internalErrorEmailRecipients;
 
     @Autowired
     private ChplEmailFactory chplEmailFactory;
@@ -142,7 +146,7 @@ public class MergeDeveloperJob implements Job {
         if (mergeException == null) {
             htmlMessage = createHtmlEmailBodySuccess(newDeveloper, oldDevelopers);
         } else {
-            String[] errorEmailRecipients = env.getProperty("mergeDeveloperErrorEmailRecipients").split(",");
+            String[] errorEmailRecipients = internalErrorEmailRecipients.split(",");
             for (int i = 0; i < errorEmailRecipients.length; i++) {
                 recipients.add(errorEmailRecipients[i].trim());
             }

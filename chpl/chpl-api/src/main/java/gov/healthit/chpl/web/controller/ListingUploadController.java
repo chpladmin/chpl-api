@@ -61,8 +61,8 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ListingUploadController {
 
-    @Value("${uploadErrorEmailRecipients}")
-    private String uploadErrorEmailRecipients;
+    @Value("${internalErrorEmailRecipients}")
+    private String internalErrorEmailRecipients;
 
     @Value("${uploadErrorEmailSubject}")
     private String uploadErrorEmailSubject;
@@ -244,10 +244,10 @@ public class ListingUploadController {
     }
 
     private void sendUploadError(MultipartFile file, Exception ex) {
-        if (StringUtils.isEmpty(uploadErrorEmailRecipients)) {
+        if (StringUtils.isEmpty(internalErrorEmailRecipients)) {
             return;
         }
-        List<String> recipients = Arrays.asList(uploadErrorEmailRecipients.split(","));
+        List<String> recipients = Arrays.asList(internalErrorEmailRecipients.split(","));
 
         //figure out the filename for the attachment
         String originalFilename = file.getOriginalFilename();

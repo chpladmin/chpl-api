@@ -26,6 +26,7 @@ import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -47,8 +48,10 @@ import com.microsoft.graph.requests.GraphServiceClient;
 import com.microsoft.graph.tasks.IProgressCallback;
 import com.microsoft.graph.tasks.LargeFileUploadTask;
 
+import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplEmailMessage;
 import gov.healthit.chpl.email.EmailOverrider;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import lombok.extern.log4j.Log4j2;
 import okhttp3.Request;
 
@@ -60,11 +63,25 @@ public class SendEmailJob implements Job {
     private static final Integer UNLIMITED_RETRY_ATTEMPTS = -1;
     private static final String EMAIL_FILES_DIRECTORY = "emailFiles";
     private static final String GRAPH_DEFAULT_SCOPE = "https://graph.microsoft.com/.default";
+    private static final String HEADER_PREFER = "Prefer";
+    private static final String HEADER_IMMUTABLE_ID = "IdType=\"ImmutableId\"";
 
     private String azureUser;
     private ClientSecretCredential clientSecretCredential;
     private GraphServiceClient<Request> appClient;
     private EmailOverrider overrider;
+
+    @Value("${internalErrorEmailRecipients}")
+    private String internalErrorEmailRecipients;
+
+    @Value("${noRecipientsErrorEmailSubject}")
+    private String noRecipientsErrorEmailSubject;
+
+    @Value("${noRecipientsErrorEmailBody}")
+    private String noRecipientsErrorEmailBody;
+
+    @Autowired
+    private ChplEmailFactory chplEmailFactory;
 
     @Autowired
     private Environment env;
@@ -79,7 +96,7 @@ public class SendEmailJob implements Job {
         if (CollectionUtils.isEmpty(message.getRecipients())) {
             LOGGER.fatal("No recipients found in the message with subject: " + message.getSubject()
                 + ". The message will not be sent.");
-            //TODO: Send email to "Upload Errors Channel"
+            sendInternalErrorEmail(message);
         } else {
             message.setRetryAttempts(message.getRetryAttempts() + 1);
             Message graphMessage = null;
@@ -162,11 +179,6 @@ public class SendEmailJob implements Job {
         draftMessage.body.contentType = BodyType.HTML;
         draftMessage.toRecipients = new ArrayList<Recipient>();
 
-
-        //TODO: DO we want to keep this code??
-        //IS there a header I can use to tell the message not to stick around in SEnt Items? I can't find a list of available headers.
-
-
         List<String> recipientAddresses = overrider.getRecipients(message.getRecipients());
         recipientAddresses.stream()
             .forEach(recipientAddress -> {
@@ -177,7 +189,7 @@ public class SendEmailJob implements Job {
             });
 
         Message savedDraft = appClient.users(azureUser).messages()
-            .buildRequest(new HeaderOption("Prefer", "IdType=\"ImmutableId\""))
+            .buildRequest(new HeaderOption(HEADER_PREFER, HEADER_IMMUTABLE_ID))
             .post(draftMessage);
 
         return savedDraft;
@@ -249,24 +261,35 @@ public class SendEmailJob implements Job {
     }
 
     private void deleteMessage(Message message) {
-        //TODO:
         //The message object gets moved from Drafts to Sent Items, but it might not be available right away...
         //It can take time to appear there.
-        //So we can have code to wait, to retry, a separate job perhaps to retry? Don't bother with it?
-        //This will be really hard to test.
+        //If this turns out to be a problem, like if Sent Items fills up or something,
+        //we can adjust the code here to to wait, to retry a configurable number of times, or schedule a separate job to retry.
         LOGGER.info("Deleting message with ID " + message.id);
         try {
             appClient.users(azureUser).messages(message.id)
                 .buildRequest()
             .delete();
         } catch (Exception ex) {
-            LOGGER.error("Error deleting" + (message.isDraft ? " draft " : " ")
+            LOGGER.warn("Error deleting" + (message.isDraft ? " draft " : " ")
                     + "message with ID '" + message.id + "'. Message had subject '"
                     + message.subject + "' and is addressed to "
                     + message.toRecipients.stream()
                         .map(recip -> recip.emailAddress.address)
                         .collect(Collectors.joining(",")));
             LOGGER.catching(ex);
+        }
+    }
+
+    private void sendInternalErrorEmail(ChplEmailMessage message) {
+        try {
+            chplEmailFactory.emailBuilder()
+                    .recipients(internalErrorEmailRecipients.split(","))
+                    .subject(noRecipientsErrorEmailSubject)
+                    .htmlMessage(String.format(noRecipientsErrorEmailBody, message.getSubject(), message.getBody()))
+                    .sendEmail();
+        } catch (EmailNotSentException msgEx) {
+            LOGGER.error("Could not send email about failed listing upload: " + msgEx.getMessage(), msgEx);
         }
     }
 
