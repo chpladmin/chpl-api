@@ -910,5 +910,14 @@
                 </entry>
             </job-data-map>
         </job>
+        
+        <job>
+            <name>rwtQuestionableActivityCreatorJob</name>
+            <group>systemJobs</group>
+            <description>Back fills RWT Questionable Activity</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.RwtQuestionableActivityCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
     </schedule>
 </job-scheduling-data>

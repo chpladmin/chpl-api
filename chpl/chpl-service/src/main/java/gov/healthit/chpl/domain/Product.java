@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.time.LocalDate;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -21,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import gov.healthit.chpl.domain.contact.PointOfContact;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -109,14 +111,14 @@ public class Product implements Serializable {
         }
         ProductOwner currentOwner = new ProductOwner();
         currentOwner.setDeveloper(this.getOwner());
-        currentOwner.setTransferDate(System.currentTimeMillis());
+        currentOwner.setTransferDay(LocalDate.now());
         localOwnerHistory.add(currentOwner);
         // first we need to make sure the status events are in ascending order
         localOwnerHistory.sort(new Comparator<ProductOwner>() {
             @Override
             public int compare(ProductOwner o1, ProductOwner o2) {
-                if (o1.getTransferDate() != null && o2.getTransferDate() != null) {
-                    return o1.getTransferDate().compareTo(o2.getTransferDate());
+                if (o1.getTransferDay() != null && o2.getTransferDay() != null) {
+                    return o1.getTransferDay().compareTo(o2.getTransferDay());
                 }
                 return 0;
             }
@@ -125,7 +127,8 @@ public class Product implements Serializable {
         ProductOwner result = null;
         for (int i = 0; i < localOwnerHistory.size() && result == null; i++) {
             ProductOwner currOwner = localOwnerHistory.get(i);
-            if (currOwner.getTransferDate() != null && currOwner.getTransferDate().longValue() >= date.getTime()) {
+            if (currOwner.getTransferDay() != null
+                    && currOwner.getTransferDay().isAfter(DateUtil.toLocalDate(date.getTime()))) {
                 result = currOwner;
             }
         }

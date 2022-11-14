@@ -9,7 +9,8 @@ public final class NullSafeEvaluator {
 
     public static <R> R eval(Supplier<R> chainSupplier, R defaultValue) {
         try {
-            return chainSupplier.get();
+            R returnValue = chainSupplier.get();
+            return returnValue != null ? returnValue : defaultValue;
         } catch (Exception e) {
             return defaultValue;
         }

@@ -5,12 +5,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -22,9 +22,11 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
+import gov.healthit.chpl.util.NullSafeEvaluator;
 import gov.healthit.chpl.util.Util;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -54,15 +56,28 @@ public class SurveillanceNonconformity implements Serializable {
      * Type of non-conformity; this is either a certification criteria number or
      * a textual description
      */
-    @XmlElement(required = true)
+    @Deprecated
+    @DeprecatedResponseField(removalDate = "2023-05-01",
+        message = "This field is deprecated and will be removed from the response data in a future release. "
+                + "Please replace usage of the 'nonconformityType' field with 'type'.")
     private String nonconformityType;
 
     /**
      * If the non-conformity type is a certified capability
      * then this field will have the criterion details (number, title, etc).
      */
-    @XmlElement(required = false)
+    @Deprecated
+    @DeprecatedResponseField(removalDate = "2023-05-01",
+    message = "This field is deprecated and will be removed from the response data in a future release. "
+            + "Please replace usage of the 'criterion' field with 'type'.")
     private CertificationCriterion criterion;
+
+    /**
+     * Type of non-conformity; this is either a certification criteria number or
+     * a textual description
+     */
+    @XmlElement(required = false)
+    private NonconformityType type;
 
     /**
      * The status of a non-conformity found as a result of a surveillance
@@ -178,11 +193,6 @@ public class SurveillanceNonconformity implements Serializable {
     @XmlElement(required = true)
     private Date lastModifiedDate;
 
-    /**
-     * Determines if this non-conformity matches another non-conformity.
-     * @param anotherNonconformity
-     * @return whether the two non-conformity objects are the same
-     */
     public boolean matches(SurveillanceNonconformity anotherNonconformity) {
         if (!propertiesMatch(anotherNonconformity)) {
             return false;
@@ -245,18 +255,9 @@ public class SurveillanceNonconformity implements Serializable {
                 && this.id.longValue() != anotherNonconformity.id.longValue()) {
             return false;
         }
-        if (StringUtils.isEmpty(this.nonconformityType) && !StringUtils.isEmpty(anotherNonconformity.nonconformityType)
-                || !StringUtils.isEmpty(this.nonconformityType) && StringUtils.isEmpty(anotherNonconformity.nonconformityType)) {
-            return false;
-        } else if (!StringUtils.isEmpty(this.nonconformityType) && !StringUtils.isEmpty(anotherNonconformity.nonconformityType)
-                && !this.nonconformityType.equalsIgnoreCase(anotherNonconformity.nonconformityType)) {
-            return false;
-        }
-        if ((this.criterion == null && anotherNonconformity.criterion != null)
-                || (this.criterion != null && anotherNonconformity.criterion == null)) {
-            return false;
-        } else if (this.criterion != null && anotherNonconformity.criterion != null
-                && !this.criterion.getId().equals(anotherNonconformity.criterion.getId())) {
+        if (!Objects.equals(
+                NullSafeEvaluator.eval(() -> this.type.getId(), null),
+                NullSafeEvaluator.eval(() -> anotherNonconformity.getType().getId(), null))) {
             return false;
         }
         if (this.dateOfDeterminationDay == null && anotherNonconformity.dateOfDeterminationDay != null
@@ -361,20 +362,32 @@ public class SurveillanceNonconformity implements Serializable {
         this.id = id;
     }
 
+    @Deprecated
     public String getNonconformityType() {
         return nonconformityType;
     }
 
+    @Deprecated
     public void setNonconformityType(String nonconformityType) {
         this.nonconformityType = nonconformityType;
     }
 
+    @Deprecated
     public CertificationCriterion getCriterion() {
         return criterion;
     }
 
+    @Deprecated
     public void setCriterion(CertificationCriterion criterion) {
         this.criterion = criterion;
+    }
+
+    public NonconformityType getType() {
+        return type;
+    }
+
+    public void setType(NonconformityType type) {
+        this.type = type;
     }
 
     public String getNonconformityStatus() {
@@ -499,14 +512,10 @@ public class SurveillanceNonconformity implements Serializable {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
-    @XmlTransient
     @Deprecated //this field should be removed from Json responses but left in the API code
     @DeprecatedResponseField(removalDate = "2023-01-01",
         message = "This field is deprecated and will be removed from the response data in a future release.")
     public String getNonconformityTypeName() {
-        if (getCriterion() == null) {
-            return getNonconformityType();
-        }
-        return Util.formatCriteriaNumber(getCriterion());
+        return NullSafeEvaluator.eval(() -> type.getFormattedTitle(), "");
     }
 }

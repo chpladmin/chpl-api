@@ -1,5 +1,36 @@
 # Release Notes
 
+## Version 37.5.0
+_14 November 2022_
+
+### Features
+* Only run validators against Active Certificates
+* Update API architecture for Surveillance domain; deprecated a variety of surveillance related values
+* Add one-time job to back-fill Questionable Activity for RWT Activity outside normal periods
+* Add decertification date range parameters to /search/v2 endpoint.
+* Ensure product owner history has distinct transferDay per entry
+* Deprecate product owner history transferDate for transferDay
+
+---
+
+## Version 37.4.0
+_31 October 2022_
+
+### Features
+* Only check active criteria for d12/d13 attestation requirement
+* More leniently parse measure types and criteria numbers
+
+### Flagged Features
+* Stop giving listing validation warnings for removed criteria
+* Update required/related rules based on grace period
+
+### Bug Fixes
+* Do not save Developer, Product and Version updates if no meaningful change is made
+* Do not allow developers to be created with duplicate names
+* Require a developer's first status to be 'Active'.
+
+---
+
 ## Version 37.3.0
 _17 October 2022_
 

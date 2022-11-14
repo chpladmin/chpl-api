@@ -108,6 +108,10 @@ public class SearchController {
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationDateStart") @RequestParam(value = "certificationDateStart", required = false, defaultValue = "") String certificationDateStart,
         @Parameter(description = "To return only listings certified before this date. Required format is " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT,
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationDateEnd") @RequestParam(value = "certificationDateEnd", required = false, defaultValue = "") String certificationDateEnd,
+        @Parameter(description = "To return only listings decertified after this date. Required format is " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT,
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "decertificationDateStart") @RequestParam(value = "decertificationDateStart", required = false, defaultValue = "") String decertificationDateStart,
+        @Parameter(description = "To return only listings decertified before this date. Required format is " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT,
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "decertificationDateEnd") @RequestParam(value = "decertificationDateEnd", required = false, defaultValue = "") String decertificationDateEnd,
         @Parameter(description = "Zero-based page number used in concert with pageSize. Defaults to 0.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "pageNumber") @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
         @Parameter(description = "Number of results to return used in concert with pageNumber. "
@@ -143,6 +147,8 @@ public class SearchController {
                 .practiceType(practiceType)
                 .certificationDateStart(certificationDateStart)
                 .certificationDateEnd(certificationDateEnd)
+                .decertificationDateStart(decertificationDateStart)
+                .decertificationDateEnd(decertificationDateEnd)
                 .pageSize(pageSize)
                 .pageNumber(pageNumber)
                 .orderByString(orderBy)

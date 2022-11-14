@@ -275,11 +275,10 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     private BrokenSurveillanceRulesDTO addNcData(BrokenSurveillanceRulesDTO rule, SurveillanceNonconformity nc) {
 
         rule.setNonconformity(true);
-        if (nc.getCriterion() != null) {
-            rule.setNonconformityCriteria(CertificationCriterionService.formatCriteriaNumber(nc.getCriterion()));
-        } else {
-            rule.setNonconformityCriteria(nc.getNonconformityType());
+        if (nc.getType() != null && nc.getType().getNumber() != null) {
+            rule.setNonconformityCriteria(CertificationCriterionService.formatCriteriaNumber(nc.getType().getNumber(), nc.getType().getTitle()));
         }
+
         if (nc.getNonconformityCloseDay() != null) {
             rule.setNonConformityCloseDate(nc.getNonconformityCloseDay());
         }

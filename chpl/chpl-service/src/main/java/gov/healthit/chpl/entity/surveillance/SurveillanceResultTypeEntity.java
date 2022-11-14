@@ -9,11 +9,18 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "surveillance_result")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SurveillanceResultTypeEntity {
 
     @Id
@@ -35,4 +42,11 @@ public class SurveillanceResultTypeEntity {
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
+
+    public SurveillanceResultType toDomain() {
+        return SurveillanceResultType.builder()
+                .id(this.getId())
+                .name(this.getName())
+                .build();
+    }
 }
