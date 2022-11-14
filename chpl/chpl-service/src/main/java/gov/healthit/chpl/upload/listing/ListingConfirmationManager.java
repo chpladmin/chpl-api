@@ -116,7 +116,6 @@ public class ListingConfirmationManager {
         activeStatus = certStatusDao.getByStatusName(CertificationStatusType.Active.toString());
     }
 
-
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CREATE, #listing)")

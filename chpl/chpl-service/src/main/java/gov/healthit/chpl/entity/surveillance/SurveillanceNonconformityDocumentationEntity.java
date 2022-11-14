@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
 import lombok.Data;
 
 @Entity
@@ -54,4 +55,14 @@ public class SurveillanceNonconformityDocumentationEntity {
 
     @Column(nullable = false)
     private Boolean deleted;
+
+    public SurveillanceNonconformityDocument toDomain() {
+        SurveillanceNonconformityDocument doc = new SurveillanceNonconformityDocument();
+        doc.setId(this.getId());
+        doc.setFileType(this.getFileType());
+        doc.setFileName(this.getFileName());
+        doc.setFileContents(this.getFileData());
+        return doc;
+    }
+
 }

@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job.developer;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -93,7 +94,7 @@ public class TransactionalDeveloperMergeManager {
             Developer prevOwner = new Developer();
             prevOwner.setId(product.getOwner().getId());
             historyToAdd.setDeveloper(prevOwner);
-            historyToAdd.setTransferDate(System.currentTimeMillis());
+            historyToAdd.setTransferDay(LocalDate.now());
             product.getOwnerHistory().add(historyToAdd);
             // reassign those products to the new developer
             product.setOwner(Developer.builder()
