@@ -14,26 +14,29 @@ public abstract class Validator {
 
     public abstract List<ComparisonReviewer> getComparisonReviewers();
 
-    public synchronized void validate(final CertifiedProductSearchDetails listing) {
-        for (Reviewer reviewer : getReviewers()) {
-            try {
-                if (reviewer != null) {
-                    reviewer.review(listing);
-                } else {
-                    LOGGER.info("Cound not run a NULL reviewer.");
+    public synchronized void validate(CertifiedProductSearchDetails listing) {
+        if (listing.isCertificateActive()) {
+            for (Reviewer reviewer : getReviewers()) {
+                try {
+                    if (reviewer != null) {
+                        reviewer.review(listing);
+                    } else {
+                        LOGGER.info("Cound not run a NULL reviewer.");
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("There was an exception trying to run the Reviewer: " + reviewer.getClass().getName());
+                    throw e;
                 }
-            } catch (Exception e) {
-                LOGGER.error("There was an exception trying to run the Reviewer: " + reviewer.getClass().getName());
-                throw e;
             }
         }
     }
 
-    public void validate(final CertifiedProductSearchDetails existingListing,
-            final CertifiedProductSearchDetails updatedListing) {
-        validate(updatedListing);
-        for (ComparisonReviewer reviewer : getComparisonReviewers()) {
-            reviewer.review(existingListing, updatedListing);
+    public void validate(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
+        if (updatedListing.isCertificateActive()) {
+            validate(updatedListing);
+            for (ComparisonReviewer reviewer : getComparisonReviewers()) {
+                reviewer.review(existingListing, updatedListing);
+            }
         }
     }
 }

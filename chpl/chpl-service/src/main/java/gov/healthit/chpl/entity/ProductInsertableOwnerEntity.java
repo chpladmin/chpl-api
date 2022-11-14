@@ -1,6 +1,7 @@
 package gov.healthit.chpl.entity;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -43,7 +44,7 @@ public class ProductInsertableOwnerEntity implements Serializable {
     private Long productId;
 
     @Column(name = "transfer_date")
-    private Date transferDate;
+    private LocalDate transferDay;
 
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
     private Date creationDate;
