@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.Before;
@@ -11,6 +12,7 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
@@ -72,7 +74,7 @@ public class UcdProcessNormalizerTest {
                         .ucdProcesses(Stream.of(CertifiedProductUcdProcess.builder()
                                 .name("ucd 1")
                                 .details("details")
-                                .build()).toList())
+                                .build()).collect(Collectors.toList()))
                         .build())
                 .build();
         Mockito.when(ucdProcessDao.getByName(ArgumentMatchers.anyString()))
@@ -93,7 +95,7 @@ public class UcdProcessNormalizerTest {
                         .ucdProcesses(Stream.of(CertifiedProductUcdProcess.builder()
                                 .name("ucd 1")
                                 .details("details")
-                                .build()).toList())
+                                .build()).collect(Collectors.toList()))
                         .build())
                 .build();
         Mockito.when(ucdProcessDao.getByName(ArgumentMatchers.eq("ucd 1")))
@@ -115,7 +117,7 @@ public class UcdProcessNormalizerTest {
                         .ucdProcesses(Stream.of(CertifiedProductUcdProcess.builder()
                                 .name("ucd 1")
                                 .details("details")
-                                .build()).toList())
+                                .build()).collect(Collectors.toList()))
                         .build())
                 .build();
         Mockito.when(ucdProcessDao.getByName(ArgumentMatchers.eq("ucd 1")))
@@ -128,5 +130,22 @@ public class UcdProcessNormalizerTest {
         assertNull(listing.getSed().getUcdProcesses().get(0).getId());
         assertEquals("ucd 1", listing.getSed().getUcdProcesses().get(0).getName());
         assertNull(listing.getSed().getUcdProcesses().get(0).getUserEnteredName());
+    }
+
+    @Test
+    public void normalize_ucdProcessWithCriteriaButNoOtherFields_ucdProcessIsRemoved() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder()
+                        .ucdProcesses(Stream.of(CertifiedProductUcdProcess.builder()
+                                .criteria(Stream.of(CertificationCriterion.builder()
+                                        .id(1L)
+                                        .number("170.315 (a)(1)")
+                                        .build()).toList())
+                                .build()).collect(Collectors.toList()))
+                        .build())
+                .build();
+
+        normalizer.normalize(listing);
+        assertEquals(0, listing.getSed().getUcdProcesses().size());
     }
 }

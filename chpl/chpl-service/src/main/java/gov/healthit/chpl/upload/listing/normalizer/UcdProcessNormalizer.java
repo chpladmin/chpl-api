@@ -1,5 +1,8 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,7 +32,20 @@ public class UcdProcessNormalizer {
             listing.getSed().getUcdProcesses().stream()
                 .forEach(ucdProcess -> populateUcdProcessId(ucdProcess));
             findFuzzyMatchesForUnknownUcdProcesses(listing);
+
+            List<CertifiedProductUcdProcess> ucdProcessesToRemove = getHopelessUcdProcesses(listing.getSed().getUcdProcesses());
+            if (!CollectionUtils.isEmpty(ucdProcessesToRemove)) {
+                listing.getSed().getUcdProcesses().removeAll(ucdProcessesToRemove);
+            }
         }
+    }
+
+    private List<CertifiedProductUcdProcess> getHopelessUcdProcesses(List<CertifiedProductUcdProcess> ucdProcesses) {
+        return ucdProcesses.stream()
+                .filter(cpUcd -> cpUcd.getId() == null && StringUtils.isBlank(cpUcd.getName())
+                    && StringUtils.isBlank(cpUcd.getDetails())
+                    && StringUtils.isBlank(cpUcd.getUserEnteredName()))
+                .toList();
     }
 
     private void populateUcdProcessId(CertifiedProductUcdProcess ucdProcess) {
