@@ -22,7 +22,6 @@ import gov.healthit.chpl.permissions.domains.FilterDomainPermissions;
 import gov.healthit.chpl.permissions.domains.FuzzyMatchPermissions;
 import gov.healthit.chpl.permissions.domains.InvitationDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions;
-import gov.healthit.chpl.permissions.domains.PendingSurveillanceDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ProductDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions;
 import gov.healthit.chpl.permissions.domains.RealWorldTestingDomainPermissions;
@@ -36,7 +35,6 @@ import gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions;
 
 @Component
 public class Permissions {
-    public static final String PENDING_SURVEILLANCE = "PENDING_SURVEILLANCE";
     public static final String CERTIFICATION_RESULTS = "CERTIFICATION_RESULTS";
     public static final String CERTIFIED_PRODUCT = "CERTIFIED_PRODUCT";
     public static final String CORRECTIVE_ACTION_PLAN = "CORRECTIVE_ACTION_PLAN";
@@ -69,8 +67,7 @@ public class Permissions {
 
     @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
-    public Permissions(PendingSurveillanceDomainPermissions pendingSurveillanceDomainPermissions,
-            CertificationResultsDomainPermissions certificationResultsDomainPermissions,
+    public Permissions(CertificationResultsDomainPermissions certificationResultsDomainPermissions,
             CertifiedProductDomainPermissions certifiedProductDomainPermissions,
             CorrectiveActionPlanDomainPermissions correctiveActionPlanDomainPermissions,
             CertificationIdDomainPermissions certificationIdDomainPermissions,
@@ -96,7 +93,6 @@ public class Permissions {
             SvapDomainPermissions svapDomainPermissions,
             AttestationDomainPermissions attestationDomainPermissions) {
 
-        domainPermissions.put(PENDING_SURVEILLANCE, pendingSurveillanceDomainPermissions);
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
         domainPermissions.put(CERTIFIED_PRODUCT, certifiedProductDomainPermissions);
         domainPermissions.put(CORRECTIVE_ACTION_PLAN, correctiveActionPlanDomainPermissions);
