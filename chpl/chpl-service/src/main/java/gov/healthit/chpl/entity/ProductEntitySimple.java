@@ -67,7 +67,6 @@ public class ProductEntitySimple implements Serializable {
     public Product toDomain() {
         return Product.builder()
                 .id(this.getId())
-                .productId(this.getId())
                 .name(this.getName())
                 .contact(this.getContactId() == null ? null
                         : PointOfContact.builder()
