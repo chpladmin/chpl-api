@@ -119,10 +119,10 @@ public class DeprecatedFieldExplorerTest {
         Set<String> deprecatedItemNames = deprecatedItems.keySet();
         assertTrue(deprecatedItemNames.contains("developer" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedItemNames.contains("product" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "owner" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developerId"));
-        assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "documents"));
         assertTrue(deprecatedItemNames.contains("product" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "ownerHistory" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developer" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedItemNames.contains("product" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "ownerHistory" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "transferDate"));
         assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirementName"));
+        assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "type"));
         assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirement"));
         assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "criterion"));
         assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformityTypeName"));
@@ -142,13 +142,13 @@ public class DeprecatedFieldExplorerTest {
         assertTrue(deprecatedItemNames.contains("product" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "ownerHistory" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developer" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedItemNames.contains("product" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "ownerHistory" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "transferDate"));
         assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirementName"));
+        assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "type"));
         assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirement"));
         assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "criterion"));
         assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformityTypeName"));
         assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "documents"));
         assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformityType"));
         assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "criterion"));
-        assertTrue(deprecatedItemNames.contains("surveillance" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "requirements" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "nonconformities" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "documents"));
     }
 
     @Test
