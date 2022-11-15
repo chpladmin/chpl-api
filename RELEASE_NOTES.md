@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version 37.5.0
+_14 November 2022_
+
+### Features
+* Only run validators against Active Certificates
+* Update API architecture for Surveillance domain; deprecated a variety of surveillance related values
+* Add one-time job to back-fill Questionable Activity for RWT Activity outside normal periods
+* Add decertification date range parameters to /search/v2 endpoint.
+* Ensure product owner history has distinct transferDay per entry
+* Deprecate product owner history transferDate for transferDay
+
+---
+
 ## Version 37.4.0
 _31 October 2022_
 
