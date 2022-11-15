@@ -68,6 +68,7 @@ public class UcdProcessNormalizer {
         if (!StringUtils.isEmpty(topFuzzyChoice)) {
             ucdProcess.setUserEnteredName(ucdProcess.getName());
             ucdProcess.setName(topFuzzyChoice);
+            populateUcdProcessId(ucdProcess);
         }
     }
 }

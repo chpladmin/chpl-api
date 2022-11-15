@@ -100,14 +100,19 @@ public class UcdProcessNormalizerTest {
                 .build();
         Mockito.when(ucdProcessDao.getByName(ArgumentMatchers.eq("ucd 1")))
             .thenReturn(null);
+        Mockito.when(ucdProcessDao.getByName(ArgumentMatchers.eq("ucd1")))
+            .thenReturn(UcdProcess.builder()
+                    .id(4L)
+                    .name("ucd1")
+                    .build());
         Mockito.when(fuzzyChoicesManager.getTopFuzzyChoice(ArgumentMatchers.eq("ucd 1"), ArgumentMatchers.eq(FuzzyType.UCD_PROCESS)))
             .thenReturn("ucd1");
 
         normalizer.normalize(listing);
         assertEquals(1, listing.getSed().getUcdProcesses().size());
-        assertNull(listing.getSed().getUcdProcesses().get(0).getId());
         assertEquals("ucd 1", listing.getSed().getUcdProcesses().get(0).getUserEnteredName());
         assertEquals("ucd1", listing.getSed().getUcdProcesses().get(0).getName());
+        assertEquals(4L, listing.getSed().getUcdProcesses().get(0).getId());
     }
 
     @Test
