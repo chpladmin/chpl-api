@@ -1459,9 +1459,6 @@
 									"pm.test(\"expect to see an error for invalid SVAP ID\", function () {\r",
 									"    pm.expect(pm.response.text()).to.include(\"Standards Version Advancement Process 170.204(a)(1) is not valid for criteria 170.315 (b)(6)\");\r",
 									"});\r",
-									"//pm.test(\"expect to see an error for invalid Test Functionality ID\", function () {\r",
-									"    //pm.expect(pm.response.text()).to.include(\"Certification 170.315 (g)(6) contains invalid test functionality ID '2021\");\r",
-									"//});\r",
 									"pm.test(\"expect to see an error for invalid Test Functionality ID and name\", function () {\r",
 									"    pm.expect(pm.response.text()).to.include(\"Certification 170.315 (g)(8) contains invalid test functionality ID '2021\");\r",
 									"});\r",
@@ -1478,7 +1475,7 @@
 									"    pm.expect(pm.response.text()).to.include(\"Test Tool 'HL7 v2 Syndromic Surveillance Reporting Validation Tool' is not valid\");\r",
 									"});\r",
 									"pm.test(\"Adding Test Tool with invalid ID and invalid Test Tool name to 2015 listing should give error in response\", function () {\r",
-									"    pm.expect(pm.response.text()).to.include(\"contains an invalid test tool 'HL7 CDA Cancer Registry Reporting Validation Tool'\");\r",
+									"    pm.expect(pm.response.text()).to.include(\"contains an invalid test tool 'HL7 CDA Cancer Registry Reporting Validation ToolTest'\");\r",
 									"});"
 								],
 								"type": "text/javascript"
