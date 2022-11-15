@@ -1,15 +1,12 @@
 package gov.healthit.chpl.web.controller;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
-import javax.servlet.http.HttpServletResponse;
 
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +28,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.SimpleExplainableAction;
-import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
-import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.domain.surveillance.SurveillanceUploadResult;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.CertificationBodyAccessException;
@@ -55,7 +49,6 @@ import gov.healthit.chpl.manager.PendingSurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
@@ -113,51 +106,7 @@ public class SurveillanceController {
         results.setPendingSurveillance(pendingSurvs);
         return results;
     }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/surveillance/document/{documentId}",
-        removalDate = "2023-01-01",
-        message = "This endpoint is deprecated and will be removed in a future release.")
-    @Operation(summary = "Download non-conformity supporting documentation.",
-            description = "Download a specific file that was previously uploaded to a surveillance non-conformity.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/document/{documentId}", method = RequestMethod.GET)
-    public void streamDocumentContents(@PathVariable("documentId") Long documentId,
-            HttpServletResponse response) throws EntityRetrievalException, IOException {
-        SurveillanceNonconformityDocument doc = survManager.getDocumentById(documentId, true);
-
-        if (doc != null && doc.getFileContents() != null && doc.getFileContents().length > 0) {
-            try (ByteArrayInputStream inputStream = new ByteArrayInputStream(doc.getFileContents());
-                    OutputStream outStream = response.getOutputStream()) {
-
-                // get MIME type of the file
-                String mimeType = doc.getFileType();
-                if (mimeType == null) {
-                    // set to binary type if MIME mapping not found
-                    mimeType = "application/octet-stream";
-                }
-                // set content attributes for the response
-                response.setContentType(mimeType);
-                response.setContentLength(doc.getFileContents().length);
-
-                // set headers for the response
-                String headerKey = "Content-Disposition";
-                String headerValue = String.format("attachment; filename=\"%s\"", doc.getFileName());
-                response.setHeader(headerKey, headerValue);
-
-                byte[] buffer = new byte[FileUtils.BUFFER_SIZE];
-                int bytesRead = -1;
-
-                // write bytes read from the input stream into the output stream
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    outStream.write(buffer, 0, bytesRead);
-                }
-            }
-        }
-    }
-
+    
     @Operation(summary = "Create a new surveillance activity for a certified product.",
             description = "Creates a new surveillance activity, surveilled requirements, and any applicable non-conformities "
                     + "in the system and associates them with the certified product indicated in the "
@@ -187,66 +136,6 @@ public class SurveillanceController {
         // query the inserted surveillance
         Surveillance result = survManager.getById(insertedSurv);
         return new ResponseEntity<Surveillance>(result, responseHeaders, HttpStatus.OK);
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/surveillance/{surveillanceId}/nonconformity/{nonconformityId}/document",
-        httpMethod = "POST",
-        removalDate = "2023-01-01",
-        message = "This endpoint is deprecated and will be removed in a future release.")
-    @Operation(summary = "Add documentation to an existing non-conformity.",
-            description = "Upload a file of any kind (current size limit 5MB) as supporting "
-                    + " documentation to an existing non-conformity. Security Restrictions: ROLE_ADMIN, ROLE_ONC, or "
-                    + "ROLE_ACB and administrative authority on the associated ONC-ACB.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/{surveillanceId}/nonconformity/{nonconformityId}/document",
-            method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public @ResponseBody String uploadNonconformityDocument(
-            @PathVariable("surveillanceId") Long surveillanceId,
-            @PathVariable("nonconformityId") Long nonconformityId,
-            @RequestParam("file") MultipartFile file)
-            throws InvalidArgumentsException, MaxUploadSizeExceededException, EntityRetrievalException,
-            EntityCreationException, IOException {
-
-        return createNonconformityDocumentForSurveillance(surveillanceId, nonconformityId, file);
-    }
-
-    @Deprecated
-    private String createNonconformityDocumentForSurveillance(
-            Long surveillanceId,
-            Long nonconformityId,
-            MultipartFile file)
-            throws InvalidArgumentsException, MaxUploadSizeExceededException, EntityRetrievalException,
-            EntityCreationException, IOException {
-
-        if (file.isEmpty()) {
-            throw new InvalidArgumentsException("You cannot upload an empty file!");
-        }
-
-        Surveillance surv = survManager.getById(surveillanceId);
-        CertifiedProductSearchDetails beforeCp = cpdetailsManager
-                .getCertifiedProductDetails(surv.getCertifiedProduct().getId());
-
-        SurveillanceNonconformityDocument toInsert = new SurveillanceNonconformityDocument();
-        toInsert.setFileContents(file.getBytes());
-        toInsert.setFileName(file.getOriginalFilename());
-        toInsert.setFileType(file.getContentType());
-
-        Long insertedDocId = survManager.addDocumentToNonconformity(nonconformityId, toInsert);
-        if (insertedDocId == null) {
-            throw new EntityCreationException("Error adding a document to non-conformity with id " + nonconformityId);
-        }
-
-        CertifiedProductSearchDetails afterCp = cpdetailsManager
-                .getCertifiedProductDetails(surv.getCertifiedProduct().getId());
-        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT,
-                beforeCp.getId(), "Documentation " + toInsert.getFileName()
-                        + " was added to a non-conformity for certified product " + afterCp.getChplProductNumber(),
-                beforeCp, afterCp);
-        return "{\"success\": \"true\"}";
     }
 
     @Operation(summary = "Update a surveillance activity for a certified product.",
@@ -303,55 +192,6 @@ public class SurveillanceController {
         survManager.deleteSurveillance(survToDelete, requestBody.getReason());
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         return new ResponseEntity<String>("{\"success\" : true}", responseHeaders, HttpStatus.OK);
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/surveillance/{surveillanceId}/document/{docId}",
-        httpMethod = "DELETE",
-        removalDate = "2023-01-01",
-        message = "This endpoint is deprecated and will be removed in a future release.")
-    @Operation(summary = "Remove documentation from a non-conformity.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative authority "
-                    + "on the associated Listing.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/{surveillanceId}/document/{docId}", method = RequestMethod.DELETE,
-            produces = "application/json; charset=utf-8")
-    public String deleteNonconformityDocumentFromSurveillance(
-            @PathVariable("surveillanceId") Long surveillanceId,
-            @PathVariable("docId") Long docId)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
-            InvalidArgumentsException {
-
-        return deleteNonconformityDocument(surveillanceId, docId);
-    }
-
-    @Deprecated
-    private String deleteNonconformityDocument(Long surveillanceId, Long docId)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
-            InvalidArgumentsException {
-
-        Surveillance surv = survManager.getById(surveillanceId);
-        if (surv == null) {
-            throw new InvalidArgumentsException("Cannot find surveillance with id " + surveillanceId + " to delete.");
-        }
-
-        CertifiedProductSearchDetails beforeCp = cpdetailsManager
-                .getCertifiedProductDetails(surv.getCertifiedProduct().getId());
-        try {
-            survManager.deleteNonconformityDocument(docId);
-        } catch (Exception ex) {
-            throw ex;
-        }
-
-        CertifiedProductSearchDetails afterCp = cpdetailsManager
-                .getCertifiedProductDetails(surv.getCertifiedProduct().getId());
-        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeCp.getId(),
-                "A document was removed from a non-conformity for certified product " + afterCp.getChplProductNumber(),
-                beforeCp, afterCp);
-        return "{\"success\": \"true\"}";
     }
 
     @Operation(summary = "Reject (effectively delete) a pending surveillance item.",

@@ -35,7 +35,6 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.dao.surveillance.PendingSurveillanceDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.NonconformityType;
@@ -47,21 +46,18 @@ import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
 import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
-import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceUploadResult;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.ValidationMessageType;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceRequirementEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceValidationEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
-import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ObjectMissingValidationException;
@@ -556,30 +552,6 @@ public class PendingSurveillanceManager extends SecuredManager {
                     + " with friendly id " + survFriendlyId);
         }
         return surv.toDomain(cpDAO, certificationCriterionService);
-    }
-
-    private SurveillanceNonconformityDocument convertToDomain(SurveillanceNonconformityDocumentationEntity entity,
-            boolean getContents) {
-        SurveillanceNonconformityDocument doc = new SurveillanceNonconformityDocument();
-        doc.setId(entity.getId());
-        doc.setFileType(entity.getFileType());
-        doc.setFileName(entity.getFileName());
-        if (getContents) {
-            doc.setFileContents(entity.getFileData());
-        }
-        return doc;
-    }
-
-    private CertificationCriterion convertToDomain(CertificationCriterionEntity entity) {
-        CertificationCriterion cc = new CertificationCriterion();
-        cc.setId(entity.getId());
-        cc.setCertificationEditionId(entity.getCertificationEditionId());
-        cc.setCertificationEdition(entity.getCertificationEdition().getYear());
-        cc.setDescription(entity.getDescription());
-        cc.setNumber(entity.getNumber());
-        cc.setRemoved(entity.getRemoved());
-        cc.setTitle(entity.getTitle());
-        return cc;
     }
 
     private void deleteSurveillance(Surveillance surv) throws EntityRetrievalException {

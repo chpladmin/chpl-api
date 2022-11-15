@@ -18,7 +18,6 @@ import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
 import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
-import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
@@ -26,7 +25,6 @@ import gov.healthit.chpl.entity.surveillance.NonconformityTypeEntity;
 import gov.healthit.chpl.entity.surveillance.RequirementGroupTypeEntity;
 import gov.healthit.chpl.entity.surveillance.RequirementTypeEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
-import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceResultTypeEntity;
@@ -118,15 +116,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
         entityManager.merge(nonconformityEntity);
         entityManager.flush();
 
-        //Add documents
-        nonconformity.getDocuments().stream()
-                .filter(doc -> !isIdInDocumentEntities(doc.getId(), nonconformityEntity.getDocuments()))
-                .forEach(nc -> insertNonconformityDocument(nonconformityEntity.getId(), nc));
-        //Delete documents
-        nonconformityEntity.getDocuments().stream()
-                .filter(doc -> !isIdInDocuments(doc.getId(), nonconformity.getDocuments()))
-                .forEach(doc -> deleteNonconformityDocument(doc.getId()));
-
         return nonconformityEntity;
     }
 
@@ -137,7 +126,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
         entityManager.merge(nonconformityEntity);
         entityManager.flush();
 
-        nonconformityEntity.getDocuments().forEach(doc -> deleteNonconformityDocument(doc.getId()));
         return nonconformityEntity;
     }
 
@@ -198,32 +186,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
         requirementEntity.getNonconformities().forEach(nc -> deleteSurveillanceNonconformity(nc));
 
         return requirementEntity;
-    }
-
-    @Deprecated
-    public Long insertNonconformityDocument(Long nonconformityId, SurveillanceNonconformityDocument doc) {
-        try {
-            SurveillanceNonconformityEntity nc = entityManager.find(SurveillanceNonconformityEntity.class, nonconformityId);
-            if (nc == null) {
-                String msg = msgUtil.getMessage("surveillance.nonconformity.notFound");
-                throw new EntityRetrievalException(msg);
-            }
-            SurveillanceNonconformityDocumentationEntity docEntity = new SurveillanceNonconformityDocumentationEntity();
-            docEntity.setNonconformityId(nonconformityId);
-            docEntity.setFileData(doc.getFileContents());
-            docEntity.setFileType(doc.getFileType());
-            docEntity.setFileName(doc.getFileName());
-            docEntity.setDeleted(false);
-            docEntity.setLastModifiedUser(AuthUtil.getAuditId());
-
-            entityManager.persist(docEntity);
-            entityManager.flush();
-
-            return docEntity.getId();
-        } catch (EntityRetrievalException e) {
-            LOGGER.error("Error adding Document to Nonconformity: {}", nonconformityId);
-            return null;
-        }
     }
 
     private SurveillanceNonconformity getSurveillanceNonconformity(Long id, List<SurveillanceNonconformity> nonconformities) {
@@ -290,20 +252,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
                     .findAny()
                     .isPresent();
         }
-    }
-
-    private Boolean isIdInDocuments(Long id, List<SurveillanceNonconformityDocument> documents) {
-        return documents.stream()
-                .filter(nc -> nc.getId().equals(id))
-                .findAny()
-                .isPresent();
-    }
-
-    private Boolean isIdInDocumentEntities(Long id, Set<SurveillanceNonconformityDocumentationEntity> documents) {
-        return documents.stream()
-                .filter(nc -> nc.getId().equals(id))
-                .findAny()
-                .isPresent();
     }
 
     public Long updateSurveillance(Surveillance updatedSurveillance) throws EntityRetrievalException {
@@ -388,23 +336,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
         }
     }
 
-    @Deprecated
-    public SurveillanceNonconformityDocumentationEntity getDocumentById(Long documentId)
-            throws EntityRetrievalException {
-        Query query = entityManager.createQuery(
-                "from SurveillanceNonconformityDocumentationEntity doc " + "where doc.id = :id "
-                        + "and doc.deleted <> true",
-                        SurveillanceNonconformityDocumentationEntity.class);
-        query.setParameter("id", documentId);
-        List<SurveillanceNonconformityDocumentationEntity> matches = query.getResultList();
-
-        if (matches != null && matches.size() > 0) {
-            return matches.get(0);
-        }
-        String msg = msgUtil.getMessage("surveillance.document.notFound");
-        throw new EntityRetrievalException(msg);
-    }
-
     public List<SurveillanceEntity> getSurveillanceByCertifiedProductId(Long id) {
             entityManager.clear();
             Query query = entityManager.createQuery(SURVEILLANCE_FULL_HQL
@@ -417,22 +348,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
 
-    @Deprecated
-    public void deleteNonconformityDocument(Long documentId) {
-
-        SurveillanceNonconformityDocumentationEntity doc = entityManager
-                .find(SurveillanceNonconformityDocumentationEntity.class, documentId);
-        if (doc == null) {
-            LOGGER.error(msgUtil.getMessage("surveillance.document.notFound"));
-            return;
-        }
-        doc.setDeleted(true);
-        doc.setLastModifiedUser(AuthUtil.getAuditId());
-        entityManager.merge(doc);
-        entityManager.flush();
-    }
-
-
     public void deleteSurveillance(Surveillance surv) throws EntityRetrievalException {
         LOGGER.debug("Looking for surveillance with id " + surv.getId() + " to delete.");
         SurveillanceEntity toDelete = fetchSurveillanceById(surv.getId());
@@ -440,14 +355,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
             for (SurveillanceRequirementEntity reqToDelete : toDelete.getSurveilledRequirements()) {
                 if (reqToDelete.getNonconformities() != null) {
                     for (SurveillanceNonconformityEntity ncToDelete : reqToDelete.getNonconformities()) {
-                        if (ncToDelete.getDocuments() != null) {
-                            for (SurveillanceNonconformityDocumentationEntity docToDelete : ncToDelete.getDocuments()) {
-                                docToDelete.setDeleted(true);
-                                docToDelete.setLastModifiedUser(AuthUtil.getAuditId());
-                                entityManager.merge(docToDelete);
-                                entityManager.flush();
-                            }
-                        }
                         ncToDelete.setDeleted(true);
                         ncToDelete.setLastModifiedUser(AuthUtil.getAuditId());
                         entityManager.merge(ncToDelete);

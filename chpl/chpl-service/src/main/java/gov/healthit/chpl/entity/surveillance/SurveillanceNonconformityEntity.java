@@ -2,10 +2,7 @@ package gov.healthit.chpl.entity.surveillance;
 
 import java.time.LocalDate;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,11 +10,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
@@ -98,12 +92,6 @@ public class SurveillanceNonconformityEntity {
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "nonconformityId")
-    @Basic(optional = false)
-    @Column(name = "surveillance_nonconformity_id", nullable = false)
-    @Where(clause = "deleted <> 'true'")
-    private Set<SurveillanceNonconformityDocumentationEntity> documents = new HashSet<SurveillanceNonconformityDocumentationEntity>();
-
     public SurveillanceNonconformity toDomain(CertificationCriterionService certificationCriterionService) {
         SurveillanceNonconformity nc = SurveillanceNonconformity.builder()
                 .capApprovalDay(this.getCapApproval())
@@ -127,12 +115,6 @@ public class SurveillanceNonconformityEntity {
 
         if (nc.getType().getClassification().equals(NonconformityClassification.CRITERION)) {
             nc.setCriterion(certificationCriterionService.get(nc.getType().getId()));
-        }
-
-        if (this.getDocuments() != null && this.getDocuments().size() > 0) {
-            nc.setDocuments(this.getDocuments().stream()
-                    .map(e -> e.toDomain())
-                    .toList());
         }
 
         return nc;
