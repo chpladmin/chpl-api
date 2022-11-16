@@ -165,6 +165,13 @@ public class CertificationResultRules {
                         .optionName(TEST_TOOLS_USED)
                         .build());
             }
+            if (attribute.getTestData()) {
+                rules.get(attribute.getCriterion().getNumber()).add(
+                        CertificationResultOption.builder()
+                        .canHaveOption(true)
+                        .optionName(TEST_DATA)
+                        .build());
+            }
         }
     }
 
