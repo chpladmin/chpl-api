@@ -149,7 +149,7 @@ public class UcdProcessReviewer implements Reviewer {
     }
 
     private boolean hasFuzzyMatch(CertifiedProductUcdProcess ucdProcess) {
-        return ucdProcess.getId() == null
+        return !StringUtils.isEmpty(ucdProcess.getUserEnteredName())
                 && !StringUtils.isEmpty(ucdProcess.getName())
                 && !StringUtils.equals(ucdProcess.getName(), ucdProcess.getUserEnteredName());
     }
