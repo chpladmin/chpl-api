@@ -64,6 +64,10 @@ public class UcdProcessNormalizer {
     }
 
     private void lookForFuzzyMatch(CertifiedProductSearchDetails listing, CertifiedProductUcdProcess ucdProcess) {
+        if (StringUtils.isEmpty(ucdProcess.getName())) {
+            return;
+        }
+
         String topFuzzyChoice = fuzzyChoicesManager.getTopFuzzyChoice(ucdProcess.getName(), FuzzyType.UCD_PROCESS);
         if (!StringUtils.isEmpty(topFuzzyChoice)) {
             ucdProcess.setUserEnteredName(ucdProcess.getName());
