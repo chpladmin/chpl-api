@@ -7,9 +7,10 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.entity.FuzzyChoicesEntity;
+import gov.healthit.chpl.entity.FuzzyType;
 
+//TODO: After OCD-4040 and OCD-4041 we should no longer need this class
 public class FuzzyChoicesDTO {
     private Long id;
     private FuzzyType fuzzyType;

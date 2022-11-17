@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
 import javax.persistence.Query;
 
@@ -51,11 +52,15 @@ public class FuzzyChoicesDAO extends BaseDAOImpl {
     }
 
     @Transactional
+    @Deprecated
     public List<FuzzyChoicesDTO> findAllTypes() throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException {
-        List<FuzzyChoicesEntity> entities = entityManager
-            .createQuery("SELECT fuzzy FROM FuzzyChoicesEntity fuzzy WHERE (fuzzy.deleted <> true) ",
-                         FuzzyChoicesEntity.class)
-            .getResultList();
+        Query query = entityManager.createQuery("SELECT fuzzy "
+                    + "FROM FuzzyChoicesEntity fuzzy "
+                    + "WHERE fuzzyType NOT IN (:fuzzyTypesToExclude) "
+                    + "AND (fuzzy.deleted <> true) ",
+                         FuzzyChoicesEntity.class);
+        query.setParameter("fuzzyTypesToExclude", Stream.of(FuzzyType.UCD_PROCESS).toList());
+        List<FuzzyChoicesEntity> entities = query.getResultList();
 
         List<FuzzyChoicesDTO> dtos = new ArrayList<FuzzyChoicesDTO>();
         for (FuzzyChoicesEntity entity : entities) {

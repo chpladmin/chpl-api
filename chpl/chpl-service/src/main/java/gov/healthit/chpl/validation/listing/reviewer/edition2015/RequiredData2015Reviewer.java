@@ -15,7 +15,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -64,28 +63,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 for (CertificationResult cert : listing.getCertificationResults()) {
                     if (cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE)
                             && cert.getCriterion().getNumber().equals(UCD_RELATED_CERTS[i])) {
-                        // make sure at least one UCD process has this criteria number
-                        if (cert.isSed()) {
-                            if (listing.getSed() == null || listing.getSed().getUcdProcesses() == null
-                                    || listing.getSed().getUcdProcesses().size() == 0) {
-                                addCriterionError(listing, cert, "listing.criteria.missingUcdProcess",
-                                        Util.formatCriteriaNumber(cert.getCriterion()));
-                            } else {
-
-                                boolean foundCriteria = false;
-                                for (UcdProcess ucd : listing.getSed().getUcdProcesses()) {
-                                    for (CertificationCriterion criteria : ucd.getCriteria()) {
-                                        if (criteria.getId().equals(cert.getCriterion().getId())) {
-                                            foundCriteria = true;
-                                        }
-                                    }
-                                }
-                                if (!foundCriteria) {
-                                    addCriterionError(listing, cert, "listing.criteria.missingUcdProcess",
-                                            Util.formatCriteriaNumber(cert.getCriterion()));
-                                }
-                            }
-                        }
                         if (cert.isSed()) {
                             if (listing.getSed() == null || listing.getSed().getTestTasks() == null
                                     || listing.getSed().getTestTasks().size() == 0) {

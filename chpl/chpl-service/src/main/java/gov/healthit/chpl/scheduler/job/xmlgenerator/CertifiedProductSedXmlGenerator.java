@@ -10,7 +10,7 @@ public class CertifiedProductSedXmlGenerator extends XmlGenerator {
         if (sed != null) {
             sw.writeStartElement(rootNodeName);
             TestTaskXmlGenerator.add(sed.getTestTasks(), "testTasks", sw);
-            UcdProcessXmlGenerator.add(sed.getUcdProcesses(), "ucdProcesses", sw);
+            CertifiedProductUcdProcessXmlGenerator.add(sed.getUcdProcesses(), "ucdProcesses", sw);
             sw.writeEndElement();
         }
     }

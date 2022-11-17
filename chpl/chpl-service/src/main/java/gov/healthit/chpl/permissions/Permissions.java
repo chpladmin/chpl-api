@@ -31,6 +31,7 @@ import gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SvapDomainPermissions;
 import gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions;
+import gov.healthit.chpl.permissions.domains.UcdProcessDomainPermissions;
 import gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions;
 
 @Component
@@ -61,6 +62,7 @@ public class Permissions {
     public static final String CHANGE_REQUEST = "CHANGE_REQUEST";
     public static final String REAL_WORLD_TESTING = "REAL_WORLD_TESTING";
     public static final String SVAP = "SVAP";
+    public static final String UCD_PROCESS = "UCD_PROCESS";
     public static final String ATTESTATION = "ATTESTATION";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
@@ -91,6 +93,7 @@ public class Permissions {
             ChangeRequestDomainPermissions changeRequestDomainPermissions,
             RealWorldTestingDomainPermissions realWorldTestingDomainPermissions,
             SvapDomainPermissions svapDomainPermissions,
+            UcdProcessDomainPermissions ucdProcessDomainPermissions,
             AttestationDomainPermissions attestationDomainPermissions) {
 
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
@@ -117,6 +120,7 @@ public class Permissions {
         domainPermissions.put(CHANGE_REQUEST, changeRequestDomainPermissions);
         domainPermissions.put(REAL_WORLD_TESTING, realWorldTestingDomainPermissions);
         domainPermissions.put(SVAP, svapDomainPermissions);
+        domainPermissions.put(UCD_PROCESS, ucdProcessDomainPermissions);
         domainPermissions.put(ATTESTATION, attestationDomainPermissions);
     }
 

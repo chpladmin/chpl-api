@@ -3,7 +3,6 @@ package gov.healthit.chpl.upload.listing.handler;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,8 +94,8 @@ public class ListingDetailsUploadHandler {
                 .measures(measuresUploadHandler.parseAsMeasures(headingRecord, listingRecords))
                 .sedReportFileLocation(parseSedReportLocationUrl(headingRecord, listingRecords))
                 .sedIntendedUserDescription(parseSedIntendedUserDescription(headingRecord, listingRecords))
-                .sedTestingEndDate(parseSedTestingDate(headingRecord, listingRecords))
-                .sedTestingEndDateStr(parseSedTestingDateStr(headingRecord, listingRecords))
+                .sedTestingEndDay(parseSedTestingDay(headingRecord, listingRecords))
+                .sedTestingEndDateStr(parseSedTestingDayStr(headingRecord, listingRecords))
                 .sed(sedUploadHandler.parseAsSed(headingRecord, listingRecords))
             .build();
 
@@ -237,17 +236,17 @@ public class ListingDetailsUploadHandler {
         return uploadUtil.parseSingleRowField(Headings.SED_INTENDED_USERS, headingRecord, listingRecords);
     }
 
-    private Date parseSedTestingDate(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
-        Date sedTestingDate = null;
+    private LocalDate parseSedTestingDay(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+        LocalDate sedTestingDate = null;
         try {
-            sedTestingDate = uploadUtil.parseSingleRowFieldAsDate(
+            sedTestingDate = uploadUtil.parseSingleRowFieldAsLocalDate(
                     Headings.SED_TESTING_DATE, headingRecord, listingRecords);
         } catch (Exception ex) {
         }
         return sedTestingDate;
     }
 
-    private String parseSedTestingDateStr(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+    private String parseSedTestingDayStr(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         return uploadUtil.parseSingleRowField(Headings.SED_TESTING_DATE, headingRecord, listingRecords);
     }
 }

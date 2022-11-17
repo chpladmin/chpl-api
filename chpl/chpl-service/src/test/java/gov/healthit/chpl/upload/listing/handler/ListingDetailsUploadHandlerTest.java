@@ -571,7 +571,7 @@ public class ListingDetailsUploadHandlerTest {
 
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
         assertNotNull(listing);
-        assertNull(listing.getSedTestingEndDate());
+        assertNull(listing.getSedTestingEndDay());
     }
 
     @Test
@@ -584,7 +584,23 @@ public class ListingDetailsUploadHandlerTest {
 
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
         assertNotNull(listing);
-        assertNotNull(listing.getSedTestingEndDate());
+        assertNotNull(listing.getSedTestingEndDay());
+        assertEquals(LocalDate.parse("2020-09-09"), listing.getSedTestingEndDay());
+    }
+
+    @Test
+    public void buildListing_SedTestingDateLocalDateValue_ReturnsNull() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
+                HEADER_ROW_BEGIN + ",Date SED Testing was Concluded").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",2022-01-01");
+        assertNotNull(listingRecords);
+
+        CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
+        assertNotNull(listing.getSedTestingEndDay());
+        assertEquals(LocalDate.parse("2022-01-01"), listing.getSedTestingEndDay());
+        assertNotNull(listing.getSedTestingEndDateStr());
+        assertEquals("2022-01-01", listing.getSedTestingEndDateStr());
     }
 
     @Test
@@ -597,7 +613,7 @@ public class ListingDetailsUploadHandlerTest {
 
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
         assertNotNull(listing);
-        assertNull(listing.getSedTestingEndDate());
+        assertNull(listing.getSedTestingEndDay());
     }
 
     @Test
@@ -609,7 +625,7 @@ public class ListingDetailsUploadHandlerTest {
         assertNotNull(listingRecords);
 
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
-        assertNull(listing.getSedTestingEndDate());
+        assertNull(listing.getSedTestingEndDay());
         assertNotNull(listing.getSedTestingEndDateStr());
         assertEquals("BADDATE", listing.getSedTestingEndDateStr());
     }

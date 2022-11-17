@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.domain.UcdProcess;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 
@@ -25,8 +25,8 @@ public class UcdProcessUploadHandler {
         this.uploadUtil = uploadUtil;
     }
 
-    public List<UcdProcess> handle(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        List<UcdProcess> ucdProcesses = new ArrayList<UcdProcess>();
+    public List<CertifiedProductUcdProcess> handle(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
+        List<CertifiedProductUcdProcess> ucdProcesses = new ArrayList<CertifiedProductUcdProcess>();
         List<String> ucdNames = parseUcdNames(certHeadingRecord, certResultRecords);
         List<String> ucdDetails = parseUcdDetails(certHeadingRecord, certResultRecords);
         if (uploadUtil.areCollectionsEmpty(ucdNames, ucdDetails)) {
@@ -48,7 +48,7 @@ public class UcdProcessUploadHandler {
         return ucdProcesses;
     }
 
-    private UcdProcess buildUcdProcess(int index, List<String> ucdNames, List<String> ucdDetails) {
+    private CertifiedProductUcdProcess buildUcdProcess(int index, List<String> ucdNames, List<String> ucdDetails) {
         String ucdName = (ucdNames != null && ucdNames.size() > index) ? ucdNames.get(index) : null;
         String ucdDetail = (ucdDetails != null && ucdDetails.size() > index)
                 ? ucdDetails.get(index) : null;
@@ -57,7 +57,7 @@ public class UcdProcessUploadHandler {
             return null;
         }
 
-        return UcdProcess.builder()
+        return CertifiedProductUcdProcess.builder()
                 .name(ucdName)
                 .details(ucdDetail)
         .build();

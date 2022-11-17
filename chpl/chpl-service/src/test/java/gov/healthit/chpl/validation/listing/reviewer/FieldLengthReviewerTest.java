@@ -23,6 +23,7 @@ import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
@@ -30,7 +31,6 @@ import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestProcedure;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class FieldLengthReviewerTest {
@@ -804,52 +804,6 @@ public class FieldLengthReviewerTest {
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "SED Report Hyperlink", "placeholder")));
-    }
-
-    @Test
-    public void review_nullUcdProcesses_noError() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder().build())
-                .build();
-        listing.getSed().setUcdProcesses(null);
-        reviewer.review(listing);
-        assertEquals(0, listing.getErrorMessages().size());
-    }
-
-    @Test
-    public void review_emptyUcdProcesses_noError() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder().build())
-                .build();
-        reviewer.review(listing);
-        assertEquals(0, listing.getErrorMessages().size());
-    }
-
-    @Test
-    public void review_shortUcdProcessName_noError() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder().build())
-                .build();
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
-                .name("name")
-                .details("some details")
-                .build());
-        reviewer.review(listing);
-        assertEquals(0, listing.getErrorMessages().size());
-    }
-
-    @Test
-    public void review_longUcdProcessName_hasError() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .sed(CertifiedProductSed.builder().build())
-                .build();
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
-                .name(createStringLongerThan(20, "A"))
-                .details("some details")
-                .build());
-        reviewer.review(listing);
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "UCD Process Name", "placeholder")));
     }
 
     @Test

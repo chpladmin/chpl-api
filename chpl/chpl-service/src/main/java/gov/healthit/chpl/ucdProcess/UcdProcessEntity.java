@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.ucdProcess;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -45,4 +45,11 @@ public class UcdProcessEntity implements Serializable {
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
+
+    public UcdProcess toDomain() {
+        return UcdProcess.builder()
+                .id(getId())
+                .name(getName())
+                .build();
+    }
 }

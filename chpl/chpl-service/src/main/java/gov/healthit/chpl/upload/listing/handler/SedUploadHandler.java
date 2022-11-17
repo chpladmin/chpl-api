@@ -21,9 +21,9 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSed;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import lombok.extern.log4j.Log4j2;
@@ -55,7 +55,7 @@ public class SedUploadHandler {
         List<TestTask> availableTestTasks = testTaskHandler.handle(headingRecord, listingRecords);
         List<TestParticipant> availableTestParticipants = testParticipantHandler.handle(headingRecord, listingRecords);
         List<TestTask> testTasks = new ArrayList<TestTask>();
-        List<UcdProcess> ucdProcesses = new ArrayList<UcdProcess>();
+        List<CertifiedProductUcdProcess> allUcdProcessesOnListing = new ArrayList<CertifiedProductUcdProcess>();
 
         int prevCertResultIndex = -1;
         int nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(0, headingRecord);
@@ -65,9 +65,9 @@ public class SedUploadHandler {
             CSVRecord certHeadingRecord = uploadUtil.getHeadingRecord(parsedCertResultRecords);
             CertificationCriterion criterion = criterionHandler.handle(certHeadingRecord);
             if (criterion != null) {
-                List<UcdProcess> certResultUcdProcesses = ucdHandler.handle(certHeadingRecord,
+                List<CertifiedProductUcdProcess> certResultUcdProcesses = ucdHandler.handle(certHeadingRecord,
                         parsedCertResultRecords.subList(1, parsedCertResultRecords.size()));
-                updateUcdProcessList(ucdProcesses, certResultUcdProcesses, criterion);
+                updateUcdProcessList(allUcdProcessesOnListing, certResultUcdProcesses, criterion);
 
                 List<TestTask> certResultTestTasks = parseTestTaskIdsWithParticipantIds(
                         certHeadingRecord, parsedCertResultRecords.subList(1, parsedCertResultRecords.size()));
@@ -80,36 +80,38 @@ public class SedUploadHandler {
 
         CertifiedProductSed sed = CertifiedProductSed.builder()
                 .testTasks(testTasks)
-                .ucdProcesses(ucdProcesses)
+                .ucdProcesses(allUcdProcessesOnListing)
             .build();
         updateUnusedTaskAndParticipantIds(sed, availableTestTasks, availableTestParticipants);
         return sed;
     }
 
-    private void updateUcdProcessList(List<UcdProcess> ucdProcesses, List<UcdProcess> certResultUcdProcesses,
+    private void updateUcdProcessList(List<CertifiedProductUcdProcess> allUcdProcessesOnListing, List<CertifiedProductUcdProcess> certResultUcdProcesses,
             CertificationCriterion criterion) {
         certResultUcdProcesses.stream().forEach(certResultUcdProcess -> {
-            if (listingContainsUcdProcess(ucdProcesses, certResultUcdProcess)) {
-                addCriteriaToExistingUcdProcess(ucdProcesses, certResultUcdProcess, criterion);
+            if (listingContainsUcdProcess(allUcdProcessesOnListing, certResultUcdProcess)) {
+                addCriteriaToExistingUcdProcess(allUcdProcessesOnListing, certResultUcdProcess, criterion);
             } else {
                 Set<CertificationCriterion> criteriaSet = new LinkedHashSet<CertificationCriterion>();
                 criteriaSet.add(criterion);
                 certResultUcdProcess.setCriteria(criteriaSet);
-                ucdProcesses.add(certResultUcdProcess);
+                allUcdProcessesOnListing.add(certResultUcdProcess);
             }
         });
     }
 
-    private boolean listingContainsUcdProcess(List<UcdProcess> listingUcdProcesses, UcdProcess certResultUcdProcess) {
+    private boolean listingContainsUcdProcess(List<CertifiedProductUcdProcess> listingUcdProcesses, CertifiedProductUcdProcess certResultUcdProcess) {
         return listingUcdProcesses.stream()
-            .filter(listingUcdProcess -> listingUcdProcess.getName().equals(certResultUcdProcess.getName()))
+            .filter(listingUcdProcess -> listingUcdProcess.getName()
+                    .equals(certResultUcdProcess.getName()))
             .findAny().isPresent();
     }
 
-    private void addCriteriaToExistingUcdProcess(List<UcdProcess> listingUcdProcesses, UcdProcess certResultUcdProcess,
+    private void addCriteriaToExistingUcdProcess(List<CertifiedProductUcdProcess> listingUcdProcesses, CertifiedProductUcdProcess certResultUcdProcess,
             CertificationCriterion criterion) {
         listingUcdProcesses.stream()
-            .filter(listingUcdProcess -> listingUcdProcess.getName().equals(certResultUcdProcess.getName()))
+            .filter(listingUcdProcess -> listingUcdProcess.getName()
+                    .equals(certResultUcdProcess.getName()))
             .forEach(listingUcdProcess -> {
                 listingUcdProcess.getCriteria().add(criterion);
             });

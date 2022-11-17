@@ -26,9 +26,9 @@ import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
@@ -40,7 +40,6 @@ import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
-import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.entity.TestParticipantEntity;
 import gov.healthit.chpl.entity.TestTaskEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultAdditionalSoftwareEntity;
@@ -67,15 +66,13 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class CertificationResultDAO extends BaseDAOImpl {
     private static final Logger LOGGER = LogManager.getLogger(CertificationResultDAO.class);
 
-    private UcdProcessDAO ucdProcessDao;
     private TestParticipantDAO participantDao;
     private TestTaskDAO testTaskDao;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public CertificationResultDAO(UcdProcessDAO ucdProcessDao, TestParticipantDAO participantDao,
+    public CertificationResultDAO(TestParticipantDAO participantDao,
             TestTaskDAO testTaskDao, ErrorMessageUtil msgUtil) {
-        this.ucdProcessDao = ucdProcessDao;
         this.participantDao = participantDao;
         this.testTaskDao = testTaskDao;
         this.msgUtil = msgUtil;
@@ -284,7 +281,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
      *******************************************************/
 
     public List<CertificationResultUcdProcessDTO> getUcdProcessesForCertificationResult(Long certificationResultId) {
-
         List<CertificationResultUcdProcessEntity> entities = getUcdProcessesForCertification(certificationResultId);
         List<CertificationResultUcdProcessDTO> dtos = new ArrayList<CertificationResultUcdProcessDTO>();
 
@@ -295,9 +291,12 @@ public class CertificationResultDAO extends BaseDAOImpl {
     }
 
     public CertificationResultUcdProcessDTO lookupUcdProcessMapping(Long certificationResultId, Long ucdProcessId) {
-        Query query = entityManager.createQuery("SELECT up " + "FROM CertificationResultUcdProcessEntity up "
-                + "LEFT OUTER JOIN FETCH up.ucdProcess " + "where (NOT up.deleted = true) "
-                + "AND (certification_result_id = :certificationResultId) " + "AND up.ucdProcessId = :ucdProcessId",
+        Query query = entityManager.createQuery("SELECT up "
+                + "FROM CertificationResultUcdProcessEntity up "
+                + "LEFT OUTER JOIN FETCH up.ucdProcess "
+                + "WHERE (NOT up.deleted = true) "
+                + "AND (certification_result_id = :certificationResultId) "
+                + "AND up.ucdProcessId = :ucdProcessId",
                 CertificationResultUcdProcessEntity.class);
         query.setParameter("certificationResultId", certificationResultId);
         query.setParameter("ucdProcessId", ucdProcessId);
@@ -310,23 +309,18 @@ public class CertificationResultDAO extends BaseDAOImpl {
         return result;
     }
 
-    public Long createUcdProcessMapping(Long certificationResultId, UcdProcess ucdProcess) throws EntityCreationException {
+    public Long createUcdProcessMapping(Long certificationResultId, CertifiedProductUcdProcess ucdProcess) throws EntityCreationException {
         try {
             CertificationResultUcdProcessEntity mapping = new CertificationResultUcdProcessEntity();
             mapping.setCertificationResultId(certificationResultId);
-
-            if (ucdProcess.getId() == null) {
-                UcdProcessDTO foundUcdProcess = ucdProcessDao.findOrCreate(ucdProcess.getId(), ucdProcess.getName());
-                mapping.setUcdProcessId(foundUcdProcess.getId());
-            } else {
-                mapping.setUcdProcessId(ucdProcess.getId());
-            }
-
+            mapping.setUcdProcessId(ucdProcess.getId());
             mapping.setUcdProcessDetails(ucdProcess.getDetails());
             mapping.setLastModifiedUser(AuthUtil.getAuditId());
             create(mapping);
             return mapping.getId();
         } catch (Exception ex) {
+            String msg = msgUtil.getMessage("listing.criteria.badUcdProcess", ucdProcess.getName());
+            LOGGER.error(msg, ex);
             throw new EntityCreationException(ex);
         }
     }
@@ -342,8 +336,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
         mapping.setLastModifiedDate(new Date());
         mapping.setLastModifiedUser(AuthUtil.getAuditId());
         try {
-            entityManager.persist(mapping);
-            entityManager.flush();
+            create(mapping);
         } catch (Exception ex) {
             String msg = msgUtil.getMessage("listing.criteria.badUcdProcess", dto.getUcdProcessName());
             LOGGER.error(msg, ex);
@@ -375,8 +368,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
         toUpdate.setLastModifiedDate(new Date());
         toUpdate.setLastModifiedUser(AuthUtil.getAuditId());
         try {
-            entityManager.persist(toUpdate);
-            entityManager.flush();
+            update(toUpdate);
         } catch (Exception ex) {
             String msg = msgUtil.getMessage("listing.criteria.badUcdProcess", dto.getUcdProcessName());
             LOGGER.error(msg, ex);
@@ -388,10 +380,12 @@ public class CertificationResultDAO extends BaseDAOImpl {
             Long ucdProcessId) {
         CertificationResultUcdProcessEntity entity = null;
 
-        Query query = entityManager.createQuery(
-                "SELECT certUcd " + "FROM CertificationResultUcdProcessEntity certUcd "
-                        + "LEFT OUTER JOIN FETCH certUcd.ucdProcess ucd " + "WHERE (NOT certUcd.deleted = true) "
-                        + "AND (ucd.id = :ucdProcessId) " + "AND certUcd.certificationResultId = :certResultId ",
+        Query query = entityManager.createQuery("SELECT certUcd "
+                + "FROM CertificationResultUcdProcessEntity certUcd "
+                + "LEFT OUTER JOIN FETCH certUcd.ucdProcess ucd "
+                + "WHERE (NOT certUcd.deleted = true) "
+                + "AND (ucd.id = :ucdProcessId) "
+                + "AND certUcd.certificationResultId = :certResultId ",
                 CertificationResultUcdProcessEntity.class);
         query.setParameter("ucdProcessId", ucdProcessId);
         query.setParameter("certResultId", certResultId);
@@ -404,12 +398,13 @@ public class CertificationResultDAO extends BaseDAOImpl {
     }
 
     private List<CertificationResultUcdProcessEntity> getUcdProcessesForCertification(Long certificationResultId) {
-        Query query = entityManager.createQuery(
-                "SELECT up " + "FROM CertificationResultUcdProcessEntity up " + "LEFT OUTER JOIN FETCH up.ucdProcess "
-                        + "where (NOT up.deleted = true) AND (certification_result_id = :certificationResultId) ",
+        Query query = entityManager.createQuery("SELECT up "
+                + "FROM CertificationResultUcdProcessEntity up "
+                + "LEFT OUTER JOIN FETCH up.ucdProcess "
+                + "WHERE (NOT up.deleted = true) "
+                + "AND (up.certificationResultId = :certificationResultId) ",
                 CertificationResultUcdProcessEntity.class);
         query.setParameter("certificationResultId", certificationResultId);
-
         return query.getResultList();
     }
 

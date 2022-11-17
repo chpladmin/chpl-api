@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Date;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Developer;
@@ -38,7 +38,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private String reportFileLocation;
     private String sedReportFileLocation;
     private String sedIntendedUserDescription;
-    private Date sedTestingEnd;
+    private LocalDate sedTestingEnd;
     private String acbCertificationId;
     private Long practiceTypeId;
     private String practiceTypeName;
