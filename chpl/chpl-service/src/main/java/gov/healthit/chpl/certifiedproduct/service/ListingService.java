@@ -41,6 +41,7 @@ import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.service.DirectReviewSearchService;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -140,7 +141,8 @@ public class ListingService {
                 .reportFileLocation(dto.getReportFileLocation())
                 .sedReportFileLocation(dto.getSedReportFileLocation())
                 .sedIntendedUserDescription(dto.getSedIntendedUserDescription())
-                .sedTestingEndDate(dto.getSedTestingEnd())
+                .sedTestingEndDate(DateUtil.toDate(dto.getSedTestingEnd()))
+                .sedTestingEndDay(dto.getSedTestingEnd())
                 .testingLabs(getTestingLabs(dto.getId()))
                 .developer(dto.getDeveloper())
                 .product(dto.getProduct())

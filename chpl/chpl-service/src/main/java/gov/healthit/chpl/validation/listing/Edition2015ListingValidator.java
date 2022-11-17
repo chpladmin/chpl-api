@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.upload.listing.validation.reviewer.UcdProcessReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberComparisonReviewer;
@@ -238,6 +239,10 @@ public class Edition2015ListingValidator extends Validator {
     private ConformanceMethodReviewer conformanceMethodReviewer;
 
     @Autowired
+    @Qualifier("ucdProcessReviewer")
+    private UcdProcessReviewer ucdProcessReviewer;
+
+    @Autowired
     @Qualifier("deprecatedFieldReviewer")
     private DeprecatedFieldReviewer deprecatedFieldReviewer;
 
@@ -266,6 +271,7 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(testingLabReviewer);
         reviewers.add(validDataReviewer);
         reviewers.add(sedG3Reviewer);
+        reviewers.add(ucdProcessReviewer);
         reviewers.add(oldCriteriaWithoutIcsReviewer);
         reviewers.add(certStatusReviewer);
         reviewers.add(certDateReviewer);

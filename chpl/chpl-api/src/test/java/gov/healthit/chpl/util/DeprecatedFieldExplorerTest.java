@@ -117,6 +117,7 @@ public class DeprecatedFieldExplorerTest {
         assertNotNull(deprecatedItems);
         assertEquals(12, deprecatedItems.keySet().size());
         Set<String> deprecatedItemNames = deprecatedItems.keySet();
+        assertTrue(deprecatedItemNames.contains("sedTestingEndDate"));
         assertTrue(deprecatedItemNames.contains("developer" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedItemNames.contains("product" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "owner" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedItemNames.contains("product" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "ownerHistory" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developer" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developerId"));
@@ -137,6 +138,7 @@ public class DeprecatedFieldExplorerTest {
         assertNotNull(deprecatedItems);
         assertEquals(12, deprecatedItems.size());
         Set<String> deprecatedItemNames = deprecatedItems.keySet();
+        assertTrue(deprecatedItemNames.contains("sedTestingEndDate"));
         assertTrue(deprecatedItemNames.contains("developer" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedItemNames.contains("product" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "owner" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developerId"));
         assertTrue(deprecatedItemNames.contains("product" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "ownerHistory" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developer" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "developerId"));

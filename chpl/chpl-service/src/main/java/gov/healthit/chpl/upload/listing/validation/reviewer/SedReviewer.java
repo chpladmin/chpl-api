@@ -24,7 +24,7 @@ public class SedReviewer {
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public SedReviewer(@Qualifier("listingUploadUcdProcessReviewer") UcdProcessReviewer ucdProcessReviewer,
+    public SedReviewer(@Qualifier("ucdProcessReviewer") UcdProcessReviewer ucdProcessReviewer,
             @Qualifier("listingUploadTestTaskReviewer") TestTaskReviewer testTaskReviewer,
             @Qualifier("listingUploadTestParticipantReviewer") TestParticipantReviewer testParticipantReviewer,
             CertificationResultRules certResultRules,

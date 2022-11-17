@@ -15,7 +15,8 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSed;
-import gov.healthit.chpl.domain.UcdProcess;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
+import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -25,6 +26,7 @@ public class UcdProcessReviewerTest {
     private static final String UCD_NOT_APPLICABLE = "UCD Processes are not applicable for the criterion %s.";
     private static final String UCD_NOT_FOUND_AND_REMOVED = "UCD Process '%s' referenced by criteria %s was not found and has been removed.";
     private static final String MISSING_UCD_PROCESS = "Certification %s requires at least one UCD process.";
+    private static final String FUZZY_MATCH_REPLACEMENT = "The %s value was changed from %s to %s.";
 
     private CertificationResultRules certResultRules;
     private CertificationCriterionService criteriaService;
@@ -45,6 +47,9 @@ public class UcdProcessReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingUcdProcess"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(MISSING_UCD_PROCESS, i.getArgument(1), ""));
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.fuzzyMatch"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(FUZZY_MATCH_REPLACEMENT, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
 
         criteriaService = Mockito.mock(CertificationCriterionService.class);
         a1 = CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("a1").removed(false).build();
@@ -104,7 +109,7 @@ public class UcdProcessReviewerTest {
                         .build())
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                 .id(1L)
                 .criterion(a3)
                 .name("UCD Name")
@@ -127,7 +132,7 @@ public class UcdProcessReviewerTest {
                         .build())
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                                 .id(1L)
                                 .criterion(a3)
                                 .name("UCD Name")
@@ -150,7 +155,7 @@ public class UcdProcessReviewerTest {
                         .build())
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                                 .id(1L)
                                 .criterion(a3)
                                 .name("UCD Name")
@@ -173,7 +178,7 @@ public class UcdProcessReviewerTest {
                         .build())
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                 .id(1L)
                 .criterion(a6)
                 .name("UCD Name")
@@ -195,7 +200,7 @@ public class UcdProcessReviewerTest {
                         .build())
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                                 .id(1L)
                                 .criterion(a6)
                                 .name("UCD Name")
@@ -217,7 +222,7 @@ public class UcdProcessReviewerTest {
                         .build())
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                                 .id(1L)
                                 .criterion(a6)
                                 .name("UCD Name")
@@ -230,7 +235,7 @@ public class UcdProcessReviewerTest {
     }
 
     @Test
-    public void review_ucdProcessWithoutIdIsRemoved_certResultAttested_hasWarningAndError() {
+    public void review_ucdProcessWithoutIdNoFuzzyMatchIsRemoved_certResultAttested_hasWarningAndError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .success(true)
@@ -240,7 +245,7 @@ public class UcdProcessReviewerTest {
                 .sed(CertifiedProductSed.builder()
                         .build())
                 .build();
-        UcdProcess ucdNotFound = UcdProcess.builder()
+        CertifiedProductUcdProcess ucdNotFound = CertifiedProductUcdProcess.builder()
                 .criterion(a1)
                 .name("UCD Name")
                 .details("some details")
@@ -266,7 +271,7 @@ public class UcdProcessReviewerTest {
                 .sed(CertifiedProductSed.builder()
                         .build())
                 .build();
-        UcdProcess ucdNotFound = UcdProcess.builder()
+        CertifiedProductUcdProcess ucdNotFound = CertifiedProductUcdProcess.builder()
                 .criterion(a1)
                 .name("UCD Name")
                 .details("some details")
@@ -296,7 +301,7 @@ public class UcdProcessReviewerTest {
                 .sed(CertifiedProductSed.builder()
                         .build())
                 .build();
-        UcdProcess ucdNotFound = UcdProcess.builder()
+        CertifiedProductUcdProcess ucdNotFound = CertifiedProductUcdProcess.builder()
                 .criterion(a1)
                 .criterion(a2)
                 .name("UCD Name")
@@ -324,7 +329,7 @@ public class UcdProcessReviewerTest {
                 .sed(CertifiedProductSed.builder()
                         .build())
                 .build();
-        UcdProcess ucdNotFound = UcdProcess.builder()
+        CertifiedProductUcdProcess ucdNotFound = CertifiedProductUcdProcess.builder()
                 .criterion(a3)
                 .name("UCD Name")
                 .details("some details")
@@ -349,7 +354,7 @@ public class UcdProcessReviewerTest {
                 .sed(CertifiedProductSed.builder()
                         .build())
                 .build();
-        UcdProcess ucdNotFound = UcdProcess.builder()
+        CertifiedProductUcdProcess ucdNotFound = CertifiedProductUcdProcess.builder()
                 .criterion(a6)
                 .name("UCD Name")
                 .details("some details")
@@ -359,6 +364,7 @@ public class UcdProcessReviewerTest {
 
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(0, listing.getSed().getUcdProcesses().size());
     }
 
     @Test
@@ -371,7 +377,7 @@ public class UcdProcessReviewerTest {
                         .build())
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                             .id(1L)
                             .name("UCD Name")
                             .details("some details")
@@ -398,7 +404,7 @@ public class UcdProcessReviewerTest {
                         .build())
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                             .id(1L)
                             .criterion(a1)
                             .name("UCD Name")
@@ -430,14 +436,14 @@ public class UcdProcessReviewerTest {
                         .build())
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                                 .id(1L)
                                 .criterion(a1)
                                 .criterion(a2)
                                 .name("UCD Name 1")
                                 .details("some details")
                                 .build());
-        listing.getSed().getUcdProcesses().add(UcdProcess.builder()
+        listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                                 .id(2L)
                                 .criterion(a2)
                                 .name("UCD Name 2")
@@ -447,5 +453,43 @@ public class UcdProcessReviewerTest {
 
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_hasIdAndUcdProcessNameDifferentThanUserEnteredName_hasFuzzyMatchWarning() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder()
+                        .ucdProcesses(Stream.of(CertifiedProductUcdProcess.builder()
+                                .name("ucd1")
+                                .id(1L)
+                                .userEnteredName("ucd 1")
+                                .build()).toList())
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getSed().getUcdProcesses().size());
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(FUZZY_MATCH_REPLACEMENT, FuzzyType.UCD_PROCESS.fuzzyType(), "ucd 1", "ucd1")));
+    }
+
+    @Test
+    public void review_hasNullIdAndUcdProcessNameDifferentThanUserEnteredName_hasFuzzyMatchWarning() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder()
+                        .ucdProcesses(Stream.of(CertifiedProductUcdProcess.builder()
+                                .name("ucd1")
+                                .id(null)
+                                .userEnteredName("ucd 1")
+                                .build()).toList())
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getSed().getUcdProcesses().size());
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(FUZZY_MATCH_REPLACEMENT, FuzzyType.UCD_PROCESS.fuzzyType(), "ucd 1", "ucd1")));
     }
 }

@@ -8,9 +8,9 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 
@@ -144,7 +144,7 @@ public class UnattestedCriteriaWithDataReviewer {
                             Util.formatCriteriaNumber(criterion), "Test Tasks")));
     }
 
-    private void addWarningIfUcdProcessCriterionIsNotAttestedTo(CertifiedProductSearchDetails listing, UcdProcess ucdProcess) {
+    private void addWarningIfUcdProcessCriterionIsNotAttestedTo(CertifiedProductSearchDetails listing, CertifiedProductUcdProcess ucdProcess) {
         ucdProcess.getCriteria().stream()
             .filter(criterion -> !isCriterionAttestedTo(listing, criterion))
             .forEach(criterion -> listing.getWarningMessages().add(
