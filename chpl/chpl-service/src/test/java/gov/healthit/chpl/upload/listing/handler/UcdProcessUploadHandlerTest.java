@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.domain.UcdProcess;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -36,7 +36,7 @@ public class UcdProcessUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1");
         assertNotNull(certResultRecords);
 
-        List<UcdProcess> parsedUcdProcesss = handler.handle(headingRecord, certResultRecords);
+        List<CertifiedProductUcdProcess> parsedUcdProcesss = handler.handle(headingRecord, certResultRecords);
         assertNotNull(parsedUcdProcesss);
         assertEquals(0, parsedUcdProcesss.size());
     }
@@ -48,7 +48,7 @@ public class UcdProcessUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,,");
         assertNotNull(certResultRecords);
 
-        List<UcdProcess> parsedUcdProcesss = handler.handle(headingRecord, certResultRecords);
+        List<CertifiedProductUcdProcess> parsedUcdProcesss = handler.handle(headingRecord, certResultRecords);
         assertNotNull(parsedUcdProcesss);
         assertEquals(0, parsedUcdProcesss.size());
     }
@@ -61,7 +61,7 @@ public class UcdProcessUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,");
         assertNotNull(certResultRecords);
 
-        List<UcdProcess> parsedUcdProcesss = handler.handle(headingRecord, certResultRecords);
+        List<CertifiedProductUcdProcess> parsedUcdProcesss = handler.handle(headingRecord, certResultRecords);
         assertNotNull(parsedUcdProcesss);
         assertEquals(0, parsedUcdProcesss.size());
     }
@@ -74,10 +74,10 @@ public class UcdProcessUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,UCD Name");
         assertNotNull(certResultRecords);
 
-        List<UcdProcess> parsedUcdProcesss = handler.handle(headingRecord, certResultRecords);
+        List<CertifiedProductUcdProcess> parsedUcdProcesss = handler.handle(headingRecord, certResultRecords);
         assertNotNull(parsedUcdProcesss);
         assertEquals(1, parsedUcdProcesss.size());
-        UcdProcess ucd = parsedUcdProcesss.get(0);
+        CertifiedProductUcdProcess ucd = parsedUcdProcesss.get(0);
         assertEquals("UCD Name", ucd.getName());
         assertNull(ucd.getDetails());
         assertNull(ucd.getId());
@@ -90,10 +90,10 @@ public class UcdProcessUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,NISTIR 7741,NISTIR 7741 was used");
         assertNotNull(certResultRecords);
 
-        List<UcdProcess> parsedUcdProcesss = handler.handle(headingRecord, certResultRecords);
+        List<CertifiedProductUcdProcess> parsedUcdProcesss = handler.handle(headingRecord, certResultRecords);
         assertNotNull(parsedUcdProcesss);
         assertEquals(1, parsedUcdProcesss.size());
-        UcdProcess ucd = parsedUcdProcesss.get(0);
+        CertifiedProductUcdProcess ucd = parsedUcdProcesss.get(0);
         assertEquals("NISTIR 7741", ucd.getName());
         assertEquals("NISTIR 7741 was used", ucd.getDetails());
         assertNull(ucd.getId());
@@ -107,10 +107,10 @@ public class UcdProcessUploadHandlerTest {
                 "1,NISTIR 7741,NISTIR 7741 was used\n,,");
         assertNotNull(certResultRecords);
 
-        List<UcdProcess> parsedUcdProcesss = handler.handle(headingRecord, certResultRecords);
+        List<CertifiedProductUcdProcess> parsedUcdProcesss = handler.handle(headingRecord, certResultRecords);
         assertNotNull(parsedUcdProcesss);
         assertEquals(1, parsedUcdProcesss.size());
-        UcdProcess ucd = parsedUcdProcesss.get(0);
+        CertifiedProductUcdProcess ucd = parsedUcdProcesss.get(0);
         assertEquals("NISTIR 7741", ucd.getName());
         assertEquals("NISTIR 7741 was used", ucd.getDetails());
         assertNull(ucd.getId());
@@ -124,7 +124,7 @@ public class UcdProcessUploadHandlerTest {
                 "1,NISTIR 7741,NISTIR 7741 was used" + "\n" + ",UCD 2,UCD 2 was used");
         assertNotNull(certResultRecords);
 
-        List<UcdProcess> parsedUcdProcesss = handler.handle(headingRecord, certResultRecords);
+        List<CertifiedProductUcdProcess> parsedUcdProcesss = handler.handle(headingRecord, certResultRecords);
         assertNotNull(parsedUcdProcesss);
         assertEquals(2, parsedUcdProcesss.size());
         parsedUcdProcesss.stream().forEach(ucd -> {
@@ -149,10 +149,10 @@ public class UcdProcessUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,details,ucd name");
         assertNotNull(certResultRecords);
 
-        List<UcdProcess> parsedUcdProcesss = handler.handle(headingRecord, certResultRecords);
+        List<CertifiedProductUcdProcess> parsedUcdProcesss = handler.handle(headingRecord, certResultRecords);
         assertNotNull(parsedUcdProcesss);
         assertEquals(1, parsedUcdProcesss.size());
-        UcdProcess ucd = parsedUcdProcesss.get(0);
+        CertifiedProductUcdProcess ucd = parsedUcdProcesss.get(0);
         assertEquals("ucd name", ucd.getName());
         assertEquals("details", ucd.getDetails());
     }

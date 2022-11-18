@@ -59,7 +59,7 @@ public class CertifiedProductDetailsEntitySimple {
 
     @Basic(optional = true)
     @Column(name = "sed_testing_end")
-    private Date sedTestingEnd;
+    private LocalDate sedTestingEnd;
 
     @Column(name = "acb_certification_id")
     private String acbCertificationId;

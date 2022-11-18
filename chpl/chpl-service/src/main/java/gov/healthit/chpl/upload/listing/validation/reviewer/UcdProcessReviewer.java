@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,15 +16,17 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.UcdProcess;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
+import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
-@Component("listingUploadUcdProcessReviewer")
-public class UcdProcessReviewer {
+@Component("ucdProcessReviewer")
+public class UcdProcessReviewer implements Reviewer {
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
@@ -51,37 +54,30 @@ public class UcdProcessReviewer {
         removeUcdProcessesNotFound(listing);
         reviewAllUcdProcessCriteriaAreAllowed(listing);
         reviewCertResultsHaveUcdProcessesIfRequired(listing);
+        addFuzzyMatchWarnings(listing);
     }
 
     private void removeUcdProcessesNotFound(CertifiedProductSearchDetails listing) {
-        List<UcdProcess> ucdProcesses = listing.getSed().getUcdProcesses();
+        List<CertifiedProductUcdProcess> ucdProcesses = listing.getSed().getUcdProcesses();
         if (!CollectionUtils.isEmpty(ucdProcesses)) {
-            List<UcdProcess> ucdProcessesWithoutIds = ucdProcesses.stream()
-                        .filter(currUcdProc -> doesUcdProcessHaveAnyNonRemovedCriteria(currUcdProc))
-                        .filter(currUcdProc -> currUcdProc.getId() == null)
-                        .collect(Collectors.toList());
+            List<CertifiedProductUcdProcess> ucdProcessesWithoutFuzzyMatchesOrIds = ucdProcesses.stream()
+                    .filter(currUcdProc -> StringUtils.isEmpty(currUcdProc.getUserEnteredName()))
+                    .filter(currUcdProc -> currUcdProc.getId() == null)
+                    .collect(Collectors.toList());
 
-            if (!CollectionUtils.isEmpty(ucdProcessesWithoutIds)) {
-                ucdProcesses.removeAll(ucdProcessesWithoutIds);
+            if (!CollectionUtils.isEmpty(ucdProcessesWithoutFuzzyMatchesOrIds)) {
+                ucdProcesses.removeAll(ucdProcessesWithoutFuzzyMatchesOrIds);
 
-                ucdProcessesWithoutIds.stream()
+                ucdProcessesWithoutFuzzyMatchesOrIds.stream()
+                    .filter(ucdProc -> doesUcdProcessHaveAnyNonRemovedCriteria(ucdProc))
                     .forEach(ucdProcWithoutId -> listing.getWarningMessages().add(
-                            msgUtil.getMessage("listing.criteria.ucdProcessNotFoundAndRemoved", ucdProcWithoutId.getName(),
+                            msgUtil.getMessage("listing.criteria.ucdProcessNotFoundAndRemoved",
+                                    ucdProcWithoutId.getName(),
                                     ucdProcWithoutId.getCriteria().stream()
-                                    .map(criterion -> Util.formatCriteriaNumber(criterion))
-                                    .collect(Collectors.joining(",")))));
+                                        .map(criterion -> Util.formatCriteriaNumber(criterion))
+                                        .collect(Collectors.joining(",")))));
             }
         }
-    }
-
-    private boolean doesUcdProcessHaveAnyNonRemovedCriteria(UcdProcess ucdProcess) {
-        if (CollectionUtils.isEmpty(ucdProcess.getCriteria())) {
-            return false;
-        }
-
-        return ucdProcess.getCriteria().stream()
-                .filter(criterion -> BooleanUtils.isFalse(criterion.getRemoved()))
-                .findAny().isPresent();
     }
 
     private void reviewAllUcdProcessCriteriaAreAllowed(CertifiedProductSearchDetails listing) {
@@ -94,6 +90,16 @@ public class UcdProcessReviewer {
                 .forEach(notAllowedUcdCriterion ->
                     listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.ucdProcessNotApplicable", Util.formatCriteriaNumber(notAllowedUcdCriterion))));
         }
+    }
+
+    private boolean doesUcdProcessHaveAnyNonRemovedCriteria(CertifiedProductUcdProcess ucdProcess) {
+        if (CollectionUtils.isEmpty(ucdProcess.getCriteria())) {
+            return false;
+        }
+
+        return ucdProcess.getCriteria().stream()
+                .filter(criterion -> BooleanUtils.isFalse(criterion.getRemoved()))
+                .findAny().isPresent();
     }
 
     private void reviewCertResultsHaveUcdProcessesIfRequired(CertifiedProductSearchDetails listing) {
@@ -134,10 +140,23 @@ public class UcdProcessReviewer {
             .count() > 0;
     }
 
-    private boolean doesListingAttestToCriterion(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
-        return listing.getCertificationResults().stream()
-            .filter(certResult -> certResult.getCriterion() != null && BooleanUtils.isTrue(certResult.isSuccess())
-                && certResult.getCriterion().getId().equals(criterion.getId()))
-            .count() > 0;
+    private void addFuzzyMatchWarnings(CertifiedProductSearchDetails listing) {
+        if (!CollectionUtils.isEmpty(listing.getSed().getUcdProcesses())) {
+            listing.getSed().getUcdProcesses().stream()
+                .filter(ucdProcess -> hasFuzzyMatch(ucdProcess))
+                .forEach(ucdProcess -> addFuzzyMatchWarning(listing, ucdProcess));
+        }
+    }
+
+    private boolean hasFuzzyMatch(CertifiedProductUcdProcess ucdProcess) {
+        return !StringUtils.isEmpty(ucdProcess.getUserEnteredName())
+                && !StringUtils.isEmpty(ucdProcess.getName())
+                && !StringUtils.equals(ucdProcess.getName(), ucdProcess.getUserEnteredName());
+    }
+
+    private void addFuzzyMatchWarning(CertifiedProductSearchDetails listing, CertifiedProductUcdProcess ucdProcess) {
+        String warningMsg = msgUtil.getMessage("listing.fuzzyMatch", FuzzyType.UCD_PROCESS.fuzzyType(),
+                ucdProcess.getUserEnteredName(), ucdProcess.getName());
+        listing.getWarningMessages().add(warningMsg);
     }
 }

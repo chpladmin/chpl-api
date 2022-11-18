@@ -234,22 +234,6 @@ public class ActivityDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
-    public List<ActivityDTO> findUserActivity(List<Long> userIds, Date startDate, Date endDate) {
-        List<ActivityEntity> entities = getEntitiesByObjectIds(userIds,
-                ActivityConcept.USER, startDate, endDate);
-
-        return entities.stream()
-                .map(entity -> mapEntityToDto(entity))
-                .collect(Collectors.toList());
-    }
-
-    public List<ActivityDTO> findByUserId(Long userId, Date startDate, Date endDate) {
-        List<ActivityEntity> entities = this.getEntitiesByUserId(userId, startDate, endDate);
-        return entities.stream()
-                .map(entity -> mapEntityToDto(entity))
-                .collect(Collectors.toList());
-    }
-
     public Map<Long, List<ActivityDTO>> findAllByUserInDateRange(Date startDate, Date endDate) {
         Map<Long, List<ActivityDTO>> activityByUser = new HashMap<Long, List<ActivityDTO>>();
         List<ActivityEntity> entities = this.getAllEntitiesInDateRange(startDate, endDate);
@@ -396,32 +380,6 @@ public class ActivityDAO extends BaseDAOImpl {
         if (endDate != null) {
             query.setParameter("endDate", endDate);
         }
-        List<ActivityEntity> result = query.getResultList();
-        return result;
-    }
-
-    private List<ActivityEntity> getEntitiesByUserId(Long userId, Date startDate, Date endDate) {
-        String queryStr = "SELECT ae "
-                + "FROM ActivityEntity ae "
-                + "JOIN FETCH ae.concept "
-                + "LEFT OUTER JOIN FETCH ae.user "
-                + "WHERE (ae.lastModifiedUser = :userid) ";
-        if (startDate != null) {
-            queryStr += "AND (ae.activityDate >= :startDate) ";
-        }
-        if (endDate != null) {
-            queryStr += "AND (ae.activityDate <= :endDate) ";
-        }
-
-        Query query = entityManager.createQuery(queryStr, ActivityEntity.class);
-        query.setParameter("userid", userId);
-        if (startDate != null) {
-            query.setParameter("startDate", startDate);
-        }
-        if (endDate != null) {
-            query.setParameter("endDate", endDate);
-        }
-
         List<ActivityEntity> result = query.getResultList();
         return result;
     }

@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
@@ -47,7 +47,7 @@ public class CertifiedProductDTO implements Serializable {
     private String reportFileLocation;
     private String sedReportFileLocation;
     private String sedIntendedUserDescription;
-    private Date sedTestingEnd;
+    private LocalDate sedTestingEnd;
     private CertificationStatus certificationStatus;
     private String otherAcb;
     private String mandatoryDisclosures;
@@ -117,7 +117,7 @@ public class CertifiedProductDTO implements Serializable {
         this.setReportFileLocation(from.getReportFileLocation());
         this.setSedReportFileLocation(from.getSedReportFileLocation());
         this.setSedIntendedUserDescription(from.getSedIntendedUserDescription());
-        this.setSedTestingEnd(from.getSedTestingEndDate());
+        this.setSedTestingEnd(from.getSedTestingEndDay());
         this.setAcbCertificationId(from.getAcbCertificationId());
         this.setOtherAcb(from.getOtherAcb());
         this.setIcs(from.getIcs() == null || from.getIcs().getInherits() == null ? Boolean.FALSE : from.getIcs().getInherits());
@@ -188,11 +188,11 @@ public class CertifiedProductDTO implements Serializable {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
-    public Date getSedTestingEnd() {
-        return Util.getNewDate(sedTestingEnd);
+    public LocalDate getSedTestingEnd() {
+        return sedTestingEnd;
     }
 
-    public void setSedTestingEnd(Date sedTestingEnd) {
-        this.sedTestingEnd = Util.getNewDate(sedTestingEnd);
+    public void setSedTestingEnd(LocalDate sedTestingEnd) {
+        this.sedTestingEnd = sedTestingEnd;
     }
 }

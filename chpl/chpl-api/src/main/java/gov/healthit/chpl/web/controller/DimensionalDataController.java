@@ -82,6 +82,10 @@ public class DimensionalDataController {
         this.svapManager = svapManager;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/fuzzy_choices",
+        message = "This endpoint is deprecated and will be removed in a future release.",
+        removalDate = "2022-04-30")
     @Operation(summary = "Get all fuzzy matching choices for the items that be fuzzy matched.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ONC_STAFF.",
             security = {
@@ -96,6 +100,11 @@ public class DimensionalDataController {
         return fuzzyChoicesManager.getFuzzyChoices();
     }
 
+    @DeprecatedApi(friendlyUrl = "/data/fuzzy_choices/{id}",
+            httpMethod = "PUT",
+            message = "This endpoint is deprecated and will be removed in a future release.",
+            removalDate = "2022-04-30")
+    @Deprecated
     @Operation(summary = "Change existing fuzzy matching choices.",
             description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
             security = {
@@ -111,6 +120,7 @@ public class DimensionalDataController {
         return updateFuzzyChoices(fuzzyChoices);
     }
 
+    @Deprecated
     private FuzzyChoices updateFuzzyChoices(FuzzyChoices fuzzyChoices)
             throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
             EntityCreationException, IOException {
@@ -389,6 +399,10 @@ public class DimensionalDataController {
         return result;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/ucd_processes",
+        message = "This endpoint is deprecated and will be removed. Please GET from /ucd-processes.",
+        removalDate = "2023-04-30")
     @Operation(summary = "Get all possible UCD process options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {

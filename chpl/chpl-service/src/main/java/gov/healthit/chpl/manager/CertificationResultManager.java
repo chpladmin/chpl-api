@@ -5,14 +5,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,6 @@ import gov.healthit.chpl.dao.TestParticipantDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestTaskDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
-import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
@@ -39,10 +37,10 @@ import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
@@ -55,14 +53,11 @@ import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
-import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
-import gov.healthit.chpl.dto.UcdProcessDTO;
-import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -70,12 +65,12 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
+import gov.healthit.chpl.ucdProcess.UcdProcessDAO;
+import lombok.extern.log4j.Log4j2;
 
 @Service
+@Log4j2
 public class CertificationResultManager extends SecuredManager {
-    private static final Logger LOGGER = LogManager.getLogger(CertificationResultManager.class);
-    private static final String CM_MUST_NOT_HAVE_OTHER_DATA = "Attestation";
-
     private CertifiedProductSearchDAO cpDao;
     private CertificationCriterionDAO criteriaDao;
     private CertificationResultDAO certResultDAO;
@@ -125,16 +120,16 @@ public class CertificationResultManager extends SecuredManager {
         boolean hasChanged = false;
         if (!StringUtils.equals(orig.getApiDocumentation(), updated.getApiDocumentation())
                 || !StringUtils.equals(orig.getPrivacySecurityFramework(), updated.getPrivacySecurityFramework())
-                || !ObjectUtils.equals(orig.isG1Success(), updated.isG1Success())
-                || !ObjectUtils.equals(orig.isG2Success(), updated.isG2Success())
-                || !ObjectUtils.equals(orig.isGap(), updated.isGap())
-                || !ObjectUtils.equals(orig.isSed(), updated.isSed())
-                || !ObjectUtils.equals(orig.isSuccess(), updated.isSuccess())
-                || !ObjectUtils.equals(orig.getAttestationAnswer(), updated.getAttestationAnswer())
-                || !ObjectUtils.equals(orig.getDocumentationUrl(), updated.getDocumentationUrl())
-                || !ObjectUtils.equals(orig.getExportDocumentation(), updated.getExportDocumentation())
-                || !ObjectUtils.equals(orig.getUseCases(), updated.getUseCases())
-                || !ObjectUtils.equals(orig.getServiceBaseUrlList(), updated.getServiceBaseUrlList())) {
+                || !Objects.equals(orig.isG1Success(), updated.isG1Success())
+                || !Objects.equals(orig.isG2Success(), updated.isG2Success())
+                || !Objects.equals(orig.isGap(), updated.isGap())
+                || !Objects.equals(orig.isSed(), updated.isSed())
+                || !Objects.equals(orig.isSuccess(), updated.isSuccess())
+                || !Objects.equals(orig.getAttestationAnswer(), updated.getAttestationAnswer())
+                || !Objects.equals(orig.getDocumentationUrl(), updated.getDocumentationUrl())
+                || !Objects.equals(orig.getExportDocumentation(), updated.getExportDocumentation())
+                || !Objects.equals(orig.getUseCases(), updated.getUseCases())
+                || !Objects.equals(orig.getServiceBaseUrlList(), updated.getServiceBaseUrlList())) {
             hasChanged = true;
         }
         if (hasChanged) {
@@ -192,8 +187,8 @@ public class CertificationResultManager extends SecuredManager {
 
             if (existingListing.getSed() != null && existingListing.getSed().getUcdProcesses() != null
                     && existingListing.getSed().getUcdProcesses().size() > 0) {
-                List<UcdProcess> origUcdsForCriteria = new ArrayList<UcdProcess>();
-                for (UcdProcess existingUcd : existingListing.getSed().getUcdProcesses()) {
+                List<CertifiedProductUcdProcess> origUcdsForCriteria = new ArrayList<CertifiedProductUcdProcess>();
+                for (CertifiedProductUcdProcess existingUcd : existingListing.getSed().getUcdProcesses()) {
                     boolean ucdMeetsCriteria = false;
                     for (CertificationCriterion ucdCriteria : existingUcd.getCriteria()) {
                         if (ucdCriteria.getId().equals(updated.getCriterion().getId())) {
@@ -235,11 +230,11 @@ public class CertificationResultManager extends SecuredManager {
             numChanges += updateTestFunctionality(updatedListing, updated, orig.getTestFunctionality(), updated.getTestFunctionality());
             numChanges += updateSvap(updated, orig.getSvaps(), updated.getSvaps());
 
-            List<UcdProcess> origUcdsForCriteria = new ArrayList<UcdProcess>();
-            List<UcdProcess> updatedUcdsForCriteria = new ArrayList<UcdProcess>();
+            List<CertifiedProductUcdProcess> origUcdsForCriteria = new ArrayList<CertifiedProductUcdProcess>();
+            List<CertifiedProductUcdProcess> updatedUcdsForCriteria = new ArrayList<CertifiedProductUcdProcess>();
             if (existingListing.getSed() != null && existingListing.getSed().getUcdProcesses() != null
                     && existingListing.getSed().getUcdProcesses().size() > 0) {
-                for (UcdProcess existingUcd : existingListing.getSed().getUcdProcesses()) {
+                for (CertifiedProductUcdProcess existingUcd : existingListing.getSed().getUcdProcesses()) {
                     boolean ucdMeetsCriteria = false;
                     for (CertificationCriterion ucdCriteria : existingUcd.getCriteria()) {
                         if (ucdCriteria.getId().equals(updated.getCriterion().getId())
@@ -254,7 +249,7 @@ public class CertificationResultManager extends SecuredManager {
             }
             if (updatedListing.getSed() != null && updatedListing.getSed().getUcdProcesses() != null
                     && updatedListing.getSed().getUcdProcesses().size() > 0) {
-                for (UcdProcess updatedUcd : updatedListing.getSed().getUcdProcesses()) {
+                for (CertifiedProductUcdProcess updatedUcd : updatedListing.getSed().getUcdProcesses()) {
                     boolean ucdMeetsCriteria = false;
                     for (CertificationCriterion ucdCriteria : updatedUcd.getCriteria()) {
                         if (ucdCriteria.getId().equals(updated.getCriterion().getId())
@@ -438,33 +433,27 @@ public class CertificationResultManager extends SecuredManager {
         return numChanges;
     }
 
-    private int updateUcdProcesses(CertificationResult certResult, List<UcdProcess> existingUcdProcesses,
-            List<UcdProcess> updatedUcdProcesses)
+    private int updateUcdProcesses(CertificationResult certResult, List<CertifiedProductUcdProcess> existingUcdProcesses,
+            List<CertifiedProductUcdProcess> updatedUcdProcesses)
             throws EntityCreationException, EntityRetrievalException, IOException {
         int numChanges = 0;
-        List<UcdProcess> ucdToAdd = new ArrayList<UcdProcess>();
+        List<CertifiedProductUcdProcess> ucdToAdd = new ArrayList<CertifiedProductUcdProcess>();
         List<CertificationResultUcdProcessPair> ucdToUpdate = new ArrayList<CertificationResultUcdProcessPair>();
         List<Long> idsToRemove = new ArrayList<Long>();
 
         // figure out which ucd processes to add
         if (updatedUcdProcesses != null && updatedUcdProcesses.size() > 0) {
-            // fill in potentially missing ucd process id
-            for (UcdProcess updatedItem : updatedUcdProcesses) {
-                UcdProcessDTO foundUcd = ucdDao.findOrCreate(updatedItem.getId(), updatedItem.getName());
-                updatedItem.setId(foundUcd.getId());
-            }
-
             if (existingUcdProcesses == null || existingUcdProcesses.size() == 0) {
                 // existing listing has none, add all from the update
-                for (UcdProcess updatedItem : updatedUcdProcesses) {
+                for (CertifiedProductUcdProcess updatedItem : updatedUcdProcesses) {
                     ucdToAdd.add(updatedItem);
                 }
             } else if (existingUcdProcesses.size() > 0) {
                 // existing listing has some, compare to the update to see if
                 // any are different
-                for (UcdProcess updatedItem : updatedUcdProcesses) {
+                for (CertifiedProductUcdProcess updatedItem : updatedUcdProcesses) {
                     boolean inExistingListing = false;
-                    for (UcdProcess existingItem : existingUcdProcesses) {
+                    for (CertifiedProductUcdProcess existingItem : existingUcdProcesses) {
                         if (updatedItem.matches(existingItem)) {
                             inExistingListing = true;
                             ucdToUpdate.add(new CertificationResultUcdProcessPair(existingItem, updatedItem));
@@ -482,13 +471,13 @@ public class CertificationResultManager extends SecuredManager {
         if (existingUcdProcesses != null && existingUcdProcesses.size() > 0) {
             // if the updated listing has none, remove them all from existing
             if (updatedUcdProcesses == null || updatedUcdProcesses.size() == 0) {
-                for (UcdProcess existingItem : existingUcdProcesses) {
+                for (CertifiedProductUcdProcess existingItem : existingUcdProcesses) {
                     idsToRemove.add(existingItem.getId());
                 }
             } else if (updatedUcdProcesses.size() > 0) {
-                for (UcdProcess existingItem : existingUcdProcesses) {
+                for (CertifiedProductUcdProcess existingItem : existingUcdProcesses) {
                     boolean inUpdatedListing = false;
-                    for (UcdProcess updatedItem : updatedUcdProcesses) {
+                    for (CertifiedProductUcdProcess updatedItem : updatedUcdProcesses) {
                         inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
                     }
                     if (!inUpdatedListing) {
@@ -500,16 +489,7 @@ public class CertificationResultManager extends SecuredManager {
 
         numChanges = ucdToAdd.size() + idsToRemove.size();
 
-        List<String> fuzzyQmsChoices = fuzzyChoicesDao.getByType(FuzzyType.UCD_PROCESS).getChoices();
-        for (UcdProcess toAdd : ucdToAdd) {
-            if (!fuzzyQmsChoices.contains(toAdd.getName())) {
-                fuzzyQmsChoices.add(toAdd.getName());
-                FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
-                dto.setFuzzyType(FuzzyType.UCD_PROCESS);
-                dto.setChoices(fuzzyQmsChoices);
-                fuzzyChoicesDao.update(dto);
-            }
-
+        for (CertifiedProductUcdProcess toAdd : ucdToAdd) {
             CertificationResultUcdProcessDTO toAddDto = new CertificationResultUcdProcessDTO();
             toAddDto.setCertificationResultId(certResult.getId());
             toAddDto.setUcdProcessId(toAdd.getId());
@@ -519,7 +499,7 @@ public class CertificationResultManager extends SecuredManager {
 
         for (CertificationResultUcdProcessPair toUpdate : ucdToUpdate) {
             boolean hasChanged = false;
-            if (!ObjectUtils.equals(toUpdate.getOrig().getDetails(), toUpdate.getUpdated().getDetails())) {
+            if (!Objects.equals(toUpdate.getOrig().getDetails(), toUpdate.getUpdated().getDetails())) {
                 hasChanged = true;
             }
             if (hasChanged) {
@@ -1482,27 +1462,27 @@ public class CertificationResultManager extends SecuredManager {
     }
 
     private static class CertificationResultUcdProcessPair {
-        private UcdProcess orig;
-        private UcdProcess updated;
+        private CertifiedProductUcdProcess orig;
+        private CertifiedProductUcdProcess updated;
 
-        CertificationResultUcdProcessPair(final UcdProcess orig, final UcdProcess updated) {
+        CertificationResultUcdProcessPair(final CertifiedProductUcdProcess orig, final CertifiedProductUcdProcess updated) {
             this.orig = orig;
             this.updated = updated;
         }
 
-        public UcdProcess getOrig() {
+        public CertifiedProductUcdProcess getOrig() {
             return orig;
         }
 
-        public void setOrig(final UcdProcess orig) {
+        public void setOrig(final CertifiedProductUcdProcess orig) {
             this.orig = orig;
         }
 
-        public UcdProcess getUpdated() {
+        public CertifiedProductUcdProcess getUpdated() {
             return updated;
         }
 
-        public void setUpdated(final UcdProcess updated) {
+        public void setUpdated(final CertifiedProductUcdProcess updated) {
             this.updated = updated;
         }
     }
