@@ -8,7 +8,7 @@
 			"name": "ROLE_ONC",
 			"item": [
 				{
-					"name": "POST /surveillance - ROLE_ONC user has access",
+					"name": "POST /surveillance - ROLE_ONC user should get 401 status and access denied error",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -23,8 +23,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"ROLE_ONC user should have access to create surveillance\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
+									"pm.test(\"create surveillance request by ROLE_ONC user should return Status code 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"ROLE_ONC user should be denied access to create surveillance\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
 									"});\r",
 									""
 								],
@@ -75,7 +79,7 @@
 					"response": []
 				},
 				{
-					"name": "PUT /surveillance/{surveillanceId} - ROLE_ONC user has access",
+					"name": "PUT /surveillance/{surveillanceId} - ROLE_ONC user should get 401 status and access denied error",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -90,8 +94,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"ROLE_ONC user should have access to edit surveillance\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
+									"pm.test(\"edit surveillance request by ROLE_ONC user should return Status code 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"ROLE_ONC user should be denied access to edit surveillance\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -142,7 +150,7 @@
 					"response": []
 				},
 				{
-					"name": "DELETE /surveillance/{surveillanceId} - ROLE_ONC has access",
+					"name": "DELETE /surveillance/{surveillanceId} - ROLE_ONC should get 401 status and access denied error",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -157,8 +165,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"ROLE_ONC user should have access to delete surveillance\", function () {\r",
-									"    pm.response.to.not.have.status(401);\r",
+									"pm.test(\"ROLE_ONC user should not have access to delete surveillance\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([401,400]);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -464,6 +472,225 @@
 						"exec": [
 							"var ReqBody= {",
 							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")",
+							"    };",
+							"pm.sendRequest({",
+							"    url: pm.environment.get(\"authurl\"),",
+							"    method: \"POST\",",
+							"    header: {",
+							"        \"Content-Type\": \"application/json\",",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")",
+							"    },",
+							"    body: JSON.stringify(ReqBody)",
+							"}, function (err, response) {",
+							"   var jsonData = response.json();",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "ROLE_ACB",
+			"item": [
+				{
+					"name": "POST /surveillance - ROLE_ACB user has access",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ROLE_ACB user should have access to create surveillance\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"id\":1020,\"surveillanceIdToReplace\":null,\"friendlyId\":\"SURV01\",\"certifiedProduct\":{\"id\":10533,\"chplProductNumber\":\"15.04.04.2913.GINS.20.00.1.210121\",\"lastModifiedDate\":1625011623204,\"edition\":\"2015\",\"certificationDate\":1611187200000,\"certificationStatus\":\"Active\",\"curesUpdate\":true},\"startDate\":1623196800000,\"startDay\":\"2021-06-09\",\"endDate\":1631145599999,\"endDay\":\"2021-09-08\",\"type\":{\"id\":1,\"name\":\"Reactive\",\"description\":null},\"randomizedSitesUsed\":null,\"requirements\":[{\"id\":1683,\"type\":{\"id\":1,\"name\":\"Certified Capability\",\"description\":null},\"requirement\":\"170.315 (g)(5)\",\"criterion\":{\"id\":54,\"number\":\"170.315 (g)(5)\",\"title\":\"Accessibility-Centered Design\",\"certificationEditionId\":3,\"certificationEdition\":\"2015\",\"description\":null,\"removed\":false},\"result\":{\"id\":2,\"name\":\"No Non-Conformity\",\"description\":null},\"nonconformities\":[],\"requirementName\":\"170.315 (g)(4)\",\"guiId\":1683}],\"errorMessages\":[],\"warningMessages\":[],\"lastModifiedDate\":1635457131673}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/surveillance",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /surveillance/{surveillanceId} - ROLE_ACB user has access",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ROLE_ACB user should have access to edit surveillance\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"id\":1006,\"surveillanceIdToReplace\":null,\"friendlyId\":\"SURV01\",\"certifiedProduct\":{\"id\":10533,\"chplProductNumber\":\"15.04.04.2913.GINS.20.00.1.210121\",\"lastModifiedDate\":1625011623204,\"edition\":\"2015\",\"certificationDate\":1611187200000,\"certificationStatus\":\"Active\",\"curesUpdate\":true},\"startDate\":1623196800000,\"startDay\":\"2021-06-09\",\"endDate\":1631145599999,\"endDay\":\"2021-09-08\",\"type\":{\"id\":1,\"name\":\"Reactive\",\"description\":null},\"randomizedSitesUsed\":null,\"requirements\":[{\"id\":1683,\"type\":{\"id\":1,\"name\":\"Certified Capability\",\"description\":null},\"requirement\":\"170.315 (g)(5)\",\"criterion\":{\"id\":54,\"number\":\"170.315 (g)(5)\",\"title\":\"Accessibility-Centered Design\",\"certificationEditionId\":3,\"certificationEdition\":\"2015\",\"description\":null,\"removed\":false},\"result\":{\"id\":2,\"name\":\"No Non-Conformity\",\"description\":null},\"nonconformities\":[],\"requirementName\":\"170.315 (g)(4)\",\"guiId\":1683}],\"errorMessages\":[],\"warningMessages\":[],\"lastModifiedDate\":1635457131673}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/surveillance/1006",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance",
+								"1006"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE /surveillance/{surveillanceId} - ROLE_ACB has access",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ROLE_ACB user should have access to delete surveillance\", function () {\r",
+									"    pm.response.to.not.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"reason\": \"Test\"\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/surveillance/1020",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"surveillance",
+								"1020"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var ReqBody= {",
+							"        userName:pm.environment.get(\"emailACB\"),password:pm.environment.get(\"passwordACB\")",
 							"    };",
 							"pm.sendRequest({",
 							"    url: pm.environment.get(\"authurl\"),",
