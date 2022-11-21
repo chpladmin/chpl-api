@@ -61,10 +61,6 @@ public class DeveloperAttestationPeriodCalculator {
                 .toList();
     }
 
-    public List<Developer> getDevelopersWithActiveListingsDuringMostRecentPastAttestationPeriodAndMissingChangeRequest(Logger logger) {
-
-    }
-
     private List<Developer> getAllDevelopers() {
         return developerDao.findAll();
     }
