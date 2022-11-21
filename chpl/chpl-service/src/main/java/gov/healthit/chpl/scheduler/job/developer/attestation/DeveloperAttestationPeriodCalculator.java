@@ -125,7 +125,7 @@ public class DeveloperAttestationPeriodCalculator {
     private List<ListingSearchResult> getListingDataForDeveloper(Developer developer, Logger logger) {
         SearchRequest searchRequest = SearchRequest.builder()
                 .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
-                .developer(developer.getName())
+                .developerId(developer.getId())
                 .pageSize(MAX_PAGE_SIZE)
                 .pageNumber(0)
                 .build();

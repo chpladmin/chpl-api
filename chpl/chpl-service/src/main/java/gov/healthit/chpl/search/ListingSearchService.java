@@ -84,6 +84,7 @@ public class ListingSearchService {
             .filter(listing -> matchesDerivedCertificationEditions(listing, searchRequest.getDerivedCertificationEditions()))
             .filter(listing -> matchesCertificationEditions(listing, searchRequest.getCertificationEditions()))
             .filter(listing -> matchesDeveloper(listing, searchRequest.getDeveloper()))
+            .filter(listing -> matchesDeveloperId(listing, searchRequest.getDeveloperId()))
             .filter(listing -> matchesProduct(listing, searchRequest.getProduct()))
             .filter(listing -> matchesVersion(listing, searchRequest.getVersion()))
             .filter(listing -> matchesPracticeType(listing, searchRequest.getPracticeType()))
@@ -212,6 +213,16 @@ public class ListingSearchService {
         return listing.getDeveloper() != null
                 && !StringUtils.isEmpty(listing.getDeveloper().getName())
                 && listing.getDeveloper().getName().toUpperCase().contains(developer.toUpperCase());
+    }
+
+    private boolean matchesDeveloperId(ListingSearchResult listing, Long developerId) {
+        if (developerId == null) {
+            return true;
+        }
+
+        return listing.getDeveloper() != null
+                && listing.getDeveloper().getId() != null
+                && listing.getDeveloper().getId().equals(developerId);
     }
 
     private boolean matchesProduct(ListingSearchResult listing, String product) {

@@ -64,15 +64,10 @@ public class MissingAttestationChangeRequestEmailJob implements Job  {
     }
 
     private Boolean hasDeveloperSubmittedChangeRequestForPeriod(Developer developer, AttestationPeriod mostRecentPastPeriod) {
-        Boolean x = getAllAttestationChangeRequestsForDeveloper(developer).stream()
+        return getAllAttestationChangeRequestsForDeveloper(developer).stream()
                 .filter(attestationSubmission -> attestationSubmission.getAttestationPeriod().getId().equals(mostRecentPastPeriod.getId()))
                 .findAny()
                 .isPresent();
-
-        if (!x) {
-            LOGGER.info("Found NO Attestation Submission for period for {}", developer.getName());
-        }
-        return x;
     }
 
     private List<ChangeRequestAttestationSubmission> getAllAttestationChangeRequestsForDeveloper(Developer developer) {
