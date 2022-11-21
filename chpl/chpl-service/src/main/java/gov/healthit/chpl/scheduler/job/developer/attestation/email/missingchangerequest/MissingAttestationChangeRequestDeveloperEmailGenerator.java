@@ -48,6 +48,7 @@ public class MissingAttestationChangeRequestDeveloperEmailGenerator implements D
         try {
             List<UserDTO> developerUsers = developerManager.getAllUsersOnDeveloper(developer.getId());
             return DeveloperEmail.builder()
+                    .developer(developer)
                     .recipients(getRecipients(developerUsers))
                     .subject(emailSubject)
                     .message(getMessage(developer, developerUsers))
@@ -78,7 +79,7 @@ public class MissingAttestationChangeRequestDeveloperEmailGenerator implements D
 
     private String getUsersAsString(List<UserDTO> developerUsers) {
         return developerUsers.stream()
-                .map(user -> user.getFullName() + " <" + user.getEmail() + ">")
+                .map(user -> user.getFullName() + " &lt;" + user.getEmail() + "&gt;")
                 .collect(Collectors.joining(", "));
     }
 }
