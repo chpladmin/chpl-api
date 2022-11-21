@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.scheduler.job.developer.attestation.email.DeveloperEmail;
 import gov.healthit.chpl.scheduler.job.developer.attestation.email.DeveloperEmailGenerator;
@@ -18,16 +19,27 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class MissingAttestationChangeRequestDeveloperEmailGenerator implements DeveloperEmailGenerator {
     private DeveloperManager developerManager;
+    private ChplHtmlEmailBuilder htmlEmailBuilder;
     private String emailSubject;
-    private String emailBody;
+    private String emailSalutation;
+    private String emailParagraph1;
+    private String emailParagraph2;
+    private String emailClosing;
 
     @Autowired
-    public MissingAttestationChangeRequestDeveloperEmailGenerator(DeveloperManager developerManager,
+    public MissingAttestationChangeRequestDeveloperEmailGenerator(DeveloperManager developerManager, ChplHtmlEmailBuilder htmlEmailBuilder,
             @Value("${developer.missingAttestationChangeRequest.subject}") String emailSubject,
-            @Value("${developer.missingAttestationChangeRequest.body}") String emailBody) {
+            @Value("${developer.missingAttestationChangeRequest.salutation}") String emailSalutation,
+            @Value("${developer.missingAttestationChangeRequest.paragraph1}") String emailParagraph1,
+            @Value("${developer.missingAttestationChangeRequest.paragraph2}") String emailParagraph2,
+            @Value("${developer.missingAttestationChangeRequest.closing}") String emailClosing) {
         this.developerManager = developerManager;
+        this.htmlEmailBuilder = htmlEmailBuilder;
         this.emailSubject = emailSubject;
-        this.emailBody = emailBody;
+        this.emailSalutation = emailSalutation;
+        this.emailParagraph1 = emailParagraph1;
+        this.emailParagraph2 = emailParagraph2;
+        this.emailClosing = emailClosing;
     }
 
 
@@ -54,7 +66,14 @@ public class MissingAttestationChangeRequestDeveloperEmailGenerator implements D
     }
 
     private String getMessage(Developer developer, List<UserDTO> developerUsers) {
-        return String.format(emailBody, developer.getName(), getUsersAsString(developerUsers));
+        return htmlEmailBuilder.initialize()
+                .heading(emailSubject)
+                .paragraph("", emailSalutation)
+                .paragraph("", String.format(emailParagraph1, developer.getName(), getUsersAsString(developerUsers)))
+                .paragraph("", emailParagraph2)
+                .paragraph("", emailClosing)
+                .footer(true)
+                .build();
     }
 
     private String getUsersAsString(List<UserDTO> developerUsers) {
