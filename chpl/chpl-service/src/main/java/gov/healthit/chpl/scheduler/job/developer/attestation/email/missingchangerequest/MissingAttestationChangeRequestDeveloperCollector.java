@@ -1,14 +1,11 @@
-package gov.healthit.chpl.scheduler.job.developer.attestation.missingchangerequest;
+package gov.healthit.chpl.scheduler.job.developer.attestation.email.missingchangerequest;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
@@ -26,35 +23,32 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.scheduler.job.developer.attestation.DeveloperAttestationPeriodCalculator;
+import gov.healthit.chpl.scheduler.job.developer.attestation.email.DeveloperCollector;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-public class MissingAttestationChangeRequestEmailJob implements Job  {
-
-    @Autowired
+@Component
+public class MissingAttestationChangeRequestDeveloperCollector implements DeveloperCollector {
     private AttestationPeriodService attestationPeriodService;
-
-    @Autowired
     private ChangeRequestSearchManager changeRequestSearchManager;
-
-    @Autowired
     private DeveloperAttestationPeriodCalculator developerAttestationPeriodCalculator;
-
-    @Autowired
     private ChangeRequestManager changeRequestManager;
 
+    @Autowired
+    public MissingAttestationChangeRequestDeveloperCollector(AttestationPeriodService attestationPeriodService,
+            ChangeRequestSearchManager changeRequestSearchManager, DeveloperAttestationPeriodCalculator developerAttestationPeriodCalculator,
+            ChangeRequestManager changeRequestManager) {
+        this.attestationPeriodService = attestationPeriodService;
+        this.changeRequestSearchManager = changeRequestSearchManager;
+        this.developerAttestationPeriodCalculator = developerAttestationPeriodCalculator;
+        this.changeRequestManager = changeRequestManager;
+    }
+
     @Override
-    public void execute(JobExecutionContext context) throws JobExecutionException {
-        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+    public List<Developer> getDevelopers() {
         setSecurityContext();
-
-        LOGGER.info("********* Starting Developer Missing Attestatation Change Request Email job. *********");
         AttestationPeriod mostRecentPastPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
-        getDevelopersWithActiveListingsDuringAttestationPeriodAndMissingChangeRequest(mostRecentPastPeriod).stream()
-                .forEach(developer -> LOGGER.info("Found the following developer: {}", developer.getName()));
-
-        LOGGER.info("********* Completed Developer Missing Attestatation Change Request Email job. *********");
-
+        return getDevelopersWithActiveListingsDuringAttestationPeriodAndMissingChangeRequest(mostRecentPastPeriod);
     }
 
     private List<Developer> getDevelopersWithActiveListingsDuringAttestationPeriodAndMissingChangeRequest(AttestationPeriod mostRecentPastPeriod) {
@@ -123,5 +117,4 @@ public class MissingAttestationChangeRequestEmailJob implements Job  {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
-
 }

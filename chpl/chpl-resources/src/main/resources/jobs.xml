@@ -924,7 +924,7 @@
             <name>missingAttestationChangeRequestEmailJob</name>
             <group>chplJobs</group>
             <description>Sends Email to Developer who have not submitted Attestation Change Request</description>
-            <job-class>gov.healthit.chpl.scheduler.job.developer.attestation.missingchangerequest.MissingAttestationChangeRequestEmailJob</job-class>
+            <job-class>gov.healthit.chpl.scheduler.job.developer.attestation.email.missingchangerequest.MissingAttestationChangeRequestEmailJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>
