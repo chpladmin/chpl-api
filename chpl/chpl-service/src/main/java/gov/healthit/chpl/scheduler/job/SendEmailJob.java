@@ -30,9 +30,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import com.azure.identity.ClientSecretCredential;
-import com.azure.identity.ClientSecretCredentialBuilder;
-import com.microsoft.graph.authentication.TokenCredentialAuthProvider;
 import com.microsoft.graph.models.AttachmentCreateUploadSessionParameterSet;
 import com.microsoft.graph.models.AttachmentItem;
 import com.microsoft.graph.models.AttachmentType;
@@ -62,14 +59,14 @@ public class SendEmailJob implements Job {
     public static final String MESSAGE_KEY = "messageKey";
     private static final Integer UNLIMITED_RETRY_ATTEMPTS = -1;
     private static final String EMAIL_FILES_DIRECTORY = "emailFiles";
-    private static final String GRAPH_DEFAULT_SCOPE = "https://graph.microsoft.com/.default";
     private static final String HEADER_PREFER = "Prefer";
     private static final String HEADER_IMMUTABLE_ID = "IdType=\"ImmutableId\"";
 
     private String azureUser;
-    private ClientSecretCredential clientSecretCredential;
-    private GraphServiceClient<Request> appClient;
     private EmailOverrider overrider;
+
+    @Autowired
+    private GraphServiceClient<Request> appClient;
 
     @Value("${internalErrorEmailRecipients}")
     private String internalErrorEmailRecipients;
@@ -92,6 +89,12 @@ public class SendEmailJob implements Job {
 
         LOGGER.info("********* Starting the Send Email job. *********");
         overrider = new EmailOverrider(env);
+        if (azureUser == null) {
+            LOGGER.debug("Getting the Azure user");
+            azureUser = env.getProperty("azure.user");
+            LOGGER.debug("Azure user is " + azureUser);
+        }
+
         ChplEmailMessage message = (ChplEmailMessage) context.getMergedJobDataMap().get(MESSAGE_KEY);
         if (CollectionUtils.isEmpty(message.getRecipients())) {
             LOGGER.fatal("No recipients found in the message with subject: " + message.getSubject()
@@ -101,7 +104,6 @@ public class SendEmailJob implements Job {
             message.setRetryAttempts(message.getRetryAttempts() + 1);
             Message graphMessage = null;
             try {
-                initGraphForAppOnlyAuth();
                 graphMessage = getDraftMessage(message);
                 uploadAttachments(graphMessage, message.getFileAttachments());
                 sendMessage(graphMessage);
@@ -147,31 +149,8 @@ public class SendEmailJob implements Job {
         LOGGER.info("********* Completed the Send Email job. *********");
     }
 
-    private void initGraphForAppOnlyAuth() {
-        if (azureUser == null) {
-            azureUser = env.getProperty("azure.user");
-        }
-
-        if (clientSecretCredential == null) {
-            clientSecretCredential = new ClientSecretCredentialBuilder()
-                .clientId(env.getProperty("azure.clientId"))
-                .tenantId(env.getProperty("azure.tenantId"))
-                .clientSecret(env.getProperty("azure.clientSecret"))
-                .build();
-        }
-
-        if (appClient == null) {
-            final TokenCredentialAuthProvider authProvider =
-                new TokenCredentialAuthProvider(
-                    List.of(GRAPH_DEFAULT_SCOPE), clientSecretCredential);
-
-            appClient = GraphServiceClient.builder()
-                .authenticationProvider(authProvider)
-                .buildClient();
-        }
-    }
-
     private Message getDraftMessage(ChplEmailMessage message) {
+        LOGGER.debug("Creating a draft message with subject '" + message.getSubject() + "'");
         final Message draftMessage = new Message();
         draftMessage.subject = message.getSubject();
         draftMessage.body = new ItemBody();
@@ -188,15 +167,18 @@ public class SendEmailJob implements Job {
                 draftMessage.toRecipients.add(recipient);
             });
 
+        LOGGER.debug("Saving the draft message");
         Message savedDraft = appClient.users(azureUser).messages()
             .buildRequest(new HeaderOption(HEADER_PREFER, HEADER_IMMUTABLE_ID))
             .post(draftMessage);
+        LOGGER.debug("Saved the draft message with ID " + savedDraft.id);
 
         return savedDraft;
     }
 
     private void uploadAttachments(Message message, List<File> attachments) {
         if (CollectionUtils.isEmpty(attachments)) {
+            LOGGER.debug("No attachments for message " + message.id);
             return;
         }
         attachments.stream()
@@ -204,6 +186,7 @@ public class SendEmailJob implements Job {
     }
 
     private void uploadAttachment(Message message, File attachment) {
+        LOGGER.debug("Uploading attachment " + attachment.getName() + " for message "+ message.id);
         AttachmentItem attachmentItem = new AttachmentItem();
         attachmentItem.attachmentType = AttachmentType.FILE;
         attachmentItem.name = attachment.getName();
@@ -237,6 +220,7 @@ public class SendEmailJob implements Job {
 
             // Do the upload
             uploadTask.upload(0, null, callback);
+            LOGGER.debug("Completed uploading attachment " + attachment.getName() + " for message "+ message.id);
         } catch (FileNotFoundException ex) {
             //the FileInputStream could not be created
             LOGGER.error("The file " + attachment.getAbsolutePath() + " could not be found and will not be sent as an attachment.", ex);
