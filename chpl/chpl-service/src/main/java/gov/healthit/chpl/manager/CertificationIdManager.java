@@ -25,6 +25,7 @@ import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -160,10 +161,10 @@ public class CertificationIdManager {
     }
 
     @Transactional(readOnly = false)
-    public CertificationIdDTO create(List<Long> productIds, String year)
+    public CertificationIdDTO create(List<CertifiedProductDetailsDTO> listings, String year)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
-        CertificationIdDTO result = certificationIdDao.create(productIds, year);
+        CertificationIdDTO result = certificationIdDao.create(listings, year);
 
         String activityMsg = "CertificationId " + result.getCertificationId() + " was created.";
         activityManager.addActivity(ActivityConcept.CERTIFICATION_ID, result.getId(), activityMsg, null,

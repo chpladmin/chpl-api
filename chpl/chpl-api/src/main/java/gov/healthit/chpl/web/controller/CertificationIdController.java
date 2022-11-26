@@ -337,7 +337,7 @@ public class CertificationIdController {
                 } else {
                     if ((create) && (results.isValid())) {
                         // Generate a new ID
-                        idDto = certificationIdManager.create(productIdList, year);
+                        idDto = certificationIdManager.create(productDtos, year);
                         results.setEhrCertificationId(idDto.getCertificationId());
                     }
                 }
