@@ -1,6 +1,6 @@
 package gov.healthit.chpl.entity;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public enum FuzzyType {
     UCD_PROCESS("UCD Process"), QMS_STANDARD("QMS Standard"), ACCESSIBILITY_STANDARD("Accessibility Standard");

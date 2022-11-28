@@ -13,12 +13,12 @@ import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.TestTool;
 import gov.healthit.chpl.domain.TestToolCriteriaMap;
-import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
@@ -124,8 +124,8 @@ public class CertificationResultService {
             List<CertificationResultUcdProcessDTO> ucdProcesses = certResultManager.getUcdProcessesForCertificationResult(result.getId());
             for (CertificationResultUcdProcessDTO currResult : ucdProcesses) {
                 boolean alreadyExists = false;
-                UcdProcess newUcd = new UcdProcess(currResult);
-                for (UcdProcess currUcd : searchDetails.getSed().getUcdProcesses()) {
+                CertifiedProductUcdProcess newUcd = new CertifiedProductUcdProcess(currResult);
+                for (CertifiedProductUcdProcess currUcd : searchDetails.getSed().getUcdProcesses()) {
                     if (newUcd.matches(currUcd)) {
                         alreadyExists = true;
                         currUcd.getCriteria().add(criteria);

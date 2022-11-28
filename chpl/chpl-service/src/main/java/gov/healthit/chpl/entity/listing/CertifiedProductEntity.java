@@ -96,7 +96,7 @@ public class CertifiedProductEntity implements Serializable {
 
     @Basic(optional = true)
     @Column(name = "sed_testing_end")
-    private Date sedTestingEnd;
+    private LocalDate sedTestingEnd;
 
     @Basic(optional = true)
     @Column(name = "other_acb", length = OTHER_ACB_LENGTH)

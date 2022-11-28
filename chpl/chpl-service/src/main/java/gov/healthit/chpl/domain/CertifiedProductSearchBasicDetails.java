@@ -1,5 +1,7 @@
 package gov.healthit.chpl.domain;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,7 +21,6 @@ import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
-import gov.healthit.chpl.util.Util;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -61,10 +62,17 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
      */
     private String sedIntendedUserDescription;
 
+    @Deprecated
+    @DeprecatedResponseField(removalDate = "2023-05-01",
+        message = "This field is deprecated and will be removed from the response data in a future release. Please use sedTestingEndDay")
+    private Date sedTestingEndDate;
+
     /**
      * Date all SED testing was concluded for the Health IT. The format for the date is YYYMMDD
      */
-    private Date sedTestingEndDate;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate sedTestingEndDay;
 
     /**
      * The ID used by ONC-ACBs for internal tracking for 2014 and 2015 Certification Edition. It is a string variable
@@ -298,12 +306,22 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
         sed = new CertifiedProductSed();
     }
 
+    @Deprecated
     public Date getSedTestingEndDate() {
-        return Util.getNewDate(sedTestingEndDate);
+        return sedTestingEndDate;
     }
 
+    @Deprecated
     public void setSedTestingEndDate(Date sedTestingEndDate) {
-        this.sedTestingEndDate = Util.getNewDate(sedTestingEndDate);
+        this.sedTestingEndDate = sedTestingEndDate;
+    }
+
+    public LocalDate getSedTestingEndDay() {
+        return sedTestingEndDay;
+    }
+
+    public void setSedTestingEndDay(LocalDate sedTestingEndDay) {
+        this.sedTestingEndDay = sedTestingEndDay;
     }
 
     /**

@@ -39,8 +39,8 @@ import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CuresUpdateEventDTO;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
@@ -187,6 +187,7 @@ public class ListingConfirmationManager {
         }
     }
 
+    //TODO: Remove as part of OCD-4041
     private void addQmsStandardToFuzzyChoices(CertifiedProductQmsStandard qmsStandard, List<String> fuzzyChoices) {
         fuzzyChoices.add(qmsStandard.getQmsStandardName());
         FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
@@ -215,6 +216,7 @@ public class ListingConfirmationManager {
         }
     }
 
+    //TODO: Remove as part of OCD-4040
     private void addAccessibilityStandardToFuzzyChoices(CertifiedProductAccessibilityStandard accessibilityStandard,
             List<String> fuzzyChoices) {
         fuzzyChoices.add(accessibilityStandard.getAccessibilityStandardName());
@@ -335,14 +337,6 @@ public class ListingConfirmationManager {
 
     private void saveSed(CertifiedProductSearchDetails listing) throws EntityCreationException {
         if (listing.getSed() != null && !CollectionUtils.isEmpty(listing.getSed().getUcdProcesses())) {
-            try {
-                List<String> fuzzyChoices = fuzzyChoicesDao.getByType(FuzzyType.UCD_PROCESS).getChoices();
-                listing.getSed().getUcdProcesses().stream()
-                    .filter(ucdProcess -> !fuzzyChoices.contains(ucdProcess.getName()))
-                    .forEach(ucdProcess -> addUcdProcessToFuzzyChoices(ucdProcess, fuzzyChoices));
-            } catch (IOException | EntityRetrievalException ex) {
-                LOGGER.error("Cannot get UCD Process fuzzy choices", ex);
-            }
             listing.getSed().getUcdProcesses().stream()
                 .forEach(rethrowConsumer(ucdProcess -> saveUcdProcess(listing, ucdProcess)));
         }
@@ -352,19 +346,7 @@ public class ListingConfirmationManager {
         }
     }
 
-    private void addUcdProcessToFuzzyChoices(UcdProcess ucdProcess, List<String> fuzzyChoices) {
-        fuzzyChoices.add(ucdProcess.getName());
-        FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
-        dto.setFuzzyType(FuzzyType.UCD_PROCESS);
-        dto.setChoices(fuzzyChoices);
-        try {
-            fuzzyChoicesDao.update(dto);
-        } catch (IOException | EntityCreationException | EntityRetrievalException ex) {
-            LOGGER.error("Cannot update fuzzy choices with " + ucdProcess.getName(), ex);
-        }
-    }
-
-    private void saveUcdProcess(CertifiedProductSearchDetails listing, UcdProcess ucdProcess) throws EntityCreationException {
+    private void saveUcdProcess(CertifiedProductSearchDetails listing, CertifiedProductUcdProcess ucdProcess) throws EntityCreationException {
         List<Long> certResultIds = ucdProcess.getCriteria().stream()
             .map(criterion -> getCertificationResultId(listing, criterion))
             .collect(Collectors.toList());

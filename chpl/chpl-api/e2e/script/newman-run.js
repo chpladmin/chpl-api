@@ -218,6 +218,16 @@ const changerequestsControllerTests = {
   },
 };
 
+const ucdProcessesControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/ucd-processes-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/ucd-processes-controller-tests.xml',
+    },
+  },
+};
+
 const jobs = [
   cb => newman.run(acbControllerTests,cb),
   cb => newman.run(apiKeyControllerTests,cb),
@@ -239,6 +249,7 @@ const jobs = [
   cb => newman.run(certificationidControllerTests,cb),
   cb => newman.run(activityControllerTests,cb),
   cb => newman.run(changerequestsControllerTests,cb),
+  cb => newman.run(ucdProcessesControllerTests,cb),
   ];
 
 const responseCallback = (err) => {

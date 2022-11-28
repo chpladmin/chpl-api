@@ -11,7 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.Announcement;
-import gov.healthit.chpl.util.DateUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -64,8 +63,6 @@ public class AnnouncementEntity {
                 .text(this.getText())
                 .startDateTime(this.getStartDate())
                 .endDateTime(this.getEndDate())
-                .startDate(new Date(DateUtil.toEpochMillis(this.getStartDate())))
-                .endDate(new Date(DateUtil.toEpochMillis(this.getEndDate())))
                 .isPublic(this.getIsPublic())
                 .creationDate(this.getCreationDate())
                 .lastModifiedDate(this.getLastModifiedDate())
