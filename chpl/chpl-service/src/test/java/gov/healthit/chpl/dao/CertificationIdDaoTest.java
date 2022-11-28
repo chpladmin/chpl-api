@@ -34,8 +34,21 @@ public class CertificationIdDaoTest {
         certIdDao.setEntityManager(entityManager);
     }
 
+    @Test(expected = EntityCreationException.class)
+    public void createInvalidFlagState_2014CertificationId_generates14EString() throws EntityCreationException, EntityRetrievalException {
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.CAN_GENERATE_15C))).thenReturn(false);
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.CANNOT_GENERATE_15E))).thenReturn(true);
+
+        List<CertifiedProductDetailsDTO> listings = new ArrayList<CertifiedProductDetailsDTO>();
+        listings.add(CertifiedProductDetailsDTO.builder()
+                .id(1L)
+                .year("2014")
+                .build());
+        certIdDao.create(listings, "2014");
+    }
+
     @Test
-    public void create_2014CertificationId_generates14EString() throws EntityCreationException, EntityRetrievalException {
+    public void createBothFlagsFalse_2014CertificationId_generates14EString() throws EntityCreationException, EntityRetrievalException {
         Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.CAN_GENERATE_15C))).thenReturn(false);
         Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.CANNOT_GENERATE_15E))).thenReturn(false);
 
@@ -51,7 +64,23 @@ public class CertificationIdDaoTest {
     }
 
     @Test
-    public void create_hybridCertificationId_generates15EString() throws EntityCreationException, EntityRetrievalException {
+    public void createBothFlagsFalse_2015CertificationId_generates15EString() throws EntityCreationException, EntityRetrievalException {
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.CAN_GENERATE_15C))).thenReturn(false);
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.CANNOT_GENERATE_15E))).thenReturn(false);
+
+        List<CertifiedProductDetailsDTO> listings = new ArrayList<CertifiedProductDetailsDTO>();
+        listings.add(CertifiedProductDetailsDTO.builder()
+                .id(1L)
+                .year("2015")
+                .build());
+        CertificationIdDTO certId = certIdDao.create(listings, "2015");
+
+        assertNotNull(certId);
+        assertTrue(certId.getCertificationId().startsWith("0015E"));
+    }
+
+    @Test
+    public void createBothFlagsFalse_hybridCertificationId_generates15HString() throws EntityCreationException, EntityRetrievalException {
         Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.CAN_GENERATE_15C))).thenReturn(false);
         Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.CANNOT_GENERATE_15E))).thenReturn(false);
 
@@ -70,6 +99,73 @@ public class CertificationIdDaoTest {
         assertTrue(certId.getCertificationId().startsWith("0015H"));
     }
 
+    @Test
+    public void createCanGenerateBoth_allCuresListings_generates15CString() throws EntityCreationException, EntityRetrievalException {
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.CAN_GENERATE_15C))).thenReturn(true);
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.CANNOT_GENERATE_15E))).thenReturn(false);
+
+        List<CertifiedProductDetailsDTO> listings = new ArrayList<CertifiedProductDetailsDTO>();
+        listings.add(CertifiedProductDetailsDTO.builder()
+                .id(1L)
+                .year("2015")
+                .curesUpdate(true)
+                .build());
+        listings.add(CertifiedProductDetailsDTO.builder()
+                .id(2L)
+                .year("2015")
+                .curesUpdate(true)
+                .build());
+        CertificationIdDTO certId = certIdDao.create(listings, "2015");
+
+        assertNotNull(certId);
+        assertTrue(certId.getCertificationId().startsWith("0015C"));
+    }
+
+    @Test
+    public void createCanGenerateBoth_curesAndNotCuresListings_generates15EString() throws EntityCreationException, EntityRetrievalException {
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.CAN_GENERATE_15C))).thenReturn(true);
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.CANNOT_GENERATE_15E))).thenReturn(false);
+
+        List<CertifiedProductDetailsDTO> listings = new ArrayList<CertifiedProductDetailsDTO>();
+        listings.add(CertifiedProductDetailsDTO.builder()
+                .id(1L)
+                .year("2015")
+                .curesUpdate(false)
+                .build());
+        listings.add(CertifiedProductDetailsDTO.builder()
+                .id(2L)
+                .year("2015")
+                .curesUpdate(true)
+                .build());
+        CertificationIdDTO certId = certIdDao.create(listings, "2015");
+
+        assertNotNull(certId);
+        assertTrue(certId.getCertificationId().startsWith("0015E"));
+    }
+
+    @Test
+    public void createCanGenerateBoth_hybridEditions_generates15HString() throws EntityCreationException, EntityRetrievalException {
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.CAN_GENERATE_15C))).thenReturn(true);
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.CANNOT_GENERATE_15E))).thenReturn(false);
+
+        List<CertifiedProductDetailsDTO> listings = new ArrayList<CertifiedProductDetailsDTO>();
+        listings.add(CertifiedProductDetailsDTO.builder()
+                .id(1L)
+                .year("2014")
+                .curesUpdate(false)
+                .build());
+        listings.add(CertifiedProductDetailsDTO.builder()
+                .id(2L)
+                .year("2015")
+                .curesUpdate(true)
+                .build());
+        CertificationIdDTO certId = certIdDao.create(listings, "2014/2015");
+
+        assertNotNull(certId);
+        assertTrue(certId.getCertificationId().startsWith("0015H"));
+    }
+
+    //this test should remain when the two flags are removed
     @Test
     public void create_curesCertificationId_generates15CString() throws EntityCreationException, EntityRetrievalException {
         Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.CAN_GENERATE_15C))).thenReturn(true);
