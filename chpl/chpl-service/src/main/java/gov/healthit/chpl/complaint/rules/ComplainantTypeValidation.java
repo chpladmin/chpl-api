@@ -12,7 +12,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @NoArgsConstructor
 public class ComplainantTypeValidation extends ValidationRule<ComplaintValidationContext> {
-    private static final String COMPLAINANT_TYPE_OTHER = "Other - [Please Describe]";
+    private static final String COMPLAINANT_TYPE_OTHER = "Other";
 
     private ComplaintValidationContext context;
     private List<ComplainantType> complainantTypes;
