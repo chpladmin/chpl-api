@@ -2,7 +2,7 @@ package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
 
-import gov.healthit.chpl.entity.AccessibilityStandardEntity;
+import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

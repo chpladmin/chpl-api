@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.accessibilityStandard;
 
 import java.util.Date;
 
@@ -44,4 +44,11 @@ public class AccessibilityStandardEntity {
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
+
+    public AccessibilityStandard toDomain() {
+        return AccessibilityStandard.builder()
+                .id(getId())
+                .name(getName())
+                .build();
+    }
 }

@@ -11,10 +11,10 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.dao.AccessibilityStandardDAO;
+import gov.healthit.chpl.accessibilityStandard.AccessibilityStandard;
+import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardDAO;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
 
@@ -58,7 +58,7 @@ public class AccessibilityStandardNormalizerTest {
                         .build())
                 .build();
         Mockito.when(accessibilityStandardDao.getByName(ArgumentMatchers.anyString()))
-            .thenReturn(AccessibilityStandardDTO.builder()
+            .thenReturn(AccessibilityStandard.builder()
                     .id(1L)
                     .name("test")
                     .build());

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.permissions.domain.ucdProcess;
+package gov.healthit.chpl.permissions.domain.accessibilityStandard;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -12,7 +12,7 @@ import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
-import gov.healthit.chpl.permissions.domains.ucdProcess.UpdateActionPermissions;
+import gov.healthit.chpl.permissions.domains.accessibilityStandard.UpdateActionPermissions;
 
 public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     private AutoCloseable closeableMocks;

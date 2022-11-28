@@ -4,10 +4,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.AccessibilityStandardDAO;
+import gov.healthit.chpl.accessibilityStandard.AccessibilityStandard;
+import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardDAO;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
 
@@ -33,10 +33,10 @@ public class AccessibilityStandardNormalizer {
 
     private void populateAccessibilityStandardId(CertifiedProductAccessibilityStandard accessibilityStandard) {
         if (!StringUtils.isEmpty(accessibilityStandard.getAccessibilityStandardName())) {
-            AccessibilityStandardDTO accStdDto =
+            AccessibilityStandard accStd =
                     accessibilityStandardDao.getByName(accessibilityStandard.getAccessibilityStandardName());
-            if (accStdDto != null) {
-                accessibilityStandard.setAccessibilityStandardId(accStdDto.getId());
+            if (accStd != null) {
+                accessibilityStandard.setAccessibilityStandardId(accStd.getId());
             }
         }
     }
