@@ -1,5 +1,23 @@
 # Release Notes
 
+## Version 38.0.0
+_28 November 2022_
+
+### Breaking Changes
+* Remove a variety of deprecated endpoints and response fields
+
+### Features
+* Update Cures Statistics query to run on the servers using Postgres 14
+* Add trigger key fields to scheduled system job endpoint response
+* Add Test Data to b7 and b7 Cures Criteria
+* Deprecate sedTestingEndDate -> sedTestingEndDay for listings
+* Deprecate the /data/fuzzy_choices endpoints
+* Alter UCD Process validation during upload and edit
+* Add GET, PUT, POST, DELETE endpoints for /ucd-processes
+* Deprecate GET /data/ucd_processes endpoint
+
+---
+
 ## Version 37.5.0
 _14 November 2022_
 
