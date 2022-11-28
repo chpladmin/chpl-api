@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.scheduler.job.developer.attestation.email.DeveloperEmail;
 import gov.healthit.chpl.scheduler.job.developer.attestation.email.StatusReportEmail;
@@ -33,18 +34,18 @@ public class MissingAttestationChangeRequestDeveloperStatusReportEmailGenerator 
         this.emailParagraph = emailParagraph;
     }
 
-    public StatusReportEmail getStatusReportEmail(List<DeveloperEmail> developerEmails) {
+    public StatusReportEmail getStatusReportEmail(List<DeveloperEmail> developerEmails, UserDTO submittedUser) {
         return StatusReportEmail.builder()
                 .subject(emailSubject)
-                .message(getMessage(developerEmails))
-                .recipients(List.of("tyoung@ainq.com"))
+                .message(getMessage(developerEmails, submittedUser))
+                .recipients(List.of(submittedUser.getEmail()))
                 .build();
     }
 
-    private String getMessage(List<DeveloperEmail> developerEmails) {
+    private String getMessage(List<DeveloperEmail> developerEmails, UserDTO submittedUser) {
         return htmlEmailBuilder.initialize()
                 .heading(emailSubject)
-                .paragraph("", String.format(emailSalutation, "NEED TO GET THIS"))
+                .paragraph("", String.format(emailSalutation, submittedUser.getFullName()))
                 .paragraph("", emailParagraph)
                 .table(tableHeaders, getTableRows(developerEmails))
                 .footer(true)

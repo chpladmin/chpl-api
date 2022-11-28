@@ -84,7 +84,7 @@ public class MissingAttestationChangeRequestDeveloperCollector implements Develo
                     .map(result -> getAttestationSubmission(getChangeRequest(result.getId())))
                     .toList();
 
-            LOGGER.info("Found {} Attestation Change Requests for {}", changeRequestAttestationSubmissions.size(), developer.getName());
+            LOGGER.debug("Found {} Attestation Change Requests for {}", changeRequestAttestationSubmissions.size(), developer.getName());
             return changeRequestAttestationSubmissions;
         } catch (ValidationException e) {
             LOGGER.error("Error getting change requests for developer: {} {}", developer.getId(), developer.getName());

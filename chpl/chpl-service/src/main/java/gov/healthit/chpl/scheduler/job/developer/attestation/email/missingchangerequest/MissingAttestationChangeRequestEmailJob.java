@@ -9,7 +9,10 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.scheduler.job.developer.attestation.email.DeveloperEmail;
 import gov.healthit.chpl.scheduler.job.developer.attestation.email.StatusReportEmail;
 import lombok.extern.log4j.Log4j2;
@@ -29,25 +32,34 @@ public class MissingAttestationChangeRequestEmailJob implements Job  {
     @Autowired
     private ChplEmailFactory emailFactory;
 
+    @Autowired
+    private UserDAO userDAO;
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         LOGGER.info("********* Starting Developer Missing Attestatation Change Request Email job. *********");
-        List<DeveloperEmail> developerEmails = missingAttestationChangeRequestDeveloperCollector.getDevelopers().stream()
-                .map(developer -> emailGenerator.getDeveloperEmail(developer))
-                .toList();
+        try {
+            UserDTO submittedByUser = getUserFromJobData(context);
 
-        sendEmails(developerEmails);
+            List<DeveloperEmail> developerEmails = missingAttestationChangeRequestDeveloperCollector.getDevelopers().stream()
+                    .map(developer -> emailGenerator.getDeveloperEmail(developer))
+                    .toList();
 
-        sendStatusReportEmail(developerEmails);
-
-        LOGGER.info("********* Completed Developer Missing Attestatation Change Request Email job. *********");
+            sendEmails(developerEmails);
+            sendStatusReportEmail(developerEmails, submittedByUser);
+        } catch (Exception e) {
+            LOGGER.error(e);
+        } finally {
+            LOGGER.info("********* Completed Developer Missing Attestatation Change Request Email job. *********");
+        }
     }
 
     private void sendEmails(List<DeveloperEmail> developerEmails) {
         developerEmails.forEach(email -> {
             try {
+                LOGGER.info("Sending email to developer : {}", email.getDeveloper().getName());
                 emailFactory.emailBuilder()
                     .recipients(email.getRecipients())
                     .subject(email.getSubject())
@@ -60,8 +72,8 @@ public class MissingAttestationChangeRequestEmailJob implements Job  {
         });
     }
 
-    private void sendStatusReportEmail(List<DeveloperEmail> developerEmails) {
-        StatusReportEmail statusReportEmail = emailStatusReportGenerator.getStatusReportEmail(developerEmails);
+    private void sendStatusReportEmail(List<DeveloperEmail> developerEmails, UserDTO submittedUser) {
+        StatusReportEmail statusReportEmail = emailStatusReportGenerator.getStatusReportEmail(developerEmails, submittedUser);
 
         try {
             emailFactory.emailBuilder()
@@ -73,5 +85,9 @@ public class MissingAttestationChangeRequestEmailJob implements Job  {
             LOGGER.error("Error sending status report emails to: {}", statusReportEmail.getRecipients().stream().collect(Collectors.joining("; ")));
             LOGGER.error(e);
         }
+    }
+
+    private UserDTO getUserFromJobData(JobExecutionContext context) throws UserRetrievalException {
+        return userDAO.getById(context.getMergedJobDataMap().getLong("submittedByUserId"));
     }
 }

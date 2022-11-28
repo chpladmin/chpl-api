@@ -133,6 +133,8 @@ public class SchedulerManager extends SecuredManager {
                 .forJob(chplTrigger.getJob().getName(), chplTrigger.getJob().getGroup())
                 .usingJobData(chplTrigger.getJob().getJobDataMap()).build();
 
+        trigger.getJobDataMap().put("submittedByUserId", AuthUtil.getCurrentUser().getId());
+
         scheduler.scheduleJob(trigger);
 
         return chplTrigger;
