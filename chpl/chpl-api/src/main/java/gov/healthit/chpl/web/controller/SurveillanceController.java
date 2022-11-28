@@ -102,7 +102,7 @@ public class SurveillanceController {
     @Operation(summary = "Update a surveillance activity for a certified product.",
             description = "Updates an existing surveillance activity, surveilled requirements, and any applicable "
                     + "non-conformities in the system. The surveillance passed into this request will first be "
-                    + "validated to check for errors. Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB "
+                    + "validated to check for errors. Security Restrictions: ROLE_ADMIN or ROLE_ACB "
                     + "and associated with the certified product is required.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
