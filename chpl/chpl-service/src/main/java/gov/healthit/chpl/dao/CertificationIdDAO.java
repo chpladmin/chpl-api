@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -334,7 +335,6 @@ public class CertificationIdDAO extends BaseDAOImpl {
         // of products specified,
         // this filters out CertIDs that only contain a subset of those products
         // specified.
-        List<CertificationIdEntity> result = new ArrayList<CertificationIdEntity>();
         Query query = entityManager.createQuery(
                 "FROM CertificationIdEntity "
                 + "WHERE ehr_certification_id_id in ("
@@ -361,9 +361,29 @@ public class CertificationIdDAO extends BaseDAOImpl {
         query.setParameter("productIds", productIds);
         query.setParameter("productCount", Long.valueOf(productIds.size()));
         query.setParameter("year", year);
-        result = query.getResultList();
-        if (result.size() > 0) {
-            entity = result.get(0);
+        List<CertificationIdEntity> results = query.getResultList();
+        if (!CollectionUtils.isEmpty(results)) {
+            if (ff4j.check(FeatureList.CAN_GENERATE_15C)
+                    && ff4j.check(FeatureList.CANNOT_GENERATE_15E)) {
+                //the eventual future state
+                newId.append("C");
+            } else if (!ff4j.check(FeatureList.CAN_GENERATE_15C)
+                    && !ff4j.check(FeatureList.CANNOT_GENERATE_15E)) {
+                appendLegacyCertIdEditionCharacter(newId, year);
+            } else if (ff4j.check(FeatureList.CAN_GENERATE_15C)
+                    && !ff4j.check(FeatureList.CANNOT_GENERATE_15E)) {
+                //if it could be either C or E based on flag state then use C iff all listings are cures update, otherwise use legacy logic
+                if (areAllListings2015CuresUpdate(listings)) {
+                    newId.append("C");
+                } else {
+                    appendLegacyCertIdEditionCharacter(newId, year);
+                }
+            } else if (!ff4j.check(FeatureList.CAN_GENERATE_15C)
+                    && ff4j.check(FeatureList.CANNOT_GENERATE_15E)) {
+                //can't generate E or C - invalid flag state.
+                throw new EntityCreationException("Invalid flag state.");
+            }
+            entity = results.get(0);
         }
 
         return entity;
