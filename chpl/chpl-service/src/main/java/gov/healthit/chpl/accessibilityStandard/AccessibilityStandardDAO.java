@@ -94,9 +94,9 @@ public class AccessibilityStandardDAO extends BaseDAOImpl {
 
     public List<CertifiedProduct> getCertifiedProductsByAccessibilityStandard(AccessibilityStandard accessibilityStandard) {
         Query query = entityManager.createQuery("SELECT DISTINCT cpd "
-                        + "FROM CertifiedProductAccessibilityStandardEntity cpAs "
-                        + "CertifiedProductDetailsEntity cpd "
-                        + "WHERE cpAs.accessibilityStandardId = :accessibilityStandardId "
+                        + "FROM CertifiedProductAccessibilityStandardEntity cpAs, CertifiedProductDetailsEntity cpd "
+                        + "WHERE cpAs.certifiedProductId = cpd.id "
+                        + "AND cpAs.accessibilityStandardId = :accessibilityStandardId "
                         + "AND cpAs.deleted <> true "
                         + "AND cpd.deleted <> true");
         query.setParameter("accessibilityStandardId", accessibilityStandard.getId());
@@ -108,18 +108,18 @@ public class AccessibilityStandardDAO extends BaseDAOImpl {
     }
 
     private List<AccessibilityStandardEntity> getAllEntities() {
-        return entityManager.createQuery("SELECT as "
-                + "FROM AccessibilityStandardEntity as "
+        return entityManager.createQuery("SELECT accStd "
+                + "FROM AccessibilityStandardEntity accStd "
                 + "WHERE (NOT deleted = true) ", AccessibilityStandardEntity.class).getResultList();
     }
 
     private AccessibilityStandardEntity getEntityById(Long id) {
         AccessibilityStandardEntity entity = null;
         Query query = entityManager.createQuery(
-                "SELECT as "
-                + "FROM AccessibilityStandardEntity as "
+                "SELECT accStd "
+                + "FROM AccessibilityStandardEntity accStd "
                 + "WHERE (NOT deleted = true) "
-                + "AND (as.id = :id) ",
+                + "AND (accStd.id = :id) ",
                 AccessibilityStandardEntity.class);
         query.setParameter("id", id);
         List<AccessibilityStandardEntity> result = query.getResultList();
@@ -132,8 +132,8 @@ public class AccessibilityStandardDAO extends BaseDAOImpl {
 
     private List<AccessibilityStandardEntity> getEntitiesByName(String name) {
         Query query = entityManager.createQuery(
-                "SELECT as "
-                + "FROM AccessibilityStandardEntity as "
+                "SELECT accStd "
+                + "FROM AccessibilityStandardEntity accStd "
                 + "WHERE (NOT deleted = true) "
                 + "AND (UPPER(name) = :name) ",
                 AccessibilityStandardEntity.class);
