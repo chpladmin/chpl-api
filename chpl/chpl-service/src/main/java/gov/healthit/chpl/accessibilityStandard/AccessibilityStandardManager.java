@@ -23,14 +23,14 @@ import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2
-public class AccessibiityStandardManager {
+public class AccessibilityStandardManager {
     private static final int MAX_LISTINGS_IN_DELETE_ERROR_MESSAGE = 25;
 
     private AccessibilityStandardDAO accessibilityStandardDao;
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public AccessibiityStandardManager(AccessibilityStandardDAO accessibilityStandardDao,
+    public AccessibilityStandardManager(AccessibilityStandardDAO accessibilityStandardDao,
             ErrorMessageUtil errorMessageUtil) {
         this.accessibilityStandardDao = accessibilityStandardDao;
         this.errorMessageUtil = errorMessageUtil;

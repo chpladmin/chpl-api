@@ -52,6 +52,7 @@ public class AccessibilityStandardNormalizer {
         if (!StringUtils.isEmpty(topFuzzyChoice)) {
             accessibilityStandard.setUserEnteredAccessibilityStandardName(accessibilityStandard.getAccessibilityStandardName());
             accessibilityStandard.setAccessibilityStandardName(topFuzzyChoice);
+            populateAccessibilityStandardId(accessibilityStandard);
         }
     }
 }
