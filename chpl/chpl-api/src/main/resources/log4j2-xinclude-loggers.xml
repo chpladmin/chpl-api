@@ -240,4 +240,8 @@
         <AppenderRef ref="rwtQuestionableActivityCreatorJob" />
         <AppenderRef ref="rwtQuestionableActivityCreatorJobJson" />
     </Logger>
+    <Logger name="missingAttestationChangeRequestEmailJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="missingAttestationChangeRequestEmailJob" />
+        <AppenderRef ref="missingAttestationChangeRequestEmailJobJson" />
+    </Logger>
 </Loggers>

@@ -1142,4 +1142,24 @@
             </Delete>
         </DefaultRolloverStrategy>
     </RollingFile>
+    <RollingFile name="missingAttestationChangeRequestEmailJobJson"
+        fileName="${logDir}/scheduler/missingAttestationChangeRequestEmailJob.json"
+        filePattern="${logDir}/scheduler/history/missingAttestationChangeRequestEmailJob-%d{yyyy-MM-dd}.json"
+        filePermissions="rw-rw-r--">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="missingAttestationChangeRequestEmailJob" />
+                        <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${logDir}/scheduler/history" >
+                <IfFileName glob="missingAttestationChangeRequestEmailJob-*.json" />
+                <IfLastModified age="1d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
 </Appenders>

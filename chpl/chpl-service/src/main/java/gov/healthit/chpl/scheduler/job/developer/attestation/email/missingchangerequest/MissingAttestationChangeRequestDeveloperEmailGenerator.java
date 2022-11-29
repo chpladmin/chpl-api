@@ -16,7 +16,7 @@ import gov.healthit.chpl.scheduler.job.developer.attestation.email.DeveloperEmai
 import lombok.extern.log4j.Log4j2;
 
 @Component
-@Log4j2
+@Log4j2(topic = "missingAttestationChangeRequestEmailJobLogger")
 public class MissingAttestationChangeRequestDeveloperEmailGenerator implements DeveloperEmailGenerator {
     private DeveloperManager developerManager;
     private ChplHtmlEmailBuilder htmlEmailBuilder;

@@ -17,7 +17,7 @@ import gov.healthit.chpl.scheduler.job.developer.attestation.email.DeveloperEmai
 import gov.healthit.chpl.scheduler.job.developer.attestation.email.StatusReportEmail;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "missingAttestationChangeRequestEmailJobLogger")
 public class MissingAttestationChangeRequestEmailJob implements Job  {
 
     @Autowired

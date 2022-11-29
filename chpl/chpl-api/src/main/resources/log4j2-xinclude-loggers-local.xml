@@ -187,4 +187,7 @@
     <Logger name="rwtQuestionableActivityCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="rwtQuestionableActivityCreatorJob" />
     </Logger>
+    <Logger name="missingAttestationChangeRequestEmailJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="missingAttestationChangeRequestEmailJob" />
+    </Logger>
 </Loggers>
