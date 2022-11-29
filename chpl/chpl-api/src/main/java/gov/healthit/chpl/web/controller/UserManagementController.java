@@ -6,9 +6,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -166,7 +163,7 @@ public class UserManagementController {
     @RequestMapping(value = "/confirm", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public User confirmUser(@RequestBody String hash) throws InvalidArgumentsException, UserRetrievalException,
-    EntityRetrievalException, MessagingException, JsonProcessingException, EntityCreationException,
+    EntityRetrievalException, JsonProcessingException, EntityCreationException,
     MultipleUserAccountsException {
         UserInvitation invitation = invitationManager.getByConfirmationHash(hash);
 
@@ -250,7 +247,7 @@ public class UserManagementController {
             produces = "application/json; charset=utf-8")
     public UserInvitation inviteUser(@RequestBody UserInvitation invitation)
             throws InvalidArgumentsException, UserCreationException, UserRetrievalException,
-            UserPermissionRetrievalException, AddressException, EmailNotSentException {
+            UserPermissionRetrievalException, EmailNotSentException {
         UserInvitation createdInvitiation = null;
         if (invitation.getRole().equals(Authority.ROLE_ADMIN)) {
             createdInvitiation = invitationManager.inviteAdmin(invitation.getEmailAddress());
