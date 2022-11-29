@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import javax.mail.internet.AddressException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.Job;
@@ -78,7 +76,7 @@ public class ApiKeyDeleteJob implements Job {
                             sendEmail(apiKey);
                         } catch (EntityRetrievalException | EntityCreationException | JsonProcessingException e) {
                             LOGGER.error("Error updating api_key.deleted for id: " + apiKey.getId(), e);
-                        } catch (AddressException | EmailNotSentException e) {
+                        } catch (EmailNotSentException e) {
                             LOGGER.error("Error sending email to: " + apiKey.getEmail(), e);
                         }
                     }
@@ -102,7 +100,7 @@ public class ApiKeyDeleteJob implements Job {
                 null);
     }
 
-    private void sendEmail(ApiKey apiKey) throws AddressException, EmailNotSentException {
+    private void sendEmail(ApiKey apiKey) throws EmailNotSentException {
         List<String> recipients = new ArrayList<String>();
         recipients.add(apiKey.getEmail());
 

@@ -10,9 +10,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-
 import org.quartz.JobDataMap;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -124,7 +121,7 @@ public class EmailBuilder {
 
     //where it all comes together
     //this method is private and is called from sendEmail()
-    private EmailBuilder build() throws AddressException, MessagingException {
+    private EmailBuilder build() {
         message = new ChplEmailMessage();
         message.setFileAttachments(fileAttachments);
         message.setBody(htmlBody + htmlFooter);

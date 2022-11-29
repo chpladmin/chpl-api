@@ -3,8 +3,6 @@ package gov.healthit.chpl.web.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -192,14 +190,14 @@ public class CertificationBodyController {
             produces = "application/json; charset=utf-8")
     public CertificationBody updateAcb(@RequestBody final CertificationBody acbInfo) throws InvalidArgumentsException,
             EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException,
-            SchedulerException, ValidationException, MessagingException {
+            SchedulerException, ValidationException {
 
         return update(acbInfo);
     }
 
     private CertificationBody update(final CertificationBody updatedAcb) throws InvalidArgumentsException,
             EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException,
-            SchedulerException, ValidationException, MessagingException {
+            SchedulerException, ValidationException {
         // Get the ACB as it is currently in the database to find out if
         // the retired flag was changed.
         // Retirement and un-retirement is done as a separate manager action

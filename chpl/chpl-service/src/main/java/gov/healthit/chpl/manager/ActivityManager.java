@@ -1,14 +1,10 @@
 package gov.healthit.chpl.manager;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -137,37 +133,6 @@ public class ActivityManager extends SecuredManager {
         ActivityDTO result = activityDAO.getById(activityId);
         ActivityDetails event = getActivityDetailsFromDTO(result);
         return event;
-    }
-
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
-            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_USER_ACTIVITY)")
-    public List<ActivityDetails> getUserActivity(Set<Long> userIds, Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-        List<Long> userIdList = new ArrayList<Long>();
-        userIdList.addAll(userIds);
-        List<ActivityDTO> userActivity = activityDAO.findUserActivity(userIdList, startDate, endDate);
-
-        List<ActivityDetails> events = new ArrayList<ActivityDetails>();
-        for (ActivityDTO dto : userActivity) {
-            ActivityDetails event = getActivityDetailsFromDTO(dto);
-            events.add(event);
-        }
-        return events;
-    }
-
-    @Transactional(readOnly = true)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public List<ActivityDetails> getActivityForUserInDateRange(Long userId, Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-
-        List<ActivityDetails> userActivityEvents = new ArrayList<ActivityDetails>();
-
-        for (ActivityDTO userEventDTO : activityDAO.findByUserId(userId, startDate, endDate)) {
-            ActivityDetails event = getActivityDetailsFromDTO(userEventDTO);
-            userActivityEvents.add(event);
-        }
-        return userActivityEvents;
     }
 
     private ActivityDetails getActivityDetailsFromDTO(ActivityDTO dto) throws JsonParseException, IOException {

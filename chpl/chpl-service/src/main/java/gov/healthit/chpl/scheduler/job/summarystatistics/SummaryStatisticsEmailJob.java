@@ -12,8 +12,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import javax.mail.internet.AddressException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
@@ -88,7 +86,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         }
     }
 
-    private void sendEmail(String message, String address) throws AddressException, EmailNotSentException, IOException {
+    private void sendEmail(String message, String address) throws EmailNotSentException, IOException {
         String subject = env.getProperty("summaryEmailSubject").toString();
 
         List<String> addresses = new ArrayList<String>();

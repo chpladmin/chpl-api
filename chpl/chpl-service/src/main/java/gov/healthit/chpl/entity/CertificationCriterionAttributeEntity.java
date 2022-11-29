@@ -55,6 +55,9 @@ public class CertificationCriterionAttributeEntity {
     @Column(name = "test_tool")
     private Boolean testTool;
 
+    @Column(name = "test_data")
+    private Boolean testData;
+
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
     private Date creationDate;
