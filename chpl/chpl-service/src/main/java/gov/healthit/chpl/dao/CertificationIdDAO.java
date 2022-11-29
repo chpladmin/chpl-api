@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -52,6 +53,7 @@ public class CertificationIdDAO extends BaseDAOImpl {
     private static final String CERT_ID_CHARS_NUMERIC = "0123456789";
     private static final String CERT_ID_CHARS = CERT_ID_CHARS_NUMERIC + CERT_ID_CHARS_ALPHA;
     private static final int CERT_ID_LENGTH = 15;
+    private static final String CERT_ID_15C_BEGIN = "0015C";
     private static final long MODIFIED_USER_ID = -4L;
     private static final int MAX_COUNT_ALPHAS = 3;
 
@@ -191,9 +193,9 @@ public class CertificationIdDAO extends BaseDAOImpl {
         return results;
     }
 
-    public CertificationIdDTO getByProductIds(List<Long> productIds, String year)
+    public CertificationIdDTO getByListings(List<CertifiedProductDetailsDTO> listings, String year)
             throws EntityRetrievalException {
-        CertificationIdEntity entity = getEntityByProductIds(productIds, year);
+        CertificationIdEntity entity = getEntityByListings(listings, year);
         if (entity == null) {
             return null;
         }
@@ -322,8 +324,11 @@ public class CertificationIdDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private CertificationIdEntity getEntityByProductIds(List<Long> productIds, String year)
+    private CertificationIdEntity getEntityByListings(List<CertifiedProductDetailsDTO> listings, String year)
             throws EntityRetrievalException {
+        List<Long> productIds = listings.stream()
+                .map(listing -> listing.getId())
+                .toList();
         CertificationIdEntity entity = null;
 
         // Lookup the EHR Certification ID record by:
@@ -366,27 +371,47 @@ public class CertificationIdDAO extends BaseDAOImpl {
             if (ff4j.check(FeatureList.CAN_GENERATE_15C)
                     && ff4j.check(FeatureList.CANNOT_GENERATE_15E)) {
                 //the eventual future state
-                newId.append("C");
+                //there could be more than one cert ID that matches for this set of products (15E and 15C)
+                //if there is a 15C cert ID available, that is the one we want
+                entity = get15CCertIdEntity(results);
             } else if (!ff4j.check(FeatureList.CAN_GENERATE_15C)
                     && !ff4j.check(FeatureList.CANNOT_GENERATE_15E)) {
-                appendLegacyCertIdEditionCharacter(newId, year);
+                entity = getLegacyCertIdEntity(results);
             } else if (ff4j.check(FeatureList.CAN_GENERATE_15C)
                     && !ff4j.check(FeatureList.CANNOT_GENERATE_15E)) {
                 //if it could be either C or E based on flag state then use C iff all listings are cures update, otherwise use legacy logic
                 if (areAllListings2015CuresUpdate(listings)) {
-                    newId.append("C");
+                    entity = get15CCertIdEntity(results);
                 } else {
-                    appendLegacyCertIdEditionCharacter(newId, year);
+                    entity = getLegacyCertIdEntity(results);
                 }
             } else if (!ff4j.check(FeatureList.CAN_GENERATE_15C)
                     && ff4j.check(FeatureList.CANNOT_GENERATE_15E)) {
-                //can't generate E or C - invalid flag state.
-                throw new EntityCreationException("Invalid flag state.");
+                LOGGER.error("Invalid flag state.");
+                entity = null;
             }
-            entity = results.get(0);
         }
-
         return entity;
+    }
+
+    private CertificationIdEntity get15CCertIdEntity(List<CertificationIdEntity> entities) {
+        Optional<CertificationIdEntity> entityWith15CCertId = entities.stream()
+            .filter(entity -> entity.getCertificationId().startsWith(CERT_ID_15C_BEGIN))
+            .findFirst();
+        if (entityWith15CCertId.isEmpty()) {
+            return null;
+        }
+        return entityWith15CCertId.get();
+    }
+
+    private CertificationIdEntity getLegacyCertIdEntity(List<CertificationIdEntity> entities) {
+        Optional<CertificationIdEntity> entityWithLegacyCertId = entities.stream()
+            .filter(entity -> !entity.getCertificationId().startsWith(CERT_ID_15C_BEGIN))
+            .findFirst();
+        if (entityWithLegacyCertId.isEmpty()) {
+            return null;
+        }
+        return entityWithLegacyCertId.get();
     }
 
     private static String encodeCollectionKey(List<Long> numbers) {

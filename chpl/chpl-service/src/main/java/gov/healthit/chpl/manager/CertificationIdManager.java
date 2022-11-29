@@ -55,8 +55,8 @@ public class CertificationIdManager {
     }
 
     @Transactional(readOnly = true)
-    public CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException {
-        return certificationIdDao.getByProductIds(productIds, year);
+    public CertificationIdDTO getByListings(List<CertifiedProductDetailsDTO> listings, String year) throws EntityRetrievalException {
+        return certificationIdDao.getByListings(listings, year);
     }
 
     @Transactional(readOnly = true)

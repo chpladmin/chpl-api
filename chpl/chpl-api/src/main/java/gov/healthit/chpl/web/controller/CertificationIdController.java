@@ -331,7 +331,7 @@ public class CertificationIdController {
         if (validator.isValid()) {
             CertificationIdDTO idDto = null;
             try {
-                idDto = certificationIdManager.getByProductIds(productIdList, year);
+                idDto = certificationIdManager.getByListings(productDtos, year);
                 if (null != idDto) {
                     results.setEhrCertificationId(idDto.getCertificationId());
                 } else {
