@@ -41,6 +41,7 @@ public class DeprecatedFieldExplorerTest {
         assertTrue(deprecatedItemNames.contains("testables2" + DeprecatedResponseFieldExplorer.FIELD_SEPARATOR + "attribute100"));
     }
 
+    @Test
     public void findDeprecatedFields_SkipNonDeprecatedField_NotInResults() {
         Map<String, Object> deprecatedItems = deprecatedFieldExplorer.getUniqueDeprecatedItemsForClass(TestableClass.class);
         assertNotNull(deprecatedItems);
@@ -48,6 +49,7 @@ public class DeprecatedFieldExplorerTest {
         assertFalse(deprecatedItemNames.contains("attribute1"));
     }
 
+    @Test
     public void findDeprecatedFields_SkipJsonIgnoreField_NotInResults() {
         Map<String, Object> deprecatedItems = deprecatedFieldExplorer.getUniqueDeprecatedItemsForClass(TestableClass.class);
         assertNotNull(deprecatedItems);
@@ -55,6 +57,7 @@ public class DeprecatedFieldExplorerTest {
         assertFalse(deprecatedItemNames.contains("attribute4"));
     }
 
+    @Test
     public void findDeprecatedFields_SkipNonDeprecatedMethod_NotInResults() {
         Map<String, Object> deprecatedItems = deprecatedFieldExplorer.getUniqueDeprecatedItemsForClass(TestableClass.class);
         assertNotNull(deprecatedItems);
@@ -62,6 +65,7 @@ public class DeprecatedFieldExplorerTest {
         assertFalse(deprecatedItemNames.contains("method2"));
     }
 
+    @Test
     public void findDeprecatedFields_SkipJsonPropertyWriteOnlyMethod_NotInResults() {
         Map<String, Object> deprecatedItems = deprecatedFieldExplorer.getUniqueDeprecatedItemsForClass(TestableClass.class);
         assertNotNull(deprecatedItems);
@@ -69,6 +73,7 @@ public class DeprecatedFieldExplorerTest {
         assertFalse(deprecatedItemNames.contains("method3"));
     }
 
+    @Test
     public void findDeprecatedFields_SkipJsonIgnoreMethod_NotInResults() {
         Map<String, Object> deprecatedItems = deprecatedFieldExplorer.getUniqueDeprecatedItemsForClass(TestableClass.class);
         assertNotNull(deprecatedItems);
