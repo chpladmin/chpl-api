@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dao;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +35,6 @@ import gov.healthit.chpl.entity.CertificationIdEntity;
 import gov.healthit.chpl.entity.CertificationIdProductMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("certificationIdDAO")
 public class CertificationIdDAO extends BaseDAOImpl {
@@ -57,11 +55,6 @@ public class CertificationIdDAO extends BaseDAOImpl {
     private static final long MODIFIED_USER_ID = -4L;
     private static final int MAX_COUNT_ALPHAS = 3;
 
-    private static final int ENCODED_RADIX = 36; // The radix base for values within
-    // the Key
-    private static final int ENCODED_PADDED_LENGTH = 8; // The number of digits for
-    // each value in the Key
-
     private FF4j ff4j;
 
     @Autowired
@@ -79,7 +72,6 @@ public class CertificationIdDAO extends BaseDAOImpl {
         entity = new CertificationIdEntity();
         entity.setCertificationId(this.generateCertificationIdString(listings, year));
         entity.setYear(year);
-        entity.setKey(this.encodeCollectionKey(productIds));
         entity.setLastModifiedDate(new Date());
         entity.setCreationDate(new Date());
         entity.setLastModifiedUser(MODIFIED_USER_ID);
@@ -104,51 +96,6 @@ public class CertificationIdDAO extends BaseDAOImpl {
         entityManager.flush();
 
         return newDto;
-    }
-
-    @Transactional
-    public CertificationIdDTO create(CertificationIdDTO dto) throws EntityCreationException {
-
-        CertificationIdEntity entity = null;
-        try {
-            if (null != dto.getId()) {
-                entity = this.getEntityById(dto.getId());
-            }
-        } catch (EntityRetrievalException e) {
-            throw new EntityCreationException(e);
-        }
-
-        if (entity != null) {
-            throw new EntityCreationException("An entity with this record ID or Certification ID already exists.");
-        } else {
-
-            entity = new CertificationIdEntity();
-            entity.setCertificationId(dto.getCertificationId());
-            entity.setYear(dto.getYear());
-            entity.setPracticeTypeId(dto.getPracticeTypeId());
-
-            if (dto.getLastModifiedUser() != null) {
-                entity.setLastModifiedUser(dto.getLastModifiedUser());
-            } else {
-                entity.setLastModifiedUser(AuthUtil.getAuditId());
-            }
-
-            if (dto.getLastModifiedDate() != null) {
-                entity.setLastModifiedDate(dto.getLastModifiedDate());
-            } else {
-                entity.setLastModifiedDate(new Date());
-            }
-
-            if (dto.getCreationDate() != null) {
-                entity.setCreationDate(dto.getCreationDate());
-            } else {
-                entity.setCreationDate(new Date());
-            }
-
-            create(entity);
-            return new CertificationIdDTO(entity);
-        }
-
     }
 
     public List<CertificationIdDTO> findAll() {
@@ -270,11 +217,6 @@ public class CertificationIdDAO extends BaseDAOImpl {
         }
 
         return dtos;
-    }
-
-    private void create(CertificationIdEntity entity) {
-        entityManager.persist(entity);
-        entityManager.flush();
     }
 
     private List<CertificationIdEntity> getAllEntities() {
@@ -412,23 +354,6 @@ public class CertificationIdDAO extends BaseDAOImpl {
             return null;
         }
         return entityWithLegacyCertId.get();
-    }
-
-    private static String encodeCollectionKey(List<Long> numbers) {
-        // Sort the product numbers before we encode them so they are in order
-        Collections.sort(numbers);
-
-        // Collect encoded version of all numbers.
-        StringBuilder numbersString = new StringBuilder();
-        for (Long number : numbers) {
-            StringBuffer encodedNumber = new StringBuffer(Long.toString(number, ENCODED_RADIX));
-            while (encodedNumber.length() < ENCODED_PADDED_LENGTH) {
-                encodedNumber.insert(0, "0");
-            }
-            numbersString.append(encodedNumber);
-        }
-
-        return numbersString.toString().toUpperCase();
     }
 
     private List<CertificationIdAndCertifiedProductEntity> getAllCertificationIdsWithProductsEntities() {

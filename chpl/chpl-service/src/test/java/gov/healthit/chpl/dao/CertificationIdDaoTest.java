@@ -198,7 +198,6 @@ public class CertificationIdDaoTest {
         assertEquals(1, results.size());
         CertificationIdDTO result = results.get(0);
         assertEquals("CertificationId", result.getCertificationId());
-        assertEquals("key", result.getKey());
         assertEquals("2015", result.getYear());
     }
 
@@ -206,7 +205,6 @@ public class CertificationIdDaoTest {
         CertificationIdDTO dto = CertificationIdDTO.builder()
                 .id(1L)
                 .certificationId("CertificationId")
-                .key("key")
                 .year("2015")
                 .build();
         List<CertificationIdDTO> ret = new ArrayList<CertificationIdDTO>();
