@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -25,12 +26,10 @@ import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.domain.schedule.ChplJob;
@@ -61,16 +60,14 @@ public class SchedulerManager extends SecuredManager {
     private ChplSchedulerReference chplScheduler;
     private ResourcePermissions resourcePermissions;
     private ChplRepeatableTriggerChangeEmailer emailer;
-    private Environment env;
 
     @Autowired
     public SchedulerManager(ChplSchedulerReference chplScheduler, ResourcePermissions resourcePermissions,
-            ChplRepeatableTriggerChangeEmailer emailer, Environment env) {
+            ChplRepeatableTriggerChangeEmailer emailer) {
 
         this.chplScheduler = chplScheduler;
         this.resourcePermissions = resourcePermissions;
         this.emailer = emailer;
-        this.env = env;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
@@ -198,12 +195,24 @@ public class SchedulerManager extends SecuredManager {
                     String jobDescription = jobDetail.getDescription();
                     Date nextRunDate = curTrigger.getNextFireTime();
                     if (curTrigger instanceof CronTrigger) {
-                        ssJobs.add(new ScheduledSystemJob(jobName, jobDescription, nextRunDate,
-                                TriggerSchedule.REPEATABLE));
+                        ssJobs.add(ScheduledSystemJob.builder()
+                                .name(jobName)
+                                .description(jobDescription)
+                                .nextRunDate(nextRunDate)
+                                .triggerScheduleType(TriggerSchedule.REPEATABLE)
+                                .triggerGroup(curTrigger.getKey().getGroup())
+                                .triggerName(curTrigger.getKey().getName())
+                                .build());
+
                     } else if (curTrigger instanceof SimpleTrigger) {
-                        jobName = curTrigger.getJobKey().getName();
-                        ssJobs.add(new ScheduledSystemJob(jobName, jobDescription, nextRunDate,
-                                TriggerSchedule.ONE_TIME));
+                        ssJobs.add(ScheduledSystemJob.builder()
+                                .name(curTrigger.getJobKey().getName())
+                                .description(jobDescription)
+                                .nextRunDate(nextRunDate)
+                                .triggerScheduleType(TriggerSchedule.ONE_TIME)
+                                .triggerGroup(curTrigger.getKey().getGroup())
+                                .triggerName(curTrigger.getKey().getName())
+                                .build());
                     }
                 }
             }

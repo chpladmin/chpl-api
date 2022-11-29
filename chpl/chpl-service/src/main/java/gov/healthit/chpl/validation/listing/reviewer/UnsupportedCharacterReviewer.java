@@ -16,9 +16,9 @@ import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -127,7 +127,7 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                 }
             }
             if (sed.getUcdProcesses() != null) {
-                for (UcdProcess ucd : sed.getUcdProcesses()) {
+                for (CertifiedProductUcdProcess ucd : sed.getUcdProcesses()) {
                     addListingWarningIfNotValid(listing,
                             ucd.getName(), "UCD Process Name '" + ucd.getName() + "'");
                     addListingWarningIfNotValid(listing,

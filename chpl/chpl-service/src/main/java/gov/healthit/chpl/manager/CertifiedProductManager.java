@@ -817,6 +817,7 @@ public class CertifiedProductManager extends SecuredManager {
                 FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
                 dto.setFuzzyType(FuzzyType.QMS_STANDARD);
                 dto.setChoices(fuzzyQmsChoices);
+                //TODO: Remove as part of OCD-4041
                 fuzzyChoicesDao.update(dto);
             }
             QmsStandardDTO qmsItem = qmsDao.findOrCreate(toAdd.getQmsStandardId(), toAdd.getQmsStandardName());
@@ -1070,6 +1071,7 @@ public class CertifiedProductManager extends SecuredManager {
                 FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
                 dto.setFuzzyType(FuzzyType.ACCESSIBILITY_STANDARD);
                 dto.setChoices(fuzzyAsChoices);
+                //TODO: Remove as part of OCD-4040
                 fuzzyChoicesDao.update(dto);
             }
 

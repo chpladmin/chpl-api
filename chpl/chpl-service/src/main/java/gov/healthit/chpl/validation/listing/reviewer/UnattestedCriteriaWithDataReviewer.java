@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.domain.UcdProcess;
 
 @Component("unattestedCriteriaWithDataReviewer")
 public class UnattestedCriteriaWithDataReviewer implements Reviewer {
@@ -75,7 +75,7 @@ public class UnattestedCriteriaWithDataReviewer implements Reviewer {
                 }
                 if (listing.getSed() != null && listing.getSed().getUcdProcesses() != null
                         && listing.getSed().getUcdProcesses().size() > 0) {
-                    for (UcdProcess ucd : listing.getSed().getUcdProcesses()) {
+                    for (CertifiedProductUcdProcess ucd : listing.getSed().getUcdProcesses()) {
                         ArrayList<CertificationCriterion> remove = new ArrayList<CertificationCriterion>();
                         for (CertificationCriterion ucdCriteria : ucd.getCriteria()) {
                             if (ucdCriteria.getId() != null && ucdCriteria.getId().equals(cert.getCriterion().getId())) {

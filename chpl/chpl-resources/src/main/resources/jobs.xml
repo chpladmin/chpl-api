@@ -9,15 +9,7 @@
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
         <delete-job>
-          <name>conformanceMethodConversionJob</name>
-          <group>systemJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>removeCriteriaJob</name>
-            <group>systemJobs</group>
-        </delete-job>
-        <delete-job>
-          <name>addMissingMeasuresToListingsJob</name>
+          <name>inviteDevelopersJob</name>
           <group>systemJobs</group>
         </delete-job>
         <!-- END remove after PROD push -->
@@ -833,15 +825,6 @@
                     <value>47</value>
                 </entry>
             </job-data-map>
-        </job>
-
-        <job>
-            <name>inviteDevelopersJob</name>
-            <group>systemJobs</group>
-            <description>Send account invitations to POCs of any Developers that do not have accounts associated with them.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.onetime.InviteDevelopersJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
         </job>
 
         <job>

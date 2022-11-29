@@ -153,16 +153,8 @@ public class FieldLengthReviewer implements Reviewer {
             checkFieldLength(listing, listing.getSedReportFileLocation(), "sedReportHyperlink");
         }
         if (listing.getSed() != null) {
-            checkUcdProcesses(listing);
             checkTestTasks(listing);
             checkTestParticipants(listing);
-        }
-    }
-
-    private void checkUcdProcesses(CertifiedProductSearchDetails listing) {
-        if (!CollectionUtils.isEmpty(listing.getSed().getUcdProcesses())) {
-            listing.getSed().getUcdProcesses().stream()
-                .forEach(ucdProcess -> checkFieldLength(listing, ucdProcess.getName(), "ucdProcessName"));
         }
     }
 

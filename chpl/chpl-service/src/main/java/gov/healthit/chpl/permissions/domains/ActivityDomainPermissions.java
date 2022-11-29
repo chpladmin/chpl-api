@@ -16,7 +16,6 @@ import gov.healthit.chpl.permissions.domains.activity.GetChangeRequestActivityMe
 import gov.healthit.chpl.permissions.domains.activity.GetComplaintActivityMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetPendingSurveillanceMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetQuarterlyReportActivityMetadataActionPermissions;
-import gov.healthit.chpl.permissions.domains.activity.GetUserActivityActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetUserMaintenanceMetadataActionPermissions;
 
 @Component
@@ -42,7 +41,6 @@ public class ActivityDomainPermissions extends DomainPermissions {
             @Qualifier("actionGetActivityMetadataByAcbActionPermissions") GetActivityMetadataByAcbActionPermissions getActivityMetadataByAcbActionPermissions,
             @Qualifier("actionGetAtlActivityMetadataActionPermissions") GetAtlActivityMetadataActionPermissions getAtlActivityMetadataActionPermissions,
             @Qualifier("actionGetActivityMetadataByAtlActionPermissions") GetActivityMetadataByAtlActionPermissions getActivityMetadataByAtlActionPermissions,
-            @Qualifier("actionGetUserActivityActionPermissions") GetUserActivityActionPermissions getUserActivity,
             @Qualifier("actionGetActivityDetailsActionPermissions") GetActivityDetailsActionPermissions getActivityDetails,
             @Qualifier("activityGetUserMaintenanceMetadataActionPermissions") GetUserMaintenanceMetadataActionPermissions getUserMaintenanceMetadataActionPermissions,
             @Qualifier("activityGetActivityMetadataByConceptActionPermissions") GetActivityMetadataByConceptActionPermissions getActivityMetadataByConceptActionPermissions,
@@ -57,7 +55,6 @@ public class ActivityDomainPermissions extends DomainPermissions {
         getActionPermissions().put(GET_METADATA_BY_ACB, getActivityMetadataByAcbActionPermissions);
         getActionPermissions().put(GET_ATL_METADATA, getAtlActivityMetadataActionPermissions);
         getActionPermissions().put(GET_METADATA_BY_ATL, getActivityMetadataByAtlActionPermissions);
-        getActionPermissions().put(GET_USER_ACTIVITY, getUserActivity);
         getActionPermissions().put(GET_ACTIVITY_DETAILS, getActivityDetails);
         getActionPermissions().put(GET_USER_MAINTENANCE_METADATA, getUserMaintenanceMetadataActionPermissions);
         getActionPermissions().put(GET_ACTIVITY_METADATA_BY_CONCEPT, getActivityMetadataByConceptActionPermissions);

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,12 +63,6 @@ import lombok.extern.log4j.Log4j2;
 @RequestMapping("/certified_products")
 @Log4j2
 public class CertifiedProductController {
-
-    @Value("${uploadErrorEmailRecipients}")
-    private String uploadErrorEmailRecipients;
-
-    @Value("${uploadErrorEmailSubject}")
-    private String uploadErrorEmailSubject;
 
     private CertifiedProductDetailsManager cpdManager;
     private CertifiedProductManager cpManager;
@@ -793,6 +786,7 @@ public class CertifiedProductController {
                 .sed(e.getSed())
                 .sedIntendedUserDescription(e.getSedIntendedUserDescription())
                 .sedReportFileLocation(e.getSedReportFileLocation())
+                .sedTestingEndDay(e.getSedTestingEndDay())
                 .sedTestingEndDate(e.getSedTestingEndDate())
                 .svapNoticeUrl(e.getSvapNoticeUrl())
                 .surveillance(e.getSurveillance())

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.UcdProcess;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -40,9 +40,9 @@ public class RemovedCriteriaUcdComparisonReviewer implements ComparisonReviewer 
             return;
         }
 
-        for (UcdProcess updatedUcd : updatedListing.getSed().getUcdProcesses()) {
+        for (CertifiedProductUcdProcess updatedUcd : updatedListing.getSed().getUcdProcesses()) {
             boolean existsInOriginal = false;
-            for (UcdProcess existingUcd : existingListing.getSed().getUcdProcesses()) {
+            for (CertifiedProductUcdProcess existingUcd : existingListing.getSed().getUcdProcesses()) {
                 if (updatedUcd.matches(existingUcd)) {
                     existsInOriginal = true;
                     //not a new UCD Process, but maybe there are new criteria?

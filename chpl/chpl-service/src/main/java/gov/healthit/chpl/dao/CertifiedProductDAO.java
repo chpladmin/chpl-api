@@ -66,7 +66,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             entity.setCertifiedDateCode(chplProductNumberUtil.getCertificationDateCode(listing.getChplProductNumber()));
             entity.setReportFileLocation(listing.getReportFileLocation());
             entity.setSedIntendedUserDescription(listing.getSedIntendedUserDescription());
-            entity.setSedTestingEnd(listing.getSedTestingEndDate());
+            entity.setSedTestingEnd(listing.getSedTestingEndDay());
             entity.setSedReportFileLocation(listing.getSedReportFileLocation());
             entity.setProductAdditionalSoftware(listing.getProductAdditionalSoftware());
             entity.setOtherAcb(listing.getOtherAcb());

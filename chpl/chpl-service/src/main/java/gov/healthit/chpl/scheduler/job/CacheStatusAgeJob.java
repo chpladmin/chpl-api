@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.mail.internet.AddressException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.Job;
@@ -42,7 +40,7 @@ public class CacheStatusAgeJob implements Job {
                 String recipient = jobContext.getMergedJobDataMap().getString("email");
                 try {
                     sendEmail(recipient);
-                } catch (IOException | AddressException | EmailNotSentException e) {
+                } catch (IOException | EmailNotSentException e) {
                     LOGGER.error(e);
                 }
             }
@@ -83,8 +81,7 @@ public class CacheStatusAgeJob implements Job {
         }
     }
 
-    private void sendEmail(String recipient)
-            throws IOException, AddressException, EmailNotSentException {
+    private void sendEmail(String recipient) throws IOException, EmailNotSentException {
         LOGGER.info("Sending email to: " + recipient);
         String subject = env.getProperty("cacheStatusMaxAgeSubject");
         String htmlMessage = createHtmlEmailBody();
