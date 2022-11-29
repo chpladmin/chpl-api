@@ -58,8 +58,8 @@ public class ListingUploadValidationJob implements Job {
     @Autowired
     private ListingUploadManager listingUploadManager;
 
-    @Value("${uploadErrorEmailRecipients}")
-    private String uploadErrorEmailRecipients;
+    @Value("${internalErrorEmailRecipients}")
+    private String internalErrorEmailRecipients;
 
     @Value("${uploadErrorEmailSubject}")
     private String uploadErrorEmailSubject;
@@ -168,10 +168,10 @@ public class ListingUploadValidationJob implements Job {
     }
 
     private void sendUploadError(File file, Exception ex) {
-        if (StringUtils.isEmpty(uploadErrorEmailRecipients)) {
+        if (StringUtils.isEmpty(internalErrorEmailRecipients)) {
             return;
         }
-        List<String> recipients = Arrays.asList(uploadErrorEmailRecipients.split(","));
+        List<String> recipients = Arrays.asList(internalErrorEmailRecipients.split(","));
 
         //attach the file the user tried to upload
         List<File> attachments = new ArrayList<File>();

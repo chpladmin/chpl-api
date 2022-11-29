@@ -12,6 +12,10 @@
             <name>surveillanceUploadJob</name>
             <group>chplBackgroundJobs</group>
         </delete-job>
+        <delete-job>
+            <name>inviteDevelopersJob</name>
+            <group>systemJobs</group>
+        </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
@@ -809,15 +813,6 @@
                     <value>47</value>
                 </entry>
             </job-data-map>
-        </job>
-
-        <job>
-            <name>inviteDevelopersJob</name>
-            <group>systemJobs</group>
-            <description>Send account invitations to POCs of any Developers that do not have accounts associated with them.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.onetime.InviteDevelopersJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
         </job>
 
         <job>

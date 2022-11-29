@@ -2,7 +2,6 @@ package gov.healthit.chpl;
 
 import java.io.IOException;
 
-import javax.mail.internet.AddressException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.NotImplementedException;
@@ -111,13 +110,6 @@ public class ApiExceptionControllerAdvice {
     public ResponseEntity<ErrorResponse> typeMismatchException(TypeMismatchException e) {
         LOGGER.error(e.getMessage(), e);
         return new ResponseEntity<ErrorResponse>(new ErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(AddressException.class)
-    public ResponseEntity<ErrorResponse> exception(AddressException e) {
-        LOGGER.error("Could not send email", e);
-        return new ResponseEntity<ErrorResponse>(new ErrorResponse("Could not send email. " + e.getMessage()),
-                HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(UpdateTestingLabException.class)
