@@ -419,6 +419,10 @@ public class DimensionalDataController {
         return result;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/accessibility_standards",
+        message = "This endpoint is deprecated and will be removed. Please GET from /accessibility-standards.",
+        removalDate = "2023-06-30")
     @Operation(summary = "Get all possible accessibility standard options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {
