@@ -4,12 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.mail.Address;
-import javax.mail.BodyPart;
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-
 import org.springframework.core.env.Environment;
 
 public class EmailOverrider {
@@ -28,21 +22,18 @@ public class EmailOverrider {
      * the list is replaced with the "forward-to" address.
      * @param toAddresses - List of strings representing email addresses
      * @return - List of Address objects
-     * @throws MessagingException - General exception, check message for specific error
      */
-    public Address[] getRecipients(final List<String> toAddresses) throws MessagingException {
-        List<Address> addresses = new ArrayList<Address>();
+    public List<String> getRecipients(final List<String> toAddresses) {
+        List<String> addresses = new ArrayList<String>();
         if (shouldEmailBeRedirected(toAddresses)) {
-            Address address = new InternetAddress(getForwardToEmail());
-            addresses.add(address);
+            String forwardToAddress = getForwardToEmail();
+            addresses.add(forwardToAddress);
         } else {
-            for (String addr : toAddresses) {
-                Address address = new InternetAddress(addr);
+            for (String address : toAddresses) {
                 addresses.add(address);
             }
         }
-        Address[] addressArr = new Address[addresses.size()];
-        return addresses.toArray(addressArr);
+        return addresses;
     }
 
     /**
@@ -52,9 +43,8 @@ public class EmailOverrider {
      * @param htmlBody - the original HTML formatted message
      * @param toAddresses - List of Strings representing email addresses
      * @return - String representing the updated (if necessary) HTML message
-     * @throws MessagingException - general exception, check message for specific error
      */
-    public BodyPart getBody(final String htmlBody, final List<String> toAddresses) throws MessagingException {
+    public String getBody(String htmlBody, List<String> toAddresses) {
         StringBuffer message = new StringBuffer();
 
         if (shouldEmailBeRedirected(toAddresses)) {
@@ -65,9 +55,16 @@ public class EmailOverrider {
             message.append("<br/><br/>");
         }
         message.append(htmlBody);
-        BodyPart messageBodyPartWithMessage = new MimeBodyPart();
-        messageBodyPartWithMessage.setContent(message.toString(), "text/html; charset=UTF-8");
-        return messageBodyPartWithMessage;
+        return message.toString();
+    }
+
+    /**
+     * Determines whether or not an email should remain in the Sent Items account.
+     * Only production-environment emails should be saved.
+     * @return
+     */
+    public Boolean getSaveToSentItems() {
+        return isProductionEmailEnvironment();
     }
 
     private String getToAddressesAsString(final List<String> toAddresses) {
@@ -82,7 +79,7 @@ public class EmailOverrider {
         return addresses;
     }
 
-    private Boolean shouldEmailBeRedirected(final List<String> toAddresses) throws MessagingException {
+    private Boolean shouldEmailBeRedirected(final List<String> toAddresses) {
         //ASSUMPTION:
         //If any of the recipients are not in the allowed domains, we are going to redirect the email.
 

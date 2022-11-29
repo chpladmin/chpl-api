@@ -1,14 +1,9 @@
 package gov.healthit.chpl.web.controller;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import javax.mail.internet.AddressException;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,13 +18,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.api.domain.ApiKeyRegistration;
-import gov.healthit.chpl.email.ChplEmailFactory;
-import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.results.BooleanResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -45,12 +39,10 @@ public class ApiKeyController {
     @Autowired
     private ApiKeyManager apiKeyManager;
 
-    @Autowired
-    private Environment env;
-
-    @Autowired
-    private ChplEmailFactory chplEmailFactory;
-
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/key", httpMethod = "POST",
+        message = "This endpoint is deprecated and will be removed. Please use POST /key/register and POST /key/confirm to obtain an API Key.",
+        removalDate = "2023-05-15")
     @Operation(summary = "Sign up for a new API key.",
             description = "Anyone wishing to access the methods listed in this API must have an API key. This service "
                     + " will auto-generate a key and send it to the supplied email address. It must be included "
@@ -62,13 +54,14 @@ public class ApiKeyController {
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public KeyRegistered register(@RequestBody ApiKeyRegistration registration) throws EntityCreationException,
-            AddressException, EmailNotSentException, JsonProcessingException, EntityRetrievalException {
+            EmailNotSentException, JsonProcessingException, EntityRetrievalException {
 
         return create(registration);
     }
 
+    @Deprecated
     private KeyRegistered create(final ApiKeyRegistration registration) throws JsonProcessingException, EntityCreationException,
-            EntityRetrievalException, AddressException, EmailNotSentException {
+            EntityRetrievalException, EmailNotSentException {
         Date now = new Date();
         String apiKey = gov.healthit.chpl.util.Util.md5(registration.getName() + registration.getEmail() + now.getTime());
         ApiKey toCreate = ApiKey.builder()
@@ -79,7 +72,6 @@ public class ApiKeyController {
                 .build();
 
         apiKeyManager.createKey(toCreate);
-        sendRegistrationEmail(registration.getEmail(), registration.getName(), apiKey);
         return new KeyRegistered(apiKey);
     }
 
@@ -142,24 +134,6 @@ public class ApiKeyController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ApiKey> listKeys(@RequestParam(required = false, defaultValue = "false") boolean includeDeleted) {
         return apiKeyManager.findAll(includeDeleted);
-    }
-
-    private void sendRegistrationEmail(String email, String orgName, String apiKey)
-            throws AddressException, EmailNotSentException {
-
-        String subject = env.getProperty("apiKey.confirm.email.subject");
-        String htmlMessage = String.format(env.getProperty("apiKey.confirm.email.body"),
-                apiKey, env.getProperty("chplUrlBegin"));
-
-        String[] toEmails = {
-                email
-        };
-
-        EmailBuilder emailBuilder = chplEmailFactory.emailBuilder();
-        emailBuilder.recipients(new ArrayList<String>(Arrays.asList(toEmails)))
-                .subject(subject)
-                .htmlMessage(htmlMessage)
-                .sendEmail();
     }
 
     private class KeyRegistered {
