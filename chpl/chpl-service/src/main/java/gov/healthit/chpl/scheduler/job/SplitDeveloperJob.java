@@ -9,9 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,6 +18,7 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.security.access.AccessDeniedException;
@@ -84,6 +82,9 @@ public class SplitDeveloperJob implements Job {
     @Autowired
     private ChplEmailFactory chplEmailFactory;
 
+    @Value("${internalErrorEmailRecipients}")
+    private String internalErrorEmailRecipients;
+
     private Developer preSplitDeveloper;
     private Developer postSplitDeveloper;
     private Map<Long, CertifiedProductSearchDetails> preSplitListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
@@ -130,7 +131,7 @@ public class SplitDeveloperJob implements Job {
                 try {
                     sendJobCompletionEmails(postSplitDeveloper != null ? postSplitDeveloper : newDeveloper,
                             productIdsToMove, splitException, recipients);
-                } catch (IOException | MessagingException e) {
+                } catch (IOException e) {
                     LOGGER.error(e);
                 }
             } else {
@@ -256,15 +257,14 @@ public class SplitDeveloperJob implements Job {
     }
 
     private void sendJobCompletionEmails(Developer newDeveloper, List<Long> productIds,
-            Exception splitException, List<String> recipients)
-            throws IOException, AddressException, MessagingException {
+            Exception splitException, List<String> recipients) throws IOException {
 
         String subject = getSubject(splitException == null);
         String htmlMessage = "";
         if (splitException == null) {
             htmlMessage = createHtmlEmailBodySuccess(newDeveloper, productIds);
         } else {
-            String[] errorEmailRecipients = env.getProperty("splitDeveloperErrorEmailRecipients").split(",");
+            String[] errorEmailRecipients = internalErrorEmailRecipients.split(",");
             for (int i = 0; i < errorEmailRecipients.length; i++) {
                 recipients.add(errorEmailRecipients[i].trim());
             }
