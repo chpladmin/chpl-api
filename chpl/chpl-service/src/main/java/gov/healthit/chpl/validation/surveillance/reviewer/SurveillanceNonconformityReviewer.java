@@ -1,16 +1,12 @@
 package gov.healthit.chpl.validation.surveillance.reviewer;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
-import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.domain.NonconformityType;
-import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
@@ -55,7 +51,7 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
                             .add(msgUtil.getMessage("surveillance.nonConformityNotFound", req.getRequirementType().getFormattedTitle()));
                 } else {
                     for (SurveillanceNonconformity nc : req.getNonconformities()) {
-                        checkNonconformityTypeValidity(surv, req, nc, certResults);
+                        checkNonconformityTypeValidity(surv, req, nc);
                         checkCorrectiveActionPlanDatesValidity(surv, req, nc);
                         checkDateOfDeterminationExists(surv, req, nc);
                         checkSummaryExists(surv, req, nc);
@@ -74,44 +70,13 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
         }
     }
 
-    private void checkNonconformityTypeValidity(Surveillance surv, SurveillanceRequirement req,
-            SurveillanceNonconformity nc, List<CertificationResultDetailsDTO> certResults) {
+    private void checkNonconformityTypeValidity(Surveillance surv, SurveillanceRequirement req, SurveillanceNonconformity nc) {
         if (NullSafeEvaluator.eval(() -> nc.getType().getId(), -1).equals(-1)) {
             surv.getErrorMessages().add(
                     msgUtil.getMessage("surveillance.nonConformityTypeRequired",
                             req.getRequirementType().getFormattedTitle()));
             return;
         }
-
-        NonconformityType ncFromDb = getNonconformityType(nc.getType().getId());
-
-        if (ncFromDb.getClassification().equals(NonconformityClassification.CRITERION)) {
-            CertificationCriterion criterion = criterionService.get(ncFromDb.getId());
-
-            Optional<CertificationResultDetailsDTO> attestedCertResult = certResults.stream()
-                    .filter(certResult -> isCriteriaAttestedTo(certResult, criterion))
-                    .findFirst();
-
-            if (!attestedCertResult.isPresent()) {
-                surv.getErrorMessages().add(
-                        msgUtil.getMessage("surveillance.nonConformityTypeMatchException",
-                                nc.getType().getFormattedTitle()));
-            }
-        }
-    }
-
-    private NonconformityType getNonconformityType(Long nonconformityTypeId) {
-        return dimensionalDataManager.getNonconformityTypes().stream()
-                .filter(nc -> nc.getId().equals(nonconformityTypeId))
-                .findFirst()
-                .orElse(null);
-    }
-
-    private boolean isCriteriaAttestedTo(CertificationResultDetailsDTO certResult, CertificationCriterion criterion) {
-        return certResult.getCriterion() != null
-                && certResult.getSuccess() != null
-                && certResult.getSuccess().booleanValue()
-                && certResult.getCriterion().getId().equals(criterion.getId());
     }
 
     private void checkCorrectiveActionPlanDatesValidity(Surveillance surv, SurveillanceRequirement req,
