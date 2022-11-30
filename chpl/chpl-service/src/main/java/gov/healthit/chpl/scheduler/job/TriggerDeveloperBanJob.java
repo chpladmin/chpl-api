@@ -5,9 +5,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -88,7 +85,7 @@ public class TriggerDeveloperBanJob implements Job {
 
         try {
             sendEmails(jobContext, recipients);
-        } catch (IOException | MessagingException e) {
+        } catch (IOException e) {
             LOGGER.error(e);
         }
         LOGGER.info("********* Completed the Trigger Developer Ban job. *********");
@@ -101,11 +98,9 @@ public class TriggerDeveloperBanJob implements Job {
         userProvidedReason = jobDataMap.getString(USER_PROVIDED_REASON);
     }
 
-    private void sendEmails(JobExecutionContext jobContext, String[] recipients)
-            throws IOException, AddressException, MessagingException {
-
+    private void sendEmails(JobExecutionContext jobContext, String[] recipients) throws IOException {
         String subject = String.format(emailSubject, updatedListing.getCurrentStatus().getStatus().getName());
-        String htmlMessage = createHtmlEmailBody(jobContext);
+        String htmlMessage = createHtmlEmailBody();
 
         List<String> emailAddresses = Arrays.asList(recipients);
         for (String emailAddress : emailAddresses) {
@@ -132,8 +127,7 @@ public class TriggerDeveloperBanJob implements Job {
                 .sendEmail();
     }
 
-    private String createHtmlEmailBody(JobExecutionContext jobContext) {
-        JobDataMap jdm = jobContext.getMergedJobDataMap();
+    private String createHtmlEmailBody() {
         String reasonForStatusChange = updatedListing.getCurrentStatus().getReason();
         if (StringUtils.isEmpty(reasonForStatusChange)) {
             reasonForStatusChange = "<strong>ONC-ACB provided reason for status change:</strong> This field is blank";

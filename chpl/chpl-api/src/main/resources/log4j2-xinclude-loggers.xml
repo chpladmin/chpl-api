@@ -210,11 +210,6 @@
         <AppenderRef ref="listingsWithCriterionSnapshotCsvCreatorJob" />
         <AppenderRef ref="listingsWithCriterionSnapshotCsvCreatorJobJson" />
     </Logger>
-    <Logger name="inviteDevelopersJobLogger" level="INFO"
-        additivity="false">
-        <AppenderRef ref="inviteDevelopersJob" />
-        <AppenderRef ref="inviteDevelopersJobJson" />
-    </Logger>
     <Logger name="sendEmailJobLogger" level="INFO"
         additivity="false">
         <AppenderRef ref="sendEmailJob" />
