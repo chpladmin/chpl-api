@@ -2,15 +2,12 @@ package gov.healthit.chpl.domain.surveillance;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -177,17 +174,6 @@ public class SurveillanceNonconformity implements Serializable {
     private String resolution;
 
     /**
-     * Any documents associated with the non-conformity
-     */
-    @XmlElementWrapper(name = "documents", nillable = true, required = false)
-    @XmlElement(name = "document")
-    @Builder.Default
-    @Deprecated
-    @DeprecatedResponseField(removalDate = "2023-01-01",
-        message = "This field is deprecated and will be removed from the response data in a future release.")
-    private List<SurveillanceNonconformityDocument> documents = new ArrayList<SurveillanceNonconformityDocument>();
-
-    /**
      * Date of the last modification of the surveillance.
      */
     @XmlElement(required = true)
@@ -198,50 +184,6 @@ public class SurveillanceNonconformity implements Serializable {
             return false;
         }
 
-        //check documents
-        if (this.documents == null && anotherNonconformity.documents != null
-                || this.documents != null && anotherNonconformity.documents == null) {
-            return false;
-        } else if (this.documents != null && anotherNonconformity.documents != null
-                && this.documents.size() != anotherNonconformity.documents.size()) {
-            //easy check if the sizes are different
-            return false;
-        } else {
-            //documents - were any removed?
-            for (SurveillanceNonconformityDocument thisDoc : this.documents) {
-                boolean foundInOtherNonconformity = false;
-                for (SurveillanceNonconformityDocument otherDoc : anotherNonconformity.documents) {
-                    if (thisDoc.getId().longValue() == otherDoc.getId().longValue()) {
-                        foundInOtherNonconformity = true;
-                    }
-                }
-                if (!foundInOtherNonconformity) {
-                    return false;
-                }
-            }
-            //documents - were any added?
-            for (SurveillanceNonconformityDocument otherDoc : anotherNonconformity.documents) {
-                boolean foundInThisNonconformity = false;
-                for (SurveillanceNonconformityDocument thisDoc : this.documents) {
-                    if (thisDoc.getId().longValue() == otherDoc.getId().longValue()) {
-                        foundInThisNonconformity = true;
-                    }
-                }
-                if (!foundInThisNonconformity) {
-                    return false;
-                }
-            }
-            //documents - were any changed?
-            for (SurveillanceNonconformityDocument otherDoc : anotherNonconformity.documents) {
-                for (SurveillanceNonconformityDocument thisDoc : this.documents) {
-                    if (thisDoc.getId().longValue() == otherDoc.getId().longValue()) {
-                        if (!thisDoc.matches(otherDoc)) {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
         //all checks passed and turned out to be matching
         //so the two non-conformities must be identical
         return true;
@@ -492,16 +434,6 @@ public class SurveillanceNonconformity implements Serializable {
 
     public void setResolution(String resolution) {
         this.resolution = resolution;
-    }
-
-    @Deprecated
-    public List<SurveillanceNonconformityDocument> getDocuments() {
-        return documents;
-    }
-
-    @Deprecated
-    public void setDocuments(List<SurveillanceNonconformityDocument> documents) {
-        this.documents = documents;
     }
 
     public Date getLastModifiedDate() {
