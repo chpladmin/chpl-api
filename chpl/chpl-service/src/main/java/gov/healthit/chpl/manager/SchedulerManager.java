@@ -43,6 +43,7 @@ import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.ChplRepeatableTriggerChangeEmailer;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
+import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.util.AuthUtil;
 
 @Service
@@ -85,8 +86,8 @@ public class SchedulerManager extends SecuredManager {
                         .withIdentity(triggerId)
                         .startNow()
                         .forJob(jobId)
-                        .usingJobData("email", trigger.getEmail())
-                        .usingJobData("acb", trigger.getAcb())
+                        .usingJobData(QuartzJob.JOB_DATA_KEY_EMAIL, trigger.getEmail())
+                        .usingJobData(QuartzJob.JOB_DATA_KEY_ACB, trigger.getAcb())
                         .usingJobData(trigger.getJob().getJobDataMap())
                         .withSchedule(cronSchedule(trigger.getCronSchedule()))
                         .build();
@@ -95,7 +96,7 @@ public class SchedulerManager extends SecuredManager {
                         .withIdentity(triggerId)
                         .startNow()
                         .forJob(jobId)
-                        .usingJobData("email", trigger.getEmail())
+                        .usingJobData(QuartzJob.JOB_DATA_KEY_EMAIL, trigger.getEmail())
                         .usingJobData(trigger.getJob().getJobDataMap())
                         .withSchedule(cronSchedule(trigger.getCronSchedule()))
                         .build();
@@ -130,7 +131,7 @@ public class SchedulerManager extends SecuredManager {
                 .forJob(chplTrigger.getJob().getName(), chplTrigger.getJob().getGroup())
                 .usingJobData(chplTrigger.getJob().getJobDataMap()).build();
 
-        trigger.getJobDataMap().put("submittedByUserId", AuthUtil.getCurrentUser().getId());
+        trigger.getJobDataMap().put(QuartzJob.JOB_DATA_KEY_SUBMITTED_BY_USER_ID, AuthUtil.getCurrentUser().getId());
 
         scheduler.scheduleJob(trigger);
 

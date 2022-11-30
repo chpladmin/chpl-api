@@ -13,6 +13,7 @@ import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.scheduler.job.developer.attestation.email.DeveloperEmail;
 import gov.healthit.chpl.scheduler.job.developer.attestation.email.StatusReportEmail;
 import lombok.extern.log4j.Log4j2;
@@ -88,6 +89,6 @@ public class MissingAttestationChangeRequestEmailJob implements Job  {
     }
 
     private UserDTO getUserFromJobData(JobExecutionContext context) throws UserRetrievalException {
-        return userDAO.getById(context.getMergedJobDataMap().getLong("submittedByUserId"));
+        return userDAO.getById(context.getMergedJobDataMap().getLong(QuartzJob.JOB_DATA_KEY_SUBMITTED_BY_USER_ID));
     }
 }
