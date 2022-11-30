@@ -2,17 +2,13 @@ package gov.healthit.chpl.accessibilityStandard;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
@@ -22,25 +18,15 @@ import lombok.NoArgsConstructor;
  * https://www.healthit.gov/sites/default/files/2015Ed_CCG_g5-Accessibility-centered-design.pdf
  *
  */
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccessibilityStandard implements Serializable {
     private static final long serialVersionUID = 7248865611086710891L;
 
-    /**
-     * Accessibility standard internal ID
-     */
-    @XmlElement(required = true)
     private Long id;
-
-    /**
-     * Accessibility standard name
-     */
-    @XmlElement(required = true)
     private String name;
 
     @Override
@@ -77,21 +63,5 @@ public class AccessibilityStandard implements Serializable {
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         return result;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }
