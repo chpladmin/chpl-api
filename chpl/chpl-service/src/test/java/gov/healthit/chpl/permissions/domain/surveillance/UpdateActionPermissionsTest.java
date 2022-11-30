@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.access.AccessDeniedException;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -19,10 +20,14 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.surveillance.UpdateActionPermissions;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
     private ResourcePermissions resourcePermissions;
+
+    @Mock
+    private ErrorMessageUtil errorMessageUtil;
 
     @Mock
     private CertifiedProductDAO cpDAO;
@@ -39,7 +44,6 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    @Ignore
     public void hasAccess_Admin() throws Exception {
         setupForAdminUser(resourcePermissions);
 
@@ -53,7 +57,6 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    @Ignore
     public void hasAccess_Onc() throws Exception {
         setupForOncUser(resourcePermissions);
 
@@ -62,7 +65,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
         // Since it is onc it has access to all - param value does not matter.
         Surveillance surv = new Surveillance();
-        assertTrue(permissions.hasAccess(surv));
+        assertFalse(permissions.hasAccess(surv));
     }
 
     @Override
@@ -76,7 +79,6 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    @Ignore
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 
@@ -88,31 +90,36 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         surv.getCertifiedProduct().setId(1L);
 
         Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
-                .thenReturn(getCertifiedProduct(1L));
+                .thenReturn(getCertifiedProductWithAcbAndEdition(1L, 3L));
         assertFalse(permissions.hasAccess(surv));
 
         Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
-                .thenReturn(getCertifiedProduct(2L));
-
+                .thenReturn(getCertifiedProductWithAcbAndEdition(2L, 3L));
         assertTrue(permissions.hasAccess(surv));
     }
 
-    @Override
-    @Test
-    @Ignore
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
+    @Test(expected = AccessDeniedException.class)
+    public void hasAccess_Acb_2014Listing() throws Exception {
+        setupForAcbUser(resourcePermissions);
 
         // This should always be false
         assertFalse(permissions.hasAccess());
 
-        // Atl has no access - the param shouldn't even matter
-        assertFalse(permissions.hasAccess(new Surveillance()));
+        Surveillance surv = new Surveillance();
+        surv.setCertifiedProduct(new CertifiedProduct());
+        surv.getCertifiedProduct().setId(1L);
+
+        Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
+                .thenReturn(getCertifiedProductWithAcbAndEdition(3L, 2L));
+
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString()))
+                .thenReturn("message");
+
+        permissions.hasAccess(surv);
     }
 
     @Override
     @Test
-    @Ignore
     public void hasAccess_Cms() throws Exception {
         setupForCmsUser(resourcePermissions);
 
@@ -125,7 +132,6 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    @Ignore
     public void hasAccess_Anon() throws Exception {
         setupForAnonUser(resourcePermissions);
 
@@ -136,9 +142,16 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess(new Surveillance()));
     }
 
-    private CertifiedProductDTO getCertifiedProduct(Long acbId) {
-        CertifiedProductDTO dto = new CertifiedProductDTO();
-        dto.setCertificationBodyId(acbId);
-        return dto;
+    private CertifiedProductDTO getCertifiedProductWithAcbAndEdition(Long acbId, Long editionId) {
+        return CertifiedProductDTO.builder()
+                .certificationBodyId(acbId)
+                .certificationEditionId(editionId)
+                .build();
+    }
+
+    @Override
+    @Test
+    @Ignore
+    public void hasAccess_Atl() throws Exception {
     }
 }
