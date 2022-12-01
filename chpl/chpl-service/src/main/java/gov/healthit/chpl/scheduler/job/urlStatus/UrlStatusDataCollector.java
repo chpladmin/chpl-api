@@ -206,7 +206,7 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
                 activeRequest.setResponseMessage(null);
                 urlCheckerDao.updateUrlResult(activeRequest);
             } catch (Exception ex) {
-                LOGGER.error("Error checking URL " +  activeRequest.getUrl() + " " + ex.getMessage());
+                LOGGER.error("Error checking URL " +  activeRequest.getUrl() + " " + ex.getMessage(), ex);
                 //we could not complete the request for some reason... timeout, no host, some other error
                 //save the exception message as the response_message field
                 //so at least we have SOMETHING
