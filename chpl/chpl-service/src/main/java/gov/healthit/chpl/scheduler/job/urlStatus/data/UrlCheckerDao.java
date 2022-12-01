@@ -6,14 +6,14 @@ import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("urlCheckerDao")
 public class UrlCheckerDao extends BaseDAOImpl {
@@ -386,7 +386,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
         }
 
         UrlResultEntity entity = new UrlResultEntity();
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
+        entity.setLastModifiedUser(User.SYSTEM_USER_ID);
         entity.setResponseCode(toCreate.getResponseCode());
         entity.setResponseMessage(toCreate.getResponseMessage());
         entity.setUrl(toCreate.getUrl());
