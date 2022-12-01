@@ -203,6 +203,7 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
                         + activeRequest.getUrl() + " with status " + responseCode);
                 activeRequest.setLastChecked(new Date());
                 activeRequest.setResponseCode(responseCode);
+                activeRequest.setResponseMessage(null);
                 urlCheckerDao.updateUrlResult(activeRequest);
             } catch (Exception ex) {
                 LOGGER.error("Error checking URL " +  activeRequest.getUrl() + " " + ex.getMessage());
@@ -253,7 +254,7 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
                     redirectCheckIntervalDays = Integer.parseInt(redirectCheckIntervalDaysStr);
                 } catch (NumberFormatException ex) {
                     LOGGER.warn("Cannot parse job.urlStatusChecker.redirectCheckIntervalDays property value "
-                            + failureCheckIntervalDaysStr + " as number.");
+                            + redirectCheckIntervalDaysStr + " as number.");
                 }
             } else {
                 LOGGER.warn("No value found for property job.urlStatusChecker.redirectCheckIntervalDays. "
