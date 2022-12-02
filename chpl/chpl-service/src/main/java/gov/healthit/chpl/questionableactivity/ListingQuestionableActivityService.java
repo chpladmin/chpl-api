@@ -17,8 +17,6 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO
 import gov.healthit.chpl.questionableactivity.listing.AddedCertificationsActivity;
 import gov.healthit.chpl.questionableactivity.listing.AddedCqmsActivity;
 import gov.healthit.chpl.questionableactivity.listing.AddedMeasureActivity;
-import gov.healthit.chpl.questionableactivity.listing.AddedRemovedSurveillanceNonconformityActivity;
-import gov.healthit.chpl.questionableactivity.listing.AddedRemovedSurveillanceRequirementActivity;
 import gov.healthit.chpl.questionableactivity.listing.AddedRwtPlanNonEligibleListingActivity;
 import gov.healthit.chpl.questionableactivity.listing.AddedRwtResultsNonEligibleListingActivity;
 import gov.healthit.chpl.questionableactivity.listing.DeletedCertificationsActivity;
@@ -82,8 +80,6 @@ public class ListingQuestionableActivityService {
         processListingActivity(UpdatedPromotingInteroperabilityActivity.class.getName(), origListing, newListing, activityReason);
         processListingActivity(AddedMeasureActivity.class.getName(), origListing, newListing, activityReason);
         processListingActivity(DeletedMeasuresActivity.class.getName(), origListing, newListing, activityReason);
-        processListingActivity(AddedRemovedSurveillanceNonconformityActivity.class.getName(), origListing, newListing, activityReason);
-        processListingActivity(AddedRemovedSurveillanceRequirementActivity.class.getName(), origListing, newListing, activityReason);
         processListingActivity(RwtResultsUpdatedOutsideNormalPeriod.class.getName(), origListing, newListing, activityReason);
         processListingActivity(RwtPlansUpdatedOutsideNormalPeriod.class.getName(), origListing, newListing, activityReason);
         processListingActivity(NonActiveCertificateEdited.class.getName(), origListing, newListing, activityReason);
