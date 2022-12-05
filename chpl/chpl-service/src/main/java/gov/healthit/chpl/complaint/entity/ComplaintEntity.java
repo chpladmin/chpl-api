@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.complaint.entity;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -20,11 +20,12 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.complaint.domain.Complaint;
+import gov.healthit.chpl.complaint.domain.ComplaintCriterionMap;
+import gov.healthit.chpl.complaint.domain.ComplaintListingMap;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
-import gov.healthit.chpl.domain.complaint.Complaint;
-import gov.healthit.chpl.domain.complaint.ComplaintCriterionMap;
-import gov.healthit.chpl.domain.complaint.ComplaintListingMap;
+import gov.healthit.chpl.entity.CertificationBodyEntity;
 import lombok.Data;
 
 @Entity

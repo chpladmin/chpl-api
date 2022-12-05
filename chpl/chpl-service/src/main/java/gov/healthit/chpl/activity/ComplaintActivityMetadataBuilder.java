@@ -5,9 +5,9 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.healthit.chpl.complaint.domain.Complaint;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.ComplaintActivityMetadata;
-import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.dto.ActivityDTO;
 import lombok.extern.log4j.Log4j2;
 

@@ -26,6 +26,7 @@ public final class CacheNames {
     public static final String TEST_PROCEDURES = "testProcedures";
     public static final String TEST_DATA = "testData";
     public static final String TEST_FUNCTIONALITY_MAPS = "testFunctionalityMaps";
+    public static final String COMPLAINTS = "complaints";
     public static final String COLLECTIONS_LISTINGS = "listingCollection";
     public static final String COLLECTIONS_SEARCH = "listingSearchCollection";
     public static final String COLLECTIONS_DEVELOPERS = "developerSearchCollection";

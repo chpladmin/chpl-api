@@ -17,6 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
+import gov.healthit.chpl.complaint.ComplaintManager;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
@@ -35,7 +36,6 @@ import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.manager.ComplaintManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.manager.FilterManager;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
@@ -625,6 +625,10 @@ public class DimensionalDataController {
         return dimensionalDataManager.getDimensionalData(simple);
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/filter_types",
+        message = "This endpoint is deprecated and will be removed.",
+        removalDate = "2023-06-01")
     @Operation(summary = "Get all available filter type.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
