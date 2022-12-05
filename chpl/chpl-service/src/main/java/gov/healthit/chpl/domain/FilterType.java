@@ -4,6 +4,7 @@ import java.util.Date;
 
 import gov.healthit.chpl.dto.FilterTypeDTO;
 
+@Deprecated
 public class FilterType {
     private Long id;
     private String name;

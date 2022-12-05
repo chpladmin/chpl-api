@@ -1,10 +1,10 @@
-package gov.healthit.chpl.manager.rules.complaints;
+package gov.healthit.chpl.complaint.rules;
 
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import gov.healthit.chpl.domain.complaint.ComplainantType;
+import gov.healthit.chpl.complaint.domain.ComplainantType;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -12,7 +12,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @NoArgsConstructor
 public class ComplainantTypeValidation extends ValidationRule<ComplaintValidationContext> {
-    private static final String COMPLAINANT_TYPE_OTHER = "Other - [Please Describe]";
+    private static final String COMPLAINANT_TYPE_OTHER = "Other";
 
     private ComplaintValidationContext context;
     private List<ComplainantType> complainantTypes;

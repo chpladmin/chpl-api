@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.complaint.entity;
 
 import java.util.Date;
 
@@ -10,7 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.domain.complaint.ComplainantType;
+import gov.healthit.chpl.complaint.domain.ComplainantType;
 import lombok.Data;
 
 @Entity

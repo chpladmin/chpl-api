@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.complaint.entity;
 
 import java.util.Date;
 

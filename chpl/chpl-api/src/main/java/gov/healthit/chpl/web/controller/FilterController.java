@@ -23,11 +23,13 @@ import gov.healthit.chpl.manager.FilterManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.results.FilterResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+@Deprecated
 @Tag(name = "filters", description = "Allows management of user filters.")
 @RestController
 @RequestMapping("/filters")
@@ -42,6 +44,10 @@ public class FilterController {
         this.userManager = userManager;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/filters",
+            message = "The filters functionality, also known as Saved Searches, is deprecated and will be removed from the CHPL.",
+            removalDate = "2023-06-01")
     @Operation(summary = "List all filters based on the filter type for the current user.",
             description = "Security Restrictions: Only filters owned by the current user will be returned",
             security = {
@@ -61,6 +67,11 @@ public class FilterController {
         return results;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/filters",
+            message = "The filters functionality, also known as Saved Searches, is deprecated and will be removed from the CHPL.",
+            removalDate = "2023-06-01",
+            httpMethod = "POST")
     @Operation(summary = "Save filter for the current user.",
             description = "",
             security = {
@@ -82,6 +93,11 @@ public class FilterController {
         return new Filter(dto);
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/filters/{filterId}",
+            message = "The filters functionality, also known as Saved Searches, is deprecated and will be removed from the CHPL.",
+            removalDate = "2023-06-01",
+            httpMethod = "DELETE")
     @Operation(summary = "Deletes a filter.",
             description = "",
             security = {

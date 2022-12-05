@@ -1,4 +1,4 @@
-package gov.healthit.chpl.manager.rules.complaints;
+package gov.healthit.chpl.complaint.rules;
 
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import lombok.NoArgsConstructor;

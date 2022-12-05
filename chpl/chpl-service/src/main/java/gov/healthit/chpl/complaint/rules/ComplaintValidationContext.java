@@ -1,8 +1,8 @@
-package gov.healthit.chpl.manager.rules.complaints;
+package gov.healthit.chpl.complaint.rules;
 
+import gov.healthit.chpl.complaint.ComplaintDAO;
+import gov.healthit.chpl.complaint.domain.Complaint;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.ComplaintDAO;
-import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.Data;
