@@ -1,21 +1,26 @@
 package gov.healthit.chpl.scheduler.job.urlStatus;
 
+import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLContext;
 
 import org.apache.commons.lang3.StringUtils;
-import org.asynchttpclient.AsyncHttpClient;
-import org.asynchttpclient.DefaultAsyncHttpClientConfig;
-import org.asynchttpclient.Dsl;
-import org.quartz.InterruptableJob;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContexts;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.UnableToInterruptJobException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -28,13 +33,10 @@ import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlCallerAsync;
 import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlCheckerDao;
 import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlResult;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "urlStatusDataCollectorJobLogger")
-public class UrlStatusDataCollector extends QuartzJob implements InterruptableJob {
+public class UrlStatusDataCollector extends QuartzJob {
     private static final int SECONDS_TO_MILLIS = 1000;
     private static final long DAYS_TO_MILLIS = 24 * 60 * 60 * SECONDS_TO_MILLIS;
     private static final int BATCH_SIZE = 100;
@@ -50,17 +52,17 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
     @Autowired
     private UrlCallerAsync urlCallerAsync;
 
+    private ExecutorService executorService;
+
     private int successCheckIntervalDays = DEFAULT_INTERVAL_DAYS;
     private int failureCheckIntervalDays = DEFAULT_INTERVAL_DAYS;
     private int redirectCheckIntervalDays = DEFAULT_INTERVAL_DAYS;
     private int connectTimeoutSeconds = DEFAULT_TIMEOUT_SECONTS;
     private int requestTimeoutSeconds = DEFAULT_TIMEOUT_SECONTS;
-    private AsyncHttpClient httpClient;
+    private CloseableHttpClient httpClient;
     private Map<UrlResult, Future<Integer>> urlResponseCodeFuturesMap;
-    private boolean interrupted;
 
     public UrlStatusDataCollector() {
-        interrupted = false;
         urlResponseCodeFuturesMap = new LinkedHashMap<UrlResult, Future<Integer>>();
     }
 
@@ -89,9 +91,6 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
                 int batchEnd = Math.min(batchBegin + BATCH_SIZE, allSystemUrls.size());
                 LOGGER.info("*** Batch " + currBatch + " (" + batchBegin + " - " + batchEnd + " ) ***");
                 processUrls(currBatch, allSystemUrls.subList(batchBegin, batchEnd));
-                if (interrupted) {
-                    break;
-                }
             }
         } catch (Exception ex) {
             LOGGER.error("Unable to complete job: " + ex.getMessage(), ex);
@@ -178,8 +177,8 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
                 LOGGER.info(systemUrl.getUrl() + " for the type " + systemUrl.getUrlType().getName()
                     + " will be checked for validity.");
                 try {
-                   Future<Integer> responseCodeFuture =
-                           urlCallerAsync.getUrlResponseCode(systemUrl, httpClient, LOGGER);
+                   CompletableFuture<Integer> responseCodeFuture =
+                           urlCallerAsync.getUrlResponseCodeFuture(systemUrl, httpClient, executorService, LOGGER);
                    urlResponseCodeFuturesMap.put(systemUrl, responseCodeFuture);
                 } catch (final Exception ex) {
                     LOGGER.error("Could not check URL " + systemUrl.getUrl()
@@ -193,9 +192,6 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
         //get all the results from this batch of URLs
         int completedUrls = 0;
         for (UrlResult activeRequest : urlResponseCodeFuturesMap.keySet()) {
-            if (interrupted) {
-                break;
-            }
             Future<Integer> futureResponseCode = urlResponseCodeFuturesMap.get(activeRequest);
             try {
                 Integer responseCode = futureResponseCode.get();
@@ -207,10 +203,10 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
                 urlCheckerDao.updateUrlResult(activeRequest);
             } catch (Exception ex) {
                 LOGGER.error("Error checking URL " +  activeRequest.getUrl() + " " + ex.getMessage(), ex);
-                //we could not complete the request for some reason... timeout, no host, some other error
-                //save the exception message as the response_message field
-                //so at least we have SOMETHING
+                //We could not complete the request for some reason... timeout, no host, some other error
+                //Save the exception message as the response_message field so at least we have something for the report.
                 activeRequest.setLastChecked(new Date());
+                activeRequest.setResponseCode(null);
                 activeRequest.setResponseMessage(ex.getMessage());
                 urlCheckerDao.updateUrlResult(activeRequest);
             } finally {
@@ -289,21 +285,25 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
             LOGGER.error("The spring environment was null.");
         }
 
-        //create ssl context to accept ALL https connections
-        //documentation says this isn't very secure... do we trust that the URLs uploaded are safe?
-        //do we need to do something different here to be more secure?
-        SslContext sslContext = null;
+        TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
+        SSLContext sslContext = null;
         try {
-            sslContext = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
-        } catch (final SSLException ex) {
+            sslContext = org.apache.http.ssl.SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
+        } catch (Exception ex) {
             LOGGER.error("Could not create ssl context; https requests may fail.", ex);
         }
 
-        DefaultAsyncHttpClientConfig.Builder clientBuilder = Dsl.config()
-                .setConnectTimeout(connectTimeoutSeconds * SECONDS_TO_MILLIS)
-                .setRequestTimeout(requestTimeoutSeconds * SECONDS_TO_MILLIS)
-                .setSslContext(sslContext);
-        httpClient = Dsl.asyncHttpClient(clientBuilder);
+        SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext != null ? sslContext : SSLContexts.createDefault());
+        httpClient = HttpClients.custom()
+                .setSSLSocketFactory(csf)
+                .setDefaultRequestConfig(RequestConfig.custom()
+                        .setConnectionRequestTimeout(requestTimeoutSeconds * SECONDS_TO_MILLIS)
+                        .setConnectTimeout(connectTimeoutSeconds * SECONDS_TO_MILLIS)
+                        .setSocketTimeout(connectTimeoutSeconds * SECONDS_TO_MILLIS)
+                        .build())
+                .build();
+
+        initializeExecutorService();
     }
 
     /**
@@ -354,8 +354,11 @@ public class UrlStatusDataCollector extends QuartzJob implements InterruptableJo
         return false;
     }
 
-    @Override
-    public void interrupt() throws UnableToInterruptJobException {
-        this.interrupted = true;
+    private Integer getThreadCountForJob() throws NumberFormatException {
+        return Integer.parseInt(env.getProperty("executorThreadCountForQuartzJobs"));
+    }
+
+    private void initializeExecutorService() {
+        executorService = Executors.newFixedThreadPool(getThreadCountForJob());
     }
 }
