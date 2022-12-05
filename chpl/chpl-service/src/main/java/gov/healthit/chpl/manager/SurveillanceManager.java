@@ -31,9 +31,7 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
-import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -111,19 +109,6 @@ public class SurveillanceManager extends SecuredManager {
         return surveillances;
     }
 
-    @Deprecated
-    @Transactional(readOnly = true)
-    public SurveillanceNonconformityDocument getDocumentById(final Long docId, final boolean getFileContents)
-            throws EntityRetrievalException {
-        SurveillanceNonconformityDocumentationEntity docEntity = survDao.getDocumentById(docId);
-
-        SurveillanceNonconformityDocument doc = null;
-        if (docEntity != null) {
-            doc = convertToDomain(docEntity, getFileContents);
-        }
-        return doc;
-    }
-
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).CREATE, #survToInsert)")
@@ -150,17 +135,6 @@ public class SurveillanceManager extends SecuredManager {
             throw ex;
         }
         logSurveillanceCreationActivity(beforeListing);
-        return insertedId;
-    }
-
-    @Deprecated
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
-            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).ADD_DOCUMENT, #nonconformityId)")
-    public Long addDocumentToNonconformity(Long nonconformityId, SurveillanceNonconformityDocument doc)
-            throws EntityRetrievalException {
-        Long insertedId = null;
-        insertedId = survDao.insertNonconformityDocument(nonconformityId, doc);
         return insertedId;
     }
 
@@ -213,14 +187,6 @@ public class SurveillanceManager extends SecuredManager {
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, afterCp.getId(),
                 "Surveillance was delete from certified product " + afterCp.getChplProductNumber(),
                 beforeCp, afterCp, reason);
-    }
-
-    @Deprecated
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
-            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).DELETE_DOCUMENT, #documentId)")
-    public void deleteNonconformityDocument(Long documentId) throws EntityRetrievalException {
-        survDao.deleteNonconformityDocument(documentId);
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
@@ -279,18 +245,6 @@ public class SurveillanceManager extends SecuredManager {
     public File getSurveillanceWithNonconformitiesDownloadFile() throws IOException {
         return fileUtils.getNewestFileMatchingName(
                 "^" + env.getProperty("surveillanceNonconformitiesReportName") + "-.+\\.csv$");
-    }
-
-    private SurveillanceNonconformityDocument convertToDomain(final SurveillanceNonconformityDocumentationEntity entity,
-            final boolean getContents) {
-        SurveillanceNonconformityDocument doc = new SurveillanceNonconformityDocument();
-        doc.setId(entity.getId());
-        doc.setFileType(entity.getFileType());
-        doc.setFileName(entity.getFileName());
-        if (getContents) {
-            doc.setFileContents(entity.getFileData());
-        }
-        return doc;
     }
 
     private void logSurveillanceUpdateActivity(CertifiedProductSearchDetails existingListing)

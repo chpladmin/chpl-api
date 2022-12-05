@@ -4,12 +4,15 @@ import java.util.Date;
 
 import gov.healthit.chpl.entity.surveillance.NonconformityTypeStatisticsEntity;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public @Data class NonconformityTypeStatisticsDTO {
+@Data
+@Builder
+public class NonconformityTypeStatisticsDTO {
 
     private Long id;
     private Long nonconformityCount;

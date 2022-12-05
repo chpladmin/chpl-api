@@ -6,18 +6,30 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
-import gov.healthit.chpl.entity.surveillance.NonconformityAggregatedStatisticsEntity;
+import gov.healthit.chpl.entity.surveillance.NonconformityTypeEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailCertificationBodyStatistic;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.DateUtil;
 
 @Repository("surveillanceStatisticsDAO")
 public class SurveillanceStatisticsDAO extends BaseDAOImpl {
+
+    private CertificationCriterionService certificationCriterionService;
+
+    @Autowired
+    public SurveillanceStatisticsDAO(CertificationCriterionService certificationCriterionService) {
+        this.certificationCriterionService = certificationCriterionService;
+    }
+
     /**
      * Total # of Surveillance Activities.
      */
@@ -227,28 +239,32 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
      * @return a list of the DTOs that hold the counts
      */
     public List<NonconformityTypeStatisticsDTO> getAllNonconformitiesByCriterion() {
-        Query query = entityManager.createQuery("SELECT data "
-                + "FROM NonconformityAggregatedStatisticsEntity data "
-                + "LEFT OUTER JOIN FETCH data.certificationCriterionEntity cce "
-                + "LEFT OUTER JOIN FETCH cce.certificationEdition ",
-                NonconformityAggregatedStatisticsEntity.class);
+        List<SurveillanceNonconformityEntity> allNonconformities = entityManager.createQuery(
+                "SELECT sne "
+                + "FROM SurveillanceNonconformityEntity sne "
+                + "JOIN FETCH sne.type ncType "
+                + "WHERE sne.deleted = false ", SurveillanceNonconformityEntity.class)
+                .getResultList();
 
-        List<NonconformityAggregatedStatisticsEntity> entities = query.getResultList();
+        List<NonconformityTypeEntity> nonconformityTypes = entityManager.createQuery(
+                "FROM NonconformityTypeEntity e ", NonconformityTypeEntity.class)
+                .getResultList();
 
-        List<NonconformityTypeStatisticsDTO> dtos = new ArrayList<NonconformityTypeStatisticsDTO>();
-        for (NonconformityAggregatedStatisticsEntity entity : entities) {
-            NonconformityTypeStatisticsDTO dto = new NonconformityTypeStatisticsDTO();
-            dto.setNonconformityCount(entity.getNonconformityCount());
-            dto.setNonconformityType(entity.getNonconformityType());
-            if (entity.getCertificationCriterionId() != null && entity.getCertificationCriterionEntity() != null) {
-                CertificationCriterionDTO criterion = new CertificationCriterionDTO(entity
-                        .getCertificationCriterionEntity());
-                dto.setCriterion(criterion);
-            }
-            dtos.add(dto);
-        }
-
-        return dtos;
+        return nonconformityTypes.stream()
+            .map(ncType ->
+                NonconformityTypeStatisticsDTO.builder()
+                        .nonconformityCount(allNonconformities.stream()
+                                .filter(nc -> nc.getType().getId().equals(ncType.getId()))
+                                .count())
+                        .nonconformityType(ncType.getClassification().equals(NonconformityClassification.REQUIREMENT.toString())
+                                ? ncType.getTitle()
+                                : null)
+                        .criterion(ncType.getClassification().equals(NonconformityClassification.CRITERION.toString())
+                                ?  new CertificationCriterionDTO(certificationCriterionService.get(ncType.getId()))
+                                : null)
+                        .build())
+            .filter(dto -> !dto.getNonconformityCount().equals(0L))
+            .toList();
     }
 
     public List<SurveillanceEntity> getAllSurveillancesWithNonconformities() {
