@@ -44,10 +44,9 @@ public class CqmAttestedCriteriaReviewerTest {
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         criteriaService = Mockito.mock(CertificationCriterionService.class);
-        Mockito.when(criteriaService.getByNumber(ArgumentMatchers.eq("170.315 (c)(1)")))
-            .thenReturn(Stream.of(c1, c1Cures).collect(Collectors.toList()));
-        Mockito.when(criteriaService.getByNumber(ArgumentMatchers.eq("170.315 (c)(2)")))
-            .thenReturn(Stream.of(c2).collect(Collectors.toList()));
+        Mockito.when(criteriaService.get(ArgumentMatchers.eq(c1.getId()))).thenReturn(c1);
+        Mockito.when(criteriaService.get(ArgumentMatchers.eq(c1Cures.getId()))).thenReturn(c1Cures);
+        Mockito.when(criteriaService.get(ArgumentMatchers.eq(c2.getId()))).thenReturn(c2);
         Mockito.when(criteriaService.isCriteriaNumber(ArgumentMatchers.eq("170.315 (c)(1)")))
             .thenReturn(true);
         Mockito.when(criteriaService.isCriteriaNumber(ArgumentMatchers.eq("170.315 (c)(2)")))
@@ -383,7 +382,7 @@ public class CqmAttestedCriteriaReviewerTest {
     }
 
     @Test
-    public void review_SingleCqmWithoutCriteriaListingAttestsToCuresCriteria_noErrors() {
+    public void review_SingleCqmC1CuresListingAttestsToOriginalCriteria_hasErrors() {
         CQMResultDetails cqmResult1 = CQMResultDetails.builder()
                 .success(true)
                 .cmsId("CMS1")
@@ -399,11 +398,11 @@ public class CqmAttestedCriteriaReviewerTest {
                         .criterion(c2)
                         .build())
                 .certificationResult(CertificationResult.builder()
-                        .success(false)
+                        .success(true)
                         .criterion(c1)
                         .build())
                 .certificationResult(CertificationResult.builder()
-                        .success(true)
+                        .success(false)
                         .criterion(c1Cures)
                         .build())
                 .cqmResults(Stream.of(cqmResult1).collect(Collectors.toList()))
@@ -411,7 +410,8 @@ public class CqmAttestedCriteriaReviewerTest {
 
         reviewer.review(listing);
         assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(MISSING_CRITERION, "CMS1", c1Cures.getNumber())));
     }
 
     @Test
@@ -448,6 +448,38 @@ public class CqmAttestedCriteriaReviewerTest {
         assertEquals(1, listing.getWarningMessages().size());
         assertTrue(listing.getWarningMessages().contains(String.format(REMOVED_CRITERION, "12345", "CMS1")));
         assertEquals(0, listing.getCqmResults().get(0).getCriteria().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_SingleCqmWithC1CuresListingAttestsToCuresCriteria_noErrors() {
+        CQMResultDetails cqmResult1 = CQMResultDetails.builder()
+                .success(true)
+                .cmsId("CMS1")
+                .criteria(Stream.of(CQMResultCertification.builder()
+                        .certificationId(c1Cures.getId())
+                        .certificationNumber(c1Cures.getNumber())
+                        .build()).collect(Collectors.toList()))
+                .build();
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(false)
+                        .criterion(c2)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .success(false)
+                        .criterion(c1)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(c1Cures)
+                        .build())
+                .cqmResults(Stream.of(cqmResult1).collect(Collectors.toList()))
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getWarningMessages().size());
         assertEquals(0, listing.getErrorMessages().size());
     }
 
