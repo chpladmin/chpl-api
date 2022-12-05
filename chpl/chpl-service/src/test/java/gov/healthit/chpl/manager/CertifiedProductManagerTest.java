@@ -22,7 +22,6 @@ import org.springframework.security.access.AccessDeniedException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
-import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
@@ -70,8 +69,8 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
-import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CuresUpdateService;
+import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.Validator;
@@ -115,7 +114,6 @@ public class CertifiedProductManagerTest {
     private ActivityManager activityManager;
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
-    private CertificationCriterionService criterionService;
 
     private CertifiedProductManager certifiedProductManager;
 
@@ -155,7 +153,6 @@ public class CertifiedProductManagerTest {
         activityManager = Mockito.mock(ActivityManager.class);
         validatorFactory = Mockito.mock(ListingValidatorFactory.class);
         curesUpdateService = Mockito.mock(CuresUpdateService.class);
-        criterionService = Mockito.mock(CertificationCriterionService.class);
 
         certifiedProductManager = new  CertifiedProductManager(msgUtil, cpDao,  searchDao, certDao,
                 certCriterionDao, qmsDao,  targetedUserDao, asDao,  cpQmsDao, cpMeasureDao, cpTestingLabDao,
@@ -163,10 +160,10 @@ public class CertifiedProductManagerTest {
                 developerDao,  devStatusDao, developerManager,  productManager, versionManager,
                 statusEventDao, curesUpdateDao, piuDao,  certResultManager, certStatusDao,
                 listingGraphDao, fuzzyChoicesDao,  resourcePermissions, certifiedProductSearchResultDAO,
-                Mockito.mock(ConformanceMethodDAO.class),
                 certifiedProductDetailsManager,
                 Mockito.mock(SchedulerManager.class),
-                activityManager, validatorFactory, curesUpdateService, criterionService);
+                activityManager, Mockito.mock(ListingDetailsNormalizer.class),
+                validatorFactory, curesUpdateService);
     }
 
     @Test(expected = ValidationException.class)
