@@ -1,6 +1,6 @@
-package gov.healthit.chpl.manager.rules.complaints;
+package gov.healthit.chpl.complaint.rules;
 
-import gov.healthit.chpl.domain.complaint.ComplaintListingMap;
+import gov.healthit.chpl.complaint.domain.ComplaintListingMap;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.rules.ValidationRule;

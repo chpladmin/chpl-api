@@ -1,27 +1,34 @@
-package gov.healthit.chpl.manager;
+package gov.healthit.chpl.complaint;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.complaint.domain.ComplainantType;
+import gov.healthit.chpl.complaint.domain.Complaint;
+import gov.healthit.chpl.complaint.rules.ComplaintValidationContext;
+import gov.healthit.chpl.complaint.rules.ComplaintValidationFactory;
+import gov.healthit.chpl.complaint.search.ComplaintSearchRequest;
+import gov.healthit.chpl.complaint.search.ComplaintSearchResponse;
+import gov.healthit.chpl.complaint.search.ComplaintSearchService;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.ComplaintDAO;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.domain.complaint.ComplainantType;
-import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -30,11 +37,11 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.manager.rules.ValidationRule;
-import gov.healthit.chpl.manager.rules.complaints.ComplaintValidationContext;
-import gov.healthit.chpl.manager.rules.complaints.ComplaintValidationFactory;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.complaints.ComplaintsReportJob;
 import gov.healthit.chpl.util.AuthUtil;
@@ -46,6 +53,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ComplaintManager extends SecuredManager {
 
+    private ComplaintSearchService searchService;
     private ComplaintDAO complaintDAO;
     private ComplaintValidationFactory complaintValidationFactory;
     private CertifiedProductDAO certifiedProductDAO;
@@ -59,9 +67,11 @@ public class ComplaintManager extends SecuredManager {
     @Autowired
     public ComplaintManager(ComplaintDAO complaintDAO,
             ComplaintValidationFactory complaintValidationFactory, CertifiedProductDAO certifiedProductDAO,
+            ComplaintSearchService searchService,
             ChplProductNumberUtil chplProductNumberUtil, ErrorMessageUtil errorMessageUtil,
             ActivityManager activityManager, SchedulerManager schedulerManager,
             UserManager userManager, ResourcePermissions resourcePermissions) {
+        this.searchService = searchService;
         this.complaintDAO = complaintDAO;
         this.complaintValidationFactory = complaintValidationFactory;
         this.certifiedProductDAO = certifiedProductDAO;
@@ -83,6 +93,7 @@ public class ComplaintManager extends SecuredManager {
         return results;
     }
 
+    @Deprecated
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).GET_ALL)")
@@ -98,16 +109,47 @@ public class ComplaintManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).GET_ALL)")
-    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
-            + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).GET_ALL, filterObject)")
     public List<Complaint> getAllComplaintsBetweenDates(CertificationBodyDTO acb, LocalDate startDate,
             LocalDate endDate) {
-        return complaintDAO.getAllComplaintsBetweenDates(acb.getId(), startDate, endDate);
+        ComplaintSearchRequest request = ComplaintSearchRequest.builder()
+                .acbIds(Stream.of(acb.getId()).collect(Collectors.toSet()))
+                .openDuringRangeStart(startDate.toString())
+                .openDuringRangeEnd(endDate.toString())
+                .pageSize(ComplaintSearchRequest.MAX_PAGE_SIZE)
+                .build();
+        List<Complaint> searchResults = new ArrayList<Complaint>();
+        try {
+            searchResults = getAllPagesOfSearchResults(request);
+        } catch (ValidationException ex) {
+            LOGGER.error("Invalid search request was made!");
+            ex.getErrorMessages().stream()
+                .forEach(errMsg -> LOGGER.error("\t" + errMsg));
+        } catch (Exception ex) {
+            LOGGER.error("Unexpected exception getting complaints between dates.", ex);
+        }
+        return searchResults;
+    }
+
+    private List<Complaint> getAllPagesOfSearchResults(ComplaintSearchRequest searchRequest) throws ValidationException {
+        List<Complaint> searchResults = new ArrayList<Complaint>();
+        LOGGER.debug(searchRequest.toString());
+        ComplaintSearchResponse searchResponse = searchService.searchComplaints(searchRequest);
+        searchResults.addAll(searchResponse.getResults());
+        while (searchResponse.getRecordCount() > searchResults.size()) {
+            searchRequest.setPageSize(searchResponse.getPageSize());
+            searchRequest.setPageNumber(searchResponse.getPageNumber() + 1);
+            LOGGER.debug(searchRequest.toString());
+            searchResponse = searchService.searchComplaints(searchRequest);
+            searchResults.addAll(searchResponse.getResults());
+        }
+        LOGGER.debug("Found {} total complaints matching the search request.", searchResults.size());
+        return searchResults;
     }
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).CREATE, #complaint)")
+    @CacheEvict(value = { CacheNames.COMPLAINTS }, allEntries = true)
     public Complaint create(Complaint complaint)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
         ValidationException validationException = new ValidationException();
@@ -126,6 +168,7 @@ public class ComplaintManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).UPDATE, #complaint)")
+    @CacheEvict(value = { CacheNames.COMPLAINTS }, allEntries = true)
     public Complaint update(Complaint complaint)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
         Complaint originalFromDB = complaintDAO.getComplaint(complaint.getId());
@@ -145,6 +188,7 @@ public class ComplaintManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).DELETE, #complaintId)")
+    @CacheEvict(value = { CacheNames.COMPLAINTS }, allEntries = true)
     public void delete(Long complaintId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         Complaint complaint = complaintDAO.getComplaint(complaintId);

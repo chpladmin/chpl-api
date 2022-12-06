@@ -1,12 +1,12 @@
-package gov.healthit.chpl.manager.rules.complaints;
+package gov.healthit.chpl.complaint.rules;
 
 import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import gov.healthit.chpl.complaint.domain.ComplaintListingMap;
 import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
-import gov.healthit.chpl.domain.complaint.ComplaintListingMap;
 import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 

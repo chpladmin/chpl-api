@@ -86,7 +86,9 @@ public class CertificationBodyManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.GET_DECERTIFIED_DEVELOPERS,
             CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
+            CacheNames.COLLECTIONS_LISTINGS,
+            CacheNames.COLLECTIONS_SEARCH,
+            CacheNames.COMPLAINTS
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.ACB_ID, id = "#acb.id")
     // no other caches have ACB data so we do not need to clear all
@@ -141,7 +143,7 @@ public class CertificationBodyManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
-    @ListingStoreRemove(removeBy = RemoveBy.ACB_ID, id = "#acb.id")
+    @ListingStoreRemove(removeBy = RemoveBy.ACB_ID, id = "#acbId")
     public CertificationBodyDTO unretire(Long acbId) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateCertifiedBodyException {
         CertificationBodyDTO beforeAcb = certificationBodyDao.getById(acbId);
