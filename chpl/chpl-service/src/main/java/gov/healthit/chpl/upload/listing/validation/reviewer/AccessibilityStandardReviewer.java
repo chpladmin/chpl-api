@@ -12,9 +12,10 @@ import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 @Component
-public class AccessibilityStandardReviewer {
+public class AccessibilityStandardReviewer implements Reviewer {
     private ErrorMessageUtil msgUtil;
 
     @Autowired
