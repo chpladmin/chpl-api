@@ -306,7 +306,7 @@ public class CertificationIdController {
             if (create) {
                 if (!ff4j.check(FeatureList.CANNOT_GENERATE_15E) && !dto.getYear().equalsIgnoreCase("2015")) {
                     throw new InvalidArgumentsException("New Certification IDs can only be created using 2015 Edition Listings");
-                } else if (ff4j.check(FeatureList.CANNOT_GENERATE_15E) && BooleanUtils.isFalse(dto.getCuresUpdate())) {
+                } else if (ff4j.check(FeatureList.CANNOT_GENERATE_15E) && BooleanUtils.isNotTrue(dto.getCuresUpdate())) {
                     throw new InvalidArgumentsException("New Certification IDs can only be created using 2015 Cures Update Listings");
                 }
             }
