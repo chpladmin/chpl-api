@@ -5,6 +5,7 @@ import java.util.Date;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.FilterEntity;
 
+@Deprecated
 public class FilterDTO {
     private Long id;
     private UserDTO user;

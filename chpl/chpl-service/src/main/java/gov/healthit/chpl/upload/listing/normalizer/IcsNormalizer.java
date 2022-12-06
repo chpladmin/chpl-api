@@ -27,32 +27,37 @@ public class IcsNormalizer {
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
+        if (listing.getIcs() != null && listing.getIcs().getChildren() != null && listing.getIcs().getChildren().size() > 0) {
+            listing.getIcs().getChildren().stream()
+                .forEach(icsChild -> populateRelative(icsChild));
+        }
+
         if (listing.getIcs() != null && listing.getIcs().getParents() != null && listing.getIcs().getParents().size() > 0) {
             listing.getIcs().getParents().stream()
-                .forEach(icsParent -> populateParent(icsParent));
+                .forEach(icsParent -> populateRelative(icsParent));
         } else if (listing.getIcs() == null || listing.getIcs().getInherits() == null) {
             populateIcsBooleanFromChplProductNumber(listing);
         }
     }
 
-    private void populateParent(CertifiedProduct parent) {
-        if (parent == null) {
+    private void populateRelative(CertifiedProduct relative) {
+        if (relative == null) {
             return;
         }
 
-        if (parent.getId() == null && !StringUtils.isEmpty(parent.getChplProductNumber())) {
+        if (relative.getId() == null && !StringUtils.isEmpty(relative.getChplProductNumber())) {
             try {
-                CertifiedProduct foundListing = cpSearchDao.getByChplProductNumber(parent.getChplProductNumber());
+                CertifiedProduct foundListing = cpSearchDao.getByChplProductNumber(relative.getChplProductNumber());
                 if (foundListing != null) {
-                    parent.setId(foundListing.getId());
-                    parent.setCertificationDate(foundListing.getCertificationDate());
-                    parent.setCertificationStatus(foundListing.getCertificationStatus());
-                    parent.setCuresUpdate(foundListing.getCuresUpdate());
-                    parent.setEdition(foundListing.getEdition());
-                    parent.setLastModifiedDate(foundListing.getLastModifiedDate());
+                    relative.setId(foundListing.getId());
+                    relative.setCertificationDate(foundListing.getCertificationDate());
+                    relative.setCertificationStatus(foundListing.getCertificationStatus());
+                    relative.setCuresUpdate(foundListing.getCuresUpdate());
+                    relative.setEdition(foundListing.getEdition());
+                    relative.setLastModifiedDate(foundListing.getLastModifiedDate());
                 }
             } catch (EntityNotFoundException ex) {
-                LOGGER.error("Listing uploaded with invalid ICS source " + parent.getChplProductNumber());
+                LOGGER.error("Listing uploaded with invalid ICS source " + relative.getChplProductNumber());
             }
         }
     }
