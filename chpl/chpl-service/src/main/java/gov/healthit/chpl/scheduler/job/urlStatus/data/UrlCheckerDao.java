@@ -3,20 +3,26 @@ package gov.healthit.chpl.scheduler.job.urlStatus.data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.Query;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("urlCheckerDao")
 public class UrlCheckerDao extends BaseDAOImpl {
+    private List<String> ACTIVE_STATUSES = Stream.of(CertificationStatusType.Active.getName(),
+            CertificationStatusType.SuspendedByAcb.getName(),
+            CertificationStatusType.SuspendedByOnc.getName()).toList();
 
     @Transactional
     public List<UrlResult> getAllUrlResults() {
@@ -61,51 +67,93 @@ public class UrlCheckerDao extends BaseDAOImpl {
      * Also gets the last time each of those URLs was checked.
      */
     @Transactional
-    public List<UrlResult> getAllSystemUrls() {
+    public List<UrlResult> getAllSystemUrls(Logger logger) {
         List<UrlResult> results = new ArrayList<UrlResult>();
         for (UrlType urlType : UrlType.values()) {
             switch (urlType) {
                 case ACB:
-                    results.addAll(getAcbUrls());
+                    logger.info("Getting all ACB URLs in the system...");
+                    List<UrlResult> acbUrls = getAcbUrls();
+                    results.addAll(acbUrls);
+                    logger.info("Got " + acbUrls.size() + " ACB URLs in the system.");
                     break;
                 case ATL:
-                    results.addAll(getAtlUrls());
+                    logger.info("Getting all ATL URLs in the system...");
+                    List<UrlResult> atlUrls = getAtlUrls();
+                    results.addAll(atlUrls);
+                    logger.info("Got " + atlUrls.size() + " ATL URLs in the system.");
                     break;
                 case DEVELOPER:
-                    results.addAll(getDeveloperUrls());
+                    logger.info("Getting all Developer URLs in the system...");
+                    List<UrlResult> developerUrls = getDeveloperUrls();
+                    results.addAll(developerUrls);
+                    logger.info("Got " + developerUrls.size() + " Developer URLs in the system.");
                     break;
                 case MANDATORY_DISCLOSURE:
-                    results.addAll(getMandatoryDisclosureUrls());
+                    logger.info("Getting all Mandatory Disclosure URLs in the system...");
+                    List<UrlResult> mandatoryDisclosureUrls = getMandatoryDisclosureUrls();
+                    results.addAll(mandatoryDisclosureUrls);
+                    logger.info("Got " + mandatoryDisclosureUrls.size() + " Mandatory Disclosure URLs in the system.");
                     break;
                 case TEST_RESULTS_SUMMARY:
-                    results.addAll(getTestResultsSummaryUrls());
+                    logger.info("Getting all Test Results Summary URLs in the system...");
+                    List<UrlResult> testResultsSummaryUrls = getTestResultsSummaryUrls();
+                    results.addAll(testResultsSummaryUrls);
+                    logger.info("Got " + testResultsSummaryUrls.size() + " Test Results Summary URLs in the system.");
                     break;
                 case FULL_USABILITY_REPORT:
-                   results.addAll(getFullUsabilityReportUrls());
+                    logger.info("Getting all Full Usability Report URLs in the system...");
+                    List<UrlResult> fullUsabilityReportUrls = getFullUsabilityReportUrls();
+                    results.addAll(fullUsabilityReportUrls);
+                    logger.info("Got " + fullUsabilityReportUrls.size() + " Full Usability Report URLs in the system.");
                     break;
                 case API_DOCUMENTATION:
-                    results.addAll(getApiDocumentationUrls());
+                    logger.info("Getting all API Documentation URLs in the system...");
+                    List<UrlResult> apiDocumentationUrls = getApiDocumentationUrls();
+                    results.addAll(apiDocumentationUrls);
+                    logger.info("Got " + apiDocumentationUrls.size() + " API Documentation URLs in the system.");
                     break;
                 case EXPORT_DOCUMENTATION:
-                    results.addAll(getExportDocumentationUrls());
+                    logger.info("Getting all Export Documentation URLs in the system...");
+                    List<UrlResult> exportDocumentationUrls = getExportDocumentationUrls();
+                    results.addAll(exportDocumentationUrls);
+                    logger.info("Got " + exportDocumentationUrls.size() + " Export Documentation URLs in the system.");
                     break;
                 case DOCUMENTATION:
-                    results.addAll(getDocumentationUrls());
+                    logger.info("Getting all Documentation URLs in the system...");
+                    List<UrlResult> documentationUrls = getDocumentationUrls();
+                    results.addAll(documentationUrls);
+                    logger.info("Got " + documentationUrls.size() + " Documentation URLs in the system.");
                     break;
                 case USE_CASES:
-                    results.addAll(getUseCaseUrls());
+                    logger.info("Getting all Use Cases URLs in the system...");
+                    List<UrlResult> useCaseUrls = getUseCaseUrls();
+                    results.addAll(useCaseUrls);
+                    logger.info("Got " + useCaseUrls.size() + " Use Cases URLs in the system.");
                     break;
                 case SERVICE_BASE_URL_LIST:
-                    results.addAll(getServiceBaseUrlLists());
+                    logger.info("Getting all Service Base URLs in the system...");
+                    List<UrlResult> serviceBaseUrls = getServiceBaseUrlLists();
+                    results.addAll(serviceBaseUrls);
+                    logger.info("Got " + serviceBaseUrls.size() + " Service Base URLs in the system.");
                     break;
                 case REAL_WORLD_TESTING_PLANS:
-                   results.addAll(getRealWorldTestingPlanUrls());
+                    logger.info("Getting all RWT Plan URLs in the system...");
+                    List<UrlResult> rwtPlanUrls = getRealWorldTestingPlanUrls();
+                    results.addAll(rwtPlanUrls);
+                    logger.info("Got " + rwtPlanUrls.size() + " RWT Plan URLs in the system.");
                     break;
                 case REAL_WORLD_TESTING_RESULTS:
-                    results.addAll(getRealWorldTestingResultUrls());
+                    logger.info("Getting all RWT Result URLs in the system...");
+                    List<UrlResult> rwtResultUrls = getRealWorldTestingResultUrls();
+                    results.addAll(rwtResultUrls);
+                    logger.info("Got " + rwtResultUrls.size() + " RWT Result URLs in the system.");
                     break;
                 case STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE:
-                    results.addAll(getSvapUrls());
+                    logger.info("Getting all SVAP URLs in the system...");
+                    List<UrlResult> svapUrls = getSvapUrls();
+                    results.addAll(svapUrls);
+                    logger.info("Got " + svapUrls.size() + " SVAP URLs in the system.");
                     break;
                 default:
                     break;
@@ -128,6 +176,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
     }
 
     private List<UrlResult> getAcbUrls() {
+
         @SuppressWarnings("unchecked")
         List<String> acbWebsites = entityManager.createQuery(
                 "SELECT DISTINCT website "
@@ -185,10 +234,12 @@ public class UrlCheckerDao extends BaseDAOImpl {
         @SuppressWarnings("unchecked")
         List<String> mandatoryDisclosureWebsites = entityManager.createQuery(
                         "SELECT DISTINCT mandatoryDisclosures "
-                        + "FROM CertifiedProductEntity "
+                        + "FROM CertifiedProductDetailsEntity "
                         + "WHERE mandatoryDisclosures IS NOT NULL "
                         + "AND mandatoryDisclosures != '' "
+                        + "AND certificationStatusName IN (:activeStatuses) "
                         + "AND deleted = false")
+                .setParameter("activeStatuses", ACTIVE_STATUSES)
                 .getResultList();
         return mandatoryDisclosureWebsites.stream()
                 .filter(website -> !StringUtils.isEmpty(website))
@@ -203,10 +254,12 @@ public class UrlCheckerDao extends BaseDAOImpl {
         @SuppressWarnings("unchecked")
         List<String> testResultsWebsites = entityManager.createQuery(
                         "SELECT DISTINCT reportFileLocation "
-                        + "FROM CertifiedProductEntity "
+                        + "FROM CertifiedProductDetailsEntity "
                         + "WHERE reportFileLocation IS NOT NULL "
                         + "AND reportFileLocation != '' "
+                        + "AND certificationStatusName IN (:activeStatuses) "
                         + "AND deleted = false")
+                .setParameter("activeStatuses", ACTIVE_STATUSES)
                 .getResultList();
         return testResultsWebsites.stream()
                 .filter(website -> !StringUtils.isEmpty(website))
@@ -221,10 +274,12 @@ public class UrlCheckerDao extends BaseDAOImpl {
         @SuppressWarnings("unchecked")
         List<String> fullUsabilityReportWebsites = entityManager.createQuery(
                         "SELECT DISTINCT sedReportFileLocation "
-                        + "FROM CertifiedProductEntity "
+                        + "FROM CertifiedProductDetailsEntity "
                         + "WHERE sedReportFileLocation IS NOT NULL "
                         + "AND sedReportFileLocation != '' "
+                        + "AND certificationStatusName IN (:activeStatuses) "
                         + "AND deleted = false")
+                .setParameter("activeStatuses", ACTIVE_STATUSES)
                 .getResultList();
         return fullUsabilityReportWebsites.stream()
                 .filter(website -> !StringUtils.isEmpty(website))
@@ -238,11 +293,14 @@ public class UrlCheckerDao extends BaseDAOImpl {
     private List<UrlResult> getApiDocumentationUrls() {
         @SuppressWarnings("unchecked")
         List<String> apiDocumentationWebsites = entityManager.createQuery(
-                        "SELECT DISTINCT apiDocumentation "
-                        + "FROM CertificationResultEntity "
-                        + "WHERE apiDocumentation IS NOT NULL "
-                        + "AND apiDocumentation != '' "
-                        + "AND deleted = false")
+                        "SELECT DISTINCT cre.apiDocumentation "
+                        + "FROM CertificationResultEntity cre, CertifiedProductDetailsEntity cpd "
+                        + "WHERE cre.certifiedProductId = cpd.id "
+                        + "AND cre.apiDocumentation IS NOT NULL "
+                        + "AND cre.apiDocumentation != '' "
+                        + "AND cpd.certificationStatusName IN (:activeStatuses) "
+                        + "AND cre.deleted = false")
+                .setParameter("activeStatuses", ACTIVE_STATUSES)
                 .getResultList();
         return apiDocumentationWebsites.stream()
                 .filter(website -> !StringUtils.isEmpty(website))
@@ -256,11 +314,14 @@ public class UrlCheckerDao extends BaseDAOImpl {
     private List<UrlResult> getExportDocumentationUrls() {
         @SuppressWarnings("unchecked")
         List<String> exportDocumentationWebsites = entityManager.createQuery(
-                        "SELECT DISTINCT exportDocumentation "
-                        + "FROM CertificationResultEntity "
-                        + "WHERE exportDocumentation IS NOT NULL "
-                        + "AND exportDocumentation != '' "
-                        + "AND deleted = false")
+                        "SELECT DISTINCT cre.exportDocumentation "
+                        + "FROM CertificationResultEntity cre, CertifiedProductDetailsEntity cpd "
+                        + "WHERE cre.certifiedProductId = cpd.id "
+                        + "AND cre.exportDocumentation IS NOT NULL "
+                        + "AND cre.exportDocumentation != '' "
+                        + "AND cpd.certificationStatusName IN (:activeStatuses) "
+                        + "AND cre.deleted = false")
+                .setParameter("activeStatuses", ACTIVE_STATUSES)
                 .getResultList();
         return exportDocumentationWebsites.stream()
                 .filter(website -> !StringUtils.isEmpty(website))
@@ -274,11 +335,14 @@ public class UrlCheckerDao extends BaseDAOImpl {
     private List<UrlResult> getDocumentationUrls() {
         @SuppressWarnings("unchecked")
         List<String> documentationUrlWebsites = entityManager.createQuery(
-                        "SELECT DISTINCT documentationUrl "
-                        + "FROM CertificationResultEntity "
-                        + "WHERE documentationUrl IS NOT NULL "
-                        + "AND documentationUrl != '' "
-                        + "AND deleted = false")
+                        "SELECT DISTINCT cre.documentationUrl "
+                        + "FROM CertificationResultEntity cre, CertifiedProductDetailsEntity cpd "
+                        + "WHERE cre.certifiedProductId = cpd.id "
+                        + "AND cre.documentationUrl IS NOT NULL "
+                        + "AND cre.documentationUrl != '' "
+                        + "AND cpd.certificationStatusName IN (:activeStatuses) "
+                        + "AND cre.deleted = false")
+                .setParameter("activeStatuses", ACTIVE_STATUSES)
                 .getResultList();
         return documentationUrlWebsites.stream()
                 .filter(website -> !StringUtils.isEmpty(website))
@@ -292,11 +356,14 @@ public class UrlCheckerDao extends BaseDAOImpl {
     private List<UrlResult> getUseCaseUrls() {
         @SuppressWarnings("unchecked")
         List<String> useCasesWebsites = entityManager.createQuery(
-                        "SELECT DISTINCT useCases "
-                        + "FROM CertificationResultEntity "
-                        + "WHERE useCases IS NOT NULL "
-                        + "AND useCases != '' "
-                        + "AND deleted = false")
+                        "SELECT DISTINCT cre.useCases "
+                        + "FROM CertificationResultEntity cre, CertifiedProductDetailsEntity cpd "
+                        + "WHERE cre.certifiedProductId = cpd.id "
+                        + "AND cre.useCases IS NOT NULL "
+                        + "AND cre.useCases != '' "
+                        + "AND cpd.certificationStatusName IN (:activeStatuses) "
+                        + "AND cre.deleted = false")
+                .setParameter("activeStatuses", ACTIVE_STATUSES)
                 .getResultList();
         return useCasesWebsites.stream()
                 .filter(website -> !StringUtils.isEmpty(website))
@@ -310,11 +377,14 @@ public class UrlCheckerDao extends BaseDAOImpl {
     private List<UrlResult> getServiceBaseUrlLists() {
         @SuppressWarnings("unchecked")
         List<String> useCasesWebsites = entityManager.createQuery(
-                        "SELECT DISTINCT serviceBaseUrlList "
-                        + "FROM CertificationResultEntity "
-                        + "WHERE serviceBaseUrlList IS NOT NULL "
-                        + "AND serviceBaseUrlList != '' "
-                        + "AND deleted = false")
+                        "SELECT DISTINCT cre.serviceBaseUrlList "
+                        + "FROM CertificationResultEntity cre, CertifiedProductDetailsEntity cpd "
+                        + "WHERE cre.certifiedProductId = cpd.id "
+                        + "AND cre.serviceBaseUrlList IS NOT NULL "
+                        + "AND cre.serviceBaseUrlList != '' "
+                        + "AND cpd.certificationStatusName IN (:activeStatuses) "
+                        + "AND cre.deleted = false")
+                .setParameter("activeStatuses", ACTIVE_STATUSES)
                 .getResultList();
         return useCasesWebsites.stream()
                 .filter(website -> !StringUtils.isEmpty(website))
@@ -329,10 +399,12 @@ public class UrlCheckerDao extends BaseDAOImpl {
         @SuppressWarnings("unchecked")
         List<String> rwtPlansWebsites = entityManager.createQuery(
                         "SELECT DISTINCT rwtPlansUrl "
-                        + "FROM CertifiedProductEntity "
+                        + "FROM CertifiedProductDetailsEntity "
                         + "WHERE rwtPlansUrl IS NOT NULL "
                         + "AND rwtPlansUrl != '' "
+                        + "AND certificationStatusName IN (:activeStatuses) "
                         + "AND deleted = false")
+                .setParameter("activeStatuses", ACTIVE_STATUSES)
                 .getResultList();
         return rwtPlansWebsites.stream()
                 .filter(website -> !StringUtils.isEmpty(website))
@@ -347,10 +419,12 @@ public class UrlCheckerDao extends BaseDAOImpl {
         @SuppressWarnings("unchecked")
         List<String> rwtResultsWebsites = entityManager.createQuery(
                         "SELECT DISTINCT rwtResultsUrl "
-                        + "FROM CertifiedProductEntity "
+                        + "FROM CertifiedProductDetailsEntity "
                         + "WHERE rwtResultsUrl IS NOT NULL "
                         + "AND rwtResultsUrl != '' "
+                        + "AND certificationStatusName IN (:activeStatuses) "
                         + "AND deleted = false")
+                .setParameter("activeStatuses", ACTIVE_STATUSES)
                 .getResultList();
         return rwtResultsWebsites.stream()
                 .filter(website -> !StringUtils.isEmpty(website))
@@ -365,10 +439,12 @@ public class UrlCheckerDao extends BaseDAOImpl {
         @SuppressWarnings("unchecked")
         List<String> svapNoticeWebsites = entityManager.createQuery(
                         "SELECT DISTINCT svapNoticeUrl "
-                        + "FROM CertifiedProductEntity "
+                        + "FROM CertifiedProductDetailsEntity "
                         + "WHERE svapNoticeUrl IS NOT NULL "
                         + "AND svapNoticeUrl != '' "
+                        + "AND certificationStatusName IN (:activeStatuses) "
                         + "AND deleted = false")
+                .setParameter("activeStatuses", ACTIVE_STATUSES)
                 .getResultList();
         return svapNoticeWebsites.stream()
                 .filter(website -> !StringUtils.isEmpty(website))

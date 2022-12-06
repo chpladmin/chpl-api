@@ -76,7 +76,7 @@ public class UrlStatusDataCollector extends QuartzJob {
 
         try {
             //get all urls in the system
-            List<UrlResult> allSystemUrls = urlCheckerDao.getAllSystemUrls();
+            List<UrlResult> allSystemUrls = urlCheckerDao.getAllSystemUrls(LOGGER);
             LOGGER.info("Found " + allSystemUrls.size() + " urls in the system.");
             List<UrlResult> existingUrlResults = urlCheckerDao.getAllUrlResults();
 
