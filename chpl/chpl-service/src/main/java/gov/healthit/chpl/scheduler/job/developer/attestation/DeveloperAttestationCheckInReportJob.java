@@ -50,6 +50,9 @@ public class DeveloperAttestationCheckInReportJob implements Job {
     @Value("${developer.attestation.checkin.report.body2}")
     private String emailBody2;
 
+    @Value("${developer.attestation.checkin.report.body3}")
+    private String emailBody3;
+
     @Value("${developer.attestation.checkin.report.sectionHeading}")
     private String sectionHeading;
 
@@ -90,6 +93,7 @@ public class DeveloperAttestationCheckInReportJob implements Job {
                                             reportSummary.getPendingAcbActionCount(),
                                             reportSummary.getPendingDeveloperActionCount(),
                                             reportSummary.getNoSubmissionCount()))
+                                    .paragraph("", reportSummary.doCountsEqualDeveloperCount() ? "" : emailBody3)
                                     .footer(true)
                                     .build())
                             .sendEmail();

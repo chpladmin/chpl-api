@@ -11,4 +11,8 @@ public class DeveloperAttestationCheckInReportSummary {
     private Long pendingAcbActionCount;
     private Long pendingDeveloperActionCount;
     private Long noSubmissionCount;
+
+    public Boolean doCountsEqualDeveloperCount() {
+        return Long.valueOf(attestationsApprovedCount + pendingAcbActionCount + pendingDeveloperActionCount + noSubmissionCount).equals(developerCount);
+    }
 }
