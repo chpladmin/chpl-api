@@ -43,7 +43,6 @@ public class DeveloperAttestationCheckInReportSummaryDataCollector {
     private Long calculatePendingDeveloperActionCount(List<DeveloperAttestationCheckInReport> developerAttestationCheckInReports) {
         return developerAttestationCheckInReports.stream()
                 .filter(row -> NullSafeEvaluator.eval(() -> row.getCurrentStatusName(), "").equals(PENDING_DEVELOPER_ACTION))
-                .peek(x -> LOGGER.info(x.toString()))
                 .count();
     }
 
