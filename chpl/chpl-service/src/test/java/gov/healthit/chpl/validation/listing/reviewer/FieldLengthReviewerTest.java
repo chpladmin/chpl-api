@@ -23,7 +23,6 @@ import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
-import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
@@ -400,9 +399,9 @@ public class FieldLengthReviewerTest {
     @Test
     public void review_shortAccessibilityStandardName_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .accessibilityStandard(CertifiedProductAccessibilityStandard.builder()
+                .accessibilityStandards(Stream.of(CertifiedProductAccessibilityStandard.builder()
                         .accessibilityStandardName("short name")
-                        .build())
+                        .build()).toList())
                 .build();
 
         reviewer.review(listing);
@@ -412,9 +411,9 @@ public class FieldLengthReviewerTest {
     @Test
     public void review_longAccessibilityStandardName_hasError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .accessibilityStandard(CertifiedProductAccessibilityStandard.builder()
+                .accessibilityStandards(Stream.of(CertifiedProductAccessibilityStandard.builder()
                         .accessibilityStandardName(createStringLongerThan(500, "a"))
-                        .build())
+                        .build()).toList())
                 .build();
 
         reviewer.review(listing);
@@ -425,12 +424,12 @@ public class FieldLengthReviewerTest {
     @Test
     public void review_oneShortAndOneLongAccessibilityStandardName_hasError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .accessibilityStandard(CertifiedProductAccessibilityStandard.builder()
+                .accessibilityStandards(Stream.of(CertifiedProductAccessibilityStandard.builder()
                         .accessibilityStandardName(createStringLongerThan(500, "a"))
-                        .build())
-                .accessibilityStandard(CertifiedProductAccessibilityStandard.builder()
+                        .build(),
+                        CertifiedProductAccessibilityStandard.builder()
                         .accessibilityStandardName("short name")
-                        .build())
+                        .build()).toList())
                 .build();
 
         reviewer.review(listing);

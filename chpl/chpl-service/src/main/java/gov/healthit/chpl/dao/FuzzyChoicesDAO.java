@@ -59,7 +59,7 @@ public class FuzzyChoicesDAO extends BaseDAOImpl {
                     + "WHERE fuzzyType NOT IN (:fuzzyTypesToExclude) "
                     + "AND (fuzzy.deleted <> true) ",
                          FuzzyChoicesEntity.class);
-        query.setParameter("fuzzyTypesToExclude", Stream.of(FuzzyType.UCD_PROCESS).toList());
+        query.setParameter("fuzzyTypesToExclude", Stream.of(FuzzyType.UCD_PROCESS, FuzzyType.ACCESSIBILITY_STANDARD).toList());
         List<FuzzyChoicesEntity> entities = query.getResultList();
 
         List<FuzzyChoicesDTO> dtos = new ArrayList<FuzzyChoicesDTO>();
