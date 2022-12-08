@@ -86,6 +86,8 @@ public class DeveloperAttestationCheckInReportDataCollector {
 
             return DeveloperAttestationCheckInReport.builder()
                 .developerName(cr.getDeveloper().getName())
+                .developerCode(cr.getDeveloper().getDeveloperCode())
+                .developerId(cr.getDeveloper().getId())
                 .submittedDate(cr.getSubmittedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
                 .published(cr.getDeveloper().getAttestations().stream()
                         .filter(pa -> pa.getAttestationPeriod().getId().equals(((ChangeRequestAttestationSubmission) cr.getDetails()).getAttestationPeriod().getId()))
