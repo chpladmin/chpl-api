@@ -9,6 +9,7 @@ import gov.healthit.chpl.dto.FilterTypeDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 
+@Deprecated
 public interface FilterManager {
     List<FilterDTO> getByFilterType(FilterTypeDTO filterTypeDTO);
 

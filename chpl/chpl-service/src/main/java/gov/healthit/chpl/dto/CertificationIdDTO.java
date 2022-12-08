@@ -20,7 +20,6 @@ public class CertificationIdDTO implements Serializable {
     private String certificationId;
     private String year;
     private Long practiceTypeId;
-    private String key;
 
     private Date creationDate;
     private Date lastModifiedDate;
@@ -35,7 +34,6 @@ public class CertificationIdDTO implements Serializable {
         this.certificationId = entity.getCertificationId();
         this.year = entity.getYear();
         this.practiceTypeId = entity.getPracticeTypeId();
-        this.key = entity.getKey();
     }
 
     public Date getCreationDate() {
