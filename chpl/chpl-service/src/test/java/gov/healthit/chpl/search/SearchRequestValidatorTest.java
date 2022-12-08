@@ -41,7 +41,6 @@ public class SearchRequestValidatorTest {
     private static final String INVALID_ACB = "Could not find certification body with value '%s'.";
     private static final String INVALID_PRACTICE_TYPE = "Could not find practice type with value '%s'.";
     private static final String INVALID_CERTIFICATION_DATE = "Could not parse '%s' as date in the format %s.";
-    private static final String INVALID_DATE_ORDER = "The certification date range end '%s' is before the start '%s'.";
     private static final String MISSING_NC_SEARCH_OPERATOR = "Multiple non-conformity search options were found without a search operator (AND/OR). A search operator is required.";
     private static final String INVALID_NONCONFORMITY_SEARCH_OPTION = "No non-conformity search option matches '%s'. Values must be one of %s.";
     private static final String DIRECT_REVIEWS_UNAVAILABLE = "Compliance and non-conformity filtering is unavailable at this time.";
@@ -85,8 +84,6 @@ public class SearchRequestValidatorTest {
             .thenAnswer(i -> String.format(INVALID_PRACTICE_TYPE, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.certificationDate.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.eq(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT)))
             .thenAnswer(i -> String.format(INVALID_CERTIFICATION_DATE, i.getArgument(1), i.getArgument(2)));
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.certificationDateOrder.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-            .thenAnswer(i -> String.format(INVALID_DATE_ORDER, i.getArgument(1), i.getArgument(2)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.compliance.missingSearchOperator")))
             .thenAnswer(i -> MISSING_NC_SEARCH_OPERATOR);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.nonconformitySearchOption.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
@@ -688,7 +685,7 @@ public class SearchRequestValidatorTest {
     }
 
     @Test
-    public void validate_backwardsCertificationDateOrder_addsError() {
+    public void validate_backwardsCertificationDateOrder_noError() {
         SearchRequest request = SearchRequest.builder()
             .certificationDateStart("2015-12-31")
             .certificationDateEnd("2015-01-01")
@@ -697,11 +694,8 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
-            assertEquals(1, ex.getErrorMessages().size());
-            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_DATE_ORDER, "2015-01-01", "2015-12-31")));
-            return;
+            fail("Should not execute.");
         }
-        fail("Should not execute.");
     }
 
     @Test

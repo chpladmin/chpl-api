@@ -22,7 +22,6 @@ public class SearchRequestValidatorTest {
     private static final String INVALID_STATUS = "Could not find developer status with value '%s'. Value must be one of %s.";
     private static final String INVALID_ACB = "Could not find certification body with value '%s'.";
     private static final String INVALID_DECERTIFICATION_DATE = "Could not parse '%s' as date in the format %s.";
-    private static final String INVALID_DATE_ORDER = "The decertification date range end '%s' is before the start '%s'.";
     private static final String INVALID_ORDER_BY = "Order by parameter '%s' is invalid. Value must be one of %s.";
 
     private DimensionalDataManager dimensionalDataManager;
@@ -40,8 +39,6 @@ public class SearchRequestValidatorTest {
             .thenAnswer(i -> String.format(INVALID_ACB, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.developer.decertificationDate.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.eq(SearchRequest.DATE_SEARCH_FORMAT)))
             .thenAnswer(i -> String.format(INVALID_DECERTIFICATION_DATE, i.getArgument(1), i.getArgument(2)));
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.developer.decertificationDateOrder.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-            .thenAnswer(i -> String.format(INVALID_DATE_ORDER, i.getArgument(1), i.getArgument(2)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.orderBy.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_ORDER_BY, i.getArgument(1), i.getArgument(2)));
 
@@ -202,7 +199,7 @@ public class SearchRequestValidatorTest {
     }
 
     @Test
-    public void validate_backwardsDecertificationDateOrder_addsError() {
+    public void validate_backwardsDecertificationDateOrder_noError() {
         SearchRequest request = SearchRequest.builder()
             .decertificationDateStart("2015-12-31")
             .decertificationDateEnd("2015-01-01")
@@ -211,11 +208,8 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
-            assertEquals(1, ex.getErrorMessages().size());
-            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_DATE_ORDER, "2015-01-01", "2015-12-31")));
-            return;
+            fail("Should not execute.");
         }
-        fail("Should not execute.");
     }
 
     @Test
