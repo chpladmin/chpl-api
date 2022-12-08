@@ -11,8 +11,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.accessibilityStandard.AccessibilityStandard;
+import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardDAO;
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -53,7 +54,6 @@ import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
-import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -234,16 +234,14 @@ public class DimensionalDataManager {
         return statuses;
     }
 
+    @Deprecated
     public Set<KeyValueModel> getAccessibilityStandards() {
         LOGGER.debug("Getting all accessibility standards from the database (not cached).");
 
-        List<AccessibilityStandardDTO> dtos = this.asDao.findAll();
-        Set<KeyValueModel> standards = new HashSet<KeyValueModel>();
-
-        for (AccessibilityStandardDTO dto : dtos) {
-            standards.add(new KeyValueModel(dto.getId(), dto.getName()));
-        }
-        return standards;
+        List<AccessibilityStandard> accStds = this.asDao.getAll();
+        return accStds.stream()
+                .map(accStd -> new KeyValueModel(accStd.getId(), accStd.getName()))
+                .collect(Collectors.toSet());
     }
 
     @Deprecated
