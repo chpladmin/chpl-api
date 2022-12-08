@@ -228,8 +228,19 @@ const ucdProcessesControllerTests = {
   },
 };
 
+const accessibilityStandardsControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/accessibility-standards-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/accessibility-standards-controller-tests.xml',
+    },
+  },
+};
+
 const jobs = [
   cb => newman.run(acbControllerTests,cb),
+  cb => newman.run(accessibilityStandardsControllerTests,cb),
   cb => newman.run(apiKeyControllerTests,cb),
   cb => newman.run(promotinginteroperabilityControllerTests,cb),
   cb => newman.run(certifiedProductControllerDataTests,cb),

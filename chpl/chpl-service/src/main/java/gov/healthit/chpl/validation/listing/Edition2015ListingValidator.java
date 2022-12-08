@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.upload.listing.validation.reviewer.AccessibilityStandardReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.UcdProcessReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationStatusReviewer;
@@ -243,6 +244,9 @@ public class Edition2015ListingValidator extends Validator {
     private UcdProcessReviewer ucdProcessReviewer;
 
     @Autowired
+    private AccessibilityStandardReviewer accessibilityStandardReviewer;
+
+    @Autowired
     @Qualifier("deprecatedFieldReviewer")
     private DeprecatedFieldReviewer deprecatedFieldReviewer;
 
@@ -292,6 +296,7 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(duplicateDataReviewer);
         reviewers.add(gapAllowedReviewer);
         reviewers.add(measureReviewer);
+        reviewers.add(accessibilityStandardReviewer);
         //after the grace period this reviewer should be included
         if (ff4j.check(FeatureList.ERD_PHASE_2)
                 && ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD_END)) {

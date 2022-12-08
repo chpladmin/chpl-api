@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.permissions.domains.AccessibilityStandardDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ActivityDomainPermissions;
 import gov.healthit.chpl.permissions.domains.AnnouncementDomainPermissions;
 import gov.healthit.chpl.permissions.domains.AttestationDomainPermissions;
@@ -63,6 +64,7 @@ public class Permissions {
     public static final String REAL_WORLD_TESTING = "REAL_WORLD_TESTING";
     public static final String SVAP = "SVAP";
     public static final String UCD_PROCESS = "UCD_PROCESS";
+    public static final String ACCESSIBILITY_STANDARD = "ACCESSIBILITY_STANDARD";
     public static final String ATTESTATION = "ATTESTATION";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
@@ -94,6 +96,7 @@ public class Permissions {
             RealWorldTestingDomainPermissions realWorldTestingDomainPermissions,
             SvapDomainPermissions svapDomainPermissions,
             UcdProcessDomainPermissions ucdProcessDomainPermissions,
+            AccessibilityStandardDomainPermissions accessibilityStandardDomainPermissions,
             AttestationDomainPermissions attestationDomainPermissions) {
 
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
@@ -121,6 +124,7 @@ public class Permissions {
         domainPermissions.put(REAL_WORLD_TESTING, realWorldTestingDomainPermissions);
         domainPermissions.put(SVAP, svapDomainPermissions);
         domainPermissions.put(UCD_PROCESS, ucdProcessDomainPermissions);
+        domainPermissions.put(ACCESSIBILITY_STANDARD, accessibilityStandardDomainPermissions);
         domainPermissions.put(ATTESTATION, attestationDomainPermissions);
     }
 
