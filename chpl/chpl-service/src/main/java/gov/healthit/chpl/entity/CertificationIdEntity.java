@@ -48,10 +48,6 @@ public class CertificationIdEntity implements Serializable {
     @Column(name = "certification_id", length = 255, nullable = false)
     private String certificationId;
 
-    @Basic(optional = false)
-    @Column(name = "key", nullable = false)
-    private String key;
-
     @Basic(optional = true)
     @Column(name = "practice_type_id", nullable = true)
     private Long practiceTypeId;
@@ -161,23 +157,6 @@ public class CertificationIdEntity implements Serializable {
     }
 
     /**
-     * Return the value associated with the column: key.
-     * @return A String object (this.key)
-     */
-    public String getKey() {
-        return this.key;
-    }
-
-    /**
-     * Set the value related to the column: key.
-     * @param key
-     *            the key value you wish to set
-     */
-    public void setKey(final String key) {
-        this.key = key;
-    }
-
-    /**
      * Return the value associated with the column: practice_type_id.
      *
      * @return A Long object (this.practiceTypeId)
@@ -227,7 +206,6 @@ public class CertificationIdEntity implements Serializable {
 
         sb.append("creationDate: " + this.getCreationDate() + ", ");
         sb.append("id: " + this.getId() + ", ");
-        sb.append("key: " + this.getKey() + ", ");
         sb.append("lastModifiedDate: " + this.getLastModifiedDate() + ", ");
         sb.append("lastModifiedUser: " + this.getLastModifiedUser() + ", ");
         sb.append("certificationId: " + this.getCertificationId() + ", ");

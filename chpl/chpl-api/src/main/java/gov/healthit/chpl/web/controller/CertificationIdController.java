@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.ff4j.FF4j;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationId.Validator;
 import gov.healthit.chpl.certificationId.ValidatorFactory;
 import gov.healthit.chpl.domain.SimpleCertificationId;
@@ -57,15 +60,17 @@ public class CertificationIdController {
     private CertificationIdManager certificationIdManager;
     private ResourcePermissions resourcePermissions;
     private ValidatorFactory validatorFactory;
+    private FF4j ff4j;
 
     @Autowired
     public CertificationIdController(CertifiedProductManager certifiedProductManager,
             CertificationIdManager certificationIdManager, ValidatorFactory validatorFactory,
-            ResourcePermissions resourcePermissions) {
+            ResourcePermissions resourcePermissions, FF4j ff4j) {
         this.certifiedProductManager = certifiedProductManager;
         this.certificationIdManager = certificationIdManager;
         this.resourcePermissions = resourcePermissions;
         this.validatorFactory = validatorFactory;
+        this.ff4j = ff4j;
     }
 
     @Deprecated
@@ -298,8 +303,12 @@ public class CertificationIdController {
         SortedSet<Integer> yearSet = new TreeSet<Integer>();
         List<CertificationIdResults.Product> resultProducts = new ArrayList<CertificationIdResults.Product>();
         for (CertifiedProductDetailsDTO dto : productDtos) {
-            if (create && !dto.getYear().equalsIgnoreCase("2015")) {
-                throw new CertificationIdException("New Certification IDs can only be created using 2015 Edition Listings");
+            if (create) {
+                if (!ff4j.check(FeatureList.CANNOT_GENERATE_15E) && !dto.getYear().equalsIgnoreCase("2015")) {
+                    throw new InvalidArgumentsException("New Certification IDs can only be created using 2015 Edition Listings");
+                } else if (ff4j.check(FeatureList.CANNOT_GENERATE_15E) && BooleanUtils.isNotTrue(dto.getCuresUpdate())) {
+                    throw new InvalidArgumentsException("New Certification IDs can only be created using 2015 Cures Update Listings");
+                }
             }
             CertificationIdResults.Product p = new CertificationIdResults.Product(dto);
             resultProducts.add(p);
@@ -331,13 +340,13 @@ public class CertificationIdController {
         if (validator.isValid()) {
             CertificationIdDTO idDto = null;
             try {
-                idDto = certificationIdManager.getByProductIds(productIdList, year);
+                idDto = certificationIdManager.getByListings(productDtos, year);
                 if (null != idDto) {
                     results.setEhrCertificationId(idDto.getCertificationId());
                 } else {
                     if ((create) && (results.isValid())) {
                         // Generate a new ID
-                        idDto = certificationIdManager.create(productIdList, year);
+                        idDto = certificationIdManager.create(productDtos, year);
                         results.setEhrCertificationId(idDto.getCertificationId());
                     }
                 }
