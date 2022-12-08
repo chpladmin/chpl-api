@@ -89,6 +89,7 @@ public class DeveloperAttestationCheckInReportJob implements Job {
                                     .paragraph("", emailBody)
                                     .paragraph("", String.format(emailBody2,
                                             reportSummary.getDeveloperCount(),
+                                            reportSummary.doCountsEqualDeveloperCount() ? "" : "*",
                                             reportSummary.getAttestationsApprovedCount(),
                                             reportSummary.getPendingAcbActionCount(),
                                             reportSummary.getPendingDeveloperActionCount(),
