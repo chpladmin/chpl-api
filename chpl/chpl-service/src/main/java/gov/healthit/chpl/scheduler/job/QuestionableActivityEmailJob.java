@@ -534,12 +534,6 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         } else if (activity.getTrigger().getName()
                 .equals(QuestionableActivityTriggerConcept.PROMOTING_INTEROPERABILITY_UPDATED_BY_ACB.getName())) {
             currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getAfter());
-        } else if (activity.getTrigger().getName()
-                .equals(QuestionableActivityTriggerConcept.REMOVED_NONCONFORMITY_ADDED.getName())) {
-            currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getAfter());
-        } else if (activity.getTrigger().getName()
-                .equals(QuestionableActivityTriggerConcept.REMOVED_REQUIREMENT_ADDED.getName())) {
-            currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getAfter());
         } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.RWT_PLANS_UPDATED_OUTSIDE_NORMAL_PERIOD.getName())
                 || activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.RWT_RESULTS_UPDATED_OUTSIDE_NORMAL_PERIOD.getName())) {
             currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getBefore() + " updated to " + activity.getAfter());

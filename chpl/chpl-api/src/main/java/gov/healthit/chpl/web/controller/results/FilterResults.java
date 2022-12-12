@@ -7,6 +7,7 @@ import java.util.List;
 import gov.healthit.chpl.domain.Filter;
 import lombok.Data;
 
+@Deprecated
 @Data
 public class FilterResults implements Serializable {
     private static final long serialVersionUID = 1540021188714861976L;

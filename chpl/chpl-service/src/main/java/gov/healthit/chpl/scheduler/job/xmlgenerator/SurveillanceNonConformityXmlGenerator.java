@@ -30,7 +30,6 @@ public class SurveillanceNonConformityXmlGenerator extends XmlGenerator {
             CertificationCriterionXmlGenerator.add(snc.getCriterion(), "criterion", sw);
             createSimpleElement(snc.getDateOfDeterminationDay(), "dateOfDeterminationDay", sw);
             createSimpleElement(snc.getDeveloperExplanation(), "developerExplanation", sw);
-            SurveillanceNonConformityDocumentXmlGenerator.add(snc.getDocuments(), "documents", sw);
             createSimpleElement(snc.getFindings(), "findings", sw);
             createSimpleElement(snc.getId(), "id", sw);
             createSimpleElement(snc.getLastModifiedDate(), "lastModifiedDate", sw);

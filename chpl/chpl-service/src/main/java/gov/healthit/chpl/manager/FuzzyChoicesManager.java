@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
@@ -32,15 +33,18 @@ import me.xdrop.fuzzywuzzy.model.ExtractedResult;
 public class FuzzyChoicesManager extends SecuredManager {
 
     private UcdProcessDAO ucdProcessDao;
-    //TODO: After OCD-4040 and OCD-4041 we should no longer need this DAO, Entity, or Table
+    private AccessibilityStandardDAO accessibilityStandardDao;
+    //TODO: After OCD-4041 we should no longer need this DAO, Entity, or Table
     private FuzzyChoicesDAO fuzzyChoicesDao;
     private Environment env;
 
     @Autowired
     public FuzzyChoicesManager(UcdProcessDAO ucdProcessDao,
+            AccessibilityStandardDAO accessibilityStandardDao,
             FuzzyChoicesDAO fuzzyChoicesDao, Environment env) {
         this.ucdProcessDao = ucdProcessDao;
-        //TODO: After OCD-4040 and OCD-4041 we should no longer need this DAO, Entity, or Table
+        this.accessibilityStandardDao = accessibilityStandardDao;
+        //TODO: After OCD-4041 we should no longer need this DAO, Entity, or Table
         this.fuzzyChoicesDao = fuzzyChoicesDao;
         this.env = env;
     }
@@ -70,8 +74,11 @@ public class FuzzyChoicesManager extends SecuredManager {
             return ucdProcessDao.getAll().stream()
                 .map(ucdProcess -> ucdProcess.getName())
                 .toList();
+        } else if (type.equals(FuzzyType.ACCESSIBILITY_STANDARD)) {
+            return accessibilityStandardDao.getAll().stream()
+                    .map(accStd -> accStd.getName())
+                    .toList();
         } else {
-            //TODO: convert to use accessibility standard dao with OCD-4040
             //TODO: convert to use qms standard dao with OCD-4041
             FuzzyChoicesDTO choices = getByType(type);
             return choices.getChoices();
@@ -98,7 +105,7 @@ public class FuzzyChoicesManager extends SecuredManager {
         return results;
     }
 
-    //TODO: AFter OCD-4040 and OCD-4041 we should no longer need this method.
+    //TODO: AFter OCD-4041 we should no longer need this method.
     //Fuzzy options will be gotten on-demand from a type-specific DAO and we do not need
     //to keep a fuzzy choice table updated
     @Transactional

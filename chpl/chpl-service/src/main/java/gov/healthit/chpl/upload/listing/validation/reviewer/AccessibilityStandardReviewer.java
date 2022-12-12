@@ -1,5 +1,9 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -8,9 +12,10 @@ import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 @Component
-public class AccessibilityStandardReviewer {
+public class AccessibilityStandardReviewer implements Reviewer {
     private ErrorMessageUtil msgUtil;
 
     @Autowired
@@ -19,11 +24,30 @@ public class AccessibilityStandardReviewer {
     }
 
     public void review(CertifiedProductSearchDetails listing) {
+        removeAccessibilityStandardsNotFound(listing);
         isAccessibilityCertifiedValidBoolean(listing);
         doesAccessibilityCertifiedBooleanMatchPresenceOfStandards(listing);
         doAccessibilityStandardsExist(listing);
         areAccessibilityStandardsValid(listing);
         addFuzzyMatchWarnings(listing);
+    }
+
+    private void removeAccessibilityStandardsNotFound(CertifiedProductSearchDetails listing) {
+        List<CertifiedProductAccessibilityStandard> accessibilityStandards = listing.getAccessibilityStandards();
+        if (!CollectionUtils.isEmpty(accessibilityStandards)) {
+            List<CertifiedProductAccessibilityStandard> accessibilityStandardsWithoutIds = accessibilityStandards.stream()
+                    .filter(currAccStd -> currAccStd.getAccessibilityStandardId() == null)
+                    .collect(Collectors.toList());
+
+            if (!CollectionUtils.isEmpty(accessibilityStandardsWithoutIds)) {
+                accessibilityStandards.removeAll(accessibilityStandardsWithoutIds);
+
+                accessibilityStandardsWithoutIds.stream()
+                    .forEach(accStdWithoutId -> listing.getWarningMessages().add(
+                            msgUtil.getMessage("listing.accessibilityStandardNotFoundAndRemoved",
+                                    accStdWithoutId.getAccessibilityStandardName() == null ? "" : accStdWithoutId.getAccessibilityStandardName())));
+            }
+        }
     }
 
     private void isAccessibilityCertifiedValidBoolean(CertifiedProductSearchDetails listing) {
@@ -70,8 +94,7 @@ public class AccessibilityStandardReviewer {
     }
 
     private boolean hasFuzzyMatch(CertifiedProductAccessibilityStandard accStd) {
-        return accStd.getAccessibilityStandardId() == null
-                && !StringUtils.isEmpty(accStd.getUserEnteredAccessibilityStandardName())
+        return !StringUtils.isEmpty(accStd.getUserEnteredAccessibilityStandardName())
                 && !StringUtils.equals(accStd.getAccessibilityStandardName(), accStd.getUserEnteredAccessibilityStandardName());
     }
 

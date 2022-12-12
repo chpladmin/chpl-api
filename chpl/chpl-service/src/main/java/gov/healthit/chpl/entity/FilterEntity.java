@@ -17,6 +17,7 @@ import org.hibernate.annotations.Type;
 
 import gov.healthit.chpl.entity.auth.UserEntity;
 
+@Deprecated
 @Entity
 @Table(name = "filter")
 public class FilterEntity {

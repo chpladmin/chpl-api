@@ -69,7 +69,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.4.1</version>
+            <version>42.4.3</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -94,11 +94,25 @@
           <version>2.0.1.Final</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>javax.mail</artifactId>
-            <version>1.6.2</version>
+        <!-- Microsoft Graph API librariess --> 
+       <dependency>
+            <groupId>com.microsoft.graph</groupId>
+            <artifactId>microsoft-graph</artifactId>
+            <version>5.39.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+        <!--I don't think this should have to be here since it is transitively included with
+            the azure library, but without it in the pom there is a NoClassDefFound error -->
+        <dependency>
+          <groupId>io.projectreactor.netty</groupId>
+          <artifactId>reactor-netty-http</artifactId>
+          <version>1.0.24</version>
+        </dependency>
+        <!-- END new Graph API libs -->
         <dependency>
             <groupId>org.bitbucket.b_c</groupId>
             <artifactId>jose4j</artifactId>

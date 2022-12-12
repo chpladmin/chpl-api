@@ -3,8 +3,6 @@ package gov.healthit.chpl.manager;
 import java.util.Date;
 import java.util.List;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +86,9 @@ public class CertificationBodyManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.GET_DECERTIFIED_DEVELOPERS,
             CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
+            CacheNames.COLLECTIONS_LISTINGS,
+            CacheNames.COLLECTIONS_SEARCH,
+            CacheNames.COMPLAINTS
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.ACB_ID, id = "#acb.id")
     // no other caches have ACB data so we do not need to clear all
@@ -118,7 +118,7 @@ public class CertificationBodyManager extends SecuredManager {
     @ListingStoreRemove(removeBy = RemoveBy.ACB_ID, id = "#acb.id")
     public CertificationBodyDTO retire(CertificationBodyDTO acb)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, IllegalArgumentException,
-            SchedulerException, ValidationException, MessagingException {
+            SchedulerException, ValidationException {
         Date now = new Date();
         if (acb.getRetirementDate() == null || now.before(acb.getRetirementDate())) {
             throw new IllegalArgumentException("Retirement date is required and must be before \"now\".");
@@ -143,7 +143,7 @@ public class CertificationBodyManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
-    @ListingStoreRemove(removeBy = RemoveBy.ACB_ID, id = "#acb.id")
+    @ListingStoreRemove(removeBy = RemoveBy.ACB_ID, id = "#acbId")
     public CertificationBodyDTO unretire(Long acbId) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateCertifiedBodyException {
         CertificationBodyDTO beforeAcb = certificationBodyDao.getById(acbId);

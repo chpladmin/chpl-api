@@ -5,9 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
@@ -16,6 +13,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -49,6 +47,9 @@ public class MergeDeveloperJob implements Job {
 
     @Autowired
     private DeveloperDAO devDao;
+
+    @Value("${internalErrorEmailRecipients}")
+    private String internalErrorEmailRecipients;
 
     @Autowired
     private ChplEmailFactory chplEmailFactory;
@@ -97,7 +98,7 @@ public class MergeDeveloperJob implements Job {
                 try {
                     sendJobCompletionEmails(postMergeDeveloper != null ? postMergeDeveloper : newDeveloper,
                             preMergeDevelopers, mergeException, recipients);
-                } catch (IOException | MessagingException e) {
+                } catch (IOException e) {
                     LOGGER.error(e);
                 }
             } else {
@@ -138,14 +139,14 @@ public class MergeDeveloperJob implements Job {
     }
 
     private void sendJobCompletionEmails(Developer newDeveloper, List<Developer> oldDevelopers,
-            Exception mergeException, List<String> recipients) throws IOException, AddressException, MessagingException {
+            Exception mergeException, List<String> recipients) throws IOException {
 
         String subject = getSubject(mergeException == null);
         String htmlMessage = "";
         if (mergeException == null) {
             htmlMessage = createHtmlEmailBodySuccess(newDeveloper, oldDevelopers);
         } else {
-            String[] errorEmailRecipients = env.getProperty("mergeDeveloperErrorEmailRecipients").split(",");
+            String[] errorEmailRecipients = internalErrorEmailRecipients.split(",");
             for (int i = 0; i < errorEmailRecipients.length; i++) {
                 recipients.add(errorEmailRecipients[i].trim());
             }
