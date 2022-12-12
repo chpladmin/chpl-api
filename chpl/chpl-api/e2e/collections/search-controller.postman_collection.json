@@ -196,7 +196,8 @@
 							"value": "2020-01-01"
 						}
 					]
-				}
+				},
+				"description": "GET /search - 200 status and no results when passing invalid date parameters"
 			},
 			"response": []
 		}
