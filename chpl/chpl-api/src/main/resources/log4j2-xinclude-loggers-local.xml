@@ -99,9 +99,6 @@
     <Logger name="developerAccessEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="developerAccessEmailJob" />
     </Logger>
-    <Logger name="directReviewCacheRefreshJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="directReviewCacheRefreshJob" />
-    </Logger>
     <Logger name="realWorldTestingUploadJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="realWorldTestingUploadJob" />
     </Logger>

@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -33,7 +34,6 @@ import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.RwtSearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
-import gov.healthit.chpl.service.DirectReviewSearchService;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 

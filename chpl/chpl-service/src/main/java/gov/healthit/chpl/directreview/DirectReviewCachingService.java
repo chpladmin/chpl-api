@@ -1,4 +1,4 @@
-package gov.healthit.chpl.service;
+package gov.healthit.chpl.directreview;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -30,8 +30,6 @@ import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewContainer;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.exception.JiraRequestFailedException;
-import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
-import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.validation.compliance.DirectReviewValidator;
 import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.Cache;
@@ -65,15 +63,18 @@ public class DirectReviewCachingService {
     private DeveloperDAO developerDao;
     private RestTemplate jiraAuthenticatedRestTemplate;
     private DirectReviewDeserializingObjectMapper mapper;
+    private DirectReviewListingSharedStoreHandler directReviewListingSharedStoreHandler;
 
     @Autowired
     public DirectReviewCachingService(DirectReviewValidator drValidator,
             DeveloperDAO developerDao, RestTemplate jiraAuthenticatedRestTemplate,
-            DirectReviewDeserializingObjectMapper mapper) {
+            DirectReviewDeserializingObjectMapper mapper,
+            DirectReviewListingSharedStoreHandler directReviewListingSharedStoreHandler) {
         this.drValidator = drValidator;
         this.developerDao = developerDao;
         this.jiraAuthenticatedRestTemplate = jiraAuthenticatedRestTemplate;
         this.mapper = mapper;
+        this.directReviewListingSharedStoreHandler = directReviewListingSharedStoreHandler;
     }
 
     @CacheEvict(value = { CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH }, allEntries = true)
@@ -113,6 +114,8 @@ public class DirectReviewCachingService {
         } else {
             replaceAllDataInDirectReviewCache(allDirectReviews, calculatedHttpStatus, logger);
         }
+
+        directReviewListingSharedStoreHandler.handler(allDirectReviews);
     }
 
     public boolean doesCacheHaveAnyOkData() {
@@ -169,9 +172,6 @@ public class DirectReviewCachingService {
         }
     }
 
-    //This is PUBLIC so that AOP/aspectj works correctly.  Aspectj supports weaving for private methods - just need to figure
-    //out how to make it work.
-    @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#dr.developerId")
     public void addDirectReviewToCache(Cache drCache, DirectReview dr, HttpStatus httpStatus, LocalDateTime drFetchTime) {
         if (drCache.get(dr.getDeveloperId()) != null) {
             Element devDirectReviewElement = drCache.get(dr.getDeveloperId());

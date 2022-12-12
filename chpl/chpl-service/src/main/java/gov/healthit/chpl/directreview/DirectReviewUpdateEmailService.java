@@ -1,4 +1,4 @@
-package gov.healthit.chpl.service;
+package gov.healthit.chpl.directreview;
 
 import java.util.ArrayList;
 import java.util.List;

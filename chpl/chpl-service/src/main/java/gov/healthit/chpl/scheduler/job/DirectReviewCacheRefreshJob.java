@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.directreview.DirectReviewCachingService;
 import gov.healthit.chpl.search.CertifiedProductSearchManager;
 import gov.healthit.chpl.search.ListingSearchManager;
-import gov.healthit.chpl.service.DirectReviewCachingService;
 import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.CacheManager;
 
