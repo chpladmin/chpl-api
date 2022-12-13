@@ -114,7 +114,7 @@ public class ChangeRequestSearchManager {
         jobDataMap.put(ChangeRequestReportEmailJob.SEARCH_REQUEST, searchRequest);
         changeRequestsReportJob.setJobDataMap(jobDataMap);
         changeRequestsReportTrigger.setJob(changeRequestsReportJob);
-        changeRequestsReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+        changeRequestsReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
         changeRequestsReportTrigger = schedulerManager.createBackgroundJobTrigger(changeRequestsReportTrigger);
         return changeRequestsReportTrigger;
     }

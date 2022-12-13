@@ -421,6 +421,10 @@ public class ResourcePermissions {
         return doesAuthenticationHaveRole(Authority.ROLE_INVITED_USER_CREATOR);
     }
 
+    public boolean isUserRoleStartup() {
+        return doesAuthenticationHaveRole(Authority.ROLE_STARTUP);
+    }
+
     public boolean isUserAnonymous() {
         return AuthUtil.getCurrentUser() == null;
     }

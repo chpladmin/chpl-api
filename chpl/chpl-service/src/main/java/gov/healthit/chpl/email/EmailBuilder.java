@@ -150,7 +150,7 @@ public class EmailBuilder {
         jobDataMap.put(SendEmailJob.MESSAGE_KEY, message);
         sendEmailJob.setJobDataMap(jobDataMap);
         sendEmailTrigger.setJob(sendEmailJob);
-        sendEmailTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+        sendEmailTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
         return sendEmailTrigger;
     }
 
