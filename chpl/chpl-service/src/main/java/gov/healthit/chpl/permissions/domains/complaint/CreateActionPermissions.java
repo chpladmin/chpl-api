@@ -2,7 +2,7 @@ package gov.healthit.chpl.permissions.domains.complaint;
 
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.domain.complaint.Complaint;
+import gov.healthit.chpl.complaint.domain.Complaint;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
 @Component("complaintCreateActionPermissions")

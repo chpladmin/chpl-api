@@ -25,9 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.accessibilityStandard.AccessibilityStandard;
+import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardDAO;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
-import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
@@ -72,7 +73,6 @@ import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
@@ -357,7 +357,7 @@ public class CertifiedProductManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH,
-            CacheNames.COLLECTIONS_DEVELOPERS
+            CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.COMPLAINTS
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#updateRequest.listing.id")
     public CertifiedProductDTO update(ListingUpdateRequest updateRequest)
@@ -1064,19 +1064,8 @@ public class CertifiedProductManager extends SecuredManager {
 
         numChanges = accStdsToAdd.size() + idsToRemove.size();
 
-        List<String> fuzzyAsChoices = fuzzyChoicesDao.getByType(FuzzyType.ACCESSIBILITY_STANDARD).getChoices();
         for (CertifiedProductAccessibilityStandard toAdd : accStdsToAdd) {
-            if (!fuzzyAsChoices.contains(toAdd.getAccessibilityStandardName())) {
-                fuzzyAsChoices.add(toAdd.getAccessibilityStandardName());
-                FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
-                dto.setFuzzyType(FuzzyType.ACCESSIBILITY_STANDARD);
-                dto.setChoices(fuzzyAsChoices);
-                //TODO: Remove as part of OCD-4040
-                fuzzyChoicesDao.update(dto);
-            }
-
-            AccessibilityStandardDTO item = asDao.findOrCreate(toAdd.getAccessibilityStandardId(),
-                    toAdd.getAccessibilityStandardName());
+            AccessibilityStandard item = asDao.getById(toAdd.getAccessibilityStandardId());
             CertifiedProductAccessibilityStandardDTO toAddStd = new CertifiedProductAccessibilityStandardDTO();
             toAddStd.setAccessibilityStandardId(item.getId());
             toAddStd.setAccessibilityStandardName(item.getName());

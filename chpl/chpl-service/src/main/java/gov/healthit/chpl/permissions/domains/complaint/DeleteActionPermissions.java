@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.dao.ComplaintDAO;
-import gov.healthit.chpl.domain.complaint.Complaint;
+import gov.healthit.chpl.complaint.ComplaintDAO;
+import gov.healthit.chpl.complaint.domain.Complaint;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 

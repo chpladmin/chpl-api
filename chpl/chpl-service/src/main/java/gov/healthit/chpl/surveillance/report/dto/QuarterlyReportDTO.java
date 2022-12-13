@@ -61,6 +61,7 @@ public class QuarterlyReportDTO {
         return LocalDate.of(getYear(), getQuarter().getStartMonth(), getQuarter().getStartDay());
     }
 
+    @Deprecated
     public Date getStartDateTime() {
         LocalDate localDate = getStartDate();
         if (localDate == null) {
@@ -76,6 +77,7 @@ public class QuarterlyReportDTO {
         return LocalDate.of(getYear(), getQuarter().getEndMonth(), getQuarter().getEndDay());
     }
 
+    @Deprecated
     public Date getEndDateTime() {
         LocalDate localDate = getEndDate();
         if (localDate == null) {

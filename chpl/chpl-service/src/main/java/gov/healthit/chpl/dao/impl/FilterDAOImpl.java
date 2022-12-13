@@ -20,6 +20,7 @@ import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.UserMapper;
 
+@Deprecated
 @Repository("filterDAO")
 public class FilterDAOImpl extends BaseDAOImpl implements FilterDAO {
 

@@ -20,6 +20,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.FilterManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
+@Deprecated
 @Component("filterManager")
 public class FilterManagerImpl extends SecuredManager implements FilterManager {
     private FilterDAO filterDAO;

@@ -11,9 +11,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import gov.healthit.chpl.dao.ComplaintDAO;
+import gov.healthit.chpl.complaint.ComplaintDAO;
+import gov.healthit.chpl.complaint.domain.Complaint;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.complaint.Complaint;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.complaint.DeleteActionPermissions;
