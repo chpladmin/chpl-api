@@ -69,6 +69,8 @@ public class DeveloperAttestationCheckInReportDataCollector {
             List<CertificationBody> acbs = developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(developerId);
             return DeveloperAttestationCheckInReport.builder()
                     .developerName(developer.getName())
+                    .developerCode(developer.getDeveloperCode())
+                    .developerId(developer.getId())
                     .published(false)
                     .relevantAcbs(acbs.stream()
                             .map(acb -> acb.getName())
