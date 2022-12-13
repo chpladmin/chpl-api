@@ -146,7 +146,8 @@ public class SearchController {
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "pageSize")
         @RequestParam(value = "pageSize", required = false, defaultValue = "20") Integer pageSize,
         @Parameter(description = "What to order by. Options are one of the following: CERTIFICATION_DATE, CHPL_ID, "
-                + "DEVELOPER, PRODUCT, VERSION, EDITION, or STATUS. Defaults to PRODUCT.",
+                + "DEVELOPER, PRODUCT, VERSION, EDITION, STATUS, OPEN_SURVEILLANCE_NC_COUNT, CLOSED_SURVEILLANCE_NC_COUNT, "
+                + "OPEN_DIRECT_REVIEW_NC_COUNT, or CLOSED_DIRECT_REVIEW_NC_COUNT. Defaults to PRODUCT.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "orderBy")
         @RequestParam(value = "orderBy", required = false, defaultValue = "product") String orderBy,
         @Parameter(description = "Use to specify the direction of the sort. Defaults to false (ascending sort).",
@@ -289,7 +290,8 @@ public class SearchController {
         @Parameter(description = "What to order by. Options are one of the following: CERTIFICATION_DATE, CHPL_ID, "
                 + "DEVELOPER, PRODUCT, VERSION, EDITION, STATUS, OPEN_SURVEILLANCE_NC_COUNT, CLOSED_SURVEILLANCE_NC_COUNT, "
                 + "OPEN_DIRECT_REVIEW_NC_COUNT, or CLOSED_DIRECT_REVIEW_NC_COUNT. Defaults to PRODUCT.",
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "orderBy") @RequestParam(value = "orderBy", required = false, defaultValue = "product") String orderBy,
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "orderBy")
+        @RequestParam(value = "orderBy", required = false, defaultValue = "product") String orderBy,
         @Parameter(description = "Use to specify the direction of the sort. Defaults to false (ascending sort).",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "sortDescending")
         @RequestParam(value = "sortDescending", required = false, defaultValue = "false") Boolean sortDescending)
