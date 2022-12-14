@@ -280,14 +280,14 @@ public class CertifiedProductManager extends SecuredManager {
         return cpDao.getDetailsByVersionAndAcbIds(versionId, acbIdList);
     }
 
+    @Deprecated
     @Transactional
     public List<IcsFamilyTreeNode> getIcsFamilyTree(String chplProductNumber) throws EntityRetrievalException {
-
         CertifiedProductDetailsDTO dto = getCertifiedProductDetailsDtoByChplProductNumber(chplProductNumber);
-
         return getIcsFamilyTree(dto.getId());
     }
 
+    @Deprecated
     @Transactional
     public List<IcsFamilyTreeNode> getIcsFamilyTree(Long certifiedProductId) throws EntityRetrievalException {
         getById(certifiedProductId); // sends back 404 if bad id

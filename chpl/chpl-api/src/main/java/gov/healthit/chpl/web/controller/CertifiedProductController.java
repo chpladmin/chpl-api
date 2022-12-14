@@ -45,6 +45,7 @@ import gov.healthit.chpl.validation.listing.Validator;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.CQMResultDetailResults;
 import gov.healthit.chpl.web.controller.results.CertificationResults;
@@ -610,6 +611,10 @@ public class CertifiedProductController {
         return results;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/certified_products/{certifiedProductId}/ics_relationships",
+            message = "This endpoint is deprecated and will be removed. Please use /certified_products/{certifiedProductId}/ics-relationships.",
+            removalDate = "2023-07-15")
     @Operation(summary = "Get the ICS family tree for the specified certified product.",
             description = "Returns all members of the family tree connected to the specified certified product.",
             security = {
@@ -618,17 +623,19 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/ics_relationships", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    @DeprecatedApiResponseFields(responseClass = IcsFamilyTreeNode.class, friendlyUrl = "/certified_products/{certifiedProductId}/ics_relationships")
     public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeById(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
         List<IcsFamilyTreeNode> familyTree = cpManager.getIcsFamilyTree(certifiedProductId);
-
         return familyTree;
     }
 
     @SuppressWarnings({
             "checkstyle:parameternumber"
     })
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/certified_products/{chplProductNumber}/ics_relationships",
+            message = "This endpoint is deprecated and will be removed. Please use /certified_products/{chplProductNumber}/ics-relationships.",
+            removalDate = "2023-07-15")
     @Operation(summary = "Get the ICS family tree for the specified certified product based on a CHPL Product Number.",
             description = "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
                     + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid call to this "
@@ -641,7 +648,6 @@ public class CertifiedProductController {
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    @DeprecatedApiResponseFields(responseClass = IcsFamilyTreeNode.class, friendlyUrl = "/certified_products/{chplProductNumber}/ics_relationships")
     public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeByChplProductNumber(
             @PathVariable("year") String year,
             @PathVariable("testingLab") String testingLab,
@@ -661,6 +667,10 @@ public class CertifiedProductController {
         return familyTree;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/certified_products/{chplProductNumber}/ics_relationships",
+            message = "This endpoint is deprecated and will be removed. Please use /certified_products/{chplProductNumber}/ics-relationships.",
+            removalDate = "2023-07-15")
     @Operation(summary = "Get the ICS family tree for the specified certified product based on a legacy CHPL Product Number",
             description = "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to this "
                     + "service would look like /certified_products/CHP-999999/ics_relationships.",
@@ -670,7 +680,6 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{chplPrefix}-{identifier}/ics_relationships", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    @DeprecatedApiResponseFields(responseClass = IcsFamilyTreeNode.class, friendlyUrl = "/certified_products/{chplProductNumber}/ics_relationships")
     public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeByChplProductNumber(
             @PathVariable("chplPrefix") String chplPrefix,
             @PathVariable("identifier") String identifier) throws EntityRetrievalException {
