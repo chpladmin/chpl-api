@@ -3,6 +3,7 @@ package gov.healthit.chpl.sharedstore.listing;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -16,6 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.listing.ics.IcsManager;
+import gov.healthit.chpl.listing.ics.ListingIcsNode;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -24,11 +28,14 @@ import lombok.extern.log4j.Log4j2;
 public class ListingStoreRemoveAspect {
     private ExpressionEvaluator<Long> evaluator = new ExpressionEvaluator<>();
     private SharedListingStoreProvider sharedListingStoreProvider;
+    private IcsManager icsManager;
     private CertifiedProductDAO certifiedProductDAO;
 
     @Autowired
-    public ListingStoreRemoveAspect(SharedListingStoreProvider sharedListingStoreProvider, CertifiedProductDAO certifiedProductDAO) {
+    public ListingStoreRemoveAspect(SharedListingStoreProvider sharedListingStoreProvider, IcsManager icsManager,
+            CertifiedProductDAO certifiedProductDAO) {
         this.sharedListingStoreProvider = sharedListingStoreProvider;
+        this.icsManager = icsManager;
         this.certifiedProductDAO = certifiedProductDAO;
     }
 
@@ -76,6 +83,11 @@ public class ListingStoreRemoveAspect {
 
     private void removeListingFromStoreByListingId(Long listingId) {
         sharedListingStoreProvider.remove(listingId);
+        List<Long> relativeIds = getCertifiedProductRelativeIds(listingId);
+        if (!CollectionUtils.isEmpty(relativeIds)) {
+            relativeIds.stream()
+                .forEach(relativeId -> sharedListingStoreProvider.remove(relativeIds));
+        }
     }
 
     private void removeListingsFromStoreByDeveloperId(Long developerId) {
@@ -104,6 +116,22 @@ public class ListingStoreRemoveAspect {
                 getCertifiedProductsForVersion(versionId).stream()
                         .map(details -> details.getId())
                         .toList());
+    }
+
+    private List<Long> getCertifiedProductRelativeIds(Long listingId) {
+        List<ListingIcsNode> icsRelatives = null;
+        try {
+            icsRelatives = icsManager.getIcsFamilyTree(listingId);
+        } catch (EntityRetrievalException ex) {
+            LOGGER.warn("Not deleting any ICS relatives. Listing with ID " + listingId + " was not found.");
+        }
+        if (!CollectionUtils.isEmpty(icsRelatives)) {
+            return icsRelatives.stream()
+                    .filter(relative -> !relative.getId().equals(listingId))
+                    .map(relative -> relative.getId())
+                    .toList();
+        }
+        return null;
     }
 
     private List<CertifiedProductDetailsDTO> getCertifiedProductsForDeveloper(Long developerId) {
