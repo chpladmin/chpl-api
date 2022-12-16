@@ -404,12 +404,11 @@ public class ListingSearchService {
         LocalDate endDate = parseLocalDate(certificationDateRangeEnd);
         if (listing.getCertificationDate() != null) {
             if (startDate == null && endDate != null) {
-                return listing.getCertificationDate().isEqual(endDate) || listing.getCertificationDate().isBefore(endDate);
+                return listing.getCertificationDate().isBefore(endDate);
             } else if (startDate != null && endDate == null) {
-                return listing.getCertificationDate().isEqual(startDate) || listing.getCertificationDate().isAfter(startDate);
+                return listing.getCertificationDate().isAfter(startDate);
             } else {
-                return listing.getCertificationDate().isEqual(startDate) || listing.getCertificationDate().isEqual(endDate)
-                        || (listing.getCertificationDate().isBefore(endDate) && listing.getCertificationDate().isAfter(startDate));
+                return listing.getCertificationDate().isBefore(endDate) && listing.getCertificationDate().isAfter(startDate);
             }
         }
         return false;
@@ -424,12 +423,11 @@ public class ListingSearchService {
         LocalDate endDate = parseLocalDate(decertificationDateRangeEnd);
         if (listing.getDecertificationDate() != null) {
             if (startDate == null && endDate != null) {
-                return listing.getDecertificationDate().isEqual(endDate) || listing.getDecertificationDate().isBefore(endDate);
+                return listing.getDecertificationDate().isBefore(endDate);
             } else if (startDate != null && endDate == null) {
-                return listing.getDecertificationDate().isEqual(startDate) || listing.getDecertificationDate().isAfter(startDate);
+                return listing.getDecertificationDate().isAfter(startDate);
             } else {
-                return listing.getDecertificationDate().isEqual(startDate) || listing.getDecertificationDate().isEqual(endDate)
-                        || (listing.getDecertificationDate().isBefore(endDate) && listing.getDecertificationDate().isAfter(startDate));
+                return (listing.getDecertificationDate().isBefore(endDate) && listing.getDecertificationDate().isAfter(startDate));
             }
         }
         return false;
