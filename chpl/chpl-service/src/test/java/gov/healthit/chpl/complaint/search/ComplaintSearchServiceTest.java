@@ -546,7 +546,7 @@ public class ComplaintSearchServiceTest {
     }
 
     @Test
-    public void search_closedStartDateEqualsComplaintClosedDate_findsMatches() throws ValidationException {
+    public void search_closedStartDateEqualsComplaintClosedDate_findsNoMatches() throws ValidationException {
         ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
                 .closedDateStart("2022-04-02")
                 .pageNumber(0)
@@ -555,8 +555,8 @@ public class ComplaintSearchServiceTest {
         ComplaintSearchResponse searchResponse = complaintSearchService.searchComplaints(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
@@ -588,7 +588,7 @@ public class ComplaintSearchServiceTest {
     }
 
     @Test
-    public void search_closedEndDateEqualsComplaintClosedDate_findsMatches() throws ValidationException {
+    public void search_closedEndDateEqualsComplaintClosedDate_findsNoMatches() throws ValidationException {
         ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
                 .closedDateEnd("2022-04-02")
                 .pageNumber(0)
@@ -597,9 +597,8 @@ public class ComplaintSearchServiceTest {
         ComplaintSearchResponse searchResponse = complaintSearchService.searchComplaints(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
-        assertEquals(LocalDate.parse("2022-04-02"), searchResponse.getResults().get(0).getClosedDate());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
@@ -646,7 +645,7 @@ public class ComplaintSearchServiceTest {
     }
 
     @Test
-    public void search_complaintClosedDateEqualsStartAndBeforeEnd_findsMatches() throws ValidationException {
+    public void search_complaintClosedDateEqualsStartAndBeforeEnd_findsNoMatches() throws ValidationException {
         ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
                 .closedDateStart("2022-04-02")
                 .closedDateEnd("2022-04-03")
@@ -656,12 +655,12 @@ public class ComplaintSearchServiceTest {
         ComplaintSearchResponse searchResponse = complaintSearchService.searchComplaints(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
-    public void search_complaintClosedDateEqualsEndAndAfterStart_findsMatches() throws ValidationException {
+    public void search_complaintClosedDateEqualsEndAndAfterStart_findsNoMatches() throws ValidationException {
         ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
                 .closedDateStart("2022-04-01")
                 .closedDateEnd("2022-04-02")
@@ -671,12 +670,12 @@ public class ComplaintSearchServiceTest {
         ComplaintSearchResponse searchResponse = complaintSearchService.searchComplaints(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
-    public void search_complaintClosedDateEqualsEndAndStart_findsMatches() throws ValidationException {
+    public void search_complaintClosedDateEqualsEndAndStart_findsNoMatches() throws ValidationException {
         ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
                 .closedDateStart("2022-04-02")
                 .closedDateEnd("2022-04-02")
@@ -686,8 +685,8 @@ public class ComplaintSearchServiceTest {
         ComplaintSearchResponse searchResponse = complaintSearchService.searchComplaints(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
@@ -706,7 +705,7 @@ public class ComplaintSearchServiceTest {
     }
 
     @Test
-    public void search_receivedStartDateEqualsComplaintReceivedDate_findsMatches() throws ValidationException {
+    public void search_receivedStartDateEqualsComplaintReceivedDate_findsNoMatches() throws ValidationException {
         ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
                 .receivedDateStart("2022-03-02")
                 .pageNumber(0)
@@ -715,8 +714,8 @@ public class ComplaintSearchServiceTest {
         ComplaintSearchResponse searchResponse = complaintSearchService.searchComplaints(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
@@ -748,7 +747,7 @@ public class ComplaintSearchServiceTest {
     }
 
     @Test
-    public void search_receivedEndDateEqualsComplaintReceivedDate_findsMatches() throws ValidationException {
+    public void search_receivedEndDateEqualsComplaintReceivedDate_findsNoMatches() throws ValidationException {
         ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
                 .receivedDateEnd("2022-01-02")
                 .pageNumber(0)
@@ -757,8 +756,8 @@ public class ComplaintSearchServiceTest {
         ComplaintSearchResponse searchResponse = complaintSearchService.searchComplaints(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
@@ -805,7 +804,7 @@ public class ComplaintSearchServiceTest {
     }
 
     @Test
-    public void search_complaintReceivedDateEqualsStartAndBeforeEnd_findsMatches() throws ValidationException {
+    public void search_complaintReceivedDateEqualsStartAndBeforeEnd_findsNoMatches() throws ValidationException {
         ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
                 .receivedDateStart("2022-03-02")
                 .receivedDateEnd("2022-03-03")
@@ -815,12 +814,12 @@ public class ComplaintSearchServiceTest {
         ComplaintSearchResponse searchResponse = complaintSearchService.searchComplaints(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
-    public void search_complaintReceivedDateEqualsEndAndAfterStart_findsMatches() throws ValidationException {
+    public void search_complaintReceivedDateEqualsEndAndAfterStart_findsNoMatches() throws ValidationException {
         ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
                 .receivedDateStart("2022-03-01")
                 .receivedDateEnd("2022-03-02")
@@ -830,12 +829,12 @@ public class ComplaintSearchServiceTest {
         ComplaintSearchResponse searchResponse = complaintSearchService.searchComplaints(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
-    public void search_complaintReceivedDateEqualsEndAndStart_findsMatches() throws ValidationException {
+    public void search_complaintReceivedDateEqualsEndAndStart_findsNoMatches() throws ValidationException {
         ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
                 .receivedDateStart("2022-03-02")
                 .receivedDateEnd("2022-03-02")
@@ -845,8 +844,8 @@ public class ComplaintSearchServiceTest {
         ComplaintSearchResponse searchResponse = complaintSearchService.searchComplaints(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
