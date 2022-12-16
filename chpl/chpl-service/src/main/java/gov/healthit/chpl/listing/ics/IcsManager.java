@@ -54,15 +54,13 @@ public class IcsManager {
         while (processingQueue.containsValue(false)) {
             List<Long> idsToAddToProcessingQueue = new ArrayList<Long>();
             for (Entry<Long, Boolean> listingForProcessing : processingQueue.entrySet()) {
-                idsToAddToProcessingQueue = processListingFamilyEntry(listingForProcessing, familyTree, processingQueue);
+                idsToAddToProcessingQueue.addAll(
+                        processListingFamilyEntry(listingForProcessing, familyTree, processingQueue));
             }
             if (!CollectionUtils.isEmpty(idsToAddToProcessingQueue)) {
                 idsToAddToProcessingQueue.stream()
-                    .forEach(idToAdd -> {
-                        if (!processingQueue.containsKey(idToAdd)) {
-                            processingQueue.put(idToAdd, false);
-                        }
-                    });
+                    .filter(idToAdd -> !processingQueue.containsKey(idToAdd))
+                    .forEach(idToAdd -> processingQueue.put(idToAdd, false));
             }
         }
         return familyTree;
