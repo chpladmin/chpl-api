@@ -46,8 +46,8 @@ public class DirectReviewListingSharedStoreHandler {
     }
 
     private Boolean hasDirectReviewBeenUpdated(DirectReview newVersion, DirectReview origVersion) {
-        return NullSafeEvaluator.eval(() -> newVersion.getLastUpdated(), new Date(Long.MIN_VALUE)).equals(
-                NullSafeEvaluator.eval(() -> newVersion.getLastUpdated(), new Date(Long.MIN_VALUE)));
+        return ! NullSafeEvaluator.eval(() -> newVersion.getLastUpdated(), new Date(Long.MIN_VALUE)).equals(
+                NullSafeEvaluator.eval(() -> origVersion.getLastUpdated(), new Date(Long.MIN_VALUE)));
 
     }
 
