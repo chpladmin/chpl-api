@@ -64,7 +64,13 @@ public class EmailOverrider {
      * @return
      */
     public Boolean getSaveToSentItems() {
-        return isProductionEmailEnvironment();
+        String saveToSentItems = env.getProperty("emailBuilder.config.saveToSentItems");
+        //We are going to assume that if the property was not found that we should save
+        if (saveToSentItems == null) {
+            return true;
+        } else {
+            return Boolean.parseBoolean(saveToSentItems);
+        }
     }
 
     private String getToAddressesAsString(final List<String> toAddresses) {
