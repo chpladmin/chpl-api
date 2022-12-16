@@ -158,11 +158,6 @@ public class ChangeRequestSearchRequestValidator {
             }
         }
 
-        if (endDateTime != null && startDateTime != null && endDateTime.isBefore(startDateTime)) {
-            errors.add(msgUtil.getMessage("search.changeRequest.currentStatusDateTimes.invalidOrder",
-                    endDateTime,
-                    startDateTime));
-        }
         return errors;
     }
 
@@ -194,11 +189,6 @@ public class ChangeRequestSearchRequestValidator {
             }
         }
 
-        if (endDateTime != null && startDateTime != null && endDateTime.isBefore(startDateTime)) {
-            errors.add(msgUtil.getMessage("search.changeRequest.submittedDateTimes.invalidOrder",
-                    endDateTime,
-                    startDateTime));
-        }
         return errors;
     }
 
