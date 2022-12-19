@@ -24,6 +24,7 @@ public class MissingAttestationChangeRequestDeveloperEmailGenerator implements D
     private String emailSalutation;
     private String emailParagraph1;
     private String emailParagraph2;
+    private String emailParagraph3;
     private String emailClosing;
 
     @Autowired
@@ -32,6 +33,7 @@ public class MissingAttestationChangeRequestDeveloperEmailGenerator implements D
             @Value("${developer.missingAttestationChangeRequest.salutation}") String emailSalutation,
             @Value("${developer.missingAttestationChangeRequest.paragraph1}") String emailParagraph1,
             @Value("${developer.missingAttestationChangeRequest.paragraph2}") String emailParagraph2,
+            @Value("${developer.missingAttestationChangeRequest.paragraph3}") String emailParagraph3,
             @Value("${developer.missingAttestationChangeRequest.closing}") String emailClosing) {
         this.developerManager = developerManager;
         this.htmlEmailBuilder = htmlEmailBuilder;
@@ -39,6 +41,7 @@ public class MissingAttestationChangeRequestDeveloperEmailGenerator implements D
         this.emailSalutation = emailSalutation;
         this.emailParagraph1 = emailParagraph1;
         this.emailParagraph2 = emailParagraph2;
+        this.emailParagraph3 = emailParagraph3;
         this.emailClosing = emailClosing;
     }
 
@@ -70,8 +73,9 @@ public class MissingAttestationChangeRequestDeveloperEmailGenerator implements D
         return htmlEmailBuilder.initialize()
                 .heading(emailSubject)
                 .paragraph("", emailSalutation)
-                .paragraph("", String.format(emailParagraph1, developer.getName(), getUsersAsString(developerUsers)))
-                .paragraph("", emailParagraph2)
+                .paragraph("", String.format(emailParagraph1, developer.getName()))
+                .paragraph("", String.format(emailParagraph2, getUsersAsString(developerUsers)))
+                .paragraph("", emailParagraph3)
                 .paragraph("", emailClosing)
                 .footer(true)
                 .build();
