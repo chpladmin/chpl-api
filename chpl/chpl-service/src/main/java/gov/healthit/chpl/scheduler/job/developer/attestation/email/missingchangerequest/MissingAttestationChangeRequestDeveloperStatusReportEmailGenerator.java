@@ -53,10 +53,14 @@ public class MissingAttestationChangeRequestDeveloperStatusReportEmailGenerator 
     }
 
     private List<List<String>> getTableRows(List<DeveloperEmail> developerEmails) {
+        if (developerEmails.size() > 0) {
         return developerEmails.stream()
                 .map(email -> List.of(email.getDeveloper().getName(), email.getRecipients().stream()
                         .collect(Collectors.joining("; "))))
                 .toList();
+        } else {
+            return List.of(List.of("No Emails Sent"));
+        }
     }
 
 }
