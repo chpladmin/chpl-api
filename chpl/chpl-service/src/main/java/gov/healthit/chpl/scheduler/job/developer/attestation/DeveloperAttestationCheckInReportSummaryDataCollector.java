@@ -13,6 +13,7 @@ public class DeveloperAttestationCheckInReportSummaryDataCollector {
     private static final String PENDING_DEVELOPER_ACTION = "Pending Developer Action";
     private static final String PENDING_ACB_ACTION = "Pending ONC-ACB Action";
     private static final String REJECTED = "Rejected";
+    private static final String CANCELLED = "Cancelled by Requester";
 
     public DeveloperAttestationCheckInReportSummary collect(List<DeveloperAttestationCheckInReport> developerAttestationCheckInReports) {
         return DeveloperAttestationCheckInReportSummary.builder()
@@ -49,6 +50,7 @@ public class DeveloperAttestationCheckInReportSummaryDataCollector {
     private Long calculateNoSubmissionCount(List<DeveloperAttestationCheckInReport> developerAttestationCheckInReports) {
         return developerAttestationCheckInReports.stream()
                 .filter(row -> NullSafeEvaluator.eval(() -> row.getCurrentStatusName(), "").equals(REJECTED)
+                        || NullSafeEvaluator.eval(() -> row.getCurrentStatusName(), "").equals(CANCELLED)
                         || NullSafeEvaluator.eval(() -> row.getCurrentStatusName(), "").equals(""))
                 .count();
     }
