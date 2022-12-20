@@ -18,7 +18,7 @@ import gov.healthit.chpl.util.ChplProductNumberUtil;
 @Component
 public class ListingDeserializer extends JsonDeserializer<List<DeveloperAssociatedListing>> {
     private static final String ID_FIELD = "id";
-    private static final String CHPL_PRODUCT_NBR_FIELD = "chplProductNumber";
+    private static final String CHPL_PRODUCT_NUMBER_FIELD = "chplProductNumber";
 
     @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
@@ -45,7 +45,7 @@ public class ListingDeserializer extends JsonDeserializer<List<DeveloperAssociat
                 if (representsDeveloperAssociatedListingObject(listingDatabaseIdsNode)) {
                     // From an existing DeveloperAssociatedListing form {"id":10764,"chplProductNumber":"15.04.04.2883.eCli.11.01.1.211228"}
                     listingId = listingDatabaseIdsNode.findValue(ID_FIELD).asLong();
-                    chplProductNumber = listingDatabaseIdsNode.findValue(CHPL_PRODUCT_NBR_FIELD).textValue();
+                    chplProductNumber = listingDatabaseIdsNode.findValue(CHPL_PRODUCT_NUMBER_FIELD).textValue();
                 } else {
                     //From a listing id - form "10989"
                     listingId = listingDatabaseIdObj.asLong();
@@ -65,7 +65,7 @@ public class ListingDeserializer extends JsonDeserializer<List<DeveloperAssociat
     private Boolean representsDeveloperAssociatedListingObject(JsonNode node) {
         try {
             return node.findValue(ID_FIELD) != null
-                    && node.findValue(CHPL_PRODUCT_NBR_FIELD) != null;
+                    && node.findValue(CHPL_PRODUCT_NUMBER_FIELD) != null;
         } catch (Exception e) {
             return false;
         }
