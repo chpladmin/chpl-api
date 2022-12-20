@@ -109,6 +109,19 @@ public class ListingSearchService {
         return response;
     }
 
+    public List<ListingSearchResult> getAllPagesOfSearchResults(SearchRequest searchRequest) throws ValidationException {
+        List<ListingSearchResult> searchResults = new ArrayList<ListingSearchResult>();
+        ListingSearchResponse searchResponse = findListings(searchRequest);
+        searchResults.addAll(searchResponse.getResults());
+        while (searchResponse.getRecordCount() > searchResults.size()) {
+            searchRequest.setPageSize(searchResponse.getPageSize());
+            searchRequest.setPageNumber(searchResponse.getPageNumber() + 1);
+            searchResponse = findListings(searchRequest);
+            searchResults.addAll(searchResponse.getResults());
+        }
+        return searchResults;
+    }
+
     private boolean matchesSearchTerm(ListingSearchResult listing, String searchTerm) {
         if (StringUtils.isEmpty(searchTerm)) {
             return true;

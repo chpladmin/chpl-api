@@ -1,52 +1,75 @@
 package gov.healthit.chpl.compliance.directreview;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.compliance.DirectReview;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.search.ListingSearchService;
+import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.sharedstore.listing.SharedListingStoreProvider;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import lombok.extern.log4j.Log4j2;
+import one.util.streamex.StreamEx;
 
 @Component
 @Log4j2
 public class DirectReviewListingSharedStoreHandler {
     private SharedListingStoreProvider sharedListingStoreProvider;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
+    private ListingSearchService listingSearchService;
+    private DeveloperDAO developerDAO;
 
     @Autowired
     public DirectReviewListingSharedStoreHandler(@Lazy SharedListingStoreProvider sharedListingStoreProvider,
-            @Lazy CertifiedProductDetailsManager certifiedProductDetailsManager) {
+            @Lazy CertifiedProductDetailsManager certifiedProductDetailsManager, @Lazy ListingSearchService listingSearchService,
+            DeveloperDAO developerDAO) {
         this.sharedListingStoreProvider = sharedListingStoreProvider;
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
+        this.listingSearchService = listingSearchService;
+        this.developerDAO = developerDAO;
     }
 
     public void handler(List<DirectReview> allDirectReviews) {
-        getUniqueListings(allDirectReviews).forEach(listing -> {
-            removeListingFromSharedStoreIfDirectReviewUpdated(listing, allDirectReviews);
-        });
+        getUniqueDevelopers(allDirectReviews).stream()
+                .forEach(dev -> getListingDataForDeveloper(dev).stream()
+                        .forEach(listing -> removeListingFromSharedStoreIfDirectReviewUpdated(listing, allDirectReviews)));
+    }
+
+    private List<Developer> getUniqueDevelopers(List<DirectReview> allDirectReviews) {
+        return StreamEx.of(allDirectReviews)
+                .map(dr -> getDeveloper(dr.getDeveloperId()))
+                .filter(dev -> dev != null)
+                .distinct(dev -> dev.getId())
+                .toList();
     }
 
     private void removeListingFromSharedStoreIfDirectReviewUpdated(CertifiedProductSearchDetails listing, List<DirectReview> allDirectReviews) {
-        listing.getDirectReviews().forEach(dr -> {
-            if (hasDirectReviewBeenUpdated(findDirectReview(allDirectReviews, dr.getJiraKey()), dr)) {
-                LOGGER.info("Removing Listing Id {} from the Shared Store", listing.getId());
-                sharedListingStoreProvider.remove(listing.getId());
-            } else {
-                LOGGER.info("Not Removing Listing Id {} from the Shared Store - Direct Review Last Updated Date not changed", listing.getId());
-            }
-        });
+        listing.getDirectReviews().parallelStream()
+            .forEach(dr -> {
+                if (hasDirectReviewBeenUpdated(findDirectReview(allDirectReviews, dr.getJiraKey()), dr)) {
+                    LOGGER.info("Removing Listing Id {} from the Shared Store", listing.getId());
+                    sharedListingStoreProvider.remove(listing.getId());
+                } else {
+                    LOGGER.info("Not Removing Listing Id {} from the Shared Store - Direct Review Last Updated Date not changed", listing.getId());
+                }
+            });
     }
 
     private Boolean hasDirectReviewBeenUpdated(DirectReview newVersion, DirectReview origVersion) {
-        return ! NullSafeEvaluator.eval(() -> newVersion.getLastUpdated(), new Date(Long.MIN_VALUE)).equals(
+        return !NullSafeEvaluator.eval(() -> newVersion.getLastUpdated(), new Date(Long.MIN_VALUE)).equals(
                 NullSafeEvaluator.eval(() -> origVersion.getLastUpdated(), new Date(Long.MIN_VALUE)));
 
     }
@@ -58,23 +81,39 @@ public class DirectReviewListingSharedStoreHandler {
                 .orElse(null);
     }
 
-    private List<CertifiedProductSearchDetails> getUniqueListings(List<DirectReview> allDirectReviews) {
-        return  allDirectReviews.stream()
-                .flatMap(dr -> dr.getNonConformities().stream())
-                .flatMap(nc -> nc.getDeveloperAssociatedListings().stream())
-                .map(dal -> dal.getChplProductNumber())
-                .distinct()
-                .map(chplProdNbr -> getListing(chplProdNbr))
-                .filter(listing -> listing != null)
-                .toList();
+    private List<CertifiedProductSearchDetails> getListingDataForDeveloper(Developer developer) {
+        try {
+            //TODO: this needs to switched to use developer id when OCD-4066 gets to STG!!!
+            SearchRequest searchRequest = SearchRequest.builder()
+                    .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
+                    .developer(developer.getName())
+                    .pageSize(SearchRequest.MAX_PAGE_SIZE)
+                    .build();
 
+            return listingSearchService.getAllPagesOfSearchResults(searchRequest).parallelStream()
+                    .map(searchResult ->  getListing(searchResult.getId()))
+                    .filter(listing -> listing != null)
+                    .toList();
+        } catch (Exception e) {
+            LOGGER.error("Could not retrieve listings for developer: {} - {}", developer.getId(), e.getMessage());
+            return new ArrayList<CertifiedProductSearchDetails>();
+        }
     }
 
-    private CertifiedProductSearchDetails getListing(String chplProductNumber) {
+    private CertifiedProductSearchDetails getListing(Long listingId) {
         try {
-            return  certifiedProductDetailsManager.getCertifiedProductDetailsByChplProductNumber(chplProductNumber);
+            return certifiedProductDetailsManager.getCertifiedProductDetails(listingId);
         } catch (EntityRetrievalException e) {
-            LOGGER.error("Could not lookup ChplProductNumber: {}", chplProductNumber, e);
+            LOGGER.error("Could not lookup Listing: {}", listingId, e);
+            return null;
+        }
+    }
+
+    private Developer getDeveloper(Long developerId) {
+        try {
+            return developerDAO.getById(developerId);
+        } catch (Exception e) {
+            LOGGER.error("Could not find developer: {}", developerId);
             return null;
         }
     }
