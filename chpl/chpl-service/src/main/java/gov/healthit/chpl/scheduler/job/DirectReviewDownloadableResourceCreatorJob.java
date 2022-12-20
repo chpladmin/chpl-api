@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.directreview.DirectReviewCachingService;
-import gov.healthit.chpl.directreview.DirectReviewSearchService;
+import gov.healthit.chpl.compliance.directreview.DirectReviewCachingService;
+import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.scheduler.presenter.DirectReviewCsvPresenter;
 import lombok.extern.log4j.Log4j2;

@@ -21,7 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.directreview.DirectReviewSearchService;
+import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.search.CertifiedProductSearchManager;

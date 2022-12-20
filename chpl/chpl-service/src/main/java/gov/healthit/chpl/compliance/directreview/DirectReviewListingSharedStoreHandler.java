@@ -1,4 +1,4 @@
-package gov.healthit.chpl.directreview;
+package gov.healthit.chpl.compliance.directreview;
 
 import java.util.Date;
 import java.util.List;
