@@ -334,8 +334,9 @@ public class ResourcePermissions {
 
     @Transactional(readOnly = true)
     public boolean hasPermissionOnUser(UserDTO user) {
-
-        if (isUserRoleAdmin() || AuthUtil.getCurrentUser().getId().equals(user.getId())) {
+        if (getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(Authority.ROLE_STARTUP)) {
+            return false;
+        } else if (isUserRoleAdmin() || AuthUtil.getCurrentUser().getId().equals(user.getId())) {
             return true;
         } else if (isUserRoleOnc()) {
             return !getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN);
