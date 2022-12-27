@@ -13,7 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.entity.QmsStandardEntity;
+import gov.healthit.chpl.qmsStandard.QmsStandardEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

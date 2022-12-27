@@ -45,10 +45,8 @@ import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
 import gov.healthit.chpl.dao.CuresUpdateEventDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
-import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.PromotingInteroperabilityUserDAO;
-import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
@@ -86,13 +84,10 @@ import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.CuresUpdateEventDTO;
-import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
-import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.CertifiedProductUpdateException;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -103,6 +98,8 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.qmsStandard.QmsStandard;
+import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
 import gov.healthit.chpl.scheduler.job.TriggerDeveloperBanJob;
 import gov.healthit.chpl.service.CuresUpdateService;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
@@ -145,7 +142,6 @@ public class CertifiedProductManager extends SecuredManager {
     private CertificationResultManager certResultManager;
     private CertificationStatusDAO certStatusDao;
     private ListingGraphDAO listingGraphDao;
-    private FuzzyChoicesDAO fuzzyChoicesDao;
     private ResourcePermissions resourcePermissions;
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
@@ -176,7 +172,7 @@ public class CertifiedProductManager extends SecuredManager {
             CuresUpdateEventDAO curesUpdateDao,
             PromotingInteroperabilityUserDAO piuDao, CertificationResultManager certResultManager,
             CertificationStatusDAO certStatusDao, ListingGraphDAO listingGraphDao,
-            FuzzyChoicesDAO fuzzyChoicesDao, ResourcePermissions resourcePermissions,
+            ResourcePermissions resourcePermissions,
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
             SchedulerManager schedulerManager,
@@ -210,7 +206,6 @@ public class CertifiedProductManager extends SecuredManager {
         this.certResultManager = certResultManager;
         this.certStatusDao = certStatusDao;
         this.listingGraphDao = listingGraphDao;
-        this.fuzzyChoicesDao = fuzzyChoicesDao;
         this.resourcePermissions = resourcePermissions;
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
@@ -810,17 +805,8 @@ public class CertifiedProductManager extends SecuredManager {
 
         numChanges = qmsToAdd.size() + idsToRemove.size();
 
-        List<String> fuzzyQmsChoices = fuzzyChoicesDao.getByType(FuzzyType.QMS_STANDARD).getChoices();
         for (CertifiedProductQmsStandard toAdd : qmsToAdd) {
-            if (!fuzzyQmsChoices.contains(toAdd.getQmsStandardName())) {
-                fuzzyQmsChoices.add(toAdd.getQmsStandardName());
-                FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
-                dto.setFuzzyType(FuzzyType.QMS_STANDARD);
-                dto.setChoices(fuzzyQmsChoices);
-                //TODO: Remove as part of OCD-4041
-                fuzzyChoicesDao.update(dto);
-            }
-            QmsStandardDTO qmsItem = qmsDao.findOrCreate(toAdd.getQmsStandardId(), toAdd.getQmsStandardName());
+            QmsStandard qmsItem = qmsDao.getById(toAdd.getQmsStandardId());
             CertifiedProductQmsStandardDTO qmsDto = new CertifiedProductQmsStandardDTO();
             qmsDto.setApplicableCriteria(toAdd.getApplicableCriteria());
             qmsDto.setCertifiedProductId(listingId);
@@ -841,8 +827,7 @@ public class CertifiedProductManager extends SecuredManager {
 
             if (hasChanged) {
                 CertifiedProductQmsStandard stdToUpdate = toUpdate.getUpdated();
-                QmsStandardDTO qmsItem = qmsDao.findOrCreate(stdToUpdate.getQmsStandardId(),
-                        stdToUpdate.getQmsStandardName());
+                QmsStandard qmsItem = qmsDao.getById(stdToUpdate.getQmsStandardId());
                 CertifiedProductQmsStandardDTO qmsDto = new CertifiedProductQmsStandardDTO();
                 qmsDto.setId(stdToUpdate.getId());
                 qmsDto.setApplicableCriteria(stdToUpdate.getApplicableCriteria());

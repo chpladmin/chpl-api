@@ -2,7 +2,6 @@ package gov.healthit.chpl.upload.listing;
 
 import static gov.healthit.chpl.util.LambdaExceptionUtil.rethrowConsumer;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,22 +29,17 @@ import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
 import gov.healthit.chpl.dao.CuresUpdateEventDAO;
-import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
-import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
-import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CuresUpdateEventDTO;
-import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
@@ -69,7 +63,6 @@ public class ListingConfirmationManager {
     private CertifiedProductTargetedUserDAO cpTargetedUserDao;
     private ListingGraphDAO listingGraphDao;
     private ListingMeasureDAO listingMeasureDao;
-    private FuzzyChoicesDAO fuzzyChoicesDao;
     private CertificationResultDAO certResultDao;
     private CQMResultDAO cqmResultDao;
     private CertificationStatusEventDAO statusEventDao;
@@ -85,7 +78,7 @@ public class ListingConfirmationManager {
     public ListingConfirmationManager(DeveloperManager developerManager,
             ProductManager productManager, ProductVersionManager versionManager,
             CertifiedProductDAO cpDao, CertifiedProductTestingLabDAO cpTestingLabDao,
-            FuzzyChoicesDAO fuzzyChoicesDao, CertifiedProductQmsStandardDAO cpQmsDao,
+            CertifiedProductQmsStandardDAO cpQmsDao,
             CertifiedProductAccessibilityStandardDAO cpAccStdDao,
             CertifiedProductTargetedUserDAO cpTargetedUserDao,
             ListingGraphDAO listingGraphDao, ListingMeasureDAO listingMeasureDao,
@@ -99,7 +92,6 @@ public class ListingConfirmationManager {
         this.versionManager = versionManager;
         this.cpDao = cpDao;
         this.cpTestingLabDao = cpTestingLabDao;
-        this.fuzzyChoicesDao = fuzzyChoicesDao;
         this.cpQmsDao = cpQmsDao;
         this.cpAccStdDao = cpAccStdDao;
         this.cpTargetedUserDao = cpTargetedUserDao;
@@ -174,59 +166,16 @@ public class ListingConfirmationManager {
     private void saveListingQmsStandardMappings(CertifiedProductSearchDetails listing)
         throws EntityCreationException {
         if (!CollectionUtils.isEmpty(listing.getQmsStandards())) {
-            try {
-                List<String> fuzzyChoices = fuzzyChoicesDao.getByType(FuzzyType.QMS_STANDARD).getChoices();
-                listing.getQmsStandards().stream()
-                    .filter(qmsStandard -> !fuzzyChoices.contains(qmsStandard.getQmsStandardName()))
-                    .forEach(qmsStandard -> addQmsStandardToFuzzyChoices(qmsStandard, fuzzyChoices));
-            } catch (IOException | EntityRetrievalException ex) {
-                LOGGER.error("Cannot get QMS Standard fuzzy choices", ex);
-            }
             listing.getQmsStandards().stream()
                 .forEach(rethrowConsumer(qmsStandard -> cpQmsDao.createListingQmsStandardMapping(listing.getId(), qmsStandard)));
-        }
-    }
-
-    //TODO: Remove as part of OCD-4041
-    private void addQmsStandardToFuzzyChoices(CertifiedProductQmsStandard qmsStandard, List<String> fuzzyChoices) {
-        fuzzyChoices.add(qmsStandard.getQmsStandardName());
-        FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
-        dto.setFuzzyType(FuzzyType.QMS_STANDARD);
-        dto.setChoices(fuzzyChoices);
-        try {
-            fuzzyChoicesDao.update(dto);
-        } catch (IOException | EntityCreationException | EntityRetrievalException ex) {
-            LOGGER.error("Cannot update fuzzy choices with " + qmsStandard.getQmsStandardName(), ex);
         }
     }
 
     private void saveListingAccessibiltyStandardMappings(CertifiedProductSearchDetails listing)
             throws EntityCreationException {
         if (!CollectionUtils.isEmpty(listing.getAccessibilityStandards())) {
-            try {
-                List<String> fuzzyChoices = fuzzyChoicesDao.getByType(FuzzyType.ACCESSIBILITY_STANDARD).getChoices();
-                listing.getAccessibilityStandards().stream()
-                    .filter(accStandard -> !fuzzyChoices.contains(accStandard.getAccessibilityStandardName()))
-                    .forEach(accStandard -> addAccessibilityStandardToFuzzyChoices(accStandard, fuzzyChoices));
-            } catch (IOException | EntityRetrievalException ex) {
-                LOGGER.error("Cannot get Accessibility Standard fuzzy choices", ex);
-            }
             listing.getAccessibilityStandards().stream()
                 .forEach(rethrowConsumer(accStandard -> cpAccStdDao.createListingAccessibilityStandardMapping(listing.getId(), accStandard)));
-        }
-    }
-
-    //TODO: Remove as part of OCD-4040
-    private void addAccessibilityStandardToFuzzyChoices(CertifiedProductAccessibilityStandard accessibilityStandard,
-            List<String> fuzzyChoices) {
-        fuzzyChoices.add(accessibilityStandard.getAccessibilityStandardName());
-        FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
-        dto.setFuzzyType(FuzzyType.ACCESSIBILITY_STANDARD);
-        dto.setChoices(fuzzyChoices);
-        try {
-            fuzzyChoicesDao.update(dto);
-        } catch (IOException | EntityCreationException | EntityRetrievalException ex) {
-            LOGGER.error("Cannot update fuzzy choices with " + accessibilityStandard.getAccessibilityStandardName(), ex);
         }
     }
 
