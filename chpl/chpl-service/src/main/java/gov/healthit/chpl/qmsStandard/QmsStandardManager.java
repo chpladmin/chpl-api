@@ -46,6 +46,10 @@ public class QmsStandardManager {
     public QmsStandard update(QmsStandard qmsStandard) throws EntityRetrievalException, ValidationException {
         qmsStandard.setName(StringUtils.trim(qmsStandard.getName()));
         QmsStandard originalQmsStandard = qmsStandardDao.getById(qmsStandard.getId());
+        if (originalQmsStandard == null) {
+            throw new EntityRetrievalException(errorMessageUtil.getMessage("qmsStandard.doesNotExist"));
+        }
+
         if (!originalQmsStandard.equals(qmsStandard)) {
             validateForEdit(qmsStandard);
             qmsStandardDao.update(qmsStandard);
@@ -67,6 +71,9 @@ public class QmsStandardManager {
     @Transactional
     public void delete(Long qmsStandardId) throws EntityRetrievalException, ValidationException {
         QmsStandard originalQmsStandard = qmsStandardDao.getById(qmsStandardId);
+        if (originalQmsStandard == null) {
+            throw new EntityRetrievalException(errorMessageUtil.getMessage("qmsStandard.doesNotExist"));
+        }
         validateForDelete(originalQmsStandard);
         qmsStandardDao.delete(qmsStandardId);
     }

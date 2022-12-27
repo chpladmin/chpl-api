@@ -48,6 +48,10 @@ public class AccessibilityStandardManager {
     public AccessibilityStandard update(AccessibilityStandard accessibilityStandard) throws EntityRetrievalException, ValidationException {
         accessibilityStandard.setName(StringUtils.trim(accessibilityStandard.getName()));
         AccessibilityStandard originalAccessibilityStandard = accessibilityStandardDao.getById(accessibilityStandard.getId());
+        if (originalAccessibilityStandard == null) {
+            throw new EntityRetrievalException(errorMessageUtil.getMessage("accessibilityStandard.doesNotExist"));
+        }
+
         if (!originalAccessibilityStandard.equals(accessibilityStandard)) {
             validateForEdit(accessibilityStandard);
             accessibilityStandardDao.update(accessibilityStandard);
@@ -69,6 +73,9 @@ public class AccessibilityStandardManager {
     @Transactional
     public void delete(Long accessibilityStandardId) throws EntityRetrievalException, ValidationException {
         AccessibilityStandard originalAccessibilityStandard = accessibilityStandardDao.getById(accessibilityStandardId);
+        if (originalAccessibilityStandard == null) {
+            throw new EntityRetrievalException(errorMessageUtil.getMessage("accessibilityStandard.doesNotExist"));
+        }
         validateForDelete(originalAccessibilityStandard);
         accessibilityStandardDao.delete(accessibilityStandardId);
     }
