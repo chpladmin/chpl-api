@@ -75,7 +75,7 @@ public class QmsStandardManager {
         List<CertifiedProduct> listings = qmsStandardDao.getCertifiedProductsByQmsStandard(qmsStandard);
 
         if (!CollectionUtils.isEmpty(listings)) {
-            String message = errorMessageUtil.getMessage("qmStandard.delete.listingsExist",
+            String message = errorMessageUtil.getMessage("qmsStandard.delete.listingsExist",
                     listings.size(),
                     listings.size() > 1 ? "s" : "");
             if (listings.size() < MAX_LISTINGS_IN_DELETE_ERROR_MESSAGE) {
