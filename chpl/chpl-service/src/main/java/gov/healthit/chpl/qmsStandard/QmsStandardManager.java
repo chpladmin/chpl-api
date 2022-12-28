@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,12 +27,15 @@ public class QmsStandardManager {
 
     private QmsStandardDAO qmsStandardDao;
     private ErrorMessageUtil errorMessageUtil;
+    private Long qmsStandardNameMaxLength;
 
     @Autowired
     public QmsStandardManager(QmsStandardDAO qmsStandardDao,
-            ErrorMessageUtil errorMessageUtil) {
+            ErrorMessageUtil errorMessageUtil,
+            @Value("${maxLength.qmsStandard}") Long qmsStandardNameMaxLength) {
         this.qmsStandardDao = qmsStandardDao;
         this.errorMessageUtil = errorMessageUtil;
+        this.qmsStandardNameMaxLength = qmsStandardNameMaxLength;
     }
 
     @Transactional
@@ -101,6 +105,8 @@ public class QmsStandardManager {
 
         if (StringUtils.isBlank(updatedQmsStandard.getName())) {
             messages.add(errorMessageUtil.getMessage("qmsStandard.emptyName"));
+        } else if (updatedQmsStandard.getName().length() > qmsStandardNameMaxLength) {
+            messages.add(errorMessageUtil.getMessage("qmsStandard.nameTooLong"));
         } else if (isQmsStandardNameDuplicate(updatedQmsStandard)) {
             messages.add(errorMessageUtil.getMessage("qmsStandard.duplicate", updatedQmsStandard.getName()));
         }
@@ -116,6 +122,8 @@ public class QmsStandardManager {
 
         if (StringUtils.isBlank(qmsStandard.getName())) {
             messages.add(errorMessageUtil.getMessage("qmsStandard.emptyName"));
+        } else if (qmsStandard.getName().length() > qmsStandardNameMaxLength) {
+            messages.add(errorMessageUtil.getMessage("qmsStandard.nameTooLong"));
         } else if (isQmsStandardNameDuplicate(qmsStandard)) {
             messages.add(errorMessageUtil.getMessage("qmsStandard.duplicate", qmsStandard.getName()));
         }
