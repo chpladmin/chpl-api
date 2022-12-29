@@ -1,7 +1,7 @@
-package gov.healthit.chpl.dto.questionableActivity;
+package gov.healthit.chpl.questionableactivity.dto;
 
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityDeveloperEntity;
+import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityDeveloperEntity;
 
 public class QuestionableActivityDeveloperDTO extends QuestionableActivityDTO {
     private Long developerId;

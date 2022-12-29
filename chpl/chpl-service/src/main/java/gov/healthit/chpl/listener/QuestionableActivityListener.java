@@ -14,7 +14,7 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ProductVersionDTO;
-import gov.healthit.chpl.manager.QuestionableActivityManager;
+import gov.healthit.chpl.questionableactivity.QuestionableActivityManager;
 import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 

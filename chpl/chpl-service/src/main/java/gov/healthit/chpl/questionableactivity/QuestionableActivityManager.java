@@ -1,4 +1,4 @@
-package gov.healthit.chpl.manager;
+package gov.healthit.chpl.questionableactivity;
 
 import java.util.Date;
 import java.util.List;
@@ -6,23 +6,21 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.healthit.chpl.dao.QuestionableActivityDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
-import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.dto.ProductVersionDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityCertificationResultDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDeveloperDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO;
-import gov.healthit.chpl.questionableactivity.CertificationResultQuestionableActivityProvider;
-import gov.healthit.chpl.questionableactivity.DeveloperQuestionableActivityProvider;
-import gov.healthit.chpl.questionableactivity.ListingQuestionableActivityService;
-import gov.healthit.chpl.questionableactivity.ProductQuestionableActivityProvider;
-import gov.healthit.chpl.questionableactivity.VersionQuestionableActivityProvider;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResultDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloperDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProductDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTriggerDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersionDTO;
+import gov.healthit.chpl.questionableactivity.service.CertificationResultQuestionableActivityProvider;
+import gov.healthit.chpl.questionableactivity.service.DeveloperQuestionableActivityProvider;
+import gov.healthit.chpl.questionableactivity.service.ListingQuestionableActivityService;
+import gov.healthit.chpl.questionableactivity.service.ProductQuestionableActivityProvider;
+import gov.healthit.chpl.questionableactivity.service.VersionQuestionableActivityProvider;
 import gov.healthit.chpl.util.CertificationResultRules;
 import lombok.extern.log4j.Log4j2;
 

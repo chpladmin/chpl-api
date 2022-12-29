@@ -1,4 +1,4 @@
-package gov.healthit.chpl.questionableactivity;
+package gov.healthit.chpl.questionableactivity.service;
 
 import java.util.Date;
 import java.util.List;
@@ -9,11 +9,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.QuestionableActivityDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO;
+import gov.healthit.chpl.questionableactivity.QuestionableActivityDAO;
+import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTriggerDTO;
 import gov.healthit.chpl.questionableactivity.listing.AddedCertificationsActivity;
 import gov.healthit.chpl.questionableactivity.listing.AddedCqmsActivity;
 import gov.healthit.chpl.questionableactivity.listing.AddedMeasureActivity;
