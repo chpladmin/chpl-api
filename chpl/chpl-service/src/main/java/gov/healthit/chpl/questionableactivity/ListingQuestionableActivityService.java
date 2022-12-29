@@ -19,6 +19,7 @@ import gov.healthit.chpl.questionableactivity.listing.AddedCqmsActivity;
 import gov.healthit.chpl.questionableactivity.listing.AddedMeasureActivity;
 import gov.healthit.chpl.questionableactivity.listing.AddedRwtPlanNonEligibleListingActivity;
 import gov.healthit.chpl.questionableactivity.listing.AddedRwtResultsNonEligibleListingActivity;
+import gov.healthit.chpl.questionableactivity.listing.CuresUpdateDesignationRemoved;
 import gov.healthit.chpl.questionableactivity.listing.DeletedCertificationsActivity;
 import gov.healthit.chpl.questionableactivity.listing.DeletedCqmsActivity;
 import gov.healthit.chpl.questionableactivity.listing.DeletedMeasuresActivity;
@@ -82,6 +83,7 @@ public class ListingQuestionableActivityService {
         processListingActivity(DeletedMeasuresActivity.class.getName(), origListing, newListing, activityReason);
         processListingActivity(RwtResultsUpdatedOutsideNormalPeriod.class.getName(), origListing, newListing, activityReason);
         processListingActivity(RwtPlansUpdatedOutsideNormalPeriod.class.getName(), origListing, newListing, activityReason);
+        processListingActivity(CuresUpdateDesignationRemoved.class.getName(), origListing, newListing, activityReason);
         processListingActivity(NonActiveCertificateEdited.class.getName(), origListing, newListing, activityReason);
 
         // finally check for other changes that are only questionable
