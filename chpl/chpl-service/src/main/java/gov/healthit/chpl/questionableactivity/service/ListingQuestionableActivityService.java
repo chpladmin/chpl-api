@@ -65,26 +65,27 @@ public class ListingQuestionableActivityService {
         triggerTypes = questionableActivityDao.getAllTriggers();
     }
 
-    public void processQuestionableActivity(CertifiedProductSearchDetails origListing,  CertifiedProductSearchDetails newListing, String activityReason) {
-        if (processListingActivity(Updated2011EditionListingActivity.class.getName(), origListing, newListing, activityReason) > 0) {
+    public void processQuestionableActivity(CertifiedProductSearchDetails origListing,  CertifiedProductSearchDetails newListing,
+            Date activityDate, String activityReason) {
+        if (processListingActivity(Updated2011EditionListingActivity.class.getName(), origListing, newListing, activityDate, activityReason) > 0) {
             return;
         }
-        processListingActivity(Updated2014EditionListingActivity.class.getName(), origListing, newListing, activityReason);
-        processListingActivity(UpdatedCertificationStatusWithdrawnByDeveloperUnderReviewActivity.class.getName(), origListing, newListing, activityReason);
-        processListingActivity(UpdatedCertificationStatusHistoryActivity.class.getName(), origListing, newListing, activityReason);
-        processListingActivity(UpdatedTestingLabActivity.class.getName(), origListing, newListing, activityReason);
-        processListingActivity(UpdatedCriteriaB3AndListingHasIcsActivity.class.getName(), origListing, newListing, activityReason);
-        processListingActivity(DeletedRwtPlanActivity.class.getName(), origListing, newListing, activityReason);
-        processListingActivity(DeletedRwtResultsActivity.class.getName(), origListing, newListing, activityReason);
-        processListingActivity(AddedRwtPlanNonEligibleListingActivity.class.getName(), origListing, newListing, activityReason);
-        processListingActivity(AddedRwtResultsNonEligibleListingActivity.class.getName(), origListing, newListing, activityReason);
-        processListingActivity(UpdatedPromotingInteroperabilityActivity.class.getName(), origListing, newListing, activityReason);
-        processListingActivity(AddedMeasureActivity.class.getName(), origListing, newListing, activityReason);
-        processListingActivity(DeletedMeasuresActivity.class.getName(), origListing, newListing, activityReason);
-        processListingActivity(RwtResultsUpdatedOutsideNormalPeriod.class.getName(), origListing, newListing, activityReason);
-        processListingActivity(RwtPlansUpdatedOutsideNormalPeriod.class.getName(), origListing, newListing, activityReason);
-        processListingActivity(CuresUpdateDesignationRemoved.class.getName(), origListing, newListing, activityReason);
-        processListingActivity(NonActiveCertificateEdited.class.getName(), origListing, newListing, activityReason);
+        processListingActivity(Updated2014EditionListingActivity.class.getName(), origListing, newListing, activityDate, activityReason);
+        processListingActivity(UpdatedCertificationStatusWithdrawnByDeveloperUnderReviewActivity.class.getName(), origListing, newListing, activityDate, activityReason);
+        processListingActivity(UpdatedCertificationStatusHistoryActivity.class.getName(), origListing, newListing, activityDate, activityReason);
+        processListingActivity(UpdatedTestingLabActivity.class.getName(), origListing, newListing, activityDate, activityReason);
+        processListingActivity(UpdatedCriteriaB3AndListingHasIcsActivity.class.getName(), origListing, newListing, activityDate, activityReason);
+        processListingActivity(DeletedRwtPlanActivity.class.getName(), origListing, newListing, activityDate, activityReason);
+        processListingActivity(DeletedRwtResultsActivity.class.getName(), origListing, newListing, activityDate, activityReason);
+        processListingActivity(AddedRwtPlanNonEligibleListingActivity.class.getName(), origListing, newListing, activityDate, activityReason);
+        processListingActivity(AddedRwtResultsNonEligibleListingActivity.class.getName(), origListing, newListing, activityDate, activityReason);
+        processListingActivity(UpdatedPromotingInteroperabilityActivity.class.getName(), origListing, newListing, activityDate, activityReason);
+        processListingActivity(AddedMeasureActivity.class.getName(), origListing, newListing, activityDate, activityReason);
+        processListingActivity(DeletedMeasuresActivity.class.getName(), origListing, newListing, activityDate, activityReason);
+        processListingActivity(RwtResultsUpdatedOutsideNormalPeriod.class.getName(), origListing, newListing, activityDate, activityReason);
+        processListingActivity(RwtPlansUpdatedOutsideNormalPeriod.class.getName(), origListing, newListing, activityDate, activityReason);
+        processListingActivity(CuresUpdateDesignationRemoved.class.getName(), origListing, newListing, activityDate, activityReason);
+        processListingActivity(NonActiveCertificateEdited.class.getName(), origListing, newListing, activityDate, activityReason);
 
         // finally check for other changes that are only questionable
         // outside of the acceptable activity threshold
@@ -95,17 +96,18 @@ public class ListingQuestionableActivityService {
                 && (newListing.getLastModifiedDate().longValue()
                         - confirmDate.getTime() > getListingActivityThresholdInMillis())) {
 
-            processListingActivity(UpdateCurrentCertificationStatusActivity.class.getName(), origListing, newListing, activityReason);
-            processListingActivity(UpdatedCertificationStatusDate.class.getName(), origListing, newListing, activityReason);
-            processListingActivity(DeletedSurveillanceActivity.class.getName(), origListing, newListing, activityReason);
-            processListingActivity(AddedCqmsActivity.class.getName(), origListing, newListing, activityReason);
-            processListingActivity(DeletedCqmsActivity.class.getName(), origListing, newListing, activityReason);
-            processListingActivity(AddedCertificationsActivity.class.getName(), origListing, newListing, activityReason);
-            processListingActivity(DeletedCertificationsActivity.class.getName(), origListing, newListing, activityReason);
+            processListingActivity(UpdateCurrentCertificationStatusActivity.class.getName(), origListing, newListing, activityDate, activityReason);
+            processListingActivity(UpdatedCertificationStatusDate.class.getName(), origListing, newListing, activityDate, activityReason);
+            processListingActivity(DeletedSurveillanceActivity.class.getName(), origListing, newListing, activityDate, activityReason);
+            processListingActivity(AddedCqmsActivity.class.getName(), origListing, newListing, activityDate, activityReason);
+            processListingActivity(DeletedCqmsActivity.class.getName(), origListing, newListing, activityDate, activityReason);
+            processListingActivity(AddedCertificationsActivity.class.getName(), origListing, newListing, activityDate, activityReason);
+            processListingActivity(DeletedCertificationsActivity.class.getName(), origListing, newListing, activityDate, activityReason);
         }
     }
 
-    private Integer processListingActivity(String className, CertifiedProductSearchDetails origListing,  CertifiedProductSearchDetails newListing, String activityReason) {
+    private Integer processListingActivity(String className, CertifiedProductSearchDetails origListing,  CertifiedProductSearchDetails newListing,
+            Date activityDate, String activityReason) {
         Integer activitiesCreated = 0;
         Optional<ListingActivity> listingActivity = getListingActivity(className);
         if (!listingActivity.isPresent()) {
@@ -115,8 +117,8 @@ public class ListingQuestionableActivityService {
             if (activities != null && activities.size() > 0) {
                 for (QuestionableActivityListingDTO dto : activities) {
                     if (dto != null) {
-                        //Need to ge the real user here
-                        createListingActivity(dto, origListing.getId(), AuthUtil.getAuditId(), listingActivity.get().getTriggerType(), activityReason);
+                        //Need to get the real user here
+                        createListingActivity(dto, origListing.getId(), AuthUtil.getAuditId(), listingActivity.get().getTriggerType(), activityDate, activityReason);
                     }
                 }
             }
@@ -125,10 +127,10 @@ public class ListingQuestionableActivityService {
     }
 
     private void createListingActivity(QuestionableActivityListingDTO activity, Long listingId,
-            Long activityUser, QuestionableActivityTriggerConcept trigger, String activityReason) {
+            Long activityUser, QuestionableActivityTriggerConcept trigger, Date activityDate, String activityReason) {
         activity.setListingId(listingId);
-        activity.setActivityDate(new Date());
         activity.setUserId(activityUser);
+        activity.setActivityDate(activityDate);
         activity.setReason(activityReason);
         QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
         activity.setTriggerId(triggerDto.getId());

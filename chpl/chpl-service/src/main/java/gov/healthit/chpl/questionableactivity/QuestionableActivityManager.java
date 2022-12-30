@@ -149,7 +149,7 @@ public class QuestionableActivityManager {
 
     public void checkListingQuestionableActivityOnEdit(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing,
             Date activityDate, Long activityUser, String activityReason) {
-        listingQuestionableActivityService.processQuestionableActivity(origListing, newListing, activityReason);
+        listingQuestionableActivityService.processQuestionableActivity(origListing, newListing, activityDate, activityReason);
     }
 
     public void checkCertificationResultQuestionableActivity(CertificationResult origCertResult,
