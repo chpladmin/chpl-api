@@ -231,8 +231,8 @@
         <AppenderRef ref="developerAttestationCheckinReportJob" />
         <AppenderRef ref="developerAttestationCheckinReportJobJson" />
     </Logger>
-    <Logger name="rwtQuestionableActivityCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="rwtQuestionableActivityCreatorJob" />
-        <AppenderRef ref="rwtQuestionableActivityCreatorJobJson" />
+    <Logger name="curesDesignationRemovedQuestionableActivityCreatorJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="curesDesignationRemovedQuestionableActivityCreatorJob" />
+        <AppenderRef ref="curesDesignationRemovedQuestionableActivityCreatorJobJson" />
     </Logger>
 </Loggers>

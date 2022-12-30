@@ -180,7 +180,7 @@
     <Logger name="conformanceMethodConversionJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="conformanceMethodConversionJob" />
     </Logger>
-    <Logger name="rwtQuestionableActivityCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="rwtQuestionableActivityCreatorJob" />
+    <Logger name="curesDesignationRemovedQuestionableActivityCreatorJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="curesDesignationRemovedQuestionableActivityCreatorJob" />
     </Logger>
 </Loggers>
