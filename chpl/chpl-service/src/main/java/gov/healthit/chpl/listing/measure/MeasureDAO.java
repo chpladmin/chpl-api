@@ -59,31 +59,6 @@ public class MeasureDAO extends BaseDAOImpl {
         return result;
     }
 
-    public Measure getMeasureByMacraMeasureId(Long macraMeasureId) {
-        MeasureEntity entity = getEntityByMacraMeasureId(macraMeasureId);
-        return entity.convert();
-    }
-
-    public MeasureEntity getEntityByMacraMeasureId(Long macraMeasureId) {
-        Query query = entityManager.createQuery(
-                MEASURE_HQL_BEGIN
-                + "WHERE measure.deleted = false "
-                + "AND measure.id = "
-                + " (SELECT DISTINCT mcm.measureId "
-                +   "FROM LegacyMacraMeasureCriterionMapEntity legacyMacraMap "
-                +   "JOIN legacyMacraMap.measureCriterionMap mcm "
-                +   "WHERE legacyMacraMap.legacyMacraMeasureId = :macraMeasureId)",
-                MeasureEntity.class);
-        query.setParameter("macraMeasureId", macraMeasureId);
-        List<MeasureEntity> entities = query.getResultList();
-
-        MeasureEntity result = null;
-        if (entities != null && entities.size() > 0) {
-            result = entities.get(0);
-        }
-        return result;
-    }
-
     public Set<Measure> findAll() {
         Query query = entityManager.createQuery(
                 MEASURE_HQL_BEGIN

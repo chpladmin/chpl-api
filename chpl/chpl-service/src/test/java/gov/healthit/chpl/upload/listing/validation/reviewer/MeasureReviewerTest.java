@@ -207,27 +207,6 @@ public class MeasureReviewerTest {
     }
 
     @Test
-    public void review_legacyMeasureNoId_errorMessage() throws ParseException {
-        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        listing.getMeasures().add(ListingMeasure.builder()
-                .measure(Measure.builder()
-                        .legacyMacraMeasureValue("Test")
-                        .build())
-                .measureType(MeasureType.builder()
-                        .id(1L)
-                        .name("G1")
-                        .build())
-                .associatedCriteria(buildCriterionSet(1L, "170.315 (a)(1)"))
-                .build());
-        assertEquals(1, listing.getMeasures().size());
-
-        reviewer.review(listing);
-        assertEquals(0, listing.getMeasures().size());
-        assertEquals(1, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(MEASURE_NOT_FOUND, "G1", "Test", "associated with 170.315 (a)(1)")));
-    }
-
-    @Test
     public void review_mipsMeasureWithNameNoId_errorMessage() throws ParseException {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         listing.getMeasures().add(ListingMeasure.builder()

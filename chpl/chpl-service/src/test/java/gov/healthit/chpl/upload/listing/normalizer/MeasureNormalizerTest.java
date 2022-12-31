@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.MeasureType;
@@ -21,7 +20,6 @@ import gov.healthit.chpl.listing.measure.MeasureDAO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 
 public class MeasureNormalizerTest {
-    private MacraMeasureDAO legacyMacraMeasureDao;
     private MeasureDAO measureDao;
     private ListingMeasureDAO listingMeasureDao;
     private CertificationCriterionService criteriaService;
@@ -31,7 +29,6 @@ public class MeasureNormalizerTest {
 
     @Before
     public void before() {
-        legacyMacraMeasureDao = Mockito.mock(MacraMeasureDAO.class);
         measureDao = Mockito.mock(MeasureDAO.class);
         listingMeasureDao = Mockito.mock(ListingMeasureDAO.class);
         criteriaService = Mockito.mock(CertificationCriterionService.class);
@@ -40,7 +37,7 @@ public class MeasureNormalizerTest {
         g2 = buildMeasureType(2L, "G2");
         Mockito.when(listingMeasureDao.getMeasureTypes()).thenReturn(Stream.of(g1, g2).collect(Collectors.toSet()));
 
-        normalizer = new MeasureNormalizer(legacyMacraMeasureDao, measureDao, listingMeasureDao, criteriaService);
+        normalizer = new MeasureNormalizer(measureDao, listingMeasureDao, criteriaService);
         normalizer.initialize();
     }
 

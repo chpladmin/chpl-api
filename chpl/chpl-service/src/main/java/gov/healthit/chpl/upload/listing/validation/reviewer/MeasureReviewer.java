@@ -261,9 +261,6 @@ public class MeasureReviewer implements Reviewer {
                 measureName = measure.getMeasure().getAbbreviation();
             }
         }
-        if (measureName == null && !StringUtils.isEmpty(measure.getMeasure().getLegacyMacraMeasureValue())) {
-            measureName = measure.getMeasure().getLegacyMacraMeasureValue();
-        }
         if (measureName == null && measure.getMeasure() != null && !StringUtils.isEmpty(measure.getMeasure().getName())) {
             measureName = measure.getMeasure().getName();
         }
