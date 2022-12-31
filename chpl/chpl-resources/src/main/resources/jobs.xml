@@ -9,11 +9,7 @@
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
         <delete-job>
-            <name>surveillanceUploadJob</name>
-            <group>chplBackgroundJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>inviteDevelopersJob</name>
+            <name>updateMeasuresJob</name>
             <group>systemJobs</group>
         </delete-job>
         <!-- END remove after PROD push -->
@@ -734,16 +730,6 @@
             <group>systemJobs</group>
             <description>Sends emails to any registered API Keys that have accessed deprecated endpoints.</description>
             <job-class>gov.healthit.chpl.scheduler.job.deprecatedApiUsage.DeprecatedApiUsageEmailJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-        </job>
-
-        <!-- One time job to update a defined set of Measures -->
-        <job>
-            <name>updateMeasuresJob</name>
-            <group>systemJobs</group>
-            <description>One time job to update a defined set of Measures</description>
-            <job-class>gov.healthit.chpl.scheduler.job.onetime.measures.UpdateMeasuresJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>
