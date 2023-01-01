@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -116,7 +117,7 @@ public class MeasureNormalizer {
     }
 
     private void associateAllowedCriteriaIfCriteriaSelectionNotRequired(ListingMeasure listingMeasure) {
-        if (!listingMeasure.getMeasure().getRequiresCriteriaSelection()) {
+        if (BooleanUtils.isFalse(listingMeasure.getMeasure().getRequiresCriteriaSelection())) {
             //if the user can't select the criteria add all the allowed as associated
             listingMeasure.getMeasure().getAllowedCriteria().stream()
                 .forEach(allowedCriterion -> listingMeasure.getAssociatedCriteria().add(allowedCriterion));
@@ -124,16 +125,18 @@ public class MeasureNormalizer {
     }
 
     private void associateCuresAndOriginalCriteria(ListingMeasure listingMeasure) {
-        Set<CertificationCriterion> associatedCriteriaCopy = listingMeasure.getAssociatedCriteria().stream().collect(Collectors.toSet());
+        if (!CollectionUtils.isEmpty(listingMeasure.getAssociatedCriteria())) {
+            Set<CertificationCriterion> associatedCriteriaCopy = listingMeasure.getAssociatedCriteria().stream().collect(Collectors.toSet());
 
-        listingMeasure.getAssociatedCriteria().stream()
-            .forEach(associatedCriterion -> {
-                List<CertificationCriterion> criteriaWithNumber = criteriaService.getByNumber(associatedCriterion.getNumber());
-                if (criteriaWithNumber != null && criteriaWithNumber.size() > 1) {
-                    associatedCriteriaCopy.addAll(criteriaWithNumber);
-                }
-            });
-        listingMeasure.setAssociatedCriteria(associatedCriteriaCopy);
+            listingMeasure.getAssociatedCriteria().stream()
+                .forEach(associatedCriterion -> {
+                    List<CertificationCriterion> criteriaWithNumber = criteriaService.getByNumber(associatedCriterion.getNumber());
+                    if (criteriaWithNumber != null && criteriaWithNumber.size() > 1) {
+                        associatedCriteriaCopy.addAll(criteriaWithNumber);
+                    }
+                });
+            listingMeasure.setAssociatedCriteria(associatedCriteriaCopy);
+        }
     }
 
     private MeasureType getMeasureTypeByName(String name) {
