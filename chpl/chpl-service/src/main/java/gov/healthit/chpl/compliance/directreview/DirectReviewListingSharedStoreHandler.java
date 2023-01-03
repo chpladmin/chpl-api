@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -42,10 +43,10 @@ public class DirectReviewListingSharedStoreHandler {
         this.developerDAO = developerDAO;
     }
 
-    public void handler(List<DirectReview> allDirectReviews) {
+    public void handler(List<DirectReview> allDirectReviews, Logger logger) {
         getUniqueDevelopers(allDirectReviews).stream()
-                .forEach(dev -> getListingDataForDeveloper(dev).stream()
-                        .forEach(listing -> removeListingFromSharedStoreIfDirectReviewUpdated(listing, allDirectReviews)));
+                .forEach(dev -> getListingDataForDeveloper(dev, logger).stream()
+                        .forEach(listing -> removeListingFromSharedStoreIfDirectReviewUpdated(listing, allDirectReviews, logger)));
     }
 
     private List<Developer> getUniqueDevelopers(List<DirectReview> allDirectReviews) {
@@ -56,14 +57,14 @@ public class DirectReviewListingSharedStoreHandler {
                 .toList();
     }
 
-    private void removeListingFromSharedStoreIfDirectReviewUpdated(CertifiedProductSearchDetails listing, List<DirectReview> allDirectReviews) {
+    private void removeListingFromSharedStoreIfDirectReviewUpdated(CertifiedProductSearchDetails listing, List<DirectReview> allDirectReviews, Logger logger) {
         listing.getDirectReviews().parallelStream()
             .forEach(dr -> {
                 if (hasDirectReviewBeenUpdated(findDirectReview(allDirectReviews, dr.getJiraKey()), dr)) {
-                    LOGGER.info("Removing Listing Id {} from the Shared Store", listing.getId());
+                    logger.info("Removing Listing Id {} from the Shared Store", listing.getId());
                     sharedListingStoreProvider.remove(listing.getId());
                 } else {
-                    LOGGER.info("Not Removing Listing Id {} from the Shared Store - Direct Review Last Updated Date not changed", listing.getId());
+                    logger.info("Not Removing Listing Id {} from the Shared Store - Direct Review Last Updated Date not changed", listing.getId());
                 }
             });
     }
@@ -81,7 +82,7 @@ public class DirectReviewListingSharedStoreHandler {
                 .orElse(null);
     }
 
-    private List<CertifiedProductSearchDetails> getListingDataForDeveloper(Developer developer) {
+    private List<CertifiedProductSearchDetails> getListingDataForDeveloper(Developer developer, Logger logger) {
         try {
             //TODO: this needs to switched to use developer id when OCD-4066 gets to STG!!!
             SearchRequest searchRequest = SearchRequest.builder()
@@ -91,20 +92,25 @@ public class DirectReviewListingSharedStoreHandler {
                     .build();
 
             return listingSearchService.getAllPagesOfSearchResults(searchRequest).parallelStream()
-                    .map(searchResult ->  getListing(searchResult.getId()))
+                    .map(searchResult ->  getListingIfInSharedStore(searchResult.getId(), logger))
                     .filter(listing -> listing != null)
                     .toList();
         } catch (Exception e) {
-            LOGGER.error("Could not retrieve listings for developer: {} - {}", developer.getId(), e.getMessage());
+            logger.error("Could not retrieve listings for developer: {} - {}", developer.getId(), e.getMessage());
             return new ArrayList<CertifiedProductSearchDetails>();
         }
     }
 
-    private CertifiedProductSearchDetails getListing(Long listingId) {
+    private CertifiedProductSearchDetails getListingIfInSharedStore(Long listingId, Logger logger) {
         try {
-            return certifiedProductDetailsManager.getCertifiedProductDetails(listingId);
+            if (sharedListingStoreProvider.containsKey(listingId)) {
+                return certifiedProductDetailsManager.getCertifiedProductDetails(listingId);
+            } else {
+                logger.info("Listing Id: {} is not currently in the Shared Store", listingId);
+                return null;
+            }
         } catch (EntityRetrievalException e) {
-            LOGGER.error("Could not lookup Listing: {}", listingId, e);
+            logger.error("Could not lookup Listing: {}", listingId, e);
             return null;
         }
     }
