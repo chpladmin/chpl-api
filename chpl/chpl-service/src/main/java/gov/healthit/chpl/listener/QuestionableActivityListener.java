@@ -77,7 +77,7 @@ public class QuestionableActivityListener implements EnvironmentAware {
             return;
         }
 
-        // all questionable activity from this action should have the exact same date and user id
+        // all questionable activity from this action should have the exact same user id
         Long activityUser = AuthUtil.getAuditId();
 
         // look for any of the listing questionable activity
@@ -119,7 +119,7 @@ public class QuestionableActivityListener implements EnvironmentAware {
             return;
         }
 
-        // all questionable activity from this action should have the exact same date and user id
+        // all questionable activity from this action should have the exact same user id
         Long activityUser = AuthUtil.getAuditId();
 
         questionableActivityManager.checkDeveloperQuestionableActivity(originalDeveloper, newDeveloper, activityDate,
@@ -133,7 +133,7 @@ public class QuestionableActivityListener implements EnvironmentAware {
             return;
         }
 
-        // all questionable activity from this action should have the exact same date and user id
+        // all questionable activity from this action should have the exact same user id
         Long activityUser = AuthUtil.getAuditId();
 
         questionableActivityManager.checkProductQuestionableActivity(originalProduct, newProduct, activityDate, activityUser);
@@ -146,7 +146,7 @@ public class QuestionableActivityListener implements EnvironmentAware {
             return;
         }
 
-        // all questionable activity from this action should have the exact same date and user id
+        // all questionable activity from this action should have the exact same user id
         Long activityUser = AuthUtil.getAuditId();
 
         questionableActivityManager.checkVersionQuestionableActivity(originalVersion, newVersion, activityDate, activityUser);
