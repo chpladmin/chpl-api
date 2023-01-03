@@ -1,7 +1,6 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation.email.missingchangerequest;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +12,7 @@ import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.scheduler.job.developer.attestation.email.DeveloperEmail;
 import gov.healthit.chpl.scheduler.job.developer.attestation.email.DeveloperEmailGenerator;
+import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -82,8 +82,9 @@ public class MissingAttestationChangeRequestDeveloperEmailGenerator implements D
     }
 
     private String getUsersAsString(List<UserDTO> developerUsers) {
-        return developerUsers.stream()
+        List<String> users = developerUsers.stream()
                 .map(user -> user.getFullName() + " &lt;" + user.getEmail() + "&gt;")
-                .collect(Collectors.joining(", "));
+                .toList();
+        return Util.joinListGrammatically(users);
     }
 }
