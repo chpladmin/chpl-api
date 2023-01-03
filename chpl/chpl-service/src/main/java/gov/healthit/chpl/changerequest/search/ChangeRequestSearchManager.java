@@ -200,16 +200,12 @@ public class ChangeRequestSearchManager {
         if (changeRequest.getCurrentStatus() != null
                 && changeRequest.getCurrentStatus().getStatusChangeDateTime() != null) {
             if (startDateTime == null && endDateTime != null) {
-                return changeRequest.getCurrentStatus().getStatusChangeDateTime().isEqual(endDateTime)
-                        || changeRequest.getCurrentStatus().getStatusChangeDateTime().isBefore(endDateTime);
+                return changeRequest.getCurrentStatus().getStatusChangeDateTime().isBefore(endDateTime);
             } else if (startDateTime != null && endDateTime == null) {
-                return changeRequest.getCurrentStatus().getStatusChangeDateTime().isEqual(startDateTime)
-                        || changeRequest.getCurrentStatus().getStatusChangeDateTime().isAfter(startDateTime);
+                return changeRequest.getCurrentStatus().getStatusChangeDateTime().isAfter(startDateTime);
             } else {
-                return changeRequest.getCurrentStatus().getStatusChangeDateTime().isEqual(startDateTime)
-                        || changeRequest.getCurrentStatus().getStatusChangeDateTime().isEqual(endDateTime)
-                        || (changeRequest.getCurrentStatus().getStatusChangeDateTime().isBefore(endDateTime)
-                                && changeRequest.getCurrentStatus().getStatusChangeDateTime().isAfter(startDateTime));
+                return changeRequest.getCurrentStatus().getStatusChangeDateTime().isBefore(endDateTime)
+                                && changeRequest.getCurrentStatus().getStatusChangeDateTime().isAfter(startDateTime);
             }
         }
         return false;
@@ -225,16 +221,12 @@ public class ChangeRequestSearchManager {
         if (changeRequest.getSubmittedDateTime() != null
                 && changeRequest.getSubmittedDateTime() != null) {
             if (startDateTime == null && endDateTime != null) {
-                return changeRequest.getSubmittedDateTime().isEqual(endDateTime)
-                        || changeRequest.getSubmittedDateTime().isBefore(endDateTime);
+                return changeRequest.getSubmittedDateTime().isBefore(endDateTime);
             } else if (startDateTime != null && endDateTime == null) {
-                return changeRequest.getSubmittedDateTime().isEqual(startDateTime)
-                        || changeRequest.getSubmittedDateTime().isAfter(startDateTime);
+                return changeRequest.getSubmittedDateTime().isAfter(startDateTime);
             } else {
-                return changeRequest.getSubmittedDateTime().isEqual(startDateTime)
-                        || changeRequest.getSubmittedDateTime().isEqual(endDateTime)
-                        || (changeRequest.getSubmittedDateTime().isBefore(endDateTime)
-                                && changeRequest.getSubmittedDateTime().isAfter(startDateTime));
+                return changeRequest.getSubmittedDateTime().isBefore(endDateTime)
+                                && changeRequest.getSubmittedDateTime().isAfter(startDateTime);
             }
         }
         return false;

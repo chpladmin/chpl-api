@@ -101,10 +101,6 @@ public class SearchRequestValidator {
             }
         }
 
-        if (endDate != null && startDate != null && endDate.isBefore(startDate)) {
-            errors.add(
-                    msgUtil.getMessage("search.developer.decertificationDateOrder.invalid", decertificationDateEnd, decertificationDateStart));
-        }
         return errors;
     }
 
