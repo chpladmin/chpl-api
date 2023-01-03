@@ -44,14 +44,14 @@ public class DirectReviewListingSharedStoreHandler {
     }
 
     public void handler(List<DirectReview> allDirectReviews, Logger logger) {
-        getUniqueDevelopers(allDirectReviews).stream()
+        getUniqueDevelopers(allDirectReviews, logger).stream()
                 .forEach(dev -> getListingDataForDeveloper(dev, logger).stream()
                         .forEach(listing -> removeListingFromSharedStoreIfDirectReviewUpdated(listing, allDirectReviews, logger)));
     }
 
-    private List<Developer> getUniqueDevelopers(List<DirectReview> allDirectReviews) {
+    private List<Developer> getUniqueDevelopers(List<DirectReview> allDirectReviews, Logger logger) {
         return StreamEx.of(allDirectReviews)
-                .map(dr -> getDeveloper(dr.getDeveloperId()))
+                .map(dr -> getDeveloper(dr.getDeveloperId(), logger))
                 .filter(dev -> dev != null)
                 .distinct(dev -> dev.getId())
                 .toList();
@@ -115,11 +115,11 @@ public class DirectReviewListingSharedStoreHandler {
         }
     }
 
-    private Developer getDeveloper(Long developerId) {
+    private Developer getDeveloper(Long developerId, Logger logger) {
         try {
             return developerDAO.getById(developerId);
         } catch (Exception e) {
-            LOGGER.error("Could not find developer: {}", developerId);
+            logger.error("Could not find developer: {}", developerId);
             return null;
         }
     }
