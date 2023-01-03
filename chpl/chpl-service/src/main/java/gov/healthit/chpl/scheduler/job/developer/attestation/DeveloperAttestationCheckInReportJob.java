@@ -30,6 +30,9 @@ public class DeveloperAttestationCheckInReportJob implements Job {
     private DeveloperAttestationCheckInReportDataCollector developerAttestationCheckInReportDataCollection;
 
     @Autowired
+    private DeveloperAttestationCheckInReportSummaryDataCollector developerAttestationCheckInReportSummaryDataCollection;
+
+    @Autowired
     private DeveloperAttestationCheckInReportCsvWriter developerAttestationCheckInReportCsvWriter;
 
     @Autowired
@@ -43,6 +46,12 @@ public class DeveloperAttestationCheckInReportJob implements Job {
 
     @Value("${developer.attestation.checkin.report.body}")
     private String emailBody;
+
+    @Value("${developer.attestation.checkin.report.body2}")
+    private String emailBody2;
+
+    @Value("${developer.attestation.checkin.report.body3}")
+    private String emailBody3;
 
     @Value("${developer.attestation.checkin.report.sectionHeading}")
     private String sectionHeading;
@@ -69,6 +78,7 @@ public class DeveloperAttestationCheckInReportJob implements Job {
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
                     List<DeveloperAttestationCheckInReport> reportRows = developerAttestationCheckInReportDataCollection.collect();
+                    DeveloperAttestationCheckInReportSummary reportSummary = developerAttestationCheckInReportSummaryDataCollection.collect(reportRows);
                     File csv = developerAttestationCheckInReportCsvWriter.generateFile(reportRows);
                     chplEmailFactory.emailBuilder()
                             .recipient(context.getMergedJobDataMap().getString("email"))
@@ -77,6 +87,14 @@ public class DeveloperAttestationCheckInReportJob implements Job {
                             .htmlMessage(chplHtmlEmailBuilder.initialize()
                                     .heading(sectionHeading)
                                     .paragraph("", emailBody)
+                                    .paragraph("", String.format(emailBody2,
+                                            reportSummary.getDeveloperCount(),
+                                            reportSummary.doCountsEqualDeveloperCount() ? "" : "*",
+                                            reportSummary.getAttestationsApprovedCount(),
+                                            reportSummary.getPendingAcbActionCount(),
+                                            reportSummary.getPendingDeveloperActionCount(),
+                                            reportSummary.getNoSubmissionCount()))
+                                    .paragraph("", reportSummary.doCountsEqualDeveloperCount() ? "" : emailBody3)
                                     .footer(true)
                                     .build())
                             .sendEmail();
