@@ -170,8 +170,11 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                 .filter(badUrl -> isNotListingUrl(badUrl) || (isUrlRelatedTo2015Edition(badUrl) && isUrlRelatedToActiveListing(badUrl)))
                 .filter(badUrl -> doesUrlResultMatchAllowedStatusCodes(badUrl, jobContext))
                 .collect(Collectors.toList());
+        } else {
+            return badUrls.stream()
+                .filter(badUrl -> isNotListingUrl(badUrl) || (isUrlRelatedTo2015Edition(badUrl) && isUrlRelatedToActiveListing(badUrl)))
+                .collect(Collectors.toList());
         }
-        return badUrls;
     }
 
     private boolean isUrlRelatedToAcbs(FailedUrlResult urlResult, List<Long> acbIds) {
@@ -333,7 +336,9 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             int brokenSvapNoticeUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE);
 
             String brokenUrlSummaryHtml = "<ul>";
-            brokenUrlSummaryHtml += "<li>" + UrlType.ATL.getName() + ": " + brokenAtlUrls + "</li>";
+            if (!isAcbSpecific(jobContext)) {
+                brokenUrlSummaryHtml += "<li>" + UrlType.ATL.getName() + ": " + brokenAtlUrls + "</li>";
+            }
             brokenUrlSummaryHtml += "<li>" + UrlType.ACB.getName() + ": " + brokenAcbUrls + "</li>";
             brokenUrlSummaryHtml += "<li>" + UrlType.DEVELOPER.getName() + ": " + brokenDeveloperUrls + "</li>";
             brokenUrlSummaryHtml += "<li>" + UrlType.FULL_USABILITY_REPORT.getName() + ": " + brokenFullUsabilityReportUrls + "</li>";
