@@ -245,11 +245,6 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.13</version>
         </dependency>
-        <dependency>
-            <groupId>org.asynchttpclient</groupId>
-            <artifactId>async-http-client</artifactId>
-            <version>${asynchttpclient.version}</version>
-        </dependency>
 
         <!-- Password strength checking library -->
         <dependency>
