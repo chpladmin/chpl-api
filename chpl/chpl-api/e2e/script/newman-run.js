@@ -228,6 +228,16 @@ const ucdProcessesControllerTests = {
   },
 };
 
+const qmsStandardsControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/qms-standards-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/qms-standards-controller-tests.xml',
+    },
+  },
+};
+
 const accessibilityStandardsControllerTests = {
   ...commonOptions,
   collection: collection_path + '/accessibility-standards-controller.postman_collection.json',
@@ -260,6 +270,7 @@ const jobs = [
   cb => newman.run(certificationidControllerTests,cb),
   cb => newman.run(activityControllerTests,cb),
   cb => newman.run(changerequestsControllerTests,cb),
+  cb => newman.run(qmsStandardsControllerTests,cb),
   cb => newman.run(ucdProcessesControllerTests,cb),
   ];
 
