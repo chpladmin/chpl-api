@@ -207,6 +207,7 @@ public class DirectReviewCachingService {
         } else {
             drContainer = getDirectReviewsForDeveloperFromCache(developerId, logger);
         }
+        directReviewListingSharedStoreHandler.handler(drContainer.getDirectReviews(), logger);
         return drContainer;
     }
 
