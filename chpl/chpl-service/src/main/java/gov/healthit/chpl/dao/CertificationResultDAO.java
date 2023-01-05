@@ -1275,15 +1275,10 @@ public class CertificationResultDAO extends BaseDAOImpl {
 
     public Long createTestTaskMapping(Long certificationResultId, TestTask testTask, List<TestTask> allTestTasks)
             throws EntityCreationException {
-        Long testTaskId = null;
-        if (testTask.getId() == null || testTask.getId() < 0) {
+        Long testTaskId = testTask.getId();
+        if (testTaskId == null || testTaskId < 0) {
             testTaskId = testTaskDao.create(testTask);
             testTask.setId(testTaskId);
-
-            allTestTasks.stream()
-                .filter(currTestTask -> currTestTask.getId() == null || currTestTask.getId() < 0)
-                .filter(currTestTask -> currTestTask.getUniqueId().equals(testTask.getUniqueId()))
-                .forEach(currTestTask -> currTestTask.setId(testTask.getId()));
         }
 
         CertificationResultTestTaskEntity mapping = new CertificationResultTestTaskEntity();
