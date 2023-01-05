@@ -67,7 +67,7 @@ public class MissingAttestationChangeRequestEmailJob implements Job  {
                     .htmlMessage(email.getMessage())
                     .sendEmail();
             } catch (Exception e) {
-                LOGGER.error("Error sending emails to developer : {}", email.getDeveloper().getName());
+                LOGGER.error("Error sending emails to developer : {}", email.toString());
                 LOGGER.error(e);
             }
         });

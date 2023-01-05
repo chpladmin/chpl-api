@@ -64,13 +64,9 @@ public class MissingAttestationChangeRequestDeveloperEmailGenerator implements D
     }
 
     private List<String> getRecipients(List<UserDTO> developerUsers) {
-        if (developerUsers == null || developerUsers.size() == 0) {
-            return List.of();
-        } else {
-            return developerUsers.stream()
+        return developerUsers.stream()
                     .map(user -> user.getEmail())
                     .toList();
-        }
     }
 
     private String getMessage(Developer developer, List<UserDTO> developerUsers) {
