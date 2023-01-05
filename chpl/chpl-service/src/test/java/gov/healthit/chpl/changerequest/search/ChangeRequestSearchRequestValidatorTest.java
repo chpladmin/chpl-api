@@ -30,9 +30,7 @@ public class ChangeRequestSearchRequestValidatorTest {
     private static final String STATUS_NAME_INVALID = "The change request status name '%s' is not valid.";
     private static final String TYPE_NAME_INVALID = "The change request type name '%s' is not valid.";
     private static final String CURRENT_STATUS_DATE_INVALID_FORMAT = "The \"current status\" date '%s' is not valid. It must be in the format %s.";
-    private static final String CURRENT_STATUS_DATE_INVALID_ORDER = "The \"current status\" date range end '%s' is before the start '%s'.";
     private static final String SUBMITTED_DATE_INVALID_FORMAT = "The submitted date '%s' is not valid. It must be in the format %s.";
-    private static final String SUBMITTED_DATE_INVALID_ORDER = "The submitted date range end '%s' is before the start '%s'.";
     private static final String INVALID_PAGE_NUMBER = "Page number '%s' is not a valid number.";
     private static final String PAGE_NUMBER_OUT_OF_RANGE = "Page number must be 0 or greater. '%s' is not valid";
     private static final String INVALID_PAGE_SIZE = "Page size '%s' is not a valid number.";
@@ -64,12 +62,8 @@ public class ChangeRequestSearchRequestValidatorTest {
             .thenAnswer(i -> String.format(TYPE_NAME_INVALID, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.changeRequest.currentStatusDateTime.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(CURRENT_STATUS_DATE_INVALID_FORMAT, i.getArgument(1), i.getArgument(2)));
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.changeRequest.currentStatusDateTimes.invalidOrder"), ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenAnswer(i -> String.format(CURRENT_STATUS_DATE_INVALID_ORDER, i.getArgument(1), i.getArgument(2)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.changeRequest.submittedDateTime.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(SUBMITTED_DATE_INVALID_FORMAT, i.getArgument(1), i.getArgument(2)));
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.changeRequest.submittedDateTimes.invalidOrder"), ArgumentMatchers.any(), ArgumentMatchers.any()))
-            .thenAnswer(i -> String.format(SUBMITTED_DATE_INVALID_ORDER, i.getArgument(1), i.getArgument(2)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.changeRequest.pageNumber.invalid"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_PAGE_NUMBER, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.changeRequest.pageNumber.outOfRange"), ArgumentMatchers.any()))
@@ -416,7 +410,7 @@ public class ChangeRequestSearchRequestValidatorTest {
     }
 
     @Test
-    public void validate_backwardsCurrentStatusChangeDateTimeOrder_addsError() {
+    public void validate_backwardsCurrentStatusChangeDateTimeOrder_noError() {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
             .currentStatusChangeDateTimeStart("2015-12-31T00:00:00")
             .currentStatusChangeDateTimeEnd("2015-01-01T01:00:00")
@@ -425,11 +419,8 @@ public class ChangeRequestSearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
-            assertEquals(1, ex.getErrorMessages().size());
-            assertTrue(ex.getErrorMessages().contains(String.format(CURRENT_STATUS_DATE_INVALID_ORDER, "2015-01-01T01:00", "2015-12-31T00:00")));
-            return;
+            fail("Should not execute.");
         }
-        fail("Should not execute.");
     }
 
     @Test
@@ -521,7 +512,7 @@ public class ChangeRequestSearchRequestValidatorTest {
     }
 
     @Test
-    public void validate_backwardsSubmittedDateTimeOrder_addsError() {
+    public void validate_backwardsSubmittedDateTimeOrder_noError() {
         ChangeRequestSearchRequest request = ChangeRequestSearchRequest.builder()
             .submittedDateTimeStart("2015-12-31T00:00:00")
             .submittedDateTimeEnd("2015-01-01T01:00:00")
@@ -530,11 +521,8 @@ public class ChangeRequestSearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
-            assertEquals(1, ex.getErrorMessages().size());
-            assertTrue(ex.getErrorMessages().contains(String.format(SUBMITTED_DATE_INVALID_ORDER, "2015-01-01T01:00", "2015-12-31T00:00")));
-            return;
+            fail("Should not execute.");
         }
-        fail("Should not execute.");
     }
 
     @Test

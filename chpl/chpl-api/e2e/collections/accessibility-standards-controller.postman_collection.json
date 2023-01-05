@@ -1,0 +1,288 @@
+{
+	"info": {
+		"name": "accessibility-standards-controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "94396"
+	},
+	"item": [
+		{
+			"name": "GET /accessibility-standards - Retrieve all current Accessibility Standards",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.test(\"expect GET accessibility-standards endpoint to return 200 status and response body to not be empty\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(jsonData.response).not.eq(null);\r",
+							"});\r",
+							"\r",
+							"pm.test('GET accessibility-standards endpoint response should include accessibility-standards id and name', function() {\r",
+							"    pm.expect(jsonData[0]).to.have.property('id');\r",
+							"    pm.expect(jsonData[0]).to.have.property('name');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/accessibility-standards",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"accessibility-standards"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT /accessibility-standards -  Update an Accessibility Standard",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.test(\"valid accessibility standards edit request should return valid response\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(jsonData.response).not.eq(null);\r",
+							"});\r",
+							"\r",
+							"pm.test('validate edit response - accessibility standard name is correct', function() {\r",
+							"    pm.expect(jsonData.name).to.eql('WCAG 2.0 Level AA');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"emailONC\"),password:pm.environment.get(\"passwordONC\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"id\":3,\"name\":\"WCAG 2.0 Level AA\"}"
+				},
+				"url": {
+					"raw": "{{url}}/rest/accessibility-standards",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"accessibility-standards"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST /accessibility-standards  - anonymous user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"request to add new accessibility standard by anonymous user should return Status code 401\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"expect anonymous user to receive access denied error on request to add new accessibility standard\", () => {\r",
+							"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"name\":\"Test Accessibility Standard\"}"
+				},
+				"url": {
+					"raw": "{{url}}/rest/accessibility-standards",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"accessibility-standards"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST /accessibility-standards  - ACB",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"request to add new accessibility standard by ACB user should return Status code 401\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"expect ACB user to receive access denied error on request to add new accessibility standard\", () => {\r",
+							"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"emailACB\"),password:pm.environment.get(\"passwordACB\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"name\":\"Test Accessibility Standard\"}"
+				},
+				"url": {
+					"raw": "{{url}}/rest/accessibility-standards",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"accessibility-standards"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

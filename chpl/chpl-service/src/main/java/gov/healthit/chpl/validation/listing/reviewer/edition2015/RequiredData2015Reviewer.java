@@ -200,10 +200,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
             }
         }
 
-        if (listing.getAccessibilityStandards() == null || listing.getAccessibilityStandards().size() == 0) {
-            listing.getErrorMessages().add("Accessibility standards are required.");
-        }
-
         for (CertificationResult cert : listing.getCertificationResults()) {
             if (cert.isSuccess() != null && cert.isSuccess()) {
                 boolean gapEligibleAndTrue = false;

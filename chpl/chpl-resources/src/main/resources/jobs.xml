@@ -9,8 +9,12 @@
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
         <delete-job>
-          <name>inviteDevelopersJob</name>
-          <group>systemJobs</group>
+            <name>surveillanceUploadJob</name>
+            <group>chplBackgroundJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>inviteDevelopersJob</name>
+            <group>systemJobs</group>
         </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
@@ -705,22 +709,6 @@
                 <entry>
                     <key>authorities</key>
                     <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value>
-                </entry>
-            </job-data-map>
-        </job>
-
-        <!-- Job fired when a large surveillance file is uploaded -->
-        <job>
-            <name>surveillanceUploadJob</name>
-            <group>chplBackgroundJobs</group>
-            <description>Complete the work of uploading large surveillance files.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.SurveillanceUploadJob</job-class>
-            <durability>true</durability>
-            <recover>true</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ACB</value>
                 </entry>
             </job-data-map>
         </job>

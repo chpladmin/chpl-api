@@ -572,9 +572,9 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
     }
 
     private boolean surveillanceOccursDuringQuarterlyReportTime(Surveillance surv, QuarterlyReportDTO quarterlyReport) {
-        return surv.getStartDay().compareTo(DateUtil.toLocalDate(quarterlyReport.getEndDateTime().getTime())) <= 0
+        return surv.getStartDay().compareTo(quarterlyReport.getEndDate()) <= 0
                 && (surv.getEndDay() == null
-                    || surv.getEndDay().compareTo(DateUtil.toLocalDate(quarterlyReport.getStartDateTime().getTime())) >= 0);
+                    || surv.getEndDay().compareTo(quarterlyReport.getStartDate()) >= 0);
     }
 
     private boolean determineIfSurveillanceHappenedDuringQuarter(String quarterName,

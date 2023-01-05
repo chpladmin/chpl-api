@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.validation.surveillance.reviewer.NewSurveillanceEditionReviewer;
-import gov.healthit.chpl.validation.surveillance.reviewer.NewSurveillanceRemovedCriteriaReviewer;
 import gov.healthit.chpl.validation.surveillance.reviewer.Reviewer;
 import gov.healthit.chpl.validation.surveillance.reviewer.SurveillanceDetailsReviewer;
 import gov.healthit.chpl.validation.surveillance.reviewer.SurveillanceNonconformityReviewer;
@@ -26,14 +25,12 @@ public class SurveillanceCreationValidator {
             SurveillanceRequirementReviewer survReqReviewer,
             SurveillanceNonconformityReviewer survNcReviewer,
             @Qualifier("surveillanceUnsupportedCharacterReviewer") UnsupportedCharacterReviewer charReviewer,
-            NewSurveillanceRemovedCriteriaReviewer removedCriteriaReviewer,
             NewSurveillanceEditionReviewer editionReviewer) {
         reviewers = new ArrayList<Reviewer>();
         reviewers.add(survDetailsReviewer);
         reviewers.add(survReqReviewer);
         reviewers.add(survNcReviewer);
         reviewers.add(charReviewer);
-        reviewers.add(removedCriteriaReviewer);
         reviewers.add(editionReviewer);
     }
 

@@ -12,7 +12,7 @@ import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
-import gov.healthit.chpl.permissions.domains.svap.CreateActionPermissions;
+import gov.healthit.chpl.permissions.domains.ucdProcess.CreateActionPermissions;
 
 public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
     private AutoCloseable closeableMocks;

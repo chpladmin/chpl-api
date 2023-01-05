@@ -6,12 +6,10 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
-import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductAccessibilityStandardEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -20,26 +18,13 @@ import gov.healthit.chpl.util.AuthUtil;
 
 @Repository(value = "certifiedProductAccessibilityStandardDao")
 public class CertifiedProductAccessibilityStandardDAO extends BaseDAOImpl {
-    private AccessibilityStandardDAO accessibilityStandardDao;
-
-    @Autowired
-    public CertifiedProductAccessibilityStandardDAO(AccessibilityStandardDAO accessibilityStandardDao) {
-        this.accessibilityStandardDao = accessibilityStandardDao;
-    }
 
     public Long createListingAccessibilityStandardMapping(Long listingId, CertifiedProductAccessibilityStandard accStdMapping)
             throws EntityCreationException {
         try {
             CertifiedProductAccessibilityStandardEntity mappingEntity = new CertifiedProductAccessibilityStandardEntity();
             mappingEntity.setCertifiedProductId(listingId);
-
-            if (accStdMapping.getAccessibilityStandardId() == null) {
-                AccessibilityStandardDTO accessibiltyStandard = accessibilityStandardDao.findOrCreate(accStdMapping.getAccessibilityStandardId(), accStdMapping.getAccessibilityStandardName());
-                mappingEntity.setAccessibilityStandardId(accessibiltyStandard.getId());
-            } else {
-                mappingEntity.setAccessibilityStandardId(accStdMapping.getAccessibilityStandardId());
-            }
-
+            mappingEntity.setAccessibilityStandardId(accStdMapping.getAccessibilityStandardId());
             mappingEntity.setLastModifiedUser(AuthUtil.getAuditId());
             create(mappingEntity);
             return mappingEntity.getId();
@@ -101,9 +86,11 @@ public class CertifiedProductAccessibilityStandardDAO extends BaseDAOImpl {
     private CertifiedProductAccessibilityStandardEntity getEntityById(Long id) throws EntityRetrievalException {
         CertifiedProductAccessibilityStandardEntity entity = null;
         Query query = entityManager.createQuery(
-                "SELECT accStd from CertifiedProductAccessibilityStandardEntity accStd "
-                        + "LEFT OUTER JOIN FETCH accStd.accessibilityStandard "
-                        + "where (NOT accStd.deleted = true) AND (accStd.id = :entityid) ",
+                "SELECT accStd "
+                + "FROM CertifiedProductAccessibilityStandardEntity accStd "
+                + "LEFT OUTER JOIN FETCH accStd.accessibilityStandard "
+                + "WHERE (NOT accStd.deleted = true) "
+                + "AND (accStd.id = :entityid) ",
                 CertifiedProductAccessibilityStandardEntity.class);
 
         query.setParameter("entityid", id);
@@ -117,9 +104,11 @@ public class CertifiedProductAccessibilityStandardDAO extends BaseDAOImpl {
     private List<CertifiedProductAccessibilityStandardEntity> getEntitiesByCertifiedProductId(Long productId)
             throws EntityRetrievalException {
         Query query = entityManager.createQuery(
-                "SELECT accStd from " + "CertifiedProductAccessibilityStandardEntity accStd "
+                "SELECT accStd from "
+                        + "CertifiedProductAccessibilityStandardEntity accStd "
                         + "LEFT OUTER JOIN FETCH accStd.accessibilityStandard "
-                        + "where (NOT accStd.deleted = true) AND " + "(certified_product_id = :entityid) ",
+                        + "WHERE (NOT accStd.deleted = true) "
+                        + "AND (certified_product_id = :entityid) ",
                 CertifiedProductAccessibilityStandardEntity.class);
 
         query.setParameter("entityid", productId);
@@ -131,8 +120,10 @@ public class CertifiedProductAccessibilityStandardDAO extends BaseDAOImpl {
     private List<CertifiedProductAccessibilityStandardEntity> findSpecificMapping(Long productId, Long accStdId)
             throws EntityRetrievalException {
         Query query = entityManager.createQuery(
-                "SELECT accStd from " + "CertifiedProductAccessibilityStandardEntity accStd "
-                        + "LEFT OUTER JOIN FETCH accStd.accessibilityStandard " + "where (NOT accStd.deleted = true) "
+                "SELECT accStd from "
+                        + "CertifiedProductAccessibilityStandardEntity accStd "
+                        + "LEFT OUTER JOIN FETCH accStd.accessibilityStandard "
+                        + "WHERE (NOT accStd.deleted = true) "
                         + "AND (certified_product_id = :productId) "
                         + "AND (accStd.accessibilityStandardId = :accStdId)",
                 CertifiedProductAccessibilityStandardEntity.class);

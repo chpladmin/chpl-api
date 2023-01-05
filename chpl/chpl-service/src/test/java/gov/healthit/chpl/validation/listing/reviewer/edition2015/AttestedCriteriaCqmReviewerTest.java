@@ -243,7 +243,7 @@ public class AttestedCriteriaCqmReviewerTest {
     }
 
     @Test
-    public void review_ListingAttestsC1CuresAndCqmHasC1_noErrors() {
+    public void review_ListingAttestsC1CuresAndCqmHasC1_hasError() {
         CQMResultDetails cqmResult1 = CQMResultDetails.builder()
                 .success(true)
                 .cmsId("CMS1")
@@ -258,6 +258,39 @@ public class AttestedCriteriaCqmReviewerTest {
                 .criteria(Stream.of(CQMResultCertification.builder()
                         .certificationId(c1.getId())
                         .certificationNumber(c1.getNumber())
+                        .build()).collect(Collectors.toList()))
+                .build();
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(c1Cures)
+                        .build())
+                .cqmResults(Stream.of(cqmResult1, cqmResult2).collect(Collectors.toList()))
+                .build();
+
+        reviewer.review(listing);
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(MISSING_CQM, "170.315 (c)(1) (Cures Update)")));
+    }
+
+    @Test
+    public void review_ListingAttestsC1CuresAndCqmHasC1Cures_noError() {
+        CQMResultDetails cqmResult1 = CQMResultDetails.builder()
+                .success(true)
+                .cmsId("CMS1")
+                .criteria(Stream.of(CQMResultCertification.builder()
+                        .certificationId(c1Cures.getId())
+                        .certificationNumber(c1Cures.getNumber())
+                        .build()).collect(Collectors.toList()))
+                .build();
+        CQMResultDetails cqmResult2 = CQMResultDetails.builder()
+                .success(true)
+                .cmsId("CMS2")
+                .criteria(Stream.of(CQMResultCertification.builder()
+                        .certificationId(c1Cures.getId())
+                        .certificationNumber(c1Cures.getNumber())
                         .build()).collect(Collectors.toList()))
                 .build();
 

@@ -415,12 +415,11 @@ public class ListingSearchService {
         LocalDate endDate = parseLocalDate(certificationDateRangeEnd);
         if (listing.getCertificationDate() != null) {
             if (startDate == null && endDate != null) {
-                return listing.getCertificationDate().isEqual(endDate) || listing.getCertificationDate().isBefore(endDate);
+                return listing.getCertificationDate().isBefore(endDate);
             } else if (startDate != null && endDate == null) {
-                return listing.getCertificationDate().isEqual(startDate) || listing.getCertificationDate().isAfter(startDate);
+                return listing.getCertificationDate().isAfter(startDate);
             } else {
-                return listing.getCertificationDate().isEqual(startDate) || listing.getCertificationDate().isEqual(endDate)
-                        || (listing.getCertificationDate().isBefore(endDate) && listing.getCertificationDate().isAfter(startDate));
+                return listing.getCertificationDate().isBefore(endDate) && listing.getCertificationDate().isAfter(startDate);
             }
         }
         return false;
@@ -435,12 +434,11 @@ public class ListingSearchService {
         LocalDate endDate = parseLocalDate(decertificationDateRangeEnd);
         if (listing.getDecertificationDate() != null) {
             if (startDate == null && endDate != null) {
-                return listing.getDecertificationDate().isEqual(endDate) || listing.getDecertificationDate().isBefore(endDate);
+                return listing.getDecertificationDate().isBefore(endDate);
             } else if (startDate != null && endDate == null) {
-                return listing.getDecertificationDate().isEqual(startDate) || listing.getDecertificationDate().isAfter(startDate);
+                return listing.getDecertificationDate().isAfter(startDate);
             } else {
-                return listing.getDecertificationDate().isEqual(startDate) || listing.getDecertificationDate().isEqual(endDate)
-                        || (listing.getDecertificationDate().isBefore(endDate) && listing.getDecertificationDate().isAfter(startDate));
+                return (listing.getDecertificationDate().isBefore(endDate) && listing.getDecertificationDate().isAfter(startDate));
             }
         }
         return false;
@@ -508,6 +506,18 @@ public class ListingSearchService {
                 break;
             case STATUS:
                 listings.sort(new CertificationStatusComparator(descending));
+                break;
+            case OPEN_SURVEILLANCE_NC_COUNT:
+                listings.sort(new OpenSurveillanceNonConformityComparator(descending));
+                break;
+            case CLOSED_SURVEILLANCE_NC_COUNT:
+                listings.sort(new ClosedSurveillanceNonConformityComparator(descending));
+                break;
+            case OPEN_DIRECT_REVIEW_NC_COUNT:
+                listings.sort(new OpenDirectReviewNonConformityComparator(descending));
+                break;
+            case CLOSED_DIRECT_REVIEW_NC_COUNT:
+                listings.sort(new ClosedDirectReviewNonConformityComparator(descending));
                 break;
             default:
                 LOGGER.error("Unrecognized value for Order By: " + orderBy.name());
@@ -654,6 +664,74 @@ public class ListingSearchService {
             }
             int sortFactor = descending ? -1 : 1;
             return (listing1.getCertificationStatus().getName().compareTo(listing2.getCertificationStatus().getName())) * sortFactor;
+        }
+    }
+
+    private class OpenSurveillanceNonConformityComparator implements Comparator<ListingSearchResult> {
+        private boolean descending = false;
+
+        OpenSurveillanceNonConformityComparator(boolean descending) {
+            this.descending = descending;
+        }
+
+        @Override
+        public int compare(ListingSearchResult listing1, ListingSearchResult listing2) {
+            if (listing1.getOpenSurveillanceNonConformityCount() == null || listing2.getOpenSurveillanceNonConformityCount() == null) {
+                return 0;
+            }
+            int sortFactor = descending ? -1 : 1;
+            return (listing1.getOpenSurveillanceNonConformityCount().compareTo(listing2.getOpenSurveillanceNonConformityCount())) * sortFactor;
+        }
+    }
+
+    private class ClosedSurveillanceNonConformityComparator implements Comparator<ListingSearchResult> {
+        private boolean descending = false;
+
+        ClosedSurveillanceNonConformityComparator(boolean descending) {
+            this.descending = descending;
+        }
+
+        @Override
+        public int compare(ListingSearchResult listing1, ListingSearchResult listing2) {
+            if (listing1.getClosedSurveillanceNonConformityCount() == null || listing2.getClosedSurveillanceNonConformityCount() == null) {
+                return 0;
+            }
+            int sortFactor = descending ? -1 : 1;
+            return (listing1.getClosedSurveillanceNonConformityCount().compareTo(listing2.getClosedSurveillanceNonConformityCount())) * sortFactor;
+        }
+    }
+
+    private class OpenDirectReviewNonConformityComparator implements Comparator<ListingSearchResult> {
+        private boolean descending = false;
+
+        OpenDirectReviewNonConformityComparator(boolean descending) {
+            this.descending = descending;
+        }
+
+        @Override
+        public int compare(ListingSearchResult listing1, ListingSearchResult listing2) {
+            if (listing1.getOpenDirectReviewNonConformityCount() == null || listing2.getOpenDirectReviewNonConformityCount() == null) {
+                return 0;
+            }
+            int sortFactor = descending ? -1 : 1;
+            return (listing1.getOpenDirectReviewNonConformityCount().compareTo(listing2.getOpenDirectReviewNonConformityCount())) * sortFactor;
+        }
+    }
+
+    private class ClosedDirectReviewNonConformityComparator implements Comparator<ListingSearchResult> {
+        private boolean descending = false;
+
+        ClosedDirectReviewNonConformityComparator(boolean descending) {
+            this.descending = descending;
+        }
+
+        @Override
+        public int compare(ListingSearchResult listing1, ListingSearchResult listing2) {
+            if (listing1.getClosedDirectReviewNonConformityCount() == null || listing2.getClosedDirectReviewNonConformityCount() == null) {
+                return 0;
+            }
+            int sortFactor = descending ? -1 : 1;
+            return (listing1.getClosedDirectReviewNonConformityCount().compareTo(listing2.getClosedDirectReviewNonConformityCount())) * sortFactor;
         }
     }
 }
