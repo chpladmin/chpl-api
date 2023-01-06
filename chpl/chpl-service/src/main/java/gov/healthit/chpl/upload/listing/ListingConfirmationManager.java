@@ -308,8 +308,8 @@ public class ListingConfirmationManager {
     }
 
     private void saveTestFunctionality(CertificationResult certResult) throws EntityCreationException {
-        if (!CollectionUtils.isEmpty(certResult.getTestFunctionality())) {
-            certResult.getTestFunctionality().stream()
+        if (!CollectionUtils.isEmpty(certResult.getFunctionalitiesTested())) {
+            certResult.getFunctionalitiesTested().stream()
                 .forEach(rethrowConsumer(testFunctionality -> certResultDao.createTestFunctionalityMapping(certResult.getId(), testFunctionality)));
         }
     }

@@ -177,7 +177,7 @@ public class CertificationResult implements Serializable {
     @XmlElementWrapper(name = "functionalitiesTested", nillable = true, required = false)
     @XmlElement(name = "functionalityTested")
     @Builder.Default
-    private List<CertificationResultTestFunctionality> testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
+    private List<CertificationResultTestFunctionality> functionalitiesTested = new ArrayList<CertificationResultTestFunctionality>();
 
     /**
      * The methods used to evaluate compliance with the certification criterion.
@@ -272,7 +272,7 @@ public class CertificationResult implements Serializable {
     private String number;
 
     public CertificationResult() {
-        this.testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
+        this.functionalitiesTested = new ArrayList<CertificationResultTestFunctionality>();
         this.testToolsUsed = new ArrayList<CertificationResultTestTool>();
         this.testStandards = new ArrayList<CertificationResultTestStandard>();
         this.optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
@@ -385,7 +385,7 @@ public class CertificationResult implements Serializable {
         }
 
         this.setOptionalStandards(getOptionalStandards(certResult, certRules));
-        this.setTestFunctionality(getTestFunctionalities(certResult, certRules));
+        this.setFunctionalitiesTested(getTestFunctionalities(certResult, certRules));
         this.setConformanceMethods(getConformanceMethods(certResult, certRules));
         this.setTestProcedures(getTestProcedures(certResult, certRules));
         this.setTestDataUsed(getTestData(certResult, certRules));
@@ -587,12 +587,12 @@ public class CertificationResult implements Serializable {
         this.testDataUsed = testDataUsed;
     }
 
-    public List<CertificationResultTestFunctionality> getTestFunctionality() {
-        return testFunctionality;
+    public List<CertificationResultTestFunctionality> getFunctionalitiesTested() {
+        return functionalitiesTested;
     }
 
-    public void setTestFunctionality(List<CertificationResultTestFunctionality> testFunctionality) {
-        this.testFunctionality = testFunctionality;
+    public void setFunctionalitiesTested(List<CertificationResultTestFunctionality> functionalitiesTested) {
+        this.functionalitiesTested = functionalitiesTested;
     }
 
     public String getApiDocumentation() {

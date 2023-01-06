@@ -49,8 +49,8 @@ public class TestFunctionalityAllowedByCriteriaReviewer extends PermissionBasedR
     public void review(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationResults() != null) {
             for (CertificationResult cr : listing.getCertificationResults()) {
-                if (BooleanUtils.isTrue(cr.isSuccess()) && cr.getTestFunctionality() != null) {
-                    for (CertificationResultTestFunctionality crtf : cr.getTestFunctionality()) {
+                if (BooleanUtils.isTrue(cr.isSuccess()) && cr.getFunctionalitiesTested() != null) {
+                    for (CertificationResultTestFunctionality crtf : cr.getFunctionalitiesTested()) {
                         Set<String> messages = getTestingFunctionalityErrorMessages(crtf, cr, listing);
                         for (String message : messages) {
                             addCriterionError(listing, cr, message);

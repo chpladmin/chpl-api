@@ -48,8 +48,8 @@ public class TestFunctionalityAllowedByRoleReviewer implements ComparisonReviewe
         for (CertificationResult updatedCr : updatedListing.getCertificationResults()) {
             Optional<CertificationResult> existingCr = findCertificationResult(existingListing, updatedCr.getId());
             if (existingCr.isPresent()) {
-                Optional<List<CertificationResultTestFunctionality>> listUpdateCrtfs = Optional.ofNullable(updatedCr.getTestFunctionality());
-                Optional<List<CertificationResultTestFunctionality>> listExistingCrtfs = Optional.ofNullable(existingCr.get().getTestFunctionality());
+                Optional<List<CertificationResultTestFunctionality>> listUpdateCrtfs = Optional.ofNullable(updatedCr.getFunctionalitiesTested());
+                Optional<List<CertificationResultTestFunctionality>> listExistingCrtfs = Optional.ofNullable(existingCr.get().getFunctionalitiesTested());
 
                 List<CertificationResultTestFunctionality> addedCrtfs = getAddedCrtfs(listUpdateCrtfs, listExistingCrtfs);
 

@@ -62,9 +62,9 @@ public class TestFunctionalityNormalizerTest {
                                 .build())
                         .build())
                 .build();
-        listing.getCertificationResults().get(0).setTestFunctionality(null);
+        listing.getCertificationResults().get(0).setFunctionalitiesTested(null);
         normalizer.normalize(listing);
-        assertNull(listing.getCertificationResults().get(0).getTestFunctionality());
+        assertNull(listing.getCertificationResults().get(0).getFunctionalitiesTested());
     }
 
     @Test
@@ -79,7 +79,7 @@ public class TestFunctionalityNormalizerTest {
                         .build())
                 .build();
         normalizer.normalize(listing);
-        assertEquals(0, listing.getCertificationResults().get(0).getTestFunctionality().size());
+        assertEquals(0, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
     }
 
     @Test
@@ -102,12 +102,12 @@ public class TestFunctionalityNormalizerTest {
                                 .id(CRITERIA_ID_WITHOUT_RESTRICTIONS)
                                 .number("170.315 (a)(13)")
                                 .build())
-                        .testFunctionality(testFunctionalities)
+                        .functionalitiesTested(testFunctionalities)
                         .build())
                 .build();
         normalizer.normalize(listing);
-        assertEquals(1, listing.getCertificationResults().get(0).getTestFunctionality().size());
-        assertNull(listing.getCertificationResults().get(0).getTestFunctionality().get(0).getTestFunctionalityId());
+        assertEquals(1, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
+        assertNull(listing.getCertificationResults().get(0).getFunctionalitiesTested().get(0).getTestFunctionalityId());
     }
 
     @Test
@@ -134,12 +134,12 @@ public class TestFunctionalityNormalizerTest {
                                 .id(CRITERIA_ID_WITHOUT_RESTRICTIONS)
                                 .number("170.315 (a)(13)")
                                 .build())
-                        .testFunctionality(testFunctionalities)
+                        .functionalitiesTested(testFunctionalities)
                         .build())
                 .build();
         normalizer.normalize(listing);
-        assertEquals(1, listing.getCertificationResults().get(0).getTestFunctionality().size());
-        assertEquals(1L, listing.getCertificationResults().get(0).getTestFunctionality().get(0).getTestFunctionalityId());
+        assertEquals(1, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
+        assertEquals(1L, listing.getCertificationResults().get(0).getFunctionalitiesTested().get(0).getTestFunctionalityId());
     }
 
     @Test
@@ -157,11 +157,11 @@ public class TestFunctionalityNormalizerTest {
                                 .id(CRITERIA_ID_WITHOUT_RESTRICTIONS)
                                 .number("170.315 (a)(13)")
                                 .build())
-                        .testFunctionality(testFunctionalities)
+                        .functionalitiesTested(testFunctionalities)
                         .build())
                 .build();
         normalizer.normalize(listing);
-        assertEquals(1, listing.getCertificationResults().get(0).getTestFunctionality().size());
+        assertEquals(1, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
     }
 
     @Test
@@ -182,11 +182,11 @@ public class TestFunctionalityNormalizerTest {
                                 .id(CRITERIA_ID_WITH_RESTRICTIONS)
                                 .number("170.315 (c)(3)")
                                 .build())
-                        .testFunctionality(testFunctionalities)
+                        .functionalitiesTested(testFunctionalities)
                         .build())
                 .build();
         normalizer.normalize(listing);
-        assertEquals(1, listing.getCertificationResults().get(0).getTestFunctionality().size());
+        assertEquals(1, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
     }
 
     @Test
@@ -207,11 +207,11 @@ public class TestFunctionalityNormalizerTest {
                                 .id(CRITERIA_ID_WITH_RESTRICTIONS)
                                 .number("170.315 (c)(3)")
                                 .build())
-                        .testFunctionality(testFunctionalities)
+                        .functionalitiesTested(testFunctionalities)
                         .build())
                 .build();
         normalizer.normalize(listing);
-        assertEquals(0, listing.getCertificationResults().get(0).getTestFunctionality().size());
+        assertEquals(0, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
     }
 
     @Test
@@ -242,7 +242,7 @@ public class TestFunctionalityNormalizerTest {
                         .build())
                 .build();
         normalizer.normalize(listing);
-        assertEquals(0, listing.getCertificationResults().get(0).getTestFunctionality().size());
+        assertEquals(0, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
         assertEquals(2, listing.getCertificationResults().get(0).getAllowedTestFunctionalities().size());
         assertTrue(listing.getCertificationResults().get(0).getAllowedTestFunctionalities().stream()
                 .map(tf -> tf.getId())
@@ -280,7 +280,7 @@ public class TestFunctionalityNormalizerTest {
                         .build())
                 .build();
         normalizer.normalize(listing);
-        assertEquals(0, listing.getCertificationResults().get(0).getTestFunctionality().size());
+        assertEquals(0, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
         assertEquals(0, listing.getCertificationResults().get(0).getAllowedTestFunctionalities().size());
     }
 

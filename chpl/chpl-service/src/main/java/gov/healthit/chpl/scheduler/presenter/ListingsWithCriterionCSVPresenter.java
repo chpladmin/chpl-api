@@ -117,9 +117,9 @@ public class ListingsWithCriterionCSVPresenter {
             certificationResultFirstRow.add("");
         }
 
-        if (!CollectionUtils.isEmpty(certResult.getTestFunctionality())) {
-            for (int i = 0; i < certResult.getTestFunctionality().size(); i++) {
-                CertificationResultTestFunctionality testFunc = certResult.getTestFunctionality().get(i);
+        if (!CollectionUtils.isEmpty(certResult.getFunctionalitiesTested())) {
+            for (int i = 0; i < certResult.getFunctionalitiesTested().size(); i++) {
+                CertificationResultTestFunctionality testFunc = certResult.getFunctionalitiesTested().get(i);
                 if (i == 0) {
                     certificationResultFirstRow.add(testFunc.getName());
                 } else if (result.size() > i) {

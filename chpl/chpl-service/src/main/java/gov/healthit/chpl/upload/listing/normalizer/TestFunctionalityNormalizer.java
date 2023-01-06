@@ -64,7 +64,7 @@ public class TestFunctionalityNormalizer {
                 .forEach(certResult -> fillInTestFunctionalityData(listing, certResult));
 
             listing.getCertificationResults().stream()
-                .filter(certResult -> certResult.getTestFunctionality() != null && certResult.getTestFunctionality().size() > 0)
+                .filter(certResult -> certResult.getFunctionalitiesTested() != null && certResult.getFunctionalitiesTested().size() > 0)
                 .forEach(certResult -> removeRestrictedTestFunctionalityBasedOnUserRule(certResult));
         }
 
@@ -72,7 +72,7 @@ public class TestFunctionalityNormalizer {
 
     private void fillInTestFunctionalityData(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         populateAllowedTestFunctionalities(listing, certResult);
-        populateTestFunctionalityIds(listing, certResult.getTestFunctionality());
+        populateTestFunctionalityIds(listing, certResult.getFunctionalitiesTested());
     }
 
     private void populateAllowedTestFunctionalities(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -119,7 +119,7 @@ public class TestFunctionalityNormalizer {
     }
 
     private void removeRestrictedTestFunctionalityBasedOnUserRule(CertificationResult certResult) {
-        Iterator<CertificationResultTestFunctionality> testFunctionalityIter = certResult.getTestFunctionality().listIterator();
+        Iterator<CertificationResultTestFunctionality> testFunctionalityIter = certResult.getFunctionalitiesTested().listIterator();
         while (testFunctionalityIter.hasNext()) {
             CertificationResultTestFunctionality currTestFunctionality = testFunctionalityIter.next();
             if (currTestFunctionality.getTestFunctionalityId() != null) {

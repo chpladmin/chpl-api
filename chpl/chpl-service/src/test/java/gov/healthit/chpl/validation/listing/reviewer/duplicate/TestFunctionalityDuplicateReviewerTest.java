@@ -43,8 +43,8 @@ public class TestFunctionalityDuplicateReviewerTest {
         testFunc2.setTestFunctionalityId(1L);
         testFunc2.setName("TestFunc1");
 
-        cert.getTestFunctionality().add(testFunc1);
-        cert.getTestFunctionality().add(testFunc2);
+        cert.getFunctionalitiesTested().add(testFunc1);
+        cert.getFunctionalitiesTested().add(testFunc2);
 
         reviewer.review(listing, cert);
 
@@ -52,7 +52,7 @@ public class TestFunctionalityDuplicateReviewerTest {
         assertEquals(1, listing.getWarningMessages().stream()
                 .filter(warning -> warning.equals(String.format(ERR_MSG, CRITERION_NUMBER, "TestFunc1")))
                 .count());
-        assertEquals(1, cert.getTestFunctionality().size());
+        assertEquals(1, cert.getFunctionalitiesTested().size());
     }
 
     @Test
@@ -68,25 +68,25 @@ public class TestFunctionalityDuplicateReviewerTest {
         testFunc2.setTestFunctionalityId(2L);
         testFunc2.setName("TestFunc2");
 
-        cert.getTestFunctionality().add(testFunc1);
-        cert.getTestFunctionality().add(testFunc2);
+        cert.getFunctionalitiesTested().add(testFunc1);
+        cert.getFunctionalitiesTested().add(testFunc2);
 
         reviewer.review(listing, cert);
 
         assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(2, cert.getTestFunctionality().size());
+        assertEquals(2, cert.getFunctionalitiesTested().size());
     }
 
     @Test
     public void review_emptyTestFunctionality_noWarning() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         CertificationResult cert = getCertResult();
-        cert.getTestFunctionality().clear();
+        cert.getFunctionalitiesTested().clear();
 
         reviewer.review(listing, cert);
 
         assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(0, cert.getTestFunctionality().size());
+        assertEquals(0, cert.getFunctionalitiesTested().size());
     }
 
     @Test
@@ -110,10 +110,10 @@ public class TestFunctionalityDuplicateReviewerTest {
         testFunc4.setTestFunctionalityId(3L);
         testFunc4.setName("TestFunc3");
 
-        cert.getTestFunctionality().add(testFunc1);
-        cert.getTestFunctionality().add(testFunc2);
-        cert.getTestFunctionality().add(testFunc3);
-        cert.getTestFunctionality().add(testFunc4);
+        cert.getFunctionalitiesTested().add(testFunc1);
+        cert.getFunctionalitiesTested().add(testFunc2);
+        cert.getFunctionalitiesTested().add(testFunc3);
+        cert.getFunctionalitiesTested().add(testFunc4);
 
         reviewer.review(listing, cert);
 
@@ -121,7 +121,7 @@ public class TestFunctionalityDuplicateReviewerTest {
         assertEquals(1, listing.getWarningMessages().stream()
                 .filter(warning -> warning.equals(String.format(ERR_MSG, CRITERION_NUMBER, "TestFunc1")))
                 .count());
-        assertEquals(3, cert.getTestFunctionality().size());
+        assertEquals(3, cert.getFunctionalitiesTested().size());
     }
 
     private CertificationResult getCertResult() {

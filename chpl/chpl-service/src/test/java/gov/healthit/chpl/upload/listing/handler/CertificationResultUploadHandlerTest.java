@@ -338,8 +338,8 @@ public class CertificationResultUploadHandlerTest {
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
         assertNotNull(certResult);
-        assertNotNull(certResult.getTestFunctionality());
-        assertEquals(0, certResult.getTestFunctionality().size());
+        assertNotNull(certResult.getFunctionalitiesTested());
+        assertEquals(0, certResult.getFunctionalitiesTested().size());
     }
 
     @Test
@@ -351,8 +351,8 @@ public class CertificationResultUploadHandlerTest {
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
         assertNotNull(certResult);
-        assertNotNull(certResult.getTestFunctionality());
-        assertEquals(0, certResult.getTestFunctionality().size());
+        assertNotNull(certResult.getFunctionalitiesTested());
+        assertEquals(0, certResult.getFunctionalitiesTested().size());
     }
 
     @Test
@@ -364,9 +364,9 @@ public class CertificationResultUploadHandlerTest {
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
         assertNotNull(certResult);
-        assertNotNull(certResult.getTestFunctionality());
-        assertEquals(1, certResult.getTestFunctionality().size());
-        CertificationResultTestFunctionality func = certResult.getTestFunctionality().get(0);
+        assertNotNull(certResult.getFunctionalitiesTested());
+        assertEquals(1, certResult.getFunctionalitiesTested().size());
+        CertificationResultTestFunctionality func = certResult.getFunctionalitiesTested().get(0);
         assertNotNull(func);
         assertNotNull(func.getName());
         assertEquals("func", func.getName());
@@ -381,13 +381,13 @@ public class CertificationResultUploadHandlerTest {
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
         assertNotNull(certResult);
-        assertNotNull(certResult.getTestFunctionality());
-        assertEquals(2, certResult.getTestFunctionality().size());
-        CertificationResultTestFunctionality func = certResult.getTestFunctionality().get(0);
+        assertNotNull(certResult.getFunctionalitiesTested());
+        assertEquals(2, certResult.getFunctionalitiesTested().size());
+        CertificationResultTestFunctionality func = certResult.getFunctionalitiesTested().get(0);
         assertNotNull(func);
         assertNotNull(func.getName());
         assertEquals("func", func.getName());
-        func = certResult.getTestFunctionality().get(1);
+        func = certResult.getFunctionalitiesTested().get(1);
         assertNotNull(func);
         assertNotNull(func.getName());
         assertEquals("func2", func.getName());
@@ -403,9 +403,9 @@ public class CertificationResultUploadHandlerTest {
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
         assertNotNull(certResult);
-        assertNotNull(certResult.getTestFunctionality());
-        assertEquals(1, certResult.getTestFunctionality().size());
-        CertificationResultTestFunctionality func = certResult.getTestFunctionality().get(0);
+        assertNotNull(certResult.getFunctionalitiesTested());
+        assertEquals(1, certResult.getFunctionalitiesTested().size());
+        CertificationResultTestFunctionality func = certResult.getFunctionalitiesTested().get(0);
         assertNotNull(func);
         assertNotNull(func.getName());
         assertEquals("func", func.getName());

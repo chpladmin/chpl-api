@@ -37,8 +37,8 @@ import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
-import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.AgeRangeDTO;
@@ -182,7 +182,7 @@ public class CertificationResultManager extends SecuredManager {
             numChanges += updateTestTools(updated, orig.getTestToolsUsed(), null);
             numChanges += updateTestData(updated, orig.getTestDataUsed(), null);
             numChanges += updateTestProcedures(updated, orig.getTestProcedures(), null);
-            numChanges += updateTestFunctionality(updatedListing, updated, orig.getTestFunctionality(), null);
+            numChanges += updateFunctionalitiesTested(updatedListing, updated, orig.getFunctionalitiesTested(), null);
             numChanges += updateSvap(updated, orig.getSvaps(), null);
 
             if (existingListing.getSed() != null && existingListing.getSed().getUcdProcesses() != null
@@ -227,7 +227,7 @@ public class CertificationResultManager extends SecuredManager {
             numChanges += updateTestTools(updated, orig.getTestToolsUsed(), updated.getTestToolsUsed());
             numChanges += updateTestData(updated, orig.getTestDataUsed(), updated.getTestDataUsed());
             numChanges += updateTestProcedures(updated, orig.getTestProcedures(), updated.getTestProcedures());
-            numChanges += updateTestFunctionality(updatedListing, updated, orig.getTestFunctionality(), updated.getTestFunctionality());
+            numChanges += updateFunctionalitiesTested(updatedListing, updated, orig.getFunctionalitiesTested(), updated.getFunctionalitiesTested());
             numChanges += updateSvap(updated, orig.getSvaps(), updated.getSvaps());
 
             List<CertifiedProductUcdProcess> origUcdsForCriteria = new ArrayList<CertifiedProductUcdProcess>();
@@ -956,18 +956,18 @@ public class CertificationResultManager extends SecuredManager {
         return numChanges;
     }
 
-    private int updateTestFunctionality(CertifiedProductSearchDetails listing, CertificationResult certResult,
-            List<CertificationResultTestFunctionality> existingTestFunctionality,
-            List<CertificationResultTestFunctionality> updatedTestFunctionality) throws EntityCreationException {
+    private int updateFunctionalitiesTested(CertifiedProductSearchDetails listing, CertificationResult certResult,
+            List<CertificationResultTestFunctionality> existingFunctionalitiesTested,
+            List<CertificationResultTestFunctionality> updatedFunctionalitiesTested) throws EntityCreationException {
         int numChanges = 0;
         String editionIdString = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString();
-        List<CertificationResultTestFunctionalityDTO> testFuncToAdd = new ArrayList<CertificationResultTestFunctionalityDTO>();
+        List<CertificationResultTestFunctionalityDTO> functionalitiesTestedToAdd = new ArrayList<CertificationResultTestFunctionalityDTO>();
         List<Long> idsToRemove = new ArrayList<Long>();
 
         // figure out which test funcs to add
-        if (updatedTestFunctionality != null && updatedTestFunctionality.size() > 0) {
+        if (updatedFunctionalitiesTested != null && updatedFunctionalitiesTested.size() > 0) {
             // fill in potentially missing test func id
-            for (CertificationResultTestFunctionality updatedItem : updatedTestFunctionality) {
+            for (CertificationResultTestFunctionality updatedItem : updatedFunctionalitiesTested) {
                 if (updatedItem.getTestFunctionalityId() == null && !StringUtils.isEmpty(updatedItem.getName())) {
                     TestFunctionalityDTO foundFunc = testFunctionalityDAO.getByNumberAndEdition(updatedItem.getName(),
                             Long.valueOf(editionIdString));
@@ -982,22 +982,22 @@ public class CertificationResultManager extends SecuredManager {
                 }
             }
 
-            if (existingTestFunctionality == null || existingTestFunctionality.size() == 0) {
+            if (existingFunctionalitiesTested == null || existingFunctionalitiesTested.size() == 0) {
                 // existing listing has none, add all from the update
-                for (CertificationResultTestFunctionality updatedItem : updatedTestFunctionality) {
+                for (CertificationResultTestFunctionality updatedItem : updatedFunctionalitiesTested) {
                     if (updatedItem.getTestFunctionalityId() != null) {
                         CertificationResultTestFunctionalityDTO toAdd = new CertificationResultTestFunctionalityDTO();
                         toAdd.setCertificationResultId(certResult.getId());
                         toAdd.setTestFunctionalityId(updatedItem.getTestFunctionalityId());
-                        testFuncToAdd.add(toAdd);
+                        functionalitiesTestedToAdd.add(toAdd);
                     }
                 }
-            } else if (existingTestFunctionality.size() > 0) {
+            } else if (existingFunctionalitiesTested.size() > 0) {
                 // existing listing has some, compare to the update to see if
                 // any are different
-                for (CertificationResultTestFunctionality updatedItem : updatedTestFunctionality) {
+                for (CertificationResultTestFunctionality updatedItem : updatedFunctionalitiesTested) {
                     boolean inExistingListing = false;
-                    for (CertificationResultTestFunctionality existingItem : existingTestFunctionality) {
+                    for (CertificationResultTestFunctionality existingItem : existingFunctionalitiesTested) {
                         inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
                     }
 
@@ -1006,7 +1006,7 @@ public class CertificationResultManager extends SecuredManager {
                             CertificationResultTestFunctionalityDTO toAdd = new CertificationResultTestFunctionalityDTO();
                             toAdd.setCertificationResultId(certResult.getId());
                             toAdd.setTestFunctionalityId(updatedItem.getTestFunctionalityId());
-                            testFuncToAdd.add(toAdd);
+                            functionalitiesTestedToAdd.add(toAdd);
                         }
                     }
                 }
@@ -1014,16 +1014,16 @@ public class CertificationResultManager extends SecuredManager {
         }
 
         // figure out which test func to remove
-        if (existingTestFunctionality != null && existingTestFunctionality.size() > 0) {
+        if (existingFunctionalitiesTested != null && existingFunctionalitiesTested.size() > 0) {
             // if the updated listing has none, remove them all from existing
-            if (updatedTestFunctionality == null || updatedTestFunctionality.size() == 0) {
-                for (CertificationResultTestFunctionality existingItem : existingTestFunctionality) {
+            if (updatedFunctionalitiesTested == null || updatedFunctionalitiesTested.size() == 0) {
+                for (CertificationResultTestFunctionality existingItem : existingFunctionalitiesTested) {
                     idsToRemove.add(existingItem.getId());
                 }
-            } else if (updatedTestFunctionality.size() > 0) {
-                for (CertificationResultTestFunctionality existingItem : existingTestFunctionality) {
+            } else if (updatedFunctionalitiesTested.size() > 0) {
+                for (CertificationResultTestFunctionality existingItem : existingFunctionalitiesTested) {
                     boolean inUpdatedListing = false;
-                    for (CertificationResultTestFunctionality updatedItem : updatedTestFunctionality) {
+                    for (CertificationResultTestFunctionality updatedItem : updatedFunctionalitiesTested) {
                         inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
                     }
                     if (!inUpdatedListing) {
@@ -1033,8 +1033,8 @@ public class CertificationResultManager extends SecuredManager {
             }
         }
 
-        numChanges = testFuncToAdd.size() + idsToRemove.size();
-        for (CertificationResultTestFunctionalityDTO toAdd : testFuncToAdd) {
+        numChanges = functionalitiesTestedToAdd.size() + idsToRemove.size();
+        for (CertificationResultTestFunctionalityDTO toAdd : functionalitiesTestedToAdd) {
             certResultDAO.addTestFunctionalityMapping(toAdd);
         }
 

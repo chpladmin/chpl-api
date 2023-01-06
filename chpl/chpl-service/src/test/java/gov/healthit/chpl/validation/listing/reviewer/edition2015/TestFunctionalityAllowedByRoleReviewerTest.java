@@ -61,7 +61,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (b)(2)")
                                 .build())
-                        .testFunctionality(testFunctionalities)
+                        .functionalitiesTested(testFunctionalities)
                         .build())
                 .build();
 
@@ -75,7 +75,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (b)(2)")
                                 .build())
-                        .testFunctionality(testFunctionalities)
+                        .functionalitiesTested(testFunctionalities)
                         .build())
                 .build();
 
@@ -105,7 +105,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (b)(2)")
                                 .build())
-                        .testFunctionality(testFunctionalities)
+                        .functionalitiesTested(testFunctionalities)
                         .build())
                 .build();
 
@@ -134,7 +134,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (b)(2)")
                                 .build())
-                        .testFunctionality(testFunctionalities)
+                        .functionalitiesTested(testFunctionalities)
                         .build())
                 .build();
 
@@ -179,7 +179,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (c)(3)")
                                 .build())
-                        .testFunctionality(testFunctionalities)
+                        .functionalitiesTested(testFunctionalities)
                         .build())
                 .build();
 
@@ -209,7 +209,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (c)(3)")
                                 .build())
-                        .testFunctionality(testFunctionalities)
+                        .functionalitiesTested(testFunctionalities)
                         .build())
                 .build();
 
@@ -254,7 +254,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (b)(2)")
                                 .build())
-                        .testFunctionality(testFunctionalities)
+                        .functionalitiesTested(testFunctionalities)
                         .build())
                 .build();
 
@@ -284,7 +284,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (b)(2)")
                                 .build())
-                        .testFunctionality(testFunctionalities)
+                        .functionalitiesTested(testFunctionalities)
                         .build())
                 .build();
 
@@ -330,7 +330,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (c)(3)")
                                 .build())
-                        .testFunctionality(testFunctionalities)
+                        .functionalitiesTested(testFunctionalities)
                         .build())
                 .build();
 
@@ -361,7 +361,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (c)(3)")
                                 .build())
-                        .testFunctionality(testFunctionalities)
+                        .functionalitiesTested(testFunctionalities)
                         .build())
                 .build();
 
@@ -405,7 +405,7 @@ public class TestFunctionalityAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (c)(3)")
                                 .build())
-                        .testFunctionality(testFunctionalities)
+                        .functionalitiesTested(testFunctionalities)
                         .build())
                 .build();
 

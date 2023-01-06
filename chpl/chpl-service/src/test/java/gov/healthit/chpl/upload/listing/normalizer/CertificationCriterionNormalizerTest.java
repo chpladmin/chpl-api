@@ -68,7 +68,7 @@ public class CertificationCriterionNormalizerTest {
             assertNull(certResult.getServiceBaseUrlList());
             assertNull(certResult.getSvaps());
             assertNull(certResult.getTestDataUsed());
-            assertNull(certResult.getTestFunctionality());
+            assertNull(certResult.getFunctionalitiesTested());
             assertNull(certResult.getTestProcedures());
             assertNull(certResult.getTestStandards());
             assertNull(certResult.getTestToolsUsed());
@@ -244,9 +244,9 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(2, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertNotNull(certResult.getTestFunctionality());
+                assertNotNull(certResult.getFunctionalitiesTested());
             } else if (certResult.getCriterion().getNumber().equals("170.315 (a)(2)")) {
-                assertNull(certResult.getTestFunctionality());
+                assertNull(certResult.getFunctionalitiesTested());
             }
         }
     }
@@ -614,7 +614,7 @@ public class CertificationCriterionNormalizerTest {
             assertNull(certResult.getServiceBaseUrlList());
             assertNull(certResult.getSvaps());
             assertNull(certResult.getTestDataUsed());
-            assertNull(certResult.getTestFunctionality());
+            assertNull(certResult.getFunctionalitiesTested());
             assertNull(certResult.getTestProcedures());
             assertNull(certResult.getTestStandards());
             assertNull(certResult.getTestToolsUsed());
@@ -855,7 +855,7 @@ public class CertificationCriterionNormalizerTest {
                                 .number("170.315 (a)(1)")
                                 .title("a1")
                                 .build())
-                        .testFunctionality(null)
+                        .functionalitiesTested(null)
                         .build()).collect(Collectors.toList()));
         normalizer.normalize(listing);
         assertNotNull(listing.getCertificationResults());
@@ -863,10 +863,10 @@ public class CertificationCriterionNormalizerTest {
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
                 assertTrue(certResult.isSuccess());
-                assertNotNull(certResult.getTestFunctionality());
+                assertNotNull(certResult.getFunctionalitiesTested());
             } else {
                 assertFalse(certResult.isSuccess());
-                assertNull(certResult.getTestFunctionality());
+                assertNull(certResult.getFunctionalitiesTested());
             }
         }
     }
@@ -1495,7 +1495,7 @@ public class CertificationCriterionNormalizerTest {
             assertNull(certResult.getServiceBaseUrlList());
             assertNull(certResult.getSvaps());
             assertNull(certResult.getTestDataUsed());
-            assertNull(certResult.getTestFunctionality());
+            assertNull(certResult.getFunctionalitiesTested());
             assertNull(certResult.getTestProcedures());
             assertNull(certResult.getTestStandards());
             assertNull(certResult.getTestToolsUsed());

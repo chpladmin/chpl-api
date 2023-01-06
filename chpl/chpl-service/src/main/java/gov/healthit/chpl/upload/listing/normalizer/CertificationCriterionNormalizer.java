@@ -123,10 +123,10 @@ public class CertificationCriterionNormalizer {
 
         if (BooleanUtils.isFalse(certResult.isSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
-            certResult.setTestFunctionality(null);
+            certResult.setFunctionalitiesTested(null);
         } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.FUNCTIONALITY_TESTED)
-                && certResult.getTestFunctionality() == null) {
-            certResult.setTestFunctionality(new ArrayList<CertificationResultTestFunctionality>());
+                && certResult.getFunctionalitiesTested() == null) {
+            certResult.setFunctionalitiesTested(new ArrayList<CertificationResultTestFunctionality>());
         }
 
         if (BooleanUtils.isFalse(certResult.isSuccess())

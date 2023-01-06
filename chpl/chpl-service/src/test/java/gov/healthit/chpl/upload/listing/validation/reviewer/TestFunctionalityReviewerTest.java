@@ -82,7 +82,7 @@ public class TestFunctionalityReviewerTest {
                         .success(true)
                         .build())
                 .build();
-        listing.getCertificationResults().get(0).setTestFunctionality(null);
+        listing.getCertificationResults().get(0).setFunctionalitiesTested(null);
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -128,7 +128,7 @@ public class TestFunctionalityReviewerTest {
                                 .removed(false)
                                 .build())
                         .success(true)
-                        .testFunctionality(testFuncs)
+                        .functionalitiesTested(testFuncs)
                         .build())
                 .build();
         reviewer.review(listing);
@@ -138,7 +138,7 @@ public class TestFunctionalityReviewerTest {
         assertEquals(1, listing.getWarningMessages().size());
         assertTrue(listing.getWarningMessages().contains(
                 String.format(TEST_FUNCTIONALITY_NOT_APPLICABLE, "170.315 (a)(1)")));
-        assertNull(listing.getCertificationResults().get(0).getTestFunctionality());
+        assertNull(listing.getCertificationResults().get(0).getFunctionalitiesTested());
     }
 
     @Test
@@ -159,7 +159,7 @@ public class TestFunctionalityReviewerTest {
                                 .removed(true)
                                 .build())
                         .success(true)
-                        .testFunctionality(testFuncs)
+                        .functionalitiesTested(testFuncs)
                         .build())
                 .build();
         reviewer.review(listing);
@@ -191,12 +191,12 @@ public class TestFunctionalityReviewerTest {
                                 .removed(false)
                                 .build())
                         .success(true)
-                        .testFunctionality(testFuncs)
+                        .functionalitiesTested(testFuncs)
                         .build())
                 .build();
         reviewer.review(listing);
 
-        assertEquals(1, listing.getCertificationResults().get(0).getTestFunctionality().size());
+        assertEquals(1, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
         assertEquals(1, listing.getWarningMessages().size());
         assertTrue(listing.getWarningMessages().contains(
                 String.format(TEST_FUNCTIONALITY_NOT_FOUND_REMOVED, "170.315 (a)(1)", "bad name")));
@@ -226,7 +226,7 @@ public class TestFunctionalityReviewerTest {
                                 .removed(true)
                                 .build())
                         .success(true)
-                        .testFunctionality(testFuncs)
+                        .functionalitiesTested(testFuncs)
                         .build())
                 .build();
         reviewer.review(listing);
@@ -258,12 +258,12 @@ public class TestFunctionalityReviewerTest {
                                 .removed(false)
                                 .build())
                         .success(true)
-                        .testFunctionality(testFuncs)
+                        .functionalitiesTested(testFuncs)
                         .build())
                 .build();
         reviewer.review(listing);
 
-        assertEquals(1, listing.getCertificationResults().get(0).getTestFunctionality().size());
+        assertEquals(1, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
         assertEquals(1, listing.getWarningMessages().size());
         assertTrue(listing.getWarningMessages().contains(
                 String.format(TEST_FUNCTIONALITY_NOT_FOUND_REMOVED, "170.315 (a)(1)", "")));
@@ -293,7 +293,7 @@ public class TestFunctionalityReviewerTest {
                                 .removed(true)
                                 .build())
                         .success(true)
-                        .testFunctionality(testFuncs)
+                        .functionalitiesTested(testFuncs)
                         .build())
                 .build();
         reviewer.review(listing);
@@ -325,12 +325,12 @@ public class TestFunctionalityReviewerTest {
                                 .removed(false)
                                 .build())
                         .success(true)
-                        .testFunctionality(testFuncs)
+                        .functionalitiesTested(testFuncs)
                         .build())
                 .build();
         reviewer.review(listing);
 
-        assertEquals(2, listing.getCertificationResults().get(0).getTestFunctionality().size());
+        assertEquals(2, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
@@ -360,7 +360,7 @@ public class TestFunctionalityReviewerTest {
                                 .removed(true)
                                 .build())
                         .success(true)
-                        .testFunctionality(testFuncs)
+                        .functionalitiesTested(testFuncs)
                         .build())
                 .build();
         reviewer.review(listing);
@@ -393,12 +393,12 @@ public class TestFunctionalityReviewerTest {
                                 .removed(false)
                                 .build())
                         .success(true)
-                        .testFunctionality(testFuncs)
+                        .functionalitiesTested(testFuncs)
                         .build())
                 .build();
         reviewer.review(listing);
 
-        assertEquals(1, listing.getCertificationResults().get(0).getTestFunctionality().size());
+        assertEquals(1, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
         assertEquals(1, listing.getWarningMessages().size());
         assertTrue(listing.getWarningMessages().contains(
                 String.format(TEST_FUNCTIONALITY_CRITERION_MISMATCH, "170.315 (a)(1)", "mismatch",
@@ -430,7 +430,7 @@ public class TestFunctionalityReviewerTest {
                                 .removed(true)
                                 .build())
                         .success(true)
-                        .testFunctionality(testFuncs)
+                        .functionalitiesTested(testFuncs)
                         .build())
                 .build();
         reviewer.review(listing);
@@ -462,12 +462,12 @@ public class TestFunctionalityReviewerTest {
                                 .removed(false)
                                 .build())
                         .success(true)
-                        .testFunctionality(testFuncs)
+                        .functionalitiesTested(testFuncs)
                         .build())
                 .build();
         reviewer.review(listing);
 
-        assertEquals(2, listing.getCertificationResults().get(0).getTestFunctionality().size());
+        assertEquals(2, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(0, listing.getErrorMessages().size());
     }

@@ -30,8 +30,8 @@ public class TestFunctionalityDuplicateReviewer {
         DuplicateReviewResult<CertificationResultTestFunctionality> testFunctionalityDuplicateResults =
                 new DuplicateReviewResult<CertificationResultTestFunctionality>(getPredicate());
 
-        if (certificationResult.getTestFunctionality() != null) {
-            for (CertificationResultTestFunctionality dto : certificationResult.getTestFunctionality()) {
+        if (certificationResult.getFunctionalitiesTested() != null) {
+            for (CertificationResultTestFunctionality dto : certificationResult.getFunctionalitiesTested()) {
                 testFunctionalityDuplicateResults.addObject(dto);
             }
         }
@@ -40,7 +40,7 @@ public class TestFunctionalityDuplicateReviewer {
             listing.getWarningMessages().addAll(getWarnings(
                             testFunctionalityDuplicateResults.getDuplicateList(),
                             Util.formatCriteriaNumber(certificationResult.getCriterion())));
-            certificationResult.setTestFunctionality(testFunctionalityDuplicateResults.getUniqueList());
+            certificationResult.setFunctionalitiesTested(testFunctionalityDuplicateResults.getUniqueList());
         }
     }
 

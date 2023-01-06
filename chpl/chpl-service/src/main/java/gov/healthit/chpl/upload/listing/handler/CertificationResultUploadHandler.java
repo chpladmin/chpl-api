@@ -52,7 +52,7 @@ public class CertificationResultUploadHandler {
                 .hasAdditionalSoftware(parseHasAdditionalSoftware(certHeadingRecord, certResultRecords))
                 .hasAdditionalSoftwareStr(parseHasAdditionalSoftwareStr(certHeadingRecord, certResultRecords))
                 .privacySecurityFramework(parsePrivacyAndSecurityFramework(certHeadingRecord, certResultRecords))
-                .testFunctionality(parseTestFunctionalities(certHeadingRecord, certResultRecords))
+                .functionalitiesTested(parseFunctionalitiesTested(certHeadingRecord, certResultRecords))
                 .optionalStandards(parseOptionalStandards(certHeadingRecord, certResultRecords))
                 .additionalSoftware(additionalSoftwareHandler.handle(certHeadingRecord, certResultRecords))
                 .testDataUsed(testDataHandler.handle(certHeadingRecord, certResultRecords))
@@ -149,11 +149,11 @@ public class CertificationResultUploadHandler {
         return uploadUtil.parseSingleRowField(Headings.API_DOCUMENTATION_LINK, certHeadingRecord, certResultRecords);
     }
 
-    private List<CertificationResultTestFunctionality> parseTestFunctionalities(
+    private List<CertificationResultTestFunctionality> parseFunctionalitiesTested(
             CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         List<CertificationResultTestFunctionality> testFunctionalities = new ArrayList<CertificationResultTestFunctionality>();
         List<String> testFuncNames = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
-                Headings.TEST_FUNCTIONALITY, certHeadingRecord, certResultRecords);
+                Headings.FUNCTIONALITIES_TESTED, certHeadingRecord, certResultRecords);
         if (testFuncNames != null && testFuncNames.size() > 0) {
             testFuncNames.stream().forEach(testFuncName -> {
                 CertificationResultTestFunctionality testFunc = CertificationResultTestFunctionality.builder()
