@@ -28,33 +28,30 @@ public class TestParticipantNoramlizer {
                 && listing.getSed().getTestTasks().size() > 0) {
             listing.getSed().getTestTasks().stream()
                 .forEach(testTask -> {
-                    //The "set to null if negative" code is done because of a complicated issue
-                    //with React/Angular using negative IDs to track task and particpants.
-                    //The "set to null if negative" code could potentially be removed in the future with OCD-2838
-                    setTestTaskIdToNullIfNegative(testTask);
-                    setTestParticipantIdsNullIfNegative(testTask);
+                    setTestTaskUniqueIdToIdIfNegative(testTask);
+                    setTestParticipantUniqueIdsToIdIfNegative(testTask);
                     populateTestParticipantAges(testTask);
                     populateTestParticipantEducationTypes(testTask);
                 });
         }
     }
 
-    private void setTestTaskIdToNullIfNegative(TestTask testTask) {
+    private void setTestTaskUniqueIdToIdIfNegative(TestTask testTask) {
         if (testTask.getId() != null && testTask.getId() < 0) {
-            testTask.setId(null);
+            testTask.setUniqueId(testTask.getId() + "");
         }
     }
 
-    private void setTestParticipantIdsNullIfNegative(TestTask testTask) {
+    private void setTestParticipantUniqueIdsToIdIfNegative(TestTask testTask) {
         if (testTask.getTestParticipants() != null && testTask.getTestParticipants().size() > 0) {
             testTask.getTestParticipants().stream()
-                .forEach(participant -> setTestParticipantIdToNullIfNegative(participant));
+                .forEach(participant -> setTestParticipantUniqueIdToIdIfNegative(participant));
         }
     }
 
-    private void setTestParticipantIdToNullIfNegative(TestParticipant testParticipant) {
+    private void setTestParticipantUniqueIdToIdIfNegative(TestParticipant testParticipant) {
         if (testParticipant.getId() != null && testParticipant.getId() < 0) {
-            testParticipant.setId(null);
+            testParticipant.setUniqueId(testParticipant.getId() + "");
         }
     }
 
