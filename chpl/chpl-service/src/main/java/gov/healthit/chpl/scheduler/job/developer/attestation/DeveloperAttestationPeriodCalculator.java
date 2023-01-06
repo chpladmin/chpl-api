@@ -57,7 +57,11 @@ public class DeveloperAttestationPeriodCalculator {
         logger.info("Most recent past attestation period: {} - {} ", mostRecentPastPeriod.getPeriodStart().toString(), mostRecentPastPeriod.getPeriodEnd().toString());
 
         return getAllDevelopers().stream()
-                .filter(dev -> doesActiveListingExistDuringAttestationPeriod(getListingDataForDeveloper(dev, logger), mostRecentPastPeriod))
+                .filter(dev -> {
+                    List<ListingSearchResult> listingsForDeveloper = getListingDataForDeveloper(dev, logger);
+                    return doesActiveListingExistDuringAttestationPeriod(listingsForDeveloper, mostRecentPastPeriod)
+                            && doesCurrentActiveListingExist(listingsForDeveloper);
+                })
                 .toList();
     }
 
@@ -68,6 +72,13 @@ public class DeveloperAttestationPeriodCalculator {
     private Boolean doesActiveListingExistDuringAttestationPeriod(List<ListingSearchResult> listingsForDeveloper, AttestationPeriod period) {
         return listingsForDeveloper.stream()
                 .filter(listing -> isListingActiveDuringPeriod(listing, period))
+                .findAny()
+                .isPresent();
+    }
+
+    private Boolean doesCurrentActiveListingExist(List<ListingSearchResult> listings) {
+        return listings.stream()
+                .filter(listing -> listing.isCertificateActive())
                 .findAny()
                 .isPresent();
     }
@@ -114,7 +125,7 @@ public class DeveloperAttestationPeriodCalculator {
     private List<ListingSearchResult> getListingDataForDeveloper(Developer developer, Logger logger) {
         SearchRequest searchRequest = SearchRequest.builder()
                 .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
-                .developer(developer.getName())
+                .developerId(developer.getId())
                 .pageSize(MAX_PAGE_SIZE)
                 .pageNumber(0)
                 .build();
@@ -134,7 +145,7 @@ public class DeveloperAttestationPeriodCalculator {
                 searchResponse = listingSearchService.findListings(searchRequest);
                 searchResults.addAll(searchResponse.getResults());
             }
-            logger.info("Found {} total listings for developer {}.", searchResults.size(), searchRequest.getDeveloper());
+            logger.debug("Found {} total listings for developer {}.", searchResults.size(), searchRequest.getDeveloperId());
         } catch (ValidationException ex) {
             logger.error("Could not retrieve listings from search request.", ex);
         }
