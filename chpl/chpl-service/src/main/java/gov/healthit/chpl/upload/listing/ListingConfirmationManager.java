@@ -291,7 +291,7 @@ public class ListingConfirmationManager {
         }
         if (listing.getSed() != null && !CollectionUtils.isEmpty(listing.getSed().getTestTasks())) {
             listing.getSed().getTestTasks().stream()
-                .forEach(rethrowConsumer(testTask -> saveTestTask(listing, testTask)));
+                .forEach(rethrowConsumer(testTask -> saveTestTask(listing, testTask, listing.getSed().getTestTasks())));
         }
     }
 
@@ -303,12 +303,12 @@ public class ListingConfirmationManager {
             .forEach(rethrowConsumer(certResultId -> certResultDao.createUcdProcessMapping(certResultId, ucdProcess)));
     }
 
-    private void saveTestTask(CertifiedProductSearchDetails listing, TestTask testTask) throws EntityCreationException {
+    private void saveTestTask(CertifiedProductSearchDetails listing, TestTask testTask, List<TestTask> allTestTasks) throws EntityCreationException {
         List<Long> certResultIds = testTask.getCriteria().stream()
                 .map(criterion -> getCertificationResultId(listing, criterion))
                 .collect(Collectors.toList());
             certResultIds.stream()
-                .forEach(rethrowConsumer(certResultId -> certResultDao.createTestTaskMapping(certResultId, testTask)));
+                .forEach(rethrowConsumer(certResultId -> certResultDao.createTestTaskMapping(certResultId, testTask, allTestTasks)));
     }
 
     private Long getCertificationResultId(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
