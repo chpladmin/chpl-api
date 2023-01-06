@@ -7,12 +7,12 @@ import javax.xml.stream.XMLStreamWriter;
 
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 
-public class CertificationResultTestFunctionalityXmlGenerator extends XmlGenerator {
+public class CertificationResultFunctionalityTestedXmlGenerator extends XmlGenerator {
     public static void add(List<CertificationResultTestFunctionality> tests, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (tests != null) {
             sw.writeStartElement(rootNodeName);
             for (CertificationResultTestFunctionality test : tests) {
-                add(test, "testFunctionality", sw);
+                add(test, "functionalityTested", sw);
             }
             sw.writeEndElement();
         }

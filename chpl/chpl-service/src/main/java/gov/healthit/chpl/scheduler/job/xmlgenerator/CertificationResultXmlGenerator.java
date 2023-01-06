@@ -28,6 +28,7 @@ public class CertificationResultXmlGenerator extends XmlGenerator {
             CertificationCriterionXmlGenerator.add(result.getCriterion(), "criterion", sw);
             createSimpleElement(result.getDocumentationUrl(), "documentationUrl", sw);
             createSimpleElement(result.getExportDocumentation(), "exportDocumentation", sw);
+            CertificationResultFunctionalityTestedXmlGenerator.add(result.getTestFunctionality(), "functionalitiesTested", sw);
             createSimpleElement(result.isG1Success(), "g1Success", sw);
             createSimpleElement(result.isG2Success(), "g2Success", sw);
             createSimpleElement(result.isGap(), "gap", sw);
@@ -38,7 +39,6 @@ public class CertificationResultXmlGenerator extends XmlGenerator {
             createSimpleElement(result.isSuccess(), "success", sw);
             CertificationResultSvapXmlGenerator.add(result.getSvaps(), "svaps", sw);
             CertificationResultTestDataXmlGenerator.add(result.getTestDataUsed(), "testDataList", sw);
-            CertificationResultTestFunctionalityXmlGenerator.add(result.getTestFunctionality(), "testFunctionalityList", sw);
             CertificationResultTestProcedureXmlGenerator.add(result.getTestProcedures(), "testProcedures", sw);
             CertificationResultTestStandardXmlGenerator.add(result.getTestStandards(), "testStandards", sw);
             CertificationResultTestToolXmlGenerator.add(result.getTestToolsUsed(), "testTools", sw);

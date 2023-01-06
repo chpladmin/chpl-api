@@ -174,8 +174,8 @@ public class CertificationResult implements Serializable {
      * (a)(1)(ii). You can find a list of potential values in the 2014 or 2015 Functionality and Standards Reference
      * Tables. It is applicable for 2014 and 2015 Edition.
      */
-    @XmlElementWrapper(name = "testFunctionalityList", nillable = true, required = false)
-    @XmlElement(name = "testFunctionality")
+    @XmlElementWrapper(name = "functionalitiesTested", nillable = true, required = false)
+    @XmlElement(name = "functionalityTested")
     @Builder.Default
     private List<CertificationResultTestFunctionality> testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
 
