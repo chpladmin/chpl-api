@@ -69,6 +69,8 @@ public class DeveloperAttestationCheckInReportDataCollector {
             List<CertificationBody> acbs = developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(developerId);
             return DeveloperAttestationCheckInReport.builder()
                     .developerName(developer.getName())
+                    .developerCode(developer.getDeveloperCode())
+                    .developerId(developer.getId())
                     .published(false)
                     .relevantAcbs(acbs.stream()
                             .map(acb -> acb.getName())
@@ -86,6 +88,8 @@ public class DeveloperAttestationCheckInReportDataCollector {
 
             return DeveloperAttestationCheckInReport.builder()
                 .developerName(cr.getDeveloper().getName())
+                .developerCode(cr.getDeveloper().getDeveloperCode())
+                .developerId(cr.getDeveloper().getId())
                 .submittedDate(cr.getSubmittedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
                 .published(cr.getDeveloper().getAttestations().stream()
                         .filter(pa -> pa.getAttestationPeriod().getId().equals(((ChangeRequestAttestationSubmission) cr.getDetails()).getAttestationPeriod().getId()))

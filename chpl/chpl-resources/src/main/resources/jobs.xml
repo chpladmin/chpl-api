@@ -890,5 +890,15 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
+        
+        <job>
+            <name>missingAttestationChangeRequestEmailJob</name>
+            <group>systemJobs</group>
+            <description>Sends Email to Developer who have not submitted Attestation Change Request</description>
+            <job-class>gov.healthit.chpl.scheduler.job.developer.attestation.email.missingchangerequest.MissingAttestationChangeRequestEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        
     </schedule>
 </job-scheduling-data>

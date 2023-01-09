@@ -1273,10 +1273,13 @@ public class CertificationResultDAO extends BaseDAOImpl {
         return dtos;
     }
 
-    public Long createTestTaskMapping(Long certificationResultId, TestTask testTask)
+    public Long createTestTaskMapping(Long certificationResultId, TestTask testTask, List<TestTask> allTestTasks)
             throws EntityCreationException {
-        Long testTaskId = testTaskDao.create(testTask);
-        testTask.setId(testTaskId);
+        Long testTaskId = testTask.getId();
+        if (testTaskId == null || testTaskId < 0) {
+            testTaskId = testTaskDao.create(testTask);
+            testTask.setId(testTaskId);
+        }
 
         CertificationResultTestTaskEntity mapping = new CertificationResultTestTaskEntity();
         mapping.setCertificationResultId(certificationResultId);
@@ -1286,7 +1289,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
 
         if (!CollectionUtils.isEmpty(testTask.getTestParticipants())) {
             testTask.getTestParticipants().stream()
-                .forEach(rethrowConsumer(participant -> createTestParticipantMapping(testTaskId, participant)));
+                .forEach(rethrowConsumer(participant -> createTestParticipantMapping(testTask, participant, allTestTasks)));
         }
         return mapping.getId();
     }
@@ -1377,21 +1380,28 @@ public class CertificationResultDAO extends BaseDAOImpl {
         return result;
     }
 
-    public void createTestParticipantMapping(Long testTaskId, TestParticipant participant)
+    public void createTestParticipantMapping(TestTask testTask, TestParticipant participant, List<TestTask> allTestTasks)
             throws EntityCreationException {
         boolean createMapping = false;
-        if (participant.getId() == null) {
+        if (participant.getId() == null || participant.getId() < 0) {
             Long participantId = participantDao.create(participant);
             participant.setId(participantId);
+
+            allTestTasks.stream()
+                .flatMap(currTestTask -> currTestTask.getTestParticipants().stream())
+                .filter(currParticipant -> currParticipant.getId() == null || currParticipant.getId() < 0)
+                .filter(currParticipant -> currParticipant.getUniqueId().equals(participant.getUniqueId()))
+                .forEach(currParticipant -> currParticipant.setId(participant.getId()));
+
             createMapping = true;
         } else {
-            createMapping = !doesTaskParticipantMappingExist(testTaskId, participant.getId());
+            createMapping = !doesTaskParticipantMappingExist(testTask.getId(), participant.getId());
         }
 
         if (createMapping) {
             TestTaskParticipantMapEntity mapping = new TestTaskParticipantMapEntity();
             mapping.setTestParticipantId(participant.getId());
-            mapping.setTestTaskId(testTaskId);
+            mapping.setTestTaskId(testTask.getId());
             mapping.setLastModifiedUser(AuthUtil.getAuditId());
             create(mapping);
         }

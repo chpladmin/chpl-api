@@ -89,11 +89,6 @@
             <artifactId>commons-csv</artifactId>
             <version>${commons.csv.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.asynchttpclient</groupId>
-            <artifactId>async-http-client</artifactId>
-            <version>${asynchttpclient.version}</version>
-        </dependency>
         <!-- ff4j -->
         <dependency>
             <groupId>org.ff4j</groupId>

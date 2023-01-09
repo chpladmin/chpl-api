@@ -1,5 +1,26 @@
 # Release Notes
 
+## Version 39.1.0
+_9 January 2023_
+
+### Features
+* Create job to allow sending of emails from CHPL to Developer users that haven't submitted Attestations
+* Restore ability to use removed criteria to generate 15E CMS IDs
+* Add totals to Developer Attestations Check-in Report
+* Add /search endpoint that uses /search/v2 per new CHPL standard
+* Add property to configure whether emails are deleted from sent
+* Treat all date range searches as exlusive of the start/end dates
+* Remove invalid date order check from search validation
+* Add new sorting options for the listing search/v2 endpoint
+* Only check Listing URLs for Listings with Active Certificates
+* Remove "copyright" notification from email footers
+
+### Bug Fixes
+* Correctly handle SED task/participants on listing edit and upload
+* Put updated data in Questionable URL report when job runs
+
+---
+
 ## Version 39.0.0
 _12 December 2022_
 

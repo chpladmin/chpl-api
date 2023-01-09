@@ -144,6 +144,209 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "GET /search - returns 200 status and valid response",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"expect GET /search request to return 200 status and response body to not be empty\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(jsonData.response).not.eq(null);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"expect listing data fields in GET /search response\", function () {\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('chplProductNumber');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('edition');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('certificationBody');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('acbCertificationId');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('practiceType');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('developer');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('product');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('version');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('certificationDate');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('certificationStatus');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('chplProductNumber');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('edition');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('curesUpdate');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('surveillanceCount');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('openSurveillanceNonConformityCount');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('closedSurveillanceNonConformityCount');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('directReviewCount');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('openDirectReviewNonConformityCount');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('closedDirectReviewNonConformityCount');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('openSurveillanceCount');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('closedSurveillanceCount');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('promotingInteroperability');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('mandatoryDisclosures');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('criteriaMet');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('cqmsMet');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('apiDocumentation');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('serviceBaseUrlList');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('rwtPlansUrl');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('rwtResultsUrl');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"expect listing data in GET /search response\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"2015\");    \r",
+							"    pm.expect(pm.response.text()).to.include(\"Drummond Group\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"Active\");    \r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/search",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST /search - return 200 status and valid response",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"expect POST /search request to return 200 status\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(jsonData.response).not.eq(null);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"expect listing data in POST /search endpoint response\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"2015\");    \r",
+							"    pm.expect(pm.response.text()).to.include(\"Carefluence\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"Active\");    \r",
+							"    pm.expect(jsonData.results[0]).to.have.property('rwtPlansUrl');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"developer\": \"Carefluence\",\r\n  \"product\": \"Carefluence Open API\", \r\n   \"rwtOptions\": [\r\n    \"HAS_PLANS_URL\"\r\n  ]\r\n}"
+				},
+				"url": {
+					"raw": "{{url}}/rest/search",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /search - 200 status and no results when passing invalid date parameters",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.test(\"expect GET /search request to return 200 status and no results when passing invalid date parameter\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(jsonData.results.length).to.eql(0);\r",
+							" });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/search?certificationDateStart=2023-11-30&certificationDateEnd=2020-01-01",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"search"
+					],
+					"query": [
+						{
+							"key": "certificationDateStart",
+							"value": "2023-11-30"
+						},
+						{
+							"key": "certificationDateEnd",
+							"value": "2020-01-01"
+						}
+					]
+				},
+				"description": "GET /search end point should give 200 status and no results for invalid date parameters in request"
+			},
+			"response": []
 		}
 	]
 }
