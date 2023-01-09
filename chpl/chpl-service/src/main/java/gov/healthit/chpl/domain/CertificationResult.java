@@ -156,7 +156,7 @@ public class CertificationResult implements Serializable {
     private List<ConformanceMethod> allowedConformanceMethods;
 
     @XmlTransient
-    private List<TestFunctionality> allowedTestFunctionalities;
+    private List<TestFunctionality> allowedFunctionalitiesTested;
 
     @XmlTransient
     private List<Svap> allowedSvaps;
@@ -385,7 +385,7 @@ public class CertificationResult implements Serializable {
         }
 
         this.setOptionalStandards(getOptionalStandards(certResult, certRules));
-        this.setFunctionalitiesTested(getTestFunctionalities(certResult, certRules));
+        this.setFunctionalitiesTested(getFunctionalitiesTested(certResult, certRules));
         this.setConformanceMethods(getConformanceMethods(certResult, certRules));
         this.setTestProcedures(getTestProcedures(certResult, certRules));
         this.setTestDataUsed(getTestData(certResult, certRules));
@@ -412,7 +412,7 @@ public class CertificationResult implements Serializable {
         }
     }
 
-    private List<CertificationResultTestFunctionality> getTestFunctionalities(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+    private List<CertificationResultTestFunctionality> getFunctionalitiesTested(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
             return certResult.getTestFunctionality().stream()
                     .map(item -> new CertificationResultTestFunctionality(item))
@@ -659,12 +659,12 @@ public class CertificationResult implements Serializable {
         this.allowedConformanceMethods = allowedConformanceMethods;
     }
 
-    public List<TestFunctionality> getAllowedTestFunctionalities() {
-        return allowedTestFunctionalities;
+    public List<TestFunctionality> getAllowedFunctionalitiesTested() {
+        return allowedFunctionalitiesTested;
     }
 
-    public void setAllowedTestFunctionalities(List<TestFunctionality> testFunctionalities) {
-        this.allowedTestFunctionalities = testFunctionalities;
+    public void setAllowedFunctionalitiesTested(List<TestFunctionality> allowedFunctionalitiesTested) {
+        this.allowedFunctionalitiesTested = allowedFunctionalitiesTested;
     }
 
     public CertificationCriterion getCriterion() {

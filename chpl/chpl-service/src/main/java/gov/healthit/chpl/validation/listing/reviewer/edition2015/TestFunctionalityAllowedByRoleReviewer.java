@@ -36,7 +36,7 @@ public class TestFunctionalityAllowedByRoleReviewer implements ComparisonReviewe
 
     @Autowired
     public TestFunctionalityAllowedByRoleReviewer(ResourcePermissions permissions, ErrorMessageUtil errorMessages,
-            @Value("${testFunctionalities.restrictions}") String jsonRestrictions) {
+            @Value("${functionalitiesTested.restrictions}") String jsonRestrictions) {
 
         this.errorMessages = errorMessages;
         this.permissions = permissions;

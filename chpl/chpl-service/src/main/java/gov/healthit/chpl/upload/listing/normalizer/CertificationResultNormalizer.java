@@ -15,7 +15,7 @@ public class CertificationResultNormalizer {
     private CertificationCriterionNormalizer criterionNormalizer;
     private AdditionalSoftwareNormalizer additionalSoftwareNormalizer;
     private TestDataNormalizer testDataNormalizer;
-    private TestFunctionalityNormalizer testFunctionalityNormalizer;
+    private FunctionalityTestedNormalizer functionalityTestedNormalizer;
     private ConformanceMethodNormalizer conformanceMethodNormalizer;
     private OptionalStandardNormalizer optionalStandardNormalizer;
     private TestToolNormalizer testToolNormalizer;
@@ -26,7 +26,7 @@ public class CertificationResultNormalizer {
     public CertificationResultNormalizer(CertificationCriterionNormalizer criterionNormalizer,
         AdditionalSoftwareNormalizer additionalSoftwareNormalizer,
         TestDataNormalizer testDataNormalizer,
-        TestFunctionalityNormalizer testFunctionalityNormalizer,
+        FunctionalityTestedNormalizer functionalityTestedNormalizer,
         ConformanceMethodNormalizer conformanceMethodNormalizer,
         OptionalStandardNormalizer optionalStandardNormalizer,
         TestToolNormalizer testToolNormalizer,
@@ -35,7 +35,7 @@ public class CertificationResultNormalizer {
         this.criterionNormalizer = criterionNormalizer;
         this.additionalSoftwareNormalizer = additionalSoftwareNormalizer;
         this.testDataNormalizer = testDataNormalizer;
-        this.testFunctionalityNormalizer = testFunctionalityNormalizer;
+        this.functionalityTestedNormalizer = functionalityTestedNormalizer;
         this.conformanceMethodNormalizer = conformanceMethodNormalizer;
         this.optionalStandardNormalizer = optionalStandardNormalizer;
         this.testToolNormalizer = testToolNormalizer;
@@ -47,7 +47,7 @@ public class CertificationResultNormalizer {
         this.criterionNormalizer.normalize(listing);
         this.additionalSoftwareNormalizer.normalize(listing);
         this.testDataNormalizer.normalize(listing);
-        this.testFunctionalityNormalizer.normalize(listing);
+        this.functionalityTestedNormalizer.normalize(listing);
         this.conformanceMethodNormalizer.normalize(listing);
         this.optionalStandardNormalizer.normalize(listing);
         this.testToolNormalizer.normalize(listing);

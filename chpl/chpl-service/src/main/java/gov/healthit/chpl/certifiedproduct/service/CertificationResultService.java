@@ -13,8 +13,8 @@ import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.TestTool;
@@ -94,7 +94,7 @@ public class CertificationResultService {
         result.setAllowedConformanceMethods(getAvailableConformanceMethodsForCriteria(result, conformanceMethodCriteriaMap));
         result.setAllowedOptionalStandards(getAvailableOptionalStandardsForCriteria(result, optionalStandardCriteriaMap));
         result.setAllowedSvaps(getAvailableSvapForCriteria(result, svapCriteriaMap));
-        result.setAllowedTestFunctionalities(getAvailableTestFunctionalities(result, searchDetails));
+        result.setAllowedFunctionalitiesTested(getAvailableFunctionalitiesTested(result, searchDetails));
         result.setAllowedTestTools(getAvailableTestToolForCriteria(result, testToolCriteriaMap));
         return result;
     }
@@ -162,7 +162,7 @@ public class CertificationResultService {
                 .collect(Collectors.toList());
     }
 
-    private List<TestFunctionality> getAvailableTestFunctionalities(CertificationResult cr, CertifiedProductSearchDetails cp) {
+    private List<TestFunctionality> getAvailableFunctionalitiesTested(CertificationResult cr, CertifiedProductSearchDetails cp) {
         String edition = cp.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
         Long practiceTypeId = null;
         if (cp.getPracticeType().containsKey("id")) {
