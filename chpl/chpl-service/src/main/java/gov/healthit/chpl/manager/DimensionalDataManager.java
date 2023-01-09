@@ -26,7 +26,6 @@ import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestDataDAO;
-import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
@@ -46,7 +45,6 @@ import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.NonconformityTypeEnum;
 import gov.healthit.chpl.domain.Product;
-import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
 import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
@@ -63,10 +61,11 @@ import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.TestDataCriteriaMapDTO;
-import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestProcedureCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.functionalityTested.TestFunctionality;
+import gov.healthit.chpl.functionalityTested.TestFunctionalityDAO;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
 import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
@@ -209,16 +208,11 @@ public class DimensionalDataManager {
     }
 
     @Transactional
-    public Set<TestFunctionality> getTestFunctionality() {
-        LOGGER.debug("Getting all test functionality from the database (not cached).");
-        List<TestFunctionalityDTO> dtos = this.testFuncDao.findAll();
-        Set<TestFunctionality> testFuncs = new HashSet<TestFunctionality>();
-
-        for (TestFunctionalityDTO dto : dtos) {
-            testFuncs.add(new TestFunctionality(dto));
-        }
-
-        return testFuncs;
+    public Set<TestFunctionality> getFunctionalitiesTested() {
+        LOGGER.debug("Getting all functionalities tested from the database (not cached).");
+        List<TestFunctionality> functionalitiesTested = this.testFuncDao.findAll();
+        return functionalitiesTested.stream()
+                .collect(Collectors.toSet());
     }
 
     @Transactional

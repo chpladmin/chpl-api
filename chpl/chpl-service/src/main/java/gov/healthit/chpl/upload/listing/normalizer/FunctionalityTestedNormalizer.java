@@ -14,13 +14,12 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 
-import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.TestFunctionality;
-import gov.healthit.chpl.dto.TestFunctionalityDTO;
-import gov.healthit.chpl.manager.TestingFunctionalityManager;
+import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionality;
+import gov.healthit.chpl.functionalityTested.TestFunctionality;
+import gov.healthit.chpl.functionalityTested.TestFunctionalityDAO;
+import gov.healthit.chpl.functionalityTested.TestingFunctionalityManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import lombok.Data;
 import lombok.ToString;
@@ -84,7 +83,7 @@ public class FunctionalityTestedNormalizer {
         Long practiceTypeId = MapUtils.getLong(listing.getPracticeType(), PRACTICE_TYPE_ID_KEY);
         if (certResult != null && certResult.getCriterion() != null
                 && certResult.getCriterion().getId() != null) {
-            return functionalityTestedManager.getTestFunctionalities(certResult.getCriterion().getId(), edition, practiceTypeId);
+            return functionalityTestedManager.getFunctionalitiesTested(certResult.getCriterion().getId(), edition, practiceTypeId);
         }
         return new ArrayList<TestFunctionality>();
     }
@@ -109,10 +108,10 @@ public class FunctionalityTestedNormalizer {
             }
 
             if (editionId != null) {
-                TestFunctionalityDTO testFunctionalityDto =
+                TestFunctionality foundFunctionalityTested =
                         functionalityTestedDao.getByNumberAndEdition(functionalityTested.getName(), editionId);
-                if (testFunctionalityDto != null) {
-                    functionalityTested.setTestFunctionalityId(testFunctionalityDto.getId());
+                if (foundFunctionalityTested != null) {
+                    functionalityTested.setTestFunctionalityId(foundFunctionalityTested.getId());
                 }
             }
         }

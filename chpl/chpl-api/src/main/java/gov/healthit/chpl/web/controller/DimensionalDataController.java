@@ -28,7 +28,6 @@ import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.domain.SearchOption;
-import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
@@ -36,6 +35,7 @@ import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.functionalityTested.TestFunctionality;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.manager.FilterManager;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
@@ -312,7 +312,7 @@ public class DimensionalDataController {
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getTestFunctionality() {
-        Set<TestFunctionality> data = dimensionalDataManager.getTestFunctionality();
+        Set<TestFunctionality> data = dimensionalDataManager.getFunctionalitiesTested();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);

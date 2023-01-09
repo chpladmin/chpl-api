@@ -15,14 +15,13 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.TestFunctionality;
-import gov.healthit.chpl.dto.TestFunctionalityDTO;
-import gov.healthit.chpl.manager.TestingFunctionalityManager;
+import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionality;
+import gov.healthit.chpl.functionalityTested.TestFunctionality;
+import gov.healthit.chpl.functionalityTested.TestFunctionalityDAO;
+import gov.healthit.chpl.functionalityTested.TestingFunctionalityManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public class FunctionalityTestedNormalizerTest {
@@ -43,7 +42,7 @@ public class FunctionalityTestedNormalizerTest {
     public void before() {
         functionalityTestedDao = Mockito.mock(TestFunctionalityDAO.class);
         functionalityTestedManager = Mockito.mock(TestingFunctionalityManager.class);
-        Mockito.when(functionalityTestedManager.getTestFunctionalities(ArgumentMatchers.anyLong(), ArgumentMatchers.anyString(), ArgumentMatchers.anyLong()))
+        Mockito.when(functionalityTestedManager.getFunctionalitiesTested(ArgumentMatchers.anyLong(), ArgumentMatchers.anyString(), ArgumentMatchers.anyLong()))
             .thenReturn(new ArrayList<TestFunctionality>());
 
         resourcePermissions = Mockito.mock(ResourcePermissions.class);
@@ -120,10 +119,10 @@ public class FunctionalityTestedNormalizerTest {
         Map<String, Object> editionMap = create2015EditionMap();
 
         Mockito.when(functionalityTestedDao.getByNumberAndEdition(ArgumentMatchers.eq("valid"), ArgumentMatchers.eq(3L)))
-            .thenReturn(TestFunctionalityDTO.builder()
+            .thenReturn(TestFunctionality.builder()
                     .id(1L)
                     .name("valid")
-                    .number("valid")
+                    .description("valid")
                     .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -227,7 +226,7 @@ public class FunctionalityTestedNormalizerTest {
                 .description("tf2 desc")
                 .id(2L)
                 .build());
-        Mockito.when(functionalityTestedManager.getTestFunctionalities(ArgumentMatchers.anyLong(), ArgumentMatchers.anyString(), ArgumentMatchers.nullable(Long.class)))
+        Mockito.when(functionalityTestedManager.getFunctionalitiesTested(ArgumentMatchers.anyLong(), ArgumentMatchers.anyString(), ArgumentMatchers.nullable(Long.class)))
             .thenReturn(allowedFunctionalitiesTested);
 
         Map<String, Object> editionMap = create2015EditionMap();
@@ -265,7 +264,7 @@ public class FunctionalityTestedNormalizerTest {
                 .description("tf2 desc")
                 .id(2L)
                 .build());
-        Mockito.when(functionalityTestedManager.getTestFunctionalities(ArgumentMatchers.eq(4L), ArgumentMatchers.anyString(), ArgumentMatchers.nullable(Long.class)))
+        Mockito.when(functionalityTestedManager.getFunctionalitiesTested(ArgumentMatchers.eq(4L), ArgumentMatchers.anyString(), ArgumentMatchers.nullable(Long.class)))
             .thenReturn(new ArrayList<TestFunctionality>());
 
         Map<String, Object> editionMap = create2015EditionMap();

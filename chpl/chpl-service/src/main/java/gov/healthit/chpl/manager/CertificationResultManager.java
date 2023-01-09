@@ -22,8 +22,6 @@ import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
-import gov.healthit.chpl.dao.FuzzyChoicesDAO;
-import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestParticipantDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestTaskDAO;
@@ -33,7 +31,6 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.domain.CertificationResultTestData;
-import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
@@ -46,14 +43,12 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
-import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
-import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
@@ -62,6 +57,9 @@ import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEnti
 import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionality;
+import gov.healthit.chpl.functionalityTested.TestFunctionality;
+import gov.healthit.chpl.functionalityTested.TestFunctionalityDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
@@ -76,33 +74,30 @@ public class CertificationResultManager extends SecuredManager {
     private CertificationResultDAO certResultDAO;
     private TestStandardDAO testStandardDAO;
     private TestToolDAO testToolDAO;
-    private TestFunctionalityDAO testFunctionalityDAO;
+    private TestFunctionalityDAO functionalityTestedDao;
     private TestParticipantDAO testParticipantDAO;
     private AgeRangeDAO ageDao;
     private EducationTypeDAO educDao;
     private TestTaskDAO testTaskDAO;
     private UcdProcessDAO ucdDao;
-    private FuzzyChoicesDAO fuzzyChoicesDao;
 
     @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
     public CertificationResultManager(CertifiedProductSearchDAO cpDao, CertificationCriterionDAO criteriaDao,
             CertificationResultDAO certResultDAO, TestStandardDAO testStandardDAO,
-            TestToolDAO testToolDAO, TestFunctionalityDAO testFunctionalityDAO, TestParticipantDAO testParticipantDAO,
-            AgeRangeDAO ageDao, EducationTypeDAO educDao, TestTaskDAO testTaskDAO, UcdProcessDAO ucdDao,
-            FuzzyChoicesDAO fuzzyChoicesDao) {
+            TestToolDAO testToolDAO, TestFunctionalityDAO functionalityTestedDao, TestParticipantDAO testParticipantDAO,
+            AgeRangeDAO ageDao, EducationTypeDAO educDao, TestTaskDAO testTaskDAO, UcdProcessDAO ucdDao) {
         this.cpDao = cpDao;
         this.criteriaDao = criteriaDao;
         this.certResultDAO = certResultDAO;
         this.testStandardDAO = testStandardDAO;
         this.testToolDAO = testToolDAO;
-        this.testFunctionalityDAO = testFunctionalityDAO;
+        this.functionalityTestedDao = functionalityTestedDao;
         this.testParticipantDAO = testParticipantDAO;
         this.ageDao = ageDao;
         this.educDao = educDao;
         this.testTaskDAO = testTaskDAO;
         this.ucdDao = ucdDao;
-        this.fuzzyChoicesDao = fuzzyChoicesDao;
     }
 
     @SuppressWarnings({"checkstyle:methodlength", "checkstyle:linelength"})
@@ -961,7 +956,7 @@ public class CertificationResultManager extends SecuredManager {
             List<CertificationResultTestFunctionality> updatedFunctionalitiesTested) throws EntityCreationException {
         int numChanges = 0;
         String editionIdString = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString();
-        List<CertificationResultTestFunctionalityDTO> functionalitiesTestedToAdd = new ArrayList<CertificationResultTestFunctionalityDTO>();
+        List<CertificationResultTestFunctionality> functionalitiesTestedToAdd = new ArrayList<CertificationResultTestFunctionality>();
         List<Long> idsToRemove = new ArrayList<Long>();
 
         // figure out which test funcs to add
@@ -969,7 +964,7 @@ public class CertificationResultManager extends SecuredManager {
             // fill in potentially missing test func id
             for (CertificationResultTestFunctionality updatedItem : updatedFunctionalitiesTested) {
                 if (updatedItem.getTestFunctionalityId() == null && !StringUtils.isEmpty(updatedItem.getName())) {
-                    TestFunctionalityDTO foundFunc = testFunctionalityDAO.getByNumberAndEdition(updatedItem.getName(),
+                    TestFunctionality foundFunc = functionalityTestedDao.getByNumberAndEdition(updatedItem.getName(),
                             Long.valueOf(editionIdString));
                     if (foundFunc == null) {
                         LOGGER.error("Could not find test functionality " + updatedItem.getName()
@@ -986,7 +981,7 @@ public class CertificationResultManager extends SecuredManager {
                 // existing listing has none, add all from the update
                 for (CertificationResultTestFunctionality updatedItem : updatedFunctionalitiesTested) {
                     if (updatedItem.getTestFunctionalityId() != null) {
-                        CertificationResultTestFunctionalityDTO toAdd = new CertificationResultTestFunctionalityDTO();
+                        CertificationResultTestFunctionality toAdd = new CertificationResultTestFunctionality();
                         toAdd.setCertificationResultId(certResult.getId());
                         toAdd.setTestFunctionalityId(updatedItem.getTestFunctionalityId());
                         functionalitiesTestedToAdd.add(toAdd);
@@ -1003,7 +998,7 @@ public class CertificationResultManager extends SecuredManager {
 
                     if (!inExistingListing) {
                         if (updatedItem.getTestFunctionalityId() != null) {
-                            CertificationResultTestFunctionalityDTO toAdd = new CertificationResultTestFunctionalityDTO();
+                            CertificationResultTestFunctionality toAdd = new CertificationResultTestFunctionality();
                             toAdd.setCertificationResultId(certResult.getId());
                             toAdd.setTestFunctionalityId(updatedItem.getTestFunctionalityId());
                             functionalitiesTestedToAdd.add(toAdd);
@@ -1034,12 +1029,12 @@ public class CertificationResultManager extends SecuredManager {
         }
 
         numChanges = functionalitiesTestedToAdd.size() + idsToRemove.size();
-        for (CertificationResultTestFunctionalityDTO toAdd : functionalitiesTestedToAdd) {
-            certResultDAO.addTestFunctionalityMapping(toAdd);
+        for (CertificationResultTestFunctionality toAdd : functionalitiesTestedToAdd) {
+            certResultDAO.addFunctionalityTestedMapping(toAdd);
         }
 
         for (Long idToRemove : idsToRemove) {
-            certResultDAO.deleteTestFunctionalityMapping(idToRemove);
+            certResultDAO.deleteFunctionalityTestedMapping(idToRemove);
         }
         return numChanges;
     }
@@ -1421,9 +1416,9 @@ public class CertificationResultManager extends SecuredManager {
         return certResultDAO.getTestProceduresForCertificationResult(certificationResultId);
     }
 
-    public List<CertificationResultTestFunctionalityDTO> getTestFunctionalityForCertificationResult(
+    public List<CertificationResultTestFunctionality> getFunctionalitiesTestedForCertificationResult(
             Long certificationResultId) {
-        return certResultDAO.getTestFunctionalityForCertificationResult(certificationResultId);
+        return certResultDAO.getFunctionalitiesTestedForCertificationResult(certificationResultId);
     }
 
     public List<CertificationResultTestTaskDTO> getTestTasksForCertificationResult(Long certificationResultId) {

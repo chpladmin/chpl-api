@@ -23,7 +23,6 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.domain.CertificationResultTestData;
-import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
@@ -32,7 +31,6 @@ import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
-import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
@@ -47,7 +45,6 @@ import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEnti
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultTestDataEntity;
-import gov.healthit.chpl.entity.listing.CertificationResultTestFunctionalityEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultTestProcedureEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultTestStandardEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultTestTaskEntity;
@@ -56,6 +53,8 @@ import gov.healthit.chpl.entity.listing.CertificationResultUcdProcessEntity;
 import gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionality;
+import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionalityEntity;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.entity.CertificationResultSvapEntity;
@@ -1167,30 +1166,24 @@ public class CertificationResultDAO extends BaseDAOImpl {
     }
 
     /******************************************************
-     * Test Functionality for Certification Results
+     * Functionality Tested for Certification Results
      *
      *******************************************************/
 
-    public List<CertificationResultTestFunctionalityDTO> getTestFunctionalityForCertificationResult(
+    public List<CertificationResultTestFunctionality> getFunctionalitiesTestedForCertificationResult(
             Long certificationResultId) {
-
-        List<CertificationResultTestFunctionalityEntity> entities = getTestFunctionalityForCertification(
-                certificationResultId);
-        List<CertificationResultTestFunctionalityDTO> dtos = new ArrayList<CertificationResultTestFunctionalityDTO>();
-
-        for (CertificationResultTestFunctionalityEntity entity : entities) {
-            CertificationResultTestFunctionalityDTO dto = new CertificationResultTestFunctionalityDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
+        List<CertificationResultTestFunctionalityEntity> entities = getTestFunctionalityForCertification(certificationResultId);
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    public Long createTestFunctionalityMapping(Long certResultId, CertificationResultTestFunctionality testFunctionality)
+    public Long createFunctionalityTestedMapping(Long certResultId, CertificationResultTestFunctionality functionalityTested)
             throws EntityCreationException {
         try {
             CertificationResultTestFunctionalityEntity entity = new CertificationResultTestFunctionalityEntity();
             entity.setCertificationResultId(certResultId);
-            entity.setTestFunctionalityId(testFunctionality.getTestFunctionalityId());
+            entity.setFunctionalityTestedId(functionalityTested.getTestFunctionalityId());
             entity.setLastModifiedUser(AuthUtil.getAuditId());
             create(entity);
             return entity.getId();
@@ -1199,23 +1192,19 @@ public class CertificationResultDAO extends BaseDAOImpl {
         }
     }
 
-    public CertificationResultTestFunctionalityDTO addTestFunctionalityMapping(
-            CertificationResultTestFunctionalityDTO dto) throws EntityCreationException {
+    public void addFunctionalityTestedMapping(CertificationResultTestFunctionality functionalityTested) throws EntityCreationException {
         CertificationResultTestFunctionalityEntity mapping = new CertificationResultTestFunctionalityEntity();
-        mapping.setCertificationResultId(dto.getCertificationResultId());
-        mapping.setTestFunctionalityId(dto.getTestFunctionalityId());
+        mapping.setCertificationResultId(functionalityTested.getCertificationResultId());
+        mapping.setFunctionalityTestedId(functionalityTested.getTestFunctionalityId());
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
         mapping.setLastModifiedDate(new Date());
         mapping.setLastModifiedUser(AuthUtil.getAuditId());
-        entityManager.persist(mapping);
-        entityManager.flush();
-
-        return new CertificationResultTestFunctionalityDTO(mapping);
+        create(mapping);
     }
 
-    public void deleteTestFunctionalityMapping(Long mappingId) {
-        CertificationResultTestFunctionalityEntity toDelete = getCertificationResultTestFunctionalityById(mappingId);
+    public void deleteFunctionalityTestedMapping(Long mappingId) {
+        CertificationResultTestFunctionalityEntity toDelete = getCertificationResultFunctionalityTestedById(mappingId);
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
@@ -1225,12 +1214,15 @@ public class CertificationResultDAO extends BaseDAOImpl {
         }
     }
 
-    private CertificationResultTestFunctionalityEntity getCertificationResultTestFunctionalityById(Long id) {
+    private CertificationResultTestFunctionalityEntity getCertificationResultFunctionalityTestedById(Long id) {
         CertificationResultTestFunctionalityEntity entity = null;
 
-        Query query = entityManager.createQuery("SELECT crtf " + "FROM CertificationResultTestFunctionalityEntity crtf "
-                + "LEFT OUTER JOIN FETCH crtf.testFunctionality tf " + "JOIN FETCH tf.certificationEdition edition "
-                + "WHERE (NOT crtf.deleted = true) " + "AND (crtf.id = :entityid) ",
+        Query query = entityManager.createQuery("SELECT crft "
+                + "FROM CertificationResultTestFunctionalityEntity crft "
+                + "LEFT OUTER JOIN FETCH crft.functionalityTested ft "
+                + "JOIN FETCH ft.certificationEdition edition "
+                + "WHERE (NOT crft.deleted = true) "
+                + "AND (crft.id = :entityid) ",
                 CertificationResultTestFunctionalityEntity.class);
         query.setParameter("entityid", id);
         List<CertificationResultTestFunctionalityEntity> result = query.getResultList();

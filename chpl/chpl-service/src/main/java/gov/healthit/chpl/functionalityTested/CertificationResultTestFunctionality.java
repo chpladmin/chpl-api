@@ -1,17 +1,18 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.functionalityTested;
 
 import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;
@@ -26,9 +27,9 @@ import lombok.ToString;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Builder
 @AllArgsConstructor
 @ToString
+@Builder
 public class CertificationResultTestFunctionality implements Serializable {
     private static final long serialVersionUID = -1647645050538126758L;
 
@@ -62,15 +63,11 @@ public class CertificationResultTestFunctionality implements Serializable {
     @XmlElement(required = true)
     private String year;
 
-    public CertificationResultTestFunctionality() {
-    }
+    @XmlTransient
+    @JsonIgnore
+    private Long certificationResultId;
 
-    public CertificationResultTestFunctionality(CertificationResultTestFunctionalityDTO dto) {
-        this.id = dto.getId();
-        this.testFunctionalityId = dto.getTestFunctionalityId();
-        this.description = dto.getTestFunctionalityName();
-        this.name = dto.getTestFunctionalityNumber();
-        this.year = dto.getTestFunctionalityEdition();
+    public CertificationResultTestFunctionality() {
     }
 
     public boolean matches(CertificationResultTestFunctionality anotherFunc) {
@@ -107,8 +104,8 @@ public class CertificationResultTestFunctionality implements Serializable {
         return description;
     }
 
-    public void setDescription(final String name) {
-        this.description = name;
+    public void setDescription(final String description) {
+        this.description = description;
     }
 
     public String getName() {
@@ -125,6 +122,14 @@ public class CertificationResultTestFunctionality implements Serializable {
 
     public void setYear(final String year) {
         this.year = year;
+    }
+
+    public Long getCertificationResultId() {
+        return this.certificationResultId;
+    }
+
+    public void setCertificationResultId(Long certificationResultId) {
+        this.certificationResultId = certificationResultId;
     }
 
 }

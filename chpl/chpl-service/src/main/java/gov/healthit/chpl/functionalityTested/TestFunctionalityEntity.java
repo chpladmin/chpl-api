@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.functionalityTested;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.CertificationEditionEntity;
+import gov.healthit.chpl.entity.PracticeTypeEntity;
 import lombok.Data;
 
 @Entity
@@ -60,4 +62,14 @@ public class TestFunctionalityEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
+
+    public TestFunctionality toDomain() {
+        return TestFunctionality.builder()
+                .id(this.getId())
+                .description(this.getName())
+                .name(this.getNumber())
+                .practiceType(this.getPracticeType() != null ? this.getPracticeType().toDomain() : null)
+                .year(this.getCertificationEdition() != null ? this.getCertificationEdition().getYear() : null)
+                .build();
+    }
 }

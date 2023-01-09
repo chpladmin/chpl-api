@@ -29,7 +29,7 @@ public class CertificationResultReviewer {
     private TestToolReviewer testToolReviewer;
     private TestDataReviewer testDataReviewer;
     private ConformanceMethodReviewer conformanceMethodReviewer;
-    private TestFunctionalityReviewer testFunctionalityReviewer;
+    private FunctionalityTestedReviewer functionalityTestedReviewer;
     private TestStandardReviewer testStandardReviewer;
     private OptionalStandardReviewer optionalStandardReviewer;
     private SvapReviewer svapReviewer;
@@ -51,7 +51,7 @@ public class CertificationResultReviewer {
             @Qualifier("listingUploadTestToolReviewer") TestToolReviewer testToolReviewer,
             @Qualifier("listingUploadTestDataReviewer") TestDataReviewer testDataReviewer,
             @Qualifier("conformanceMethodReviewer") ConformanceMethodReviewer conformanceMethodReviewer,
-            @Qualifier("listingUploadTestFunctionalityReviewer") TestFunctionalityReviewer testFunctionalityReviewer,
+            @Qualifier("listingUploadFunctionalityTestedReviewer") FunctionalityTestedReviewer functionalityTestedReviewer,
             @Qualifier("listingUploadTestStandardReviewer") TestStandardReviewer testStandardReviewer,
             @Qualifier("listingUploadOptionalStandardReviewer") OptionalStandardReviewer optionalStandardReviewer,
             @Qualifier("listingUploadSvapReviewer") SvapReviewer svapReviewer,
@@ -68,7 +68,7 @@ public class CertificationResultReviewer {
         this.testToolReviewer = testToolReviewer;
         this.testDataReviewer = testDataReviewer;
         this.conformanceMethodReviewer = conformanceMethodReviewer;
-        this.testFunctionalityReviewer = testFunctionalityReviewer;
+        this.functionalityTestedReviewer = functionalityTestedReviewer;
         this.testStandardReviewer = testStandardReviewer;
         this.optionalStandardReviewer = optionalStandardReviewer;
         this.svapReviewer = svapReviewer;
@@ -107,7 +107,7 @@ public class CertificationResultReviewer {
         conformanceMethodReviewer.review(listing);
         testToolReviewer.review(listing);
         testDataReviewer.review(listing);
-        testFunctionalityReviewer.review(listing);
+        functionalityTestedReviewer.review(listing);
         testStandardReviewer.review(listing);
         optionalStandardReviewer.review(listing);
         svapReviewer.review(listing);

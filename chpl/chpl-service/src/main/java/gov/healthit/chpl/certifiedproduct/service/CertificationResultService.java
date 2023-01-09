@@ -15,7 +15,6 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
-import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.TestTool;
 import gov.healthit.chpl.domain.TestToolCriteriaMap;
@@ -23,8 +22,9 @@ import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.functionalityTested.TestFunctionality;
+import gov.healthit.chpl.functionalityTested.TestingFunctionalityManager;
 import gov.healthit.chpl.manager.CertificationResultManager;
-import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
@@ -170,7 +170,7 @@ public class CertificationResultService {
                 practiceTypeId = Long.valueOf(cp.getPracticeType().get("id").toString());
             }
         }
-        return testFunctionalityManager.getTestFunctionalities(cr.getCriterion().getId(), edition, practiceTypeId);
+        return testFunctionalityManager.getFunctionalitiesTested(cr.getCriterion().getId(), edition, practiceTypeId);
     }
 
     private List<TestTool> getAvailableTestToolForCriteria(CertificationResult result, List<TestToolCriteriaMap> testToolCriteriaMap) {

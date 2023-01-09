@@ -14,14 +14,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertificationEditionDAO;
-import gov.healthit.chpl.dao.TestFunctionalityDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.TestFunctionalityCriteriaMapDTO;
-import gov.healthit.chpl.dto.TestFunctionalityDTO;
+import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionality;
+import gov.healthit.chpl.functionalityTested.TestFunctionality;
+import gov.healthit.chpl.functionalityTested.TestFunctionalityCriteriaMap;
+import gov.healthit.chpl.functionalityTested.TestFunctionalityDAO;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -50,8 +50,8 @@ public class TestFunctionalityAllowedByCriteriaReviewer extends PermissionBasedR
         if (listing.getCertificationResults() != null) {
             for (CertificationResult cr : listing.getCertificationResults()) {
                 if (BooleanUtils.isTrue(cr.isSuccess()) && cr.getFunctionalitiesTested() != null) {
-                    for (CertificationResultTestFunctionality crtf : cr.getFunctionalitiesTested()) {
-                        Set<String> messages = getTestingFunctionalityErrorMessages(crtf, cr, listing);
+                    for (CertificationResultTestFunctionality crft : cr.getFunctionalitiesTested()) {
+                        Set<String> messages = getFunctionalitiesTestedErrorMessages(crft, cr, listing);
                         for (String message : messages) {
                             addCriterionError(listing, cr, message);
                         }
@@ -61,60 +61,59 @@ public class TestFunctionalityAllowedByCriteriaReviewer extends PermissionBasedR
         }
     }
 
-    private Set<String> getTestingFunctionalityErrorMessages(CertificationResultTestFunctionality crtf,
+    private Set<String> getFunctionalitiesTestedErrorMessages(CertificationResultTestFunctionality crft,
             CertificationResult cr, CertifiedProductSearchDetails listing) {
 
         Set<String> errors = new HashSet<String>();
 
         CertificationEdition edition = getEdition(getEditionFromListing(listing));
-        TestFunctionalityDTO tf = null;
-        if (crtf.getTestFunctionalityId() != null) {
-            tf = getTestFunctionality(crtf.getTestFunctionalityId(), edition.getCertificationEditionId());
-            if (tf == null) {
-                errors.add(msgUtil.getMessage("listing.criteria.invalidTestFunctionalityId", Util.formatCriteriaNumber(cr.getCriterion()), crtf.getTestFunctionalityId()));
+        TestFunctionality functionalityTested = null;
+        if (crft.getTestFunctionalityId() != null) {
+            functionalityTested = getFunctionalityTested(crft.getTestFunctionalityId(), edition.getCertificationEditionId());
+            if (functionalityTested == null) {
+                errors.add(msgUtil.getMessage("listing.criteria.invalidTestFunctionalityId", Util.formatCriteriaNumber(cr.getCriterion()), crft.getTestFunctionalityId()));
             }
-        } else if (!StringUtils.isEmpty(crtf.getName())) {
-            tf = getTestFunctionality(crtf.getName(), edition.getCertificationEditionId());
-            if (!isTestFunctionalityCritierionValid(cr.getCriterion().getId(), tf, edition.getYear())) {
-                errors.add(getTestFunctionalityCriterionErrorMessage(crtf, cr, listing, edition));
+        } else if (!StringUtils.isEmpty(crft.getName())) {
+            functionalityTested = getFunctionalityTested(crft.getName(), edition.getCertificationEditionId());
+            if (!isFunctionalityTestedCritierionValid(cr.getCriterion().getId(), functionalityTested, edition.getYear())) {
+                errors.add(getFunctionalitiesTestedCriterionErrorMessage(crft, cr, listing, edition));
             }
         }
         return errors;
     }
 
-    private Boolean isTestFunctionalityCritierionValid(Long criteriaId, TestFunctionalityDTO tf, String year) {
+    private Boolean isFunctionalityTestedCritierionValid(Long criteriaId, TestFunctionality functionalityTested, String year) {
+        List<TestFunctionality> validFunctionalityTestedForCriteria =
+                testFunctionalityDAO.getFunctionalitiesTestedCriteriaMaps(year).get(criteriaId);
 
-        List<TestFunctionalityDTO> validTestFunctionalityForCriteria =
-                testFunctionalityDAO.getTestFunctionalityCriteriaMaps(year).get(criteriaId);
-
-        if (validTestFunctionalityForCriteria == null) {
+        if (validFunctionalityTestedForCriteria == null) {
             return false;
         } else {
             //Is the TestFunctionalityDTO in the valid list (relies on the TestFunctionalityDTO.equals()
-            return validTestFunctionalityForCriteria.contains(tf);
+            return validFunctionalityTestedForCriteria.contains(functionalityTested);
         }
     }
 
-    private String getTestFunctionalityCriterionErrorMessage(CertificationResultTestFunctionality crtf,
+    private String getFunctionalitiesTestedCriterionErrorMessage(CertificationResultTestFunctionality crft,
             CertificationResult cr, CertifiedProductSearchDetails cp,
             CertificationEdition edition) {
 
-        TestFunctionalityDTO tf = getTestFunctionality(crtf.getTestFunctionalityId(), edition.getCertificationEditionId());
-        if (tf == null || tf.getId() == null) {
-            return msgUtil.getMessage("listing.criteria.invalidTestFunctionality", Util.formatCriteriaNumber(cr.getCriterion()), crtf.getName());
+        TestFunctionality functionalityTested = getFunctionalityTested(crft.getTestFunctionalityId(), edition.getCertificationEditionId());
+        if (functionalityTested == null || functionalityTested.getId() == null) {
+            return msgUtil.getMessage("listing.criteria.invalidTestFunctionality", Util.formatCriteriaNumber(cr.getCriterion()), crft.getName());
         }
-        return getTestFunctionalityCriterionErrorMessage(
+        return getFunctionalityTestedCriterionErrorMessage(
                 Util.formatCriteriaNumber(cr.getCriterion()),
-                crtf.getName(),
-                getDelimitedListOfValidCriteriaNumbers(tf, edition),
+                crft.getName(),
+                getDelimitedListOfValidCriteriaNumbers(functionalityTested, edition),
                 Util.formatCriteriaNumber(cr.getCriterion()));
     }
 
-    private String getTestFunctionalityCriterionErrorMessage(String criteriaNumber,
-            String testFunctionalityNumber, String listOfValidCriteria, String currentCriterion) {
+    private String getFunctionalityTestedCriterionErrorMessage(String criteriaNumber,
+            String functionalityTestedNumber, String listOfValidCriteria, String currentCriterion) {
 
         return msgUtil.getMessage("listing.criteria.testFunctionalityCriterionMismatch",
-                criteriaNumber, testFunctionalityNumber, listOfValidCriteria, currentCriterion);
+                criteriaNumber, functionalityTestedNumber, listOfValidCriteria, currentCriterion);
     }
 
     private CertificationEdition getEdition(String year) {
@@ -134,36 +133,36 @@ public class TestFunctionalityAllowedByCriteriaReviewer extends PermissionBasedR
         return edition;
     }
 
-    private TestFunctionalityDTO getTestFunctionality(Long testFunctionalityId, Long editionId) {
-        return testFunctionalityDAO.getByIdAndEdition(testFunctionalityId, editionId);
+    private TestFunctionality getFunctionalityTested(Long functionalityTestedId, Long editionId) {
+        return testFunctionalityDAO.getByIdAndEdition(functionalityTestedId, editionId);
     }
 
-    private TestFunctionalityDTO getTestFunctionality(String testFunctionalityNumber, Long editionId) {
-        return testFunctionalityDAO.getByNumberAndEdition(testFunctionalityNumber, editionId);
+    private TestFunctionality getFunctionalityTested(String functionalityTestedNumber, Long editionId) {
+        return testFunctionalityDAO.getByNumberAndEdition(functionalityTestedNumber, editionId);
     }
 
-    private String getDelimitedListOfValidCriteriaNumbers(TestFunctionalityDTO tfDTO,
+    private String getDelimitedListOfValidCriteriaNumbers(TestFunctionality functionalityTested,
             CertificationEdition edition) {
 
-        StringBuilder criteria = new StringBuilder();
-        List<CertificationCriterionDTO> certDTOs = new ArrayList<CertificationCriterionDTO>();
+        StringBuilder criteriaNumbers = new StringBuilder();
+        List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
 
-        List<TestFunctionalityCriteriaMapDTO> maps = testFunctionalityDAO.getTestFunctionalityCritieriaMaps();
-        for (TestFunctionalityCriteriaMapDTO map : maps) {
-            if (map.getCriteria().getCertificationEdition().equals(edition.getYear())) {
-                if (tfDTO.getId().equals(map.getTestFunctionality().getId())) {
-                    certDTOs.add(map.getCriteria());
+        List<TestFunctionalityCriteriaMap> maps = testFunctionalityDAO.getFunctionalitiesTestedCritieriaMaps();
+        for (TestFunctionalityCriteriaMap map : maps) {
+            if (map.getCriterion().getCertificationEdition().equals(edition.getYear())) {
+                if (functionalityTested.getId().equals(map.getFunctionalityTested().getId())) {
+                    criteria.add(map.getCriterion());
                 }
             }
         }
 
-        Iterator<CertificationCriterionDTO> iter = certDTOs.iterator();
+        Iterator<CertificationCriterion> iter = criteria.iterator();
         while (iter.hasNext()) {
-            criteria.append(Util.formatCriteriaNumber(iter.next()));
+            criteriaNumbers.append(Util.formatCriteriaNumber(iter.next()));
             if (iter.hasNext()) {
-                criteria.append(", ");
+                criteriaNumbers.append(", ");
             }
         }
-        return criteria.toString();
+        return criteriaNumbers.toString();
     }
 }

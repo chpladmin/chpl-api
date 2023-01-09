@@ -26,6 +26,8 @@ import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionality;
+import gov.healthit.chpl.functionalityTested.TestFunctionality;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;
@@ -158,6 +160,9 @@ public class CertificationResult implements Serializable {
     @XmlTransient
     private List<TestFunctionality> allowedFunctionalitiesTested;
 
+    //TODO:
+    // Re-add the deprecated allowedTestFunctionalities field
+
     @XmlTransient
     private List<Svap> allowedSvaps;
 
@@ -178,6 +183,9 @@ public class CertificationResult implements Serializable {
     @XmlElement(name = "functionalityTested")
     @Builder.Default
     private List<CertificationResultTestFunctionality> functionalitiesTested = new ArrayList<CertificationResultTestFunctionality>();
+
+    //TODO:
+    // Re-add the deprecated testFunctionality field
 
     /**
      * The methods used to evaluate compliance with the certification criterion.
@@ -414,9 +422,7 @@ public class CertificationResult implements Serializable {
 
     private List<CertificationResultTestFunctionality> getFunctionalitiesTested(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
-            return certResult.getTestFunctionality().stream()
-                    .map(item -> new CertificationResultTestFunctionality(item))
-                    .collect(Collectors.toList());
+            return certResult.getFunctionalitiesTested();
         } else {
             return null;
         }
