@@ -46,6 +46,24 @@ public class CertificationBodyNormalizerTest {
         acb.put(CertifiedProductSearchDetails.ACB_NAME_KEY, "Drummond");
         acb.put(CertifiedProductSearchDetails.ACB_CODE_KEY, "04");
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.07.04.2663.ABCD.R2.01.0.200511")
+                .certifyingBody(acb)
+                .build();
+        normalizer.normalize(listing);
+
+        assertEquals(1L, MapUtils.getLong(listing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_ID_KEY));
+        assertEquals("Drummond", MapUtils.getString(listing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_NAME_KEY));
+        assertEquals("04", MapUtils.getString(listing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_CODE_KEY));
+    }
+
+    @Test
+    public void normalize_acbIdYearCodeExistLegacyChplProductNumber_noChanges() {
+        Map<String, Object> acb = new HashMap<String, Object>();
+        acb.put(CertifiedProductSearchDetails.ACB_ID_KEY, 1L);
+        acb.put(CertifiedProductSearchDetails.ACB_NAME_KEY, "Drummond");
+        acb.put(CertifiedProductSearchDetails.ACB_CODE_KEY, "04");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("CHP-123456")
                 .certifyingBody(acb)
                 .build();
         normalizer.normalize(listing);
@@ -319,6 +337,17 @@ public class CertificationBodyNormalizerTest {
     public void normalize_acbInvalidAcbCodeMissingInChplProductNumber_noLookup() throws EntityRetrievalException {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.07.?M.2663.ABCD.R2.01.0.200511")
+                .build();
+
+        normalizer.normalize(listing);
+
+        assertNull(listing.getCertifyingBody());
+    }
+
+    @Test
+    public void normalize_acbMissingLegacyChplProductNumber_noLookup() throws EntityRetrievalException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("CHP-123456")
                 .build();
 
         normalizer.normalize(listing);

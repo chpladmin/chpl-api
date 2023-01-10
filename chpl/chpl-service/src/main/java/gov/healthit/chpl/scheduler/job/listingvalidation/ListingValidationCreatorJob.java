@@ -28,6 +28,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.Validator;
 import lombok.extern.log4j.Log4j2;
@@ -43,6 +44,9 @@ public class ListingValidationCreatorJob implements Job {
 
     @Autowired
     private CertifiedProductDAO certifiedProductDAO;
+
+    @Autowired
+    private ListingDetailsNormalizer listingNormalizer;
 
     @Autowired
     private ListingValidatorFactory validatorFactory;
@@ -125,6 +129,7 @@ public class ListingValidationCreatorJob implements Job {
 
     private CertifiedProductSearchDetails validateListing(CertifiedProductSearchDetails listing) {
         try {
+            listingNormalizer.normalize(listing);
             Validator validator = validatorFactory.getValidator(listing);
             validator.validate(listing);
             LOGGER.info("Completed validation of listing: " + listing.getId());

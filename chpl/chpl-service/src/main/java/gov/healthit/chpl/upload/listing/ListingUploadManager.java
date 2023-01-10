@@ -255,7 +255,7 @@ public class ListingUploadManager {
         jobDataMap.put(ListingUploadValidationJob.USER_KEY, jobUser);
         validateListingUploadJob.setJobDataMap(jobDataMap);
         validateListingUploadTrigger.setJob(validateListingUploadJob);
-        validateListingUploadTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+        validateListingUploadTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
         validateListingUploadTrigger = schedulerManager.createBackgroundJobTrigger(validateListingUploadTrigger);
     }
 
