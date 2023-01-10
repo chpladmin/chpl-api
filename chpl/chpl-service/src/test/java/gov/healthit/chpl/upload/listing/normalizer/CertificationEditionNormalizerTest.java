@@ -40,17 +40,33 @@ public class CertificationEditionNormalizerTest {
     }
 
     @Test
-    public void normalize_editionIdAndYearExist_noChanges() {
+    public void normalize_editionIdAndYearExist_normalChplProductNumber_noChanges() {
         Map<String, Object> edition = new HashMap<String, Object>();
         edition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 1L);
         edition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.07.04.2663.ABCD.R2.01.0.200511")
                 .certificationEdition(edition)
                 .build();
         normalizer.normalize(listing);
 
         assertEquals(1L, MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY));
         assertEquals("2015", MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY));
+    }
+
+    @Test
+    public void normalize_editionIdAndYearExist_legacyChplProductNumber_noChanges() {
+        Map<String, Object> edition = new HashMap<String, Object>();
+        edition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 2L);
+        edition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2014");
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("CHP-123456")
+                .certificationEdition(edition)
+                .build();
+        normalizer.normalize(listing);
+
+        assertEquals(2L, MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY));
+        assertEquals("2014", MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY));
     }
 
     @Test
@@ -263,6 +279,16 @@ public class CertificationEditionNormalizerTest {
     public void normalize_editionMissingEditionCodeInvalidInChplProductNumber_noLookup() throws EntityRetrievalException {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("??.07.07.2663.ABCD.R2.01.0.200511")
+                .build();
+
+        normalizer.normalize(listing);
+        assertNull(listing.getCertificationEdition());
+    }
+
+    @Test
+    public void normalize_editionMissingLegacyChplProductNumber_noLookup() throws EntityRetrievalException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("CHP-123456")
                 .build();
 
         normalizer.normalize(listing);

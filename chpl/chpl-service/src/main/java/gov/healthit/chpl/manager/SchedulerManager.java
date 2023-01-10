@@ -43,6 +43,7 @@ import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.ChplRepeatableTriggerChangeEmailer;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
+import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.util.AuthUtil;
 
 @Service
@@ -52,7 +53,7 @@ public class SchedulerManager extends SecuredManager {
     private static final String UPDATED = "updated";
     private static final String DELETED = "deleted";
     public static final String DATA_DELIMITER = ",";
-    public static final Integer DELAY_BEFORE_BACKGROUND_JOB_START = 5000;
+    public static final Integer FIVE_SECONDS_IN_MILLIS = 5000;
     public static final String CHPL_BACKGROUND_JOBS_KEY = "chplBackgroundJobs";
     public static final String CHPL_JOBS_KEY = "chplJobs";
     public static final String SYSTEM_JOBS_KEY = "systemJobs";
@@ -85,8 +86,8 @@ public class SchedulerManager extends SecuredManager {
                         .withIdentity(triggerId)
                         .startNow()
                         .forJob(jobId)
-                        .usingJobData("email", trigger.getEmail())
-                        .usingJobData("acb", trigger.getAcb())
+                        .usingJobData(QuartzJob.JOB_DATA_KEY_EMAIL, trigger.getEmail())
+                        .usingJobData(QuartzJob.JOB_DATA_KEY_ACB, trigger.getAcb())
                         .usingJobData(trigger.getJob().getJobDataMap())
                         .withSchedule(cronSchedule(trigger.getCronSchedule()))
                         .build();
@@ -95,7 +96,7 @@ public class SchedulerManager extends SecuredManager {
                         .withIdentity(triggerId)
                         .startNow()
                         .forJob(jobId)
-                        .usingJobData("email", trigger.getEmail())
+                        .usingJobData(QuartzJob.JOB_DATA_KEY_EMAIL, trigger.getEmail())
                         .usingJobData(trigger.getJob().getJobDataMap())
                         .withSchedule(cronSchedule(trigger.getCronSchedule()))
                         .build();
@@ -119,7 +120,7 @@ public class SchedulerManager extends SecuredManager {
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
-            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).CREATE_ONE_TIME_TRIGGER)")
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).CREATE_ONE_TIME_TRIGGER, #chplTrigger)")
     public ChplOneTimeTrigger createOneTimeTrigger(ChplOneTimeTrigger chplTrigger)
             throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
@@ -129,6 +130,8 @@ public class SchedulerManager extends SecuredManager {
                 .startAt(new Date(chplTrigger.getRunDateMillis()))
                 .forJob(chplTrigger.getJob().getName(), chplTrigger.getJob().getGroup())
                 .usingJobData(chplTrigger.getJob().getJobDataMap()).build();
+
+        trigger.getJobDataMap().put(QuartzJob.JOB_DATA_KEY_SUBMITTED_BY_USER_ID, AuthUtil.getCurrentUser().getId());
 
         scheduler.scheduleJob(trigger);
 

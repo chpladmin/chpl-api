@@ -34,6 +34,7 @@ import gov.healthit.chpl.search.domain.RwtSearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 
+@SuppressWarnings("checkstyle:magicnumber")
 public class ListingSearchServiceTest {
 
     private ListingSearchManager listingSearchManager;
@@ -552,6 +553,222 @@ public class ListingSearchServiceTest {
     }
 
     @Test
+    public void search_sortByOpenSurvNonConformityAscending_ordersResults() throws ValidationException {
+        List<ListingSearchResult> allListings = createListingSearchResultCollection(5);
+        allListings.get(0).setOpenSurveillanceNonConformityCount(5L);
+        allListings.get(1).setOpenSurveillanceNonConformityCount(2L);
+        allListings.get(2).setOpenSurveillanceNonConformityCount(7L);
+        allListings.get(3).setOpenSurveillanceNonConformityCount(0L);
+        allListings.get(4).setOpenSurveillanceNonConformityCount(0L);
+        Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .sortDescending(false)
+            .orderBy(OrderByOption.OPEN_SURVEILLANCE_NC_COUNT)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(5, searchResponse.getRecordCount());
+        assertEquals(5, searchResponse.getResults().size());
+        assertEquals(0L, searchResponse.getResults().get(0).getOpenSurveillanceNonConformityCount());
+        assertEquals(0L, searchResponse.getResults().get(1).getOpenSurveillanceNonConformityCount());
+        assertEquals(2L, searchResponse.getResults().get(2).getOpenSurveillanceNonConformityCount());
+        assertEquals(5L, searchResponse.getResults().get(3).getOpenSurveillanceNonConformityCount());
+        assertEquals(7L, searchResponse.getResults().get(4).getOpenSurveillanceNonConformityCount());
+    }
+
+    @Test
+    public void search_sortByOpenSurvNonConformityDescending_ordersResults() throws ValidationException {
+        List<ListingSearchResult> allListings = createListingSearchResultCollection(5);
+        allListings.get(0).setOpenSurveillanceNonConformityCount(5L);
+        allListings.get(1).setOpenSurveillanceNonConformityCount(2L);
+        allListings.get(2).setOpenSurveillanceNonConformityCount(7L);
+        allListings.get(3).setOpenSurveillanceNonConformityCount(0L);
+        allListings.get(4).setOpenSurveillanceNonConformityCount(0L);
+        Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .sortDescending(true)
+            .orderBy(OrderByOption.OPEN_SURVEILLANCE_NC_COUNT)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(5, searchResponse.getRecordCount());
+        assertEquals(5, searchResponse.getResults().size());
+        assertEquals(7L, searchResponse.getResults().get(0).getOpenSurveillanceNonConformityCount());
+        assertEquals(5L, searchResponse.getResults().get(1).getOpenSurveillanceNonConformityCount());
+        assertEquals(2L, searchResponse.getResults().get(2).getOpenSurveillanceNonConformityCount());
+        assertEquals(0L, searchResponse.getResults().get(3).getOpenSurveillanceNonConformityCount());
+        assertEquals(0L, searchResponse.getResults().get(4).getOpenSurveillanceNonConformityCount());
+    }
+
+    @Test
+    public void search_sortByClosedSurvNonConformityAscending_ordersResults() throws ValidationException {
+        List<ListingSearchResult> allListings = createListingSearchResultCollection(5);
+        allListings.get(0).setClosedSurveillanceNonConformityCount(5L);
+        allListings.get(1).setClosedSurveillanceNonConformityCount(2L);
+        allListings.get(2).setClosedSurveillanceNonConformityCount(7L);
+        allListings.get(3).setClosedSurveillanceNonConformityCount(0L);
+        allListings.get(4).setClosedSurveillanceNonConformityCount(0L);
+        Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .sortDescending(false)
+            .orderBy(OrderByOption.CLOSED_SURVEILLANCE_NC_COUNT)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(5, searchResponse.getRecordCount());
+        assertEquals(5, searchResponse.getResults().size());
+        assertEquals(0L, searchResponse.getResults().get(0).getClosedSurveillanceNonConformityCount());
+        assertEquals(0L, searchResponse.getResults().get(1).getClosedSurveillanceNonConformityCount());
+        assertEquals(2L, searchResponse.getResults().get(2).getClosedSurveillanceNonConformityCount());
+        assertEquals(5L, searchResponse.getResults().get(3).getClosedSurveillanceNonConformityCount());
+        assertEquals(7L, searchResponse.getResults().get(4).getClosedSurveillanceNonConformityCount());
+    }
+
+    @Test
+    public void search_sortByClosedSurvNonConformityDescending_ordersResults() throws ValidationException {
+        List<ListingSearchResult> allListings = createListingSearchResultCollection(5);
+        allListings.get(0).setClosedSurveillanceNonConformityCount(5L);
+        allListings.get(1).setClosedSurveillanceNonConformityCount(2L);
+        allListings.get(2).setClosedSurveillanceNonConformityCount(7L);
+        allListings.get(3).setClosedSurveillanceNonConformityCount(0L);
+        allListings.get(4).setClosedSurveillanceNonConformityCount(0L);
+        Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .sortDescending(true)
+            .orderBy(OrderByOption.CLOSED_SURVEILLANCE_NC_COUNT)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(5, searchResponse.getRecordCount());
+        assertEquals(5, searchResponse.getResults().size());
+        assertEquals(7L, searchResponse.getResults().get(0).getClosedSurveillanceNonConformityCount());
+        assertEquals(5L, searchResponse.getResults().get(1).getClosedSurveillanceNonConformityCount());
+        assertEquals(2L, searchResponse.getResults().get(2).getClosedSurveillanceNonConformityCount());
+        assertEquals(0L, searchResponse.getResults().get(3).getClosedSurveillanceNonConformityCount());
+        assertEquals(0L, searchResponse.getResults().get(4).getClosedSurveillanceNonConformityCount());
+    }
+
+    @Test
+    public void search_sortByOpenDrNonConformityAscending_ordersResults() throws ValidationException {
+        List<ListingSearchResult> allListings = createListingSearchResultCollection(5);
+        allListings.get(0).setOpenDirectReviewNonConformityCount(5);
+        allListings.get(1).setOpenDirectReviewNonConformityCount(2);
+        allListings.get(2).setOpenDirectReviewNonConformityCount(7);
+        allListings.get(3).setOpenDirectReviewNonConformityCount(0);
+        allListings.get(4).setOpenDirectReviewNonConformityCount(0);
+        Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .sortDescending(false)
+            .orderBy(OrderByOption.OPEN_DIRECT_REVIEW_NC_COUNT)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(5, searchResponse.getRecordCount());
+        assertEquals(5, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getResults().get(0).getOpenDirectReviewNonConformityCount());
+        assertEquals(0, searchResponse.getResults().get(1).getOpenDirectReviewNonConformityCount());
+        assertEquals(2, searchResponse.getResults().get(2).getOpenDirectReviewNonConformityCount());
+        assertEquals(5, searchResponse.getResults().get(3).getOpenDirectReviewNonConformityCount());
+        assertEquals(7, searchResponse.getResults().get(4).getOpenDirectReviewNonConformityCount());
+    }
+
+    @Test
+    public void search_sortByOpenDrNonConformityDescending_ordersResults() throws ValidationException {
+        List<ListingSearchResult> allListings = createListingSearchResultCollection(5);
+        allListings.get(0).setOpenDirectReviewNonConformityCount(5);
+        allListings.get(1).setOpenDirectReviewNonConformityCount(2);
+        allListings.get(2).setOpenDirectReviewNonConformityCount(7);
+        allListings.get(3).setOpenDirectReviewNonConformityCount(0);
+        allListings.get(4).setOpenDirectReviewNonConformityCount(0);
+        Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .sortDescending(true)
+            .orderBy(OrderByOption.OPEN_DIRECT_REVIEW_NC_COUNT)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(5, searchResponse.getRecordCount());
+        assertEquals(5, searchResponse.getResults().size());
+        assertEquals(7, searchResponse.getResults().get(0).getOpenDirectReviewNonConformityCount());
+        assertEquals(5, searchResponse.getResults().get(1).getOpenDirectReviewNonConformityCount());
+        assertEquals(2, searchResponse.getResults().get(2).getOpenDirectReviewNonConformityCount());
+        assertEquals(0, searchResponse.getResults().get(3).getOpenDirectReviewNonConformityCount());
+        assertEquals(0, searchResponse.getResults().get(4).getOpenDirectReviewNonConformityCount());
+    }
+
+    @Test
+    public void search_sortByClosedDrNonConformityAscending_ordersResults() throws ValidationException {
+        List<ListingSearchResult> allListings = createListingSearchResultCollection(5);
+        allListings.get(0).setClosedDirectReviewNonConformityCount(5);
+        allListings.get(1).setClosedDirectReviewNonConformityCount(2);
+        allListings.get(2).setClosedDirectReviewNonConformityCount(7);
+        allListings.get(3).setClosedDirectReviewNonConformityCount(0);
+        allListings.get(4).setClosedDirectReviewNonConformityCount(0);
+        Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .sortDescending(false)
+            .orderBy(OrderByOption.CLOSED_DIRECT_REVIEW_NC_COUNT)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(5, searchResponse.getRecordCount());
+        assertEquals(5, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getResults().get(0).getClosedDirectReviewNonConformityCount());
+        assertEquals(0, searchResponse.getResults().get(1).getClosedDirectReviewNonConformityCount());
+        assertEquals(2, searchResponse.getResults().get(2).getClosedDirectReviewNonConformityCount());
+        assertEquals(5, searchResponse.getResults().get(3).getClosedDirectReviewNonConformityCount());
+        assertEquals(7, searchResponse.getResults().get(4).getClosedDirectReviewNonConformityCount());
+    }
+
+    @Test
+    public void search_sortByClosedDrNonConformityDescending_ordersResults() throws ValidationException {
+        List<ListingSearchResult> allListings = createListingSearchResultCollection(5);
+        allListings.get(0).setClosedDirectReviewNonConformityCount(5);
+        allListings.get(1).setClosedDirectReviewNonConformityCount(2);
+        allListings.get(2).setClosedDirectReviewNonConformityCount(7);
+        allListings.get(3).setClosedDirectReviewNonConformityCount(0);
+        allListings.get(4).setClosedDirectReviewNonConformityCount(0);
+        Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .sortDescending(true)
+            .orderBy(OrderByOption.CLOSED_DIRECT_REVIEW_NC_COUNT)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(5, searchResponse.getRecordCount());
+        assertEquals(5, searchResponse.getResults().size());
+        assertEquals(7, searchResponse.getResults().get(0).getClosedDirectReviewNonConformityCount());
+        assertEquals(5, searchResponse.getResults().get(1).getClosedDirectReviewNonConformityCount());
+        assertEquals(2, searchResponse.getResults().get(2).getClosedDirectReviewNonConformityCount());
+        assertEquals(0, searchResponse.getResults().get(3).getClosedDirectReviewNonConformityCount());
+        assertEquals(0, searchResponse.getResults().get(4).getClosedDirectReviewNonConformityCount());
+    }
+
+    @Test
     public void search_searchTermProvided_findsListingsWithMatchingDevelopers() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setDeveloper(developer("dev name"));
@@ -1004,6 +1221,26 @@ public class ListingSearchServiceTest {
     }
 
     @Test
+    public void search_developerIdProvided_findsMatchingListings() throws ValidationException {
+        List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
+        allListings.get(0).setDeveloper(developerId(1L));
+        allListings.get(1).setDeveloper(developerId(2L));
+        allListings.get(2).setDeveloper(developerId(2L));
+
+        Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .developerId(2L)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
+    }
+
+    @Test
     public void search_productProvided_findsMatchingListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setProduct(product("product name"));
@@ -1254,7 +1491,7 @@ public class ListingSearchServiceTest {
     }
 
     @Test
-    public void search_certificationStartDateEqualsListingCertificationDate_findsMatchingListings() throws ValidationException {
+    public void search_certificationStartDateEqualsListingCertificationDate_findsNoMatchingListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setCertificationDate(LocalDate.parse("2020-06-25"));
         allListings.get(1).setCertificationDate(LocalDate.parse("2020-06-01"));
@@ -1268,8 +1505,8 @@ public class ListingSearchServiceTest {
         ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
@@ -1292,7 +1529,7 @@ public class ListingSearchServiceTest {
     }
 
     @Test
-    public void search_certificationEndDateEqualsListingCertificationDate_findsMatchingListings() throws ValidationException {
+    public void search_certificationEndDateEqualsListingCertificationDate_findsNoMatchingListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setCertificationDate(LocalDate.parse("2020-06-25"));
         allListings.get(1).setCertificationDate(LocalDate.parse("2020-06-27"));
@@ -1306,8 +1543,8 @@ public class ListingSearchServiceTest {
         ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
@@ -1350,7 +1587,7 @@ public class ListingSearchServiceTest {
     }
 
     @Test
-    public void search_listingCertificationDateEqualsStartAndBeforeEnd_findsMatchingListings() throws ValidationException {
+    public void search_listingCertificationDateEqualsStartAndBeforeEnd_findsNoListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setCertificationDate(LocalDate.parse("2020-06-25"));
         allListings.get(1).setCertificationDate(LocalDate.parse("2020-06-27"));
@@ -1365,12 +1602,12 @@ public class ListingSearchServiceTest {
         ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
-    public void search_listingCertificationDateEqualsEndAndAfterStart_findsMatchingListings() throws ValidationException {
+    public void search_listingCertificationDateEqualsEndAndAfterStart_findsNoListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setCertificationDate(LocalDate.parse("2020-06-25"));
         allListings.get(1).setCertificationDate(LocalDate.parse("2020-06-27"));
@@ -1385,12 +1622,12 @@ public class ListingSearchServiceTest {
         ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
-    public void search_listingCertificationDateEqualsEndAndStart_findsMatchingListings() throws ValidationException {
+    public void search_listingCertificationDateEqualsEndAndStart_findsNoListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setCertificationDate(LocalDate.parse("2020-06-25"));
         allListings.get(1).setCertificationDate(LocalDate.parse("2020-06-27"));
@@ -1405,12 +1642,32 @@ public class ListingSearchServiceTest {
         ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
-    public void search_decertificationStartDateEqualsListingDecertificationDate_findsMatchingListings() throws ValidationException {
+    public void search_listingCertificationDateEndBeforeStart_findsNoListings() throws ValidationException {
+        List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
+        allListings.get(0).setCertificationDate(LocalDate.parse("2020-06-25"));
+        allListings.get(1).setCertificationDate(LocalDate.parse("2020-06-27"));
+
+        Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .certificationDateStart("2020-07-01")
+            .certificationDateEnd("2020-06-01")
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_decertificationStartDateEqualsListingDecertificationDate_findsNoMatchingListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allListings.get(1).setDecertificationDate(LocalDate.parse("2020-06-01"));
@@ -1424,8 +1681,8 @@ public class ListingSearchServiceTest {
         ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
@@ -1448,7 +1705,7 @@ public class ListingSearchServiceTest {
     }
 
     @Test
-    public void search_decertificationEndDateEqualsListingDecertificationDate_findsMatchingListings() throws ValidationException {
+    public void search_decertificationEndDateEqualsListingDecertificationDate_findsNoMatchingListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allListings.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
@@ -1462,8 +1719,8 @@ public class ListingSearchServiceTest {
         ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
@@ -1506,7 +1763,7 @@ public class ListingSearchServiceTest {
     }
 
     @Test
-    public void search_listingDecertificationDateEqualsStartAndBeforeEnd_findsMatchingListings() throws ValidationException {
+    public void search_listingDecertificationDateEqualsStartAndBeforeEnd_findsNoMatchingListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allListings.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
@@ -1521,12 +1778,12 @@ public class ListingSearchServiceTest {
         ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
-    public void search_listingDecertificationDateEqualsEndAndAfterStart_findsMatchingListings() throws ValidationException {
+    public void search_listingDecertificationDateEqualsEndAndAfterStart_findsNoMatchingListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allListings.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
@@ -1541,12 +1798,12 @@ public class ListingSearchServiceTest {
         ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
-    public void search_listingDecertificationDateEqualsEndAndStart_findsMatchingListings() throws ValidationException {
+    public void search_listingDecertificationDateEqualsEndAndStart_findsNoMatchingListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allListings.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
@@ -1561,8 +1818,8 @@ public class ListingSearchServiceTest {
         ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
@@ -2075,6 +2332,12 @@ public class ListingSearchServiceTest {
     private DeveloperSearchResult developer(String name) {
         return DeveloperSearchResult.builder()
                 .name(name)
+                .build();
+    }
+
+    private DeveloperSearchResult developerId(Long id) {
+        return DeveloperSearchResult.builder()
+                .id(id)
                 .build();
     }
 

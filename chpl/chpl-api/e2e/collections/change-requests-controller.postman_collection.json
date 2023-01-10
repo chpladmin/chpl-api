@@ -370,6 +370,103 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "GET /change-requests/search - return 200 status and no results when passing invalid date parameter",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"emailACB\"),password:pm.environment.get(\"passwordACB\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.test(\"expect GET /change-request/search request to return 200 status and no results when passing invalid date parameter\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(jsonData.results.length).to.eql(0);\r",
+							" });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/change-requests/search?currentStatusChangeDateTimeStart=2022-11-11T03:00:00&currentStatusChangeDateTimeEnd=2022-10-10T01:00:00&submittedDateTimeStart=2022-12-10T01:00:00&submittedDateTimeEnd=2022-08-10T01:00:00",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"change-requests",
+						"search"
+					],
+					"query": [
+						{
+							"key": "currentStatusChangeDateTimeStart",
+							"value": "2022-11-11T03:00:00"
+						},
+						{
+							"key": "currentStatusChangeDateTimeEnd",
+							"value": "2022-10-10T01:00:00"
+						},
+						{
+							"key": "submittedDateTimeStart",
+							"value": "2022-12-10T01:00:00"
+						},
+						{
+							"key": "submittedDateTimeEnd",
+							"value": "2022-08-10T01:00:00"
+						}
+					]
+				},
+				"description": "GET /change-requests/search - 200 status and no results for invalid date parameters"
+			},
+			"response": []
 		}
 	]
 }

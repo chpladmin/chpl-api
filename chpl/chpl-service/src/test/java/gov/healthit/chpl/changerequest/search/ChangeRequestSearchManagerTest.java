@@ -601,7 +601,7 @@ public class ChangeRequestSearchManagerTest {
     }
 
     @Test
-    public void search_submittedDateTimeStartEqualsChangeRequestSubmittedDate_findsMatching() throws ValidationException {
+    public void search_submittedDateTimeStartEqualsChangeRequestSubmittedDate_findsNoMatching() throws ValidationException {
         List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
         allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
         allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("1980-01-01T00:00"));
@@ -615,8 +615,8 @@ public class ChangeRequestSearchManagerTest {
         ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
@@ -658,7 +658,7 @@ public class ChangeRequestSearchManagerTest {
     }
 
     @Test
-    public void search_submittedDateTimeEndEqualsChangeRequestSubmittedDate_findsMatching() throws ValidationException {
+    public void search_submittedDateTimeEndEqualsChangeRequestSubmittedDate_findsNoMatching() throws ValidationException {
         List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
         allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
         allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("2022-01-01T00:00"));
@@ -672,8 +672,8 @@ public class ChangeRequestSearchManagerTest {
         ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
@@ -735,7 +735,7 @@ public class ChangeRequestSearchManagerTest {
     }
 
     @Test
-    public void search_submittedDateTimeEqualsStartAndBeforeEnd_findsMatching() throws ValidationException {
+    public void search_submittedDateTimeEqualsStartAndBeforeEnd_findsNoMatching() throws ValidationException {
         List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
         allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
         allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("2020-01-01T00:00"));
@@ -750,12 +750,12 @@ public class ChangeRequestSearchManagerTest {
         ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
-    public void search_submittedDateTimeEqualsEndAndAfterStart_findsMatching() throws ValidationException {
+    public void search_submittedDateTimeEqualsEndAndAfterStart_findsNoMatching() throws ValidationException {
         List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
         allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
         allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("2020-01-01T00:00"));
@@ -770,12 +770,12 @@ public class ChangeRequestSearchManagerTest {
         ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
-    public void search_submittedDateTimeEqualsEndAndStart_findsMatching() throws ValidationException {
+    public void search_submittedDateTimeEqualsEndAndStart_findsNoMatching() throws ValidationException {
         List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
         allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
         allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("2020-01-01T00:00"));
@@ -790,12 +790,12 @@ public class ChangeRequestSearchManagerTest {
         ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
-    public void search_statusChangeDateTimeStartEqualsChangeRequestStatusChangeDateTime_findsMatching() throws ValidationException {
+    public void search_statusChangeDateTimeStartEqualsChangeRequestStatusChangeDateTime_findsNoMatching() throws ValidationException {
         List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
         allChangeRequests.get(0).setCurrentStatus(status(1L, "Approved", LocalDateTime.parse("2020-06-25T00:00")));
         allChangeRequests.get(1).setCurrentStatus(status(2L, "Open", LocalDateTime.parse("1980-01-01T00:00")));
@@ -809,8 +809,8 @@ public class ChangeRequestSearchManagerTest {
         ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
@@ -852,7 +852,7 @@ public class ChangeRequestSearchManagerTest {
     }
 
     @Test
-    public void search_statusChangeDateTimeEndEqualsChangeRequestStatusChangeDateTime_findsMatching() throws ValidationException {
+    public void search_statusChangeDateTimeEndEqualsChangeRequestStatusChangeDateTime_findsNoMatching() throws ValidationException {
         List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
         allChangeRequests.get(0).setCurrentStatus(status(1L, "Active", LocalDateTime.parse("2020-06-25T00:00")));
         allChangeRequests.get(1).setCurrentStatus(status(2L, "Rejected", LocalDateTime.parse("2022-01-01T00:00")));
@@ -866,8 +866,8 @@ public class ChangeRequestSearchManagerTest {
         ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
@@ -929,7 +929,7 @@ public class ChangeRequestSearchManagerTest {
     }
 
     @Test
-    public void search_statusChangeDateTimeEqualsStartAndBeforeEnd_findsMatching() throws ValidationException {
+    public void search_statusChangeDateTimeEqualsStartAndBeforeEnd_findsNoMatching() throws ValidationException {
         List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
         allChangeRequests.get(0).setCurrentStatus(status(1L, "Active", LocalDateTime.parse("2020-06-25T00:00")));
         allChangeRequests.get(1).setCurrentStatus(status(1L, "Active", LocalDateTime.parse("2020-01-01T00:00")));
@@ -944,12 +944,12 @@ public class ChangeRequestSearchManagerTest {
         ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
-    public void search_statusChangeDateTimeEqualsEndAndAfterStart_findsMatching() throws ValidationException {
+    public void search_statusChangeDateTimeEqualsEndAndAfterStart_findsNoMatching() throws ValidationException {
         List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
         allChangeRequests.get(0).setCurrentStatus(status(1L, "Active", LocalDateTime.parse("2020-06-25T00:00")));
         allChangeRequests.get(1).setCurrentStatus(status(1L, "Active", LocalDateTime.parse("2020-01-01T00:00")));
@@ -964,12 +964,12 @@ public class ChangeRequestSearchManagerTest {
         ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
-    public void search_statusChangeDateTimeEqualsEndAndStart_findsMatching() throws ValidationException {
+    public void search_statusChangeDateTimeEqualsEndAndStart_findsNoMatching() throws ValidationException {
         List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
         allChangeRequests.get(0).setCurrentStatus(status(1L, "Active", LocalDateTime.parse("2020-06-25T00:00")));
         allChangeRequests.get(1).setCurrentStatus(status(1L, "Active", LocalDateTime.parse("2020-01-01T00:00")));
@@ -984,8 +984,8 @@ public class ChangeRequestSearchManagerTest {
         ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     private List<ChangeRequestSearchResult> createChangeRequestSearchResultCollection(int collectionSize) {

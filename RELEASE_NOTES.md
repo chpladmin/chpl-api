@@ -1,5 +1,57 @@
 # Release Notes
 
+## Version 39.1.0
+_9 January 2023_
+
+### Features
+* Create job to allow sending of emails from CHPL to Developer users that haven't submitted Attestations
+* Restore ability to use removed criteria to generate 15E CMS IDs
+* Add totals to Developer Attestations Check-in Report
+* Add /search endpoint that uses /search/v2 per new CHPL standard
+* Add property to configure whether emails are deleted from sent
+* Treat all date range searches as exlusive of the start/end dates
+* Remove invalid date order check from search validation
+* Add new sorting options for the listing search/v2 endpoint
+* Only check Listing URLs for Listings with Active Certificates
+* Remove "copyright" notification from email footers
+
+### Bug Fixes
+* Correctly handle SED task/participants on listing edit and upload
+* Put updated data in Questionable URL report when job runs
+
+---
+
+## Version 39.0.0
+_12 December 2022_
+
+### Breaking Change
+* Remove bulk Surveillance functionality and associated endpoint
+
+### Features
+* Add new endpoints for operations on Accessibility Standards management
+  * Deprecate GET /data/accessibility_standards
+* Deprecate startDate and endDate fields of Quarterly Reports
+* Deprecate GET /surveillance-report/quarterly/{id}/complaints
+* Improve performance of Complaints search
+  * Add complaints /search endpoint
+  * Deprecate GET /complaints endpoint
+* Deprecate all /filters endpoints and /data/filter_types
+* Look up CQM Criteria by ID rather than number
+* Remove the system job to Invite Developers
+* Deprecate POST /key endpoint
+* Convert email sending to use Microsoft Graph modern auth
+* Surveillance on a removed Criteria is no longer Questionable Activity
+* Surveillance can be attached to Listing for Criteria that is not attested to
+
+### Flagged Features
+* Generate Certification IDs with "15C" syntax
+
+### Bug Fixes
+* Nonconformity Chart is not showing when a new surveillance is created
+* Use correct URL in API Key registration email
+
+---
+
 ## Version 38.0.0
 _28 November 2022_
 

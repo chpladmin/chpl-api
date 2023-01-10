@@ -55,6 +55,17 @@ public class ValidationUtils {
         return true;
     }
 
+    public boolean chplNumberPartIsPresentAndValid(String chplProductNumber, int partIndex, String regexToMatch) {
+        String[] uniqueIdParts = chplProductNumber.split("\\.");
+        if (uniqueIdParts.length == ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {
+            String chplNumberPart = uniqueIdParts[partIndex];
+            if (!StringUtils.isEmpty(chplNumberPart) && chplNumberPart.matches(regexToMatch)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean isValidUtf8(String input) {
         return isValidUtf8(Charset.defaultCharset(), input);
     }

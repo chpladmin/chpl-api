@@ -200,7 +200,7 @@ public class SurveillanceReportManager extends SecuredManager {
         jobDataMap.put(AnnualReportGenerationJob.USER_KEY, jobUser);
         expoertAnnualReportJob.setJobDataMap(jobDataMap);
         exportAnnualReportTrigger.setJob(expoertAnnualReportJob);
-        exportAnnualReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+        exportAnnualReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
         exportAnnualReportTrigger = schedulerManager.createBackgroundJobTrigger(exportAnnualReportTrigger);
 
         return exportAnnualReportTrigger;
@@ -541,7 +541,7 @@ public class SurveillanceReportManager extends SecuredManager {
         jobDataMap.put(QuarterlyReportGenerationJob.USER_KEY, jobUser);
         expoertQuarterlyReportJob.setJobDataMap(jobDataMap);
         exportQuarterlyReportTrigger.setJob(expoertQuarterlyReportJob);
-        exportQuarterlyReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+        exportQuarterlyReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
         exportQuarterlyReportTrigger = schedulerManager.createBackgroundJobTrigger(exportQuarterlyReportTrigger);
 
         return exportQuarterlyReportTrigger;

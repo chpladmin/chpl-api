@@ -10,6 +10,8 @@ import lombok.Data;
 @Builder
 public class DeveloperAttestationCheckInReport {
     private String developerName;
+    private String developerCode;
+    private Long developerId;
     private LocalDateTime submittedDate;
     private Boolean published;
     private String currentStatusName;
@@ -30,6 +32,8 @@ public class DeveloperAttestationCheckInReport {
 
     public List<String> toListOfStrings() {
         return List.of(developerName,
+                developerCode,
+                developerId.toString(),
                 submittedDate != null ? submittedDate.toString() : "",
                 published ? "Yes" : "No",
                 currentStatusName != null ? currentStatusName : "",
@@ -51,6 +55,8 @@ public class DeveloperAttestationCheckInReport {
 
     public static List<String> getHeaders() {
         return List.of("Developer Name",
+                "Developer Code",
+                "Developer DBID",
                 "Change Request Submitted Date",
                 "Attestations Published?",
                 "Change Request Current Status",

@@ -207,7 +207,7 @@ public class SurveillanceManager extends SecuredManager {
         jobDataMap.put(SurveillanceReportingActivityJob.USER_EMAIL, user.getEmail());
         surveillanceActivityReportJob.setJobDataMap(jobDataMap);
         surveillanceActivityReportTrigger.setJob(surveillanceActivityReportJob);
-        surveillanceActivityReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+        surveillanceActivityReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
         try {
             return schedulerManager.createBackgroundJobTrigger(surveillanceActivityReportTrigger);
         } catch (SchedulerException e) {

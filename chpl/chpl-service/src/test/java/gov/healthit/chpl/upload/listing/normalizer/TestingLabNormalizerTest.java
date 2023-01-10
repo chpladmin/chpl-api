@@ -58,6 +58,27 @@ public class TestingLabNormalizerTest {
                 .testingLabCode("TL")
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.07.04.2663.ABCD.R2.01.0.200511")
+                .testingLabs(atls)
+                .build();
+        normalizer.normalize(listing);
+
+        assertEquals(1, listing.getTestingLabs().size());
+        assertEquals(1L, listing.getTestingLabs().get(0).getTestingLabId());
+        assertEquals("ICSA", listing.getTestingLabs().get(0).getTestingLabName());
+        assertEquals("TL", listing.getTestingLabs().get(0).getTestingLabCode());
+    }
+
+    @Test
+    public void normalize_testingLabIdNameCodeExistLegacyChplProductNumber_noLookup() {
+        List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
+        atls.add(CertifiedProductTestingLab.builder()
+                .testingLabId(1L)
+                .testingLabName("ICSA")
+                .testingLabCode("TL")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("CHP-123456")
                 .testingLabs(atls)
                 .build();
         normalizer.normalize(listing);
@@ -288,6 +309,19 @@ public class TestingLabNormalizerTest {
         List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.T?.04.2663.ABCD.R2.01.0.200511")
+                .testingLabs(atls)
+                .build();
+
+        normalizer.normalize(listing);
+
+        assertEquals(0, listing.getTestingLabs().size());
+    }
+
+    @Test
+    public void normalize_atlsEmptyLegacyChplProductNumber_noLookup() throws EntityRetrievalException {
+        List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("CHP-123456")
                 .testingLabs(atls)
                 .build();
 

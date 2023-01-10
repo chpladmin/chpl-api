@@ -276,10 +276,6 @@ public class SearchRequestValidator {
             }
         }
 
-        if (endDate != null && startDate != null && endDate.isBefore(startDate)) {
-            errors.add(
-                    msgUtil.getMessage("search.certificationDateOrder.invalid", certificationDateEnd, certificationDateStart));
-        }
         return errors;
     }
 

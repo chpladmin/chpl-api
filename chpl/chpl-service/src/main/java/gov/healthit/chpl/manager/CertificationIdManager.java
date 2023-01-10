@@ -25,6 +25,7 @@ import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -54,8 +55,8 @@ public class CertificationIdManager {
     }
 
     @Transactional(readOnly = true)
-    public CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException {
-        return certificationIdDao.getByProductIds(productIds, year);
+    public CertificationIdDTO getByListings(List<CertifiedProductDetailsDTO> listings, String year) throws EntityRetrievalException {
+        return certificationIdDao.getByListings(listings, year);
     }
 
     @Transactional(readOnly = true)
@@ -154,16 +155,16 @@ public class CertificationIdManager {
         jobDataMap.put(CertificationIdEmailJob.USER_KEY, jobUser);
         complaintsReportJob.setJobDataMap(jobDataMap);
         complaintsReportTrigger.setJob(complaintsReportJob);
-        complaintsReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+        complaintsReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
         complaintsReportTrigger = schedulerManager.createBackgroundJobTrigger(complaintsReportTrigger);
         return complaintsReportTrigger;
     }
 
     @Transactional(readOnly = false)
-    public CertificationIdDTO create(List<Long> productIds, String year)
+    public CertificationIdDTO create(List<CertifiedProductDetailsDTO> listings, String year)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
-        CertificationIdDTO result = certificationIdDao.create(productIds, year);
+        CertificationIdDTO result = certificationIdDao.create(listings, year);
 
         String activityMsg = "CertificationId " + result.getCertificationId() + " was created.";
         activityManager.addActivity(ActivityConcept.CERTIFICATION_ID, result.getId(), activityMsg, null,

@@ -79,7 +79,7 @@ public class PromotingInteroperabilityManager {
         jobDataMap.put(PromotingInteroperabilityUploadJob.USER_KEY, jobUser);
         uploadPiuJob.setJobDataMap(jobDataMap);
         uploadPiuTrigger.setJob(uploadPiuJob);
-        uploadPiuTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+        uploadPiuTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
         uploadPiuTrigger = schedulerManager.createBackgroundJobTrigger(uploadPiuTrigger);
         return uploadPiuTrigger;
     }
