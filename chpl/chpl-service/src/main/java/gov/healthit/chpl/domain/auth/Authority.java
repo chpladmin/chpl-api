@@ -12,4 +12,5 @@ public final class Authority {
     public static final String ROLE_DEVELOPER = "ROLE_DEVELOPER";
     public static final String ROLE_USER_AUTHENTICATOR = "ROLE_USER_AUTHENTICATOR";
     public static final String ROLE_INVITED_USER_CREATOR = "ROLE_INVITED_USER_CREATOR";
+    public static final String ROLE_STARTUP = "ROLE_STARTUP";
 }

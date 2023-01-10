@@ -10,9 +10,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import gov.healthit.chpl.domain.schedule.ChplJob;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.scheduler.CreateOneTimeTriggerActionPermissions;
+import gov.healthit.chpl.scheduler.job.DirectReviewCacheRefreshJob;
 
 public class CreateOneTimeTriggerActionPermissionsTest extends ActionPermissionsBaseTest {
 
@@ -35,9 +38,7 @@ public class CreateOneTimeTriggerActionPermissionsTest extends ActionPermissions
         setupForAdminUser(resourcePermissions);
 
         assertTrue(permissions.hasAccess());
-
-        // Not used
-        assertFalse(permissions.hasAccess(new Object()));
+        assertTrue(permissions.hasAccess(new ChplOneTimeTrigger()));
     }
 
     @Override
@@ -46,9 +47,7 @@ public class CreateOneTimeTriggerActionPermissionsTest extends ActionPermissions
         setupForOncUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-
-        // Not used
-        assertFalse(permissions.hasAccess(new Object()));
+        assertFalse(permissions.hasAccess(new ChplOneTimeTrigger()));
     }
 
     @Override
@@ -57,8 +56,7 @@ public class CreateOneTimeTriggerActionPermissionsTest extends ActionPermissions
         setupForOncStaffUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-
-        assertFalse(permissions.hasAccess(new Object()));
+        assertFalse(permissions.hasAccess(new ChplOneTimeTrigger()));
     }
 
     @Override
@@ -67,9 +65,7 @@ public class CreateOneTimeTriggerActionPermissionsTest extends ActionPermissions
         setupForAcbUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-
-        // Not used
-        assertFalse(permissions.hasAccess(new Object()));
+        assertFalse(permissions.hasAccess(new ChplOneTimeTrigger()));
     }
 
     @Override
@@ -78,9 +74,7 @@ public class CreateOneTimeTriggerActionPermissionsTest extends ActionPermissions
         setupForAtlUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-
-        // Not used
-        assertFalse(permissions.hasAccess(new Object()));
+        assertFalse(permissions.hasAccess(new ChplOneTimeTrigger()));
     }
 
     @Override
@@ -89,9 +83,28 @@ public class CreateOneTimeTriggerActionPermissionsTest extends ActionPermissions
         setupForCmsUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
+        assertFalse(permissions.hasAccess(new ChplOneTimeTrigger()));
+    }
 
-        // Not used
-        assertFalse(permissions.hasAccess(new Object()));
+    @Test
+    public void hasAccess_StartupUser_emptyTrigger() throws Exception {
+        setupForStartupUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
+        assertFalse(permissions.hasAccess(new ChplOneTimeTrigger()));
+    }
+
+    @Test
+    public void hasAccess_StartupUser_cacheRefreshJob() throws Exception {
+        setupForStartupUser(resourcePermissions);
+
+        assertFalse(permissions.hasAccess());
+        ChplOneTimeTrigger trigger = new ChplOneTimeTrigger();
+        trigger.setJob(ChplJob.builder()
+                .name(DirectReviewCacheRefreshJob.JOB_NAME)
+                .group(DirectReviewCacheRefreshJob.JOB_GROUP)
+                .build());
+        assertTrue(permissions.hasAccess(trigger));
     }
 
     @Override
@@ -100,8 +113,6 @@ public class CreateOneTimeTriggerActionPermissionsTest extends ActionPermissions
         setupForAnonUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-
-        // Not used
-        assertFalse(permissions.hasAccess(new Object()));
+        assertFalse(permissions.hasAccess(new ChplOneTimeTrigger()));
     }
 }
