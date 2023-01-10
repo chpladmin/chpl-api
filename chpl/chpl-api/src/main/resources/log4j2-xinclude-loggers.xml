@@ -235,4 +235,8 @@
         <AppenderRef ref="curesDesignationRemovedQuestionableActivityCreatorJob" />
         <AppenderRef ref="curesDesignationRemovedQuestionableActivityCreatorJobJson" />
     </Logger>
+    <Logger name="missingAttestationChangeRequestEmailJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="missingAttestationChangeRequestEmailJob" />
+        <AppenderRef ref="missingAttestationChangeRequestEmailJobJson" />
+    </Logger>
 </Loggers>

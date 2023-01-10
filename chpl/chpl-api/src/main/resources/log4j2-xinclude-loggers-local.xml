@@ -183,4 +183,7 @@
     <Logger name="curesDesignationRemovedQuestionableActivityCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="curesDesignationRemovedQuestionableActivityCreatorJob" />
     </Logger>
+    <Logger name="missingAttestationChangeRequestEmailJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="missingAttestationChangeRequestEmailJob" />
+    </Logger>
 </Loggers>

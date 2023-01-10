@@ -87,7 +87,7 @@ public class CertificationBodyNormalizer {
 
     private boolean isAcbPortionOfChplProductNumberValid(CertifiedProductSearchDetails listing) {
         return !StringUtils.isEmpty(listing.getChplProductNumber())
-                && validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
+                && validationUtils.chplNumberPartIsPresentAndValid(listing.getChplProductNumber(),
                     ChplProductNumberUtil.ACB_CODE_INDEX,
                     ChplProductNumberUtil.ACB_CODE_REGEX);
     }

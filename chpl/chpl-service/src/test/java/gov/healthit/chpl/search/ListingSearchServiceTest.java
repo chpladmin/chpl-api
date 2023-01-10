@@ -34,6 +34,7 @@ import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.service.DirectReviewSearchService;
 
+@SuppressWarnings("checkstyle:magicnumber")
 public class ListingSearchServiceTest {
 
     private ListingSearchManager listingSearchManager;
@@ -1220,6 +1221,26 @@ public class ListingSearchServiceTest {
     }
 
     @Test
+    public void search_developerIdProvided_findsMatchingListings() throws ValidationException {
+        List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
+        allListings.get(0).setDeveloper(developerId(1L));
+        allListings.get(1).setDeveloper(developerId(2L));
+        allListings.get(2).setDeveloper(developerId(2L));
+
+        Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .developerId(2L)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
+    }
+
+    @Test
     public void search_productProvided_findsMatchingListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setProduct(product("product name"));
@@ -2311,6 +2332,12 @@ public class ListingSearchServiceTest {
     private DeveloperSearchResult developer(String name) {
         return DeveloperSearchResult.builder()
                 .name(name)
+                .build();
+    }
+
+    private DeveloperSearchResult developerId(Long id) {
+        return DeveloperSearchResult.builder()
+                .id(id)
                 .build();
     }
 

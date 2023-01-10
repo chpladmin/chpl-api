@@ -50,6 +50,7 @@ public class SearchRequest implements Serializable {
     private Set<String> certificationBodies = new HashSet<String>();
 
     private String developer;
+    private Long developerId;
     private String product;
     private String version;
     private String practiceType;
