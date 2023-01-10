@@ -16,6 +16,8 @@ import net.sf.ehcache.CacheManager;
 @DisallowConcurrentExecution
 @Log4j2(topic = "directReviewCacheRefreshJobLogger")
 public class DirectReviewCacheRefreshJob extends QuartzJob {
+    public static final String JOB_NAME = "directReviewCacheRefresh";
+    public static final String JOB_GROUP = "systemJobs";
 
     @Autowired
     private DirectReviewCachingService directReviewService;

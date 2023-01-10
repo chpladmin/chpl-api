@@ -1631,7 +1631,7 @@ public class CertifiedProductManager extends SecuredManager {
         jobDataMap.put(TriggerDeveloperBanJob.USER_PROVIDED_REASON, reason);
         triggerDeveloperBanJob.setJobDataMap(jobDataMap);
         possibleDeveloperBanTrigger.setJob(triggerDeveloperBanJob);
-        possibleDeveloperBanTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+        possibleDeveloperBanTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
         try {
             possibleDeveloperBanTrigger = schedulerManager.createBackgroundJobTrigger(possibleDeveloperBanTrigger);
         } catch (Exception ex) {
