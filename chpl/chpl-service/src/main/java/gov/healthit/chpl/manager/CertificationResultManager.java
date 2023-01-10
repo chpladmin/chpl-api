@@ -959,17 +959,17 @@ public class CertificationResultManager extends SecuredManager {
         List<CertificationResultFunctionalityTested> functionalitiesTestedToAdd = new ArrayList<CertificationResultFunctionalityTested>();
         List<Long> idsToRemove = new ArrayList<Long>();
 
-        // figure out which test funcs to add
+        // figure out which functionalities tested to add
         if (updatedFunctionalitiesTested != null && updatedFunctionalitiesTested.size() > 0) {
-            // fill in potentially missing test func id
+            // fill in potentially missing functionality tested id
             for (CertificationResultFunctionalityTested updatedItem : updatedFunctionalitiesTested) {
                 if (updatedItem.getFunctionalityTestedId() == null && !StringUtils.isEmpty(updatedItem.getName())) {
                     FunctionalityTested foundFunc = functionalityTestedDao.getByNumberAndEdition(updatedItem.getName(),
                             Long.valueOf(editionIdString));
                     if (foundFunc == null) {
-                        LOGGER.error("Could not find test functionality " + updatedItem.getName()
+                        LOGGER.error("Could not find functionality tested " + updatedItem.getName()
                                 + " for certifiation edition id " + editionIdString
-                                + "; will not be adding this as a test functionality to listing id " + listing.getId()
+                                + "; will not be adding this as a functionality tested to listing id " + listing.getId()
                                 + ", criteria " + certResult.getCriterion().getNumber());
                     } else {
                         updatedItem.setFunctionalityTestedId(foundFunc.getId());
@@ -1008,7 +1008,7 @@ public class CertificationResultManager extends SecuredManager {
             }
         }
 
-        // figure out which test func to remove
+        // figure out which functionality tested to remove
         if (existingFunctionalitiesTested != null && existingFunctionalitiesTested.size() > 0) {
             // if the updated listing has none, remove them all from existing
             if (updatedFunctionalitiesTested == null || updatedFunctionalitiesTested.size() == 0) {

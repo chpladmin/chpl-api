@@ -52,7 +52,7 @@ public class FunctionalityTestedReviewer {
         removeFunctionalitiesTestedMismatchedToCriteria(listing, certResult);
         if (certResult.getFunctionalitiesTested() != null && certResult.getFunctionalitiesTested().size() > 0) {
             certResult.getFunctionalitiesTested().stream()
-                .forEach(testFunc -> reviewFunctionalityTestedFields(listing, certResult, testFunc));
+                .forEach(functionalityTested -> reviewFunctionalityTestedFields(listing, certResult, functionalityTested));
         }
     }
 

@@ -836,7 +836,7 @@ public class CertificationCriterionNormalizerTest {
     }
 
     @Test
-    public void normalize_a1AttestedAndTestFunctionalityAllowed_a2AddedAndA1TestFunctionalityNotNull() {
+    public void normalize_a1AttestedAndFunctionalityTestedAllowed_a2AddedAndA1FunctionalityTestedNotNull() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
                 ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
             .thenReturn(true);

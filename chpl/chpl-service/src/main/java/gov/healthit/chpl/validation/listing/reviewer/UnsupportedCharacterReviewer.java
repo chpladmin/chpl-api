@@ -68,7 +68,7 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                     }
                 }
 
-                // not checking test functionality name because it has to match one of the existing options
+                // not checking functionality tested name because it has to match one of the existing options
 
                 if (cert.getTestProcedures() != null) {
                     for (CertificationResultTestProcedure testProc : cert.getTestProcedures()) {

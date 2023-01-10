@@ -34,8 +34,8 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
         return null;
     }
 
-    public FunctionalityTested getByIdAndEdition(Long testFunctionalityId, Long editionId) {
-        List<FunctionalityTestedEntity> entities = getEntitiesByIdAndYear(testFunctionalityId, editionId);
+    public FunctionalityTested getByIdAndEdition(Long functionalityTestedId, Long editionId) {
+        List<FunctionalityTestedEntity> entities = getEntitiesByIdAndYear(functionalityTestedId, editionId);
         if (entities != null && entities.size() > 0) {
             return entities.get(0).toDomain();
         }

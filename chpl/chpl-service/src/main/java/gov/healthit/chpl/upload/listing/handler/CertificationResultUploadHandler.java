@@ -151,18 +151,18 @@ public class CertificationResultUploadHandler {
 
     private List<CertificationResultFunctionalityTested> parseFunctionalitiesTested(
             CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        List<CertificationResultFunctionalityTested> testFunctionalities = new ArrayList<CertificationResultFunctionalityTested>();
-        List<String> testFuncNames = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
+        List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
+        List<String> functionalitiesTestedNames = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
                 Headings.FUNCTIONALITIES_TESTED, certHeadingRecord, certResultRecords);
-        if (testFuncNames != null && testFuncNames.size() > 0) {
-            testFuncNames.stream().forEach(testFuncName -> {
-                CertificationResultFunctionalityTested testFunc = CertificationResultFunctionalityTested.builder()
-                        .name(testFuncName)
+        if (functionalitiesTestedNames != null && functionalitiesTestedNames.size() > 0) {
+            functionalitiesTestedNames.stream().forEach(functionalityTestedName -> {
+                CertificationResultFunctionalityTested functionalityTested = CertificationResultFunctionalityTested.builder()
+                        .name(functionalityTestedName)
                         .build();
-                testFunctionalities.add(testFunc);
+                functionalitiesTested.add(functionalityTested);
             });
         }
-        return testFunctionalities;
+        return functionalitiesTested;
     }
 
     private List<CertificationResultOptionalStandard> parseOptionalStandards(

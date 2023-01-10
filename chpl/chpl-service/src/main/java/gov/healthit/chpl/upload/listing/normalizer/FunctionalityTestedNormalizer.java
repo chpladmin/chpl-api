@@ -131,13 +131,13 @@ public class FunctionalityTestedNormalizer {
         }
     }
 
-    private Optional<RestrictedFunctionalityTested> findRestrictedFunctionalityTested(Long criteriaId, Long functionalityTestedId) {
+    private Optional<RestrictedFunctionalityTested> findRestrictedFunctionalityTested(Long criterionId, Long functionalityTestedId) {
         Optional<RestrictedCriteriaFunctionalityTested> foundBasedOnCriteriaId = restrictedCriteriaFunctionalitiesTested.stream()
-                .filter(restrictedFunctionalityTested -> restrictedFunctionalityTested.getCriteriaId().equals(criteriaId))
+                .filter(restrictedFunctionalityTested -> restrictedFunctionalityTested.getCriterionId().equals(criterionId))
                 .findAny();
 
         if (foundBasedOnCriteriaId.isPresent()) {
-            // Is there a match on the test functionality
+            // Is there a match on the functionality tested
             return foundBasedOnCriteriaId.get().getRestrictedFunctionalitiesTested().stream()
                     .filter(restrictedFunctionalityTested -> restrictedFunctionalityTested.getFunctionalityTestedId().equals(functionalityTestedId)
                             && !resourcePermissions.doesUserHaveRole(restrictedFunctionalityTested.allowedRoleNames))
@@ -150,7 +150,7 @@ public class FunctionalityTestedNormalizer {
     @Data
     @ToString
     static class RestrictedCriteriaFunctionalityTested {
-        private Long criteriaId;
+        private Long criterionId;
         private List<RestrictedFunctionalityTested> restrictedFunctionalitiesTested;
     }
 

@@ -37,7 +37,7 @@ import gov.healthit.chpl.util.CertificationResultRules;
 public class CertificationResultService {
     private CertificationResultRules certRules;
     private CertificationResultManager certResultManager;
-    private FunctionalityTestedManager testFunctionalityManager;
+    private FunctionalityTestedManager functionalityTestedManager;
     private CertificationResultDetailsDAO certificationResultDetailsDAO;
     private SvapDAO svapDao;
     private OptionalStandardDAO optionalStandardDAO;
@@ -46,11 +46,11 @@ public class CertificationResultService {
 
     @Autowired
     public CertificationResultService(CertificationResultRules certRules, CertificationResultManager certResultManager,
-            FunctionalityTestedManager testFunctionalityManager, CertificationResultDetailsDAO certificationResultDetailsDAO,
+            FunctionalityTestedManager functionalityTestedManager, CertificationResultDetailsDAO certificationResultDetailsDAO,
             SvapDAO svapDAO, OptionalStandardDAO optionalStandardDAO, TestToolDAO testToolDAO, ConformanceMethodDAO conformanceMethodDAO) {
         this.certRules = certRules;
         this.certResultManager = certResultManager;
-        this.testFunctionalityManager = testFunctionalityManager;
+        this.functionalityTestedManager = functionalityTestedManager;
         this.certificationResultDetailsDAO = certificationResultDetailsDAO;
         this.svapDao = svapDAO;
         this.optionalStandardDAO = optionalStandardDAO;
@@ -170,7 +170,7 @@ public class CertificationResultService {
                 practiceTypeId = Long.valueOf(cp.getPracticeType().get("id").toString());
             }
         }
-        return testFunctionalityManager.getFunctionalitiesTested(cr.getCriterion().getId(), edition, practiceTypeId);
+        return functionalityTestedManager.getFunctionalitiesTested(cr.getCriterion().getId(), edition, practiceTypeId);
     }
 
     private List<TestTool> getAvailableTestToolForCriteria(CertificationResult result, List<TestToolCriteriaMap> testToolCriteriaMap) {

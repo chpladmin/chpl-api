@@ -1172,7 +1172,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
 
     public List<CertificationResultFunctionalityTested> getFunctionalitiesTestedForCertificationResult(
             Long certificationResultId) {
-        List<CertificationResultFunctionalityTestedEntity> entities = getTestFunctionalityForCertification(certificationResultId);
+        List<CertificationResultFunctionalityTestedEntity> entities = getFunctionalitiesTestedForCertification(certificationResultId);
         return entities.stream()
                 .map(entity -> entity.toDomain())
                 .collect(Collectors.toList());
@@ -1233,7 +1233,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private List<CertificationResultFunctionalityTestedEntity> getTestFunctionalityForCertification(
+    private List<CertificationResultFunctionalityTestedEntity> getFunctionalitiesTestedForCertification(
             Long certificationResultId) {
         Query query = entityManager.createQuery("SELECT crft "
                 + "FROM CertificationResultFunctionalityTestedEntity crft "

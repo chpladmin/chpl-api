@@ -53,7 +53,7 @@ public class FunctionalityTestedAllowedByRoleReviewer implements ComparisonRevie
 
                 List<CertificationResultFunctionalityTested> addedCrtfs = getAddedFunctionalitiesTested(listUpdateCrtfs, listExistingCrtfs);
 
-                //Only check removed CertificationResultTestFunctionality if the criteria is attested to
+                //Only check removed CertificationResultFunctionalityTested if the criteria is attested to
                 List<CertificationResultFunctionalityTested> removedCrtfs = new ArrayList<CertificationResultFunctionalityTested>();
                 if (BooleanUtils.isTrue(updatedCr.isSuccess())) {
                     removedCrtfs = getRemovedFunctionalitiesTested(listUpdateCrtfs, listExistingCrtfs);
@@ -76,7 +76,7 @@ public class FunctionalityTestedAllowedByRoleReviewer implements ComparisonRevie
 
     private List<CertificationResultFunctionalityTested> getRemovedFunctionalitiesTested(Optional<List<CertificationResultFunctionalityTested>> listA,
             Optional<List<CertificationResultFunctionalityTested>> listB) {
-        // This will get the test functionalities removed - items in listB not in ListA
+        // This will get the functionalities tested removed - items in listB not in ListA
         return subtractLists(
                 listB.isPresent() ? listB.get() : new ArrayList<CertificationResultFunctionalityTested>(),
                 listA.isPresent() ? listA.get() : new ArrayList<CertificationResultFunctionalityTested>());
@@ -84,7 +84,7 @@ public class FunctionalityTestedAllowedByRoleReviewer implements ComparisonRevie
 
     private List<CertificationResultFunctionalityTested> getAddedFunctionalitiesTested(Optional<List<CertificationResultFunctionalityTested>> listA,
             Optional<List<CertificationResultFunctionalityTested>> listB) {
-        // This will get the test functionalities added - items in listA not in ListB
+        // This will get the functionalities tested added - items in listA not in ListB
         return subtractLists(
                 listA.isPresent() ? listA.get() : new ArrayList<CertificationResultFunctionalityTested>(),
                 listB.isPresent() ? listB.get() : new ArrayList<CertificationResultFunctionalityTested>());
@@ -108,11 +108,11 @@ public class FunctionalityTestedAllowedByRoleReviewer implements ComparisonRevie
                 .findFirst();
     }
 
-    private boolean isFunctionalityTestedChangeAllowedBasedOnRole(Long criteriaId, Long testFunctionalityId) {
-        Optional<RestrictedFunctionalityTested> restrictedTestFunctionality = findRestrictedFunctionalityTested(criteriaId,
-                testFunctionalityId);
-        if (restrictedTestFunctionality.isPresent()) {
-            return permissions.doesUserHaveRole(restrictedTestFunctionality.get().getAllowedRoleNames());
+    private boolean isFunctionalityTestedChangeAllowedBasedOnRole(Long criteriaId, Long functionalityTestedId) {
+        Optional<RestrictedFunctionalityTested> restrictedFunctionalityTested = findRestrictedFunctionalityTested(criteriaId,
+                functionalityTestedId);
+        if (restrictedFunctionalityTested.isPresent()) {
+            return permissions.doesUserHaveRole(restrictedFunctionalityTested.get().getAllowedRoleNames());
         } else {
             return true;
         }

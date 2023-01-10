@@ -272,7 +272,7 @@ public class ListingConfirmationManager {
             saveOptionalStandards(certResult);
             saveTestData(certResult);
             saveTestProcedures(certResult);
-            saveTestFunctionality(certResult);
+            saveFunctionalityTested(certResult);
             saveTestTools(certResult);
             saveConformanceMethods(certResult);
             saveSvaps(certResult);
@@ -307,10 +307,10 @@ public class ListingConfirmationManager {
         }
     }
 
-    private void saveTestFunctionality(CertificationResult certResult) throws EntityCreationException {
+    private void saveFunctionalityTested(CertificationResult certResult) throws EntityCreationException {
         if (!CollectionUtils.isEmpty(certResult.getFunctionalitiesTested())) {
             certResult.getFunctionalitiesTested().stream()
-                .forEach(rethrowConsumer(testFunctionality -> certResultDao.createFunctionalityTestedMapping(certResult.getId(), testFunctionality)));
+                .forEach(rethrowConsumer(functionalityTested -> certResultDao.createFunctionalityTestedMapping(certResult.getId(), functionalityTested)));
         }
     }
 

@@ -187,19 +187,19 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
 
     private boolean isFunctionalityTestedChanged(CertificationResult existingCert, CertificationResult updatedCert) {
         if (certResultRules.hasCertOption(updatedCert.getCriterion().getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
-            for (CertificationResultFunctionalityTested updatedTestFunctionality : updatedCert.getFunctionalitiesTested()) {
+            for (CertificationResultFunctionalityTested updatedFunctionalityTested : updatedCert.getFunctionalitiesTested()) {
                 boolean isInExistingCert =
                         existingCert.getFunctionalitiesTested().stream()
-                        .anyMatch(existingTestFunctionality -> existingTestFunctionality.matches(updatedTestFunctionality));
+                        .anyMatch(existingFunctionalityTested -> existingFunctionalityTested.matches(updatedFunctionalityTested));
                 if (!isInExistingCert) {
                     return true;
                 }
             }
 
-            for (CertificationResultFunctionalityTested existingTestFunctionality : existingCert.getFunctionalitiesTested()) {
+            for (CertificationResultFunctionalityTested existingFunctionalityTested : existingCert.getFunctionalitiesTested()) {
                 boolean isInUpdatedCert =
                         updatedCert.getFunctionalitiesTested().stream()
-                        .anyMatch(updatedTestFunctionality -> updatedTestFunctionality.matches(existingTestFunctionality));
+                        .anyMatch(updatedFunctionalityTested -> updatedFunctionalityTested.matches(existingFunctionalityTested));
                 if (!isInUpdatedCert) {
                     return true;
                 }

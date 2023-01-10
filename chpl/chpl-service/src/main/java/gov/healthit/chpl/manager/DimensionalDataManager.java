@@ -87,7 +87,7 @@ public class DimensionalDataManager {
     private EducationTypeDAO educationTypeDao;
     private AgeRangeDAO ageRangeDao;
     private OptionalStandardDAO optionalStandardDao;
-    private FunctionalityTestedDAO testFuncDao;
+    private FunctionalityTestedDAO functionalityTestedDao;
     private TestStandardDAO testStandardDao;
     private TestProcedureDAO testProcedureDao;
     private TestDataDAO testDataDao;
@@ -109,7 +109,7 @@ public class DimensionalDataManager {
     @SuppressWarnings("checkstyle:parameternumber")
     public DimensionalDataManager(CacheableDimensionalDataManager cacheableDimensionalDataManager,
                                   CertificationBodyDAO certificationBodyDao, CertificationCriterionDAO certificationCriterionDao,
-                                  EducationTypeDAO educationTypeDao, AgeRangeDAO ageRangeDao, FunctionalityTestedDAO testFuncDao,
+                                  EducationTypeDAO educationTypeDao, AgeRangeDAO ageRangeDao, FunctionalityTestedDAO functionalityTestedDao,
                                   TestStandardDAO testStandardDao, TestProcedureDAO testProcedureDao,
                                   TestDataDAO testDataDao, AccessibilityStandardDAO asDao, UcdProcessDAO ucdDao,
                                   QmsStandardDAO qmsDao, TargetedUserDAO tuDao, DeveloperStatusDAO devStatusDao,
@@ -123,7 +123,7 @@ public class DimensionalDataManager {
         this.educationTypeDao = educationTypeDao;
         this.ageRangeDao = ageRangeDao;
         this.optionalStandardDao = optionalStandardDao;
-        this.testFuncDao = testFuncDao;
+        this.functionalityTestedDao = functionalityTestedDao;
         this.testStandardDao = testStandardDao;
         this.testProcedureDao = testProcedureDao;
         this.testDataDao = testDataDao;
@@ -210,7 +210,7 @@ public class DimensionalDataManager {
     @Transactional
     public Set<FunctionalityTested> getFunctionalitiesTested() {
         LOGGER.debug("Getting all functionalities tested from the database (not cached).");
-        List<FunctionalityTested> functionalitiesTested = this.testFuncDao.findAll();
+        List<FunctionalityTested> functionalitiesTested = this.functionalityTestedDao.findAll();
         return functionalitiesTested.stream()
                 .collect(Collectors.toSet());
     }

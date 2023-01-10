@@ -209,7 +209,7 @@ public class Edition2015ListingValidator extends Validator {
 
     @Autowired
     @Qualifier("functionalityTestedAllowedByRoleReviewer")
-    private FunctionalityTestedAllowedByRoleReviewer testFunctionalityAllowedByRoleReviewer;
+    private FunctionalityTestedAllowedByRoleReviewer functionalityTestedAllowedByRoleReviewer;
 
     @Autowired
     @Qualifier("listingStatusAndUserRoleReviewer")
@@ -314,7 +314,7 @@ public class Edition2015ListingValidator extends Validator {
         comparisonReviewers.add(criteriaComparisonReviewer);
         comparisonReviewers.add(testTaskCriteriaComparisonReviewer);
         comparisonReviewers.add(ucdCriteriaComparisonReviewer);
-        comparisonReviewers.add(testFunctionalityAllowedByRoleReviewer);
+        comparisonReviewers.add(functionalityTestedAllowedByRoleReviewer);
         comparisonReviewers.add(listingStatusAndUserRoleReviewer);
         //before ERD-Phase-2 and during the grace period the comparison reviewer should be included
         if (!ff4j.check(FeatureList.ERD_PHASE_2)

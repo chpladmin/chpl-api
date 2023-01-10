@@ -16,31 +16,31 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.DuplicateReviewResult;
 
-@Component("testFunctionalityDuplicateReviewer")
-public class TestFunctionalityDuplicateReviewer {
+@Component("functionalityTestedDuplicateReviewer")
+public class FunctionalityTestedDuplicateReviewer {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public TestFunctionalityDuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
+    public FunctionalityTestedDuplicateReviewer(ErrorMessageUtil errorMessageUtil) {
         this.errorMessageUtil = errorMessageUtil;
     }
 
     public void review(CertifiedProductSearchDetails listing, CertificationResult certificationResult) {
 
-        DuplicateReviewResult<CertificationResultFunctionalityTested> testFunctionalityDuplicateResults =
+        DuplicateReviewResult<CertificationResultFunctionalityTested> functionalityTestedDuplicateResults =
                 new DuplicateReviewResult<CertificationResultFunctionalityTested>(getPredicate());
 
         if (certificationResult.getFunctionalitiesTested() != null) {
-            for (CertificationResultFunctionalityTested dto : certificationResult.getFunctionalitiesTested()) {
-                testFunctionalityDuplicateResults.addObject(dto);
+            for (CertificationResultFunctionalityTested crft : certificationResult.getFunctionalitiesTested()) {
+                functionalityTestedDuplicateResults.addObject(crft);
             }
         }
 
-        if (testFunctionalityDuplicateResults.duplicatesExist()) {
+        if (functionalityTestedDuplicateResults.duplicatesExist()) {
             listing.getWarningMessages().addAll(getWarnings(
-                            testFunctionalityDuplicateResults.getDuplicateList(),
+                            functionalityTestedDuplicateResults.getDuplicateList(),
                             Util.formatCriteriaNumber(certificationResult.getCriterion())));
-            certificationResult.setFunctionalitiesTested(testFunctionalityDuplicateResults.getUniqueList());
+            certificationResult.setFunctionalitiesTested(functionalityTestedDuplicateResults.getUniqueList());
         }
     }
 
@@ -61,10 +61,10 @@ public class TestFunctionalityDuplicateReviewer {
                 new BiPredicate<
                 CertificationResultFunctionalityTested, CertificationResultFunctionalityTested>() {
             @Override
-            public boolean test(CertificationResultFunctionalityTested tf1, CertificationResultFunctionalityTested tf2) {
-                return (ObjectUtils.allNotNull(tf1.getFunctionalityTestedId(), tf2.getFunctionalityTestedId())
-                        && Objects.equals(tf1.getFunctionalityTestedId(),  tf2.getFunctionalityTestedId()))
-                    || Objects.equals(tf1.getName(), tf2.getName());
+            public boolean test(CertificationResultFunctionalityTested ft1, CertificationResultFunctionalityTested ft2) {
+                return (ObjectUtils.allNotNull(ft1.getFunctionalityTestedId(), ft2.getFunctionalityTestedId())
+                        && Objects.equals(ft1.getFunctionalityTestedId(), ft2.getFunctionalityTestedId()))
+                    || Objects.equals(ft1.getName(), ft2.getName());
             }
         };
     }

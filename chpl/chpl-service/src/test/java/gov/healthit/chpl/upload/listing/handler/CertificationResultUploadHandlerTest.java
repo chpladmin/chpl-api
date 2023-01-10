@@ -330,7 +330,7 @@ public class CertificationResultUploadHandlerTest {
     }
 
     @Test
-    public void buildCertResult_TestFunctionalityNoColumn_ReturnsEmptyList() {
+    public void buildCertResult_functionalityTestedNoColumn_ReturnsEmptyList() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1");
@@ -343,7 +343,7 @@ public class CertificationResultUploadHandlerTest {
     }
 
     @Test
-    public void buildCertResult_TestFunctionalityEmptyData_ReturnsEmptyList() {
+    public void buildCertResult_functionalityTestedEmptyData_ReturnsEmptyList() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",Functionality Tested").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,");
@@ -356,7 +356,7 @@ public class CertificationResultUploadHandlerTest {
     }
 
     @Test
-    public void buildCertResult_TestFunctionalityWithData_ParsesCorrectly() {
+    public void buildCertResult_functionalityTestedWithData_ParsesCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",Functionality Tested").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,func");
@@ -373,7 +373,7 @@ public class CertificationResultUploadHandlerTest {
     }
 
     @Test
-    public void buildCertResult_TestFunctionalityMultipleRowsWithData_ParsesCorrectly() {
+    public void buildCertResult_functionalityTestedMultipleRowsWithData_ParsesCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",Functionality Tested").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,func\n,func2");
@@ -394,7 +394,7 @@ public class CertificationResultUploadHandlerTest {
     }
 
     @Test
-    public void buildCertResult_TestFunctionalityDuplicateData_ParsesFirstValue() {
+    public void buildCertResult_functionalityTestedDuplicateData_ParsesFirstValue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
                 + ",Functionality Tested,Functionality Tested").get(0);
         assertNotNull(headingRecord);

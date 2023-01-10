@@ -45,8 +45,8 @@ public class FunctionalityTestedAllowedByRoleReviewerTest {
     @Test
     public void review_functionalityTestedDidNotChange_NoErrorMessages() {
         // Setup
-        List<CertificationResultFunctionalityTested> testFunctionalities = new ArrayList<CertificationResultFunctionalityTested>();
-        testFunctionalities.add(CertificationResultFunctionalityTested.builder()
+        List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
+        functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
                 .name("(b)(2)(i)(E)")
                 .functionalityTestedId(FUNCTIONALITY_TESTED_ID_RANDOM)
                 .build());
@@ -61,7 +61,7 @@ public class FunctionalityTestedAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (b)(2)")
                                 .build())
-                        .functionalitiesTested(testFunctionalities)
+                        .functionalitiesTested(functionalitiesTested)
                         .build())
                 .build();
 
@@ -75,7 +75,7 @@ public class FunctionalityTestedAllowedByRoleReviewerTest {
                                 .certificationEditionId(CERTIFICATION_EDITION_ID)
                                 .number("170.315 (b)(2)")
                                 .build())
-                        .functionalitiesTested(testFunctionalities)
+                        .functionalitiesTested(functionalitiesTested)
                         .build())
                 .build();
 
