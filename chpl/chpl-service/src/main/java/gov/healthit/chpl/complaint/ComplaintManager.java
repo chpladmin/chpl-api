@@ -218,7 +218,7 @@ public class ComplaintManager extends SecuredManager {
         jobDataMap.put(ComplaintsReportJob.EMAIL_KEY, jobUser.getEmail());
         complaintsReportJob.setJobDataMap(jobDataMap);
         complaintsReportTrigger.setJob(complaintsReportJob);
-        complaintsReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+        complaintsReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
         complaintsReportTrigger = schedulerManager.createBackgroundJobTrigger(complaintsReportTrigger);
         return complaintsReportTrigger;
 
