@@ -16,7 +16,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class FunctionalityTestedDuplicateReviewerTest {
     private static final String CRITERION_NUMBER = "170.315 (a)(1)";
     private static final String ERR_MSG =
-            "Certification %s contains duplicate Test Functionality: Number '%s'. The duplicates have been removed.";
+            "Certification %s contains duplicate Functionality Tested: Number '%s'. The duplicates have been removed.";
 
     private ErrorMessageUtil msgUtil;
     private FunctionalityTestedDuplicateReviewer reviewer;
@@ -24,7 +24,7 @@ public class FunctionalityTestedDuplicateReviewerTest {
     @Before
     public void setup() {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestFunctionality"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateFunctionalityTested"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(ERR_MSG, i.getArgument(1), i.getArgument(2)));
         reviewer = new FunctionalityTestedDuplicateReviewer(msgUtil);

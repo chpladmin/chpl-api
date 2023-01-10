@@ -48,7 +48,7 @@ public class FunctionalityTestedDuplicateReviewer {
             String criteria) {
         List<String> warnings = new ArrayList<String>();
         for (CertificationResultFunctionalityTested duplicate : duplicates) {
-            String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestFunctionality",
+            String warning = errorMessageUtil.getMessage("listing.criteria.duplicateFunctionalityTested",
                     criteria, duplicate.getName());
             warnings.add(warning);
         }

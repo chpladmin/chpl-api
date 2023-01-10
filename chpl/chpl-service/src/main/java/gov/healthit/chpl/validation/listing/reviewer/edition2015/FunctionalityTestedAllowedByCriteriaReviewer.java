@@ -71,7 +71,7 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
         if (crft.getFunctionalityTestedId() != null) {
             functionalityTested = getFunctionalityTested(crft.getFunctionalityTestedId(), edition.getCertificationEditionId());
             if (functionalityTested == null) {
-                errors.add(msgUtil.getMessage("listing.criteria.invalidTestFunctionalityId", Util.formatCriteriaNumber(cr.getCriterion()), crft.getFunctionalityTestedId()));
+                errors.add(msgUtil.getMessage("listing.criteria.invalidFunctionalityTestedId", Util.formatCriteriaNumber(cr.getCriterion()), crft.getFunctionalityTestedId()));
             }
         } else if (!StringUtils.isEmpty(crft.getName())) {
             functionalityTested = getFunctionalityTested(crft.getName(), edition.getCertificationEditionId());
@@ -100,7 +100,7 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
 
         FunctionalityTested functionalityTested = getFunctionalityTested(crft.getFunctionalityTestedId(), edition.getCertificationEditionId());
         if (functionalityTested == null || functionalityTested.getId() == null) {
-            return msgUtil.getMessage("listing.criteria.invalidTestFunctionality", Util.formatCriteriaNumber(cr.getCriterion()), crft.getName());
+            return msgUtil.getMessage("listing.criteria.invalidFunctionalityTested", Util.formatCriteriaNumber(cr.getCriterion()), crft.getName());
         }
         return getFunctionalityTestedCriterionErrorMessage(
                 Util.formatCriteriaNumber(cr.getCriterion()),
@@ -112,7 +112,7 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
     private String getFunctionalityTestedCriterionErrorMessage(String criteriaNumber,
             String functionalityTestedNumber, String listOfValidCriteria, String currentCriterion) {
 
-        return msgUtil.getMessage("listing.criteria.testFunctionalityCriterionMismatch",
+        return msgUtil.getMessage("listing.criteria.functionalityTestedCriterionMismatch",
                 criteriaNumber, functionalityTestedNumber, listOfValidCriteria, currentCriterion);
     }
 

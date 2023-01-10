@@ -66,7 +66,7 @@ public class FunctionalityTestedAllowedByRoleReviewer implements ComparisonRevie
                         .forEach(crtf -> {
                             if (!isFunctionalityTestedChangeAllowedBasedOnRole(updatedCr.getCriterion().getId(), crtf.getFunctionalityTestedId())) {
                                 updatedListing.getErrorMessages()
-                                        .add(errorMessages.getMessage("listing.criteria.testFunctionalityPermissionError",
+                                        .add(errorMessages.getMessage("listing.criteria.functionalityTestedPermissionError",
                                                 crtf.getName(), Util.formatCriteriaNumber(updatedCr.getCriterion())));
                             }
                         });

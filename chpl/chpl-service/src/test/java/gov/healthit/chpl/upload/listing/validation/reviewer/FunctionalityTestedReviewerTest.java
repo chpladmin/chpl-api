@@ -27,10 +27,10 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
 public class FunctionalityTestedReviewerTest {
-    private static final String FUNCTIONALITIES_TESTED_NOT_APPLICABLE = "Test functionality is not applicable for the criterion %s. It has been removed.";
-    private static final String FUNCTIONALITIES_TESTED_NOT_FOUND_REMOVED = "Criteria %s contains an invalid test functionality '%s'. It has been removed from the pending listing.";
-    private static final String MISSING_FUNCTIONALITY_TESTED_NAME = "There was no test functionality name found for certification criteria %s.";
-    private static final String FUNCTIONALITY_TESTED_CRITERION_MISMATCH = "In Criteria %s, Test Functionality %s is for Criteria %s and is not valid for Criteria %s. The invalid Test Functionality has been removed.";
+    private static final String FUNCTIONALITIES_TESTED_NOT_APPLICABLE = "Functionality tested is not applicable for the criterion %s. It has been removed.";
+    private static final String FUNCTIONALITIES_TESTED_NOT_FOUND_REMOVED = "Criteria %s contains an invalid Functionality Tested '%s'. It has been removed from the pending listing.";
+    private static final String MISSING_FUNCTIONALITY_TESTED_NAME = "There was no Functionality Tested name found for certification criteria %s.";
+    private static final String FUNCTIONALITY_TESTED_CRITERION_MISMATCH = "In Criteria %s, Functionality Tested %s is for Criteria %s and is not valid for Criteria %s. The invalid Functionality Tested has been removed.";
 
     private ErrorMessageUtil msgUtil;
     private CertificationResultRules certResultRules;
@@ -49,16 +49,16 @@ public class FunctionalityTestedReviewerTest {
         Mockito.when(functionalityTestedDao.getFunctionalitiesTestedCritieriaMaps())
             .thenReturn(createDefaultFunctionalityTestedCriteriaMaps());
 
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testFunctionalityNotApplicable"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.functionalityTestedNotApplicable"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(FUNCTIONALITIES_TESTED_NOT_APPLICABLE, i.getArgument(1), ""));
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testFunctionalityNotFoundAndRemoved"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.functionalityTestedNotFoundAndRemoved"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(FUNCTIONALITIES_TESTED_NOT_FOUND_REMOVED, i.getArgument(1), i.getArgument(2)));
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingTestFunctionalityName"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingFunctionalityTestedName"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(MISSING_FUNCTIONALITY_TESTED_NAME, i.getArgument(1), ""));
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testFunctionalityCriterionMismatch"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.functionalityTestedCriterionMismatch"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(FUNCTIONALITY_TESTED_CRITERION_MISMATCH, i.getArgument(1), i.getArgument(2), i.getArgument(3), i.getArgument(4)));
         reviewer = new FunctionalityTestedReviewer(certResultRules,
@@ -116,7 +116,7 @@ public class FunctionalityTestedReviewerTest {
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
                 .functionalityTestedId(1L)
-                .name("test func")
+                .name("func tested")
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationEdition(create2015EditionMap())
@@ -147,7 +147,7 @@ public class FunctionalityTestedReviewerTest {
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
                 .functionalityTestedId(1L)
-                .name("test func")
+                .name("func tested")
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationEdition(create2015EditionMap())
@@ -175,7 +175,7 @@ public class FunctionalityTestedReviewerTest {
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
                 .functionalityTestedId(1L)
-                .name("test func")
+                .name("func tested")
                 .build());
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
                 .name("bad name")
@@ -210,7 +210,7 @@ public class FunctionalityTestedReviewerTest {
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
                 .functionalityTestedId(1L)
-                .name("test func")
+                .name("func tested")
                 .build());
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
                 .name("bad name")
@@ -242,7 +242,7 @@ public class FunctionalityTestedReviewerTest {
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
                 .functionalityTestedId(1L)
-                .name("test func")
+                .name("func tested")
                 .build());
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
                 .functionalityTestedId(null)
@@ -277,7 +277,7 @@ public class FunctionalityTestedReviewerTest {
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
                 .functionalityTestedId(1L)
-                .name("test func")
+                .name("func tested")
                 .build());
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
                 .functionalityTestedId(null)
@@ -309,7 +309,7 @@ public class FunctionalityTestedReviewerTest {
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
                 .functionalityTestedId(1L)
-                .name("test func")
+                .name("func tested")
                 .build());
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
                 .functionalityTestedId(2L)
@@ -344,7 +344,7 @@ public class FunctionalityTestedReviewerTest {
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
                 .functionalityTestedId(1L)
-                .name("test func")
+                .name("func tested")
                 .build());
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
                 .functionalityTestedId(2L)
@@ -450,7 +450,7 @@ public class FunctionalityTestedReviewerTest {
                 .build());
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
                 .functionalityTestedId(4L)
-                .name("another test func")
+                .name("another func tested")
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                     .certificationEdition(create2015EditionMap())
@@ -476,8 +476,8 @@ public class FunctionalityTestedReviewerTest {
         functionalityTestedMaps.put(1L, new ArrayList<FunctionalityTested>());
         functionalityTestedMaps.get(1L).add(FunctionalityTested.builder()
                 .id(1L)
-                .name("test func")
-                .description("test func")
+                .name("func tested")
+                .description("func tested")
                 .build());
         functionalityTestedMaps.get(1L).add(FunctionalityTested.builder()
                 .id(2L)
@@ -486,8 +486,8 @@ public class FunctionalityTestedReviewerTest {
                 .build());
         functionalityTestedMaps.get(1L).add(FunctionalityTested.builder()
                 .id(4L)
-                .name("another test func")
-                .description("another test func")
+                .name("another func tested")
+                .description("another func tested")
                 .build());
         return functionalityTestedMaps;
     }

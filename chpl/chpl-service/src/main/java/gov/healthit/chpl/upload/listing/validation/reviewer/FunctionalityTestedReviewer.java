@@ -60,7 +60,7 @@ public class FunctionalityTestedReviewer {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
             if (!CollectionUtils.isEmpty(certResult.getFunctionalitiesTested())) {
                 listing.getWarningMessages().add(msgUtil.getMessage(
-                    "listing.criteria.testFunctionalityNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+                    "listing.criteria.functionalityTestedNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setFunctionalitiesTested(null);
         }
@@ -82,7 +82,7 @@ public class FunctionalityTestedReviewer {
             if (functionalityTested.getFunctionalityTestedId() == null) {
                 functionalitiesTestedIter.remove();
                 listing.getWarningMessages().add(msgUtil.getMessage(
-                        "listing.criteria.testFunctionalityNotFoundAndRemoved",
+                        "listing.criteria.functionalityTestedNotFoundAndRemoved",
                         Util.formatCriteriaNumber(certResult.getCriterion()), functionalityTested.getName()));
             }
         }
@@ -99,7 +99,7 @@ public class FunctionalityTestedReviewer {
             if (!isFunctionalityTestedCritierionValid(certResult.getCriterion().getId(),
                     functionalityTested.getFunctionalityTestedId(), year)) {
                 functionalitiesTestedIter.remove();
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.testFunctionalityCriterionMismatch",
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.functionalityTestedCriterionMismatch",
                             Util.formatCriteriaNumber(certResult.getCriterion()),
                             functionalityTested.getName(),
                             getDelimitedListOfValidCriteriaNumbers(functionalityTested.getFunctionalityTestedId(), year),
@@ -135,7 +135,7 @@ public class FunctionalityTestedReviewer {
     private void reviewFunctionalityTestedName(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultFunctionalityTested FunctionalityTested) {
         if (StringUtils.isEmpty(FunctionalityTested.getName())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingTestFunctionalityName",
+            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingFunctionalityTestedName",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
