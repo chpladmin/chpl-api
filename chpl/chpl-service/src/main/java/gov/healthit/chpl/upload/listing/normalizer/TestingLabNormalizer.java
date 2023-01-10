@@ -47,7 +47,7 @@ public class TestingLabNormalizer {
 
     private Boolean isTestingLabPortionOfChplProductNumberValid(CertifiedProductSearchDetails listing) {
         return !StringUtils.isEmpty(listing.getChplProductNumber())
-                && validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(), ChplProductNumberUtil.ATL_CODE_INDEX, ChplProductNumberUtil.ATL_CODE_REGEX);
+                && validationUtils.chplNumberPartIsPresentAndValid(listing.getChplProductNumber(), ChplProductNumberUtil.ATL_CODE_INDEX, ChplProductNumberUtil.ATL_CODE_REGEX);
     }
 
     private void updateTestingLabFromChplProductNumber(CertifiedProductSearchDetails listing) {
