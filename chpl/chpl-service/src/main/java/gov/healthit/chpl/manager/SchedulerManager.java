@@ -53,7 +53,7 @@ public class SchedulerManager extends SecuredManager {
     private static final String UPDATED = "updated";
     private static final String DELETED = "deleted";
     public static final String DATA_DELIMITER = ",";
-    public static final Integer DELAY_BEFORE_BACKGROUND_JOB_START = 5000;
+    public static final Integer FIVE_SECONDS_IN_MILLIS = 5000;
     public static final String CHPL_BACKGROUND_JOBS_KEY = "chplBackgroundJobs";
     public static final String CHPL_JOBS_KEY = "chplJobs";
     public static final String SYSTEM_JOBS_KEY = "systemJobs";
@@ -120,7 +120,7 @@ public class SchedulerManager extends SecuredManager {
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
-            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).CREATE_ONE_TIME_TRIGGER)")
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).CREATE_ONE_TIME_TRIGGER, #chplTrigger)")
     public ChplOneTimeTrigger createOneTimeTrigger(ChplOneTimeTrigger chplTrigger)
             throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
