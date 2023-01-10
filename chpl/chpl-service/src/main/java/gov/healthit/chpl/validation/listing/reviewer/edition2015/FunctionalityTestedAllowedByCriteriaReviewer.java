@@ -18,30 +18,30 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionality;
-import gov.healthit.chpl.functionalityTested.TestFunctionality;
-import gov.healthit.chpl.functionalityTested.TestFunctionalityCriteriaMap;
-import gov.healthit.chpl.functionalityTested.TestFunctionalityDAO;
+import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalityTested.FunctionalityTested;
+import gov.healthit.chpl.functionalityTested.FunctionalityTestedCriteriaMap;
+import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 
-@Component("testFunctionalityAllowedByCriteriaReviewer")
+@Component("functionalityTestedAllowedByCriteriaReviewer")
 @Transactional
 @DependsOn("certificationEditionDAO")
-public class TestFunctionalityAllowedByCriteriaReviewer extends PermissionBasedReviewer {
-    private TestFunctionalityDAO testFunctionalityDAO;
+public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBasedReviewer {
+    private FunctionalityTestedDAO functionalityTestedDao;
     private DimensionalDataManager dimensionalDataManager;
 
     @Autowired
-    public TestFunctionalityAllowedByCriteriaReviewer(TestFunctionalityDAO testFunctionalityDAO,
+    public FunctionalityTestedAllowedByCriteriaReviewer(FunctionalityTestedDAO functionalityTestedDao,
             CertificationEditionDAO editionDAO,
             DimensionalDataManager dimensionalDataManager,
             ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
         super(msgUtil, resourcePermissions);
-        this.testFunctionalityDAO = testFunctionalityDAO;
+        this.functionalityTestedDao = functionalityTestedDao;
         this.dimensionalDataManager = dimensionalDataManager;
     }
 
@@ -50,7 +50,7 @@ public class TestFunctionalityAllowedByCriteriaReviewer extends PermissionBasedR
         if (listing.getCertificationResults() != null) {
             for (CertificationResult cr : listing.getCertificationResults()) {
                 if (BooleanUtils.isTrue(cr.isSuccess()) && cr.getFunctionalitiesTested() != null) {
-                    for (CertificationResultTestFunctionality crft : cr.getFunctionalitiesTested()) {
+                    for (CertificationResultFunctionalityTested crft : cr.getFunctionalitiesTested()) {
                         Set<String> messages = getFunctionalitiesTestedErrorMessages(crft, cr, listing);
                         for (String message : messages) {
                             addCriterionError(listing, cr, message);
@@ -61,17 +61,17 @@ public class TestFunctionalityAllowedByCriteriaReviewer extends PermissionBasedR
         }
     }
 
-    private Set<String> getFunctionalitiesTestedErrorMessages(CertificationResultTestFunctionality crft,
+    private Set<String> getFunctionalitiesTestedErrorMessages(CertificationResultFunctionalityTested crft,
             CertificationResult cr, CertifiedProductSearchDetails listing) {
 
         Set<String> errors = new HashSet<String>();
 
         CertificationEdition edition = getEdition(getEditionFromListing(listing));
-        TestFunctionality functionalityTested = null;
-        if (crft.getTestFunctionalityId() != null) {
-            functionalityTested = getFunctionalityTested(crft.getTestFunctionalityId(), edition.getCertificationEditionId());
+        FunctionalityTested functionalityTested = null;
+        if (crft.getFunctionalityTestedId() != null) {
+            functionalityTested = getFunctionalityTested(crft.getFunctionalityTestedId(), edition.getCertificationEditionId());
             if (functionalityTested == null) {
-                errors.add(msgUtil.getMessage("listing.criteria.invalidTestFunctionalityId", Util.formatCriteriaNumber(cr.getCriterion()), crft.getTestFunctionalityId()));
+                errors.add(msgUtil.getMessage("listing.criteria.invalidTestFunctionalityId", Util.formatCriteriaNumber(cr.getCriterion()), crft.getFunctionalityTestedId()));
             }
         } else if (!StringUtils.isEmpty(crft.getName())) {
             functionalityTested = getFunctionalityTested(crft.getName(), edition.getCertificationEditionId());
@@ -82,23 +82,23 @@ public class TestFunctionalityAllowedByCriteriaReviewer extends PermissionBasedR
         return errors;
     }
 
-    private Boolean isFunctionalityTestedCritierionValid(Long criteriaId, TestFunctionality functionalityTested, String year) {
-        List<TestFunctionality> validFunctionalityTestedForCriteria =
-                testFunctionalityDAO.getFunctionalitiesTestedCriteriaMaps(year).get(criteriaId);
+    private Boolean isFunctionalityTestedCritierionValid(Long criteriaId, FunctionalityTested functionalityTested, String year) {
+        List<FunctionalityTested> validFunctionalityTestedForCriteria =
+                functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps(year).get(criteriaId);
 
         if (validFunctionalityTestedForCriteria == null) {
             return false;
         } else {
-            //Is the TestFunctionalityDTO in the valid list (relies on the TestFunctionalityDTO.equals()
+            //Is the functionality tested in the valid list (relies on the FunctionalityTested.equals()
             return validFunctionalityTestedForCriteria.contains(functionalityTested);
         }
     }
 
-    private String getFunctionalitiesTestedCriterionErrorMessage(CertificationResultTestFunctionality crft,
+    private String getFunctionalitiesTestedCriterionErrorMessage(CertificationResultFunctionalityTested crft,
             CertificationResult cr, CertifiedProductSearchDetails cp,
             CertificationEdition edition) {
 
-        TestFunctionality functionalityTested = getFunctionalityTested(crft.getTestFunctionalityId(), edition.getCertificationEditionId());
+        FunctionalityTested functionalityTested = getFunctionalityTested(crft.getFunctionalityTestedId(), edition.getCertificationEditionId());
         if (functionalityTested == null || functionalityTested.getId() == null) {
             return msgUtil.getMessage("listing.criteria.invalidTestFunctionality", Util.formatCriteriaNumber(cr.getCriterion()), crft.getName());
         }
@@ -133,22 +133,22 @@ public class TestFunctionalityAllowedByCriteriaReviewer extends PermissionBasedR
         return edition;
     }
 
-    private TestFunctionality getFunctionalityTested(Long functionalityTestedId, Long editionId) {
-        return testFunctionalityDAO.getByIdAndEdition(functionalityTestedId, editionId);
+    private FunctionalityTested getFunctionalityTested(Long functionalityTestedId, Long editionId) {
+        return functionalityTestedDao.getByIdAndEdition(functionalityTestedId, editionId);
     }
 
-    private TestFunctionality getFunctionalityTested(String functionalityTestedNumber, Long editionId) {
-        return testFunctionalityDAO.getByNumberAndEdition(functionalityTestedNumber, editionId);
+    private FunctionalityTested getFunctionalityTested(String functionalityTestedNumber, Long editionId) {
+        return functionalityTestedDao.getByNumberAndEdition(functionalityTestedNumber, editionId);
     }
 
-    private String getDelimitedListOfValidCriteriaNumbers(TestFunctionality functionalityTested,
+    private String getDelimitedListOfValidCriteriaNumbers(FunctionalityTested functionalityTested,
             CertificationEdition edition) {
 
         StringBuilder criteriaNumbers = new StringBuilder();
         List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
 
-        List<TestFunctionalityCriteriaMap> maps = testFunctionalityDAO.getFunctionalitiesTestedCritieriaMaps();
-        for (TestFunctionalityCriteriaMap map : maps) {
+        List<FunctionalityTestedCriteriaMap> maps = functionalityTestedDao.getFunctionalitiesTestedCritieriaMaps();
+        for (FunctionalityTestedCriteriaMap map : maps) {
             if (map.getCriterion().getCertificationEdition().equals(edition.getYear())) {
                 if (functionalityTested.getId().equals(map.getFunctionalityTested().getId())) {
                     criteria.add(map.getCriterion());

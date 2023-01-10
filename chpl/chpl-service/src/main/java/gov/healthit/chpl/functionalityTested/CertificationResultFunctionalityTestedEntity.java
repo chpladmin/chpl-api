@@ -24,7 +24,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @Table(name = "certification_result_test_functionality")
-public class CertificationResultTestFunctionalityEntity {
+public class CertificationResultFunctionalityTestedEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +42,7 @@ public class CertificationResultTestFunctionalityEntity {
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "test_functionality_id", unique = true, nullable = true, insertable = false, updatable = false)
-    private TestFunctionalityEntity functionalityTested;
+    private FunctionalityTestedEntity functionalityTested;
 
     @Column(name = "deleted", insertable = false)
     private Boolean deleted;
@@ -56,10 +56,10 @@ public class CertificationResultTestFunctionalityEntity {
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
 
-    public CertificationResultTestFunctionality toDomain() {
-        return CertificationResultTestFunctionality.builder()
+    public CertificationResultFunctionalityTested toDomain() {
+        return CertificationResultFunctionalityTested.builder()
                 .id(this.getId())
-                .testFunctionalityId(this.getFunctionalityTestedId())
+                .functionalityTestedId(this.getFunctionalityTestedId())
                 .name(this.getFunctionalityTested() != null ? this.getFunctionalityTested().getNumber() : null)
                 .description(this.getFunctionalityTested() != null ? this.getFunctionalityTested().getName() : null)
                 .year(this.getFunctionalityTested() != null && this.getFunctionalityTested().getCertificationEdition() != null

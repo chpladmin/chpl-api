@@ -21,7 +21,7 @@ import lombok.Data;
 @Entity
 @Table(name = "test_functionality")
 @Data
-public class TestFunctionalityEntity implements Serializable {
+public class FunctionalityTestedEntity implements Serializable {
     private static final long serialVersionUID = 2662883108826795645L;
 
     @Id
@@ -63,8 +63,8 @@ public class TestFunctionalityEntity implements Serializable {
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-    public TestFunctionality toDomain() {
-        return TestFunctionality.builder()
+    public FunctionalityTested toDomain() {
+        return FunctionalityTested.builder()
                 .id(this.getId())
                 .description(this.getName())
                 .name(this.getNumber())

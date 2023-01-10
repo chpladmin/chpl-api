@@ -12,10 +12,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TestFunctionalityCriteriaMap {
+public class FunctionalityTestedCriteriaMap {
     private Long id;
     private CertificationCriterion criterion;
-    private TestFunctionality functionalityTested;
+    private FunctionalityTested functionalityTested;
     private Date creationDate;
     private Boolean deleted;
     private Date lastModifiedDate;

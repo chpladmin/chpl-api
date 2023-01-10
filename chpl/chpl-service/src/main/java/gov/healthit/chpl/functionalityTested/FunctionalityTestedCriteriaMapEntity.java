@@ -24,7 +24,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @Table(name = "test_functionality_criteria_map")
-public class TestFunctionalityCriteriaMapEntity implements Serializable {
+public class FunctionalityTestedCriteriaMapEntity implements Serializable {
     private static final long serialVersionUID = 6446486138564063907L;
 
     @Id
@@ -47,7 +47,7 @@ public class TestFunctionalityCriteriaMapEntity implements Serializable {
     @Basic(optional = false)
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "test_functionality_id", insertable = false, updatable = false)
-    private TestFunctionalityEntity functionalityTested;
+    private FunctionalityTestedEntity functionalityTested;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
@@ -65,8 +65,8 @@ public class TestFunctionalityCriteriaMapEntity implements Serializable {
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-    public TestFunctionalityCriteriaMap toDomain() {
-        return TestFunctionalityCriteriaMap.builder()
+    public FunctionalityTestedCriteriaMap toDomain() {
+        return FunctionalityTestedCriteriaMap.builder()
                 .id(this.getId())
                 .creationDate(this.getCreationDate())
                 .criterion(this.getCriterion() != null ? this.getCriterion().toDomain() : null)

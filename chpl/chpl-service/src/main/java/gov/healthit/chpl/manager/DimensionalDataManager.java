@@ -64,8 +64,8 @@ import gov.healthit.chpl.dto.TestDataCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestProcedureCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.functionalityTested.TestFunctionality;
-import gov.healthit.chpl.functionalityTested.TestFunctionalityDAO;
+import gov.healthit.chpl.functionalityTested.FunctionalityTested;
+import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
 import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
@@ -87,7 +87,7 @@ public class DimensionalDataManager {
     private EducationTypeDAO educationTypeDao;
     private AgeRangeDAO ageRangeDao;
     private OptionalStandardDAO optionalStandardDao;
-    private TestFunctionalityDAO testFuncDao;
+    private FunctionalityTestedDAO testFuncDao;
     private TestStandardDAO testStandardDao;
     private TestProcedureDAO testProcedureDao;
     private TestDataDAO testDataDao;
@@ -109,7 +109,7 @@ public class DimensionalDataManager {
     @SuppressWarnings("checkstyle:parameternumber")
     public DimensionalDataManager(CacheableDimensionalDataManager cacheableDimensionalDataManager,
                                   CertificationBodyDAO certificationBodyDao, CertificationCriterionDAO certificationCriterionDao,
-                                  EducationTypeDAO educationTypeDao, AgeRangeDAO ageRangeDao, TestFunctionalityDAO testFuncDao,
+                                  EducationTypeDAO educationTypeDao, AgeRangeDAO ageRangeDao, FunctionalityTestedDAO testFuncDao,
                                   TestStandardDAO testStandardDao, TestProcedureDAO testProcedureDao,
                                   TestDataDAO testDataDao, AccessibilityStandardDAO asDao, UcdProcessDAO ucdDao,
                                   QmsStandardDAO qmsDao, TargetedUserDAO tuDao, DeveloperStatusDAO devStatusDao,
@@ -208,9 +208,9 @@ public class DimensionalDataManager {
     }
 
     @Transactional
-    public Set<TestFunctionality> getFunctionalitiesTested() {
+    public Set<FunctionalityTested> getFunctionalitiesTested() {
         LOGGER.debug("Getting all functionalities tested from the database (not cached).");
-        List<TestFunctionality> functionalitiesTested = this.testFuncDao.findAll();
+        List<FunctionalityTested> functionalitiesTested = this.testFuncDao.findAll();
         return functionalitiesTested.stream()
                 .collect(Collectors.toSet());
     }

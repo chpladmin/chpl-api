@@ -15,7 +15,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionality;
+import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
@@ -366,7 +366,7 @@ public class CertificationResultUploadHandlerTest {
         assertNotNull(certResult);
         assertNotNull(certResult.getFunctionalitiesTested());
         assertEquals(1, certResult.getFunctionalitiesTested().size());
-        CertificationResultTestFunctionality func = certResult.getFunctionalitiesTested().get(0);
+        CertificationResultFunctionalityTested func = certResult.getFunctionalitiesTested().get(0);
         assertNotNull(func);
         assertNotNull(func.getName());
         assertEquals("func", func.getName());
@@ -383,7 +383,7 @@ public class CertificationResultUploadHandlerTest {
         assertNotNull(certResult);
         assertNotNull(certResult.getFunctionalitiesTested());
         assertEquals(2, certResult.getFunctionalitiesTested().size());
-        CertificationResultTestFunctionality func = certResult.getFunctionalitiesTested().get(0);
+        CertificationResultFunctionalityTested func = certResult.getFunctionalitiesTested().get(0);
         assertNotNull(func);
         assertNotNull(func.getName());
         assertEquals("func", func.getName());
@@ -405,7 +405,7 @@ public class CertificationResultUploadHandlerTest {
         assertNotNull(certResult);
         assertNotNull(certResult.getFunctionalitiesTested());
         assertEquals(1, certResult.getFunctionalitiesTested().size());
-        CertificationResultTestFunctionality func = certResult.getFunctionalitiesTested().get(0);
+        CertificationResultFunctionalityTested func = certResult.getFunctionalitiesTested().get(0);
         assertNotNull(func);
         assertNotNull(func.getName());
         assertEquals("func", func.getName());

@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionality;
-import gov.healthit.chpl.functionalityTested.TestFunctionality;
-import gov.healthit.chpl.functionalityTested.TestFunctionalityCriteriaMap;
-import gov.healthit.chpl.functionalityTested.TestFunctionalityDAO;
+import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalityTested.FunctionalityTested;
+import gov.healthit.chpl.functionalityTested.FunctionalityTestedCriteriaMap;
+import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -25,13 +25,13 @@ import gov.healthit.chpl.util.ValidationUtils;
 public class FunctionalityTestedReviewer {
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;
-    private TestFunctionalityDAO functionalityTestedDao;
+    private FunctionalityTestedDAO functionalityTestedDao;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public FunctionalityTestedReviewer(CertificationResultRules certResultRules,
             ValidationUtils validationUtils,
-            TestFunctionalityDAO functionalityTestedDao, ErrorMessageUtil msgUtil) {
+            FunctionalityTestedDAO functionalityTestedDao, ErrorMessageUtil msgUtil) {
         this.certResultRules = certResultRules;
         this.validationUtils = validationUtils;
         this.functionalityTestedDao = functionalityTestedDao;
@@ -76,10 +76,10 @@ public class FunctionalityTestedReviewer {
         if (CollectionUtils.isEmpty(certResult.getFunctionalitiesTested())) {
             return;
         }
-        Iterator<CertificationResultTestFunctionality> functionalitiesTestedIter = certResult.getFunctionalitiesTested().iterator();
+        Iterator<CertificationResultFunctionalityTested> functionalitiesTestedIter = certResult.getFunctionalitiesTested().iterator();
         while (functionalitiesTestedIter.hasNext()) {
-            CertificationResultTestFunctionality functionalityTested = functionalitiesTestedIter.next();
-            if (functionalityTested.getTestFunctionalityId() == null) {
+            CertificationResultFunctionalityTested functionalityTested = functionalitiesTestedIter.next();
+            if (functionalityTested.getFunctionalityTestedId() == null) {
                 functionalitiesTestedIter.remove();
                 listing.getWarningMessages().add(msgUtil.getMessage(
                         "listing.criteria.testFunctionalityNotFoundAndRemoved",
@@ -93,23 +93,23 @@ public class FunctionalityTestedReviewer {
             return;
         }
         String year = MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY);
-        Iterator<CertificationResultTestFunctionality> functionalitiesTestedIter = certResult.getFunctionalitiesTested().iterator();
+        Iterator<CertificationResultFunctionalityTested> functionalitiesTestedIter = certResult.getFunctionalitiesTested().iterator();
         while (functionalitiesTestedIter.hasNext()) {
-            CertificationResultTestFunctionality functionalityTested = functionalitiesTestedIter.next();
+            CertificationResultFunctionalityTested functionalityTested = functionalitiesTestedIter.next();
             if (!isFunctionalityTestedCritierionValid(certResult.getCriterion().getId(),
-                    functionalityTested.getTestFunctionalityId(), year)) {
+                    functionalityTested.getFunctionalityTestedId(), year)) {
                 functionalitiesTestedIter.remove();
                 listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.testFunctionalityCriterionMismatch",
                             Util.formatCriteriaNumber(certResult.getCriterion()),
                             functionalityTested.getName(),
-                            getDelimitedListOfValidCriteriaNumbers(functionalityTested.getTestFunctionalityId(), year),
+                            getDelimitedListOfValidCriteriaNumbers(functionalityTested.getFunctionalityTestedId(), year),
                             Util.formatCriteriaNumber(certResult.getCriterion())));
             }
         }
     }
 
     private boolean isFunctionalityTestedCritierionValid(Long criteriaId, Long functionalityTestedId, String year) {
-        List<TestFunctionality> validFunctionalitiesTestedForCriteria =
+        List<FunctionalityTested> validFunctionalitiesTestedForCriteria =
                 functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps(year).get(criteriaId);
         if (validFunctionalitiesTestedForCriteria == null) {
             return false;
@@ -119,7 +119,7 @@ public class FunctionalityTestedReviewer {
     }
 
     private String getDelimitedListOfValidCriteriaNumbers(Long functionalityTestedId, String year) {
-        List<TestFunctionalityCriteriaMap> functionalityTestedMaps = functionalityTestedDao.getFunctionalitiesTestedCritieriaMaps();
+        List<FunctionalityTestedCriteriaMap> functionalityTestedMaps = functionalityTestedDao.getFunctionalitiesTestedCritieriaMaps();
         return functionalityTestedMaps.stream().
             filter(functionalityTestedMap -> functionalityTestedMap.getCriterion().getCertificationEdition().equals(year)
                     && functionalityTestedId.equals(functionalityTestedMap.getFunctionalityTested().getId()))
@@ -128,12 +128,12 @@ public class FunctionalityTestedReviewer {
     }
 
     private void reviewFunctionalityTestedFields(CertifiedProductSearchDetails listing,
-            CertificationResult certResult, CertificationResultTestFunctionality functionalityTested) {
+            CertificationResult certResult, CertificationResultFunctionalityTested functionalityTested) {
         reviewFunctionalityTestedName(listing, certResult, functionalityTested);
     }
 
     private void reviewFunctionalityTestedName(CertifiedProductSearchDetails listing,
-            CertificationResult certResult, CertificationResultTestFunctionality FunctionalityTested) {
+            CertificationResult certResult, CertificationResultFunctionalityTested FunctionalityTested) {
         if (StringUtils.isEmpty(FunctionalityTested.getName())) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingTestFunctionalityName",
                     Util.formatCriteriaNumber(certResult.getCriterion())));

@@ -10,7 +10,7 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionality;
+import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class TestFunctionalityDuplicateReviewerTest {
@@ -35,12 +35,12 @@ public class TestFunctionalityDuplicateReviewerTest {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         CertificationResult cert = getCertResult();
 
-        CertificationResultTestFunctionality testFunc1 = new CertificationResultTestFunctionality();
-        testFunc1.setTestFunctionalityId(1L);
+        CertificationResultFunctionalityTested testFunc1 = new CertificationResultFunctionalityTested();
+        testFunc1.setFunctionalityTestedId(1L);
         testFunc1.setName("TestFunc1");
 
-        CertificationResultTestFunctionality testFunc2 = new CertificationResultTestFunctionality();
-        testFunc2.setTestFunctionalityId(1L);
+        CertificationResultFunctionalityTested testFunc2 = new CertificationResultFunctionalityTested();
+        testFunc2.setFunctionalityTestedId(1L);
         testFunc2.setName("TestFunc1");
 
         cert.getFunctionalitiesTested().add(testFunc1);
@@ -60,12 +60,12 @@ public class TestFunctionalityDuplicateReviewerTest {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         CertificationResult cert = getCertResult();
 
-        CertificationResultTestFunctionality testFunc1 = new CertificationResultTestFunctionality();
-        testFunc1.setTestFunctionalityId(1L);
+        CertificationResultFunctionalityTested testFunc1 = new CertificationResultFunctionalityTested();
+        testFunc1.setFunctionalityTestedId(1L);
         testFunc1.setName("TestFunc1");
 
-        CertificationResultTestFunctionality testFunc2 = new CertificationResultTestFunctionality();
-        testFunc2.setTestFunctionalityId(2L);
+        CertificationResultFunctionalityTested testFunc2 = new CertificationResultFunctionalityTested();
+        testFunc2.setFunctionalityTestedId(2L);
         testFunc2.setName("TestFunc2");
 
         cert.getFunctionalitiesTested().add(testFunc1);
@@ -94,20 +94,20 @@ public class TestFunctionalityDuplicateReviewerTest {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         CertificationResult cert = getCertResult();
 
-        CertificationResultTestFunctionality testFunc1 = new CertificationResultTestFunctionality();
-        testFunc1.setTestFunctionalityId(1L);
+        CertificationResultFunctionalityTested testFunc1 = new CertificationResultFunctionalityTested();
+        testFunc1.setFunctionalityTestedId(1L);
         testFunc1.setName("TestFunc1");
 
-        CertificationResultTestFunctionality testFunc2 = new CertificationResultTestFunctionality();
-        testFunc2.setTestFunctionalityId(2L);
+        CertificationResultFunctionalityTested testFunc2 = new CertificationResultFunctionalityTested();
+        testFunc2.setFunctionalityTestedId(2L);
         testFunc2.setName("TestFunc2");
 
-        CertificationResultTestFunctionality testFunc3 = new CertificationResultTestFunctionality();
-        testFunc3.setTestFunctionalityId(1L);
+        CertificationResultFunctionalityTested testFunc3 = new CertificationResultFunctionalityTested();
+        testFunc3.setFunctionalityTestedId(1L);
         testFunc3.setName("TestFunc1");
 
-        CertificationResultTestFunctionality testFunc4 = new CertificationResultTestFunctionality();
-        testFunc4.setTestFunctionalityId(3L);
+        CertificationResultFunctionalityTested testFunc4 = new CertificationResultFunctionalityTested();
+        testFunc4.setFunctionalityTestedId(3L);
         testFunc4.setName("TestFunc3");
 
         cert.getFunctionalitiesTested().add(testFunc1);

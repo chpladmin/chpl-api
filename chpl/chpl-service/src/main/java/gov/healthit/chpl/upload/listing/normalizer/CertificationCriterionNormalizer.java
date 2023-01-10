@@ -20,7 +20,7 @@ import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionality;
+import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -126,7 +126,7 @@ public class CertificationCriterionNormalizer {
             certResult.setFunctionalitiesTested(null);
         } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.FUNCTIONALITY_TESTED)
                 && certResult.getFunctionalitiesTested() == null) {
-            certResult.setFunctionalitiesTested(new ArrayList<CertificationResultTestFunctionality>());
+            certResult.setFunctionalitiesTested(new ArrayList<CertificationResultFunctionalityTested>());
         }
 
         if (BooleanUtils.isFalse(certResult.isSuccess())

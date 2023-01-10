@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionality;
+import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.upload.listing.Headings;
@@ -149,14 +149,14 @@ public class CertificationResultUploadHandler {
         return uploadUtil.parseSingleRowField(Headings.API_DOCUMENTATION_LINK, certHeadingRecord, certResultRecords);
     }
 
-    private List<CertificationResultTestFunctionality> parseFunctionalitiesTested(
+    private List<CertificationResultFunctionalityTested> parseFunctionalitiesTested(
             CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        List<CertificationResultTestFunctionality> testFunctionalities = new ArrayList<CertificationResultTestFunctionality>();
+        List<CertificationResultFunctionalityTested> testFunctionalities = new ArrayList<CertificationResultFunctionalityTested>();
         List<String> testFuncNames = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
                 Headings.FUNCTIONALITIES_TESTED, certHeadingRecord, certResultRecords);
         if (testFuncNames != null && testFuncNames.size() > 0) {
             testFuncNames.stream().forEach(testFuncName -> {
-                CertificationResultTestFunctionality testFunc = CertificationResultTestFunctionality.builder()
+                CertificationResultFunctionalityTested testFunc = CertificationResultFunctionalityTested.builder()
                         .name(testFuncName)
                         .build();
                 testFunctionalities.add(testFunc);

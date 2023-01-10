@@ -16,10 +16,10 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionality;
-import gov.healthit.chpl.functionalityTested.TestFunctionality;
-import gov.healthit.chpl.functionalityTested.TestFunctionalityDAO;
-import gov.healthit.chpl.functionalityTested.TestingFunctionalityManager;
+import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalityTested.FunctionalityTested;
+import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
+import gov.healthit.chpl.functionalityTested.FunctionalityTestedManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import lombok.Data;
 import lombok.ToString;
@@ -30,14 +30,14 @@ import lombok.extern.log4j.Log4j2;
 public class FunctionalityTestedNormalizer {
     private static final String PRACTICE_TYPE_ID_KEY = "id";
 
-    private TestFunctionalityDAO functionalityTestedDao;
-    private TestingFunctionalityManager functionalityTestedManager;
+    private FunctionalityTestedDAO functionalityTestedDao;
+    private FunctionalityTestedManager functionalityTestedManager;
     private ResourcePermissions resourcePermissions;
     private List<RestrictedCriteriaFunctionalityTested> restrictedCriteriaFunctionalitiesTested;
 
     @Autowired
-    public FunctionalityTestedNormalizer(TestFunctionalityDAO functionalityTestedDao,
-            TestingFunctionalityManager functionalityTestedManager,
+    public FunctionalityTestedNormalizer(FunctionalityTestedDAO functionalityTestedDao,
+            FunctionalityTestedManager functionalityTestedManager,
             ResourcePermissions resourcePermissions,
             @Value("${functionalitiesTested.restrictions}") String jsonRestrictions) {
         this.functionalityTestedDao = functionalityTestedDao;
@@ -78,18 +78,18 @@ public class FunctionalityTestedNormalizer {
         certResult.setAllowedFunctionalitiesTested(getAvailableFunctionalitiesTested(listing, certResult));
     }
 
-    private List<TestFunctionality> getAvailableFunctionalitiesTested(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private List<FunctionalityTested> getAvailableFunctionalitiesTested(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         String edition = MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY);
         Long practiceTypeId = MapUtils.getLong(listing.getPracticeType(), PRACTICE_TYPE_ID_KEY);
         if (certResult != null && certResult.getCriterion() != null
                 && certResult.getCriterion().getId() != null) {
             return functionalityTestedManager.getFunctionalitiesTested(certResult.getCriterion().getId(), edition, practiceTypeId);
         }
-        return new ArrayList<TestFunctionality>();
+        return new ArrayList<FunctionalityTested>();
     }
 
     private void populateFunctionalitiesTestedIds(CertifiedProductSearchDetails listing,
-            List<CertificationResultTestFunctionality> functionalitiesTested) {
+            List<CertificationResultFunctionalityTested> functionalitiesTested) {
         if (functionalitiesTested != null && functionalitiesTested.size() > 0) {
             functionalitiesTested.stream()
                 .forEach(functionalityTested -> populateFunctionalityTestedId(listing, functionalityTested));
@@ -97,7 +97,7 @@ public class FunctionalityTestedNormalizer {
     }
 
     private void populateFunctionalityTestedId(CertifiedProductSearchDetails listing,
-            CertificationResultTestFunctionality functionalityTested) {
+            CertificationResultFunctionalityTested functionalityTested) {
         if (!StringUtils.isEmpty(functionalityTested.getName())
                 && MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY) != null) {
             Long editionId = null;
@@ -108,22 +108,22 @@ public class FunctionalityTestedNormalizer {
             }
 
             if (editionId != null) {
-                TestFunctionality foundFunctionalityTested =
+                FunctionalityTested foundFunctionalityTested =
                         functionalityTestedDao.getByNumberAndEdition(functionalityTested.getName(), editionId);
                 if (foundFunctionalityTested != null) {
-                    functionalityTested.setTestFunctionalityId(foundFunctionalityTested.getId());
+                    functionalityTested.setFunctionalityTestedId(foundFunctionalityTested.getId());
                 }
             }
         }
     }
 
     private void removeRestrictedFunctionalitiesTestedBasedOnUserRule(CertificationResult certResult) {
-        Iterator<CertificationResultTestFunctionality> functionalityTestedIter = certResult.getFunctionalitiesTested().listIterator();
+        Iterator<CertificationResultFunctionalityTested> functionalityTestedIter = certResult.getFunctionalitiesTested().listIterator();
         while (functionalityTestedIter.hasNext()) {
-            CertificationResultTestFunctionality currFunctionalityTested = functionalityTestedIter.next();
-            if (currFunctionalityTested.getTestFunctionalityId() != null) {
+            CertificationResultFunctionalityTested currFunctionalityTested = functionalityTestedIter.next();
+            if (currFunctionalityTested.getFunctionalityTestedId() != null) {
                 Optional<RestrictedFunctionalityTested> restrictedFunctionalityTested
-                    = findRestrictedFunctionalityTested(certResult.getCriterion().getId(), currFunctionalityTested.getTestFunctionalityId());
+                    = findRestrictedFunctionalityTested(certResult.getCriterion().getId(), currFunctionalityTested.getFunctionalityTestedId());
                 if (restrictedFunctionalityTested.isPresent()) {
                     functionalityTestedIter.remove();
                 }

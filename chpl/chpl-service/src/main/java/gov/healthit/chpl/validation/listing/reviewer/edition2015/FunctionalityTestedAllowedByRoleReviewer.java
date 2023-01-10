@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionality;
+import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -26,16 +26,16 @@ import lombok.Data;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 
-@Component("testFunctionalityAllowedByRoleReviewer")
+@Component("functionalityTestedAllowedByRoleReviewer")
 @Log4j2
-public class TestFunctionalityAllowedByRoleReviewer implements ComparisonReviewer {
+public class FunctionalityTestedAllowedByRoleReviewer implements ComparisonReviewer {
 
     private ErrorMessageUtil errorMessages;
     private ResourcePermissions permissions;
     private String jsonRestrictions;
 
     @Autowired
-    public TestFunctionalityAllowedByRoleReviewer(ResourcePermissions permissions, ErrorMessageUtil errorMessages,
+    public FunctionalityTestedAllowedByRoleReviewer(ResourcePermissions permissions, ErrorMessageUtil errorMessages,
             @Value("${functionalitiesTested.restrictions}") String jsonRestrictions) {
 
         this.errorMessages = errorMessages;
@@ -48,23 +48,23 @@ public class TestFunctionalityAllowedByRoleReviewer implements ComparisonReviewe
         for (CertificationResult updatedCr : updatedListing.getCertificationResults()) {
             Optional<CertificationResult> existingCr = findCertificationResult(existingListing, updatedCr.getId());
             if (existingCr.isPresent()) {
-                Optional<List<CertificationResultTestFunctionality>> listUpdateCrtfs = Optional.ofNullable(updatedCr.getFunctionalitiesTested());
-                Optional<List<CertificationResultTestFunctionality>> listExistingCrtfs = Optional.ofNullable(existingCr.get().getFunctionalitiesTested());
+                Optional<List<CertificationResultFunctionalityTested>> listUpdateCrtfs = Optional.ofNullable(updatedCr.getFunctionalitiesTested());
+                Optional<List<CertificationResultFunctionalityTested>> listExistingCrtfs = Optional.ofNullable(existingCr.get().getFunctionalitiesTested());
 
-                List<CertificationResultTestFunctionality> addedCrtfs = getAddedCrtfs(listUpdateCrtfs, listExistingCrtfs);
+                List<CertificationResultFunctionalityTested> addedCrtfs = getAddedFunctionalitiesTested(listUpdateCrtfs, listExistingCrtfs);
 
                 //Only check removed CertificationResultTestFunctionality if the criteria is attested to
-                List<CertificationResultTestFunctionality> removedCrtfs = new ArrayList<CertificationResultTestFunctionality>();
+                List<CertificationResultFunctionalityTested> removedCrtfs = new ArrayList<CertificationResultFunctionalityTested>();
                 if (BooleanUtils.isTrue(updatedCr.isSuccess())) {
-                    removedCrtfs = getRemovedCrtfs(listUpdateCrtfs, listExistingCrtfs);
+                    removedCrtfs = getRemovedFunctionalitiesTested(listUpdateCrtfs, listExistingCrtfs);
                 }
 
-                List<CertificationResultTestFunctionality> allEditedCrtfs = Stream.concat(addedCrtfs.stream(), removedCrtfs.stream())
+                List<CertificationResultFunctionalityTested> allEditedCrtfs = Stream.concat(addedCrtfs.stream(), removedCrtfs.stream())
                         .collect(Collectors.toList());
 
                 allEditedCrtfs.stream()
                         .forEach(crtf -> {
-                            if (!isTestFunctionalityChangeAllowedBasedOnRole(updatedCr.getCriterion().getId(), crtf.getTestFunctionalityId())) {
+                            if (!isFunctionalityTestedChangeAllowedBasedOnRole(updatedCr.getCriterion().getId(), crtf.getFunctionalityTestedId())) {
                                 updatedListing.getErrorMessages()
                                         .add(errorMessages.getMessage("listing.criteria.testFunctionalityPermissionError",
                                                 crtf.getName(), Util.formatCriteriaNumber(updatedCr.getCriterion())));
@@ -74,26 +74,26 @@ public class TestFunctionalityAllowedByRoleReviewer implements ComparisonReviewe
         }
     }
 
-    private List<CertificationResultTestFunctionality> getRemovedCrtfs(Optional<List<CertificationResultTestFunctionality>> listA,
-            Optional<List<CertificationResultTestFunctionality>> listB) {
+    private List<CertificationResultFunctionalityTested> getRemovedFunctionalitiesTested(Optional<List<CertificationResultFunctionalityTested>> listA,
+            Optional<List<CertificationResultFunctionalityTested>> listB) {
         // This will get the test functionalities removed - items in listB not in ListA
         return subtractLists(
-                listB.isPresent() ? listB.get() : new ArrayList<CertificationResultTestFunctionality>(),
-                listA.isPresent() ? listA.get() : new ArrayList<CertificationResultTestFunctionality>());
+                listB.isPresent() ? listB.get() : new ArrayList<CertificationResultFunctionalityTested>(),
+                listA.isPresent() ? listA.get() : new ArrayList<CertificationResultFunctionalityTested>());
     }
 
-    private List<CertificationResultTestFunctionality> getAddedCrtfs(Optional<List<CertificationResultTestFunctionality>> listA,
-            Optional<List<CertificationResultTestFunctionality>> listB) {
+    private List<CertificationResultFunctionalityTested> getAddedFunctionalitiesTested(Optional<List<CertificationResultFunctionalityTested>> listA,
+            Optional<List<CertificationResultFunctionalityTested>> listB) {
         // This will get the test functionalities added - items in listA not in ListB
         return subtractLists(
-                listA.isPresent() ? listA.get() : new ArrayList<CertificationResultTestFunctionality>(),
-                listB.isPresent() ? listB.get() : new ArrayList<CertificationResultTestFunctionality>());
+                listA.isPresent() ? listA.get() : new ArrayList<CertificationResultFunctionalityTested>(),
+                listB.isPresent() ? listB.get() : new ArrayList<CertificationResultFunctionalityTested>());
     }
 
-    private List<CertificationResultTestFunctionality> subtractLists(List<CertificationResultTestFunctionality> listA,
-            List<CertificationResultTestFunctionality> listB) {
+    private List<CertificationResultFunctionalityTested> subtractLists(List<CertificationResultFunctionalityTested> listA,
+            List<CertificationResultFunctionalityTested> listB) {
 
-        Predicate<CertificationResultTestFunctionality> notInListB = crtfFromA -> !listB.stream()
+        Predicate<CertificationResultFunctionalityTested> notInListB = crtfFromA -> !listB.stream()
                 .anyMatch(crtf -> crtfFromA.matches(crtf));
 
         return listA.stream()
@@ -108,8 +108,8 @@ public class TestFunctionalityAllowedByRoleReviewer implements ComparisonReviewe
                 .findFirst();
     }
 
-    private boolean isTestFunctionalityChangeAllowedBasedOnRole(Long criteriaId, Long testFunctionalityId) {
-        Optional<RestrictedTestFunctionality> restrictedTestFunctionality = findRestrictedTestFunctionality(criteriaId,
+    private boolean isFunctionalityTestedChangeAllowedBasedOnRole(Long criteriaId, Long testFunctionalityId) {
+        Optional<RestrictedFunctionalityTested> restrictedTestFunctionality = findRestrictedFunctionalityTested(criteriaId,
                 testFunctionalityId);
         if (restrictedTestFunctionality.isPresent()) {
             return permissions.doesUserHaveRole(restrictedTestFunctionality.get().getAllowedRoleNames());
@@ -118,28 +118,28 @@ public class TestFunctionalityAllowedByRoleReviewer implements ComparisonReviewe
         }
     }
 
-    private Optional<RestrictedTestFunctionality> findRestrictedTestFunctionality(Long criteriaId, Long testFunctionalityId) {
-        Optional<RestrictedCriteriaTestFunctionality> foundBasedOnCriteriaId = getRestrictedCriteriaTestFunctionality().stream()
-                .filter(x -> x.getCriteriaId().equals(criteriaId))
+    private Optional<RestrictedFunctionalityTested> findRestrictedFunctionalityTested(Long criterionId, Long functionalityTestedId) {
+        Optional<RestrictedCriteriaFunctionalityTested> foundBasedOnCriteriaId = getRestrictedCriteriaFunctionalityTested().stream()
+                .filter(x -> x.getCriterionId().equals(criterionId))
                 .findAny();
 
         if (foundBasedOnCriteriaId.isPresent()) {
-            // Is there a match on the test functionality
-            return foundBasedOnCriteriaId.get().getRestrictedTestFunctionalities().stream()
-                    .filter(x -> x.getTestFunctionalityId().equals(testFunctionalityId))
+            // Is there a match on the functionality tested
+            return foundBasedOnCriteriaId.get().getRestrictedFunctionalitiesTested().stream()
+                    .filter(x -> x.getFunctionalityTestedId().equals(functionalityTestedId))
                     .findAny();
         } else {
             return Optional.empty();
         }
     }
 
-    private List<RestrictedCriteriaTestFunctionality> getRestrictedCriteriaTestFunctionality() {
-        List<RestrictedCriteriaTestFunctionality> restrictedCriteria = new ArrayList<RestrictedCriteriaTestFunctionality>();
+    private List<RestrictedCriteriaFunctionalityTested> getRestrictedCriteriaFunctionalityTested() {
+        List<RestrictedCriteriaFunctionalityTested> restrictedCriteria = new ArrayList<RestrictedCriteriaFunctionalityTested>();
 
         try {
             ObjectMapper mapper = new ObjectMapper();
             CollectionType javaType = mapper.getTypeFactory().constructCollectionType(List.class,
-                    RestrictedCriteriaTestFunctionality.class);
+                    RestrictedCriteriaFunctionalityTested.class);
             restrictedCriteria = mapper.readValue(jsonRestrictions, javaType);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -150,15 +150,15 @@ public class TestFunctionalityAllowedByRoleReviewer implements ComparisonReviewe
 
     @Data
     @ToString
-    static class RestrictedCriteriaTestFunctionality {
-        private Long criteriaId;
-        private List<RestrictedTestFunctionality> restrictedTestFunctionalities;
+    static class RestrictedCriteriaFunctionalityTested {
+        private Long criterionId;
+        private List<RestrictedFunctionalityTested> restrictedFunctionalitiesTested;
     }
 
     @Data
     @ToString
-    static class RestrictedTestFunctionality {
-        private Long testFunctionalityId;
+    static class RestrictedFunctionalityTested {
+        private Long functionalityTestedId;
         private List<String> allowedRoleNames;
     }
 

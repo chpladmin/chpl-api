@@ -18,10 +18,10 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionality;
-import gov.healthit.chpl.functionalityTested.TestFunctionality;
-import gov.healthit.chpl.functionalityTested.TestFunctionalityDAO;
-import gov.healthit.chpl.functionalityTested.TestingFunctionalityManager;
+import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalityTested.FunctionalityTested;
+import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
+import gov.healthit.chpl.functionalityTested.FunctionalityTestedManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public class FunctionalityTestedNormalizerTest {
@@ -33,17 +33,17 @@ public class FunctionalityTestedNormalizerTest {
     private static final Long FUNCTIONALITY_TESTED_ID_WITH_RESTRICTIONS = 56L;
     private static final Long FUNCTIONALITY_TESTED_ID_WITHOUT_RESTRICTIONS = 52L;
 
-    private TestFunctionalityDAO functionalityTestedDao;
-    private TestingFunctionalityManager functionalityTestedManager;
+    private FunctionalityTestedDAO functionalityTestedDao;
+    private FunctionalityTestedManager functionalityTestedManager;
     private ResourcePermissions resourcePermissions;
     private FunctionalityTestedNormalizer normalizer;
 
     @Before
     public void before() {
-        functionalityTestedDao = Mockito.mock(TestFunctionalityDAO.class);
-        functionalityTestedManager = Mockito.mock(TestingFunctionalityManager.class);
+        functionalityTestedDao = Mockito.mock(FunctionalityTestedDAO.class);
+        functionalityTestedManager = Mockito.mock(FunctionalityTestedManager.class);
         Mockito.when(functionalityTestedManager.getFunctionalitiesTested(ArgumentMatchers.anyLong(), ArgumentMatchers.anyString(), ArgumentMatchers.anyLong()))
-            .thenReturn(new ArrayList<TestFunctionality>());
+            .thenReturn(new ArrayList<FunctionalityTested>());
 
         resourcePermissions = Mockito.mock(ResourcePermissions.class);
         normalizer = new FunctionalityTestedNormalizer(functionalityTestedDao, functionalityTestedManager,
@@ -83,9 +83,9 @@ public class FunctionalityTestedNormalizerTest {
 
     @Test
     public void normalize_functionalityTestedNotInDatabase_idIsNull() {
-        List<CertificationResultTestFunctionality> functionalitiesTested = new ArrayList<CertificationResultTestFunctionality>();
-        functionalitiesTested.add(CertificationResultTestFunctionality.builder()
-                .testFunctionalityId(null)
+        List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
+        functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
+                .functionalityTestedId(null)
                 .name("notindb")
                 .build());
         Map<String, Object> editionMap = create2015EditionMap();
@@ -106,20 +106,20 @@ public class FunctionalityTestedNormalizerTest {
                 .build();
         normalizer.normalize(listing);
         assertEquals(1, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
-        assertNull(listing.getCertificationResults().get(0).getFunctionalitiesTested().get(0).getTestFunctionalityId());
+        assertNull(listing.getCertificationResults().get(0).getFunctionalitiesTested().get(0).getFunctionalityTestedId());
     }
 
     @Test
     public void normalize_functionalityTestedInDatabase_setsId() {
-        List<CertificationResultTestFunctionality> functionalitiesTested = new ArrayList<CertificationResultTestFunctionality>();
-        functionalitiesTested.add(CertificationResultTestFunctionality.builder()
-                .testFunctionalityId(null)
+        List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
+        functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
+                .functionalityTestedId(null)
                 .name("valid")
                 .build());
         Map<String, Object> editionMap = create2015EditionMap();
 
         Mockito.when(functionalityTestedDao.getByNumberAndEdition(ArgumentMatchers.eq("valid"), ArgumentMatchers.eq(3L)))
-            .thenReturn(TestFunctionality.builder()
+            .thenReturn(FunctionalityTested.builder()
                     .id(1L)
                     .name("valid")
                     .description("valid")
@@ -138,14 +138,14 @@ public class FunctionalityTestedNormalizerTest {
                 .build();
         normalizer.normalize(listing);
         assertEquals(1, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
-        assertEquals(1L, listing.getCertificationResults().get(0).getFunctionalitiesTested().get(0).getTestFunctionalityId());
+        assertEquals(1L, listing.getCertificationResults().get(0).getFunctionalitiesTested().get(0).getFunctionalityTestedId());
     }
 
     @Test
     public void normalize_noRestrictedFunctionalityTested_functionalityTestedNotRemoved() {
-        List<CertificationResultTestFunctionality> functionalitiesTested = new ArrayList<CertificationResultTestFunctionality>();
-        functionalitiesTested.add(CertificationResultTestFunctionality.builder()
-                .testFunctionalityId(FUNCTIONALITY_TESTED_ID_WITHOUT_RESTRICTIONS)
+        List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
+        functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
+                .functionalityTestedId(FUNCTIONALITY_TESTED_ID_WITHOUT_RESTRICTIONS)
                 .name("(a)(13)(iii)")
                 .build());
 
@@ -168,9 +168,9 @@ public class FunctionalityTestedNormalizerTest {
         Mockito.when(resourcePermissions.doesUserHaveRole(ArgumentMatchers.anyList()))
             .thenReturn(true);
 
-        List<CertificationResultTestFunctionality> functionalitiesTested = new ArrayList<CertificationResultTestFunctionality>();
-        functionalitiesTested.add(CertificationResultTestFunctionality.builder()
-                .testFunctionalityId(FUNCTIONALITY_TESTED_ID_WITH_RESTRICTIONS)
+        List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
+        functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
+                .functionalityTestedId(FUNCTIONALITY_TESTED_ID_WITH_RESTRICTIONS)
                 .name("(c)(3)(ii)")
                 .build());
 
@@ -193,9 +193,9 @@ public class FunctionalityTestedNormalizerTest {
         Mockito.when(resourcePermissions.doesUserHaveRole(ArgumentMatchers.anyList()))
             .thenReturn(false);
 
-        List<CertificationResultTestFunctionality> functionalityTested = new ArrayList<CertificationResultTestFunctionality>();
-        functionalityTested.add(CertificationResultTestFunctionality.builder()
-                .testFunctionalityId(FUNCTIONALITY_TESTED_ID_WITH_RESTRICTIONS)
+        List<CertificationResultFunctionalityTested> functionalityTested = new ArrayList<CertificationResultFunctionalityTested>();
+        functionalityTested.add(CertificationResultFunctionalityTested.builder()
+                .functionalityTestedId(FUNCTIONALITY_TESTED_ID_WITH_RESTRICTIONS)
                 .name("(c)(3)(ii)")
                 .build());
 
@@ -215,13 +215,13 @@ public class FunctionalityTestedNormalizerTest {
 
     @Test
     public void normalize_hasAllowedValues_addsAllowedFunctionalityTested() {
-        List<TestFunctionality> allowedFunctionalitiesTested = new ArrayList<TestFunctionality>();
-        allowedFunctionalitiesTested.add(TestFunctionality.builder()
+        List<FunctionalityTested> allowedFunctionalitiesTested = new ArrayList<FunctionalityTested>();
+        allowedFunctionalitiesTested.add(FunctionalityTested.builder()
                 .name("TF1")
                 .description("tf1 desc")
                 .id(1L)
                 .build());
-        allowedFunctionalitiesTested.add(TestFunctionality.builder()
+        allowedFunctionalitiesTested.add(FunctionalityTested.builder()
                 .name("TF2")
                 .description("tf2 desc")
                 .id(2L)
@@ -253,19 +253,19 @@ public class FunctionalityTestedNormalizerTest {
 
     @Test
     public void normalize_hasNoAllowedValues_addsNoAllowedFunctionalityTested() {
-        List<TestFunctionality> allowedFunctionalitiesTested = new ArrayList<TestFunctionality>();
-        allowedFunctionalitiesTested.add(TestFunctionality.builder()
+        List<FunctionalityTested> allowedFunctionalitiesTested = new ArrayList<FunctionalityTested>();
+        allowedFunctionalitiesTested.add(FunctionalityTested.builder()
                 .name("TF1")
                 .description("tf1 desc")
                 .id(1L)
                 .build());
-        allowedFunctionalitiesTested.add(TestFunctionality.builder()
+        allowedFunctionalitiesTested.add(FunctionalityTested.builder()
                 .name("TF2")
                 .description("tf2 desc")
                 .id(2L)
                 .build());
         Mockito.when(functionalityTestedManager.getFunctionalitiesTested(ArgumentMatchers.eq(4L), ArgumentMatchers.anyString(), ArgumentMatchers.nullable(Long.class)))
-            .thenReturn(new ArrayList<TestFunctionality>());
+            .thenReturn(new ArrayList<FunctionalityTested>());
 
         Map<String, Object> editionMap = create2015EditionMap();
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()

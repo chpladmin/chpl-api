@@ -13,33 +13,33 @@ import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 
 @Service
 @Transactional
-public class TestingFunctionalityManager {
+public class FunctionalityTestedManager {
 
-    private TestFunctionalityDAO functionalityTestedDao;
+    private FunctionalityTestedDAO functionalityTestedDao;
 
     @Autowired
-    public TestingFunctionalityManager(TestFunctionalityDAO functionalityTestedDao) {
+    public FunctionalityTestedManager(FunctionalityTestedDAO functionalityTestedDao) {
         this.functionalityTestedDao = functionalityTestedDao;
     }
 
-    public List<TestFunctionality> getFunctionalitiesTested(Long criteriaId, String certificationEdition, Long practiceTypeId) {
+    public List<FunctionalityTested> getFunctionalitiesTested(Long criteriaId, String certificationEdition, Long practiceTypeId) {
         if (!StringUtils.isEmpty(certificationEdition) && certificationEdition.equals("2014")) {
             return get2014FunctionalitiesTested(criteriaId, practiceTypeId);
         } else if (!StringUtils.isEmpty(certificationEdition) && certificationEdition.equals("2015")) {
             return get2015FunctionalitiesTested(criteriaId);
         } else {
-            return new ArrayList<TestFunctionality>();
+            return new ArrayList<FunctionalityTested>();
         }
     }
 
-    private List<TestFunctionality> get2014FunctionalitiesTested(Long criteriaId, Long practiceTypeId) {
-        Map<Long, List<TestFunctionality>> functionalitiesTestedByCriteria2014 =
+    private List<FunctionalityTested> get2014FunctionalitiesTested(Long criteriaId, Long practiceTypeId) {
+        Map<Long, List<FunctionalityTested>> functionalitiesTestedByCriteria2014 =
                 functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps(CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear());
-        List<TestFunctionality> allowedFunctionalitiesTested = new ArrayList<TestFunctionality>();
+        List<FunctionalityTested> allowedFunctionalitiesTested = new ArrayList<FunctionalityTested>();
 
         if (functionalitiesTestedByCriteria2014.containsKey(criteriaId)) {
-            List<TestFunctionality> functionalitiesTested = functionalitiesTestedByCriteria2014.get(criteriaId);
-            for (TestFunctionality functionalityTested : functionalitiesTested) {
+            List<FunctionalityTested> functionalitiesTested = functionalitiesTestedByCriteria2014.get(criteriaId);
+            for (FunctionalityTested functionalityTested : functionalitiesTested) {
                 if (functionalityTested.getPracticeType() == null || functionalityTested.getPracticeType().getId().equals(practiceTypeId)) {
                     allowedFunctionalitiesTested.add(functionalityTested);
                 }
@@ -49,14 +49,14 @@ public class TestingFunctionalityManager {
         return allowedFunctionalitiesTested;
     }
 
-    private List<TestFunctionality> get2015FunctionalitiesTested(Long criteriaId) {
-        Map<Long, List<TestFunctionality>> functionalitiesTestedByCriteria2015 =
+    private List<FunctionalityTested> get2015FunctionalitiesTested(Long criteriaId) {
+        Map<Long, List<FunctionalityTested>> functionalitiesTestedByCriteria2015 =
                 functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
-        List<TestFunctionality> allowedFunctionalitiesTested = new ArrayList<TestFunctionality>();
+        List<FunctionalityTested> allowedFunctionalitiesTested = new ArrayList<FunctionalityTested>();
 
         if (functionalitiesTestedByCriteria2015.containsKey(criteriaId)) {
-            List<TestFunctionality> functionalitiesTested = functionalitiesTestedByCriteria2015.get(criteriaId);
-            for (TestFunctionality functionalityTested : functionalitiesTested) {
+            List<FunctionalityTested> functionalitiesTested = functionalitiesTestedByCriteria2015.get(criteriaId);
+            for (FunctionalityTested functionalityTested : functionalitiesTested) {
                 allowedFunctionalitiesTested.add(functionalityTested);
             }
         }

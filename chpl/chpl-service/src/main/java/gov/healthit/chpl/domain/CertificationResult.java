@@ -21,13 +21,13 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalityTested.FunctionalityTested;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.util.CertificationResultRules;
-import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionality;
-import gov.healthit.chpl.functionalityTested.TestFunctionality;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;
@@ -38,8 +38,8 @@ import lombok.ToString;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Builder
 @AllArgsConstructor
+@Builder
 @ToString
 public class CertificationResult implements Serializable {
     private static final long serialVersionUID = -4917413876078419868L;
@@ -158,7 +158,7 @@ public class CertificationResult implements Serializable {
     private List<ConformanceMethod> allowedConformanceMethods;
 
     @XmlTransient
-    private List<TestFunctionality> allowedFunctionalitiesTested;
+    private List<FunctionalityTested> allowedFunctionalitiesTested;
 
     //TODO:
     // Re-add the deprecated allowedTestFunctionalities field
@@ -182,7 +182,7 @@ public class CertificationResult implements Serializable {
     @XmlElementWrapper(name = "functionalitiesTested", nillable = true, required = false)
     @XmlElement(name = "functionalityTested")
     @Builder.Default
-    private List<CertificationResultTestFunctionality> functionalitiesTested = new ArrayList<CertificationResultTestFunctionality>();
+    private List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
 
     //TODO:
     // Re-add the deprecated testFunctionality field
@@ -280,7 +280,7 @@ public class CertificationResult implements Serializable {
     private String number;
 
     public CertificationResult() {
-        this.functionalitiesTested = new ArrayList<CertificationResultTestFunctionality>();
+        this.functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         this.testToolsUsed = new ArrayList<CertificationResultTestTool>();
         this.testStandards = new ArrayList<CertificationResultTestStandard>();
         this.optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
@@ -420,7 +420,7 @@ public class CertificationResult implements Serializable {
         }
     }
 
-    private List<CertificationResultTestFunctionality> getFunctionalitiesTested(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+    private List<CertificationResultFunctionalityTested> getFunctionalitiesTested(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
             return certResult.getFunctionalitiesTested();
         } else {
@@ -593,11 +593,11 @@ public class CertificationResult implements Serializable {
         this.testDataUsed = testDataUsed;
     }
 
-    public List<CertificationResultTestFunctionality> getFunctionalitiesTested() {
+    public List<CertificationResultFunctionalityTested> getFunctionalitiesTested() {
         return functionalitiesTested;
     }
 
-    public void setFunctionalitiesTested(List<CertificationResultTestFunctionality> functionalitiesTested) {
+    public void setFunctionalitiesTested(List<CertificationResultFunctionalityTested> functionalitiesTested) {
         this.functionalitiesTested = functionalitiesTested;
     }
 
@@ -665,11 +665,11 @@ public class CertificationResult implements Serializable {
         this.allowedConformanceMethods = allowedConformanceMethods;
     }
 
-    public List<TestFunctionality> getAllowedFunctionalitiesTested() {
+    public List<FunctionalityTested> getAllowedFunctionalitiesTested() {
         return allowedFunctionalitiesTested;
     }
 
-    public void setAllowedFunctionalitiesTested(List<TestFunctionality> allowedFunctionalitiesTested) {
+    public void setAllowedFunctionalitiesTested(List<FunctionalityTested> allowedFunctionalitiesTested) {
         this.allowedFunctionalitiesTested = allowedFunctionalitiesTested;
     }
 

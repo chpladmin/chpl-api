@@ -11,7 +11,7 @@ import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionality;
+import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -187,7 +187,7 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
 
     private boolean isFunctionalityTestedChanged(CertificationResult existingCert, CertificationResult updatedCert) {
         if (certResultRules.hasCertOption(updatedCert.getCriterion().getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
-            for (CertificationResultTestFunctionality updatedTestFunctionality : updatedCert.getFunctionalitiesTested()) {
+            for (CertificationResultFunctionalityTested updatedTestFunctionality : updatedCert.getFunctionalitiesTested()) {
                 boolean isInExistingCert =
                         existingCert.getFunctionalitiesTested().stream()
                         .anyMatch(existingTestFunctionality -> existingTestFunctionality.matches(updatedTestFunctionality));
@@ -196,7 +196,7 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
                 }
             }
 
-            for (CertificationResultTestFunctionality existingTestFunctionality : existingCert.getFunctionalitiesTested()) {
+            for (CertificationResultFunctionalityTested existingTestFunctionality : existingCert.getFunctionalitiesTested()) {
                 boolean isInUpdatedCert =
                         updatedCert.getFunctionalitiesTested().stream()
                         .anyMatch(updatedTestFunctionality -> updatedTestFunctionality.matches(existingTestFunctionality));

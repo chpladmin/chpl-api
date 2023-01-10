@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionality;
+import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.DuplicateReviewResult;
@@ -27,11 +27,11 @@ public class TestFunctionalityDuplicateReviewer {
 
     public void review(CertifiedProductSearchDetails listing, CertificationResult certificationResult) {
 
-        DuplicateReviewResult<CertificationResultTestFunctionality> testFunctionalityDuplicateResults =
-                new DuplicateReviewResult<CertificationResultTestFunctionality>(getPredicate());
+        DuplicateReviewResult<CertificationResultFunctionalityTested> testFunctionalityDuplicateResults =
+                new DuplicateReviewResult<CertificationResultFunctionalityTested>(getPredicate());
 
         if (certificationResult.getFunctionalitiesTested() != null) {
-            for (CertificationResultTestFunctionality dto : certificationResult.getFunctionalitiesTested()) {
+            for (CertificationResultFunctionalityTested dto : certificationResult.getFunctionalitiesTested()) {
                 testFunctionalityDuplicateResults.addObject(dto);
             }
         }
@@ -44,10 +44,10 @@ public class TestFunctionalityDuplicateReviewer {
         }
     }
 
-    private List<String> getWarnings(List<CertificationResultTestFunctionality> duplicates,
+    private List<String> getWarnings(List<CertificationResultFunctionalityTested> duplicates,
             String criteria) {
         List<String> warnings = new ArrayList<String>();
-        for (CertificationResultTestFunctionality duplicate : duplicates) {
+        for (CertificationResultFunctionalityTested duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestFunctionality",
                     criteria, duplicate.getName());
             warnings.add(warning);
@@ -56,14 +56,14 @@ public class TestFunctionalityDuplicateReviewer {
     }
 
     private BiPredicate<
-    CertificationResultTestFunctionality, CertificationResultTestFunctionality> getPredicate() {
+    CertificationResultFunctionalityTested, CertificationResultFunctionalityTested> getPredicate() {
         return
                 new BiPredicate<
-                CertificationResultTestFunctionality, CertificationResultTestFunctionality>() {
+                CertificationResultFunctionalityTested, CertificationResultFunctionalityTested>() {
             @Override
-            public boolean test(CertificationResultTestFunctionality tf1, CertificationResultTestFunctionality tf2) {
-                return (ObjectUtils.allNotNull(tf1.getTestFunctionalityId(), tf2.getTestFunctionalityId())
-                        && Objects.equals(tf1.getTestFunctionalityId(),  tf2.getTestFunctionalityId()))
+            public boolean test(CertificationResultFunctionalityTested tf1, CertificationResultFunctionalityTested tf2) {
+                return (ObjectUtils.allNotNull(tf1.getFunctionalityTestedId(), tf2.getFunctionalityTestedId())
+                        && Objects.equals(tf1.getFunctionalityTestedId(),  tf2.getFunctionalityTestedId()))
                     || Objects.equals(tf1.getName(), tf2.getName());
             }
         };

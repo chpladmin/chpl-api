@@ -22,8 +22,8 @@ import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.functionalityTested.TestFunctionality;
-import gov.healthit.chpl.functionalityTested.TestingFunctionalityManager;
+import gov.healthit.chpl.functionalityTested.FunctionalityTested;
+import gov.healthit.chpl.functionalityTested.FunctionalityTestedManager;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
@@ -37,7 +37,7 @@ import gov.healthit.chpl.util.CertificationResultRules;
 public class CertificationResultService {
     private CertificationResultRules certRules;
     private CertificationResultManager certResultManager;
-    private TestingFunctionalityManager testFunctionalityManager;
+    private FunctionalityTestedManager testFunctionalityManager;
     private CertificationResultDetailsDAO certificationResultDetailsDAO;
     private SvapDAO svapDao;
     private OptionalStandardDAO optionalStandardDAO;
@@ -46,7 +46,7 @@ public class CertificationResultService {
 
     @Autowired
     public CertificationResultService(CertificationResultRules certRules, CertificationResultManager certResultManager,
-            TestingFunctionalityManager testFunctionalityManager, CertificationResultDetailsDAO certificationResultDetailsDAO,
+            FunctionalityTestedManager testFunctionalityManager, CertificationResultDetailsDAO certificationResultDetailsDAO,
             SvapDAO svapDAO, OptionalStandardDAO optionalStandardDAO, TestToolDAO testToolDAO, ConformanceMethodDAO conformanceMethodDAO) {
         this.certRules = certRules;
         this.certResultManager = certResultManager;
@@ -162,7 +162,7 @@ public class CertificationResultService {
                 .collect(Collectors.toList());
     }
 
-    private List<TestFunctionality> getAvailableFunctionalitiesTested(CertificationResult cr, CertifiedProductSearchDetails cp) {
+    private List<FunctionalityTested> getAvailableFunctionalitiesTested(CertificationResult cr, CertifiedProductSearchDetails cp) {
         String edition = cp.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
         Long practiceTypeId = null;
         if (cp.getPracticeType().containsKey("id")) {

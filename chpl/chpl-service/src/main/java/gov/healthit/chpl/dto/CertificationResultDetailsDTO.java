@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
-import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionality;
+import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import lombok.Data;
@@ -36,7 +36,7 @@ public class CertificationResultDetailsDTO implements Serializable {
     private CertificationCriterionDTO criterion;
 
     private List<CertificationResultOptionalStandard> optionalStandards;
-    private List<CertificationResultTestFunctionality> functionalitiesTested;
+    private List<CertificationResultFunctionalityTested> functionalitiesTested;
     private List<CertificationResultConformanceMethodEntity> conformanceMethods;
     private List<CertificationResultTestProcedureDTO> testProcedures;
     private List<CertificationResultTestDataDTO> testData;

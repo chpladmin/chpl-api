@@ -30,7 +30,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Builder
-public class CertificationResultTestFunctionality implements Serializable {
+public class CertificationResultFunctionalityTested implements Serializable {
     private static final long serialVersionUID = -1647645050538126758L;
 
     /**
@@ -43,7 +43,7 @@ public class CertificationResultTestFunctionality implements Serializable {
      * Functionality tested internal ID
      */
     @XmlElement(required = true)
-    private Long testFunctionalityId;
+    private Long functionalityTestedId;
 
     /**
      * Description of functionality tested
@@ -67,13 +67,13 @@ public class CertificationResultTestFunctionality implements Serializable {
     @JsonIgnore
     private Long certificationResultId;
 
-    public CertificationResultTestFunctionality() {
+    public CertificationResultFunctionalityTested() {
     }
 
-    public boolean matches(CertificationResultTestFunctionality anotherFunc) {
+    public boolean matches(CertificationResultFunctionalityTested anotherFunc) {
         boolean result = false;
-        if (this.getTestFunctionalityId() != null && anotherFunc.getTestFunctionalityId() != null
-                && this.getTestFunctionalityId().longValue() == anotherFunc.getTestFunctionalityId().longValue()) {
+        if (this.getFunctionalityTestedId() != null && anotherFunc.getFunctionalityTestedId() != null
+                && this.getFunctionalityTestedId().longValue() == anotherFunc.getFunctionalityTestedId().longValue()) {
             result = true;
         } else if (!StringUtils.isEmpty(this.getName()) && !StringUtils.isEmpty(anotherFunc.getName())
                 && this.getName().equalsIgnoreCase(anotherFunc.getName()) && !StringUtils.isEmpty(this.getYear())
@@ -92,12 +92,12 @@ public class CertificationResultTestFunctionality implements Serializable {
         this.id = id;
     }
 
-    public Long getTestFunctionalityId() {
-        return testFunctionalityId;
+    public Long getFunctionalityTestedId() {
+        return functionalityTestedId;
     }
 
-    public void setTestFunctionalityId(final Long testFunctionalityId) {
-        this.testFunctionalityId = testFunctionalityId;
+    public void setFunctionalityTestedId(Long functionalityTestedId) {
+        this.functionalityTestedId = functionalityTestedId;
     }
 
     public String getDescription() {

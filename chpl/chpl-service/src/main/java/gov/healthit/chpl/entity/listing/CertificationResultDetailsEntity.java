@@ -16,7 +16,7 @@ import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
-import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionalityEntity;
+import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTestedEntity;
 import gov.healthit.chpl.svap.entity.CertificationResultSvapEntity;
 import lombok.Data;
 
@@ -107,7 +107,7 @@ public class CertificationResultDetailsEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
     @Column(name = "certification_result_id")
     @Where(clause = "deleted <> 'true'")
-    private Set<CertificationResultTestFunctionalityEntity> certificationResultFunctionalitiesTested;
+    private Set<CertificationResultFunctionalityTestedEntity> certificationResultFunctionalitiesTested;
 
     @Basic(optional = true)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
