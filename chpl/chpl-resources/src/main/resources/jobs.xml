@@ -8,14 +8,7 @@
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
-        <delete-job>
-            <name>surveillanceUploadJob</name>
-            <group>chplBackgroundJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>inviteDevelopersJob</name>
-            <group>systemJobs</group>
-        </delete-job>
+
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
@@ -890,5 +883,15 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
+        
+        <job>
+            <name>missingAttestationChangeRequestEmailJob</name>
+            <group>systemJobs</group>
+            <description>Sends Email to Developer who have not submitted Attestation Change Request</description>
+            <job-class>gov.healthit.chpl.scheduler.job.developer.attestation.email.missingchangerequest.MissingAttestationChangeRequestEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        
     </schedule>
 </job-scheduling-data>

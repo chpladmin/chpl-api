@@ -70,7 +70,7 @@ public class CertificationEditionNormalizer {
 
     private boolean isEditionPortionOfChplProductNumberValid(CertifiedProductSearchDetails listing) {
         return !StringUtils.isEmpty(listing.getChplProductNumber())
-                && validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
+                && validationUtils.chplNumberPartIsPresentAndValid(listing.getChplProductNumber(),
                     ChplProductNumberUtil.EDITION_CODE_INDEX,
                     ChplProductNumberUtil.EDITION_CODE_REGEX);
     }

@@ -123,4 +123,16 @@ public final class Util {
     public static boolean isEmailAddressValidFormat(String email) {
         return EmailValidator.getInstance().isValid(email);
     }
+
+    public static String joinListGrammatically(List<String> list) {
+        if (list == null || list.size() == 0) {
+            return "";
+        } else {
+            return list.size() > 1
+                    ? String.join(", ", list.subList(0, list.size() - 1))
+                        .concat(String.format("%s and ", list.size() > 2 ? "," : ""))
+                        .concat(list.get(list.size() - 1))
+                    : list.get(0);
+        }
+    }
 }
