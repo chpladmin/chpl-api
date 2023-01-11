@@ -14,7 +14,7 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ProductVersionDTO;
-import gov.healthit.chpl.manager.QuestionableActivityManager;
+import gov.healthit.chpl.questionableactivity.QuestionableActivityManager;
 import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -45,40 +45,39 @@ public class QuestionableActivityListener implements EnvironmentAware {
     }
 
     public void checkQuestionableActivity(ActivityConcept concept, Long objectId, String activityDescription,
-            Object originalData, Object newData) {
-        checkQuestionableActivity(concept, objectId, activityDescription, originalData, newData, null);
+            Date activityDate, Object originalData, Object newData) {
+        checkQuestionableActivity(concept, objectId, activityDescription, activityDate, originalData, newData, null);
     }
 
     public void checkQuestionableActivity(ActivityConcept concept, Long objectId, String activityDescription,
-            Object originalData, Object newData, String reason) {
+            Date activityDate, Object originalData, Object newData, String reason) {
 
         if (newData instanceof CertifiedProductSearchDetails) {
-            checkQuestionableActivityForListingEdit(concept, objectId, activityDescription,
+            checkQuestionableActivityForListingEdit(concept, objectId, activityDescription, activityDate,
                     (CertifiedProductSearchDetails) originalData, (CertifiedProductSearchDetails) newData, reason);
         } else if (areAllValuesNonNull(originalData, newData) && originalData instanceof Developer
                 && newData instanceof Developer) {
-            checkQuestionableActivityForDeveloper(concept, objectId, activityDescription, (Developer) originalData,
+            checkQuestionableActivityForDeveloper(concept, objectId, activityDescription, activityDate, (Developer) originalData,
                     (Developer) newData);
         } else if (areAllValuesNonNull(originalData, newData) && originalData instanceof Product
                 && newData instanceof Product) {
-            checkQuestionableActivityForProduct(concept, objectId, activityDescription, (Product) originalData,
+            checkQuestionableActivityForProduct(concept, objectId, activityDescription, activityDate, (Product) originalData,
                     (Product) newData);
         } else if (areAllValuesNonNull(originalData, newData) && originalData instanceof ProductVersionDTO
                 && newData instanceof ProductVersionDTO) {
-            checkQuestionableActivityForVersion(concept, objectId, activityDescription, (ProductVersionDTO) originalData,
+            checkQuestionableActivityForVersion(concept, objectId, activityDescription, activityDate, (ProductVersionDTO) originalData,
                     (ProductVersionDTO) newData);
         }
     }
 
     private void checkQuestionableActivityForListingEdit(ActivityConcept concept, Long objectId, String activityDescription,
-            CertifiedProductSearchDetails originalData, CertifiedProductSearchDetails newData, String reason) {
+            Date activityDate, CertifiedProductSearchDetails originalData, CertifiedProductSearchDetails newData, String reason) {
 
         if (originalData == null || newData == null || AuthUtil.getCurrentUser() == null) {
             return;
         }
 
-        // all questionable activity from this action should have the exact same date and user id
-        Date activityDate = new Date();
+        // all questionable activity from this action should have the exact same user id
         Long activityUser = AuthUtil.getAuditId();
 
         // look for any of the listing questionable activity
@@ -114,14 +113,13 @@ public class QuestionableActivityListener implements EnvironmentAware {
     }
 
     private void checkQuestionableActivityForDeveloper(ActivityConcept concept, Long objectId, String activityDescription,
-            Developer originalDeveloper, Developer newDeveloper) {
+            Date activityDate, Developer originalDeveloper, Developer newDeveloper) {
 
         if (originalDeveloper == null || newDeveloper == null || AuthUtil.getCurrentUser() == null) {
             return;
         }
 
-        // all questionable activity from this action should have the exact same date and user id
-        Date activityDate = new Date();
+        // all questionable activity from this action should have the exact same user id
         Long activityUser = AuthUtil.getAuditId();
 
         questionableActivityManager.checkDeveloperQuestionableActivity(originalDeveloper, newDeveloper, activityDate,
@@ -129,28 +127,26 @@ public class QuestionableActivityListener implements EnvironmentAware {
     }
 
     private void checkQuestionableActivityForProduct(ActivityConcept concept, Long objectId, String activityDescription,
-            Product originalProduct, Product newProduct) {
+            Date activityDate, Product originalProduct, Product newProduct) {
 
         if (originalProduct == null || newProduct == null || AuthUtil.getCurrentUser() == null) {
             return;
         }
 
-        // all questionable activity from this action should have the exact same date and user id
-        Date activityDate = new Date();
+        // all questionable activity from this action should have the exact same user id
         Long activityUser = AuthUtil.getAuditId();
 
         questionableActivityManager.checkProductQuestionableActivity(originalProduct, newProduct, activityDate, activityUser);
     }
 
     private void checkQuestionableActivityForVersion(ActivityConcept concept, Long objectId, String activityDescription,
-            ProductVersionDTO originalVersion, ProductVersionDTO newVersion) {
+            Date activityDate, ProductVersionDTO originalVersion, ProductVersionDTO newVersion) {
 
         if (originalVersion == null || newVersion == null || AuthUtil.getCurrentUser() == null) {
             return;
         }
 
-        // all questionable activity from this action should have the exact same date and user id
-        Date activityDate = new Date();
+        // all questionable activity from this action should have the exact same user id
         Long activityUser = AuthUtil.getAuditId();
 
         questionableActivityManager.checkVersionQuestionableActivity(originalVersion, newVersion, activityDate, activityUser);

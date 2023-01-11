@@ -1,9 +1,9 @@
-package gov.healthit.chpl.questionableactivity;
+package gov.healthit.chpl.questionableactivity.service;
 
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dto.ProductVersionDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersionDTO;
 
 /**
  * Tools for checking for Questionable Activity related to Versions.

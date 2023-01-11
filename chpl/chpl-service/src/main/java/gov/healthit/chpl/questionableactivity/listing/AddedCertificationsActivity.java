@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 
 @Component

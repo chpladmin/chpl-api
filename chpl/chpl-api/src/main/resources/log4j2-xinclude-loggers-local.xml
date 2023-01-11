@@ -174,8 +174,8 @@
     <Logger name="developerAttestationCheckinReportJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="developerAttestationCheckinReportJob" />
     </Logger>
-    <Logger name="rwtQuestionableActivityCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="rwtQuestionableActivityCreatorJob" />
+    <Logger name="curesDesignationRemovedQuestionableActivityCreatorJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="curesDesignationRemovedQuestionableActivityCreatorJob" />
     </Logger>
     <Logger name="missingAttestationChangeRequestEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="missingAttestationChangeRequestEmailJob" />
