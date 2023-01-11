@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -9,6 +10,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -57,6 +59,13 @@ public class MeasureNormalizer {
                     populateAssociatedCriteriaFields(listingMeasure);
                     populateMissingAssociatedCriteria(listingMeasure);
                 });
+
+            List<ListingMeasure> combinedListingMeasures = new ArrayList<ListingMeasure>();
+            combineListingMeasures(combinedListingMeasures, listing.getMeasures());
+            combinedListingMeasures.stream()
+                .filter(listingMeasure -> listingMeasure.getMeasure() != null && listingMeasure.getMeasure().getId() != null)
+                .forEach(listingMeasure -> populateMissingAssociatedCriteria(listingMeasure));
+            listing.setMeasures(combinedListingMeasures);
         }
     }
 
@@ -147,5 +156,40 @@ public class MeasureNormalizer {
             return foundMeasureType.get();
         }
         return null;
+    }
+
+    private void combineListingMeasures(List<ListingMeasure> combinedListingMeasures, List<ListingMeasure> currListingMeasures) {
+        currListingMeasures.stream().forEach(currListingMeasure -> {
+            if (containsMeasure(combinedListingMeasures, currListingMeasure)) {
+                addCriteriaToCombinedListingMeasure(combinedListingMeasures, currListingMeasure);
+            } else {
+                combinedListingMeasures.add(currListingMeasure);
+            }
+        });
+    }
+
+    private boolean containsMeasure(List<ListingMeasure> combinedListingMeasures, ListingMeasure currListingMeasure) {
+        return combinedListingMeasures.stream()
+            .filter(listingMeasure -> areMeasuresEqual(listingMeasure, currListingMeasure))
+            .findAny().isPresent();
+    }
+
+    private void addCriteriaToCombinedListingMeasure(List<ListingMeasure> combinedListingMeasures, ListingMeasure currListingMeasure) {
+        combinedListingMeasures.stream()
+            .filter(listingMeasure -> areMeasuresEqual(listingMeasure, currListingMeasure))
+            .forEach(listingMeasure -> {
+                listingMeasure.getAssociatedCriteria().addAll(currListingMeasure.getAssociatedCriteria());
+            });
+    }
+
+    private boolean areMeasuresEqual(ListingMeasure listingMeasure1, ListingMeasure listingMeasure2) {
+        if (ObjectUtils.allNotNull(listingMeasure1.getMeasure(), listingMeasure2.getMeasure(),
+                listingMeasure1.getMeasure().getId(), listingMeasure2.getMeasure().getId(),
+                listingMeasure1.getMeasureType(), listingMeasure2.getMeasureType(),
+                listingMeasure1.getMeasureType().getId(), listingMeasure2.getMeasureType().getId())) {
+            return listingMeasure1.getMeasure().getId().equals(listingMeasure2.getMeasure().getId())
+                    && listingMeasure1.getMeasureType().getId().equals(listingMeasure2.getMeasureType().getId());
+        }
+        return false;
     }
 }

@@ -11,9 +11,14 @@ import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
+import gov.healthit.chpl.domain.Measure;
+import gov.healthit.chpl.domain.MeasureDomain;
 import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
@@ -31,7 +36,8 @@ public class MeasureNormalizerTest {
     public void before() {
         measureDao = Mockito.mock(MeasureDAO.class);
         listingMeasureDao = Mockito.mock(ListingMeasureDAO.class);
-        criteriaService = Mockito.mock(CertificationCriterionService.class);
+        criteriaService = new CertificationCriterionService(Mockito.mock(CertificationCriterionDAO.class),
+                Mockito.mock(Environment.class));
 
         g1 = buildMeasureType(1L, "G1");
         g2 = buildMeasureType(2L, "G2");
@@ -116,6 +122,67 @@ public class MeasureNormalizerTest {
         assertEquals(1, listing.getMeasures().size());
         assertNull(listing.getMeasures().get(0).getMeasureType().getId());
         assertEquals("g8", listing.getMeasures().get(0).getMeasureType().getName());
+    }
+
+    @Test
+    public void normalize_measureTypeDuplicates_MeasuresCombined() {
+        CertifiedProductSearchDetails listing =
+                CertifiedProductSearchDetails.builder()
+                    .measures(Stream.of(
+                        ListingMeasure.builder()
+                            .measureType(
+                                MeasureType.builder()
+                                .name("G1")
+                                .build())
+                            .associatedCriteria(Stream.of(
+                                    CertificationCriterion.builder()
+                                    .id(1L)
+                                    .number("170.315 (a)(1)")
+                                    .build()).collect(Collectors.toSet()))
+                            .measure(Measure.builder()
+                                    .abbreviation("12345")
+                                    .id(1L)
+                                    .domain(MeasureDomain.builder()
+                                            .id(1L)
+                                            .name("EC2")
+                                            .build())
+                                    .name("Measure1")
+                                    .removed(false)
+                                    .requiredTest("RT2")
+                                    .requiresCriteriaSelection(false)
+                                    .build())
+                        .build(),
+                        ListingMeasure.builder()
+                        .measureType(
+                            MeasureType.builder()
+                            .name("G1")
+                            .build())
+                        .associatedCriteria(Stream.of(
+                                CertificationCriterion.builder()
+                                .id(2L)
+                                .number("170.315 (a)(2)")
+                                .build()).collect(Collectors.toSet()))
+                        .measure(Measure.builder()
+                                .abbreviation("12345")
+                                .id(1L)
+                                .domain(MeasureDomain.builder()
+                                        .id(1L)
+                                        .name("EC2")
+                                        .build())
+                                .name("Measure1")
+                                .removed(false)
+                                .requiredTest("RT2")
+                                .requiresCriteriaSelection(false)
+                                .build())
+                    .build()
+                        ).toList())
+                .build();
+
+        assertEquals(2, listing.getMeasures().size());
+        normalizer.normalize(listing);
+        assertEquals(1, listing.getMeasures().size());
+        assertNotNull(listing.getMeasures().get(0).getAssociatedCriteria());
+        assertEquals(2, listing.getMeasures().get(0).getAssociatedCriteria().size());
     }
 
     private MeasureType buildMeasureType(Long id, String name) {
