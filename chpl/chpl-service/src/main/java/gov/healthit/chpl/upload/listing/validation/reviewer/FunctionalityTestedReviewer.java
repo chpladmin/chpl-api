@@ -63,12 +63,14 @@ public class FunctionalityTestedReviewer {
                     "listing.criteria.functionalityTestedNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setFunctionalitiesTested(null);
+            certResult.setTestFunctionality(null);
         }
     }
 
     private void removeFunctionalitiesTestedIfNotApplicable(CertificationResult certResult) {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
             certResult.setFunctionalitiesTested(null);
+            certResult.setTestFunctionality(null);
         }
     }
 

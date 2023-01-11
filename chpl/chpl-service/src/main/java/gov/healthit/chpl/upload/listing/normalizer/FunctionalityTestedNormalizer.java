@@ -76,6 +76,7 @@ public class FunctionalityTestedNormalizer {
 
     private void populateAllowedFunctionalitiesTested(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         certResult.setAllowedFunctionalitiesTested(getAvailableFunctionalitiesTested(listing, certResult));
+        certResult.setAllowedTestFunctionalities(certResult.getAllowedFunctionalitiesTested());
     }
 
     private List<FunctionalityTested> getAvailableFunctionalitiesTested(CertifiedProductSearchDetails listing, CertificationResult certResult) {

@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections.CollectionUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -23,11 +24,13 @@ import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.functionalityTested.FunctionalityTested;
+import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionality;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;
@@ -160,8 +163,11 @@ public class CertificationResult implements Serializable {
     @XmlTransient
     private List<FunctionalityTested> allowedFunctionalitiesTested;
 
-    //TODO:
-    // Re-add the deprecated allowedTestFunctionalities field
+    @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. Please use 'allowedFunctionalitiesTested'.",
+        removalDate = "2023-08-01")
+    @XmlTransient
+    private List<FunctionalityTested> allowedTestFunctionalities;
 
     @XmlTransient
     private List<Svap> allowedSvaps;
@@ -184,8 +190,12 @@ public class CertificationResult implements Serializable {
     @Builder.Default
     private List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
 
-    //TODO:
-    // Re-add the deprecated testFunctionality field
+    @XmlTransient
+    @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. Please use 'functionalitiesTested'.",
+            removalDate = "2023-08-01")
+    @Builder.Default
+    private List<CertificationResultTestFunctionality> testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
 
     /**
      * The methods used to evaluate compliance with the certification criterion.
@@ -281,6 +291,7 @@ public class CertificationResult implements Serializable {
 
     public CertificationResult() {
         this.functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
+        this.testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
         this.testToolsUsed = new ArrayList<CertificationResultTestTool>();
         this.testStandards = new ArrayList<CertificationResultTestStandard>();
         this.optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
@@ -394,6 +405,18 @@ public class CertificationResult implements Serializable {
 
         this.setOptionalStandards(getOptionalStandards(certResult, certRules));
         this.setFunctionalitiesTested(getFunctionalitiesTested(certResult, certRules));
+        if (!CollectionUtils.isEmpty(this.getFunctionalitiesTested())) {
+            this.setTestFunctionality(this.getFunctionalitiesTested().stream()
+                    .map(funcTested -> CertificationResultTestFunctionality.builder()
+                            .certificationResultId(funcTested.getCertificationResultId())
+                            .description(funcTested.getDescription())
+                            .id(funcTested.getId())
+                            .name(funcTested.getName())
+                            .testFunctionalityId(funcTested.getFunctionalityTestedId())
+                            .year(funcTested.getYear())
+                            .build())
+                    .collect(Collectors.toList()));
+        }
         this.setConformanceMethods(getConformanceMethods(certResult, certRules));
         this.setTestProcedures(getTestProcedures(certResult, certRules));
         this.setTestDataUsed(getTestData(certResult, certRules));
@@ -601,6 +624,16 @@ public class CertificationResult implements Serializable {
         this.functionalitiesTested = functionalitiesTested;
     }
 
+    @Deprecated
+    public List<CertificationResultTestFunctionality> getTestFunctionality() {
+        return this.testFunctionality;
+    }
+
+    @Deprecated
+    public void setTestFunctionality(List<CertificationResultTestFunctionality> testFunctionality) {
+        this.testFunctionality = testFunctionality;
+    }
+
     public String getApiDocumentation() {
         return apiDocumentation;
     }
@@ -671,6 +704,16 @@ public class CertificationResult implements Serializable {
 
     public void setAllowedFunctionalitiesTested(List<FunctionalityTested> allowedFunctionalitiesTested) {
         this.allowedFunctionalitiesTested = allowedFunctionalitiesTested;
+    }
+
+    @Deprecated
+    public List<FunctionalityTested> getAllowedTestFunctionalities() {
+        return allowedTestFunctionalities;
+    }
+
+    @Deprecated
+    public void setAllowedTestFunctionalities(List<FunctionalityTested> allowedTestFunctionalities) {
+        this.allowedTestFunctionalities = allowedTestFunctionalities;
     }
 
     public CertificationCriterion getCriterion() {
