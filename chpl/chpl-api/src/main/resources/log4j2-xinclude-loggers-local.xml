@@ -106,7 +106,7 @@
         <AppenderRef ref="realWorldTestingUploadJob" />
     </Logger>
     <Logger name="realWorldTestingReportEmailJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="realWorldTestingEmailJobJson" />
+        <AppenderRef ref="realWorldTestingReportEmailJobJson" />
     </Logger>
     <Logger name="auditDataRetentionJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="auditDataRetentionJob" />
@@ -144,9 +144,6 @@
     <Logger name="updateMeasuresJobLogger" level="INFO"  additivity="false">
         <AppenderRef ref="updateMeasuresJob" />
     </Logger>
-    <Logger name="addMissingMeasuresToListingsJobLogger" level="INFO"  additivity="false">
-        <AppenderRef ref="addMissingMeasuresToListingsJob" />
-    </Logger>
     <Logger name="listingsSnapshotCsvCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="listingsSnapshotCsvCreatorJob" />
     </Logger>
@@ -176,9 +173,6 @@
     </Logger>
     <Logger name="developerAttestationCheckinReportJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="developerAttestationCheckinReportJob" />
-    </Logger>
-    <Logger name="conformanceMethodConversionJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="conformanceMethodConversionJob" />
     </Logger>
     <Logger name="rwtQuestionableActivityCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="rwtQuestionableActivityCreatorJob" />
