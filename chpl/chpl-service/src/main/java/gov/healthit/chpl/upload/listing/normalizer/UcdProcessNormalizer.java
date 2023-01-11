@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
-import gov.healthit.chpl.entity.FuzzyType;
-import gov.healthit.chpl.manager.FuzzyChoicesManager;
+import gov.healthit.chpl.fuzzyMatching.FuzzyChoicesManager;
+import gov.healthit.chpl.fuzzyMatching.FuzzyType;
 import gov.healthit.chpl.ucdProcess.UcdProcess;
 import gov.healthit.chpl.ucdProcess.UcdProcessDAO;
 

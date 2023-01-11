@@ -23,7 +23,6 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
-import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
@@ -60,7 +59,6 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
-import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.TestDataCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
@@ -72,6 +70,8 @@ import gov.healthit.chpl.listing.measure.MeasureDAO;
 import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.entity.OptionalStandardEntity;
+import gov.healthit.chpl.qmsStandard.QmsStandard;
+import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
 import gov.healthit.chpl.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.surveillance.report.domain.Quarter;
 import gov.healthit.chpl.ucdProcess.UcdProcess;
@@ -254,16 +254,14 @@ public class DimensionalDataManager {
                 .collect(Collectors.toSet());
     }
 
+    @Deprecated
     public Set<KeyValueModel> getQmsStandards() {
         LOGGER.debug("Getting all qms standards from the database (not cached).");
 
-        List<QmsStandardDTO> dtos = this.qmsDao.findAll();
-        Set<KeyValueModel> qms = new HashSet<KeyValueModel>();
-
-        for (QmsStandardDTO dto : dtos) {
-            qms.add(new KeyValueModel(dto.getId(), dto.getName()));
-        }
-        return qms;
+        List<QmsStandard> qmsStandards = this.qmsDao.getAll();
+        return qmsStandards.stream()
+            .map(qms -> new KeyValueModel(qms.getId(), qms.getName()))
+            .collect(Collectors.toSet());
     }
 
     public Set<KeyValueModel> getTargetedUesrs() {

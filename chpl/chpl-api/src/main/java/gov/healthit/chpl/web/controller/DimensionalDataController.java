@@ -1,6 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,6 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DimensionalData;
-import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Measure;
@@ -31,14 +31,12 @@ import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
-import gov.healthit.chpl.dto.FuzzyChoicesDTO;
-import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.fuzzyMatching.FuzzyChoices;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.manager.FilterManager;
-import gov.healthit.chpl.manager.FuzzyChoicesManager;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.svap.manager.SvapManager;
@@ -58,7 +56,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/data")
 public class DimensionalDataController {
     private DimensionalDataManager dimensionalDataManager;
-    private FuzzyChoicesManager fuzzyChoicesManager;
     private FilterManager filterManager;
     private ComplaintManager complaintManager;
     private SurveillanceReportManager survReportManager;
@@ -67,14 +64,12 @@ public class DimensionalDataController {
 
     @Autowired
     public DimensionalDataController(DimensionalDataManager dimensionalDataManager,
-            FuzzyChoicesManager fuzzyChoicesManager,
             FilterManager filterManager,
             ComplaintManager complaintManager,
             SurveillanceReportManager survReportManager,
             ChangeRequestManager changeRequestManager,
             SvapManager svapManager) {
         this.dimensionalDataManager = dimensionalDataManager;
-        this.fuzzyChoicesManager = fuzzyChoicesManager;
         this.filterManager = filterManager;
         this.complaintManager = complaintManager;
         this.survReportManager = survReportManager;
@@ -85,7 +80,7 @@ public class DimensionalDataController {
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/data/fuzzy_choices",
         message = "This endpoint is deprecated and will be removed in a future release.",
-        removalDate = "2022-04-30")
+        removalDate = "2023-04-30")
     @Operation(summary = "Get all fuzzy matching choices for the items that be fuzzy matched.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ONC_STAFF.",
             security = {
@@ -97,13 +92,13 @@ public class DimensionalDataController {
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<FuzzyChoices> getFuzzyChoices()
             throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException {
-        return fuzzyChoicesManager.getFuzzyChoices();
+        return new HashSet<FuzzyChoices>();
     }
 
     @DeprecatedApi(friendlyUrl = "/data/fuzzy_choices/{id}",
             httpMethod = "PUT",
             message = "This endpoint is deprecated and will be removed in a future release.",
-            removalDate = "2022-04-30")
+            removalDate = "2023-04-30")
     @Deprecated
     @Operation(summary = "Change existing fuzzy matching choices.",
             description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
@@ -124,14 +119,8 @@ public class DimensionalDataController {
     private FuzzyChoices updateFuzzyChoices(FuzzyChoices fuzzyChoices)
             throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
             EntityCreationException, IOException {
-
-        FuzzyChoicesDTO toUpdate = new FuzzyChoicesDTO();
-        toUpdate.setId(fuzzyChoices.getId());
-        toUpdate.setFuzzyType(FuzzyType.getValue(fuzzyChoices.getFuzzyType()));
-        toUpdate.setChoices(fuzzyChoices.getChoices());
-
-        FuzzyChoices result = fuzzyChoicesManager.updateFuzzyChoices(toUpdate);
-        return result;
+        //no update is made any longer
+        return fuzzyChoices;
     }
 
     @Operation(summary = "Get a list of quarters for which a surveillance report can be created.",
@@ -367,6 +356,10 @@ public class DimensionalDataController {
         return result;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/qms_standards",
+        message = "This endpoint is deprecated and will be removed. Please GET from /qms-standards.",
+        removalDate = "2023-07-31")
     @Operation(summary = "Get all possible qms standard options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {

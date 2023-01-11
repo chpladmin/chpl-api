@@ -10,7 +10,6 @@ import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestData;
-import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.domain.TestParticipant;
@@ -186,16 +185,6 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             }
                         }
                     }
-                }
-            }
-        }
-
-        if (listing.getQmsStandards() == null || listing.getQmsStandards().size() == 0) {
-            listing.getErrorMessages().add("QMS Standards are required.");
-        } else {
-            for (CertifiedProductQmsStandard qms : listing.getQmsStandards()) {
-                if (StringUtils.isEmpty(qms.getApplicableCriteria())) {
-                    listing.getErrorMessages().add("Applicable criteria is required for each QMS Standard listed.");
                 }
             }
         }

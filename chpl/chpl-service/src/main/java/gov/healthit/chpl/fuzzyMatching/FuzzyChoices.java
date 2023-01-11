@@ -1,10 +1,9 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.fuzzyMatching;
 
 import java.io.Serializable;
 import java.util.List;
 
-import gov.healthit.chpl.dto.FuzzyChoicesDTO;
-
+@Deprecated
 public class FuzzyChoices implements Serializable {
     private static final long serialVersionUID = -7647761708813529969L;
     private Long id;
@@ -13,13 +12,6 @@ public class FuzzyChoices implements Serializable {
     private Long lastModifiedUser;
 
     public FuzzyChoices() {
-    }
-
-    public FuzzyChoices(FuzzyChoicesDTO dto) {
-        this.id = dto.getId();
-        this.fuzzyType = dto.getFuzzyType().toString();
-        this.choices = dto.getChoices();
-        this.lastModifiedUser = dto.getLastModifiedUser();
     }
 
     public Long getId() {
