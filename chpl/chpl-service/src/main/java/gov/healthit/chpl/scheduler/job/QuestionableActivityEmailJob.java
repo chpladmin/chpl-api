@@ -29,19 +29,19 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.dao.QuestionableActivityDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityCertificationResultDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDeveloperDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
+import gov.healthit.chpl.questionableactivity.QuestionableActivityDAO;
+import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResultDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloperDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProductDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTriggerDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersionDTO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.Util;
 
@@ -536,6 +536,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getAfter());
         } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.RWT_PLANS_UPDATED_OUTSIDE_NORMAL_PERIOD.getName())
                 || activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.RWT_RESULTS_UPDATED_OUTSIDE_NORMAL_PERIOD.getName())) {
+            currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getBefore() + " updated to " + activity.getAfter());
+        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.CURES_UPDATE_REMOVED.getName())) {
             currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getBefore() + " updated to " + activity.getAfter());
         }
         currRow.set(ACTIVITY_REASON_COL, activity.getReason());

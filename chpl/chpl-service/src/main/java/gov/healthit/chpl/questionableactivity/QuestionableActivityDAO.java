@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dao;
+package gov.healthit.chpl.questionableactivity;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,22 +13,22 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.dao.QuestionableActivityDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityCertificationResultDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDeveloperDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO;
-import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityCertificationResultEntity;
-import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityDeveloperEntity;
-import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityEntity;
-import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityListingEntity;
-import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityProductEntity;
-import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityTriggerEntity;
-import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityVersionEntity;
+import gov.healthit.chpl.questionableactivity.QuestionableActivityDAO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResultDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloperDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProductDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTriggerDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersionDTO;
+import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityCertificationResultEntity;
+import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityDeveloperEntity;
+import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityEntity;
+import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityListingEntity;
+import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityProductEntity;
+import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityTriggerEntity;
+import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityVersionEntity;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.UserMapper;
 

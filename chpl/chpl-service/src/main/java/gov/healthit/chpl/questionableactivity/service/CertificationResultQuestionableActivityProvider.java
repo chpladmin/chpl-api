@@ -1,4 +1,4 @@
-package gov.healthit.chpl.questionableactivity;
+package gov.healthit.chpl.questionableactivity.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityCertificationResultDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResultDTO;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 
 /**
