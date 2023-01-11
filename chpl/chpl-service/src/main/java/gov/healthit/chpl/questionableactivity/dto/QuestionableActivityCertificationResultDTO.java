@@ -1,8 +1,8 @@
-package gov.healthit.chpl.dto.questionableActivity;
+package gov.healthit.chpl.questionableactivity.dto;
 
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityCertificationResultEntity;
+import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityCertificationResultEntity;
 
 public class QuestionableActivityCertificationResultDTO extends QuestionableActivityDTO {
     private Long certResultId;

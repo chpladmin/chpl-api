@@ -1,4 +1,4 @@
-package gov.healthit.chpl.questionableactivity;
+package gov.healthit.chpl.questionableactivity.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductOwner;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProductDTO;
 
 /**
  * Checks for Product questionable activities.

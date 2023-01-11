@@ -1,7 +1,7 @@
-package gov.healthit.chpl.dto.questionableActivity;
+package gov.healthit.chpl.questionableactivity.dto;
 
 import gov.healthit.chpl.dto.ProductVersionDTO;
-import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityVersionEntity;
+import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityVersionEntity;
 
 public class QuestionableActivityVersionDTO extends QuestionableActivityDTO {
     private Long versionId;

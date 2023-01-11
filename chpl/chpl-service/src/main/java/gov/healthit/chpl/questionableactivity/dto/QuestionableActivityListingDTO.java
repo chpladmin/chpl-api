@@ -1,7 +1,7 @@
-package gov.healthit.chpl.dto.questionableActivity;
+package gov.healthit.chpl.questionableactivity.dto;
 
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityListingEntity;
+import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityListingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

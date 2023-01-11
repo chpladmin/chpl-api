@@ -391,9 +391,9 @@
         </JsonLayout>
     </Console>
 
-    <Console name="rwtQuestionableActivityCreatorJobJson" target="SYSTEM_OUT">
+    <Console name="curesDesignationRemovedQuestionableActivityCreatorJobJson" target="SYSTEM_OUT">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
-            <KeyValuePair key="service" value="rwtQuestionableActivityCreatorJob" />
+            <KeyValuePair key="service" value="curesDesignationRemovedQuestionableActivityCreatorJob" />
             <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
             <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
         </JsonLayout>
