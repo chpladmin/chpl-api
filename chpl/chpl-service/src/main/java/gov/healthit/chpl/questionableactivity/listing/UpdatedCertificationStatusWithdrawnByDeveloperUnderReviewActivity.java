@@ -6,9 +6,9 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
 
 @Component
 public class UpdatedCertificationStatusWithdrawnByDeveloperUnderReviewActivity implements ListingActivity {

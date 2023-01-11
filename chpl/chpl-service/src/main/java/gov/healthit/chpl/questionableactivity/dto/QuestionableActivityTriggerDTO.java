@@ -1,8 +1,8 @@
-package gov.healthit.chpl.dto.questionableActivity;
+package gov.healthit.chpl.questionableactivity.dto;
 
 import java.io.Serializable;
 
-import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityTriggerEntity;
+import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityTriggerEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

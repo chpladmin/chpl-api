@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity.questionableActivity;
+package gov.healthit.chpl.questionableactivity.entity;
 
 import java.util.Date;
 
@@ -13,12 +13,12 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.auth.UserEntity;
-import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.util.Util;
 
 @Entity
-@Table(name = "questionable_activity_listing")
-public class QuestionableActivityListingEntity implements QuestionableActivityEntity {
+@Table(name = "questionable_activity_developer")
+public class QuestionableActivityDeveloperEntity implements QuestionableActivityEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,21 +32,18 @@ public class QuestionableActivityListingEntity implements QuestionableActivityEn
     @JoinColumn(name = "questionable_activity_trigger_id", insertable = false, updatable = false)
     private QuestionableActivityTriggerEntity trigger;
 
-    @Column(name = "listing_id")
-    private Long listingId;
+    @Column(name = "developer_id")
+    private Long developerId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "listing_id", insertable = false, updatable = false)
-    private CertifiedProductDetailsEntity listing;
+    @JoinColumn(name = "developer_id", insertable = false, updatable = false)
+    private DeveloperEntity developer;
 
     @Column(name = "before_data")
     private String before;
 
     @Column(name = "after_data")
     private String after;
-
-    @Column(name = "certification_status_change_reason")
-    private String certificationStatusChangeReason;
 
     @Column(name = "reason")
     private String reason;
@@ -169,20 +166,20 @@ public class QuestionableActivityListingEntity implements QuestionableActivityEn
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
-    public Long getListingId() {
-        return listingId;
+    public Long getDeveloperId() {
+        return developerId;
     }
 
-    public void setListingId(Long listingId) {
-        this.listingId = listingId;
+    public void setDeveloperId(Long developerId) {
+        this.developerId = developerId;
     }
 
-    public CertifiedProductDetailsEntity getListing() {
-        return listing;
+    public DeveloperEntity getDeveloper() {
+        return developer;
     }
 
-    public void setListing(CertifiedProductDetailsEntity listing) {
-        this.listing = listing;
+    public void setDeveloper(DeveloperEntity developer) {
+        this.developer = developer;
     }
 
     public String getReason() {
@@ -193,12 +190,13 @@ public class QuestionableActivityListingEntity implements QuestionableActivityEn
         this.reason = reason;
     }
 
-    public String getCertificationStatusChangeReason() {
-        return certificationStatusChangeReason;
-    }
-
-    public void setCertificationStatusChangeReason(String certificationStatusChangeReason) {
-        this.certificationStatusChangeReason = certificationStatusChangeReason;
+    @Override
+    public String toString() {
+        return "QuestionableActivityDeveloperEntity [id=" + id + ", triggerId=" + triggerId + ", trigger=" + trigger
+                + ", developerId=" + developerId + ", developer=" + developer + ", before=" + before + ", after="
+                + after + ", reason=" + reason + ", activityDate=" + activityDate + ", userId=" + userId + ", user="
+                + user + ", deleted=" + deleted + ", lastModifiedUser=" + lastModifiedUser + ", creationDate="
+                + creationDate + ", lastModifiedDate=" + lastModifiedDate + "]";
     }
 }
 

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.questionableactivity;
+package gov.healthit.chpl.questionableactivity.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.dto.DeveloperStatusEventPair;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDeveloperDTO;
 import gov.healthit.chpl.manager.impl.DeveloperStatusEventsHelper;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloperDTO;
 import gov.healthit.chpl.util.Util;
 
 @Component

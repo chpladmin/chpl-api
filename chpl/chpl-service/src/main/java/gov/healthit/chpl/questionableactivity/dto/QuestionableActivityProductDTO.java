@@ -1,7 +1,7 @@
-package gov.healthit.chpl.dto.questionableActivity;
+package gov.healthit.chpl.questionableactivity.dto;
 
 import gov.healthit.chpl.domain.Product;
-import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityProductEntity;
+import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityProductEntity;
 
 public class QuestionableActivityProductDTO extends QuestionableActivityDTO {
     private Long productId;

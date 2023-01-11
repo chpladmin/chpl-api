@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity.questionableActivity;
+package gov.healthit.chpl.questionableactivity.entity;
 
 import java.util.Date;
 
@@ -12,13 +12,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.entity.ProductEntity;
+import gov.healthit.chpl.entity.ProductVersionEntity;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.util.Util;
 
 @Entity
-@Table(name = "questionable_activity_product")
-public class QuestionableActivityProductEntity implements QuestionableActivityEntity {
+@Table(name = "questionable_activity_version")
+public class QuestionableActivityVersionEntity implements QuestionableActivityEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,12 +32,12 @@ public class QuestionableActivityProductEntity implements QuestionableActivityEn
     @JoinColumn(name = "questionable_activity_trigger_id", insertable = false, updatable = false)
     private QuestionableActivityTriggerEntity trigger;
 
-    @Column(name = "product_id")
-    private Long productId;
+    @Column(name = "version_id")
+    private Long versionId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", insertable = false, updatable = false)
-    private ProductEntity product;
+    @JoinColumn(name = "version_id", insertable = false, updatable = false)
+    private ProductVersionEntity version;
 
     @Column(name = "before_data")
     private String before;
@@ -91,20 +91,20 @@ public class QuestionableActivityProductEntity implements QuestionableActivityEn
         this.trigger = trigger;
     }
 
-    public String getBefore() {
-        return before;
+    public Long getVersionId() {
+        return versionId;
     }
 
-    public void setBefore(String before) {
-        this.before = before;
+    public void setVersionId(Long versionId) {
+        this.versionId = versionId;
     }
 
-    public String getAfter() {
-        return after;
+    public ProductVersionEntity getVersion() {
+        return version;
     }
 
-    public void setAfter(String after) {
-        this.after = after;
+    public void setVersion(ProductVersionEntity version) {
+        this.version = version;
     }
 
     public Date getActivityDate() {
@@ -155,6 +155,7 @@ public class QuestionableActivityProductEntity implements QuestionableActivityEn
         this.creationDate = Util.getNewDate(creationDate);
     }
 
+    
     public Date getLastModifiedDate() {
         return Util.getNewDate(lastModifiedDate);
     }
@@ -163,20 +164,20 @@ public class QuestionableActivityProductEntity implements QuestionableActivityEn
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
-    public Long getProductId() {
-        return productId;
+    public String getBefore() {
+        return before;
     }
 
-    public void setProductId(Long productId) {
-        this.productId = productId;
+    public void setBefore(String before) {
+        this.before = before;
     }
 
-    public ProductEntity getProduct() {
-        return product;
+    public String getAfter() {
+        return after;
     }
 
-    public void setProduct(ProductEntity product) {
-        this.product = product;
+    public void setAfter(String after) {
+        this.after = after;
     }
 }
 

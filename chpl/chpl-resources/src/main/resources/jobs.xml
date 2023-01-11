@@ -12,6 +12,10 @@
             <name>updateMeasuresJob</name>
             <group>systemJobs</group>
         </delete-job>
+        <delete-job>
+            <name>rwtQuestionableActivityCreatorJob</name>
+            <group>systemJobs</group>
+        </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
@@ -869,10 +873,10 @@
         </job>
 
         <job>
-            <name>rwtQuestionableActivityCreatorJob</name>
+            <name>curesUpdateDesignationQuestionableActivityCreatorJob</name>
             <group>systemJobs</group>
-            <description>Back fills RWT Questionable Activity</description>
-            <job-class>gov.healthit.chpl.scheduler.job.onetime.RwtQuestionableActivityCreatorJob</job-class>
+            <description>Retroactively adds missing Cures Update Designation Questionable Activity</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.CuresDesignationRemovedQuestionableActivityCreatorJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>

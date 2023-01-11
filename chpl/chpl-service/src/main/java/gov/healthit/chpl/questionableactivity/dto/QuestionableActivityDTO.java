@@ -1,9 +1,9 @@
-package gov.healthit.chpl.dto.questionableActivity;
+package gov.healthit.chpl.questionableactivity.dto;
 
 import java.util.Date;
 
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityEntity;
+import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityEntity;
 import gov.healthit.chpl.util.Util;
 import lombok.AllArgsConstructor;
 import lombok.Data;
