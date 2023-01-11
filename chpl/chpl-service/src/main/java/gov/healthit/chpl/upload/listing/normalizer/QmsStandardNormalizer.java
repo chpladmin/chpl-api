@@ -4,12 +4,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.QmsStandardDTO;
-import gov.healthit.chpl.entity.FuzzyType;
-import gov.healthit.chpl.manager.FuzzyChoicesManager;
+import gov.healthit.chpl.fuzzyMatching.FuzzyChoicesManager;
+import gov.healthit.chpl.fuzzyMatching.FuzzyType;
+import gov.healthit.chpl.qmsStandard.QmsStandard;
+import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
 
 @Component
 public class QmsStandardNormalizer {
@@ -32,10 +32,9 @@ public class QmsStandardNormalizer {
 
     private void populateQmsStandardId(CertifiedProductQmsStandard qmsStandard) {
         if (!StringUtils.isEmpty(qmsStandard.getQmsStandardName())) {
-            QmsStandardDTO qmsStdDto =
-                    qmsStandardDao.getByName(qmsStandard.getQmsStandardName());
-            if (qmsStdDto != null) {
-                qmsStandard.setQmsStandardId(qmsStdDto.getId());
+            QmsStandard lookedUpQms = qmsStandardDao.getByName(qmsStandard.getQmsStandardName());
+            if (lookedUpQms != null) {
+                qmsStandard.setQmsStandardId(lookedUpQms.getId());
             }
         }
     }
@@ -51,6 +50,7 @@ public class QmsStandardNormalizer {
         if (!StringUtils.isEmpty(topFuzzyChoice)) {
             qmsStandard.setUserEnteredQmsStandardName(qmsStandard.getQmsStandardName());
             qmsStandard.setQmsStandardName(topFuzzyChoice);
+            populateQmsStandardId(qmsStandard);
         }
     }
 }

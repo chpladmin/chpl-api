@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.entity.FuzzyType;
+import gov.healthit.chpl.fuzzyMatching.FuzzyType;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 

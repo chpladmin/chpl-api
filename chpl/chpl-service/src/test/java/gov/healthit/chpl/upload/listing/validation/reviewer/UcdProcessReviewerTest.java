@@ -16,7 +16,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
-import gov.healthit.chpl.entity.FuzzyType;
+import gov.healthit.chpl.fuzzyMatching.FuzzyType;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
