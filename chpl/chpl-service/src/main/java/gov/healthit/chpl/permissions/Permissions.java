@@ -20,11 +20,11 @@ import gov.healthit.chpl.permissions.domains.CorrectiveActionPlanDomainPermissio
 import gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions;
 import gov.healthit.chpl.permissions.domains.DomainPermissions;
 import gov.healthit.chpl.permissions.domains.FilterDomainPermissions;
-import gov.healthit.chpl.permissions.domains.FuzzyMatchPermissions;
 import gov.healthit.chpl.permissions.domains.InvitationDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions;
 import gov.healthit.chpl.permissions.domains.ProductDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions;
+import gov.healthit.chpl.permissions.domains.QmsStandardDomainPermissions;
 import gov.healthit.chpl.permissions.domains.RealWorldTestingDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions;
@@ -58,13 +58,13 @@ public class Permissions {
     public static final String FILTER = "FILTER";
     public static final String COMPLAINT = "COMPLAINT";
     public static final String ACTIVITY_METADATA = "ACTIVTY_METADATA";
-    public static final String FUZZY_MATCH = "FUZZY_MATCH";
     public static final String ANNOUNCEMENT = "ANNOUNCEMENT";
     public static final String CHANGE_REQUEST = "CHANGE_REQUEST";
     public static final String REAL_WORLD_TESTING = "REAL_WORLD_TESTING";
     public static final String SVAP = "SVAP";
     public static final String UCD_PROCESS = "UCD_PROCESS";
     public static final String ACCESSIBILITY_STANDARD = "ACCESSIBILITY_STANDARD";
+    public static final String QMS_STANDARD = "QMS_STANDARD";
     public static final String ATTESTATION = "ATTESTATION";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
@@ -90,13 +90,13 @@ public class Permissions {
             TestingLabDomainPermissions testingLabDomainPermissions,
             FilterDomainPermissions filterDomainPermissions,
             ComplaintDomainPermissions complaintDomainPermissions,
-            FuzzyMatchPermissions fuzzyMatchPermissions,
             AnnouncementDomainPermissions announcementDomainPermissions,
             ChangeRequestDomainPermissions changeRequestDomainPermissions,
             RealWorldTestingDomainPermissions realWorldTestingDomainPermissions,
             SvapDomainPermissions svapDomainPermissions,
             UcdProcessDomainPermissions ucdProcessDomainPermissions,
             AccessibilityStandardDomainPermissions accessibilityStandardDomainPermissions,
+            QmsStandardDomainPermissions qmsStandardDomainPermissions,
             AttestationDomainPermissions attestationDomainPermissions) {
 
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
@@ -118,13 +118,13 @@ public class Permissions {
         domainPermissions.put(TESTING_LAB, testingLabDomainPermissions);
         domainPermissions.put(FILTER, filterDomainPermissions);
         domainPermissions.put(COMPLAINT, complaintDomainPermissions);
-        domainPermissions.put(FUZZY_MATCH, fuzzyMatchPermissions);
         domainPermissions.put(ANNOUNCEMENT, announcementDomainPermissions);
         domainPermissions.put(CHANGE_REQUEST, changeRequestDomainPermissions);
         domainPermissions.put(REAL_WORLD_TESTING, realWorldTestingDomainPermissions);
         domainPermissions.put(SVAP, svapDomainPermissions);
         domainPermissions.put(UCD_PROCESS, ucdProcessDomainPermissions);
         domainPermissions.put(ACCESSIBILITY_STANDARD, accessibilityStandardDomainPermissions);
+        domainPermissions.put(QMS_STANDARD, qmsStandardDomainPermissions);
         domainPermissions.put(ATTESTATION, attestationDomainPermissions);
     }
 

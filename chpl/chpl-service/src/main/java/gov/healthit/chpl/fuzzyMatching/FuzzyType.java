@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.fuzzyMatching;
 
 import org.apache.commons.lang3.StringUtils;
 
