@@ -5,18 +5,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.QmsStandardDTO;
-import gov.healthit.chpl.entity.FuzzyType;
-import gov.healthit.chpl.manager.FuzzyChoicesManager;
+import gov.healthit.chpl.fuzzyMatching.FuzzyChoicesManager;
+import gov.healthit.chpl.fuzzyMatching.FuzzyType;
+import gov.healthit.chpl.qmsStandard.QmsStandard;
+import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
 
 public class QmsStandardNormalizerTest {
 
@@ -52,13 +55,15 @@ public class QmsStandardNormalizerTest {
 
     @Test
     public void normalize_qmsStandardNameFound_fillsInId() {
+        List<CertifiedProductQmsStandard> qmsStandards = Stream.of(CertifiedProductQmsStandard.builder()
+                .qmsStandardName("test")
+                .build()).collect(Collectors.toList());
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .qmsStandard(CertifiedProductQmsStandard.builder()
-                        .qmsStandardName("test")
-                        .build())
+                .qmsStandards(qmsStandards)
                 .build();
         Mockito.when(qmsStandardDao.getByName(ArgumentMatchers.anyString()))
-            .thenReturn(QmsStandardDTO.builder()
+            .thenReturn(QmsStandard.builder()
                     .id(1L)
                     .name("test")
                     .build());
@@ -70,31 +75,42 @@ public class QmsStandardNormalizerTest {
 
     @Test
     public void normalize_qmsStandardNameNotFoundAndFuzzyMatchFound_setsValues() {
+        List<CertifiedProductQmsStandard> qmsStandards = Stream.of(CertifiedProductQmsStandard.builder()
+                .qmsStandardName("tst")
+                .build()).collect(Collectors.toList());
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .qmsStandard(CertifiedProductQmsStandard.builder()
-                        .qmsStandardName("tst")
-                        .build())
+                .qmsStandards(qmsStandards)
                 .build();
         Mockito.when(qmsStandardDao.getByName(ArgumentMatchers.eq("tst")))
             .thenReturn(null);
+        Mockito.when(qmsStandardDao.getByName(ArgumentMatchers.eq("test")))
+            .thenReturn(QmsStandard.builder()
+                    .id(1L)
+                    .name("test")
+                    .build());
         Mockito.when(fuzzyChoicesManager.getTopFuzzyChoice(ArgumentMatchers.eq("tst"), ArgumentMatchers.eq(FuzzyType.QMS_STANDARD)))
             .thenReturn("test");
 
         normalizer.normalize(listing);
         assertEquals(1, listing.getQmsStandards().size());
-        assertNull(listing.getQmsStandards().get(0).getQmsStandardId());
+        assertEquals(1L, listing.getQmsStandards().get(0).getQmsStandardId());
         assertEquals("tst", listing.getQmsStandards().get(0).getUserEnteredQmsStandardName());
         assertEquals("test", listing.getQmsStandards().get(0).getQmsStandardName());
     }
 
     @Test
     public void normalize_qmsStandardNameNotFoundAndFuzzyMatchNotFound_noChanges() {
+        List<CertifiedProductQmsStandard> qmsStandards = Stream.of(CertifiedProductQmsStandard.builder()
+                .qmsStandardName("tst")
+                .build()).collect(Collectors.toList());
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .qmsStandard(CertifiedProductQmsStandard.builder()
-                        .qmsStandardName("tst")
-                        .build())
+                .qmsStandards(qmsStandards)
                 .build();
         Mockito.when(qmsStandardDao.getByName(ArgumentMatchers.eq("tst")))
+            .thenReturn(null);
+        Mockito.when(qmsStandardDao.getByName(ArgumentMatchers.eq("test")))
             .thenReturn(null);
         Mockito.when(fuzzyChoicesManager.getTopFuzzyChoice(ArgumentMatchers.eq("tst"), ArgumentMatchers.eq(FuzzyType.QMS_STANDARD)))
             .thenReturn(null);

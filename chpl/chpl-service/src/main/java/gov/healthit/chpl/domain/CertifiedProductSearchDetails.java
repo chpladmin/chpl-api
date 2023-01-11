@@ -324,7 +324,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElementWrapper(name = "qmsStandards", nillable = true, required = false)
     @XmlElement(name = "qmsStandard")
-    @Singular
+    @Builder.Default
     private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
 
     /**

@@ -14,7 +14,7 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.entity.FuzzyType;
+import gov.healthit.chpl.fuzzyMatching.FuzzyType;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class AccessibilityStandardReviewerTest {

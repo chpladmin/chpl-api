@@ -4,7 +4,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,10 +38,8 @@ import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
 import gov.healthit.chpl.dao.CuresUpdateEventDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
-import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.PromotingInteroperabilityUserDAO;
-import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.Address;
@@ -59,8 +56,6 @@ import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.FuzzyChoicesDTO;
-import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.exception.CertifiedProductUpdateException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -69,6 +64,7 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
 import gov.healthit.chpl.service.CuresUpdateService;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -107,7 +103,6 @@ public class CertifiedProductManagerTest {
     private CertificationResultManager certResultManager;
     private CertificationStatusDAO certStatusDao;
     private ListingGraphDAO listingGraphDao;
-    private FuzzyChoicesDAO fuzzyChoicesDao;
     private ResourcePermissions resourcePermissions;
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
@@ -146,7 +141,6 @@ public class CertifiedProductManagerTest {
         certResultManager = Mockito.mock(CertificationResultManager.class);
         certStatusDao = Mockito.mock(CertificationStatusDAO.class);
         listingGraphDao = Mockito.mock(ListingGraphDAO.class);
-        fuzzyChoicesDao = Mockito.mock(FuzzyChoicesDAO.class);
         resourcePermissions = Mockito.mock(ResourcePermissions.class);
         certifiedProductSearchResultDAO = Mockito.mock(CertifiedProductSearchResultDAO.class);
         certifiedProductDetailsManager = Mockito.mock(CertifiedProductDetailsManager.class);
@@ -159,7 +153,7 @@ public class CertifiedProductManagerTest {
                 cpTargetedUserDao, cpAccStdDao,  cqmResultDAO, cqmCriterionDao,  atlDao,
                 developerDao,  devStatusDao, developerManager,  productManager, versionManager,
                 statusEventDao, curesUpdateDao, piuDao,  certResultManager, certStatusDao,
-                listingGraphDao, fuzzyChoicesDao,  resourcePermissions, certifiedProductSearchResultDAO,
+                listingGraphDao, resourcePermissions, certifiedProductSearchResultDAO,
                 certifiedProductDetailsManager,
                 Mockito.mock(SchedulerManager.class),
                 activityManager, Mockito.mock(ListingDetailsNormalizer.class),
@@ -221,13 +215,6 @@ public class CertifiedProductManagerTest {
             }
         }).when(validator).validate(ArgumentMatchers.any(CertifiedProductSearchDetails.class),
                 ArgumentMatchers.any(CertifiedProductSearchDetails.class));
-
-        FuzzyChoicesDTO fuzzyChoices = new FuzzyChoicesDTO();
-        fuzzyChoices.setChoices(Arrays.asList("choice1", "choice2"));
-        Mockito.when(fuzzyChoicesDao.getByType(FuzzyType.QMS_STANDARD))
-                .thenReturn(fuzzyChoices);
-        Mockito.when(fuzzyChoicesDao.getByType(FuzzyType.ACCESSIBILITY_STANDARD))
-                .thenReturn(fuzzyChoices);
 
         ListingUpdateRequest request = new ListingUpdateRequest();
         request.setAcknowledgeWarnings(true);
