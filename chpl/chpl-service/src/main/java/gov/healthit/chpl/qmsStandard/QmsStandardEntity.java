@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.qmsStandard;
 
 import java.util.Date;
 
@@ -41,4 +41,11 @@ public class QmsStandardEntity {
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
+
+    public QmsStandard toDomain() {
+        return QmsStandard.builder()
+                .id(this.getId())
+                .name(this.getName())
+                .build();
+    }
 }
