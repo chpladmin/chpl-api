@@ -130,6 +130,13 @@ public class CertificationResultRules {
                         .optionName(CONFORMANCE_METHOD)
                         .build());
             }
+            if (attribute.getFunctionalityTested()) {
+                rules.get(attribute.getCriterion().getNumber()).add(
+                        CertificationResultOption.builder()
+                        .canHaveOption(true)
+                        .optionName(FUNCTIONALITY_TESTED)
+                        .build());
+            }
             if (attribute.getOptionalStandard()) {
                 rules.get(attribute.getCriterion().getNumber()).add(
                         CertificationResultOption.builder()
