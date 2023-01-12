@@ -34,7 +34,7 @@ public class CertificationCriterionNormalizerTest {
         criterionDao = Mockito.mock(CertificationCriterionDAO.class);
         certResultRules = Mockito.mock(CertificationResultRules.class);
         //mock that no criteria can have any fields, will change in specific tests
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.anyString()))
             .thenReturn(false);
         normalizer = new CertificationCriterionNormalizer(criterionDao, certResultRules);
     }
@@ -78,7 +78,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_noCriteriaInListing_allCriteriaAddedAndA1AllowsAdditionalSoftware() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -103,7 +103,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_noCriteriaInListing_allCriteriaAddedAndA1AllowsApiDocumentation() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.API_DOCUMENTATION)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -128,7 +128,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_noCriteriaInListing_allCriteriaAddedAndA1AllowsAttestationAnswer() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.ATTESTATION_ANSWER)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -153,7 +153,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_noCriteriaInListing_allCriteriaAddedAndA1AllowsConformanceMethods() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.CONFORMANCE_METHOD)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -178,7 +178,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_noCriteriaInListing_allCriteriaAddedAndA1AllowsDocumentationUrl() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.DOCUMENTATION_URL)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -203,7 +203,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_noCriteriaInListing_allCriteriaAddedAndA1AllowsExportDocumentation() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.EXPORT_DOCUMENTATION)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -228,7 +228,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_noCriteriaInListing_allCriteriaAddedAndA1AllowsFunctionalityTested() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -253,7 +253,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_noCriteriaInListing_allCriteriaAddedAndA1AllowsG1() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.G1_SUCCESS)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -278,7 +278,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_noCriteriaInListing_allCriteriaAddedAndA1AllowsG2() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.G2_SUCCESS)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -303,7 +303,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_noCriteriaInListing_allCriteriaAddedAndA1AllowsGap() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -328,7 +328,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_noCriteriaInListing_allCriteriaAddedAndA1AllowsOptionalStandards() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -353,7 +353,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_noCriteriaInListing_allCriteriaAddedAndA1AllowsPrivacyAndSecurity() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -378,7 +378,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_noCriteriaInListing_allCriteriaAddedAndA1AllowsSed() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.SED)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -403,7 +403,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_noCriteriaInListing_allCriteriaAddedAndA1AllowsServiceBaseUrl() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.SERVICE_BASE_URL_LIST)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -428,7 +428,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_noCriteriaInListing_allCriteriaAddedAndA1AllowsTestStandards() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.STANDARDS_TESTED)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -453,7 +453,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_noCriteriaInListing_allCriteriaAddedAndA1AllowsSvaps() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.SVAP)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -478,7 +478,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_noCriteriaInListing_allCriteriaAddedAndA1AllowsTestData() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -503,7 +503,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_noCriteriaInListing_allCriteriaAddedAndA1AllowsTestProcedure() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.TEST_PROCEDURE)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -528,7 +528,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_noCriteriaInListing_allCriteriaAddedAndA1AllowsTestTools() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -553,7 +553,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_noCriteriaInListing_allCriteriaAddedAndA1AllowsUseCases() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.USE_CASES)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -657,7 +657,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_a1AttestedAndAdditionaLSoftwareAllowed_a2AddedAndA1AdditionalSoftwareNotNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -693,7 +693,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_a1AttestedAndApiDocumentationAllowed_a2AddedAndA1ApiDocumentationNotNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.API_DOCUMENTATION)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -729,7 +729,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_a1AttestedAndAttestationAnswerAllowed_a2AddedAndA1AttestationAnswerNotNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.ATTESTATION_ANSWER)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -765,7 +765,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_a1AttestedAndDocumentationUrlAllowed_a2AddedAndA1DocumentationUrlNotNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.DOCUMENTATION_URL)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -801,7 +801,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_a1AttestedAndExportDocumentationAllowed_a2AddedAndA1ExportDocumentationNotNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.EXPORT_DOCUMENTATION)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -837,7 +837,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_a1AttestedAndFunctionalityTestedAllowed_a2AddedAndA1FunctionalityTestedNotNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -873,7 +873,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_a1AttestedAndG1SuccessAllowed_a2AddedAndA1G1SuccessNotNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.G1_SUCCESS)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -909,7 +909,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_a1AttestedAndG2SuccessAllowed_a2AddedAndA1G2SuccessNotNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.G2_SUCCESS)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -945,7 +945,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_a1AttestedAndGapAllowed_a2AddedAndA1GapNotNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -981,7 +981,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_a1AttestedAndOptionalStandardAllowed_a2AddedAndA1OptionalStandardNotNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -1017,7 +1017,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_a1AttestedAndPrivacySecurityAllowed_a2AddedAndA1PrivacySecurityNotNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -1053,7 +1053,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_a1AttestedAndSedAllowed_a2AddedAndA1SedNotNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.SED)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -1089,7 +1089,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_a1AttestedAndServiceBaseUrlAllowed_a2AddedAndA1ServiceBaseUrlNotNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.SERVICE_BASE_URL_LIST)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -1125,7 +1125,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_a1AttestedAndTestStandardsAllowed_a2AddedAndA1TestStandardsNotNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.STANDARDS_TESTED)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -1161,7 +1161,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_a1AttestedAndSvapAllowed_a2AddedAndA1SvapNotNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.SVAP)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -1197,7 +1197,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_a1AttestedAndTestDataAllowed_a2AddedAndA1TestDataNotNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -1233,7 +1233,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_a1AttestedAndTestProcedureAllowed_a2AddedAndA1TestProcedureNotNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.TEST_PROCEDURE)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -1269,7 +1269,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_a1AttestedAndConformanceMethodsAllowed_a2AddedAndA1ConformanceMethodsNotNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.CONFORMANCE_METHOD)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -1305,7 +1305,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_a1AttestedAndTestToolsAllowed_a2AddedAndA1TestToolsNotNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -1341,7 +1341,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_a1AttestedAndUseCasesAllowed_a2AddedAndA1UseCasesNotNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.USE_CASES)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -1377,7 +1377,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_a1AttestedAndServiceBaseUrlPopulatedButNotAllowed_a2AddedAndA1ServiceBaseUrlNotNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.SERVICE_BASE_URL_LIST)))
             .thenReturn(false);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
@@ -1413,7 +1413,7 @@ public class CertificationCriterionNormalizerTest {
 
     @Test
     public void normalize_a1AttestedAndServiceBaseUrlPopulatedAndAllowed_a2AddedAndA1ServiceBaseUrlNotNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq("170.315 (a)(1)"),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationResultRules.SERVICE_BASE_URL_LIST)))
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))

@@ -234,6 +234,6 @@ public class CertificationCriterionNormalizer {
     }
 
     private boolean isFieldAllowed(CertificationCriterion criterion, String field) {
-        return certResultRules.hasCertOption(criterion.getNumber(), field);
+        return certResultRules.hasCertOption(criterion.getId(), field);
     }
 }

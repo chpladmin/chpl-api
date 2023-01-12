@@ -61,7 +61,7 @@ public class CertificationResultNormalizer {
         listing.getCertificationResults().stream()
             .filter(certResult -> certResult.getCriterion() != null
                     && BooleanUtils.isTrue(certResult.isSuccess())
-                    && certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SED))
+                    && certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.SED))
             .forEach(certResult -> certResult.setSed(true));
     }
 

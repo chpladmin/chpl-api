@@ -57,7 +57,7 @@ public class FunctionalityTestedReviewer {
     }
 
     private void reviewCriteriaCanHaveFunctionalitiesTested(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
             if (!CollectionUtils.isEmpty(certResult.getFunctionalitiesTested())) {
                 listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.functionalityTestedNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
@@ -68,7 +68,7 @@ public class FunctionalityTestedReviewer {
     }
 
     private void removeFunctionalitiesTestedIfNotApplicable(CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
             certResult.setFunctionalitiesTested(null);
             certResult.setTestFunctionality(null);
         }

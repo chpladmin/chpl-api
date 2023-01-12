@@ -37,13 +37,13 @@ public class TestStandardReviewer implements Reviewer {
     }
 
     private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.STANDARDS_TESTED)) {
             if (!CollectionUtils.isEmpty(certResult.getTestStandards())) {
                 listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.testStandardsNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setTestStandards(null);
-        } else if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.STANDARDS_TESTED)
+        } else if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.STANDARDS_TESTED)
             && !CollectionUtils.isEmpty(certResult.getTestStandards())) {
             listing.getWarningMessages().add(msgUtil.getMessage(
                 "listing.criteria.testStandardsNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
@@ -52,7 +52,7 @@ public class TestStandardReviewer implements Reviewer {
     }
 
     private void removeTestStandardsIfNotApplicable(CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.STANDARDS_TESTED)) {
             certResult.setTestStandards(null);
         }
     }

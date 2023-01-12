@@ -62,13 +62,13 @@ public class UcdProcessReviewerTest {
         Mockito.when(criteriaService.get(ArgumentMatchers.eq(a6.getId()))).thenReturn(a6);
 
         certResultRules = Mockito.mock(CertificationResultRules.class);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a1.getNumber()), ArgumentMatchers.eq(CertificationResultRules.UCD_FIELDS)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a1.getId()), ArgumentMatchers.eq(CertificationResultRules.UCD_FIELDS)))
             .thenReturn(true);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a2.getNumber()), ArgumentMatchers.eq(CertificationResultRules.UCD_FIELDS)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a2.getId()), ArgumentMatchers.eq(CertificationResultRules.UCD_FIELDS)))
             .thenReturn(true);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a3.getNumber()), ArgumentMatchers.eq(CertificationResultRules.UCD_FIELDS)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a3.getId()), ArgumentMatchers.eq(CertificationResultRules.UCD_FIELDS)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a6.getNumber()), ArgumentMatchers.eq(CertificationResultRules.UCD_FIELDS)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a6.getId()), ArgumentMatchers.eq(CertificationResultRules.UCD_FIELDS)))
             .thenReturn(false);
 
         reviewer = new UcdProcessReviewer(criteriaService, new ValidationUtils(), certResultRules, errorMessageUtil, "1,2");

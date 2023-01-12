@@ -328,70 +328,70 @@ public class CertificationResult implements Serializable {
         this.setId(certResult.getId());
         this.setSuccess(certResult.getSuccess());
         this.setSed(certResult.getSed() == null ? Boolean.FALSE : certResult.getSed());
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.GAP)) {
+        if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.GAP)) {
             this.setGap(null);
         } else if (certResult.getGap() == null) {
             this.setGap(Boolean.FALSE);
         } else {
             this.setGap(certResult.getGap());
         }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_SUCCESS)) {
+        if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.G1_SUCCESS)) {
             this.setG1Success(null);
         } else if (certResult.getG1Success() == null) {
             this.setG1Success(Boolean.FALSE);
         } else {
             this.setG1Success(certResult.getG1Success());
         }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_SUCCESS)) {
+        if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.G2_SUCCESS)) {
             this.setG2Success(null);
         } else if (certResult.getG2Success() == null) {
             this.setG2Success(Boolean.FALSE);
         } else {
             this.setG2Success(certResult.getG2Success());
         }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ATTESTATION_ANSWER)) {
+        if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.ATTESTATION_ANSWER)) {
             this.setAttestationAnswer(null);
         } else if (certResult.getAttestationAnswer() == null) {
             this.setAttestationAnswer(false);
         } else {
             this.setAttestationAnswer(certResult.getAttestationAnswer());
         }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
+        if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.API_DOCUMENTATION)) {
             this.setApiDocumentation(null);
         } else if (certResult.getApiDocumentation() == null) {
             this.setApiDocumentation("");
         } else {
             this.setApiDocumentation(certResult.getApiDocumentation());
         }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)) {
+        if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.EXPORT_DOCUMENTATION)) {
             this.setExportDocumentation(null);
         } else if (certResult.getExportDocumentation() == null) {
             this.setExportDocumentation("");
         } else {
             this.setExportDocumentation(certResult.getExportDocumentation());
         }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.DOCUMENTATION_URL)) {
+        if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.DOCUMENTATION_URL)) {
             this.setDocumentationUrl(null);
         } else if (certResult.getDocumentationUrl() == null) {
             this.setDocumentationUrl("");
         } else {
             this.setDocumentationUrl(certResult.getDocumentationUrl());
         }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.USE_CASES)) {
+        if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.USE_CASES)) {
             this.setUseCases(null);
         } else if (certResult.getUseCases() == null) {
             this.setUseCases("");
         } else {
             this.setUseCases(certResult.getUseCases());
         }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)) {
+        if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.SERVICE_BASE_URL_LIST)) {
             this.setServiceBaseUrlList(null);
         } else if (certResult.getServiceBaseUrlList() == null) {
             this.setServiceBaseUrlList("");
         } else {
             this.setServiceBaseUrlList(certResult.getServiceBaseUrlList());
         }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
+        if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.PRIVACY_SECURITY)) {
             this.setPrivacySecurityFramework(null);
         } else if (certResult.getPrivacySecurityFramework() == null) {
             this.setPrivacySecurityFramework("");
@@ -427,7 +427,7 @@ public class CertificationResult implements Serializable {
     }
 
     private List<CertificationResultSvap> getSvaps(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.SVAP)) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.SVAP)) {
             return certResult.getSvaps();
         } else {
             return null;
@@ -435,7 +435,7 @@ public class CertificationResult implements Serializable {
     }
 
     private List<CertificationResultOptionalStandard> getOptionalStandards(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.OPTIONAL_STANDARD)) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.OPTIONAL_STANDARD)) {
             return certResult.getOptionalStandards().stream()
                     .collect(Collectors.toList());
         } else {
@@ -444,7 +444,7 @@ public class CertificationResult implements Serializable {
     }
 
     private List<CertificationResultFunctionalityTested> getFunctionalitiesTested(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
             return certResult.getFunctionalitiesTested();
         } else {
             return null;
@@ -452,7 +452,7 @@ public class CertificationResult implements Serializable {
     }
 
     private List<CertificationResultConformanceMethod> getConformanceMethods(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.CONFORMANCE_METHOD)) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.CONFORMANCE_METHOD)) {
             return certResult.getConformanceMethods().stream()
                     .map(item -> new CertificationResultConformanceMethod(item))
                     .collect(Collectors.toList());
@@ -462,7 +462,7 @@ public class CertificationResult implements Serializable {
     }
 
     private List<CertificationResultTestProcedure> getTestProcedures(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PROCEDURE)) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.TEST_PROCEDURE)) {
             return certResult.getTestProcedures().stream()
                     .map(item -> new CertificationResultTestProcedure(item))
                     .collect(Collectors.toList());
@@ -473,7 +473,7 @@ public class CertificationResult implements Serializable {
 
 
     private List<CertificationResultTestData> getTestData(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_DATA)) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.TEST_DATA)) {
             return certResult.getTestData().stream()
                     .map(item -> new CertificationResultTestData(item))
                     .collect(Collectors.toList());
@@ -483,7 +483,7 @@ public class CertificationResult implements Serializable {
     }
 
     private List<CertificationResultTestTool> getTestTools(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.TEST_TOOLS_USED)) {
             return certResult.getTestTools().stream()
                     .map(item -> new CertificationResultTestTool(item))
                     .collect(Collectors.toList());
@@ -493,7 +493,7 @@ public class CertificationResult implements Serializable {
     }
 
     private List<CertificationResultTestStandard> getTestStandards(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.STANDARDS_TESTED)) {
             return certResult.getTestStandards().stream()
                     .map(item -> new CertificationResultTestStandard(item))
                     .collect(Collectors.toList());
@@ -503,7 +503,7 @@ public class CertificationResult implements Serializable {
     }
 
     private List<CertificationResultAdditionalSoftware> getAdditionalSoftware(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
             return certResult.getAdditionalSoftware().stream()
                     .map(item -> new CertificationResultAdditionalSoftware(item))
                     .collect(Collectors.toList());

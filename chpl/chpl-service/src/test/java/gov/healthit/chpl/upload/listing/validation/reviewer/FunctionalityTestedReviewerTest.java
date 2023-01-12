@@ -68,7 +68,7 @@ public class FunctionalityTestedReviewerTest {
 
     @Test
     public void review_nullFunctionalitiesTested_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -90,7 +90,7 @@ public class FunctionalityTestedReviewerTest {
 
     @Test
     public void review_emptyFunctionalitiesTested_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -111,7 +111,7 @@ public class FunctionalityTestedReviewerTest {
 
     @Test
     public void review_functionalitiesTestedNotApplicableToCriteria_hasWarningAndFunctionalitiesTestedSetNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
             .thenReturn(false);
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
@@ -142,7 +142,7 @@ public class FunctionalityTestedReviewerTest {
 
     @Test
     public void review_functionalitiesTestedNotApplicableToRemovedCriteria_noWarning() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
             .thenReturn(false);
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
@@ -169,7 +169,7 @@ public class FunctionalityTestedReviewerTest {
 
     @Test
     public void review_removesFunctionalityTestedWithoutId_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
             .thenReturn(true);
 
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
@@ -204,7 +204,7 @@ public class FunctionalityTestedReviewerTest {
 
     @Test
     public void review_ignoresFunctionalityTestedWithoutIdForRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
             .thenReturn(true);
 
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
@@ -236,7 +236,7 @@ public class FunctionalityTestedReviewerTest {
 
     @Test
     public void review_functionalityTestedWithoutNameWithoutId_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
             .thenReturn(true);
 
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
@@ -271,7 +271,7 @@ public class FunctionalityTestedReviewerTest {
 
     @Test
     public void review_functionalityTestedWithoutNameWithoutIdForRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
             .thenReturn(true);
 
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
@@ -303,7 +303,7 @@ public class FunctionalityTestedReviewerTest {
 
     @Test
     public void review_functionalityTestedWithoutNameWithId_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
             .thenReturn(true);
 
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
@@ -338,7 +338,7 @@ public class FunctionalityTestedReviewerTest {
 
     @Test
     public void review_functionalityTestedWithoutNameWithIdForRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
             .thenReturn(true);
 
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
@@ -370,7 +370,7 @@ public class FunctionalityTestedReviewerTest {
 
     @Test
     public void review_functionalityTestedWithIdCriteriaMismatch_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
             .thenReturn(true);
 
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
@@ -407,7 +407,7 @@ public class FunctionalityTestedReviewerTest {
 
     @Test
     public void review_functionalityTestedWithIdRemovedCriteriaMismatch_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
             .thenReturn(true);
 
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
@@ -440,7 +440,7 @@ public class FunctionalityTestedReviewerTest {
 
     @Test
     public void review_validFunctionalitiesTested_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
             .thenReturn(true);
 
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
