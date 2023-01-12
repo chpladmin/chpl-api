@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import gov.healthit.chpl.domain.CertificationStatus;
+import gov.healthit.chpl.domain.IdNamePair;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -39,16 +40,5 @@ public class ListingIcsNode implements Serializable {
         private static final long serialVersionUID = -2377078038387234130L;
         private Long id;
         private String chplProductNumber;
-    }
-
-    @Getter
-    @SuperBuilder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @EqualsAndHashCode
-    public static class IdNamePair implements Serializable {
-        private static final long serialVersionUID = -2377078123832863130L;
-        private Long id;
-        private String name;
     }
 }

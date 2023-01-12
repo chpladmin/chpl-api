@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationEdition;
+import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -27,7 +28,6 @@ import gov.healthit.chpl.search.domain.ListingSearchResponse;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CQMSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResult;
-import gov.healthit.chpl.search.domain.ListingSearchResult.IdNamePairSearchResult;
 import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.RwtSearchOptions;
@@ -124,7 +124,7 @@ public class ListingSearchService {
                 || (!StringUtils.isEmpty(listing.getAcbCertificationId()) && listing.getAcbCertificationId().toUpperCase().contains(searchTermUpperCase));
     }
 
-    private boolean doProductOwnersMatchSearchTerm(Set<IdNamePairSearchResult> productOwners, String searchTerm) {
+    private boolean doProductOwnersMatchSearchTerm(Set<IdNamePair> productOwners, String searchTerm) {
         Set<String> uppercaseNames = productOwners.stream()
             .filter(productOwner -> !StringUtils.isEmpty(productOwner.getName()))
             .map(productOwner -> productOwner.getName().toUpperCase())

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationStatus;
-import gov.healthit.chpl.listing.ics.ListingIcsNode.IdNamePair;
+import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.listing.ics.ListingIcsNode.ListingRelative;
 import gov.healthit.chpl.search.entity.ListingSearchEntity;
 
