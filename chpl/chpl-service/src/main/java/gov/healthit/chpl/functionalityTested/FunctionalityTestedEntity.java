@@ -19,7 +19,7 @@ import gov.healthit.chpl.entity.PracticeTypeEntity;
 import lombok.Data;
 
 @Entity
-@Table(name = "test_functionality")
+@Table(name = "functionality_tested")
 @Data
 public class FunctionalityTestedEntity implements Serializable {
     private static final long serialVersionUID = 2662883108826795645L;
@@ -27,7 +27,7 @@ public class FunctionalityTestedEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "test_functionality_id")
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "name", nullable = false)

@@ -23,25 +23,25 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
-@Table(name = "certification_result_test_functionality")
+@Table(name = "certification_result_functionality_tested")
 public class CertificationResultFunctionalityTestedEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "certification_result_test_functionality_id")
+    @Column(name = "id")
     private Long id;
 
     @Basic(optional = false)
     @Column(name = "certification_result_id", nullable = false)
     private Long certificationResultId;
 
-    @Column(name = "test_functionality_id")
+    @Column(name = "functionality_tested_id")
     private Long functionalityTestedId;
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "test_functionality_id", unique = true, nullable = true, insertable = false, updatable = false)
+    @JoinColumn(name = "functionality_tested_id", unique = true, nullable = true, insertable = false, updatable = false)
     private FunctionalityTestedEntity functionalityTested;
 
     @Column(name = "deleted", insertable = false)
