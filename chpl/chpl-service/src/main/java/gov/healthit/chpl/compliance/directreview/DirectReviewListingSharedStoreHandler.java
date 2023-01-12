@@ -84,10 +84,9 @@ public class DirectReviewListingSharedStoreHandler {
 
     private List<CertifiedProductSearchDetails> getListingDataForDeveloper(Developer developer, Logger logger) {
         try {
-            //TODO: this needs to switched to use developer id when OCD-4066 gets to STG!!!
             SearchRequest searchRequest = SearchRequest.builder()
                     .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
-                    .developer(developer.getName())
+                    .developerId(developer.getId())
                     .pageSize(SearchRequest.MAX_PAGE_SIZE)
                     .build();
 
