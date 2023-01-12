@@ -42,6 +42,7 @@ import gov.healthit.chpl.dto.CuresUpdateEventDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTestedDAO;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
@@ -64,6 +65,7 @@ public class ListingConfirmationManager {
     private ListingGraphDAO listingGraphDao;
     private ListingMeasureDAO listingMeasureDao;
     private CertificationResultDAO certResultDao;
+    private CertificationResultFunctionalityTestedDAO certResultFuncTestedDao;
     private CQMResultDAO cqmResultDao;
     private CertificationStatusEventDAO statusEventDao;
     private CuresUpdateEventDAO curesUpdateDao;
@@ -82,7 +84,8 @@ public class ListingConfirmationManager {
             CertifiedProductAccessibilityStandardDAO cpAccStdDao,
             CertifiedProductTargetedUserDAO cpTargetedUserDao,
             ListingGraphDAO listingGraphDao, ListingMeasureDAO listingMeasureDao,
-            CertificationResultDAO certResultDao, CQMResultDAO cqmResultDao,
+            CertificationResultDAO certResultDao, CertificationResultFunctionalityTestedDAO certResultFuncTestedDao,
+            CQMResultDAO cqmResultDao,
             CertificationStatusDAO certStatusDao,  CertificationStatusEventDAO statusEventDao,
             CuresUpdateEventDAO curesUpdateDao,
             CertifiedProductDetailsManager cpDetailsManager, CuresUpdateService curesUpdateService,
@@ -98,6 +101,7 @@ public class ListingConfirmationManager {
         this.listingGraphDao = listingGraphDao;
         this.listingMeasureDao = listingMeasureDao;
         this.certResultDao = certResultDao;
+        this.certResultFuncTestedDao = certResultFuncTestedDao;
         this.cqmResultDao = cqmResultDao;
         this.statusEventDao = statusEventDao;
         this.curesUpdateDao = curesUpdateDao;
@@ -259,7 +263,7 @@ public class ListingConfirmationManager {
     private void saveFunctionalityTested(CertificationResult certResult) throws EntityCreationException {
         if (!CollectionUtils.isEmpty(certResult.getFunctionalitiesTested())) {
             certResult.getFunctionalitiesTested().stream()
-                .forEach(rethrowConsumer(functionalityTested -> certResultDao.createFunctionalityTestedMapping(certResult.getId(), functionalityTested)));
+                .forEach(rethrowConsumer(functionalityTested -> certResultFuncTestedDao.createFunctionalityTestedMapping(certResult.getId(), functionalityTested)));
         }
     }
 

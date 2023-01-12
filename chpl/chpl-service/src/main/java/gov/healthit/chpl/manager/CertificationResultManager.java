@@ -57,6 +57,7 @@ import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntit
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTestedDAO;
 import gov.healthit.chpl.functionalityTested.FunctionalityTested;
 import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
@@ -70,6 +71,7 @@ public class CertificationResultManager extends SecuredManager {
     private CertifiedProductSearchDAO cpDao;
     private CertificationCriterionDAO criteriaDao;
     private CertificationResultDAO certResultDAO;
+    private CertificationResultFunctionalityTestedDAO certResultFuncTestedDao;
     private TestStandardDAO testStandardDAO;
     private TestToolDAO testToolDAO;
     private FunctionalityTestedDAO functionalityTestedDao;
@@ -81,12 +83,14 @@ public class CertificationResultManager extends SecuredManager {
     @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
     public CertificationResultManager(CertifiedProductSearchDAO cpDao, CertificationCriterionDAO criteriaDao,
-            CertificationResultDAO certResultDAO, TestStandardDAO testStandardDAO,
-            TestToolDAO testToolDAO, FunctionalityTestedDAO functionalityTestedDao, TestParticipantDAO testParticipantDAO,
+            CertificationResultDAO certResultDAO, CertificationResultFunctionalityTestedDAO certResultFuncTestedDao,
+            TestStandardDAO testStandardDAO, TestToolDAO testToolDAO,
+            FunctionalityTestedDAO functionalityTestedDao, TestParticipantDAO testParticipantDAO,
             AgeRangeDAO ageDao, EducationTypeDAO educDao, TestTaskDAO testTaskDAO) {
         this.cpDao = cpDao;
         this.criteriaDao = criteriaDao;
         this.certResultDAO = certResultDAO;
+        this.certResultFuncTestedDao = certResultFuncTestedDao;
         this.testStandardDAO = testStandardDAO;
         this.testToolDAO = testToolDAO;
         this.functionalityTestedDao = functionalityTestedDao;
@@ -1026,11 +1030,11 @@ public class CertificationResultManager extends SecuredManager {
 
         numChanges = functionalitiesTestedToAdd.size() + idsToRemove.size();
         for (CertificationResultFunctionalityTested toAdd : functionalitiesTestedToAdd) {
-            certResultDAO.addFunctionalityTestedMapping(toAdd);
+            certResultFuncTestedDao.addFunctionalityTestedMapping(toAdd);
         }
 
         for (Long idToRemove : idsToRemove) {
-            certResultDAO.deleteFunctionalityTestedMapping(idToRemove);
+            certResultFuncTestedDao.deleteFunctionalityTestedMapping(idToRemove);
         }
         return numChanges;
     }
@@ -1414,7 +1418,7 @@ public class CertificationResultManager extends SecuredManager {
 
     public List<CertificationResultFunctionalityTested> getFunctionalitiesTestedForCertificationResult(
             Long certificationResultId) {
-        return certResultDAO.getFunctionalitiesTestedForCertificationResult(certificationResultId);
+        return certResultFuncTestedDao.getFunctionalitiesTestedForCertificationResult(certificationResultId);
     }
 
     public List<CertificationResultTestTaskDTO> getTestTasksForCertificationResult(Long certificationResultId) {

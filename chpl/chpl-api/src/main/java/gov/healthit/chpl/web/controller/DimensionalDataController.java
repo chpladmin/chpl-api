@@ -34,6 +34,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.functionalityTested.FunctionalityTested;
+import gov.healthit.chpl.functionalityTested.FunctionalityTestedManager;
 import gov.healthit.chpl.fuzzyMatching.FuzzyChoices;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.manager.FilterManager;
@@ -56,6 +57,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/data")
 public class DimensionalDataController {
     private DimensionalDataManager dimensionalDataManager;
+    private FunctionalityTestedManager functionalityTestedManager;
     private FilterManager filterManager;
     private ComplaintManager complaintManager;
     private SurveillanceReportManager survReportManager;
@@ -64,12 +66,14 @@ public class DimensionalDataController {
 
     @Autowired
     public DimensionalDataController(DimensionalDataManager dimensionalDataManager,
+            FunctionalityTestedManager functionalityTestedManager,
             FilterManager filterManager,
             ComplaintManager complaintManager,
             SurveillanceReportManager survReportManager,
             ChangeRequestManager changeRequestManager,
             SvapManager svapManager) {
         this.dimensionalDataManager = dimensionalDataManager;
+        this.functionalityTestedManager = functionalityTestedManager;
         this.filterManager = filterManager;
         this.complaintManager = complaintManager;
         this.survReportManager = survReportManager;
@@ -292,6 +296,10 @@ public class DimensionalDataController {
         return result;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/test_functionality",
+        message = "This endpoint is deprecated and will be removed. Please GET /functionalities-tested for this data.",
+        removalDate = "2023-08-01")
     @Operation(summary = "Get all possible test functionality options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {
@@ -301,7 +309,7 @@ public class DimensionalDataController {
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getTestFunctionality() {
-        Set<FunctionalityTested> data = dimensionalDataManager.getFunctionalitiesTested();
+        Set<FunctionalityTested> data = functionalityTestedManager.getFunctionalitiesTested();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);

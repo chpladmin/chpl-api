@@ -3,6 +3,8 @@ package gov.healthit.chpl.functionalityTested;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,13 @@ public class FunctionalityTestedManager {
     @Autowired
     public FunctionalityTestedManager(FunctionalityTestedDAO functionalityTestedDao) {
         this.functionalityTestedDao = functionalityTestedDao;
+    }
+
+    @Transactional
+    public Set<FunctionalityTested> getFunctionalitiesTested() {
+        List<FunctionalityTested> functionalitiesTested = this.functionalityTestedDao.findAll();
+        return functionalitiesTested.stream()
+                .collect(Collectors.toSet());
     }
 
     public List<FunctionalityTested> getFunctionalitiesTested(Long criteriaId, String certificationEdition, Long practiceTypeId) {

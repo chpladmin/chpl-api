@@ -62,7 +62,6 @@ import gov.healthit.chpl.dto.TestDataCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestProcedureCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.functionalityTested.FunctionalityTested;
 import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
@@ -205,14 +204,6 @@ public class DimensionalDataManager {
         }
 
         return optionalStds;
-    }
-
-    @Transactional
-    public Set<FunctionalityTested> getFunctionalitiesTested() {
-        LOGGER.debug("Getting all functionalities tested from the database (not cached).");
-        List<FunctionalityTested> functionalitiesTested = this.functionalityTestedDao.findAll();
-        return functionalitiesTested.stream()
-                .collect(Collectors.toSet());
     }
 
     @Transactional
