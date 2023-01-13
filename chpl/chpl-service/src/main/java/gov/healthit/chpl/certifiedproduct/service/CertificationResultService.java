@@ -94,8 +94,7 @@ public class CertificationResultService {
         result.setAllowedConformanceMethods(getAvailableConformanceMethodsForCriteria(result, conformanceMethodCriteriaMap));
         result.setAllowedOptionalStandards(getAvailableOptionalStandardsForCriteria(result, optionalStandardCriteriaMap));
         result.setAllowedSvaps(getAvailableSvapForCriteria(result, svapCriteriaMap));
-        result.setAllowedFunctionalitiesTested(getAvailableFunctionalitiesTested(result, searchDetails));
-        result.setAllowedTestFunctionalities(result.getAllowedFunctionalitiesTested());
+        result.setAllowedTestFunctionalities(getAvailableFunctionalitiesTested(result, searchDetails));
         result.setAllowedTestTools(getAvailableTestToolForCriteria(result, testToolCriteriaMap));
         return result;
     }

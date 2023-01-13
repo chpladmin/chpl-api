@@ -74,11 +74,12 @@ public class FunctionalityTestedNormalizer {
         populateFunctionalitiesTestedIds(listing, certResult.getFunctionalitiesTested());
     }
 
+    @Deprecated
     private void populateAllowedFunctionalitiesTested(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        certResult.setAllowedFunctionalitiesTested(getAvailableFunctionalitiesTested(listing, certResult));
-        certResult.setAllowedTestFunctionalities(certResult.getAllowedFunctionalitiesTested());
+        certResult.setAllowedTestFunctionalities(getAvailableFunctionalitiesTested(listing, certResult));
     }
 
+    @Deprecated
     private List<FunctionalityTested> getAvailableFunctionalitiesTested(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         String edition = MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY);
         Long practiceTypeId = MapUtils.getLong(listing.getPracticeType(), PRACTICE_TYPE_ID_KEY);

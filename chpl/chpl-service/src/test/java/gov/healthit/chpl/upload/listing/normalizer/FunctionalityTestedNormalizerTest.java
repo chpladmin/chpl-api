@@ -242,11 +242,11 @@ public class FunctionalityTestedNormalizerTest {
                 .build();
         normalizer.normalize(listing);
         assertEquals(0, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
-        assertEquals(2, listing.getCertificationResults().get(0).getAllowedFunctionalitiesTested().size());
-        assertTrue(listing.getCertificationResults().get(0).getAllowedFunctionalitiesTested().stream()
+        assertEquals(2, listing.getCertificationResults().get(0).getAllowedTestFunctionalities().size());
+        assertTrue(listing.getCertificationResults().get(0).getAllowedTestFunctionalities().stream()
                 .map(tf -> tf.getId())
                 .collect(Collectors.toList()).contains(1L));
-        assertTrue(listing.getCertificationResults().get(0).getAllowedFunctionalitiesTested().stream()
+        assertTrue(listing.getCertificationResults().get(0).getAllowedTestFunctionalities().stream()
                 .map(tf -> tf.getId())
                 .collect(Collectors.toList()).contains(2L));
     }
@@ -280,7 +280,7 @@ public class FunctionalityTestedNormalizerTest {
                 .build();
         normalizer.normalize(listing);
         assertEquals(0, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
-        assertEquals(0, listing.getCertificationResults().get(0).getAllowedFunctionalitiesTested().size());
+        assertEquals(0, listing.getCertificationResults().get(0).getAllowedTestFunctionalities().size());
     }
 
     private Map<String, Object> create2015EditionMap() {

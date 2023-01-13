@@ -160,11 +160,8 @@ public class CertificationResult implements Serializable {
     @XmlTransient
     private List<ConformanceMethod> allowedConformanceMethods;
 
-    @XmlTransient
-    private List<FunctionalityTested> allowedFunctionalitiesTested;
-
     @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. Please use 'allowedFunctionalitiesTested'.",
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found via a GET request to the endpoint /fuctionalities-tested.",
         removalDate = "2023-08-01")
     @XmlTransient
     private List<FunctionalityTested> allowedTestFunctionalities;
@@ -696,14 +693,6 @@ public class CertificationResult implements Serializable {
 
     public void setAllowedConformanceMethods(List<ConformanceMethod> allowedConformanceMethods) {
         this.allowedConformanceMethods = allowedConformanceMethods;
-    }
-
-    public List<FunctionalityTested> getAllowedFunctionalitiesTested() {
-        return allowedFunctionalitiesTested;
-    }
-
-    public void setAllowedFunctionalitiesTested(List<FunctionalityTested> allowedFunctionalitiesTested) {
-        this.allowedFunctionalitiesTested = allowedFunctionalitiesTested;
     }
 
     @Deprecated
