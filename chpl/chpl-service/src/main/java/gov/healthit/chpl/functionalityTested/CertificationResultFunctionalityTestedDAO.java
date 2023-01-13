@@ -65,7 +65,6 @@ public class CertificationResultFunctionalityTestedDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery("SELECT crft "
                 + "FROM CertificationResultFunctionalityTestedEntity crft "
                 + "LEFT OUTER JOIN FETCH crft.functionalityTested ft "
-                + "JOIN FETCH ft.certificationEdition edition "
                 + "WHERE (NOT crft.deleted = true) "
                 + "AND (crft.id = :entityid) ",
                 CertificationResultFunctionalityTestedEntity.class);
@@ -83,7 +82,6 @@ public class CertificationResultFunctionalityTestedDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery("SELECT crft "
                 + "FROM CertificationResultFunctionalityTestedEntity crft "
                 + "LEFT OUTER JOIN FETCH crft.functionalityTested ft "
-                + "JOIN FETCH ft.certificationEdition edition "
                 + "WHERE (NOT crft.deleted = true) "
                 + "AND (crft.certificationResultId = :certificationResultId) ",
                 CertificationResultFunctionalityTestedEntity.class);

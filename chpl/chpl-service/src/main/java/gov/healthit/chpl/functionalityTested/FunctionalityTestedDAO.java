@@ -26,22 +26,6 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
         return null;
     }
 
-    public FunctionalityTested getByNumberAndEdition(String number, Long editionId) {
-        List<FunctionalityTestedEntity> entities = getEntitiesByNumberAndYear(number, editionId);
-        if (entities != null && entities.size() > 0) {
-            return entities.get(0).toDomain();
-        }
-        return null;
-    }
-
-    public FunctionalityTested getByIdAndEdition(Long functionalityTestedId, Long editionId) {
-        List<FunctionalityTestedEntity> entities = getEntitiesByIdAndYear(functionalityTestedId, editionId);
-        if (entities != null && entities.size() > 0) {
-            return entities.get(0).toDomain();
-        }
-        return null;
-    }
-
     public List<FunctionalityTested> findAll() {
         List<FunctionalityTestedEntity> entities = getAllEntities();
         return entities.stream()
@@ -49,58 +33,47 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
-    public List<FunctionalityTestedCriteriaMap> getFunctionalitiesTestedCritieriaMaps() {
-        List<FunctionalityTestedCriteriaMapEntity> entities = getAllMapEntities();
-        return entities.stream()
-                    .map(entity -> entity.toDomain())
-                    .collect(Collectors.toList());
-    }
-
     @Cacheable(CacheNames.FUNCTIONALITY_TESTED_MAPS)
-    public Map<Long, List<FunctionalityTested>> getFunctionalitiesTestedCriteriaMaps(String edition) {
-        List<FunctionalityTestedCriteriaMap> allMaps = getFunctionalitiesTestedCritieriaMaps();
+    public Map<Long, List<FunctionalityTested>> getFunctionalitiesTestedCriteriaMaps() {
+        List<FunctionalityTested> allFunctionalityTested = findAll();
         Map<Long, List<FunctionalityTested>> mapping = new HashMap<Long, List<FunctionalityTested>>();
-        for (FunctionalityTestedCriteriaMap map : allMaps) {
-            if (map.getCriterion().getCertificationEdition().equals(edition)) {
-                if (!mapping.containsKey(map.getCriterion().getId())) {
-                    mapping.put(map.getCriterion().getId(), new ArrayList<FunctionalityTested>());
-                }
-                mapping.get(map.getCriterion().getId()).add(map.getFunctionalityTested());
-            }
-        }
+        allFunctionalityTested.stream()
+            .forEach(funcTest -> updateMapping(mapping, funcTest));
         return mapping;
     }
 
-    private List<FunctionalityTestedCriteriaMapEntity> getAllMapEntities() {
-        return entityManager
-                .createQuery("FROM FunctionalityTestedCriteriaMapEntity ftcm "
-                            + "LEFT OUTER JOIN FETCH ftcm.functionalityTested ft "
-                            + "LEFT OUTER JOIN FETCH ft.practiceType pt "
-                            + "LEFT OUTER JOIN FETCH ftcm.criterion c "
-                            + "LEFT OUTER JOIN FETCH c.certificationEdition "
-                            + "WHERE (NOT ftcm.deleted = true) ", FunctionalityTestedCriteriaMapEntity.class)
-                .getResultList();
+    private void updateMapping(Map<Long, List<FunctionalityTested>> mapping, FunctionalityTested functionalityTested) {
+        functionalityTested.getCriteria().stream()
+            .forEach(funcTestCriterion -> {
+                if (!mapping.containsKey(funcTestCriterion.getId())) {
+                    mapping.put(funcTestCriterion.getId(), new ArrayList<FunctionalityTested>());
+                }
+                mapping.get(funcTestCriterion.getId()).add(functionalityTested);
+            });
     }
 
     private List<FunctionalityTestedEntity> getAllEntities() {
         return entityManager
                 .createQuery("SELECT ft "
                             + "FROM FunctionalityTestedEntity ft "
-                            + "LEFT OUTER JOIN FETCH ft.certificationEdition "
                             + "LEFT OUTER JOIN FETCH ft.practiceType "
+                            + "LEFT OUTER JOIN FETCH ft.mappedCriteria criteriaMapping "
+                            + "LEFT OUTER JOIN FETCH criteriaMapping.criterion criterion "
+                            + "LEFT OUTER JOIN FETCH criterion.certificationEdition "
                             + "WHERE (NOT ft.deleted = true) ", FunctionalityTestedEntity.class)
                 .getResultList();
     }
 
     private FunctionalityTestedEntity getEntityById(Long id) throws EntityRetrievalException {
-
         FunctionalityTestedEntity entity = null;
 
         Query query = entityManager
                 .createQuery("SELECT ft "
                         + "FROM FunctionalityTestedEntity ft "
-                        + "LEFT OUTER JOIN FETCH ft.certificationEdition "
                         + "LEFT OUTER JOIN FETCH ft.practiceType "
+                        + "LEFT OUTER JOIN FETCH ft.mappedCriteria criteriaMapping "
+                        + "LEFT OUTER JOIN FETCH criteriaMapping.criterion criterion "
+                        + "LEFT OUTER JOIN FETCH criterion.certificationEdition "
                         + "WHERE (NOT ft.deleted = true) "
                         + "AND (ft.id = :entityid) ",
                         FunctionalityTestedEntity.class);
@@ -116,33 +89,5 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
         }
 
         return entity;
-    }
-
-    private List<FunctionalityTestedEntity> getEntitiesByNumberAndYear(String number, Long editionId) {
-        Query query = entityManager.createQuery("SELECT ft "
-                        + "FROM FunctionalityTestedEntity ft "
-                        + "LEFT OUTER JOIN FETCH ft.certificationEdition "
-                        + "LEFT OUTER JOIN FETCH ft.practiceType "
-                        + "WHERE ft.deleted <> true "
-                        + "AND UPPER(ft.number) = :number "
-                        + "AND ft.certificationEdition.id = :editionId ", FunctionalityTestedEntity.class);
-        query.setParameter("number", number.toUpperCase());
-        query.setParameter("editionId", editionId);
-
-        return query.getResultList();
-    }
-
-    private List<FunctionalityTestedEntity> getEntitiesByIdAndYear(Long id, Long editionId) {
-        Query query = entityManager.createQuery("SELECT ft "
-                        + "FROM FunctionalityTestedEntity ft "
-                        + "LEFT OUTER JOIN FETCH ft.certificationEdition "
-                        + "LEFT OUTER JOIN FETCH ft.practiceType "
-                        + "WHERE ft.deleted <> true "
-                        + "AND ft.id = :id "
-                        + "AND ft.certificationEdition.id = :editionId ", FunctionalityTestedEntity.class);
-        query.setParameter("id", id);
-        query.setParameter("editionId", editionId);
-
-        return query.getResultList();
     }
 }

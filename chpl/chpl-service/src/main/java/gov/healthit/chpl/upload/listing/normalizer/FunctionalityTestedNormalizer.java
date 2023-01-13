@@ -3,6 +3,7 @@ package gov.healthit.chpl.upload.listing.normalizer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.collections4.MapUtils;
@@ -71,7 +72,7 @@ public class FunctionalityTestedNormalizer {
 
     private void fillInFunctionalitiesTestedData(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         populateAllowedFunctionalitiesTested(listing, certResult);
-        populateFunctionalitiesTestedIds(listing, certResult.getFunctionalitiesTested());
+        populateFunctionalitiesTestedIds(listing, certResult, certResult.getFunctionalitiesTested());
     }
 
     @Deprecated
@@ -81,42 +82,46 @@ public class FunctionalityTestedNormalizer {
 
     @Deprecated
     private List<FunctionalityTested> getAvailableFunctionalitiesTested(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        String edition = MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY);
         Long practiceTypeId = MapUtils.getLong(listing.getPracticeType(), PRACTICE_TYPE_ID_KEY);
         if (certResult != null && certResult.getCriterion() != null
                 && certResult.getCriterion().getId() != null) {
-            return functionalityTestedManager.getFunctionalitiesTested(certResult.getCriterion().getId(), edition, practiceTypeId);
+            return functionalityTestedManager.getFunctionalitiesTested(certResult.getCriterion().getId(), practiceTypeId);
         }
         return new ArrayList<FunctionalityTested>();
     }
 
     private void populateFunctionalitiesTestedIds(CertifiedProductSearchDetails listing,
+            CertificationResult certResult,
             List<CertificationResultFunctionalityTested> functionalitiesTested) {
         if (functionalitiesTested != null && functionalitiesTested.size() > 0) {
             functionalitiesTested.stream()
-                .forEach(functionalityTested -> populateFunctionalityTestedId(listing, functionalityTested));
+                .filter(functionalityTested -> functionalityTested.getId() == null)
+                .forEach(functionalityTested -> populateFunctionalityTestedId(listing, certResult, functionalityTested));
         }
     }
 
     private void populateFunctionalityTestedId(CertifiedProductSearchDetails listing,
+            CertificationResult certResult,
             CertificationResultFunctionalityTested functionalityTested) {
-        if (!StringUtils.isEmpty(functionalityTested.getName())
-                && MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY) != null) {
-            Long editionId = null;
-            try {
-                editionId = MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY);
-            } catch (NumberFormatException ex) {
-                LOGGER.error("Could not get edition id as a number.", ex);
-            }
-
-            if (editionId != null) {
-                FunctionalityTested foundFunctionalityTested =
-                        functionalityTestedDao.getByNumberAndEdition(functionalityTested.getName(), editionId);
-                if (foundFunctionalityTested != null) {
-                    functionalityTested.setFunctionalityTestedId(foundFunctionalityTested.getId());
-                }
+        if (!StringUtils.isEmpty(functionalityTested.getName())) {
+            FunctionalityTested foundFunctionalityTested =
+                    getFunctionalityTested(functionalityTested.getName(), certResult.getCriterion().getId());
+            if (foundFunctionalityTested != null) {
+                functionalityTested.setFunctionalityTestedId(foundFunctionalityTested.getId());
             }
         }
+    }
+
+    private FunctionalityTested getFunctionalityTested(String functionalityTestedNumber, Long criterionId) {
+        Map<Long, List<FunctionalityTested>> funcTestedMappings = functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps();
+        if (!funcTestedMappings.containsKey(criterionId)) {
+            return null;
+        }
+        List<FunctionalityTested> functionalityTestedForCriterion = funcTestedMappings.get(criterionId);
+        Optional<FunctionalityTested> funcTestedOpt = functionalityTestedForCriterion.stream()
+            .filter(funcTested -> funcTested.getName().equalsIgnoreCase(functionalityTestedNumber))
+            .findAny();
+        return funcTestedOpt.isPresent() ? funcTestedOpt.get() : null;
     }
 
     private void removeRestrictedFunctionalitiesTestedBasedOnUserRule(CertificationResult certResult) {

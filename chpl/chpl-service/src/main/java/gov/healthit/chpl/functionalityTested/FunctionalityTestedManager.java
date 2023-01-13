@@ -6,12 +6,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 
 @Service
 @Transactional
@@ -31,45 +28,17 @@ public class FunctionalityTestedManager {
                 .collect(Collectors.toSet());
     }
 
-    public List<FunctionalityTested> getFunctionalitiesTested(Long criteriaId, String certificationEdition, Long practiceTypeId) {
-        if (!StringUtils.isEmpty(certificationEdition) && certificationEdition.equals("2014")) {
-            return get2014FunctionalitiesTested(criteriaId, practiceTypeId);
-        } else if (!StringUtils.isEmpty(certificationEdition) && certificationEdition.equals("2015")) {
-            return get2015FunctionalitiesTested(criteriaId);
-        } else {
-            return new ArrayList<FunctionalityTested>();
-        }
-    }
-
-    private List<FunctionalityTested> get2014FunctionalitiesTested(Long criteriaId, Long practiceTypeId) {
-        Map<Long, List<FunctionalityTested>> functionalitiesTestedByCriteria2014 =
-                functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps(CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear());
-        List<FunctionalityTested> allowedFunctionalitiesTested = new ArrayList<FunctionalityTested>();
-
-        if (functionalitiesTestedByCriteria2014.containsKey(criteriaId)) {
-            List<FunctionalityTested> functionalitiesTested = functionalitiesTestedByCriteria2014.get(criteriaId);
-            for (FunctionalityTested functionalityTested : functionalitiesTested) {
-                if (functionalityTested.getPracticeType() == null || functionalityTested.getPracticeType().getId().equals(practiceTypeId)) {
-                    allowedFunctionalitiesTested.add(functionalityTested);
-                }
+    public List<FunctionalityTested> getFunctionalitiesTested(Long criteriaId, Long practiceTypeId) {
+        List<FunctionalityTested> functionalitiesTestedForCriterion = new ArrayList<FunctionalityTested>();
+        Map<Long, List<FunctionalityTested>> functionalitiesTestedByCriteria = functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps();
+        if (functionalitiesTestedByCriteria.containsKey(criteriaId)) {
+            functionalitiesTestedForCriterion = functionalitiesTestedByCriteria.get(criteriaId);
+            if (practiceTypeId != null) {
+                functionalitiesTestedForCriterion = functionalitiesTestedForCriterion.stream()
+                        .filter(funcTest -> funcTest.getPracticeType() == null || funcTest.getPracticeType().getId().equals(practiceTypeId))
+                        .collect(Collectors.toList());
             }
         }
-
-        return allowedFunctionalitiesTested;
-    }
-
-    private List<FunctionalityTested> get2015FunctionalitiesTested(Long criteriaId) {
-        Map<Long, List<FunctionalityTested>> functionalitiesTestedByCriteria2015 =
-                functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
-        List<FunctionalityTested> allowedFunctionalitiesTested = new ArrayList<FunctionalityTested>();
-
-        if (functionalitiesTestedByCriteria2015.containsKey(criteriaId)) {
-            List<FunctionalityTested> functionalitiesTested = functionalitiesTestedByCriteria2015.get(criteriaId);
-            for (FunctionalityTested functionalityTested : functionalitiesTested) {
-                allowedFunctionalitiesTested.add(functionalityTested);
-            }
-        }
-
-        return allowedFunctionalitiesTested;
+        return functionalitiesTestedForCriterion;
     }
 }

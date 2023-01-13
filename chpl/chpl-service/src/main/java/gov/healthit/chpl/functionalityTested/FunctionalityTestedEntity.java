@@ -2,6 +2,9 @@ package gov.healthit.chpl.functionalityTested;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -11,10 +14,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.entity.CertificationEditionEntity;
+import org.hibernate.annotations.Where;
+
 import gov.healthit.chpl.entity.PracticeTypeEntity;
 import lombok.Data;
 
@@ -36,16 +41,15 @@ public class FunctionalityTestedEntity implements Serializable {
     @Column(name = "number")
     private String number;
 
-    @Column(name = "certification_edition_id")
-    private Long certificationEditionId;
-
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "certification_edition_id", insertable = false, updatable = false)
-    private CertificationEditionEntity certificationEdition;
-
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "practice_type_id", insertable = false, updatable = false)
     private PracticeTypeEntity practiceType;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "functionalityTestedId")
+    @Basic(optional = false)
+    @Column(name = "functionality_tested_id", nullable = false)
+    @Where(clause = "deleted <> 'true'")
+    private Set<FunctionalityTestedCriteriaMapEntity> mappedCriteria = new HashSet<FunctionalityTestedCriteriaMapEntity>();
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
@@ -69,7 +73,9 @@ public class FunctionalityTestedEntity implements Serializable {
                 .description(this.getName())
                 .name(this.getNumber())
                 .practiceType(this.getPracticeType() != null ? this.getPracticeType().toDomain() : null)
-                .year(this.getCertificationEdition() != null ? this.getCertificationEdition().getYear() : null)
+                .criteria(this.getMappedCriteria() != null ? this.getMappedCriteria().stream()
+                        .map(mappedCriterion -> mappedCriterion.getCriterion().toDomain())
+                        .collect(Collectors.toList()) : null)
                 .build();
     }
 }

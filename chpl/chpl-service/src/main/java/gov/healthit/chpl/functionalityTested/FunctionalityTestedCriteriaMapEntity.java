@@ -45,11 +45,6 @@ public class FunctionalityTestedCriteriaMapEntity implements Serializable {
     private Long functionalityTestedId;
 
     @Basic(optional = false)
-    @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "functionality_tested_id", insertable = false, updatable = false)
-    private FunctionalityTestedEntity functionalityTested;
-
-    @Basic(optional = false)
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
     private Date creationDate;
 
@@ -64,16 +59,4 @@ public class FunctionalityTestedCriteriaMapEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
-
-    public FunctionalityTestedCriteriaMap toDomain() {
-        return FunctionalityTestedCriteriaMap.builder()
-                .id(this.getId())
-                .creationDate(this.getCreationDate())
-                .criterion(this.getCriterion() != null ? this.getCriterion().toDomain() : null)
-                .deleted(this.getDeleted())
-                .functionalityTested(this.getFunctionalityTested() != null ? this.getFunctionalityTested().toDomain() : null)
-                .lastModifiedDate(this.getLastModifiedDate())
-                .lastModifiedUser(this.getLastModifiedUser())
-                .build();
-    }
 }

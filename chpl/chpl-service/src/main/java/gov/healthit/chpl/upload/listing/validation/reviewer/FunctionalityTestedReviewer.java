@@ -5,16 +5,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.functionalityTested.FunctionalityTested;
-import gov.healthit.chpl.functionalityTested.FunctionalityTestedCriteriaMap;
 import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -94,25 +93,24 @@ public class FunctionalityTestedReviewer {
         if (CollectionUtils.isEmpty(certResult.getFunctionalitiesTested())) {
             return;
         }
-        String year = MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY);
         Iterator<CertificationResultFunctionalityTested> functionalitiesTestedIter = certResult.getFunctionalitiesTested().iterator();
         while (functionalitiesTestedIter.hasNext()) {
             CertificationResultFunctionalityTested functionalityTested = functionalitiesTestedIter.next();
             if (!isFunctionalityTestedCritierionValid(certResult.getCriterion().getId(),
-                    functionalityTested.getFunctionalityTestedId(), year)) {
+                    functionalityTested.getFunctionalityTestedId())) {
                 functionalitiesTestedIter.remove();
                 listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.functionalityTestedCriterionMismatch",
                             Util.formatCriteriaNumber(certResult.getCriterion()),
                             functionalityTested.getName(),
-                            getDelimitedListOfValidCriteriaNumbers(functionalityTested.getFunctionalityTestedId(), year),
+                            getDelimitedListOfValidCriteriaNumbers(functionalityTested),
                             Util.formatCriteriaNumber(certResult.getCriterion())));
             }
         }
     }
 
-    private boolean isFunctionalityTestedCritierionValid(Long criteriaId, Long functionalityTestedId, String year) {
+    private boolean isFunctionalityTestedCritierionValid(Long criteriaId, Long functionalityTestedId) {
         List<FunctionalityTested> validFunctionalitiesTestedForCriteria =
-                functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps(year).get(criteriaId);
+                functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps().get(criteriaId);
         if (validFunctionalitiesTestedForCriteria == null) {
             return false;
         } else {
@@ -120,13 +118,17 @@ public class FunctionalityTestedReviewer {
         }
     }
 
-    private String getDelimitedListOfValidCriteriaNumbers(Long functionalityTestedId, String year) {
-        List<FunctionalityTestedCriteriaMap> functionalityTestedMaps = functionalityTestedDao.getFunctionalitiesTestedCritieriaMaps();
-        return functionalityTestedMaps.stream().
-            filter(functionalityTestedMap -> functionalityTestedMap.getCriterion().getCertificationEdition().equals(year)
-                    && functionalityTestedId.equals(functionalityTestedMap.getFunctionalityTested().getId()))
-            .map(functionalityTestedMap -> Util.formatCriteriaNumber(functionalityTestedMap.getCriterion()))
-            .collect(Collectors.joining(","));
+    private String getDelimitedListOfValidCriteriaNumbers(CertificationResultFunctionalityTested crft) {
+        FunctionalityTested functionalityTested = null;
+        try {
+            functionalityTested = functionalityTestedDao.getById(crft.getFunctionalityTestedId());
+        } catch (EntityRetrievalException ex) {
+            return "";
+        }
+        List<String> criteriaNumbers = functionalityTested.getCriteria().stream()
+                .map(criterion -> Util.formatCriteriaNumber(criterion))
+                .collect(Collectors.toList());
+        return Util.joinListGrammatically(criteriaNumbers);
     }
 
     private void reviewFunctionalityTestedFields(CertifiedProductSearchDetails listing,
@@ -135,8 +137,8 @@ public class FunctionalityTestedReviewer {
     }
 
     private void reviewFunctionalityTestedName(CertifiedProductSearchDetails listing,
-            CertificationResult certResult, CertificationResultFunctionalityTested FunctionalityTested) {
-        if (StringUtils.isEmpty(FunctionalityTested.getName())) {
+            CertificationResult certResult, CertificationResultFunctionalityTested functionalityTested) {
+        if (StringUtils.isEmpty(functionalityTested.getName())) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingFunctionalityTestedName",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }

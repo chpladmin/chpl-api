@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -63,6 +65,7 @@ import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
+import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Service
@@ -955,7 +958,6 @@ public class CertificationResultManager extends SecuredManager {
             List<CertificationResultFunctionalityTested> existingFunctionalitiesTested,
             List<CertificationResultFunctionalityTested> updatedFunctionalitiesTested) throws EntityCreationException {
         int numChanges = 0;
-        String editionIdString = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString();
         List<CertificationResultFunctionalityTested> functionalitiesTestedToAdd = new ArrayList<CertificationResultFunctionalityTested>();
         List<Long> idsToRemove = new ArrayList<Long>();
 
@@ -964,13 +966,11 @@ public class CertificationResultManager extends SecuredManager {
             // fill in potentially missing functionality tested id
             for (CertificationResultFunctionalityTested updatedItem : updatedFunctionalitiesTested) {
                 if (updatedItem.getFunctionalityTestedId() == null && !StringUtils.isEmpty(updatedItem.getName())) {
-                    FunctionalityTested foundFunc = functionalityTestedDao.getByNumberAndEdition(updatedItem.getName(),
-                            Long.valueOf(editionIdString));
+                    FunctionalityTested foundFunc = getFunctionalityTested(updatedItem.getName(), certResult.getCriterion().getId());
                     if (foundFunc == null) {
                         LOGGER.error("Could not find functionality tested " + updatedItem.getName()
-                                + " for certifiation edition id " + editionIdString
                                 + "; will not be adding this as a functionality tested to listing id " + listing.getId()
-                                + ", criteria " + certResult.getCriterion().getNumber());
+                                + ", criteria " + Util.formatCriteriaNumber(certResult.getCriterion()));
                     } else {
                         updatedItem.setFunctionalityTestedId(foundFunc.getId());
                     }
@@ -1037,6 +1037,18 @@ public class CertificationResultManager extends SecuredManager {
             certResultFuncTestedDao.deleteFunctionalityTestedMapping(idToRemove);
         }
         return numChanges;
+    }
+
+    private FunctionalityTested getFunctionalityTested(String functionalityTestedNumber, Long criterionId) {
+        Map<Long, List<FunctionalityTested>> funcTestedMappings = functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps();
+        if (!funcTestedMappings.containsKey(criterionId)) {
+            return null;
+        }
+        List<FunctionalityTested> functionalityTestedForCriterion = funcTestedMappings.get(criterionId);
+        Optional<FunctionalityTested> funcTestedOpt = functionalityTestedForCriterion.stream()
+            .filter(funcTested -> funcTested.getName().equalsIgnoreCase(functionalityTestedNumber))
+            .findAny();
+        return funcTestedOpt.isPresent() ? funcTestedOpt.get() : null;
     }
 
     private int updateTestTasks(CertificationResult certResult, List<TestTask> existingTestTasks,

@@ -57,12 +57,6 @@ public class CertificationResultFunctionalityTested implements Serializable {
     @XmlElement(required = true)
     private String name;
 
-    /**
-     * Edition (2014, 2015) to which the functionality tested is applicable.
-     */
-    @XmlElement(required = true)
-    private String year;
-
     @XmlTransient
     @JsonIgnore
     private Long certificationResultId;
@@ -76,9 +70,7 @@ public class CertificationResultFunctionalityTested implements Serializable {
                 && this.getFunctionalityTestedId().longValue() == anotherFunc.getFunctionalityTestedId().longValue()) {
             result = true;
         } else if (!StringUtils.isEmpty(this.getName()) && !StringUtils.isEmpty(anotherFunc.getName())
-                && this.getName().equalsIgnoreCase(anotherFunc.getName()) && !StringUtils.isEmpty(this.getYear())
-                && !StringUtils.isEmpty(anotherFunc.getYear())
-                && this.getYear().equalsIgnoreCase(anotherFunc.getYear())) {
+                && this.getName().equalsIgnoreCase(anotherFunc.getName())) {
             result = true;
         }
         return result;
@@ -114,14 +106,6 @@ public class CertificationResultFunctionalityTested implements Serializable {
 
     public void setName(final String name) {
         this.name = name;
-    }
-
-    public String getYear() {
-        return year;
-    }
-
-    public void setYear(final String year) {
-        this.year = year;
     }
 
     public Long getCertificationResultId() {

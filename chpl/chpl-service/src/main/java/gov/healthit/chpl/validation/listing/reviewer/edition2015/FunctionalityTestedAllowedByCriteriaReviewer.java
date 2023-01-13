@@ -1,10 +1,11 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -14,14 +15,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertificationEditionDAO;
-import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.functionalityTested.FunctionalityTested;
-import gov.healthit.chpl.functionalityTested.FunctionalityTestedCriteriaMap;
 import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
+import gov.healthit.chpl.functionalityTested.FunctionalityTestedManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -33,14 +32,17 @@ import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 @DependsOn("certificationEditionDAO")
 public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBasedReviewer {
     private FunctionalityTestedDAO functionalityTestedDao;
+    private FunctionalityTestedManager functionalityTestedManager;
     private DimensionalDataManager dimensionalDataManager;
 
     @Autowired
-    public FunctionalityTestedAllowedByCriteriaReviewer(FunctionalityTestedDAO functionalityTestedDao,
+    public FunctionalityTestedAllowedByCriteriaReviewer(FunctionalityTestedManager functionalityTestedManager,
+            FunctionalityTestedDAO functionalityTestedDao,
             CertificationEditionDAO editionDAO,
             DimensionalDataManager dimensionalDataManager,
             ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
         super(msgUtil, resourcePermissions);
+        this.functionalityTestedManager = functionalityTestedManager;
         this.functionalityTestedDao = functionalityTestedDao;
         this.dimensionalDataManager = dimensionalDataManager;
     }
@@ -63,28 +65,25 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
 
     private Set<String> getFunctionalitiesTestedErrorMessages(CertificationResultFunctionalityTested crft,
             CertificationResult cr, CertifiedProductSearchDetails listing) {
-
         Set<String> errors = new HashSet<String>();
-
-        CertificationEdition edition = getEdition(getEditionFromListing(listing));
         FunctionalityTested functionalityTested = null;
         if (crft.getFunctionalityTestedId() != null) {
-            functionalityTested = getFunctionalityTested(crft.getFunctionalityTestedId(), edition.getCertificationEditionId());
+            functionalityTested = getFunctionalityTested(crft.getFunctionalityTestedId(), cr.getCriterion().getId());
             if (functionalityTested == null) {
                 errors.add(msgUtil.getMessage("listing.criteria.invalidFunctionalityTestedId", Util.formatCriteriaNumber(cr.getCriterion()), crft.getFunctionalityTestedId()));
             }
         } else if (!StringUtils.isEmpty(crft.getName())) {
-            functionalityTested = getFunctionalityTested(crft.getName(), edition.getCertificationEditionId());
-            if (!isFunctionalityTestedCritierionValid(cr.getCriterion().getId(), functionalityTested, edition.getYear())) {
-                errors.add(getFunctionalitiesTestedCriterionErrorMessage(crft, cr, listing, edition));
+            functionalityTested = getFunctionalityTested(crft.getName(), cr.getCriterion().getId());
+            if (!isFunctionalityTestedCritierionValid(cr.getCriterion().getId(), functionalityTested)) {
+                errors.add(getFunctionalitiesTestedCriterionErrorMessage(crft, cr, listing));
             }
         }
         return errors;
     }
 
-    private Boolean isFunctionalityTestedCritierionValid(Long criteriaId, FunctionalityTested functionalityTested, String year) {
+    private Boolean isFunctionalityTestedCritierionValid(Long criteriaId, FunctionalityTested functionalityTested) {
         List<FunctionalityTested> validFunctionalityTestedForCriteria =
-                functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps(year).get(criteriaId);
+                functionalityTestedManager.getFunctionalitiesTested(criteriaId, null);
 
         if (validFunctionalityTestedForCriteria == null) {
             return false;
@@ -95,17 +94,16 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
     }
 
     private String getFunctionalitiesTestedCriterionErrorMessage(CertificationResultFunctionalityTested crft,
-            CertificationResult cr, CertifiedProductSearchDetails cp,
-            CertificationEdition edition) {
+            CertificationResult cr, CertifiedProductSearchDetails cp) {
 
-        FunctionalityTested functionalityTested = getFunctionalityTested(crft.getFunctionalityTestedId(), edition.getCertificationEditionId());
+        FunctionalityTested functionalityTested = getFunctionalityTested(crft.getFunctionalityTestedId(), cr.getCriterion().getId());
         if (functionalityTested == null || functionalityTested.getId() == null) {
             return msgUtil.getMessage("listing.criteria.invalidFunctionalityTested", Util.formatCriteriaNumber(cr.getCriterion()), crft.getName());
         }
         return getFunctionalityTestedCriterionErrorMessage(
                 Util.formatCriteriaNumber(cr.getCriterion()),
                 crft.getName(),
-                getDelimitedListOfValidCriteriaNumbers(functionalityTested, edition),
+                getDelimitedListOfValidCriteriaNumbers(functionalityTested),
                 Util.formatCriteriaNumber(cr.getCriterion()));
     }
 
@@ -116,53 +114,34 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
                 criteriaNumber, functionalityTestedNumber, listOfValidCriteria, currentCriterion);
     }
 
-    private CertificationEdition getEdition(String year) {
-        for (CertificationEdition edition : dimensionalDataManager.getCertificationEditions()) {
-            if (edition.getYear().equals(year)) {
-                return edition;
-            }
+    private FunctionalityTested getFunctionalityTested(Long functionalityTestedId, Long criterionId) {
+        Map<Long, List<FunctionalityTested>> funcTestedMappings = functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps();
+        if (!funcTestedMappings.containsKey(criterionId)) {
+            return null;
         }
-        return null;
+        List<FunctionalityTested> functionalityTestedForCriterion = funcTestedMappings.get(criterionId);
+        Optional<FunctionalityTested> funcTestedOpt = functionalityTestedForCriterion.stream()
+            .filter(funcTested -> funcTested.getId().equals(functionalityTestedId))
+            .findAny();
+        return funcTestedOpt.isPresent() ? funcTestedOpt.get() : null;
     }
 
-    private String getEditionFromListing(CertifiedProductSearchDetails listing) {
-        String edition = "";
-        if (listing.getCertificationEdition().containsKey(CertifiedProductSearchDetails.EDITION_NAME_KEY)) {
-            edition = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
+    private FunctionalityTested getFunctionalityTested(String functionalityTestedNumber, Long criterionId) {
+        Map<Long, List<FunctionalityTested>> funcTestedMappings = functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps();
+        if (!funcTestedMappings.containsKey(criterionId)) {
+            return null;
         }
-        return edition;
+        List<FunctionalityTested> functionalityTestedForCriterion = funcTestedMappings.get(criterionId);
+        Optional<FunctionalityTested> funcTestedOpt = functionalityTestedForCriterion.stream()
+            .filter(funcTested -> funcTested.getName().equalsIgnoreCase(functionalityTestedNumber))
+            .findAny();
+        return funcTestedOpt.isPresent() ? funcTestedOpt.get() : null;
     }
 
-    private FunctionalityTested getFunctionalityTested(Long functionalityTestedId, Long editionId) {
-        return functionalityTestedDao.getByIdAndEdition(functionalityTestedId, editionId);
-    }
-
-    private FunctionalityTested getFunctionalityTested(String functionalityTestedNumber, Long editionId) {
-        return functionalityTestedDao.getByNumberAndEdition(functionalityTestedNumber, editionId);
-    }
-
-    private String getDelimitedListOfValidCriteriaNumbers(FunctionalityTested functionalityTested,
-            CertificationEdition edition) {
-
-        StringBuilder criteriaNumbers = new StringBuilder();
-        List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
-
-        List<FunctionalityTestedCriteriaMap> maps = functionalityTestedDao.getFunctionalitiesTestedCritieriaMaps();
-        for (FunctionalityTestedCriteriaMap map : maps) {
-            if (map.getCriterion().getCertificationEdition().equals(edition.getYear())) {
-                if (functionalityTested.getId().equals(map.getFunctionalityTested().getId())) {
-                    criteria.add(map.getCriterion());
-                }
-            }
-        }
-
-        Iterator<CertificationCriterion> iter = criteria.iterator();
-        while (iter.hasNext()) {
-            criteriaNumbers.append(Util.formatCriteriaNumber(iter.next()));
-            if (iter.hasNext()) {
-                criteriaNumbers.append(", ");
-            }
-        }
-        return criteriaNumbers.toString();
+    private String getDelimitedListOfValidCriteriaNumbers(FunctionalityTested functionalityTested) {
+        List<String> criteriaNumbers = functionalityTested.getCriteria().stream()
+            .map(criterion -> Util.formatCriteriaNumber(criterion))
+            .collect(Collectors.toList());
+        return Util.joinListGrammatically(criteriaNumbers);
     }
 }

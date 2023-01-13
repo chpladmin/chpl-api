@@ -1,10 +1,13 @@
 package gov.healthit.chpl.functionalityTested;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.PracticeType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,8 +28,9 @@ public class FunctionalityTested implements Serializable {
     private Long id;
     private String name;
     private String description;
-    private String year;
     private PracticeType practiceType;
+
+    private List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
 
     @Override
     public boolean equals(final Object o) {

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,9 +18,9 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.functionalityTested.FunctionalityTested;
-import gov.healthit.chpl.functionalityTested.FunctionalityTestedCriteriaMap;
 import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -44,9 +45,7 @@ public class FunctionalityTestedReviewerTest {
         functionalityTestedDao = Mockito.mock(FunctionalityTestedDAO.class);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
 
-        Mockito.when(functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps(ArgumentMatchers.eq("2015")))
-            .thenReturn(createDefaultFunctionalityTestedMaps());
-        Mockito.when(functionalityTestedDao.getFunctionalitiesTestedCritieriaMaps())
+        Mockito.when(functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps())
             .thenReturn(createDefaultFunctionalityTestedCriteriaMaps());
 
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.functionalityTestedNotApplicable"),
@@ -369,10 +368,21 @@ public class FunctionalityTestedReviewerTest {
     }
 
     @Test
-    public void review_functionalityTestedWithIdCriteriaMismatch_hasError() {
+    public void review_functionalityTestedWithIdCriteriaMismatch_hasError() throws EntityRetrievalException {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
             .thenReturn(true);
-
+        Mockito.when(functionalityTestedDao.getById(ArgumentMatchers.anyLong()))
+            .thenReturn(FunctionalityTested.builder()
+                    .id(3L)
+                    .name("mismatch")
+                    .description("mismatch")
+                    .criteria(Stream.of(CertificationCriterion.builder()
+                            .id(2L)
+                            .number("170.315 (a)(2)")
+                            .title("a2")
+                            .removed(false)
+                            .build()).toList())
+                    .build());
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
                 .functionalityTestedId(1L)
@@ -471,43 +481,57 @@ public class FunctionalityTestedReviewerTest {
         assertEquals(0, listing.getErrorMessages().size());
     }
 
-    private Map<Long, List<FunctionalityTested>> createDefaultFunctionalityTestedMaps() {
-        Map<Long, List<FunctionalityTested>> functionalityTestedMaps = new HashMap<Long, List<FunctionalityTested>>();
-        functionalityTestedMaps.put(1L, new ArrayList<FunctionalityTested>());
-        functionalityTestedMaps.get(1L).add(FunctionalityTested.builder()
+    private Map<Long, List<FunctionalityTested>> createDefaultFunctionalityTestedCriteriaMaps() {
+        Map<Long, List<FunctionalityTested>> maps = new HashMap<Long, List<FunctionalityTested>>();
+        List<FunctionalityTested> a1FunctionalityTested = new ArrayList<FunctionalityTested>();
+        List<FunctionalityTested> a2FunctionalityTested = new ArrayList<FunctionalityTested>();
+        a1FunctionalityTested.add(FunctionalityTested.builder()
                 .id(1L)
                 .name("func tested")
                 .description("func tested")
+                .criteria(Stream.of(CertificationCriterion.builder()
+                        .id(1L)
+                        .number("170.315 (a)(1)")
+                        .title("a1")
+                        .removed(false)
+                        .build()).toList())
                 .build());
-        functionalityTestedMaps.get(1L).add(FunctionalityTested.builder()
+        a1FunctionalityTested.add(FunctionalityTested.builder()
                 .id(2L)
                 .name("")
                 .description("")
+                .criteria(Stream.of(CertificationCriterion.builder()
+                        .id(1L)
+                        .number("170.315 (a)(1)")
+                        .title("a1")
+                        .removed(false)
+                        .build()).toList())
                 .build());
-        functionalityTestedMaps.get(1L).add(FunctionalityTested.builder()
+        a1FunctionalityTested.add(FunctionalityTested.builder()
                 .id(4L)
                 .name("another func tested")
                 .description("another func tested")
+                .criteria(Stream.of(CertificationCriterion.builder()
+                        .id(1L)
+                        .number("170.315 (a)(1)")
+                        .title("a1")
+                        .removed(false)
+                        .build()).toList())
                 .build());
-        return functionalityTestedMaps;
-    }
-
-    private List<FunctionalityTestedCriteriaMap> createDefaultFunctionalityTestedCriteriaMaps() {
-        List<FunctionalityTestedCriteriaMap> maps = new ArrayList<FunctionalityTestedCriteriaMap>();
-        maps.add(FunctionalityTestedCriteriaMap.builder()
-                .criterion(CertificationCriterion.builder()
-                        .certificationEdition("2015")
-                        .certificationEditionId(1L)
-                        .number("170.315 (a)(2)")
+        a2FunctionalityTested.add(FunctionalityTested.builder()
+                .id(3L)
+                .name("mismatch")
+                .description("mismatch")
+                .criteria(Stream.of(CertificationCriterion.builder()
                         .id(2L)
-                        .build())
-                .id(1L)
-                .functionalityTested(FunctionalityTested.builder()
-                        .id(3L)
-                        .name("mismatch")
-                        .description("mismatch")
-                        .build())
+                        .number("170.315 (a)(2)")
+                        .title("a2")
+                        .removed(false)
+                        .build()).toList())
                 .build());
+
+        maps.put(1L, a1FunctionalityTested);
+        maps.put(2L, a2FunctionalityTested);
         return maps;
     }
 

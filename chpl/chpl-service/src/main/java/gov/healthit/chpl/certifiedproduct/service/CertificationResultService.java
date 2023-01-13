@@ -163,14 +163,13 @@ public class CertificationResultService {
     }
 
     private List<FunctionalityTested> getAvailableFunctionalitiesTested(CertificationResult cr, CertifiedProductSearchDetails cp) {
-        String edition = cp.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
         Long practiceTypeId = null;
         if (cp.getPracticeType().containsKey("id")) {
             if (cp.getPracticeType().get("id") != null) {
                 practiceTypeId = Long.valueOf(cp.getPracticeType().get("id").toString());
             }
         }
-        return functionalityTestedManager.getFunctionalitiesTested(cr.getCriterion().getId(), edition, practiceTypeId);
+        return functionalityTestedManager.getFunctionalitiesTested(cr.getCriterion().getId(), practiceTypeId);
     }
 
     private List<TestTool> getAvailableTestToolForCriteria(CertificationResult result, List<TestToolCriteriaMap> testToolCriteriaMap) {

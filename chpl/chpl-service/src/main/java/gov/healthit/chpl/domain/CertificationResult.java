@@ -410,7 +410,6 @@ public class CertificationResult implements Serializable {
                             .id(funcTested.getId())
                             .name(funcTested.getName())
                             .testFunctionalityId(funcTested.getFunctionalityTestedId())
-                            .year(funcTested.getYear())
                             .build())
                     .collect(Collectors.toList()));
         }

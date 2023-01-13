@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +43,7 @@ public class FunctionalityTestedNormalizerTest {
     public void before() {
         functionalityTestedDao = Mockito.mock(FunctionalityTestedDAO.class);
         functionalityTestedManager = Mockito.mock(FunctionalityTestedManager.class);
-        Mockito.when(functionalityTestedManager.getFunctionalitiesTested(ArgumentMatchers.anyLong(), ArgumentMatchers.anyString(), ArgumentMatchers.anyLong()))
+        Mockito.when(functionalityTestedManager.getFunctionalitiesTested(ArgumentMatchers.anyLong(), ArgumentMatchers.anyLong()))
             .thenReturn(new ArrayList<FunctionalityTested>());
 
         resourcePermissions = Mockito.mock(ResourcePermissions.class);
@@ -90,8 +91,8 @@ public class FunctionalityTestedNormalizerTest {
                 .build());
         Map<String, Object> editionMap = create2015EditionMap();
 
-        Mockito.when(functionalityTestedDao.getByNumberAndEdition(ArgumentMatchers.eq("notindb"), ArgumentMatchers.eq(3L)))
-            .thenReturn(null);
+        Mockito.when(functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps())
+            .thenReturn(new HashMap<Long, List<FunctionalityTested>>());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationEdition(editionMap)
@@ -118,12 +119,18 @@ public class FunctionalityTestedNormalizerTest {
                 .build());
         Map<String, Object> editionMap = create2015EditionMap();
 
-        Mockito.when(functionalityTestedDao.getByNumberAndEdition(ArgumentMatchers.eq("valid"), ArgumentMatchers.eq(3L)))
-            .thenReturn(FunctionalityTested.builder()
-                    .id(1L)
-                    .name("valid")
-                    .description("valid")
-                    .build());
+        Map<Long, List<FunctionalityTested>> funcTestedMaps = new HashMap<Long, List<FunctionalityTested>>();
+        funcTestedMaps.put(CRITERIA_ID_WITHOUT_RESTRICTIONS, Stream.of(FunctionalityTested.builder()
+                .id(1L)
+                .name("valid")
+                .description("valid")
+                .criteria(Stream.of(CertificationCriterion.builder()
+                        .id(CRITERIA_ID_WITHOUT_RESTRICTIONS)
+                        .number("170.315 (a)(13)")
+                        .build()).toList())
+                .build()).toList());
+        Mockito.when(functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps())
+            .thenReturn(funcTestedMaps);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationEdition(editionMap)
@@ -220,13 +227,22 @@ public class FunctionalityTestedNormalizerTest {
                 .name("TF1")
                 .description("tf1 desc")
                 .id(1L)
+                .criteria(Stream.of(CertificationCriterion.builder()
+                                .id(CRITERIA_ID_WITHOUT_RESTRICTIONS)
+                                .number("170.315 (a)(13)")
+                                .build()).toList())
                 .build());
         allowedFunctionalitiesTested.add(FunctionalityTested.builder()
                 .name("TF2")
                 .description("tf2 desc")
                 .id(2L)
+                .criteria(Stream.of(CertificationCriterion.builder()
+                        .id(CRITERIA_ID_WITHOUT_RESTRICTIONS)
+                        .number("170.315 (a)(13)")
+                        .build()).toList())
                 .build());
-        Mockito.when(functionalityTestedManager.getFunctionalitiesTested(ArgumentMatchers.anyLong(), ArgumentMatchers.anyString(), ArgumentMatchers.nullable(Long.class)))
+
+        Mockito.when(functionalityTestedManager.getFunctionalitiesTested(ArgumentMatchers.anyLong(), ArgumentMatchers.nullable(Long.class)))
             .thenReturn(allowedFunctionalitiesTested);
 
         Map<String, Object> editionMap = create2015EditionMap();
@@ -253,18 +269,7 @@ public class FunctionalityTestedNormalizerTest {
 
     @Test
     public void normalize_hasNoAllowedValues_addsNoAllowedFunctionalityTested() {
-        List<FunctionalityTested> allowedFunctionalitiesTested = new ArrayList<FunctionalityTested>();
-        allowedFunctionalitiesTested.add(FunctionalityTested.builder()
-                .name("TF1")
-                .description("tf1 desc")
-                .id(1L)
-                .build());
-        allowedFunctionalitiesTested.add(FunctionalityTested.builder()
-                .name("TF2")
-                .description("tf2 desc")
-                .id(2L)
-                .build());
-        Mockito.when(functionalityTestedManager.getFunctionalitiesTested(ArgumentMatchers.eq(4L), ArgumentMatchers.anyString(), ArgumentMatchers.nullable(Long.class)))
+        Mockito.when(functionalityTestedManager.getFunctionalitiesTested(ArgumentMatchers.eq(4L), ArgumentMatchers.nullable(Long.class)))
             .thenReturn(new ArrayList<FunctionalityTested>());
 
         Map<String, Object> editionMap = create2015EditionMap();
