@@ -1,8 +1,11 @@
 package gov.healthit.chpl.certifiedproduct.service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,10 +31,12 @@ import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.svap.dao.SvapDAO;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
 import gov.healthit.chpl.util.CertificationResultRules;
+import lombok.NoArgsConstructor;
 
 @Component
 public class CertificationResultService {
@@ -43,11 +48,15 @@ public class CertificationResultService {
     private OptionalStandardDAO optionalStandardDAO;
     private ConformanceMethodDAO conformanceMethodDAO;
     private TestToolDAO testToolDAO;
+    private CertificationCriterionService criterionService;
+
+    private CertificationResultComparator certResultComparator;
 
     @Autowired
     public CertificationResultService(CertificationResultRules certRules, CertificationResultManager certResultManager,
             FunctionalityTestedManager functionalityTestedManager, CertificationResultDetailsDAO certificationResultDetailsDAO,
-            SvapDAO svapDAO, OptionalStandardDAO optionalStandardDAO, TestToolDAO testToolDAO, ConformanceMethodDAO conformanceMethodDAO) {
+            SvapDAO svapDAO, OptionalStandardDAO optionalStandardDAO, TestToolDAO testToolDAO,
+            ConformanceMethodDAO conformanceMethodDAO, CertificationCriterionService criterionService) {
         this.certRules = certRules;
         this.certResultManager = certResultManager;
         this.functionalityTestedManager = functionalityTestedManager;
@@ -56,6 +65,9 @@ public class CertificationResultService {
         this.optionalStandardDAO = optionalStandardDAO;
         this.conformanceMethodDAO = conformanceMethodDAO;
         this.testToolDAO = testToolDAO;
+        this.criterionService = criterionService;
+
+        this.certResultComparator = new CertificationResultComparator();
     }
 
     public List<CertificationResult> getCertificationResults(CertifiedProductSearchDetails searchDetails) throws EntityRetrievalException {
@@ -66,6 +78,7 @@ public class CertificationResultService {
 
         return getCertificationResultDetailsDTOs(searchDetails.getId()).stream()
                 .map(dto -> getCertificationResult(dto, searchDetails, svapCriteriaMap, optionalStandardCriteriaMap, testToolCriteriaMap, conformanceMethodCriteriaMap))
+                .sorted(certResultComparator)
                 .collect(Collectors.toList());
     }
 
@@ -177,6 +190,21 @@ public class CertificationResultService {
                 .filter(ttcm -> ttcm.getCriterion().getId().equals(result.getCriterion().getId()))
                 .map(ttm -> ttm.getTestTool())
                 .collect(Collectors.toList());
+    }
+
+    @NoArgsConstructor
+    private class CertificationResultComparator implements Comparator<CertificationResult> {
+        private boolean descending = false;
+
+        @Override
+        public int compare(CertificationResult certResult1, CertificationResult certResult2) {
+            if (ObjectUtils.anyNull(certResult1.getCriterion(), certResult2.getCriterion())
+                    || StringUtils.isAnyEmpty(certResult1.getCriterion().getNumber(), certResult2.getCriterion().getNumber())) {
+                return 0;
+            }
+            int sortFactor = descending ? -1 : 1;
+            return (criterionService.sortCriteria(certResult1.getCriterion(), certResult2.getCriterion())) * sortFactor;
+        }
     }
 
 }
