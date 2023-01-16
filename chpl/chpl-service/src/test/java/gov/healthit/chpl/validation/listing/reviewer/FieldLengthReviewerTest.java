@@ -337,10 +337,12 @@ public class FieldLengthReviewerTest {
 
     @Test
     public void review_shortQmsStandardName_noError() {
+        List<CertifiedProductQmsStandard> qmsStandards = Stream.of(CertifiedProductQmsStandard.builder()
+                .qmsStandardName("short name")
+                .build()).collect(Collectors.toList());
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .qmsStandard(CertifiedProductQmsStandard.builder()
-                        .qmsStandardName("short name")
-                        .build())
+                .qmsStandards(qmsStandards)
                 .build();
 
         reviewer.review(listing);
@@ -349,10 +351,12 @@ public class FieldLengthReviewerTest {
 
     @Test
     public void review_longQmsStandardName_hasError() {
+        List<CertifiedProductQmsStandard> qmsStandards = Stream.of(CertifiedProductQmsStandard.builder()
+                .qmsStandardName(createStringLongerThan(255, "a"))
+                .build()).collect(Collectors.toList());
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .qmsStandard(CertifiedProductQmsStandard.builder()
-                        .qmsStandardName(createStringLongerThan(255, "a"))
-                        .build())
+                .qmsStandards(qmsStandards)
                 .build();
 
         reviewer.review(listing);
@@ -362,13 +366,15 @@ public class FieldLengthReviewerTest {
 
     @Test
     public void review_oneShortAndOneLongQmsStandardName_hasError() {
+        List<CertifiedProductQmsStandard> qmsStandards = Stream.of(CertifiedProductQmsStandard.builder()
+                    .qmsStandardName(createStringLongerThan(255, "a"))
+                    .build(),
+                CertifiedProductQmsStandard.builder()
+                    .qmsStandardName("short name")
+                    .build()).collect(Collectors.toList());
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .qmsStandard(CertifiedProductQmsStandard.builder()
-                        .qmsStandardName(createStringLongerThan(255, "a"))
-                        .build())
-                .qmsStandard(CertifiedProductQmsStandard.builder()
-                        .qmsStandardName("short name")
-                        .build())
+                .qmsStandards(qmsStandards)
                 .build();
 
         reviewer.review(listing);

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,12 +29,15 @@ public class AccessibilityStandardManager {
 
     private AccessibilityStandardDAO accessibilityStandardDao;
     private ErrorMessageUtil errorMessageUtil;
+    private Long accessibilityStandardNameMaxLength;
 
     @Autowired
     public AccessibilityStandardManager(AccessibilityStandardDAO accessibilityStandardDao,
-            ErrorMessageUtil errorMessageUtil) {
+            ErrorMessageUtil errorMessageUtil,
+            @Value("${maxLength.accessibilityStandard}") Long accessibilityStandardNameMaxLength) {
         this.accessibilityStandardDao = accessibilityStandardDao;
         this.errorMessageUtil = errorMessageUtil;
+        this.accessibilityStandardNameMaxLength = accessibilityStandardNameMaxLength;
     }
 
     @Transactional
@@ -48,6 +52,10 @@ public class AccessibilityStandardManager {
     public AccessibilityStandard update(AccessibilityStandard accessibilityStandard) throws EntityRetrievalException, ValidationException {
         accessibilityStandard.setName(StringUtils.trim(accessibilityStandard.getName()));
         AccessibilityStandard originalAccessibilityStandard = accessibilityStandardDao.getById(accessibilityStandard.getId());
+        if (originalAccessibilityStandard == null) {
+            throw new EntityRetrievalException(errorMessageUtil.getMessage("accessibilityStandard.doesNotExist"));
+        }
+
         if (!originalAccessibilityStandard.equals(accessibilityStandard)) {
             validateForEdit(accessibilityStandard);
             accessibilityStandardDao.update(accessibilityStandard);
@@ -69,6 +77,9 @@ public class AccessibilityStandardManager {
     @Transactional
     public void delete(Long accessibilityStandardId) throws EntityRetrievalException, ValidationException {
         AccessibilityStandard originalAccessibilityStandard = accessibilityStandardDao.getById(accessibilityStandardId);
+        if (originalAccessibilityStandard == null) {
+            throw new EntityRetrievalException(errorMessageUtil.getMessage("accessibilityStandard.doesNotExist"));
+        }
         validateForDelete(originalAccessibilityStandard);
         accessibilityStandardDao.delete(accessibilityStandardId);
     }
@@ -96,6 +107,8 @@ public class AccessibilityStandardManager {
 
         if (StringUtils.isBlank(updatedAccessibilityStandard.getName())) {
             messages.add(errorMessageUtil.getMessage("accessibilityStandard.emptyName"));
+        } else if (updatedAccessibilityStandard.getName().length() > accessibilityStandardNameMaxLength) {
+            messages.add(errorMessageUtil.getMessage("accessibilityStandard.nameTooLong"));
         } else if (isAccessibilityStandardNameDuplicate(updatedAccessibilityStandard)) {
             messages.add(errorMessageUtil.getMessage("accessibilityStandard.duplicate", updatedAccessibilityStandard.getName()));
         }
@@ -111,6 +124,8 @@ public class AccessibilityStandardManager {
 
         if (StringUtils.isBlank(accessibilityStandard.getName())) {
             messages.add(errorMessageUtil.getMessage("accessibilityStandard.emptyName"));
+        } else if (accessibilityStandard.getName().length() > accessibilityStandardNameMaxLength) {
+            messages.add(errorMessageUtil.getMessage("accessibilityStandard.nameTooLong"));
         } else if (isAccessibilityStandardNameDuplicate(accessibilityStandard)) {
             messages.add(errorMessageUtil.getMessage("accessibilityStandard.duplicate", accessibilityStandard.getName()));
         }

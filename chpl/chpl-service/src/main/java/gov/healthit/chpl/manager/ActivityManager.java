@@ -63,7 +63,7 @@ public class ActivityManager extends SecuredManager {
 
         Date activityDate = new Date();
         addActivity(concept, objectId, activityDescription, originalData, newData, activityDate, asUser);
-        questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, originalData, newData);
+        questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, activityDate, originalData, newData);
         chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
     }
 
@@ -78,7 +78,7 @@ public class ActivityManager extends SecuredManager {
 
         Date activityDate = new Date();
         addActivity(concept, objectId, activityDescription, originalData, newData, activityDate, asUser);
-        questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, originalData, newData, reason);
+        questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, activityDate, originalData, newData, reason);
         chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
     }
 
@@ -88,7 +88,7 @@ public class ActivityManager extends SecuredManager {
 
         Date activityDate = new Date();
         addActivity(concept, objectId, activityDescription, originalData, newData, activityDate, asUser);
-        questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, originalData, newData);
+        questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, activityDate, originalData, newData);
         chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
     }
 

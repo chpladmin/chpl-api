@@ -12,10 +12,10 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
-import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductQmsStandardEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
 import gov.healthit.chpl.util.AuthUtil;
 
 @Repository(value = "certifiedProductQmsStandardDao")
@@ -32,14 +32,7 @@ public class CertifiedProductQmsStandardDAO extends BaseDAOImpl {
         try {
             CertifiedProductQmsStandardEntity mappingEntity = new CertifiedProductQmsStandardEntity();
             mappingEntity.setCertifiedProductId(listingId);
-
-            if (qmsMapping.getQmsStandardId() == null) {
-                QmsStandardDTO qmsStandard = qmsDao.findOrCreate(qmsMapping.getQmsStandardId(), qmsMapping.getQmsStandardName());
-                mappingEntity.setQmsStandardId(qmsStandard.getId());
-            } else {
-                mappingEntity.setQmsStandardId(qmsMapping.getQmsStandardId());
-            }
-
+            mappingEntity.setQmsStandardId(qmsMapping.getQmsStandardId());
             mappingEntity.setApplicableCriteria(qmsMapping.getApplicableCriteria());
             mappingEntity.setModification(qmsMapping.getQmsModification());
             mappingEntity.setLastModifiedUser(AuthUtil.getAuditId());

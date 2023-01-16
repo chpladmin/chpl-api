@@ -71,6 +71,8 @@ import org.springframework.web.servlet.view.JstlView;
         @PropertySource(value = "classpath:/lookup-override.properties", ignoreResourceNotFound = true),
         @PropertySource("classpath:/email.properties"),
         @PropertySource(value = "classpath:/email-override.properties", ignoreResourceNotFound = true),
+        @PropertySource("classpath:/errors.properties"),
+        @PropertySource(value = "classpath:/errors-override.properties", ignoreResourceNotFound = true),
 })
 @ComponentScan(basePackages = {
         "gov.healthit.chpl.**"
