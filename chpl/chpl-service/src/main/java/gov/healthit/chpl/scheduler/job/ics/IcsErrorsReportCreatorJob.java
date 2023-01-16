@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job;
+package gov.healthit.chpl.scheduler.job.ics;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
@@ -22,27 +23,26 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.SpecialProperties;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
-import gov.healthit.chpl.dao.scheduler.InheritanceErrorsReportDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.scheduler.InheritanceErrorsReportDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.search.dao.ListingSearchDao;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @DisallowConcurrentExecution
-public class InheritanceErrorsReportCreatorJob extends QuartzJob {
-    private static final Logger LOGGER = LogManager.getLogger("inheritanceErrorsReportCreatorJobLogger");
+public class IcsErrorsReportCreatorJob extends QuartzJob {
+    private static final Logger LOGGER = LogManager.getLogger("icsErrorsReportCreatorJobLogger");
     private static final String EDITION_2015 = "2015";
     private static final int MIN_NUMBER_TO_NOT_NEED_PREFIX = 10;
 
@@ -50,7 +50,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
     private ListingSearchDao listingSearchDao;
 
     @Autowired
-    private InheritanceErrorsReportDAO inheritanceErrorsReportDAO;
+    private IcsErrorsReportDao icsErrorsReportDao;
 
     @Autowired
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
@@ -75,7 +75,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
 
     private Date curesRuleEffectiveDate;
 
-    public InheritanceErrorsReportCreatorJob() throws Exception {
+    public IcsErrorsReportCreatorJob() throws Exception {
         super();
     }
 
@@ -98,7 +98,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
         try {
             Integer threadPoolSize = getThreadCountForJob();
             executorService = Executors.newFixedThreadPool(threadPoolSize);
-            List<InheritanceErrorsReportDTO> allInheritanceErrors = new ArrayList<InheritanceErrorsReportDTO>();
+            List<IcsErrorsReport> allInheritanceErrors = new ArrayList<IcsErrorsReport>();
 
             List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
             for (ListingSearchResult result : certifiedProducts) {
@@ -118,7 +118,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
             // This is necessary so that the system can indicate that the job and it's threads are still running
             combinedFutures.get();
             LOGGER.info("All processes have completed");
-            saveAllInheritanceErrors(allInheritanceErrors);
+            saveAllIcsErrorReports(allInheritanceErrors);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         } finally {
@@ -138,27 +138,24 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
         return cp;
     }
 
-    private InheritanceErrorsReportDTO check(CertifiedProductSearchDetails listing) {
+    private IcsErrorsReport check(CertifiedProductSearchDetails listing) {
         if (listing == null) {
             return null;
         }
-        InheritanceErrorsReportDTO item = null;
+        IcsErrorsReport item = null;
         try {
             String reason = breaksIcsRules(listing);
             if (!StringUtils.isEmpty(reason)) {
-                item = new InheritanceErrorsReportDTO();
+                item = new IcsErrorsReport();
+                //TODO: Add certified_product_id field and generate the URL in the email rather than here.
                 item.setChplProductNumber(listing.getChplProductNumber());
                 item.setDeveloper(listing.getDeveloper().getName());
                 item.setProduct(listing.getProduct().getName());
                 item.setVersion(listing.getVersion().getVersion());
-                item.setCertificationBody(
-                        getCertificationBody(
-                                Long.parseLong(
-                                        listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString())));
-
-                String productDetailsUrl = env.getProperty("chplUrlBegin").trim() + env.getProperty("listingDetailsUrl") + listing.getId();
-                LOGGER.info("productDetailsUrl = " + productDetailsUrl);
-                item.setUrl(productDetailsUrl);
+                item.setCertificationBody(getCertificationBody(Long.parseLong(
+                        listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString())));
+                String listingDetailsUrl = env.getProperty("chplUrlBegin").trim() + env.getProperty("listingDetailsUrl") + listing.getId();
+                item.setUrl(listingDetailsUrl);
                 item.setReason(reason);
             }
         } catch (Exception e) {
@@ -168,7 +165,7 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
         return item;
     }
 
-    private void saveAllInheritanceErrors(List<InheritanceErrorsReportDTO> allInheritanceErrors) {
+    private void saveAllIcsErrorReports(List<IcsErrorsReport> allIcsErrorReports) {
 
         // We need to manually create a transaction in this case because of how AOP works. When a method is
         // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
@@ -182,10 +179,10 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
-                    LOGGER.info("Deleting {} OBE inheritance errors", inheritanceErrorsReportDAO.findAll().size());
-                    inheritanceErrorsReportDAO.deleteAll();
-                    LOGGER.info("Creating {} current inheritance errors", allInheritanceErrors.size());
-                    inheritanceErrorsReportDAO.create(allInheritanceErrors);
+                    LOGGER.info("Deleting {} OBE inheritance errors", icsErrorsReportDao.findAll().size());
+                    icsErrorsReportDao.deleteAll();
+                    LOGGER.info("Creating {} current inheritance errors", allIcsErrorReports.size());
+                    icsErrorsReportDao.create(allIcsErrorReports);
                 } catch (Exception e) {
                     LOGGER.error("Error updating to latest inheritance errors. Rolling back transaction.", e);
                     status.setRollbackOnly();
@@ -265,8 +262,9 @@ public class InheritanceErrorsReportCreatorJob extends QuartzJob {
         return effectiveRuleDate;
     }
 
-    private CertificationBodyDTO getCertificationBody(long certificationBodyId) throws EntityRetrievalException {
-        return certificationBodyDAO.getById(certificationBodyId);
+    private CertificationBody getCertificationBody(Long certificationBodyId) throws EntityRetrievalException {
+        CertificationBodyDTO acb = certificationBodyDAO.getById(certificationBodyId);
+        return new CertificationBody(acb);
     }
 
     private Integer getThreadCountForJob() throws NumberFormatException {

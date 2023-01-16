@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job;
+package gov.healthit.chpl.scheduler.job.ics;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.LogManager;
@@ -22,18 +23,19 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.scheduler.InheritanceErrorsReportDAO;
-import gov.healthit.chpl.dto.scheduler.InheritanceErrorsReportDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
+import gov.healthit.chpl.scheduler.job.QuartzJob;
+import gov.healthit.chpl.util.Util;
 
-public class InheritanceErrorsReportEmailJob extends QuartzJob {
-    private static final Logger LOGGER = LogManager.getLogger("inheritanceErrorsReportEmailJobLogger");
+public class IcsErrorsReportEmailJob extends QuartzJob {
+    private static final Logger LOGGER = LogManager.getLogger("icsErrorsReportEmailJobLogger");
 
     @Autowired
-    private InheritanceErrorsReportDAO inheritanceErrorsReportDAO;
+    private IcsErrorsReportDao icsErrorsReportDao;
 
     @Autowired
     private CertificationBodyDAO certificationBodyDAO;
@@ -44,7 +46,10 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
     @Autowired
     private ChplEmailFactory chplEmailFactory;
 
-    public InheritanceErrorsReportEmailJob() throws Exception {
+    @Autowired
+    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
+
+    public IcsErrorsReportEmailJob() throws Exception {
         super();
     }
 
@@ -52,10 +57,10 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
-        LOGGER.info("********* Starting the Inheritance Error Report Email job. *********");
+        LOGGER.info("********* Starting the ICS Errors Report Email job. *********");
         LOGGER.info("Sending email to: " + jobContext.getMergedJobDataMap().getString("email"));
 
-        List<InheritanceErrorsReportDTO> errors = getAppropriateErrors(jobContext);
+        List<IcsErrorsReport> errors = getAppropriateErrors(jobContext);
         File output = null;
         List<File> files = new ArrayList<File>();
         if (errors.size() > 0) {
@@ -63,18 +68,10 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
             files.add(output);
         }
         String to = jobContext.getMergedJobDataMap().getString("email");
-        String subject = env.getProperty("inheritanceReportEmailWeeklySubject");
-        String htmlMessage;
-        if (jobContext.getMergedJobDataMap().getBoolean("acbSpecific")) {
-            htmlMessage = String.format(env.getProperty("inheritanceReportEmailAcbWeeklyHtmlMessage"), getAcbNamesAsCommaSeparatedList(jobContext));
-        } else {
-            htmlMessage = String.format(env.getProperty("inheritanceReportEmailWeeklyHtmlMessage"), getAcbNamesAsCommaSeparatedList(jobContext));
-        }
-        LOGGER.info("Message to be sent: " + htmlMessage);
-
+        String subject = env.getProperty("icsErrorsReportEmailSubject");
         try {
-            htmlMessage += createHtmlEmailBody(errors.size(),
-                    env.getProperty("inheritanceReportEmailWeeklyNoContent"));
+            String htmlMessage = createHtmlEmailBody(errors, jobContext);
+            LOGGER.info("Message to be sent: " + htmlMessage);
 
             List<String> addresses = new ArrayList<String>();
             addresses.add(to);
@@ -87,15 +84,15 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
         } catch (IOException | EmailNotSentException e) {
             LOGGER.error(e);
         }
-        LOGGER.info("********* Completed the Inheritance Error Report Email job. *********");
+        LOGGER.info("********* Completed the ICS Errors Report Email job. *********");
     }
 
-    private List<InheritanceErrorsReportDTO> getAppropriateErrors(JobExecutionContext jobContext) {
-        List<InheritanceErrorsReportDTO> allErrors = inheritanceErrorsReportDAO.findAll();
-        List<InheritanceErrorsReportDTO> errors = new ArrayList<InheritanceErrorsReportDTO>();
+    private List<IcsErrorsReport> getAppropriateErrors(JobExecutionContext jobContext) {
+        List<IcsErrorsReport> allErrors = icsErrorsReportDao.findAll();
+        List<IcsErrorsReport> errors = new ArrayList<IcsErrorsReport>();
         List<Long> acbIds =
                 Arrays.asList(
-                        jobContext.getMergedJobDataMap().getString("acb").split(SchedulerManager.DATA_DELIMITER)).stream()
+                        jobContext.getMergedJobDataMap().getString(QuartzJob.JOB_DATA_KEY_ACB).split(SchedulerManager.DATA_DELIMITER)).stream()
                 .map(acb -> Long.parseLong(acb))
                 .collect(Collectors.toList());
 
@@ -105,8 +102,8 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
         return errors;
     }
 
-    private File getOutputFile(List<InheritanceErrorsReportDTO> errors) {
-        String reportFilename = env.getProperty("inheritanceReportEmailWeeklyFileName");
+    private File getOutputFile(List<IcsErrorsReport> errors) {
+        String reportFilename = env.getProperty("icsErrorsReportEmailFileName");
         File temp = null;
         try {
             temp = File.createTempFile(reportFilename, ".csv");
@@ -121,7 +118,7 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
                     CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
                 writer.write('\ufeff');
                 csvPrinter.printRecord(getHeaderRow());
-                for (InheritanceErrorsReportDTO error : errors) {
+                for (IcsErrorsReport error : errors) {
                     List<String> rowValue = generateRowValue(error);
                     csvPrinter.printRecord(rowValue);
                 }
@@ -144,32 +141,43 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
         return result;
     }
 
-    private List<String> generateRowValue(InheritanceErrorsReportDTO data) {
+    private List<String> generateRowValue(IcsErrorsReport data) {
         List<String> result = new ArrayList<String>();
         result.add(data.getChplProductNumber());
         result.add(data.getDeveloper());
         result.add(data.getProduct());
         result.add(data.getVersion());
         result.add(data.getCertificationBody().getName());
+        //TODO: generate this URL rather than pull it from the database
         result.add(data.getUrl());
         result.add(data.getReason());
         return result;
     }
 
-    private String createHtmlEmailBody(final int numRecords, final String noContentMsg) throws IOException {
+    private String createHtmlEmailBody(List<IcsErrorsReport> icsErrors, JobExecutionContext jobContext) throws IOException {
         String htmlMessage = "";
-        if (numRecords == 0) {
-            htmlMessage = noContentMsg;
+        if (CollectionUtils.isEmpty(icsErrors)) {
+            htmlMessage = chplHtmlEmailBuilder.initialize()
+                    .heading(env.getProperty("icsErrorsReportEmailHeading"))
+                    .paragraph(null, String.format(env.getProperty("icsErrorsReportEmailParagraph1"), getAcbNamesAsCommaSeparatedList(jobContext)))
+                    .paragraph(null, env.getProperty("icsErrorsReportEmailNoContent"))
+                    .build();
         } else {
-            htmlMessage = "<p>" + numRecords + " inheritance error" + (numRecords > 1 ? "s were" : " was") + " found.";
+            htmlMessage = chplHtmlEmailBuilder.initialize()
+                .heading(env.getProperty("icsErrorsReportEmailHeading"))
+                .paragraph(null, String.format(env.getProperty("icsErrorsReportEmailParagraph1"), getAcbNamesAsCommaSeparatedList(jobContext)))
+                .paragraph(null, String.format(env.getProperty("icsErrorsReportEmailParagraph2"), icsErrors.size(),
+                            (icsErrors.size() == 1 ? "" : "s"),
+                            (icsErrors.size() == 1 ? "was" : "were")))
+                .build();
         }
         return htmlMessage;
     }
 
     private String getAcbNamesAsCommaSeparatedList(JobExecutionContext jobContext) {
-        if (Objects.nonNull(jobContext.getMergedJobDataMap().getString("acb"))) {
-            return Arrays.asList(
-                    jobContext.getMergedJobDataMap().getString("acb").split(SchedulerManager.DATA_DELIMITER)).stream()
+        if (Objects.nonNull(jobContext.getMergedJobDataMap().getString(QuartzJob.JOB_DATA_KEY_ACB))) {
+            List<String> acbNames =
+                    Arrays.asList(jobContext.getMergedJobDataMap().getString(QuartzJob.JOB_DATA_KEY_ACB).split(SchedulerManager.DATA_DELIMITER)).stream()
                     .map(acbId -> {
                         try {
                             return certificationBodyDAO.getById(Long.parseLong(acbId)).getName();
@@ -178,7 +186,8 @@ public class InheritanceErrorsReportEmailJob extends QuartzJob {
                             return "";
                         }
                     })
-                    .collect(Collectors.joining(", "));
+                    .collect(Collectors.toList());
+            return Util.joinListGrammatically(acbNames);
         } else {
             return "";
         }

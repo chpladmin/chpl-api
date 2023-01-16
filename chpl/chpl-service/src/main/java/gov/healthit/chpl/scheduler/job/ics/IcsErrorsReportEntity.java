@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity.scheduler;
+package gov.healthit.chpl.scheduler.job.ics;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -14,15 +14,10 @@ import javax.persistence.Table;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 import lombok.Data;
 
-/**
- * Entity containing needed data for Listings with ICS errors.
- * @author alarned
- *
- */
 @Entity
 @Table(name = "inheritance_errors_report")
 @Data
-public class InheritanceErrorsReportEntity {
+public class IcsErrorsReportEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,4 +61,18 @@ public class InheritanceErrorsReportEntity {
     @Basic(optional = false)
     @Column(name = "last_modified_user")
     private Long lastModifiedUser;
+
+    public IcsErrorsReport toDomain() {
+        return IcsErrorsReport.builder()
+                .id(this.getId())
+                .chplProductNumber(this.getChplProductNumber())
+                .developer(this.getDeveloper())
+                .product(this.getProduct())
+                .version(this.getVersion())
+                .certificationBody(this.getCertificationBody().toDomain())
+                .url(this.getUrl())
+                .reason(this.getReason())
+                .deleted(this.getDeleted())
+                .build();
+    }
 }

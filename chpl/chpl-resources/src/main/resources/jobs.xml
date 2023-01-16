@@ -9,8 +9,12 @@
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
         <delete-job>
-            <name>rwtQuestionableActivityCreatorJob</name>
+            <name>inheritanceErrorsReportCreator</name>
             <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>Inherited Certification Status Errors Report</name>
+            <group>chplJobs</group>
         </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
@@ -205,12 +209,12 @@
             <recover>false</recover>
         </job>
 
-        <!-- Inheritance Report data creator -->
+        <!-- ICS Errors Report data creator -->
         <job>
-            <name>inheritanceErrorsReportCreator</name>
+            <name>icsErrorsReportCreator</name>
             <group>systemJobs</group>
-            <description>Generates the inheritance errors data</description>
-            <job-class>gov.healthit.chpl.scheduler.job.InheritanceErrorsReportCreatorJob</job-class>
+            <description>Generates the ICS errors data</description>
+            <job-class>gov.healthit.chpl.scheduler.job.ics.IcsErrorsReportCreatorJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>
@@ -561,12 +565,12 @@
             </job-data-map>
         </job>
 
-        <!-- ICS Errors Job - by ONC-ACB -->
+        <!-- ICS Errors Job -->
         <job>
-            <name>Inherited Certification Status Errors Report</name>
+            <name>ICS Errors Report</name>
             <group>chplJobs</group>
             <description>Sends an error report for all Listings breaking ICS rules, filtered by ONC-ACB</description>
-            <job-class>gov.healthit.chpl.scheduler.job.InheritanceErrorsReportEmailJob</job-class>
+            <job-class>gov.healthit.chpl.scheduler.job.ics.IcsErrorsReportEmailJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>

@@ -191,9 +191,9 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
-    <RollingFile name="inheritanceErrorsReportCreatorJob"
-        fileName="${logDir}/scheduler/inheritanceErrorsReportCreatorJob.log"
-        filePattern="${logDir}/scheduler/history/inheritanceErrorsReportCreatorJob-%d{yyyy-MM-dd}.log"
+    <RollingFile name="icsErrorsReportCreatorJob"
+        fileName="${logDir}/scheduler/icsErrorsReportCreatorJob.log"
+        filePattern="${logDir}/scheduler/history/icsErrorsReportCreatorJob-%d{yyyy-MM-dd}.log"
         filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>
@@ -203,9 +203,9 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
-    <RollingFile name="inheritanceErrorsReportEmailJob"
-        fileName="${logDir}/scheduler/inheritanceErrorsReportEmailJob.log"
-        filePattern="${logDir}/scheduler/history/inheritanceErrorsReportEmailJob-%d{yyyy-MM-dd}.log"
+    <RollingFile name="icsErrorsReportEmailJob"
+        fileName="${logDir}/scheduler/icsErrorsReportEmailJob.log"
+        filePattern="${logDir}/scheduler/history/icsErrorsReportEmailJob-%d{yyyy-MM-dd}.log"
         filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>

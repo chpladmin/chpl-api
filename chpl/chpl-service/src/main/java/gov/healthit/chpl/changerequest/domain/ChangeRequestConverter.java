@@ -87,7 +87,7 @@ public final class ChangeRequestConverter {
             .forEach(status -> cr.getStatuses().add(status));
         cr.setCurrentStatus(getLatestStatus(cr.getStatuses()));
         cr.setCertificationBodies(entity.getCertificationBodies().stream()
-                .map(e -> e.buildCertificationBody())
+                .map(e -> e.toDomain())
                 .toList());
         return cr;
     }
