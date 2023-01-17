@@ -22,11 +22,9 @@ import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.sharedstore.listing.SharedListingStoreProvider;
 import gov.healthit.chpl.util.NullSafeEvaluator;
-import lombok.extern.log4j.Log4j2;
 import one.util.streamex.StreamEx;
 
 @Component
-@Log4j2
 public class DirectReviewListingSharedStoreHandler {
     private SharedListingStoreProvider sharedListingStoreProvider;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
@@ -44,6 +42,7 @@ public class DirectReviewListingSharedStoreHandler {
     }
 
     public void handler(List<DirectReview> allDirectReviews, Logger logger) {
+        logger.info("Clearing shared store listings where direct review has been added or updated.");
         getUniqueDevelopers(allDirectReviews, logger).stream()
                 .forEach(dev -> getListingDataForDeveloper(dev, logger).stream()
                         .forEach(listing -> removeListingFromSharedStoreIfDirectReviewUpdated(listing, allDirectReviews, logger)));
@@ -58,15 +57,21 @@ public class DirectReviewListingSharedStoreHandler {
     }
 
     private void removeListingFromSharedStoreIfDirectReviewUpdated(CertifiedProductSearchDetails listing, List<DirectReview> allDirectReviews, Logger logger) {
-        listing.getDirectReviews().parallelStream()
-            .forEach(dr -> {
-                if (hasDirectReviewBeenUpdated(findDirectReview(allDirectReviews, dr.getJiraKey()), dr)) {
-                    logger.info("Removing Listing Id {} from the Shared Store", listing.getId());
-                    sharedListingStoreProvider.remove(listing.getId());
-                } else {
-                    logger.info("Not Removing Listing Id {} from the Shared Store - Direct Review Last Updated Date not changed", listing.getId());
-                }
-            });
+        if (listing.getDirectReviews() == null || listing.getDirectReviews().size() == 0) {
+            logger.info("Removing Listing Id {} from the Shared Store", listing.getId());
+            sharedListingStoreProvider.remove(listing.getId());
+        } else {
+
+            listing.getDirectReviews().parallelStream()
+                .forEach(dr -> {
+                    if (hasDirectReviewBeenUpdated(findDirectReview(allDirectReviews, dr.getJiraKey()), dr)) {
+                        logger.info("Removing Listing Id {} from the Shared Store", listing.getId());
+                        sharedListingStoreProvider.remove(listing.getId());
+                    } else {
+                        logger.info("Not Removing Listing Id {} from the Shared Store - Direct Review Last Updated Date not changed", listing.getId());
+                    }
+                });
+        }
     }
 
     private Boolean hasDirectReviewBeenUpdated(DirectReview newVersion, DirectReview origVersion) {
@@ -93,6 +98,7 @@ public class DirectReviewListingSharedStoreHandler {
             return listingSearchService.getAllPagesOfSearchResults(searchRequest).parallelStream()
                     .map(searchResult ->  getListingIfInSharedStore(searchResult.getId(), logger))
                     .filter(listing -> listing != null)
+                    .peek(l -> logger.info("Developer {} - Listing {}", developer.getId(), l.getId()))
                     .toList();
         } catch (Exception e) {
             logger.error("Could not retrieve listings for developer: {} - {}", developer.getId(), e.getMessage());
