@@ -1,14 +1,19 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
+import java.util.Comparator;
 import java.util.Iterator;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
+import lombok.NoArgsConstructor;
 
 @Component
 public class CertificationResultNormalizer {
@@ -21,6 +26,7 @@ public class CertificationResultNormalizer {
     private TestToolNormalizer testToolNormalizer;
     private SvapNormalizer svapNormalizer;
     private CertificationResultRules certResultRules;
+    private CertificationCriterionService criterionService;
 
     @Autowired
     public CertificationResultNormalizer(CertificationCriterionNormalizer criterionNormalizer,
@@ -31,7 +37,8 @@ public class CertificationResultNormalizer {
         OptionalStandardNormalizer optionalStandardNormalizer,
         TestToolNormalizer testToolNormalizer,
         SvapNormalizer svapNormalizer,
-        CertificationResultRules certResultRules) {
+        CertificationResultRules certResultRules,
+        CertificationCriterionService criterionService) {
         this.criterionNormalizer = criterionNormalizer;
         this.additionalSoftwareNormalizer = additionalSoftwareNormalizer;
         this.testDataNormalizer = testDataNormalizer;
@@ -41,6 +48,7 @@ public class CertificationResultNormalizer {
         this.testToolNormalizer = testToolNormalizer;
         this.svapNormalizer = svapNormalizer;
         this.certResultRules = certResultRules;
+        this.criterionService = criterionService;
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
@@ -55,6 +63,7 @@ public class CertificationResultNormalizer {
 
         setSedTrueIfApplicableToCriteria(listing);
         removeCertificationResultsWithNullCriterion(listing);
+        listing.getCertificationResults().sort(new CertificationResultComparator());
     }
 
     private void setSedTrueIfApplicableToCriteria(CertifiedProductSearchDetails listing) {
@@ -73,6 +82,21 @@ public class CertificationResultNormalizer {
             if (certResult.getCriterion() == null || certResult.getCriterion().getId() == null) {
                 certResultIter.remove();
             }
+        }
+    }
+
+    @NoArgsConstructor
+    private class CertificationResultComparator implements Comparator<CertificationResult> {
+        private boolean descending = false;
+
+        @Override
+        public int compare(CertificationResult certResult1, CertificationResult certResult2) {
+            if (ObjectUtils.anyNull(certResult1.getCriterion(), certResult2.getCriterion())
+                    || StringUtils.isAnyEmpty(certResult1.getCriterion().getNumber(), certResult2.getCriterion().getNumber())) {
+                return 0;
+            }
+            int sortFactor = descending ? -1 : 1;
+            return (criterionService.sortCriteria(certResult1.getCriterion(), certResult2.getCriterion())) * sortFactor;
         }
     }
 }
