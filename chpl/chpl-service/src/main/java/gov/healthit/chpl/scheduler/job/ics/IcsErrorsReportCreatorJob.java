@@ -1,8 +1,6 @@
 package gov.healthit.chpl.scheduler.job.ics;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -24,12 +22,9 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.SpecialProperties;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -39,18 +34,18 @@ import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ListingSearchResponse;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.SearchRequest;
-import gov.healthit.chpl.util.ChplProductNumberUtil;
-import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "icsErrorsReportCreatorJobLogger")
 @DisallowConcurrentExecution
 public class IcsErrorsReportCreatorJob extends QuartzJob {
     private static final String EDITION_2015 = "2015";
-    private static final int MIN_NUMBER_TO_NOT_NEED_PREFIX = 10;
 
     @Autowired
     private ListingSearchService listingSearchService;
+
+    @Autowired
+    private ListingIcsErrorDiscoveryService icsErrorDiscoveryService;
 
     @Autowired
     private IcsErrorsReportDao icsErrorsReportDao;
@@ -59,24 +54,13 @@ public class IcsErrorsReportCreatorJob extends QuartzJob {
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
     @Autowired
-    private ListingGraphDAO listingGraphDAO;
-
-    @Autowired
     private CertificationBodyDAO certificationBodyDAO;
-
-    @Autowired
-    private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
     private JpaTransactionManager txManager;
 
     @Autowired
     private Environment env;
-
-    @Autowired
-    private SpecialProperties specialProperties;
-
-    private Date curesRuleEffectiveDate;
 
     public IcsErrorsReportCreatorJob() throws Exception {
         super();
@@ -88,11 +72,6 @@ public class IcsErrorsReportCreatorJob extends QuartzJob {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         LOGGER.info("********* Starting the Inheritance Error Report Creator job. *********");
-
-        curesRuleEffectiveDate = getCuresRuleEffectiveDate();
-        if (curesRuleEffectiveDate == null) {
-            return;
-        }
 
         List<ListingSearchResult> relevantListings = getAllPagesOfSearchResults(SearchRequest.builder()
                 .certificationEditions(Stream.of(EDITION_2015).collect(Collectors.toSet()))
@@ -166,25 +145,27 @@ public class IcsErrorsReportCreatorJob extends QuartzJob {
         if (listing == null) {
             return null;
         }
-        IcsErrorsReport item = null;
+        LOGGER.info("Checking listing [" + listing.getChplProductNumber() + "]");
+        IcsErrorsReport report = null;
         try {
-            String reason = breaksIcsRules(listing);
-            if (!StringUtils.isEmpty(reason)) {
-                item = new IcsErrorsReport();
-                item.setListingId(listing.getId());
-                item.setChplProductNumber(listing.getChplProductNumber());
-                item.setDeveloper(listing.getDeveloper().getName());
-                item.setProduct(listing.getProduct().getName());
-                item.setVersion(listing.getVersion().getVersion());
-                item.setCertificationBody(getCertificationBody(Long.parseLong(
+            String icsErrorMessage = icsErrorDiscoveryService.getIcsErrorMessage(listing);
+            if (!StringUtils.isEmpty(icsErrorMessage)) {
+                report = new IcsErrorsReport();
+                report.setListingId(listing.getId());
+                report.setChplProductNumber(listing.getChplProductNumber());
+                report.setDeveloper(listing.getDeveloper().getName());
+                report.setProduct(listing.getProduct().getName());
+                report.setVersion(listing.getVersion().getVersion());
+                report.setCertificationBody(getCertificationBody(Long.parseLong(
                         listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString())));
-                item.setReason(reason);
+                report.setReason(icsErrorMessage);
+                LOGGER.info("Found ICS Error for listing [" + listing.getChplProductNumber() + "]: " + icsErrorMessage);
             }
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
         LOGGER.info("Completed check of listing [" + listing.getChplProductNumber() + "]");
-        return item;
+        return report;
     }
 
     private void saveAllIcsErrorReports(List<IcsErrorsReport> allIcsErrorReports) {
@@ -211,72 +192,6 @@ public class IcsErrorsReportCreatorJob extends QuartzJob {
                 }
             }
         });
-    }
-
-    private String breaksIcsRules(CertifiedProductSearchDetails listing) {
-        LOGGER.info("Checking listing ID " + listing.getId() + " for ICS Errors.");
-        String uniqueId = listing.getChplProductNumber();
-        String[] uniqueIdParts = uniqueId.split("\\.");
-        if (uniqueIdParts.length != ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {
-            return null;
-        }
-        String icsCodePart = uniqueIdParts[ChplProductNumberUtil.ICS_CODE_INDEX];
-        try {
-            Integer icsCode = Integer.valueOf(icsCodePart);
-            boolean hasIcs = icsCode.intValue() == 1
-                    || (listing.getIcs() != null && listing.getIcs().getInherits().booleanValue());
-
-            // check if listing has ICS but no family ties
-            if (hasIcs && (listing.getIcs() == null || listing.getIcs().getParents() == null
-                    || listing.getIcs().getParents().size() == 0)) {
-                return errorMessageUtil.getMessage("ics.noInheritanceError");
-            }
-
-            // check if this listing has correct ICS increment
-            // this listing's ICS code must be greater than the max of parent
-            // ICS codes
-            if (hasIcs && listing.getIcs() != null && listing.getIcs().getParents() != null
-                    && listing.getIcs().getParents().size() > 0) {
-                List<Long> parentIds = new ArrayList<Long>();
-                for (CertifiedProduct potentialParent : listing.getIcs().getParents()) {
-                    parentIds.add(potentialParent.getId());
-                }
-
-                Integer largestIcs = listingGraphDAO.getLargestIcs(parentIds);
-                int expectedIcsCode = largestIcs.intValue() + 1;
-                if (icsCode.intValue() != expectedIcsCode) {
-                    String existing = (icsCode.toString().length() == 1 ? "0" : "") + icsCode.toString();
-                    String expected = (expectedIcsCode < MIN_NUMBER_TO_NOT_NEED_PREFIX ? "0" : "") + expectedIcsCode;
-                    return errorMessageUtil.getMessage("ics.badIncrementError", existing, expected);
-                }
-            }
-
-            if (!hasIcs && doesGapExistForListing(listing) && isCertificationDateAfterRuleEffectiveDate(listing)) {
-                return errorMessageUtil.getMessage("ics.gapListingError");
-            }
-
-        } catch (Exception ex) {
-            LOGGER.error("Could not compare ICS value " + icsCodePart + " to inherits boolean value", ex);
-        }
-        return null;
-    }
-
-    private boolean doesGapExistForListing(CertifiedProductSearchDetails listing) {
-        return listing.getCertificationResults().stream()
-                .filter(cert -> cert.isGap() != null ? cert.isGap() : false)
-                .count() > 0;
-    }
-
-    private boolean isCertificationDateAfterRuleEffectiveDate(CertifiedProductSearchDetails listing) {
-        Date certDate = new Date(listing.getCertificationDate());
-        return certDate.equals(curesRuleEffectiveDate) || certDate.after(curesRuleEffectiveDate);
-    }
-
-    private Date getCuresRuleEffectiveDate() {
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-        Date effectiveRuleDate = specialProperties.getEffectiveRuleDate();
-        LOGGER.info("cures.ruleEffectiveDate = " + sdf.format(effectiveRuleDate));
-        return effectiveRuleDate;
     }
 
     private CertificationBody getCertificationBody(Long certificationBodyId) throws EntityRetrievalException {
