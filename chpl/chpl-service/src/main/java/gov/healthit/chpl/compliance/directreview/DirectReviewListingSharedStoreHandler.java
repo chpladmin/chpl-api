@@ -1,7 +1,6 @@
 package gov.healthit.chpl.compliance.directreview;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,7 +20,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.sharedstore.listing.SharedListingStoreProvider;
-import gov.healthit.chpl.util.NullSafeEvaluator;
 import one.util.streamex.StreamEx;
 
 @Component
@@ -45,7 +43,7 @@ public class DirectReviewListingSharedStoreHandler {
         logger.info("Clearing shared store listings where direct review has been added or updated.");
         getUniqueDevelopers(allDirectReviews, logger).stream()
                 .forEach(dev -> getListingDataForDeveloper(dev, logger).stream()
-                        .forEach(listing -> removeListingFromSharedStoreIfDirectReviewUpdated(listing, allDirectReviews, logger)));
+                        .forEach(listing -> removeListingFromSharedStore(listing, logger)));
     }
 
     private List<Developer> getUniqueDevelopers(List<DirectReview> allDirectReviews, Logger logger) {
@@ -56,38 +54,12 @@ public class DirectReviewListingSharedStoreHandler {
                 .toList();
     }
 
-    private void removeListingFromSharedStoreIfDirectReviewUpdated(CertifiedProductSearchDetails listing, List<DirectReview> allDirectReviews, Logger logger) {
-        if (listing.getDirectReviews() == null || listing.getDirectReviews().size() == 0) {
-            logger.info("Removing Listing Id {} from the Shared Store", listing.getId());
-            sharedListingStoreProvider.remove(listing.getId());
-        } else {
-
-            listing.getDirectReviews().parallelStream()
-                .forEach(dr -> {
-                    if (hasDirectReviewBeenUpdated(findDirectReview(allDirectReviews, dr.getJiraKey()), dr)) {
-                        logger.info("Removing Listing Id {} from the Shared Store", listing.getId());
-                        sharedListingStoreProvider.remove(listing.getId());
-                    } else {
-                        logger.info("Not Removing Listing Id {} from the Shared Store - Direct Review Last Updated Date not changed", listing.getId());
-                    }
-                });
-        }
+    private void removeListingFromSharedStore(CertifiedProductSearchDetails listing, Logger logger) {
+        logger.info("Removing Developer Id {} /Listing Id {} from the Shared Store", listing.getDeveloper().getId(), listing.getId());
+        sharedListingStoreProvider.remove(listing.getId());
     }
 
-    private Boolean hasDirectReviewBeenUpdated(DirectReview newVersion, DirectReview origVersion) {
-        return !NullSafeEvaluator.eval(() -> newVersion.getLastUpdated(), new Date(Long.MIN_VALUE)).equals(
-                NullSafeEvaluator.eval(() -> origVersion.getLastUpdated(), new Date(Long.MIN_VALUE)));
-
-    }
-
-    private DirectReview findDirectReview(List<DirectReview> directReviews, String jiraKey) {
-        return directReviews.stream()
-                .filter(dr -> dr.getJiraKey().equals(jiraKey))
-                .findAny()
-                .orElse(null);
-    }
-
-    private List<CertifiedProductSearchDetails> getListingDataForDeveloper(Developer developer, Logger logger) {
+        private List<CertifiedProductSearchDetails> getListingDataForDeveloper(Developer developer, Logger logger) {
         try {
             SearchRequest searchRequest = SearchRequest.builder()
                     .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
@@ -98,7 +70,6 @@ public class DirectReviewListingSharedStoreHandler {
             return listingSearchService.getAllPagesOfSearchResults(searchRequest).parallelStream()
                     .map(searchResult ->  getListingIfInSharedStore(searchResult.getId(), logger))
                     .filter(listing -> listing != null)
-                    .peek(l -> logger.info("Developer {} - Listing {}", developer.getId(), l.getId()))
                     .toList();
         } catch (Exception e) {
             logger.error("Could not retrieve listings for developer: {} - {}", developer.getId(), e.getMessage());
@@ -111,7 +82,6 @@ public class DirectReviewListingSharedStoreHandler {
             if (sharedListingStoreProvider.containsKey(listingId)) {
                 return certifiedProductDetailsManager.getCertifiedProductDetails(listingId);
             } else {
-                logger.info("Listing Id: {} is not currently in the Shared Store", listingId);
                 return null;
             }
         } catch (EntityRetrievalException e) {
