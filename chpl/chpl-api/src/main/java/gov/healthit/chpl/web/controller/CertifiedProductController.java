@@ -622,7 +622,6 @@ public class CertifiedProductController {
             })
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/ics-relationships", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody List<ListingIcsNode> getIcsFamilyById(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
         return icsManager.getIcsFamilyTree(certifiedProductId);
@@ -638,7 +637,6 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/ics-relationships",
         method = RequestMethod.GET,
         produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody List<ListingIcsNode> getIcsFamilyByChplProductNumber(
             @PathVariable("year") String year,
             @PathVariable("testingLab") String testingLab,
@@ -662,7 +660,6 @@ public class CertifiedProductController {
             })
     @RequestMapping(value = "/{chplPrefix}-{identifier}/ics-relationships", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody List<ListingIcsNode> getIcsFamilyByChplProductNumber(
             @PathVariable("chplPrefix") String chplPrefix,
             @PathVariable("identifier") String identifier) throws EntityRetrievalException {
