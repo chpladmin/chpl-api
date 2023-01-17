@@ -148,8 +148,7 @@ public class IcsErrorsReportEmailJob extends QuartzJob {
         result.add(data.getProduct());
         result.add(data.getVersion());
         result.add(data.getCertificationBody().getName());
-        //TODO: generate this URL rather than pull it from the database
-        result.add(data.getUrl());
+        result.add(env.getProperty("chplUrlBegin").trim() + env.getProperty("listingDetailsUrl") + data.getListingId());
         result.add(data.getReason());
         return result;
     }

@@ -35,16 +35,15 @@ public class IcsErrorsReportDao extends BaseDAOImpl {
     }
 
     @Transactional
-    public void create(final List<IcsErrorsReport> reports)
-            throws EntityCreationException, EntityRetrievalException {
+    public void create(List<IcsErrorsReport> reports) throws EntityCreationException, EntityRetrievalException {
         for (IcsErrorsReport report : reports) {
             IcsErrorsReportEntity entity = new IcsErrorsReportEntity();
+            entity.setCertifiedProductId(report.getListingId());
             entity.setChplProductNumber(report.getChplProductNumber());
             entity.setDeveloper(report.getDeveloper());
             entity.setProduct(report.getProduct());
             entity.setVersion(report.getVersion());
             entity.setCertificationBody(CertificationBodyEntity.getNewAcbEntity(report.getCertificationBody()));
-            entity.setUrl(report.getUrl());
             entity.setReason(report.getReason());
             entity.setDeleted(false);
             entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
@@ -55,15 +54,14 @@ public class IcsErrorsReportDao extends BaseDAOImpl {
     }
 
     @Transactional
-    public void create(IcsErrorsReport report)
-            throws EntityCreationException, EntityRetrievalException {
+    public void create(IcsErrorsReport report) throws EntityCreationException, EntityRetrievalException {
         IcsErrorsReportEntity entity = new IcsErrorsReportEntity();
+        entity.setCertifiedProductId(report.getListingId());
         entity.setChplProductNumber(report.getChplProductNumber());
         entity.setDeveloper(report.getDeveloper());
         entity.setProduct(report.getProduct());
         entity.setVersion(report.getVersion());
         entity.setCertificationBody(CertificationBodyEntity.getNewAcbEntity(report.getCertificationBody()));
-        entity.setUrl(report.getUrl());
         entity.setReason(report.getReason());
         entity.setDeleted(false);
         entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));

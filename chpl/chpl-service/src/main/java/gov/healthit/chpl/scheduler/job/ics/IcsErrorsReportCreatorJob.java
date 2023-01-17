@@ -8,10 +8,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -34,20 +33,24 @@ import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
-import gov.healthit.chpl.search.dao.ListingSearchDao;
+import gov.healthit.chpl.search.ListingSearchService;
+import gov.healthit.chpl.search.domain.ListingSearchResponse;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
+import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2(topic = "icsErrorsReportCreatorJobLogger")
 @DisallowConcurrentExecution
 public class IcsErrorsReportCreatorJob extends QuartzJob {
-    private static final Logger LOGGER = LogManager.getLogger("icsErrorsReportCreatorJobLogger");
     private static final String EDITION_2015 = "2015";
     private static final int MIN_NUMBER_TO_NOT_NEED_PREFIX = 10;
 
     @Autowired
-    private ListingSearchDao listingSearchDao;
+    private ListingSearchService listingSearchService;
 
     @Autowired
     private IcsErrorsReportDao icsErrorsReportDao;
@@ -91,22 +94,24 @@ public class IcsErrorsReportCreatorJob extends QuartzJob {
             return;
         }
 
-        List<ListingSearchResult> listings = listingSearchDao.getListingSearchResults();
-        List<ListingSearchResult> certifiedProducts = filterData(listings);
+        List<ListingSearchResult> relevantListings = getAllPagesOfSearchResults(SearchRequest.builder()
+                .certificationEditions(Stream.of(EDITION_2015).collect(Collectors.toSet()))
+                .build());
+        LOGGER.info("Checking " + relevantListings.size() + " for ICS Errors.");
 
         ExecutorService executorService = null;
         try {
             Integer threadPoolSize = getThreadCountForJob();
             executorService = Executors.newFixedThreadPool(threadPoolSize);
-            List<IcsErrorsReport> allInheritanceErrors = new ArrayList<IcsErrorsReport>();
+            List<IcsErrorsReport> allIcsErrors = new ArrayList<IcsErrorsReport>();
 
             List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
-            for (ListingSearchResult result : certifiedProducts) {
+            for (ListingSearchResult result : relevantListings) {
                 futures.add(CompletableFuture.supplyAsync(() -> getCertifiedProductSearchDetails(result.getId()), executorService)
                         .thenApply(cp -> check(cp))
                         .thenAccept(error -> {
                             if (error != null) {
-                                allInheritanceErrors.add(error);
+                                allIcsErrors.add(error);
                             }
                         }));
             }
@@ -118,13 +123,32 @@ public class IcsErrorsReportCreatorJob extends QuartzJob {
             // This is necessary so that the system can indicate that the job and it's threads are still running
             combinedFutures.get();
             LOGGER.info("All processes have completed");
-            saveAllIcsErrorReports(allInheritanceErrors);
+            saveAllIcsErrorReports(allIcsErrors);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         } finally {
             executorService.shutdown();
         }
         LOGGER.info("Completed the Inheritance Error Report Creator job. *********");
+    }
+
+    private List<ListingSearchResult> getAllPagesOfSearchResults(SearchRequest searchRequest) {
+        List<ListingSearchResult> searchResults = new ArrayList<ListingSearchResult>();
+        try {
+            LOGGER.debug(searchRequest.toString());
+            ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+            searchResults.addAll(searchResponse.getResults());
+            while (searchResponse.getRecordCount() > searchResults.size()) {
+                searchRequest.setPageSize(searchResponse.getPageSize());
+                searchRequest.setPageNumber(searchResponse.getPageNumber() + 1);
+                LOGGER.debug(searchRequest.toString());
+                searchResponse = listingSearchService.findListings(searchRequest);
+                searchResults.addAll(searchResponse.getResults());
+            }
+        } catch (ValidationException ex) {
+            LOGGER.error("Could not query all search results.", ex);
+        }
+        return searchResults;
     }
 
     private CertifiedProductSearchDetails getCertifiedProductSearchDetails(Long id) {
@@ -147,15 +171,13 @@ public class IcsErrorsReportCreatorJob extends QuartzJob {
             String reason = breaksIcsRules(listing);
             if (!StringUtils.isEmpty(reason)) {
                 item = new IcsErrorsReport();
-                //TODO: Add certified_product_id field and generate the URL in the email rather than here.
+                item.setListingId(listing.getId());
                 item.setChplProductNumber(listing.getChplProductNumber());
                 item.setDeveloper(listing.getDeveloper().getName());
                 item.setProduct(listing.getProduct().getName());
                 item.setVersion(listing.getVersion().getVersion());
                 item.setCertificationBody(getCertificationBody(Long.parseLong(
                         listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString())));
-                String listingDetailsUrl = env.getProperty("chplUrlBegin").trim() + env.getProperty("listingDetailsUrl") + listing.getId();
-                item.setUrl(listingDetailsUrl);
                 item.setReason(reason);
             }
         } catch (Exception e) {
@@ -191,13 +213,8 @@ public class IcsErrorsReportCreatorJob extends QuartzJob {
         });
     }
 
-    private List<ListingSearchResult> filterData(List<ListingSearchResult> certifiedProducts) {
-        return certifiedProducts.stream()
-                .filter(cp -> cp.getEdition() != null && cp.getEdition().getName().equalsIgnoreCase(EDITION_2015))
-                .collect(Collectors.toList());
-    }
-
     private String breaksIcsRules(CertifiedProductSearchDetails listing) {
+        LOGGER.info("Checking listing ID " + listing.getId() + " for ICS Errors.");
         String uniqueId = listing.getChplProductNumber();
         String[] uniqueIdParts = uniqueId.split("\\.");
         if (uniqueIdParts.length != ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {

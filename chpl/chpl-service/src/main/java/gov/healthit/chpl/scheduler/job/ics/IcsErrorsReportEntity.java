@@ -25,6 +25,9 @@ public class IcsErrorsReportEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(name = "certified_product_id")
+    private Long certifiedProductId;
+
     @Basic(optional = false)
     @Column(name = "chpl_product_number")
     private String chplProductNumber;
@@ -47,10 +50,6 @@ public class IcsErrorsReportEntity {
     private CertificationBodyEntity certificationBody;
 
     @Basic(optional = false)
-    @Column(name = "url")
-    private String url;
-
-    @Basic(optional = false)
     @Column(name = "reason")
     private String reason;
 
@@ -65,12 +64,12 @@ public class IcsErrorsReportEntity {
     public IcsErrorsReport toDomain() {
         return IcsErrorsReport.builder()
                 .id(this.getId())
+                .listingId(this.getCertifiedProductId())
                 .chplProductNumber(this.getChplProductNumber())
                 .developer(this.getDeveloper())
                 .product(this.getProduct())
                 .version(this.getVersion())
                 .certificationBody(this.getCertificationBody().toDomain())
-                .url(this.getUrl())
                 .reason(this.getReason())
                 .deleted(this.getDeleted())
                 .build();
