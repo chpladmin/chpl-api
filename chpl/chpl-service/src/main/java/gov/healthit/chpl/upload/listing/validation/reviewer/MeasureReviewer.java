@@ -236,8 +236,8 @@ public class MeasureReviewer implements Reviewer {
                 String measureName = getDisplayMeasureNameForUnknownMeasure(measure);
                 String assocCriteria = null;
                 if (!CollectionUtils.isEmpty(measure.getAssociatedCriteria())) {
-                    assocCriteria = ASSOCIATED_CRITERIA_ERROR_PREFIX
-                            + measure.getAssociatedCriteria().stream().map(crit -> Util.formatCriteriaNumber(crit)).collect(Collectors.joining(", "));
+                    List<String> criteriaNumbers = measure.getAssociatedCriteria().stream().map(crit -> Util.formatCriteriaNumber(crit)).toList();
+                    assocCriteria = ASSOCIATED_CRITERIA_ERROR_PREFIX + Util.joinListGrammatically(criteriaNumbers);
                 }
                 if (StringUtils.isEmpty(assocCriteria)) {
                     assocCriteria = "";
@@ -260,9 +260,6 @@ public class MeasureReviewer implements Reviewer {
             } else {
                 measureName = measure.getMeasure().getAbbreviation();
             }
-        }
-        if (measureName == null && !StringUtils.isEmpty(measure.getMeasure().getLegacyMacraMeasureValue())) {
-            measureName = measure.getMeasure().getLegacyMacraMeasureValue();
         }
         if (measureName == null && measure.getMeasure() != null && !StringUtils.isEmpty(measure.getMeasure().getName())) {
             measureName = measure.getMeasure().getName();

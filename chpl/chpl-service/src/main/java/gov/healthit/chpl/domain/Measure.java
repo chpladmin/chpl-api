@@ -8,12 +8,10 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.ObjectUtils;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
@@ -74,10 +72,6 @@ public class Measure implements Serializable {
     @XmlElement(required = true, name = "criteria")
     @Builder.Default
     private Set<CertificationCriterion> allowedCriteria = new LinkedHashSet<CertificationCriterion>();
-
-    @XmlTransient
-    @JsonIgnore
-    private String legacyMacraMeasureValue;
 
     public Measure() {
         super();
@@ -161,13 +155,5 @@ public class Measure implements Serializable {
 
     public void setAllowedCriteria(Set<CertificationCriterion> allowedCriteria) {
         this.allowedCriteria = allowedCriteria;
-    }
-
-    public String getLegacyMacraMeasureValue() {
-        return legacyMacraMeasureValue;
-    }
-
-    public void setLegacyMacraMeasureValue(String legacyMacraMeasureValue) {
-        this.legacyMacraMeasureValue = legacyMacraMeasureValue;
     }
 }

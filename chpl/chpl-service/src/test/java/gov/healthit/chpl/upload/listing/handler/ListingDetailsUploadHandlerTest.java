@@ -57,7 +57,6 @@ public class ListingDetailsUploadHandlerTest {
                 Mockito.mock(QmsUploadHandler.class), Mockito.mock(IcsUploadHandler.class),
                 Mockito.mock(CqmUploadHandler.class),
                 Mockito.mock(MeasuresUploadHandler.class),
-                Mockito.mock(MeasuresAtCriteriaLevelUploadHandler.class),
                 Mockito.mock(SedUploadHandler.class),
                 Mockito.mock(CertificationResultUploadHandler.class),
                 handlerUtil);
