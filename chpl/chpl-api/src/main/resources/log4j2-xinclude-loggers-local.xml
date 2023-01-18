@@ -57,7 +57,7 @@
     <Logger name="brokenSurveillanceRulesEmailJobLogger"  level="INFO" additivity="false">
         <AppenderRef ref="brokenSurveillanceRulesEmailJob" />
     </Logger>
-    <Logger name="icsErrorsReportCreatorJobLogger" level="INFO" additivity="false">
+    <Logger name="icsErrorsReportCreatorJobLogger" level="DEBUG" additivity="false">
         <AppenderRef ref="icsErrorsReportCreatorJob" />
     </Logger>
     <Logger name="icsErrorsReportEmailJobLogger" additivity="false">

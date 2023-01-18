@@ -33,6 +33,7 @@ public class GapWithoutIcsReviewer extends IcsErrorsReviewer {
         if (curesRuleEffectiveDate == null) {
             return null;
         } else if (!hasIcs(listing) && doesGapExistForListing(listing) && isCertificationDateAfterRuleEffectiveDate(listing)) {
+            LOGGER.info("\tListing " + listing.getId() + " has GAP but not ICS and is certified after ERD.");
             return errorMessage;
         }
         return null;

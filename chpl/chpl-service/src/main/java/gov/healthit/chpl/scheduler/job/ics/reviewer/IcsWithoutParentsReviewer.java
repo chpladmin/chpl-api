@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2(topic = "icsErrorsReportCreatorJobLogger")
 @Component
 public class IcsWithoutParentsReviewer extends IcsErrorsReviewer {
 
@@ -22,6 +24,7 @@ public class IcsWithoutParentsReviewer extends IcsErrorsReviewer {
         if (hasIcs(listing)
                 && (listing.getIcs() == null || listing.getIcs().getParents() == null
                 || listing.getIcs().getParents().size() == 0)) {
+            LOGGER.info("\tListing " + listing.getId() + " has ICS but no parents.");
             return errorMessage;
         }
         return null;

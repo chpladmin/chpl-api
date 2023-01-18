@@ -13,6 +13,7 @@ import gov.healthit.chpl.scheduler.job.ics.reviewer.GapWithoutIcsReviewer;
 import gov.healthit.chpl.scheduler.job.ics.reviewer.IcsErrorsReviewer;
 import gov.healthit.chpl.scheduler.job.ics.reviewer.IcsWithoutParentsReviewer;
 import gov.healthit.chpl.scheduler.job.ics.reviewer.IncorrectIcsIncrementReviewer;
+import gov.healthit.chpl.scheduler.job.ics.reviewer.MissingIcsSurveillanceReviewer;
 
 @Service
 public class ListingIcsErrorDiscoveryService {
@@ -21,11 +22,13 @@ public class ListingIcsErrorDiscoveryService {
     @Autowired
     public ListingIcsErrorDiscoveryService(IcsWithoutParentsReviewer icsWithParentsReviewer,
             IncorrectIcsIncrementReviewer incorrectIcsIncrementReviewer,
-            GapWithoutIcsReviewer gapWithoutIcsReviewer) {
+            GapWithoutIcsReviewer gapWithoutIcsReviewer,
+            MissingIcsSurveillanceReviewer missingIcsSurveillanceReviewer) {
         icsErrorsReviewers = new ArrayList<IcsErrorsReviewer>();
         icsErrorsReviewers.add(icsWithParentsReviewer);
         icsErrorsReviewers.add(incorrectIcsIncrementReviewer);
         icsErrorsReviewers.add(gapWithoutIcsReviewer);
+        icsErrorsReviewers.add(missingIcsSurveillanceReviewer);
     }
 
     public String getIcsErrorMessage(CertifiedProductSearchDetails listing) {
