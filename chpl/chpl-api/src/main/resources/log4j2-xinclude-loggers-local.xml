@@ -141,9 +141,6 @@
     <Logger name="deprecatedApiUsageEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="deprecatedApiUsageEmailJob" />
     </Logger>
-    <Logger name="updateMeasuresJobLogger" level="INFO"  additivity="false">
-        <AppenderRef ref="updateMeasuresJob" />
-    </Logger>
     <Logger name="addMissingMeasuresToListingsJobLogger" level="INFO"  additivity="false">
         <AppenderRef ref="addMissingMeasuresToListingsJob" />
     </Logger>

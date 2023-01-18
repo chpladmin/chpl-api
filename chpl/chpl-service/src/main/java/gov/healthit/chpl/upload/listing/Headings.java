@@ -77,8 +77,6 @@ public enum Headings {
     PRIVACY_AND_SECURITY("Privacy and Security Framework"),
     TEST_FUNCTIONALITY("Functionality Tested"),
     OPTIONAL_STANDARD("Standard Tested Against", "Optional Standard"),
-    MACRA_MEASURE_G1("Measure Successfully Tested for G1"),
-    MACRA_MEASURE_G2("Measure Successfully Tested for G2"),
     HAS_ADDITIONAL_SOFTWARE("Additional Software"),
     ADDITIONAL_SOFTWARE_LISTING("CP Source"),
     ADDITIONAL_SOFTWARE_LISTING_GROUPING("CP Source Grouping"),

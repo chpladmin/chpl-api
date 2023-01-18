@@ -552,18 +552,6 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
-    <RollingFile name="updateMeasuresJob"
-        fileName="${logDir}/scheduler/updateMeasuresJob.log"
-        filePattern="${logDir}/scheduler/history/updateMeasuresJob-%d{yyyy-MM-dd}.log"
-                filePermissions="rw-rw-r--">
-        <PatternLayout>
-            <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
-        </PatternLayout>
-        <Policies>
-            <TimeBasedTriggeringPolicy
-                interval="1" modulate="true" />
-        </Policies>
-    </RollingFile>
     <RollingFile name="removeCriteriaJob"
         fileName="${logDir}/scheduler/removeCriteriaJob.log"
         filePattern="${logDir}/scheduler/history/removeCriteriaJob-%d{yyyy-MM-dd}.log"

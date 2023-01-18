@@ -9,12 +9,12 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
@@ -28,7 +28,6 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 public class MeasureNormalizer {
-    private MacraMeasureDAO legacyMacraMeasureDao;
     private MeasureDAO measureDao;
     private ListingMeasureDAO listingMeasureDao;
     private CertificationCriterionService criteriaService;
@@ -36,11 +35,9 @@ public class MeasureNormalizer {
     private Set<MeasureType> measureTypes;
 
     @Autowired
-    public MeasureNormalizer(MacraMeasureDAO legacyMacraMeasureDao,
-            MeasureDAO measureDao,
+    public MeasureNormalizer(MeasureDAO measureDao,
             ListingMeasureDAO listingMeasureDao,
             CertificationCriterionService criteriaService) {
-        this.legacyMacraMeasureDao = legacyMacraMeasureDao;
         this.measureDao = measureDao;
         this.listingMeasureDao = listingMeasureDao;
         this.criteriaService = criteriaService;
@@ -56,17 +53,12 @@ public class MeasureNormalizer {
             listing.getMeasures().stream()
                 .forEach(listingMeasure -> populateMeasureType(listingMeasure));
             listing.getMeasures().stream()
-                .filter(listingMeasure -> listingMeasure.getMeasure() != null
-                    && StringUtils.isEmpty(listingMeasure.getMeasure().getLegacyMacraMeasureValue()))
+                .filter(listingMeasure -> listingMeasure.getMeasure() != null)
                 .forEach(listingMeasure -> {
                     populateMeasureWithMipsValues(listingMeasure);
                     populateAssociatedCriteriaFields(listingMeasure);
+                    populateMissingAssociatedCriteria(listingMeasure);
                 });
-            //if we ever get rid of legacy macra measures we can remove this
-            listing.getMeasures().stream()
-                .filter(listingMeasure -> listingMeasure.getMeasure() != null
-                    && !StringUtils.isEmpty(listingMeasure.getMeasure().getLegacyMacraMeasureValue()))
-                .forEach(listingMeasure -> populateMeasureWithLegacyValues(listingMeasure));
 
             List<ListingMeasure> combinedListingMeasures = new ArrayList<ListingMeasure>();
             combineListingMeasures(combinedListingMeasures, listing.getMeasures());
@@ -128,38 +120,13 @@ public class MeasureNormalizer {
         }
     }
 
-    private void populateMeasureWithLegacyValues(ListingMeasure listingMeasure) {
-        if (listingMeasure.getMeasure() != null
-                && listingMeasure.getMeasure().getId() == null
-                && !StringUtils.isEmpty(listingMeasure.getMeasure().getLegacyMacraMeasureValue())
-                && listingMeasure.getAssociatedCriteria() != null
-                && listingMeasure.getAssociatedCriteria().size() > 0) {
-            //there should only be one associated criterion per measure at this point
-            //when it's just been parsed with the criteria-level upload handler
-            CertificationCriterion associatedCriterion = listingMeasure.getAssociatedCriteria().iterator().next();
-            if (associatedCriterion.getId() != null) {
-                Long macraMeasureId = legacyMacraMeasureDao.getMacraMeasureIdByCriterionAndValue(
-                        associatedCriterion.getId(),
-                        listingMeasure.getMeasure().getLegacyMacraMeasureValue());
-                if (macraMeasureId != null) {
-                    Measure mappedMeasure = measureDao.getMeasureByMacraMeasureId(macraMeasureId);
-                    if (mappedMeasure != null) {
-                        listingMeasure.setMeasure(mappedMeasure);
-                    }
-                }
-            } else {
-                LOGGER.warn("There was no criterion ID found for criterion " + associatedCriterion.getNumber() + " so the legacy Macra Measure cannot be mapped.");
-            }
-        }
-    }
-
     private void populateMissingAssociatedCriteria(ListingMeasure listingMeasure) {
         associateAllowedCriteriaIfCriteriaSelectionNotRequired(listingMeasure);
         associateCuresAndOriginalCriteria(listingMeasure);
     }
 
     private void associateAllowedCriteriaIfCriteriaSelectionNotRequired(ListingMeasure listingMeasure) {
-        if (!listingMeasure.getMeasure().getRequiresCriteriaSelection()) {
+        if (BooleanUtils.isFalse(listingMeasure.getMeasure().getRequiresCriteriaSelection())) {
             //if the user can't select the criteria add all the allowed as associated
             listingMeasure.getMeasure().getAllowedCriteria().stream()
                 .forEach(allowedCriterion -> listingMeasure.getAssociatedCriteria().add(allowedCriterion));
@@ -167,16 +134,18 @@ public class MeasureNormalizer {
     }
 
     private void associateCuresAndOriginalCriteria(ListingMeasure listingMeasure) {
-        Set<CertificationCriterion> associatedCriteriaCopy = listingMeasure.getAssociatedCriteria().stream().collect(Collectors.toSet());
+        if (!CollectionUtils.isEmpty(listingMeasure.getAssociatedCriteria())) {
+            Set<CertificationCriterion> associatedCriteriaCopy = listingMeasure.getAssociatedCriteria().stream().collect(Collectors.toSet());
 
-        listingMeasure.getAssociatedCriteria().stream()
-            .forEach(associatedCriterion -> {
-                List<CertificationCriterion> criteriaWithNumber = criteriaService.getByNumber(associatedCriterion.getNumber());
-                if (criteriaWithNumber != null && criteriaWithNumber.size() > 1) {
-                    associatedCriteriaCopy.addAll(criteriaWithNumber);
-                }
-            });
-        listingMeasure.setAssociatedCriteria(associatedCriteriaCopy);
+            listingMeasure.getAssociatedCriteria().stream()
+                .forEach(associatedCriterion -> {
+                    List<CertificationCriterion> criteriaWithNumber = criteriaService.getByNumber(associatedCriterion.getNumber());
+                    if (criteriaWithNumber != null && criteriaWithNumber.size() > 1) {
+                        associatedCriteriaCopy.addAll(criteriaWithNumber);
+                    }
+                });
+            listingMeasure.setAssociatedCriteria(associatedCriteriaCopy);
+        }
     }
 
     private MeasureType getMeasureTypeByName(String name) {
@@ -219,12 +188,6 @@ public class MeasureNormalizer {
                 listingMeasure1.getMeasureType(), listingMeasure2.getMeasureType(),
                 listingMeasure1.getMeasureType().getId(), listingMeasure2.getMeasureType().getId())) {
             return listingMeasure1.getMeasure().getId().equals(listingMeasure2.getMeasure().getId())
-                    && listingMeasure1.getMeasureType().getId().equals(listingMeasure2.getMeasureType().getId());
-        } else if (ObjectUtils.allNotNull(listingMeasure1.getMeasure(), listingMeasure2.getMeasure(),
-                listingMeasure1.getMeasureType(), listingMeasure2.getMeasureType(),
-                listingMeasure1.getMeasureType().getId(), listingMeasure2.getMeasureType().getId(),
-                listingMeasure1.getMeasure().getLegacyMacraMeasureValue(), listingMeasure2.getMeasure().getLegacyMacraMeasureValue())) {
-            return listingMeasure1.getMeasure().getLegacyMacraMeasureValue().equals(listingMeasure2.getMeasure().getLegacyMacraMeasureValue())
                     && listingMeasure1.getMeasureType().getId().equals(listingMeasure2.getMeasureType().getId());
         }
         return false;
