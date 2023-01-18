@@ -979,26 +979,7 @@
             </Delete>
         </DefaultRolloverStrategy>
     </RollingFile>
-    <RollingFile name="updateMeasuresJobJson"
-        fileName="${logDir}/scheduler/updateMeasuresJob.json"
-        filePattern="${logDir}/scheduler/history/updateMeasuresJob-%d{yyyy-MM-dd}.json"
-        filePermissions="rw-rw-r--">
-        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
-            <KeyValuePair key="service" value="updateMeasuresJob" />
-            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
-            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
-        </JsonLayout>
-        <Policies>
-            <TimeBasedTriggeringPolicy
-                interval="1" modulate="true" />
-        </Policies>
-        <DefaultRolloverStrategy>
-            <Delete basePath="${logDir}/scheduler/history" >
-                <IfFileName glob="updateMeasuresJob-*.json" />
-                <IfLastModified age="1d" />
-            </Delete>
-        </DefaultRolloverStrategy>
-    </RollingFile>
+
     <RollingFile name="sendEmailJobJson"
         fileName="${logDir}/scheduler/sendEmailJob.json"
         filePattern="${logDir}/scheduler/history/sendEmailJob-%d{yyyy-MM-dd}.json"
