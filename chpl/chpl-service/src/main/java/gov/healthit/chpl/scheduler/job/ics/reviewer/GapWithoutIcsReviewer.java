@@ -3,6 +3,7 @@ package gov.healthit.chpl.scheduler.job.ics.reviewer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -41,7 +42,8 @@ public class GapWithoutIcsReviewer extends IcsErrorsReviewer {
 
     private boolean doesGapExistForListing(CertifiedProductSearchDetails listing) {
         return listing.getCertificationResults().stream()
-                .filter(cert -> cert.isGap() != null ? cert.isGap() : false)
+                .filter(cert -> BooleanUtils.isTrue(cert.isSuccess())
+                        && cert.isGap() != null ? cert.isGap() : false)
                 .count() > 0;
     }
 
