@@ -85,8 +85,7 @@ public class ListingStoreRemoveAspect {
         sharedListingStoreProvider.remove(listingId);
         List<Long> relativeIds = getCertifiedProductRelativeIds(listingId);
         if (!CollectionUtils.isEmpty(relativeIds)) {
-            relativeIds.stream()
-                .forEach(relativeId -> sharedListingStoreProvider.remove(relativeIds));
+            sharedListingStoreProvider.remove(relativeIds);
         }
     }
 
