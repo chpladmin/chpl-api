@@ -15,13 +15,13 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.core.env.Environment;
 
+import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.domain.compliance.DirectReviewContainer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.DeveloperManager;
-import gov.healthit.chpl.service.DirectReviewSearchService;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "directReviewDownloadableResourceCreatorJobLogger")

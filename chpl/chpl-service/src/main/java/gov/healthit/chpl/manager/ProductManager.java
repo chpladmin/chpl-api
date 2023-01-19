@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.compliance.directreview.DirectReviewUpdateEmailService;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
@@ -38,7 +39,6 @@ import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.manager.rules.product.ProductValidationContext;
 import gov.healthit.chpl.manager.rules.product.ProductValidationFactory;
-import gov.healthit.chpl.service.DirectReviewUpdateEmailService;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.ChplProductNumberUtil;

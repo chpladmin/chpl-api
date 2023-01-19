@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.search.CertifiedProductSearchManager;
@@ -28,7 +29,6 @@ import gov.healthit.chpl.search.domain.BasicSearchResponse;
 import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.search.domain.SearchViews;
-import gov.healthit.chpl.service.DirectReviewSearchService;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;

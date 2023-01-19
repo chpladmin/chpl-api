@@ -14,6 +14,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -21,7 +22,6 @@ import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
-import gov.healthit.chpl.service.DirectReviewSearchService;
 import lombok.extern.log4j.Log4j2;
 
 @Service
