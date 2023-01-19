@@ -25,7 +25,7 @@ public abstract class IcsErrorsReviewer {
         }
         String icsCodePart = uniqueIdParts[ChplProductNumberUtil.ICS_CODE_INDEX];
         Integer icsCode = Integer.valueOf(icsCodePart);
-        boolean hasIcs = icsCode.intValue() == 1
+        boolean hasIcs = icsCode.intValue() > 0
                 || (listing.getIcs() != null && listing.getIcs().getInherits().booleanValue());
 
         return hasIcs;
