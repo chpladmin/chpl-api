@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
@@ -32,7 +33,6 @@ import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.RwtSearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
-import gov.healthit.chpl.service.DirectReviewSearchService;
 
 @SuppressWarnings("checkstyle:magicnumber")
 public class ListingSearchServiceTest {
