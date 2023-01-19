@@ -15,7 +15,6 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
-import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -46,6 +45,30 @@ public class MissingIcsSurveillanceReviewerTest {
                         .build())
                 .build();
         String errorMessage = reviewer.getIcsError(listing);
+        assertNull(errorMessage);
+    }
+
+    @Test
+    public void review_listingWithSelfReference_noSurveillance_noErrorAndNoStackOverflow() {
+        CertifiedProductDTO childDto = CertifiedProductDTO.builder()
+                .id(2L)
+                .chplProductNumber("15.02.05.1439.A111.01.01.1.200219")
+                .build();
+        CertifiedProductSearchDetails child = CertifiedProductSearchDetails.builder()
+                .id(2L)
+                .chplProductNumber("15.02.05.1439.A111.01.01.1.200219")
+                .ics(InheritedCertificationStatus.builder()
+                        .inherits(true)
+                        .build())
+                .build();
+
+        Mockito.when(listingGraphDao.getParents(ArgumentMatchers.eq(child.getId())))
+            .thenReturn(Stream.of(childDto).collect(Collectors.toList()));
+
+        Mockito.when(survManager.getByCertifiedProduct(ArgumentMatchers.eq(child.getId())))
+            .thenReturn(null);
+
+        String errorMessage = reviewer.getIcsError(child);
         assertNull(errorMessage);
     }
 
@@ -328,10 +351,7 @@ public class MissingIcsSurveillanceReviewerTest {
                     .id(1L)
                     .requirements(Stream.of(SurveillanceRequirement.builder()
                             .id(1L)
-                            .requirementType(RequirementType.builder()
-                                    .id(1L)
-                                    .title("Annual Real World Testing Plan")
-                                    .build())
+                            .requirementTypeOther("Annual Real World Testing Plan")
                             .build())
                             .collect(Collectors.toSet()))
                     .build())
@@ -392,10 +412,7 @@ public class MissingIcsSurveillanceReviewerTest {
                     .id(1L)
                     .requirements(Stream.of(SurveillanceRequirement.builder()
                             .id(1L)
-                            .requirementType(RequirementType.builder()
-                                    .id(1L)
-                                    .title("Inherited Certified Status")
-                                    .build())
+                            .requirementTypeOther("Inherited Certified Status")
                             .build())
                             .collect(Collectors.toSet()))
                     .build())
@@ -461,10 +478,7 @@ public class MissingIcsSurveillanceReviewerTest {
                     .id(1L)
                     .requirements(Stream.of(SurveillanceRequirement.builder()
                             .id(1L)
-                            .requirementType(RequirementType.builder()
-                                    .id(1L)
-                                    .title("Inherited Certified Status")
-                                    .build())
+                            .requirementTypeOther("Inherited Certified Status")
                             .build())
                             .collect(Collectors.toSet()))
                     .build())

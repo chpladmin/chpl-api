@@ -3,9 +3,11 @@ package gov.healthit.chpl.scheduler.job.ics.reviewer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -55,6 +57,7 @@ public class MissingIcsSurveillanceReviewer extends IcsErrorsReviewer {
         while (!foundIcsSurveillance && listingIdIter.hasNext()) {
             Long listingId = listingIdIter.next();
             List<CertifiedProductDTO> parents = getParents(listingId);
+            removeSelfReferencingListings(parents, listingId);
             if (CollectionUtils.isEmpty(parents)) {
                 return generationsWithoutIcsSurveillanceCount;
             }
@@ -66,10 +69,12 @@ public class MissingIcsSurveillanceReviewer extends IcsErrorsReviewer {
                 .forEach(survList -> surveillances.addAll(survList));
             boolean hasIcsSurveillance = isAnySurveillanceForIcs(surveillances);
             if (!hasIcsSurveillance) {
+                LOGGER.debug("\tNo ICS Surveillance found for listing(s): " + parents.stream().map(parent -> parent.getId() + "").collect(Collectors.joining(", ")));
                 return getGenerationsWithoutIcsSurveillanceCount(parents.stream().map(parent -> parent.getId()).toList(),
                         foundIcsSurveillance,
                         ++generationsWithoutIcsSurveillanceCount);
             } else {
+                LOGGER.debug("\tFound ICS Surveillance for listing(s): " + parents.stream().map(parent -> parent.getId() + "").collect(Collectors.joining(", ")));
                 foundIcsSurveillance = true;
             }
         }
@@ -80,10 +85,22 @@ public class MissingIcsSurveillanceReviewer extends IcsErrorsReviewer {
         return listingGraphDao.getParents(listingId);
     }
 
+    private void removeSelfReferencingListings(List<CertifiedProductDTO> listings, Long listingId) {
+        if (listings != null) {
+            Iterator<CertifiedProductDTO> listingIter = listings.iterator();
+            while (listingIter.hasNext()) {
+                if (listingIter.next().getId().equals(listingId)) {
+                    listingIter.remove();
+                }
+            }
+        }
+    }
+
     private boolean isAnySurveillanceForIcs(List<Surveillance> surveillances) {
         return surveillances.stream()
                 .flatMap(surv -> surv.getRequirements().stream())
-                .filter(req -> req.getRequirementType().getTitle().equals(ICS_REQUIREMENT_TYPE))
+                .filter(req -> !StringUtils.isEmpty(req.getRequirementTypeOther()))
+                .filter(req -> req.getRequirementTypeOther().equals(ICS_REQUIREMENT_TYPE))
                 .count() > 0;
 
     }
