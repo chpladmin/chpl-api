@@ -4,12 +4,10 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
@@ -33,17 +31,17 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
     private ErrorMessageUtil msgUtil;
     private CertificationCriterionService criterionService;
     private DimensionalDataManager dimensionalDataManager;
-    private CertifiedProductDetailsManager certifiedProductDetailsManager;
+    private CertifiedProductDAO certifiedProductDAO;
 
     @Autowired
     public SurveillanceNonconformityReviewer(CertificationResultDetailsDAO certResultDetailsDao,
             ErrorMessageUtil msgUtil, CertificationCriterionService criterionService, DimensionalDataManager dimensionalDataManager,
-            @Lazy CertifiedProductDetailsManager certifiedProductDetailsManager) {
+            CertifiedProductDAO certifiedProductDAO) {
         this.certResultDetailsDao = certResultDetailsDao;
         this.msgUtil = msgUtil;
         this.criterionService = criterionService;
         this.dimensionalDataManager = dimensionalDataManager;
-        this.certifiedProductDetailsManager = certifiedProductDetailsManager;
+        this.certifiedProductDAO = certifiedProductDAO;
     }
 
     @Override
@@ -254,8 +252,7 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
 
     private Long getCertificationEditionIdFromListing(Long id) {
         try {
-            return Long.valueOf(certifiedProductDetailsManager.getCertifiedProductDetails(id)
-                    .getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString());
+            return certifiedProductDAO.getById(id).getCertificationEditionId();
         } catch (EntityRetrievalException e) {
             LOGGER.error("Could not retrieve listing", e);
             return NOT_FOUND;

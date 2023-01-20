@@ -87,14 +87,11 @@ public class NonconformityType implements Serializable {
         this.classification = classification;
     }
 
-    public CertificationEdition getCertificationEdition() {
-        return certificationEdition;
-    }
-
     public void setEdition(String edition) {
         this.edition = edition;
     }
 
+    @JsonIgnore
     public String getEdition() {
         return NullSafeEvaluator.eval(() -> certificationEdition.getYear(), null);
     }

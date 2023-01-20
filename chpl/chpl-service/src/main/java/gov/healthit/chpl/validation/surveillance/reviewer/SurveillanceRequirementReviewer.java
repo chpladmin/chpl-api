@@ -3,12 +3,10 @@ package gov.healthit.chpl.validation.surveillance.reviewer;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
 import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
@@ -26,16 +24,16 @@ public class SurveillanceRequirementReviewer implements Reviewer {
     private static final Long NOT_FOUND = -1L;
     private SurveillanceDAO survDao;
     private ErrorMessageUtil msgUtil;
-    private CertifiedProductDetailsManager certifiedProductDetailsManager;
+    private CertifiedProductDAO certifiedProductDAO;
     private Set<RequirementType> requirementTypes;
 
     @Autowired
     public SurveillanceRequirementReviewer(SurveillanceDAO survDao, ErrorMessageUtil msgUtil, DimensionalDataManager dimensionalDataManager,
-            @Lazy CertifiedProductDetailsManager certifiedProductDetailsManager) {
+            CertifiedProductDAO certifiedProductDAO) {
         this.survDao = survDao;
         this.msgUtil = msgUtil;
         this.requirementTypes = dimensionalDataManager.getRequirementTypes();
-        this.certifiedProductDetailsManager = certifiedProductDetailsManager;
+        this.certifiedProductDAO = certifiedProductDAO;
     }
 
     @Override
@@ -124,11 +122,10 @@ public class SurveillanceRequirementReviewer implements Reviewer {
 
     private Long getCertificationEditionIdFromListing(Long id) {
         try {
-            return Long.valueOf(certifiedProductDetailsManager.getCertifiedProductDetails(id)
-                    .getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString());
+            return certifiedProductDAO.getById(id).getCertificationEditionId();
         } catch (EntityRetrievalException e) {
             LOGGER.error("Could not retrieve listing", e);
-            return null;
+            return NOT_FOUND;
         }
     }
 }
