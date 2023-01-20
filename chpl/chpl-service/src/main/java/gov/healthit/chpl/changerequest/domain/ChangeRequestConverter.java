@@ -13,9 +13,9 @@ import gov.healthit.chpl.changerequest.entity.ChangeRequestStatusTypeEntity;
 import gov.healthit.chpl.changerequest.entity.ChangeRequestTypeEntity;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult.CurrentStatusSearchResult;
-import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult.IdNamePairSearchResult;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.util.DateUtil;
@@ -48,18 +48,18 @@ public final class ChangeRequestConverter {
     public static ChangeRequestSearchResult toSearchResult(ChangeRequestEntity entity) {
         return ChangeRequestSearchResult.builder()
         .id(entity.getId())
-        .changeRequestType(IdNamePairSearchResult.builder()
+        .changeRequestType(IdNamePair.builder()
                 .id(entity.getChangeRequestType().getId())
                 .name(entity.getChangeRequestType().getName())
                 .build())
-        .developer(IdNamePairSearchResult.builder()
+        .developer(IdNamePair.builder()
                 .id(entity.getDeveloper().getId())
                 .name(entity.getDeveloper().getName())
                 .build())
         .submittedDateTime(DateUtil.toLocalDateTime(entity.getCreationDate().getTime()))
         .currentStatus(convertSearchResult(getLatestStatus(entity.getStatuses())))
         .certificationBodies(entity.getCertificationBodies().stream()
-                .map(e -> IdNamePairSearchResult.builder()
+                .map(e -> IdNamePair.builder()
                         .id(e.getId())
                         .name(e.getName())
                         .build())

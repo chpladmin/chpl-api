@@ -102,6 +102,7 @@ import gov.healthit.chpl.qmsStandard.QmsStandard;
 import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
 import gov.healthit.chpl.scheduler.job.TriggerDeveloperBanJob;
 import gov.healthit.chpl.service.CuresUpdateService;
+import gov.healthit.chpl.sharedstore.listing.ListingIcsSharedStoreHandler;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
@@ -150,6 +151,7 @@ public class CertifiedProductManager extends SecuredManager {
     private ListingDetailsNormalizer listingNormalizer;
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
+    private ListingIcsSharedStoreHandler icsSharedStoreHandler;
 
     public CertifiedProductManager() {
     }
@@ -178,7 +180,8 @@ public class CertifiedProductManager extends SecuredManager {
             SchedulerManager schedulerManager,
             ActivityManager activityManager, ListingDetailsNormalizer listingNormalizer,
             ListingValidatorFactory validatorFactory,
-            CuresUpdateService curesUpdateService) {
+            CuresUpdateService curesUpdateService,
+            @Lazy ListingIcsSharedStoreHandler icsSharedStoreHandler) {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
@@ -214,6 +217,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.listingNormalizer = listingNormalizer;
         this.validatorFactory = validatorFactory;
         this.curesUpdateService = curesUpdateService;
+        this.icsSharedStoreHandler = icsSharedStoreHandler;
     }
 
     @Transactional(readOnly = true)
@@ -275,14 +279,14 @@ public class CertifiedProductManager extends SecuredManager {
         return cpDao.getDetailsByVersionAndAcbIds(versionId, acbIdList);
     }
 
+    @Deprecated
     @Transactional
     public List<IcsFamilyTreeNode> getIcsFamilyTree(String chplProductNumber) throws EntityRetrievalException {
-
         CertifiedProductDetailsDTO dto = getCertifiedProductDetailsDtoByChplProductNumber(chplProductNumber);
-
         return getIcsFamilyTree(dto.getId());
     }
 
+    @Deprecated
     @Transactional
     public List<IcsFamilyTreeNode> getIcsFamilyTree(Long certifiedProductId) throws EntityRetrievalException {
         getById(certifiedProductId); // sends back 404 if bad id
@@ -372,6 +376,10 @@ public class CertifiedProductManager extends SecuredManager {
 
             // if listing status has changed that may trigger other changes to developer status
             performSecondaryActionsBasedOnStatusChanges(existingListing, updatedListing, updateRequest.getReason());
+
+            //clear all ICS family from the shared store so that ICS relationships
+            //are cleared for ICS additions and ICS removals
+            icsSharedStoreHandler.handle(updateRequest.getListing().getId());
 
             // Update the listing
             CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
