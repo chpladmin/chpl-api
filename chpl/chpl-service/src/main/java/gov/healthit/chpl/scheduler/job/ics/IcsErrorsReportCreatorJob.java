@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
@@ -27,7 +28,6 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.search.ListingSearchService;
@@ -82,15 +82,15 @@ public class IcsErrorsReportCreatorJob extends QuartzJob {
         try {
             Integer threadPoolSize = getThreadCountForJob();
             executorService = Executors.newFixedThreadPool(threadPoolSize);
-            List<IcsErrorsReport> allIcsErrors = new ArrayList<IcsErrorsReport>();
+            List<IcsErrorsReportItem> allIcsErrorsReportItems = new ArrayList<IcsErrorsReportItem>();
 
             List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
             for (ListingSearchResult result : relevantListings) {
                 futures.add(CompletableFuture.supplyAsync(() -> getCertifiedProductSearchDetails(result.getId()), executorService)
                         .thenApply(cp -> check(cp))
-                        .thenAccept(error -> {
-                            if (error != null) {
-                                allIcsErrors.add(error);
+                        .thenAccept(listingIcsErrorsReportItems -> {
+                            if (!CollectionUtils.isEmpty(listingIcsErrorsReportItems)) {
+                                allIcsErrorsReportItems.addAll(listingIcsErrorsReportItems);
                             }
                         }));
             }
@@ -102,7 +102,7 @@ public class IcsErrorsReportCreatorJob extends QuartzJob {
             // This is necessary so that the system can indicate that the job and it's threads are still running
             combinedFutures.get();
             LOGGER.info("All processes have completed");
-            saveAllIcsErrorReports(allIcsErrors);
+            saveAllIcsErrorReports(allIcsErrorsReportItems);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         } finally {
@@ -141,34 +141,46 @@ public class IcsErrorsReportCreatorJob extends QuartzJob {
         return cp;
     }
 
-    private IcsErrorsReport check(CertifiedProductSearchDetails listing) {
+    private List<IcsErrorsReportItem> check(CertifiedProductSearchDetails listing) {
         if (listing == null) {
             return null;
         }
-        LOGGER.info("Checking listing [" + listing.getChplProductNumber() + "]");
-        IcsErrorsReport report = null;
+        LOGGER.info("Checking listing [" + listing.getId() + "]");
+
+        List<IcsErrorsReportItem> reportItems = new ArrayList<IcsErrorsReportItem>();
         try {
-            String icsErrorMessage = icsErrorDiscoveryService.getIcsErrorMessage(listing);
-            if (!StringUtils.isEmpty(icsErrorMessage)) {
-                report = new IcsErrorsReport();
-                report.setListingId(listing.getId());
-                report.setChplProductNumber(listing.getChplProductNumber());
-                report.setDeveloper(listing.getDeveloper().getName());
-                report.setProduct(listing.getProduct().getName());
-                report.setVersion(listing.getVersion().getVersion());
-                report.setCertificationBody(getCertificationBody(Long.parseLong(
-                        listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString())));
-                report.setReason(icsErrorMessage);
-                LOGGER.info("Found ICS Error for listing [" + listing.getChplProductNumber() + "]: " + icsErrorMessage);
+            List<String> icsErrorMessages = icsErrorDiscoveryService.getIcsErrorMessages(listing);
+            if (!CollectionUtils.isEmpty(icsErrorMessages)) {
+                reportItems = icsErrorMessages.stream()
+                        .filter(errorMessage -> !StringUtils.isEmpty(errorMessage))
+                        .map(errorMessage -> createIcsErrorsReportItem(listing, errorMessage))
+                        .collect(Collectors.toList());
             }
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        LOGGER.info("Completed check of listing [" + listing.getChplProductNumber() + "]");
-        return report;
+        LOGGER.info("Completed check of listing [" + listing.getId() + "]");
+        return reportItems;
     }
 
-    private void saveAllIcsErrorReports(List<IcsErrorsReport> allIcsErrorReports) {
+    private IcsErrorsReportItem createIcsErrorsReportItem(CertifiedProductSearchDetails listing, String icsErrorMessage) {
+        LOGGER.info("Found ICS Error for listing [" + listing.getId() + "]: " + icsErrorMessage);
+
+        CertificationBodyDTO acbDto = getCertificationBody(Long.parseLong(
+                listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()));
+
+        return IcsErrorsReportItem.builder()
+                .listingId(listing.getId())
+                .chplProductNumber(listing.getChplProductNumber())
+                .developer(listing.getDeveloper().getName())
+                .product(listing.getProduct().getName())
+                .version(listing.getVersion().getVersion())
+                .certificationBody(acbDto != null ? new CertificationBody(acbDto) : null)
+                .reason(icsErrorMessage)
+                .build();
+    }
+
+    private void saveAllIcsErrorReports(List<IcsErrorsReportItem> allIcsErrorReportItems) {
 
         // We need to manually create a transaction in this case because of how AOP works. When a method is
         // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
@@ -184,8 +196,8 @@ public class IcsErrorsReportCreatorJob extends QuartzJob {
                 try {
                     LOGGER.info("Deleting {} OBE inheritance errors", icsErrorsReportDao.findAll().size());
                     icsErrorsReportDao.deleteAll();
-                    LOGGER.info("Creating {} current inheritance errors", allIcsErrorReports.size());
-                    icsErrorsReportDao.create(allIcsErrorReports);
+                    LOGGER.info("Creating {} current inheritance errors", allIcsErrorReportItems.size());
+                    icsErrorsReportDao.create(allIcsErrorReportItems);
                 } catch (Exception e) {
                     LOGGER.error("Error updating to latest inheritance errors. Rolling back transaction.", e);
                     status.setRollbackOnly();
@@ -194,9 +206,14 @@ public class IcsErrorsReportCreatorJob extends QuartzJob {
         });
     }
 
-    private CertificationBody getCertificationBody(Long certificationBodyId) throws EntityRetrievalException {
-        CertificationBodyDTO acb = certificationBodyDAO.getById(certificationBodyId);
-        return new CertificationBody(acb);
+    private CertificationBodyDTO getCertificationBody(Long certificationBodyId) {
+        CertificationBodyDTO acb = null;
+        try {
+            acb = certificationBodyDAO.getById(certificationBodyId);
+        } catch(Exception ex) {
+            LOGGER.error("No ACB could be found with ID " + certificationBodyId);
+        }
+        return acb;
     }
 
     private Integer getThreadCountForJob() throws NumberFormatException {

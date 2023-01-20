@@ -60,7 +60,7 @@ public class IcsErrorsReportEmailJob extends QuartzJob {
         LOGGER.info("********* Starting the ICS Errors Report Email job. *********");
         LOGGER.info("Sending email to: " + jobContext.getMergedJobDataMap().getString("email"));
 
-        List<IcsErrorsReport> errors = getAppropriateErrors(jobContext);
+        List<IcsErrorsReportItem> errors = getAppropriateErrors(jobContext);
         File output = null;
         List<File> files = new ArrayList<File>();
         if (errors.size() > 0) {
@@ -87,9 +87,9 @@ public class IcsErrorsReportEmailJob extends QuartzJob {
         LOGGER.info("********* Completed the ICS Errors Report Email job. *********");
     }
 
-    private List<IcsErrorsReport> getAppropriateErrors(JobExecutionContext jobContext) {
-        List<IcsErrorsReport> allErrors = icsErrorsReportDao.findAll();
-        List<IcsErrorsReport> errors = new ArrayList<IcsErrorsReport>();
+    private List<IcsErrorsReportItem> getAppropriateErrors(JobExecutionContext jobContext) {
+        List<IcsErrorsReportItem> allErrors = icsErrorsReportDao.findAll();
+        List<IcsErrorsReportItem> errors = new ArrayList<IcsErrorsReportItem>();
         List<Long> acbIds =
                 Arrays.asList(
                         jobContext.getMergedJobDataMap().getString(QuartzJob.JOB_DATA_KEY_ACB).split(SchedulerManager.DATA_DELIMITER)).stream()
@@ -102,7 +102,7 @@ public class IcsErrorsReportEmailJob extends QuartzJob {
         return errors;
     }
 
-    private File getOutputFile(List<IcsErrorsReport> errors) {
+    private File getOutputFile(List<IcsErrorsReportItem> errors) {
         String reportFilename = env.getProperty("icsErrorsReportEmailFileName");
         File temp = null;
         try {
@@ -118,7 +118,7 @@ public class IcsErrorsReportEmailJob extends QuartzJob {
                     CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
                 writer.write('\ufeff');
                 csvPrinter.printRecord(getHeaderRow());
-                for (IcsErrorsReport error : errors) {
+                for (IcsErrorsReportItem error : errors) {
                     List<String> rowValue = generateRowValue(error);
                     csvPrinter.printRecord(rowValue);
                 }
@@ -141,7 +141,7 @@ public class IcsErrorsReportEmailJob extends QuartzJob {
         return result;
     }
 
-    private List<String> generateRowValue(IcsErrorsReport data) {
+    private List<String> generateRowValue(IcsErrorsReportItem data) {
         List<String> result = new ArrayList<String>();
         result.add(data.getChplProductNumber());
         result.add(data.getDeveloper());
@@ -153,7 +153,7 @@ public class IcsErrorsReportEmailJob extends QuartzJob {
         return result;
     }
 
-    private String createHtmlEmailBody(List<IcsErrorsReport> icsErrors, JobExecutionContext jobContext) throws IOException {
+    private String createHtmlEmailBody(List<IcsErrorsReportItem> icsErrors, JobExecutionContext jobContext) throws IOException {
         String htmlMessage = "";
         if (CollectionUtils.isEmpty(icsErrors)) {
             htmlMessage = chplHtmlEmailBuilder.initialize()

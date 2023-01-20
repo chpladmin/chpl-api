@@ -16,7 +16,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 @Repository("icsErrorsReportDao")
 public class IcsErrorsReportDao extends BaseDAOImpl {
 
-    public List<IcsErrorsReport> findAll() {
+    public List<IcsErrorsReportItem> findAll() {
         List<IcsErrorsReportEntity> entities = this.findAllEntities();
         return entities.stream()
                 .map(entity -> entity.toDomain())
@@ -35,8 +35,8 @@ public class IcsErrorsReportDao extends BaseDAOImpl {
     }
 
     @Transactional
-    public void create(List<IcsErrorsReport> reports) throws EntityCreationException, EntityRetrievalException {
-        for (IcsErrorsReport report : reports) {
+    public void create(List<IcsErrorsReportItem> reports) throws EntityCreationException, EntityRetrievalException {
+        for (IcsErrorsReportItem report : reports) {
             IcsErrorsReportEntity entity = new IcsErrorsReportEntity();
             entity.setCertifiedProductId(report.getListingId());
             entity.setChplProductNumber(report.getChplProductNumber());
@@ -54,7 +54,7 @@ public class IcsErrorsReportDao extends BaseDAOImpl {
     }
 
     @Transactional
-    public void create(IcsErrorsReport report) throws EntityCreationException, EntityRetrievalException {
+    public void create(IcsErrorsReportItem report) throws EntityCreationException, EntityRetrievalException {
         IcsErrorsReportEntity entity = new IcsErrorsReportEntity();
         entity.setCertifiedProductId(report.getListingId());
         entity.setChplProductNumber(report.getChplProductNumber());

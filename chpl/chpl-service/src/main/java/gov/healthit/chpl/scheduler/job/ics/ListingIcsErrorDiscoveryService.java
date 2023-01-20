@@ -31,12 +31,15 @@ public class ListingIcsErrorDiscoveryService {
         icsErrorsReviewers.add(missingIcsSurveillanceReviewer);
     }
 
-    public String getIcsErrorMessage(CertifiedProductSearchDetails listing) {
-        String errorMessage = null;
+    public List<String> getIcsErrorMessages(CertifiedProductSearchDetails listing) {
+        List<String> errorMessages = new ArrayList<String>();
         Iterator<IcsErrorsReviewer> reviewerIter = icsErrorsReviewers.iterator();
-        while (reviewerIter.hasNext() && StringUtils.isEmpty(errorMessage)) {
-            errorMessage = reviewerIter.next().getIcsError(listing);
+        while (reviewerIter.hasNext()) {
+            String errorMessage = reviewerIter.next().getIcsError(listing);
+            if (!StringUtils.isEmpty(errorMessage)) {
+                errorMessages.add(errorMessage);
+            }
         }
-        return errorMessage;
+        return errorMessages;
     }
 }

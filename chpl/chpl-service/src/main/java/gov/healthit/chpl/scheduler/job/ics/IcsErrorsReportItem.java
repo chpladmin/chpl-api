@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class IcsErrorsReport implements Serializable {
+public class IcsErrorsReportItem implements Serializable {
 
     private static final long serialVersionUID = -1536844909545189801L;
 

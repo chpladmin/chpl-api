@@ -61,8 +61,8 @@ public class IcsErrorsReportEntity {
     @Column(name = "last_modified_user")
     private Long lastModifiedUser;
 
-    public IcsErrorsReport toDomain() {
-        return IcsErrorsReport.builder()
+    public IcsErrorsReportItem toDomain() {
+        return IcsErrorsReportItem.builder()
                 .id(this.getId())
                 .listingId(this.getCertifiedProductId())
                 .chplProductNumber(this.getChplProductNumber())
