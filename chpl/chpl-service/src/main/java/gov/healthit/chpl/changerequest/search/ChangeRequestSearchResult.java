@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
+import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.util.EasternToSystemLocalDateTimeDeserializer;
 import gov.healthit.chpl.util.SystemToEasternLocalDateTimeSerializer;
 import lombok.AllArgsConstructor;
@@ -26,10 +27,10 @@ public class ChangeRequestSearchResult implements Serializable {
     private static final long serialVersionUID = 216843916174697622L;
 
     private Long id;
-    private IdNamePairSearchResult changeRequestType;
-    private IdNamePairSearchResult developer;
+    private IdNamePair changeRequestType;
+    private IdNamePair developer;
     @Singular
-    private List<IdNamePairSearchResult> certificationBodies = new ArrayList<IdNamePairSearchResult>();
+    private List<IdNamePair> certificationBodies = new ArrayList<IdNamePair>();
     private CurrentStatusSearchResult currentStatus;
     @JsonDeserialize(using = EasternToSystemLocalDateTimeDeserializer.class)
     @JsonSerialize(using = SystemToEasternLocalDateTimeSerializer.class)
@@ -37,16 +38,6 @@ public class ChangeRequestSearchResult implements Serializable {
 
     public Boolean isAttestation() {
         return this.changeRequestType.getName().equalsIgnoreCase(ChangeRequestType.ATTESTATION_TYPE);
-    }
-
-    @Getter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class IdNamePairSearchResult implements Serializable {
-        private static final long serialVersionUID = -237707803683286810L;
-        private Long id;
-        private String name;
     }
 
     @Getter

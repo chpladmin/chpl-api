@@ -15,17 +15,16 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.domain.CertificationEdition;
+import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
@@ -40,20 +39,20 @@ public class ListingSearchResult implements Serializable {
     private Long id;
     private String chplProductNumber;
     private Set<String> previousChplProductNumbers;
-    private IdNamePairSearchResult edition;
-    private IdNamePairSearchResult certificationBody;
+    private IdNamePair edition;
+    private IdNamePair certificationBody;
     private String acbCertificationId;
-    private IdNamePairSearchResult practiceType;
+    private IdNamePair practiceType;
     private DeveloperSearchResult developer;
-    private IdNamePairSearchResult product;
-    private IdNamePairSearchResult version;
+    private IdNamePair product;
+    private IdNamePair version;
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate certificationDate;
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate decertificationDate;
-    private IdNamePairSearchResult certificationStatus;
+    private IdNamePair certificationStatus;
     private Boolean curesUpdate;
     private Long surveillanceCount;
     private Long openSurveillanceNonConformityCount;
@@ -68,7 +67,7 @@ public class ListingSearchResult implements Serializable {
     private Long closedSurveillanceCount;
     private PromotingInteroperabilitySearchResult promotingInteroperability;
     private String mandatoryDisclosures;
-    private Set<IdNamePairSearchResult> previousDevelopers;
+    private Set<IdNamePair> previousDevelopers;
     private Set<CertificationCriterionSearchResult> criteriaMet;
     private Set<CQMSearchResult> cqmsMet;
     private Set<DateRangeSearchResult> surveillanceDateRanges;
@@ -88,7 +87,7 @@ public class ListingSearchResult implements Serializable {
         this.setOpenSurveillanceNonConformityCount(0L);
         this.setClosedSurveillanceNonConformityCount(0L);
         previousChplProductNumbers = new LinkedHashSet<String>();
-        previousDevelopers = new HashSet<IdNamePairSearchResult>();
+        previousDevelopers = new HashSet<IdNamePair>();
         criteriaMet = new HashSet<CertificationCriterionSearchResult>();
         cqmsMet = new HashSet<CQMSearchResult>();
         surveillanceDateRanges = new HashSet<DateRangeSearchResult>();
@@ -124,25 +123,15 @@ public class ListingSearchResult implements Serializable {
         return getEdition().getName() + (BooleanUtils.isTrue(getCuresUpdate()) ? CertificationEdition.CURES_SUFFIX : "");
     }
 
-
     @Getter
-    @SuperBuilder
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    @EqualsAndHashCode
-    public static class IdNamePairSearchResult implements Serializable {
-        private static final long serialVersionUID = -2377078036832863130L;
+    public static class DeveloperSearchResult implements Serializable {
+        private static final long serialVersionUID = 2613618482034013795L;
         private Long id;
         private String name;
-    }
-
-    @Getter
-    @SuperBuilder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class DeveloperSearchResult extends IdNamePairSearchResult {
-        private static final long serialVersionUID = 2613618482034013795L;
-        private IdNamePairSearchResult status;
+        private IdNamePair status;
     }
 
     @Getter
@@ -197,7 +186,7 @@ public class ListingSearchResult implements Serializable {
         @JsonDeserialize(using = LocalDateDeserializer.class)
         @JsonSerialize(using = LocalDateSerializer.class)
         private LocalDate statusStart;
-        private IdNamePairSearchResult status;
+        private IdNamePair status;
     }
 
     @Getter

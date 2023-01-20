@@ -21,6 +21,8 @@ import lombok.Setter;
 @Immutable
 @Table(name = "listing_search")
 public class ListingSearchEntity {
+    public static final String LISTING_ID_NUMBER_SEPARATOR = ":";
+    public static final String LISTING_SEPARATOR = "\\|";
     public static final String SMILEY_SPLIT_CHAR = "\u263A";
     public static final String FROWNEY_SPLIT_CHAR = "\u2639";
 
