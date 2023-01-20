@@ -29,6 +29,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
 import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingReportService;
+import gov.healthit.chpl.scheduler.job.realworldtesting.RealWorldTestingReportSummaryCalculator;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "realWorldTestingReportEmailJobLogger")
@@ -78,16 +79,17 @@ public class RealWorldTestingReportEmailJob implements Job {
         chplEmailFactory.emailBuilder()
                 .recipient(context.getMergedJobDataMap().getString("email"))
                 .subject(env.getProperty("rwt.report.subject"))
-                .htmlMessage(createHtmlMessage(context))
+                .htmlMessage(createHtmlMessage(context, rows))
                 .fileAttachments(new ArrayList<File>(Arrays.asList(generateCsvFile(context, rows))))
                 .sendEmail();
         LOGGER.info("Completed Sending email to: " + context.getMergedJobDataMap().getString("email"));
     }
 
-    private String createHtmlMessage(JobExecutionContext context) {
+    private String createHtmlMessage(JobExecutionContext context, List<RealWorldTestingReport> rows) {
         return chplHtmlEmailBuilder.initialize()
                 .heading(env.getProperty("rwt.report.subject"))
                 .paragraph(String.format(env.getProperty("rwt.report.body")), getAcbNamesAsBrSeparatedList(context))
+                .paragraph("Summary", getEmailSummaryParagraph(rows))
                 .footer(true)
                 .build();
     }
@@ -151,5 +153,10 @@ public class RealWorldTestingReportEmailJob implements Job {
             LOGGER.error("Could not retreive ACB name based on value: " + acbId, e);
             return "";
         }
+    }
+
+    private String getEmailSummaryParagraph(List<RealWorldTestingReport> rows) {
+        RealWorldTestingReportSummaryCalculator.calculateSummariesByEligibityYear(rows, 2022);
+        return RealWorldTestingReportSummaryCalculator.calculateSummariesByEligibityYear(rows, 2022).toString();
     }
 }

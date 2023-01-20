@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReportSummary;
+import gov.healthit.chpl.util.NullSafeEvaluator;
 
 public class RealWorldTestingReportSummaryCalculator {
 
@@ -20,13 +21,13 @@ public class RealWorldTestingReportSummaryCalculator {
                 .totalActive(calculateActiveListings(filteredRows))
                 .totalWithdrawn(calculateWithdrawnListings(filteredRows))
                 .totalWithPlansUrl(calculateWithPlansUrl(filteredRows))
-                .totalWithResultsUrl(calculateWithPlansUrl(filteredRows))
+                .totalWithResultsUrl(calculateWithResultsUrl(filteredRows))
                 .build();
     }
 
     private static List<RealWorldTestingReport> filterByEligibilityYear(List<RealWorldTestingReport> rows, Integer eligibilityYear) {
         return rows.stream()
-                .filter(row -> row.getRwtEligibilityYear().equals(eligibilityYear))
+                .filter(row -> NullSafeEvaluator.eval(() -> row.getRwtEligibilityYear(), -1).equals(eligibilityYear))
                 .toList();
     }
 
