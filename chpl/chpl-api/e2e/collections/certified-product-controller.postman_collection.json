@@ -1152,6 +1152,201 @@
 						"description": "GET /{chplPrefix-identifier}/details return 200 status and has mandatoryDisclosures field in response"
 					},
 					"response": []
+				},
+				{
+					"name": "GET /{certifiedProductId}/ics-relationships - request using certifiedProductId",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var certifiedProductId= pm.iterationData.get(\"certifiedProductId\");\r",
+									"pm.environment.set(\"certifiedProductId\",\"certifiedProductId\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect {certifiedProductId}/ics-relationships to return 200 status\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"expect {certifiedProductId}/ics-relationships response to have ICS family related fields and listing's basic data fields\", function () {\r",
+									"    pm.expect(jsonData[0]).to.have.property('chplProductNumber');\r",
+									"    pm.expect(jsonData[0]).to.have.property('certificationStatus');\r",
+									"    pm.expect(jsonData[0]).to.have.property('children');\r",
+									"    pm.expect(jsonData[0]).to.have.property('developer');\r",
+									"    pm.expect(jsonData[0]).to.have.property('version');\r",
+									"    pm.expect(jsonData[0]).to.have.property('product');    \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"type": "text",
+								"value": "{{apiKey}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/{{certifiedProductId}}/ics-relationships",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"{{certifiedProductId}}",
+								"ics-relationships"
+							]
+						},
+						"description": "validate response for newly added /ics-relationships endpoint"
+					},
+					"response": []
+				},
+				{
+					"name": "GET {chplPrefix}-{identifier}/ics-relationships - request using chplPrefix-identifier",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var chplidtest= pm.iterationData.get(\"oldChplProductNumber\");\r",
+									"pm.environment.set(\"chplPrefix-identifier\",chplidtest);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect {chplPrefix}-{identifier}/ics-relationships to return 200 status\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"expect /ics-relationships response to have ICS family related fields and listing's basic data fields\", function () {\r",
+									"    pm.expect(jsonData[0]).to.have.property('chplProductNumber');\r",
+									"    pm.expect(jsonData[0]).to.have.property('certificationStatus');\r",
+									"    pm.expect(jsonData[0]).to.have.property('children');\r",
+									"    pm.expect(jsonData[0]).to.have.property('developer');\r",
+									"    pm.expect(jsonData[0]).to.have.property('version');\r",
+									"    pm.expect(jsonData[0]).to.have.property('product');    \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"type": "text",
+								"value": "{{apiKey}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/{{chplPrefix-identifier}}/ics-relationships",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"{{chplPrefix-identifier}}",
+								"ics-relationships"
+							]
+						},
+						"description": "validate response for newly added /ics-relationships endpoint"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/ics-relationships - request using newChplProductNumber",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var chplidnewtest= pm.iterationData.get(\"newChplProductNumber\");\r",
+									"pm.environment.set(\"newChplProductNumber\",chplidnewtest);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect /ics-relationships to return 200 status for request with new style chpl product number\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"expect /ics-relationships response for request with new style chpl product number to have ICS family related fields and listing's basic data fields\", function () {\r",
+									"    pm.expect(jsonData[0]).to.have.property('chplProductNumber');\r",
+									"    pm.expect(jsonData[0]).to.have.property('certificationStatus');\r",
+									"    pm.expect(jsonData[0]).to.have.property('children');\r",
+									"    pm.expect(jsonData[0]).to.have.property('developer');\r",
+									"    pm.expect(jsonData[0]).to.have.property('version');\r",
+									"    pm.expect(jsonData[0]).to.have.property('product');    \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"type": "text",
+								"value": "{{apiKey}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/certified_products/{{newChplProductNumber}}/ics-relationships",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"certified_products",
+								"{{newChplProductNumber}}",
+								"ics-relationships"
+							]
+						},
+						"description": "validate response for newly added /ics-relationships endpoint"
+					},
+					"response": []
 				}
 			]
 		},

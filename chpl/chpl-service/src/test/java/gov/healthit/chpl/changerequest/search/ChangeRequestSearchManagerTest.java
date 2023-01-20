@@ -15,7 +15,7 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult.CurrentStatusSearchResult;
-import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult.IdNamePairSearchResult;
+import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
@@ -998,22 +998,22 @@ public class ChangeRequestSearchManagerTest {
         return changeRequests;
     }
 
-    private IdNamePairSearchResult developer(Long id, String name) {
-        return IdNamePairSearchResult.builder()
+    private IdNamePair developer(Long id, String name) {
+        return IdNamePair.builder()
                 .id(id)
                 .name(name)
                 .build();
     }
 
-    private IdNamePairSearchResult acb(Long id, String name) {
-        return IdNamePairSearchResult.builder()
+    private IdNamePair acb(Long id, String name) {
+        return IdNamePair.builder()
                 .id(id)
                 .name(name)
                 .build();
     }
 
-    private IdNamePairSearchResult type(Long id, String name) {
-        return IdNamePairSearchResult.builder()
+    private IdNamePair type(Long id, String name) {
+        return IdNamePair.builder()
                 .id(id)
                 .name(name)
                 .build();
