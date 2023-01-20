@@ -55,7 +55,7 @@ public class CertifiedProductDetailsManager {
     @Transactional(readOnly = true)
     public CertifiedProductSearchDetails getCertifiedProductDetailsByChplProductNumber(String chplProductNumber) throws EntityRetrievalException {
         CertifiedProductDetailsDTO dto = getCertifiedProductDetailsDtoByChplProductNumber(chplProductNumber);
-        return listingService.createCertifiedSearchDetails(dto.getId());
+        return getCertifiedProductDetails(dto.getId());
     }
 
     @Transactional(readOnly = true)
