@@ -15,7 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.developer.search.DeveloperSearchResult.IdNamePairSearchResult;
+import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DeveloperManager;
@@ -632,14 +632,14 @@ public class DeveloperSearchServiceTest {
         return developers;
     }
 
-    private IdNamePairSearchResult acb(String name) {
-        return IdNamePairSearchResult.builder()
+    private IdNamePair acb(String name) {
+        return IdNamePair.builder()
                 .name(name)
                 .build();
     }
 
-    private IdNamePairSearchResult status(String name) {
-        return IdNamePairSearchResult.builder()
+    private IdNamePair status(String name) {
+        return IdNamePair.builder()
                 .name(name)
                 .build();
     }

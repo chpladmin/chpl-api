@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
+import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
@@ -27,7 +28,6 @@ import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CQMSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.DeveloperSearchResult;
-import gov.healthit.chpl.search.domain.ListingSearchResult.IdNamePairSearchResult;
 import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.RwtSearchOptions;
@@ -2323,8 +2323,8 @@ public class ListingSearchServiceTest {
         return listings;
     }
 
-    private IdNamePairSearchResult acb(String name) {
-        return IdNamePairSearchResult.builder()
+    private IdNamePair acb(String name) {
+        return IdNamePair.builder()
                 .name(name)
                 .build();
     }
@@ -2341,38 +2341,38 @@ public class ListingSearchServiceTest {
                 .build();
     }
 
-    private IdNamePairSearchResult productOwner(String name) {
-        return IdNamePairSearchResult.builder()
+    private IdNamePair productOwner(String name) {
+        return IdNamePair.builder()
                 .name(name)
                 .build();
     }
 
-    private IdNamePairSearchResult product(String name) {
-        return IdNamePairSearchResult.builder()
+    private IdNamePair product(String name) {
+        return IdNamePair.builder()
                 .name(name)
                 .build();
     }
 
-    private IdNamePairSearchResult version(String name) {
-        return IdNamePairSearchResult.builder()
+    private IdNamePair version(String name) {
+        return IdNamePair.builder()
                 .name(name)
                 .build();
     }
 
-    private IdNamePairSearchResult edition(String year) {
-        return IdNamePairSearchResult.builder()
+    private IdNamePair edition(String year) {
+        return IdNamePair.builder()
                 .name(year)
                 .build();
     }
 
-    private IdNamePairSearchResult status(String name) {
-        return IdNamePairSearchResult.builder()
+    private IdNamePair status(String name) {
+        return IdNamePair.builder()
                 .name(name)
                 .build();
     }
 
-    private IdNamePairSearchResult practiceType(String name) {
-        return IdNamePairSearchResult.builder()
+    private IdNamePair practiceType(String name) {
+        return IdNamePair.builder()
                 .name(name)
                 .build();
     }

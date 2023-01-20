@@ -7,6 +7,7 @@ import java.util.List;
 
 import gov.healthit.chpl.util.Util;
 
+@Deprecated
 public class IcsFamilyTreeNode implements Serializable {
 
     private static final long serialVersionUID = 4170181178663367311L;

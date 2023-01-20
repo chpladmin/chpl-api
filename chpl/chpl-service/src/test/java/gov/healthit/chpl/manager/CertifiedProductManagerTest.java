@@ -66,6 +66,7 @@ import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
 import gov.healthit.chpl.service.CuresUpdateService;
+import gov.healthit.chpl.sharedstore.listing.ListingIcsSharedStoreHandler;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
@@ -157,7 +158,8 @@ public class CertifiedProductManagerTest {
                 certifiedProductDetailsManager,
                 Mockito.mock(SchedulerManager.class),
                 activityManager, Mockito.mock(ListingDetailsNormalizer.class),
-                validatorFactory, curesUpdateService);
+                validatorFactory, curesUpdateService,
+                Mockito.mock(ListingIcsSharedStoreHandler.class));
     }
 
     @Test(expected = ValidationException.class)
