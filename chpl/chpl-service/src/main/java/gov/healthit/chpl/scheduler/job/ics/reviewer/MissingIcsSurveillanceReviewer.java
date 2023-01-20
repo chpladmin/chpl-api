@@ -43,8 +43,9 @@ public class MissingIcsSurveillanceReviewer extends IcsErrorsReviewer {
         //"grandparent", "great-grandparent" has surveillance of requirement type "Inherited Certified Status"
         if (hasIcs(listing)) {
             int generationsWithoutIcsSurveillanceCount =
-                    getGenerationsWithoutIcsSurveillanceCount(Stream.of(listing.getId()).toList(),
-                    Boolean.FALSE, 0);
+                    getGenerationsWithoutIcsSurveillanceCount(Stream.of(listing.getId()).collect(Collectors.toList()),
+                            new ArrayList<Long>(),
+                            Boolean.FALSE, 0);
             if (generationsWithoutIcsSurveillanceCount > MAX_INHERITED_GENERATIONS_WITHOUT_SURVEILLANCE) {
                 return errorMessage;
             }
@@ -52,29 +53,30 @@ public class MissingIcsSurveillanceReviewer extends IcsErrorsReviewer {
         return null;
     }
 
-    private Integer getGenerationsWithoutIcsSurveillanceCount(List<Long> listingIds, Boolean foundIcsSurveillance, Integer generationsWithoutIcsSurveillanceCount) {
+    private Integer getGenerationsWithoutIcsSurveillanceCount(List<Long> listingIds, List<Long> checkedListingIds, Boolean foundIcsSurveillance, Integer generationsWithoutIcsSurveillanceCount) {
         Iterator<Long> listingIdIter = listingIds.iterator();
         while (!foundIcsSurveillance && listingIdIter.hasNext()) {
             Long listingId = listingIdIter.next();
-            List<CertifiedProductDTO> parents = getParents(listingId);
-            removeSelfReferencingListings(parents, listingId);
-            if (CollectionUtils.isEmpty(parents)) {
-                return generationsWithoutIcsSurveillanceCount;
+            if (checkedListingIds.contains(listingId)) {
+                continue;
             }
 
-            List<Surveillance> surveillances = new ArrayList<Surveillance>();
-            parents.stream()
-                .map(parent -> survManager.getByCertifiedProduct(parent.getId()))
-                .filter(survList -> !CollectionUtils.isEmpty(survList))
-                .forEach(survList -> surveillances.addAll(survList));
+            checkedListingIds.add(listingId);
+            List<Surveillance> surveillances = survManager.getByCertifiedProduct(listingId);
             boolean hasIcsSurveillance = isAnySurveillanceForIcs(surveillances);
             if (!hasIcsSurveillance) {
-                LOGGER.debug("\tNo ICS Surveillance found for listing(s): " + parents.stream().map(parent -> parent.getId() + "").collect(Collectors.joining(", ")));
-                return getGenerationsWithoutIcsSurveillanceCount(parents.stream().map(parent -> parent.getId()).toList(),
+                LOGGER.debug("\tNo ICS Surveillance found for listing: " + listingId);
+                List<CertifiedProductDTO> parents = getParents(listingId);
+                if (CollectionUtils.isEmpty(parents)) {
+                    return generationsWithoutIcsSurveillanceCount;
+                } else {
+                    return getGenerationsWithoutIcsSurveillanceCount(parents.stream().map(parent -> parent.getId()).toList(),
+                        checkedListingIds,
                         foundIcsSurveillance,
                         ++generationsWithoutIcsSurveillanceCount);
+                }
             } else {
-                LOGGER.debug("\tFound ICS Surveillance for listing(s): " + parents.stream().map(parent -> parent.getId() + "").collect(Collectors.joining(", ")));
+                LOGGER.debug("\tFound ICS Surveillance for listing: " + listingId);
                 foundIcsSurveillance = true;
             }
         }
@@ -85,18 +87,10 @@ public class MissingIcsSurveillanceReviewer extends IcsErrorsReviewer {
         return listingGraphDao.getParents(listingId);
     }
 
-    private void removeSelfReferencingListings(List<CertifiedProductDTO> listings, Long listingId) {
-        if (listings != null) {
-            Iterator<CertifiedProductDTO> listingIter = listings.iterator();
-            while (listingIter.hasNext()) {
-                if (listingIter.next().getId().equals(listingId)) {
-                    listingIter.remove();
-                }
-            }
-        }
-    }
-
     private boolean isAnySurveillanceForIcs(List<Surveillance> surveillances) {
+        if (CollectionUtils.isEmpty(surveillances)) {
+            return false;
+        }
         return surveillances.stream()
                 .flatMap(surv -> surv.getRequirements().stream())
                 .filter(req -> !StringUtils.isEmpty(req.getRequirementTypeOther()))
