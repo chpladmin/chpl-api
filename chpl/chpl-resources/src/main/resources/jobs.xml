@@ -880,7 +880,7 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
-        
+
         <job>
             <name>missingAttestationChangeRequestEmailJob</name>
             <group>systemJobs</group>
@@ -889,6 +889,14 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
-        
+
+        <job>
+            <name>updateParticipantsJob</name>
+            <group>systemJobs</group>
+            <description>Correctly deduplicate test participants uploaded since 6/1/22</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.UpdateParticipantsJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
     </schedule>
 </job-scheduling-data>

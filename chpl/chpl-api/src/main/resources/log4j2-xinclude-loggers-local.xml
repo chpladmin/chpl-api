@@ -183,4 +183,7 @@
     <Logger name="missingAttestationChangeRequestEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="missingAttestationChangeRequestEmailJob" />
     </Logger>
+    <Logger name="updateParticipantsJobLogger" level="DEBUG" additivity="false">
+        <AppenderRef ref="updateParticipantsJob" />
+    </Logger>
 </Loggers>

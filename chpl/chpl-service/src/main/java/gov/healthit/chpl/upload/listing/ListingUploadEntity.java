@@ -1,7 +1,10 @@
 package gov.healthit.chpl.upload.listing;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,12 +16,19 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.hibernate.annotations.Type;
 
+import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 import lombok.Data;
+import lombok.extern.log4j.Log4j2;
 
 @Entity
+@Log4j2
 @Table(name = "certified_product_upload")
 @Data
 public class ListingUploadEntity {
@@ -80,4 +90,40 @@ public class ListingUploadEntity {
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
+
+    public ListingUpload toDomain() {
+        return ListingUpload.builder()
+                .id(this.getId())
+                .acb(this.getCertificationBody() != null ? this.getCertificationBody().buildCertificationBody() :
+                    CertificationBody.builder()
+                        .id(this.getCertificationBodyId())
+                    .build())
+                .chplProductNumber(this.getChplProductNumber())
+                .certificationDate(this.getCertificationDate())
+                .developer(this.getDeveloperName())
+                .product(this.getProductName())
+                .version(this.getVersionName())
+                .errorCount(this.getErrorCount())
+                .warningCount(this.getWarningCount())
+                .status(this.getStatus())
+                .build();
+    }
+
+    public ListingUpload toDomainWithRecords() {
+        ListingUpload listingUpload = toDomain();
+        listingUpload.setRecords(recordsFromString(this.getFileContents()));
+        return listingUpload;
+    }
+
+    private List<CSVRecord> recordsFromString(String csvRecordStr) {
+        List<CSVRecord> records = null;
+        try {
+            StringReader in = new StringReader(csvRecordStr);
+            CSVParser csvParser = CSVFormat.EXCEL.parse(in);
+            records = csvParser.getRecords();
+        } catch (IOException ex) {
+            LOGGER.error("Could not convert the string: '" + csvRecordStr + "' to CSV records.");
+        }
+        return records;
+    }
 }
