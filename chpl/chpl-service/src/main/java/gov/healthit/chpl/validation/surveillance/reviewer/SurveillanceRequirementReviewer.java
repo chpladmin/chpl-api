@@ -52,7 +52,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
     }
 
     private void checkRequirementExists(Surveillance surv, SurveillanceRequirement req) {
-        if (!NullSafeEvaluator.eval(() -> req.getRequirementType().getId(), -1L).equals(-1L)) {
+        if (!isRequirementTypeOther(req.getRequirementType())) {
             RequirementType reqDetailTypeFound = getRequirementTypeFullyPopulated(req.getRequirementType().getId());
             if (reqDetailTypeFound == null) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.requirementIsRequired"));
@@ -91,19 +91,23 @@ public class SurveillanceRequirementReviewer implements Reviewer {
     }
 
     private void checkCriteriaEditionMatchesListingEdition(Surveillance surv, SurveillanceRequirement req) {
-            if (isRequirementTypeCertifiedCapability(req.getRequirementType())) {
-                Long requirementCriteriaEdition = NullSafeEvaluator.eval(() ->
-                        getRequirementTypeFullyPopulated(req.getRequirementType().getId())
-                                .getCertificationEdition().getCertificationEditionId(), NOT_FOUND);
+        if (!isRequirementTypeOther(req.getRequirementType()) && isRequirementTypeCertifiedCapability(req.getRequirementType())) {
+            Long requirementCriteriaEdition = NullSafeEvaluator.eval(() ->
+                    getRequirementTypeFullyPopulated(req.getRequirementType().getId())
+                            .getCertificationEdition().getCertificationEditionId(), NOT_FOUND);
 
-                if (!requirementCriteriaEdition.equals(NOT_FOUND)) {
-                    Long listingEdition = NullSafeEvaluator.eval(() -> getCertificationEditionIdFromListing(surv.getCertifiedProduct().getId()), NOT_FOUND);
-                    if (!requirementCriteriaEdition.equals(listingEdition)) {
-                        surv.getErrorMessages().add(msgUtil.getMessage("surveillance.requirementTypeEditionMismatch",
-                                getRequirementTypeFullyPopulated(req.getRequirementType().getId()).getFormattedTitle()));
-                    }
+            if (!requirementCriteriaEdition.equals(NOT_FOUND)) {
+                Long listingEdition = NullSafeEvaluator.eval(() -> getCertificationEditionIdFromListing(surv.getCertifiedProduct().getId()), NOT_FOUND);
+                if (!requirementCriteriaEdition.equals(listingEdition)) {
+                    surv.getErrorMessages().add(msgUtil.getMessage("surveillance.requirementTypeEditionMismatch",
+                            getRequirementTypeFullyPopulated(req.getRequirementType().getId()).getFormattedTitle()));
                 }
             }
+        }
+    }
+
+    private boolean isRequirementTypeOther(RequirementType requirementType) {
+        return NullSafeEvaluator.eval(() -> requirementType.getId(), NOT_FOUND).equals(NOT_FOUND);
     }
 
     private boolean isRequirementTypeCertifiedCapability(RequirementType requirementType) {
