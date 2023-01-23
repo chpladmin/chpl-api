@@ -16,8 +16,8 @@ import gov.healthit.chpl.accessibilityStandard.AccessibilityStandard;
 import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardDAO;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.entity.FuzzyType;
-import gov.healthit.chpl.manager.FuzzyChoicesManager;
+import gov.healthit.chpl.fuzzyMatching.FuzzyChoicesManager;
+import gov.healthit.chpl.fuzzyMatching.FuzzyType;
 
 public class AccessibilityStandardNormalizerTest {
 

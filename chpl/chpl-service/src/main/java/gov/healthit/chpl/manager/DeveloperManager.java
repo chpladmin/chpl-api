@@ -28,12 +28,12 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
-import gov.healthit.chpl.developer.search.DeveloperSearchResult.IdNamePairSearchResult;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.contact.PointOfContact;
@@ -145,12 +145,12 @@ public class DeveloperManager extends SecuredManager {
                 .address(developer.getAddress())
                 .contact(developer.getContact())
                 .associatedAcbs(acbs.stream()
-                        .map(acb -> IdNamePairSearchResult.builder()
+                        .map(acb -> IdNamePair.builder()
                                 .id(acb.getId())
                                 .name(acb.getName())
                                 .build())
                         .collect(Collectors.toSet()))
-                .status(IdNamePairSearchResult.builder()
+                .status(IdNamePair.builder()
                         .id(developer.getStatus().getId())
                         .name(developer.getStatus().getStatus())
                         .build())
@@ -393,7 +393,7 @@ public class DeveloperManager extends SecuredManager {
         jobDataMap.put(MergeDeveloperJob.USER_KEY, jobUser);
         mergeDeveloperJob.setJobDataMap(jobDataMap);
         mergeDeveloperTrigger.setJob(mergeDeveloperJob);
-        mergeDeveloperTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+        mergeDeveloperTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
         mergeDeveloperTrigger = schedulerManager.createBackgroundJobTrigger(mergeDeveloperTrigger);
         return mergeDeveloperTrigger;
 
@@ -432,7 +432,7 @@ public class DeveloperManager extends SecuredManager {
         jobDataMap.put(SplitDeveloperJob.USER_KEY, jobUser);
         splitDeveloperJob.setJobDataMap(jobDataMap);
         splitDeveloperTrigger.setJob(splitDeveloperJob);
-        splitDeveloperTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+        splitDeveloperTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
         splitDeveloperTrigger = schedulerManager.createBackgroundJobTrigger(splitDeveloperTrigger);
         return splitDeveloperTrigger;
     }

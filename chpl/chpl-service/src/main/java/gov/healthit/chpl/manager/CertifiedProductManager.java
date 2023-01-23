@@ -45,10 +45,8 @@ import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
 import gov.healthit.chpl.dao.CuresUpdateEventDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
-import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.PromotingInteroperabilityUserDAO;
-import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
@@ -86,13 +84,10 @@ import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.CuresUpdateEventDTO;
-import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
-import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.CertifiedProductUpdateException;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -103,8 +98,11 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.qmsStandard.QmsStandard;
+import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
 import gov.healthit.chpl.scheduler.job.TriggerDeveloperBanJob;
 import gov.healthit.chpl.service.CuresUpdateService;
+import gov.healthit.chpl.sharedstore.listing.ListingIcsSharedStoreHandler;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
@@ -145,7 +143,6 @@ public class CertifiedProductManager extends SecuredManager {
     private CertificationResultManager certResultManager;
     private CertificationStatusDAO certStatusDao;
     private ListingGraphDAO listingGraphDao;
-    private FuzzyChoicesDAO fuzzyChoicesDao;
     private ResourcePermissions resourcePermissions;
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
@@ -154,6 +151,7 @@ public class CertifiedProductManager extends SecuredManager {
     private ListingDetailsNormalizer listingNormalizer;
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
+    private ListingIcsSharedStoreHandler icsSharedStoreHandler;
 
     public CertifiedProductManager() {
     }
@@ -176,13 +174,14 @@ public class CertifiedProductManager extends SecuredManager {
             CuresUpdateEventDAO curesUpdateDao,
             PromotingInteroperabilityUserDAO piuDao, CertificationResultManager certResultManager,
             CertificationStatusDAO certStatusDao, ListingGraphDAO listingGraphDao,
-            FuzzyChoicesDAO fuzzyChoicesDao, ResourcePermissions resourcePermissions,
+            ResourcePermissions resourcePermissions,
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
             SchedulerManager schedulerManager,
             ActivityManager activityManager, ListingDetailsNormalizer listingNormalizer,
             ListingValidatorFactory validatorFactory,
-            CuresUpdateService curesUpdateService) {
+            CuresUpdateService curesUpdateService,
+            @Lazy ListingIcsSharedStoreHandler icsSharedStoreHandler) {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
@@ -210,7 +209,6 @@ public class CertifiedProductManager extends SecuredManager {
         this.certResultManager = certResultManager;
         this.certStatusDao = certStatusDao;
         this.listingGraphDao = listingGraphDao;
-        this.fuzzyChoicesDao = fuzzyChoicesDao;
         this.resourcePermissions = resourcePermissions;
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
@@ -219,6 +217,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.listingNormalizer = listingNormalizer;
         this.validatorFactory = validatorFactory;
         this.curesUpdateService = curesUpdateService;
+        this.icsSharedStoreHandler = icsSharedStoreHandler;
     }
 
     @Transactional(readOnly = true)
@@ -280,14 +279,14 @@ public class CertifiedProductManager extends SecuredManager {
         return cpDao.getDetailsByVersionAndAcbIds(versionId, acbIdList);
     }
 
+    @Deprecated
     @Transactional
     public List<IcsFamilyTreeNode> getIcsFamilyTree(String chplProductNumber) throws EntityRetrievalException {
-
         CertifiedProductDetailsDTO dto = getCertifiedProductDetailsDtoByChplProductNumber(chplProductNumber);
-
         return getIcsFamilyTree(dto.getId());
     }
 
+    @Deprecated
     @Transactional
     public List<IcsFamilyTreeNode> getIcsFamilyTree(Long certifiedProductId) throws EntityRetrievalException {
         getById(certifiedProductId); // sends back 404 if bad id
@@ -377,6 +376,10 @@ public class CertifiedProductManager extends SecuredManager {
 
             // if listing status has changed that may trigger other changes to developer status
             performSecondaryActionsBasedOnStatusChanges(existingListing, updatedListing, updateRequest.getReason());
+
+            //clear all ICS family from the shared store so that ICS relationships
+            //are cleared for ICS additions and ICS removals
+            icsSharedStoreHandler.handle(updateRequest.getListing().getId());
 
             // Update the listing
             CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
@@ -810,17 +813,8 @@ public class CertifiedProductManager extends SecuredManager {
 
         numChanges = qmsToAdd.size() + idsToRemove.size();
 
-        List<String> fuzzyQmsChoices = fuzzyChoicesDao.getByType(FuzzyType.QMS_STANDARD).getChoices();
         for (CertifiedProductQmsStandard toAdd : qmsToAdd) {
-            if (!fuzzyQmsChoices.contains(toAdd.getQmsStandardName())) {
-                fuzzyQmsChoices.add(toAdd.getQmsStandardName());
-                FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
-                dto.setFuzzyType(FuzzyType.QMS_STANDARD);
-                dto.setChoices(fuzzyQmsChoices);
-                //TODO: Remove as part of OCD-4041
-                fuzzyChoicesDao.update(dto);
-            }
-            QmsStandardDTO qmsItem = qmsDao.findOrCreate(toAdd.getQmsStandardId(), toAdd.getQmsStandardName());
+            QmsStandard qmsItem = qmsDao.getById(toAdd.getQmsStandardId());
             CertifiedProductQmsStandardDTO qmsDto = new CertifiedProductQmsStandardDTO();
             qmsDto.setApplicableCriteria(toAdd.getApplicableCriteria());
             qmsDto.setCertifiedProductId(listingId);
@@ -841,8 +835,7 @@ public class CertifiedProductManager extends SecuredManager {
 
             if (hasChanged) {
                 CertifiedProductQmsStandard stdToUpdate = toUpdate.getUpdated();
-                QmsStandardDTO qmsItem = qmsDao.findOrCreate(stdToUpdate.getQmsStandardId(),
-                        stdToUpdate.getQmsStandardName());
+                QmsStandard qmsItem = qmsDao.getById(stdToUpdate.getQmsStandardId());
                 CertifiedProductQmsStandardDTO qmsDto = new CertifiedProductQmsStandardDTO();
                 qmsDto.setId(stdToUpdate.getId());
                 qmsDto.setApplicableCriteria(stdToUpdate.getApplicableCriteria());
@@ -1631,7 +1624,7 @@ public class CertifiedProductManager extends SecuredManager {
         jobDataMap.put(TriggerDeveloperBanJob.USER_PROVIDED_REASON, reason);
         triggerDeveloperBanJob.setJobDataMap(jobDataMap);
         possibleDeveloperBanTrigger.setJob(triggerDeveloperBanJob);
-        possibleDeveloperBanTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.DELAY_BEFORE_BACKGROUND_JOB_START);
+        possibleDeveloperBanTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
         try {
             possibleDeveloperBanTrigger = schedulerManager.createBackgroundJobTrigger(possibleDeveloperBanTrigger);
         } catch (Exception ex) {

@@ -58,6 +58,11 @@ public class TestingUsers {
         Mockito.when(resourcePermissions.isUserRoleCmsStaff()).thenReturn(true);
     }
 
+    public void setupForStartupUser(ResourcePermissions resourcePermissions) {
+        SecurityContextHolder.getContext().setAuthentication(getStartupUser());
+        Mockito.when(resourcePermissions.isUserRoleStartup()).thenReturn(true);
+    }
+
     private JWTAuthenticatedUser getCmsUser() {
         JWTAuthenticatedUser cmsUser = new JWTAuthenticatedUser();
         cmsUser.setFullName("CMS");
@@ -66,6 +71,16 @@ public class TestingUsers {
         cmsUser.setSubjectName("cmsUser");
         cmsUser.getPermissions().add(new GrantedPermission("ROLE_CMS_STAFF"));
         return cmsUser;
+    }
+
+    private JWTAuthenticatedUser getStartupUser() {
+        JWTAuthenticatedUser startupUser = new JWTAuthenticatedUser();
+        startupUser.setFullName("Startup User");
+        startupUser.setId(-4L);
+        startupUser.setFriendlyName("Startup");
+        startupUser.setSubjectName("startpUser");
+        startupUser.getPermissions().add(new GrantedPermission("ROLE_STARTUP"));
+        return startupUser;
     }
 
     public void setupForOncUser(ResourcePermissions resourcePermissions) {

@@ -9,11 +9,11 @@
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
         <delete-job>
-            <name>surveillanceUploadJob</name>
-            <group>chplBackgroundJobs</group>
+            <name>updateMeasuresJob</name>
+            <group>systemJobs</group>
         </delete-job>
         <delete-job>
-            <name>inviteDevelopersJob</name>
+            <name>rwtQuestionableActivityCreatorJob</name>
             <group>systemJobs</group>
         </delete-job>
         <!-- END remove after PROD push -->
@@ -738,16 +738,6 @@
             <recover>false</recover>
         </job>
 
-        <!-- One time job to update a defined set of Measures -->
-        <job>
-            <name>updateMeasuresJob</name>
-            <group>systemJobs</group>
-            <description>One time job to update a defined set of Measures</description>
-            <job-class>gov.healthit.chpl.scheduler.job.onetime.measures.UpdateMeasuresJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-        </job>
-
         <!-- One time job to remove 3 criteria -->
         <job>
             <name>removeCriteriaJob</name>
@@ -881,12 +871,12 @@
                 </entry>
             </job-data-map>
         </job>
-        
+
         <job>
-            <name>rwtQuestionableActivityCreatorJob</name>
+            <name>curesUpdateDesignationQuestionableActivityCreatorJob</name>
             <group>systemJobs</group>
-            <description>Back fills RWT Questionable Activity</description>
-            <job-class>gov.healthit.chpl.scheduler.job.onetime.RwtQuestionableActivityCreatorJob</job-class>
+            <description>Retroactively adds missing Cures Update Designation Questionable Activity</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.CuresDesignationRemovedQuestionableActivityCreatorJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>

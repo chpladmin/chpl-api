@@ -62,6 +62,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         return result;
     }
 
+    @Deprecated
     public IcsFamilyTreeNode getICSFamilyTree(Long certifiedProductId) {
         Query query = entityManager.createQuery(
                 "SELECT cps " + "FROM CertifiedProductBasicSearchResultEntity cps "
@@ -142,6 +143,7 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
                 .build();
     }
 
+    @Deprecated
     private IcsFamilyTreeNode convertIcs(final CertifiedProductBasicSearchResultEntity result) {
         IcsFamilyTreeNode node = new IcsFamilyTreeNode();
         node.setId(result.getId());

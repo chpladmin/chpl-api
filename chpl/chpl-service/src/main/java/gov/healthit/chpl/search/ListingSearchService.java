@@ -18,7 +18,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.domain.CertificationEdition;
+import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -27,13 +29,11 @@ import gov.healthit.chpl.search.domain.ListingSearchResponse;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CQMSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResult;
-import gov.healthit.chpl.search.domain.ListingSearchResult.IdNamePairSearchResult;
 import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.RwtSearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
-import gov.healthit.chpl.service.DirectReviewSearchService;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -110,6 +110,19 @@ public class ListingSearchService {
         return response;
     }
 
+    public List<ListingSearchResult> getAllPagesOfSearchResults(SearchRequest searchRequest) throws ValidationException {
+        List<ListingSearchResult> searchResults = new ArrayList<ListingSearchResult>();
+        ListingSearchResponse searchResponse = findListings(searchRequest);
+        searchResults.addAll(searchResponse.getResults());
+        while (searchResponse.getRecordCount() > searchResults.size()) {
+            searchRequest.setPageSize(searchResponse.getPageSize());
+            searchRequest.setPageNumber(searchResponse.getPageNumber() + 1);
+            searchResponse = findListings(searchRequest);
+            searchResults.addAll(searchResponse.getResults());
+        }
+        return searchResults;
+    }
+
     private boolean matchesSearchTerm(ListingSearchResult listing, String searchTerm) {
         if (StringUtils.isEmpty(searchTerm)) {
             return true;
@@ -124,7 +137,7 @@ public class ListingSearchService {
                 || (!StringUtils.isEmpty(listing.getAcbCertificationId()) && listing.getAcbCertificationId().toUpperCase().contains(searchTermUpperCase));
     }
 
-    private boolean doProductOwnersMatchSearchTerm(Set<IdNamePairSearchResult> productOwners, String searchTerm) {
+    private boolean doProductOwnersMatchSearchTerm(Set<IdNamePair> productOwners, String searchTerm) {
         Set<String> uppercaseNames = productOwners.stream()
             .filter(productOwner -> !StringUtils.isEmpty(productOwner.getName()))
             .map(productOwner -> productOwner.getName().toUpperCase())

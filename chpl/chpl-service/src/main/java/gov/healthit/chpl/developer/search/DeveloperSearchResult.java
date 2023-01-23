@@ -12,16 +12,14 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.domain.Address;
+import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
@@ -36,16 +34,16 @@ public class DeveloperSearchResult implements Serializable {
     private String name;
     private Address address;
     private PointOfContact contact;
-    private IdNamePairSearchResult status;
+    private IdNamePair status;
 
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate decertificationDate;
 
-    private Set<IdNamePairSearchResult> associatedAcbs;
+    private Set<IdNamePair> associatedAcbs;
 
     public DeveloperSearchResult() {
-        associatedAcbs = new HashSet<DeveloperSearchResult.IdNamePairSearchResult>();
+        associatedAcbs = new HashSet<IdNamePair>();
     }
 
     @Override
@@ -69,16 +67,5 @@ public class DeveloperSearchResult implements Serializable {
             return -1;
         }
         return this.getId().hashCode();
-    }
-
-    @Getter
-    @SuperBuilder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @EqualsAndHashCode
-    public static class IdNamePairSearchResult implements Serializable {
-        private static final long serialVersionUID = -2377078036832863130L;
-        private Long id;
-        private String name;
     }
 }

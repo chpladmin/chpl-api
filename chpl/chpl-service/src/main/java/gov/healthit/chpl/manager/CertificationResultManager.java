@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,7 +21,6 @@ import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
-import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestParticipantDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
@@ -37,8 +35,8 @@ import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
-import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.AgeRangeDTO;
@@ -65,7 +63,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
-import gov.healthit.chpl.ucdProcess.UcdProcessDAO;
 import lombok.extern.log4j.Log4j2;
 
 @Service
@@ -81,16 +78,13 @@ public class CertificationResultManager extends SecuredManager {
     private AgeRangeDAO ageDao;
     private EducationTypeDAO educDao;
     private TestTaskDAO testTaskDAO;
-    private UcdProcessDAO ucdDao;
-    private FuzzyChoicesDAO fuzzyChoicesDao;
 
     @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
     public CertificationResultManager(CertifiedProductSearchDAO cpDao, CertificationCriterionDAO criteriaDao,
             CertificationResultDAO certResultDAO, TestStandardDAO testStandardDAO,
             TestToolDAO testToolDAO, TestFunctionalityDAO testFunctionalityDAO, TestParticipantDAO testParticipantDAO,
-            AgeRangeDAO ageDao, EducationTypeDAO educDao, TestTaskDAO testTaskDAO, UcdProcessDAO ucdDao,
-            FuzzyChoicesDAO fuzzyChoicesDao) {
+            AgeRangeDAO ageDao, EducationTypeDAO educDao, TestTaskDAO testTaskDAO) {
         this.cpDao = cpDao;
         this.criteriaDao = criteriaDao;
         this.certResultDAO = certResultDAO;
@@ -101,8 +95,6 @@ public class CertificationResultManager extends SecuredManager {
         this.ageDao = ageDao;
         this.educDao = educDao;
         this.testTaskDAO = testTaskDAO;
-        this.ucdDao = ucdDao;
-        this.fuzzyChoicesDao = fuzzyChoicesDao;
     }
 
     @SuppressWarnings({"checkstyle:methodlength", "checkstyle:linelength"})
@@ -409,13 +401,13 @@ public class CertificationResultManager extends SecuredManager {
 
         for (CertificationResultAdditionalSoftwarePair toUpdate : additionalSoftwareToUpdate) {
             boolean hasChanged = false;
-            if (!ObjectUtils.equals(toUpdate.getOrig().getJustification(), toUpdate.getUpdated().getJustification())
-                    || !ObjectUtils.equals(toUpdate.getOrig().getName(), toUpdate.getUpdated().getName())
-                    || !ObjectUtils.equals(toUpdate.getOrig().getGrouping(), toUpdate.getUpdated().getGrouping())
-                    || !ObjectUtils.equals(toUpdate.getOrig().getVersion(), toUpdate.getUpdated().getVersion())
-                    || !ObjectUtils.equals(toUpdate.getOrig().getCertifiedProductId(),
+            if (!Objects.equals(toUpdate.getOrig().getJustification(), toUpdate.getUpdated().getJustification())
+                    || !Objects.equals(toUpdate.getOrig().getName(), toUpdate.getUpdated().getName())
+                    || !Objects.equals(toUpdate.getOrig().getGrouping(), toUpdate.getUpdated().getGrouping())
+                    || !Objects.equals(toUpdate.getOrig().getVersion(), toUpdate.getUpdated().getVersion())
+                    || !Objects.equals(toUpdate.getOrig().getCertifiedProductId(),
                             toUpdate.getUpdated().getCertifiedProductId())
-                    || !ObjectUtils.equals(toUpdate.getOrig().getCertifiedProductNumber(),
+                    || !Objects.equals(toUpdate.getOrig().getCertifiedProductNumber(),
                             toUpdate.getUpdated().getCertifiedProductNumber())) {
                 hasChanged = true;
             }
@@ -862,10 +854,10 @@ public class CertificationResultManager extends SecuredManager {
 
         for (CertificationResultTestDataPair toUpdate : testDataToUpdate) {
             boolean hasChanged = false;
-            if (!ObjectUtils.equals(toUpdate.getOrig().getTestData().getId(),
+            if (!Objects.equals(toUpdate.getOrig().getTestData().getId(),
                     toUpdate.getUpdated().getTestData().getId())
-                    || !ObjectUtils.equals(toUpdate.getOrig().getAlteration(), toUpdate.getUpdated().getAlteration())
-                    || !ObjectUtils.equals(toUpdate.getOrig().getVersion(), toUpdate.getUpdated().getVersion())) {
+                    || !Objects.equals(toUpdate.getOrig().getAlteration(), toUpdate.getUpdated().getAlteration())
+                    || !Objects.equals(toUpdate.getOrig().getVersion(), toUpdate.getUpdated().getVersion())) {
                 hasChanged = true;
             }
 
@@ -1144,23 +1136,23 @@ public class CertificationResultManager extends SecuredManager {
         boolean isDifferent = false;
         if (!StringUtils.equals(existingTask.getDescription(), updatedTask.getDescription())
                 || !StringUtils.equals(existingTask.getTaskRatingScale(), updatedTask.getTaskRatingScale())
-                || !ObjectUtils.equals(existingTask.getTaskErrors(), updatedTask.getTaskErrors())
-                || !ObjectUtils.equals(existingTask.getTaskErrorsStddev(), updatedTask.getTaskErrorsStddev())
-                || !ObjectUtils.equals(existingTask.getTaskPathDeviationObserved(),
+                || !Objects.equals(existingTask.getTaskErrors(), updatedTask.getTaskErrors())
+                || !Objects.equals(existingTask.getTaskErrorsStddev(), updatedTask.getTaskErrorsStddev())
+                || !Objects.equals(existingTask.getTaskPathDeviationObserved(),
                         updatedTask.getTaskPathDeviationObserved())
-                || !ObjectUtils.equals(existingTask.getTaskPathDeviationOptimal(),
+                || !Objects.equals(existingTask.getTaskPathDeviationOptimal(),
                         updatedTask.getTaskPathDeviationOptimal())
-                || !ObjectUtils.equals(existingTask.getTaskRating(), updatedTask.getTaskRating())
+                || !Objects.equals(existingTask.getTaskRating(), updatedTask.getTaskRating())
                 || !StringUtils.equals(existingTask.getTaskRatingScale(), updatedTask.getTaskRatingScale())
-                || !ObjectUtils.equals(existingTask.getTaskRatingStddev(), updatedTask.getTaskRatingStddev())
-                || !ObjectUtils.equals(existingTask.getTaskSuccessAverage(), updatedTask.getTaskSuccessAverage())
-                || !ObjectUtils.equals(existingTask.getTaskSuccessStddev(), updatedTask.getTaskSuccessStddev())
-                || !ObjectUtils.equals(existingTask.getTaskTimeAvg(), updatedTask.getTaskTimeAvg())
-                || !ObjectUtils.equals(existingTask.getTaskTimeDeviationObservedAvg(),
+                || !Objects.equals(existingTask.getTaskRatingStddev(), updatedTask.getTaskRatingStddev())
+                || !Objects.equals(existingTask.getTaskSuccessAverage(), updatedTask.getTaskSuccessAverage())
+                || !Objects.equals(existingTask.getTaskSuccessStddev(), updatedTask.getTaskSuccessStddev())
+                || !Objects.equals(existingTask.getTaskTimeAvg(), updatedTask.getTaskTimeAvg())
+                || !Objects.equals(existingTask.getTaskTimeDeviationObservedAvg(),
                         updatedTask.getTaskTimeDeviationObservedAvg())
-                || !ObjectUtils.equals(existingTask.getTaskTimeDeviationOptimalAvg(),
+                || !Objects.equals(existingTask.getTaskTimeDeviationOptimalAvg(),
                         updatedTask.getTaskTimeDeviationOptimalAvg())
-                || !ObjectUtils.equals(existingTask.getTaskTimeStddev(), updatedTask.getTaskTimeStddev())) {
+                || !Objects.equals(existingTask.getTaskTimeStddev(), updatedTask.getTaskTimeStddev())) {
             isDifferent = true;
         }
 
@@ -1259,14 +1251,14 @@ public class CertificationResultManager extends SecuredManager {
             if (!StringUtils.equals(existingPart.getAgeRange(), updatedPart.getAgeRange())
                     || !StringUtils.equals(existingPart.getAssistiveTechnologyNeeds(),
                             updatedPart.getAssistiveTechnologyNeeds())
-                    || !ObjectUtils.equals(existingPart.getComputerExperienceMonths(),
+                    || !Objects.equals(existingPart.getComputerExperienceMonths(),
                             updatedPart.getComputerExperienceMonths())
                     || !StringUtils.equals(existingPart.getEducationTypeName(), updatedPart.getEducationTypeName())
                     || !StringUtils.equals(existingPart.getGender(), updatedPart.getGender())
                     || !StringUtils.equals(existingPart.getOccupation(), updatedPart.getOccupation())
-                    || !ObjectUtils.equals(existingPart.getProductExperienceMonths(),
+                    || !Objects.equals(existingPart.getProductExperienceMonths(),
                             updatedPart.getProductExperienceMonths())
-                    || !ObjectUtils.equals(existingPart.getProfessionalExperienceMonths(),
+                    || !Objects.equals(existingPart.getProfessionalExperienceMonths(),
                             updatedPart.getProfessionalExperienceMonths())) {
                 isDifferent = true;
             }
