@@ -35,38 +35,21 @@ public class IcsErrorsReportDao extends BaseDAOImpl {
     }
 
     @Transactional
-    public void create(List<IcsErrorsReportItem> reports) throws EntityCreationException, EntityRetrievalException {
-        for (IcsErrorsReportItem report : reports) {
-            IcsErrorsReportEntity entity = new IcsErrorsReportEntity();
-            entity.setCertifiedProductId(report.getListingId());
-            entity.setChplProductNumber(report.getChplProductNumber());
-            entity.setDeveloper(report.getDeveloper());
-            entity.setProduct(report.getProduct());
-            entity.setVersion(report.getVersion());
-            entity.setCertificationBody(CertificationBodyEntity.getNewAcbEntity(report.getCertificationBody()));
-            entity.setReason(report.getReason());
-            entity.setDeleted(false);
-            entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
-
+    public void create(List<IcsErrorsReportItem> reportItems) throws EntityCreationException, EntityRetrievalException {
+        for (IcsErrorsReportItem reportItem : reportItems) {
+            IcsErrorsReportEntity entity = IcsErrorsReportEntity.builder()
+                    .certifiedProductId(reportItem.getListingId())
+                    .chplProductNumber(reportItem.getChplProductNumber())
+                    .developer(reportItem.getDeveloper())
+                    .product(reportItem.getProduct())
+                    .version(reportItem.getVersion())
+                    .certificationBody(CertificationBodyEntity.getNewAcbEntity(reportItem.getCertificationBody()))
+                    .reason(reportItem.getReason())
+                    .deleted(false)
+                    .lastModifiedUser(getUserId(User.SYSTEM_USER_ID))
+                    .build();
             entityManager.persist(entity);
         }
-        entityManager.flush();
-    }
-
-    @Transactional
-    public void create(IcsErrorsReportItem report) throws EntityCreationException, EntityRetrievalException {
-        IcsErrorsReportEntity entity = new IcsErrorsReportEntity();
-        entity.setCertifiedProductId(report.getListingId());
-        entity.setChplProductNumber(report.getChplProductNumber());
-        entity.setDeveloper(report.getDeveloper());
-        entity.setProduct(report.getProduct());
-        entity.setVersion(report.getVersion());
-        entity.setCertificationBody(CertificationBodyEntity.getNewAcbEntity(report.getCertificationBody()));
-        entity.setReason(report.getReason());
-        entity.setDeleted(false);
-        entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
-
-        entityManager.persist(entity);
         entityManager.flush();
     }
 
