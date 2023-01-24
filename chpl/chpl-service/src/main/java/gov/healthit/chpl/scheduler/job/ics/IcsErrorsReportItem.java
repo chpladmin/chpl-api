@@ -18,11 +18,12 @@ public class IcsErrorsReportItem implements Serializable {
 
     private Long id;
     private Long listingId;
+    private CertificationBody certificationBody;
+    private String reason;
+
     private String chplProductNumber;
     private String developer;
     private String product;
     private String version;
-    private CertificationBody certificationBody;
-    private String reason;
-    private Boolean deleted;
+    private String certificationStatus;
 }

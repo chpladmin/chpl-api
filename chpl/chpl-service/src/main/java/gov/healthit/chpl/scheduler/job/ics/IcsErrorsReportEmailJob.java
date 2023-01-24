@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -22,7 +25,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -41,6 +46,9 @@ public class IcsErrorsReportEmailJob extends QuartzJob {
     private CertificationBodyDAO certificationBodyDAO;
 
     @Autowired
+    private CertifiedProductDetailsManager certifiedProductDetailsManager;
+
+    @Autowired
     private Environment env;
 
     @Autowired
@@ -48,6 +56,8 @@ public class IcsErrorsReportEmailJob extends QuartzJob {
 
     @Autowired
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
+
+    private String listingUrlBegin;
 
     public IcsErrorsReportEmailJob() throws Exception {
         super();
@@ -59,18 +69,43 @@ public class IcsErrorsReportEmailJob extends QuartzJob {
 
         LOGGER.info("********* Starting the ICS Errors Report Email job. *********");
         LOGGER.info("Sending email to: " + jobContext.getMergedJobDataMap().getString("email"));
+        listingUrlBegin = env.getProperty("chplUrlBegin").trim() + env.getProperty("listingDetailsUrl");
 
-        List<IcsErrorsReportItem> errors = getAppropriateErrors(jobContext);
+        List<IcsErrorsReportItem> icsErrorItems = getAppropriateErrors(jobContext);
+
+        ExecutorService executorService = null;
+        try {
+            Integer threadPoolSize = getThreadCountForJob();
+            executorService = Executors.newFixedThreadPool(threadPoolSize);
+            List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
+            for (IcsErrorsReportItem icsErrorItem : icsErrorItems) {
+                futures.add(CompletableFuture
+                        .supplyAsync(() -> getCertifiedProductSearchDetails(icsErrorItem.getListingId()), executorService)
+                        .thenAccept(listingDetails -> fillInIcsErrorItem(icsErrorItem, listingDetails)));
+            }
+            CompletableFuture<Void> combinedFutures = CompletableFuture
+                    .allOf(futures.toArray(new CompletableFuture[futures.size()]));
+
+            // This is not blocking - presumably because the job executes using it's own ExecutorService
+            // This is necessary so that the system can indicate that the job and it's threads are still running
+            combinedFutures.get();
+            LOGGER.info("All processes have completed");
+        } catch (Exception ex) {
+
+        } finally {
+            executorService.shutdown();
+        }
+
         File output = null;
         List<File> files = new ArrayList<File>();
-        if (errors.size() > 0) {
-            output = getOutputFile(errors);
+        if (icsErrorItems.size() > 0) {
+            output = getOutputFile(icsErrorItems);
             files.add(output);
         }
         String to = jobContext.getMergedJobDataMap().getString("email");
         String subject = env.getProperty("icsErrorsReportEmailSubject");
         try {
-            String htmlMessage = createHtmlEmailBody(errors, jobContext);
+            String htmlMessage = createHtmlEmailBody(icsErrorItems, jobContext);
             LOGGER.info("Message to be sent: " + htmlMessage);
 
             List<String> addresses = new ArrayList<String>();
@@ -87,19 +122,43 @@ public class IcsErrorsReportEmailJob extends QuartzJob {
         LOGGER.info("********* Completed the ICS Errors Report Email job. *********");
     }
 
+    private void fillInIcsErrorItem(IcsErrorsReportItem icsErrorItem, CertifiedProductSearchDetails listing) {
+        icsErrorItem.setChplProductNumber(listing.getChplProductNumber());
+        icsErrorItem.setDeveloper(listing.getDeveloper() != null ? listing.getDeveloper().getName() : "");
+        icsErrorItem.setProduct(listing.getProduct() != null ? listing.getProduct().getName() : "");
+        icsErrorItem.setVersion(listing.getVersion() != null ? listing.getVersion().getVersion() : "");
+        icsErrorItem.setCertificationStatus(listing.getCurrentStatus() != null
+                && listing.getCurrentStatus().getStatus() != null ? listing.getCurrentStatus().getStatus().getName() : "");
+    }
+
     private List<IcsErrorsReportItem> getAppropriateErrors(JobExecutionContext jobContext) {
         List<IcsErrorsReportItem> allErrors = icsErrorsReportDao.findAll();
-        List<IcsErrorsReportItem> errors = new ArrayList<IcsErrorsReportItem>();
+        LOGGER.info("Found " + allErrors.size() + " total ICS Errors");
+
+        List<IcsErrorsReportItem> errorsForJobAcbs = new ArrayList<IcsErrorsReportItem>();
         List<Long> acbIds =
                 Arrays.asList(
                         jobContext.getMergedJobDataMap().getString(QuartzJob.JOB_DATA_KEY_ACB).split(SchedulerManager.DATA_DELIMITER)).stream()
                 .map(acb -> Long.parseLong(acb))
                 .collect(Collectors.toList());
 
-        errors = allErrors.stream()
+        errorsForJobAcbs = allErrors.stream()
                 .filter(error -> acbIds.contains(error.getCertificationBody().getId()))
                 .collect(Collectors.toList());
-        return errors;
+        LOGGER.info("Filtered to " + errorsForJobAcbs.size() + " errors for ACBs: "
+                + Util.joinListGrammatically(acbIds.stream().map(acbId -> acbId.toString()).toList()));
+        return errorsForJobAcbs;
+    }
+
+    private CertifiedProductSearchDetails getCertifiedProductSearchDetails(Long id) {
+        CertifiedProductSearchDetails cp = null;
+        try {
+            cp = certifiedProductDetailsManager.getCertifiedProductDetails(id);
+            LOGGER.info("Completed retrieval of listing [" + cp.getChplProductNumber() + "]");
+        } catch (Exception e) {
+            LOGGER.error("Could not retrieve listing [" + id + "] - " + e.getMessage(), e);
+        }
+        return cp;
     }
 
     private File getOutputFile(List<IcsErrorsReportItem> errors) {
@@ -136,20 +195,22 @@ public class IcsErrorsReportEmailJob extends QuartzJob {
         result.add("Product");
         result.add("Version");
         result.add("ONC-ACB");
+        result.add("Certification Status");
         result.add("URL");
         result.add("Reason for Inclusion");
         return result;
     }
 
-    private List<String> generateRowValue(IcsErrorsReportItem data) {
+    private List<String> generateRowValue(IcsErrorsReportItem icsErrorItem) {
         List<String> result = new ArrayList<String>();
-        result.add(data.getChplProductNumber());
-        result.add(data.getDeveloper());
-        result.add(data.getProduct());
-        result.add(data.getVersion());
-        result.add(data.getCertificationBody().getName());
-        result.add(env.getProperty("chplUrlBegin").trim() + env.getProperty("listingDetailsUrl") + data.getListingId());
-        result.add(data.getReason());
+        result.add(icsErrorItem.getChplProductNumber());
+        result.add(icsErrorItem.getDeveloper());
+        result.add(icsErrorItem.getProduct());
+        result.add(icsErrorItem.getVersion());
+        result.add(icsErrorItem.getCertificationBody().getName());
+        result.add(icsErrorItem.getCertificationStatus());
+        result.add(listingUrlBegin + icsErrorItem.getListingId());
+        result.add(icsErrorItem.getReason());
         return result;
     }
 
@@ -192,4 +253,7 @@ public class IcsErrorsReportEmailJob extends QuartzJob {
         }
     }
 
+    private Integer getThreadCountForJob() throws NumberFormatException {
+        return Integer.parseInt(env.getProperty("executorThreadCountForQuartzJobs"));
+    }
 }

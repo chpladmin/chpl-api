@@ -171,10 +171,6 @@ public class IcsErrorsReportCreatorJob extends QuartzJob {
 
         return IcsErrorsReportItem.builder()
                 .listingId(listing.getId())
-                .chplProductNumber(listing.getChplProductNumber())
-                .developer(listing.getDeveloper().getName())
-                .product(listing.getProduct().getName())
-                .version(listing.getVersion().getVersion())
                 .certificationBody(acbDto != null ? new CertificationBody(acbDto) : null)
                 .reason(icsErrorMessage)
                 .build();
@@ -210,7 +206,7 @@ public class IcsErrorsReportCreatorJob extends QuartzJob {
         CertificationBodyDTO acb = null;
         try {
             acb = certificationBodyDAO.getById(certificationBodyId);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             LOGGER.error("No ACB could be found with ID " + certificationBodyId);
         }
         return acb;

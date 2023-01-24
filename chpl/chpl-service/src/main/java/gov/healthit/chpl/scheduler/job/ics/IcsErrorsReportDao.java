@@ -5,9 +5,7 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -23,30 +21,18 @@ public class IcsErrorsReportDao extends BaseDAOImpl {
                 .toList();
     }
 
-    @Transactional
     public void deleteAll() {
-        this.findAllEntities().stream()
-        .filter(entity -> !entity.getDeleted())
-        .forEach(entity -> {
-            entity.setDeleted(true);
-            entityManager.merge(entity);
-        });
-        entityManager.flush();
+        Query query = entityManager.createQuery(
+                "DELETE FROM IcsErrorsReportEntity");
+        query.executeUpdate();
     }
 
-    @Transactional
     public void create(List<IcsErrorsReportItem> reportItems) throws EntityCreationException, EntityRetrievalException {
         for (IcsErrorsReportItem reportItem : reportItems) {
             IcsErrorsReportEntity entity = IcsErrorsReportEntity.builder()
                     .certifiedProductId(reportItem.getListingId())
-                    .chplProductNumber(reportItem.getChplProductNumber())
-                    .developer(reportItem.getDeveloper())
-                    .product(reportItem.getProduct())
-                    .version(reportItem.getVersion())
                     .certificationBody(CertificationBodyEntity.getNewAcbEntity(reportItem.getCertificationBody()))
                     .reason(reportItem.getReason())
-                    .deleted(false)
-                    .lastModifiedUser(getUserId(User.SYSTEM_USER_ID))
                     .build();
             entityManager.persist(entity);
         }
@@ -57,8 +43,7 @@ public class IcsErrorsReportDao extends BaseDAOImpl {
         Query query = entityManager.createQuery("SELECT icsReports "
                 + "FROM IcsErrorsReportEntity icsReports "
                 + "JOIN FETCH icsReports.certificationBody acb "
-                + "JOIN FETCH acb.address "
-                + "WHERE (icsReports.deleted = false)",
+                + "JOIN FETCH acb.address ",
                 IcsErrorsReportEntity.class);
         return query.getResultList();
     }
