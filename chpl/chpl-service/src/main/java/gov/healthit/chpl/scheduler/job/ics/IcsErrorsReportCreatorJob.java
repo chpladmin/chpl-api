@@ -31,7 +31,6 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.search.ListingSearchService;
-import gov.healthit.chpl.search.domain.ListingSearchResponse;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import lombok.extern.log4j.Log4j2;
@@ -73,9 +72,15 @@ public class IcsErrorsReportCreatorJob extends QuartzJob {
 
         LOGGER.info("********* Starting the Inheritance Error Report Creator job. *********");
 
-        List<ListingSearchResult> relevantListings = getAllPagesOfSearchResults(SearchRequest.builder()
+        List<ListingSearchResult> relevantListings = new ArrayList<ListingSearchResult>();
+        try {
+            relevantListings = listingSearchService.getAllPagesOfSearchResults(SearchRequest.builder()
                 .certificationEditions(Stream.of(EDITION_2015).collect(Collectors.toSet()))
                 .build());
+        } catch (ValidationException ex) {
+            LOGGER.fatal("Invalid search request provided.", ex);
+        }
+
         LOGGER.info("Checking " + relevantListings.size() + " for ICS Errors.");
 
         ExecutorService executorService = null;
@@ -109,25 +114,6 @@ public class IcsErrorsReportCreatorJob extends QuartzJob {
             executorService.shutdown();
         }
         LOGGER.info("Completed the Inheritance Error Report Creator job. *********");
-    }
-
-    private List<ListingSearchResult> getAllPagesOfSearchResults(SearchRequest searchRequest) {
-        List<ListingSearchResult> searchResults = new ArrayList<ListingSearchResult>();
-        try {
-            LOGGER.debug(searchRequest.toString());
-            ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
-            searchResults.addAll(searchResponse.getResults());
-            while (searchResponse.getRecordCount() > searchResults.size()) {
-                searchRequest.setPageSize(searchResponse.getPageSize());
-                searchRequest.setPageNumber(searchResponse.getPageNumber() + 1);
-                LOGGER.debug(searchRequest.toString());
-                searchResponse = listingSearchService.findListings(searchRequest);
-                searchResults.addAll(searchResponse.getResults());
-            }
-        } catch (ValidationException ex) {
-            LOGGER.error("Could not query all search results.", ex);
-        }
-        return searchResults;
     }
 
     private CertifiedProductSearchDetails getCertifiedProductSearchDetails(Long id) {
