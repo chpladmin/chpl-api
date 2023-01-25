@@ -106,6 +106,7 @@ public class ListingUploadEntity {
                 .errorCount(this.getErrorCount())
                 .warningCount(this.getWarningCount())
                 .status(this.getStatus())
+                .certifiedProductId(this.getCertifiedProductId())
                 .build();
     }
 

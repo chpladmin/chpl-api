@@ -8,14 +8,7 @@
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
-        <delete-job>
-            <name>updateMeasuresJob</name>
-            <group>systemJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>rwtQuestionableActivityCreatorJob</name>
-            <group>systemJobs</group>
-        </delete-job>
+
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
@@ -893,8 +886,8 @@
         <job>
             <name>updateParticipantsJob</name>
             <group>systemJobs</group>
-            <description>Correctly deduplicate test participants uploaded since 6/1/22</description>
-            <job-class>gov.healthit.chpl.scheduler.job.onetime.UpdateParticipantsJob</job-class>
+            <description>Correctly deduplicate test participants for listing uploaded between 6/1/22 and 1/9/23</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.participants.UpdateParticipantsJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>
