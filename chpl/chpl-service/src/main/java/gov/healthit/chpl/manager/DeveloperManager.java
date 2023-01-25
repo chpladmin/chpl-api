@@ -28,12 +28,12 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
-import gov.healthit.chpl.developer.search.DeveloperSearchResult.IdNamePairSearchResult;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.contact.PointOfContact;
@@ -145,12 +145,12 @@ public class DeveloperManager extends SecuredManager {
                 .address(developer.getAddress())
                 .contact(developer.getContact())
                 .associatedAcbs(acbs.stream()
-                        .map(acb -> IdNamePairSearchResult.builder()
+                        .map(acb -> IdNamePair.builder()
                                 .id(acb.getId())
                                 .name(acb.getName())
                                 .build())
                         .collect(Collectors.toSet()))
-                .status(IdNamePairSearchResult.builder()
+                .status(IdNamePair.builder()
                         .id(developer.getStatus().getId())
                         .name(developer.getStatus().getStatus())
                         .build())

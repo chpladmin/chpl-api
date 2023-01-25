@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
-import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult.IdNamePairSearchResult;
+import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.auth.UserDTO;
@@ -328,8 +328,8 @@ public class ChangeRequestSearchManager {
                     || StringUtils.isAnyEmpty(changeRequest2.getCertificationBodies().stream().map(acb -> acb.getName()).toList().toArray(new String[0]))) {
                 return 0;
             }
-            changeRequest1.getCertificationBodies().sort(new IdNamePairSearchResultComparator());
-            changeRequest2.getCertificationBodies().sort(new IdNamePairSearchResultComparator());
+            changeRequest1.getCertificationBodies().sort(new IdNamePairComparator());
+            changeRequest2.getCertificationBodies().sort(new IdNamePairComparator());
             String changeRequest1SmushedAcbs = changeRequest1.getCertificationBodies().stream()
                     .map(acb -> acb.getName())
                     .collect(Collectors.joining(","));
@@ -414,12 +414,12 @@ public class ChangeRequestSearchManager {
         }
     }
 
-    private class IdNamePairSearchResultComparator implements Comparator<IdNamePairSearchResult> {
-        IdNamePairSearchResultComparator() {
+    private class IdNamePairComparator implements Comparator<IdNamePair> {
+        IdNamePairComparator() {
         }
 
         @Override
-        public int compare(IdNamePairSearchResult item1, IdNamePairSearchResult item2) {
+        public int compare(IdNamePair item1, IdNamePair item2) {
             if (ObjectUtils.anyNull(item1.getName(), item2.getName())) {
                 return 0;
             }

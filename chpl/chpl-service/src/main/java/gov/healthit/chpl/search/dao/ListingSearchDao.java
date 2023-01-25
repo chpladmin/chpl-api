@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
@@ -25,7 +26,6 @@ import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterio
 import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResultWithStringField;
 import gov.healthit.chpl.search.domain.ListingSearchResult.DateRangeSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.DeveloperSearchResult;
-import gov.healthit.chpl.search.domain.ListingSearchResult.IdNamePairSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.PromotingInteroperabilitySearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.StatusEventSearchResult;
 import gov.healthit.chpl.search.entity.ListingSearchEntity;
@@ -76,18 +76,18 @@ public class ListingSearchDao extends BaseDAOImpl {
         return ListingSearchResult.builder()
                 .id(entity.getId())
                 .chplProductNumber(entity.getChplProductNumber())
-                .edition(IdNamePairSearchResult.builder()
+                .edition(IdNamePair.builder()
                         .id(entity.getCertificationEditionId())
                         .name(entity.getCertificationEditionYear())
                         .build())
                 .curesUpdate(entity.getCuresUpdate())
-                .certificationBody(IdNamePairSearchResult.builder()
+                .certificationBody(IdNamePair.builder()
                         .id(entity.getCertificationBodyId())
                         .name(entity.getCertificationBodyName())
                         .build())
                 .acbCertificationId(entity.getAcbCertificationId())
                 .practiceType(entity.getPracticeTypeId() != null
-                    ? IdNamePairSearchResult.builder()
+                    ? IdNamePair.builder()
                         .id(entity.getPracticeTypeId())
                         .name(entity.getPracticeTypeName())
                         .build()
@@ -95,16 +95,16 @@ public class ListingSearchDao extends BaseDAOImpl {
                 .developer(DeveloperSearchResult.builder()
                         .id(entity.getDeveloperId())
                         .name(entity.getDeveloper())
-                        .status(IdNamePairSearchResult.builder()
+                        .status(IdNamePair.builder()
                                 .id(entity.getDeveloperStatusId())
                                 .name(entity.getDeveloperStatus())
                                 .build())
                         .build())
-                .product(IdNamePairSearchResult.builder()
+                .product(IdNamePair.builder()
                         .id(entity.getProductId())
                         .name(entity.getProduct())
                         .build())
-                .version(IdNamePairSearchResult.builder()
+                .version(IdNamePair.builder()
                         .id(entity.getVersionId())
                         .name(entity.getVersion())
                         .build())
@@ -113,7 +113,7 @@ public class ListingSearchDao extends BaseDAOImpl {
                 .decertificationDate(entity.getDecertificationDate() == null ? null :
                     DateUtil.toLocalDate(entity.getDecertificationDate().getTime()))
                 .certificationDate(DateUtil.toLocalDate(entity.getCertificationDate().getTime()))
-                .certificationStatus(IdNamePairSearchResult.builder()
+                .certificationStatus(IdNamePair.builder()
                         .id(entity.getCertificationStatusId())
                         .name(entity.getCertificationStatus())
                         .build())
@@ -203,7 +203,7 @@ public class ListingSearchDao extends BaseDAOImpl {
             throw new EntityRetrievalException("Unable to parse status event fields from '" + aggregatedStatusEventString + "'.");
         }
         return StatusEventSearchResult.builder()
-                        .status(IdNamePairSearchResult.builder()
+                        .status(IdNamePair.builder()
                                 .id(Long.parseLong(statusEventFields[0]))
                                 .name(statusEventFields[1])
                                 .build())
@@ -290,10 +290,10 @@ public class ListingSearchDao extends BaseDAOImpl {
                 .build();
     }
 
-    private Set<IdNamePairSearchResult> convertToSetOfProductOwners(String delimitedProductOwnerString, String delimeter)
+    private Set<IdNamePair> convertToSetOfProductOwners(String delimitedProductOwnerString, String delimeter)
             throws EntityRetrievalException, NumberFormatException {
         if (ObjectUtils.isEmpty(delimitedProductOwnerString)) {
-            return new LinkedHashSet<IdNamePairSearchResult>();
+            return new LinkedHashSet<IdNamePair>();
         }
 
         String[] productOwners = delimitedProductOwnerString.split(delimeter);
@@ -302,13 +302,13 @@ public class ListingSearchDao extends BaseDAOImpl {
                 .collect(Collectors.toSet());
     }
 
-    private IdNamePairSearchResult convertToProductOwner(String aggregatedProductOwnerString)
+    private IdNamePair convertToProductOwner(String aggregatedProductOwnerString)
             throws EntityRetrievalException, NumberFormatException {
         String[] productOwnerFields = aggregatedProductOwnerString.split(ListingSearchEntity.FROWNEY_SPLIT_CHAR);
         if (productOwnerFields == null || productOwnerFields.length != PRODUCT_OWNER_FIELD_COUNT) {
             throw new EntityRetrievalException("Unable to parse product owner fields from '" + aggregatedProductOwnerString + "'.");
         }
-        return IdNamePairSearchResult.builder()
+        return IdNamePair.builder()
                         .id(Long.parseLong(productOwnerFields[0]))
                         .name(productOwnerFields[1])
                         .build();
