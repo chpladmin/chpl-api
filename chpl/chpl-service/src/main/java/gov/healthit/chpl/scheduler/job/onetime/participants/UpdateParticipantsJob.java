@@ -69,8 +69,8 @@ public class UpdateParticipantsJob implements Job {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Update Participants job. *********");
         try {
-            participantUpdateStrategies = Stream.of(reprocessFromUploadStrategy,
-                    deduplicationStrategy).toList();
+            participantUpdateStrategies = Stream.of(deduplicationStrategy,
+                    reprocessFromUploadStrategy).toList();
             g3 = criteriaService.get(Criteria2015.G_3);
 
             List<ListingSearchResult> activeListingsWithG3ConfirmedWithFlexibleUpload = listingSearchService.getAllPagesOfSearchResults(SearchRequest.builder()
@@ -88,7 +88,7 @@ public class UpdateParticipantsJob implements Job {
             LOGGER.info("Found " + activeListingsWithG3ConfirmedWithFlexibleUpload.size() + " listing uploads attesting to 170.315 (g)(3).");
 
             //TODO: remove this
-            activeListingsWithG3ConfirmedWithFlexibleUpload = activeListingsWithG3ConfirmedWithFlexibleUpload.subList(0, 1);
+            //activeListingsWithG3ConfirmedWithFlexibleUpload = activeListingsWithG3ConfirmedWithFlexibleUpload.subList(0, 1);
             //end TODO:
 
             for (ListingSearchResult listing : activeListingsWithG3ConfirmedWithFlexibleUpload) {
