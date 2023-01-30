@@ -26,7 +26,7 @@ import gov.healthit.chpl.upload.listing.ListingUploadEntity;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.upload.listing.handler.ListingDetailsUploadHandler;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
-import gov.healthit.chpl.upload.listing.validation.ListingUploadValidator;
+import gov.healthit.chpl.validation.listing.Edition2015ListingValidator;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -43,11 +43,7 @@ public class ReprocessFromUploadedCsvStrategy implements ParticipantUpdateStrate
     public boolean updateParticipants(CertifiedProductSearchDetails confirmedListing) {
         CertifiedProductSearchDetails uploadedListing =
                 processedListingUploadManager.getUploadedDetailsByConfirmedCertifiedProductId(confirmedListing.getId());
-        if ((!CollectionUtils.isEmpty(uploadedListing.getErrorMessages())
-                || !CollectionUtils.isEmpty(uploadedListing.getWarningMessages()))
-             && (isAnyMessageAboutSed(uploadedListing.getErrorMessages())
-                || isAnyMessageAboutSed(uploadedListing.getWarningMessages()))) {
-            //There will be at least one error about a duplicate CHPL Product Number since this is a confirmed listing.
+        if (hasSedErrors(uploadedListing)) {
             printListingErrorsAndWarnings(uploadedListing);
             return false;
         }
@@ -85,7 +81,7 @@ public class ReprocessFromUploadedCsvStrategy implements ParticipantUpdateStrate
             return false;
         }
 
-        //if we haven't returned yet, we think this listing is eligible for reprocessing
+        //if we haven't returned yet, we think this listing is eligible for re-processing
         boolean allTestTasksCanBeUpdated = true;
         Iterator<TestTask> confirmedTaskIter = confirmedListing.getSed().getTestTasks().iterator();
         while (confirmedTaskIter.hasNext() && allTestTasksCanBeUpdated) {
@@ -122,6 +118,13 @@ public class ReprocessFromUploadedCsvStrategy implements ParticipantUpdateStrate
         return allTestTasksCanBeUpdated;
     }
 
+    private boolean hasSedErrors(CertifiedProductSearchDetails listing) {
+        //there are probably errors and warnings that weren't here originally -
+        //some criteria have been removed, we changed measure parsing, etc
+        return !CollectionUtils.isEmpty(listing.getErrorMessages())
+             && isAnyMessageAboutSed(listing.getErrorMessages());
+    }
+
     private boolean isAnyMessageAboutSed(Collection<String> messages) {
         return messages.stream()
             .map(msg -> msg.toUpperCase())
@@ -133,6 +136,7 @@ public class ReprocessFromUploadedCsvStrategy implements ParticipantUpdateStrate
 
     private void printListingErrorsAndWarnings(CertifiedProductSearchDetails listing) {
         LOGGER.info("Errors for listing: " + listing.getChplProductNumber() + " (confirmed listing " + listing.getId() + ")");
+        //there might be errors due to measure parsing since all of these files had the old measure columns...
         if (CollectionUtils.isEmpty(listing.getErrorMessages())) {
             LOGGER.info("\t0 errors.");
         } else {
@@ -248,17 +252,19 @@ public class ReprocessFromUploadedCsvStrategy implements ParticipantUpdateStrate
         private ListingDetailsNormalizer listingNormalizer;
         private ListingUploadHandlerUtil uploadUtil;
         private ProcessedListingUploadDao processedListingUploadDao;
-        private ListingUploadValidator listingUploadValidator;
+        //use this validator instead of the ListingUploadValidator because
+        //otherwise we get an error about "existing listing with this CHPL Product Number"
+        private Edition2015ListingValidator listingValidator;
         private ListingDetailsUploadHandler listingDetailsHandler;
 
         @Autowired
         ProcessedListingUploadManager(ListingDetailsNormalizer listingNormalizer,
-                ListingUploadValidator listingUploadValidator,
+                Edition2015ListingValidator listingValidator,
                 ListingDetailsUploadHandler listingDetailsHandler,
                 ProcessedListingUploadDao processedListingUploadDao,
                 ListingUploadHandlerUtil uploadUtil) {
             this.listingNormalizer = listingNormalizer;
-            this.listingUploadValidator = listingUploadValidator;
+            this.listingValidator = listingValidator;
             this.listingDetailsHandler = listingDetailsHandler;
             this.processedListingUploadDao = processedListingUploadDao;
             this.uploadUtil = uploadUtil;
@@ -280,11 +286,11 @@ public class ReprocessFromUploadedCsvStrategy implements ParticipantUpdateStrate
             LOGGER.trace("Converting listing upload with ID " + id + " into CertifiedProductSearchDetails object");
             CertifiedProductSearchDetails listing =
                     listingDetailsHandler.parseAsListing(headingRecord, allListingRecords);
-            listing.setId(id);
             LOGGER.trace("Converted listing upload with ID " + id + " into CertifiedProductSearchDetails object");
             listingNormalizer.normalize(listing);
+            listing.setId(id);
             LOGGER.trace("Normalized listing upload with ID " + id);
-            listingUploadValidator.review(listingUpload, listing);
+            listingValidator.validate(listing);
             LOGGER.trace("Validated listing upload with ID " + id);
             listing.setId(listingUpload.getCertifiedProductId());
             return listing;
