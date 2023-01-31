@@ -1,7 +1,10 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.functionalityTested;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -11,21 +14,25 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Where;
+
+import gov.healthit.chpl.entity.PracticeTypeEntity;
 import lombok.Data;
 
 @Entity
-@Table(name = "test_functionality")
+@Table(name = "functionality_tested")
 @Data
-public class TestFunctionalityEntity implements Serializable {
+public class FunctionalityTestedEntity implements Serializable {
     private static final long serialVersionUID = 2662883108826795645L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "test_functionality_id")
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "name", nullable = false)
@@ -34,16 +41,15 @@ public class TestFunctionalityEntity implements Serializable {
     @Column(name = "number")
     private String number;
 
-    @Column(name = "certification_edition_id")
-    private Long certificationEditionId;
-
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "certification_edition_id", insertable = false, updatable = false)
-    private CertificationEditionEntity certificationEdition;
-
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "practice_type_id", insertable = false, updatable = false)
     private PracticeTypeEntity practiceType;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "functionalityTestedId")
+    @Basic(optional = false)
+    @Column(name = "functionality_tested_id", nullable = false)
+    @Where(clause = "deleted <> 'true'")
+    private Set<FunctionalityTestedCriteriaMapEntity> mappedCriteria = new HashSet<FunctionalityTestedCriteriaMapEntity>();
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
@@ -60,4 +66,16 @@ public class TestFunctionalityEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
+
+    public FunctionalityTested toDomain() {
+        return FunctionalityTested.builder()
+                .id(this.getId())
+                .description(this.getName())
+                .name(this.getNumber())
+                .practiceType(this.getPracticeType() != null ? this.getPracticeType().toDomain() : null)
+                .criteria(this.getMappedCriteria() != null ? this.getMappedCriteria().stream()
+                        .map(mappedCriterion -> mappedCriterion.getCriterion().toDomain())
+                        .collect(Collectors.toList()) : null)
+                .build();
+    }
 }

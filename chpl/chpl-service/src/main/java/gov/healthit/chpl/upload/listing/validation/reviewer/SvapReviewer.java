@@ -51,7 +51,7 @@ public class SvapReviewer {
     }
 
     private void reviewCriteriaCanHaveSvaps(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SVAP)) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.SVAP)) {
             if (!CollectionUtils.isEmpty(certResult.getSvaps())) {
                 listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.svapsNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
@@ -61,7 +61,7 @@ public class SvapReviewer {
     }
 
     private void removeSvapIfNotApplicable(CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SVAP)) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.SVAP)) {
             certResult.setSvaps(null);
         }
     }

@@ -23,7 +23,7 @@ public class PracticeTypeDTO implements Serializable {
 
         this.id = entity.getId();
         this.creationDate = entity.getCreationDate();
-        this.deleted = entity.isDeleted();
+        this.deleted = entity.getDeleted();
         this.description = entity.getDescription();
         this.lastModifiedDate = entity.getLastModifiedDate();
         this.lastModifiedUser = entity.getLastModifiedUser();
@@ -70,7 +70,7 @@ public class PracticeTypeDTO implements Serializable {
     public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
-    
+
     public Long getLastModifiedUser() {
         return lastModifiedUser;
     }

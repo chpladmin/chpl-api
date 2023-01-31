@@ -411,7 +411,6 @@
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResult.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResultAdditionalSoftware.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestData.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestFunctionality.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestProcedure.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestTool.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/CertificationStatusEvent.java</source>
@@ -441,6 +440,7 @@
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceRequirement.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceResultType.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceType.java</source>
+                        <source>src/main/java/gov/healthit/chpl/functionalityTested/CertificationResultFunctionalityTested.java</source>
                         <source>src/main/java/gov/healthit/chpl/optionalStandard/domain/CertificationResultOptionalStandard.java</source>
                         <source>src/main/java/gov/healthit/chpl/svap/domain/CertificationResultSvap.java</source>
                     </sources>

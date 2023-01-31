@@ -53,7 +53,7 @@ public class SedReviewer {
     }
 
     private void reviewCriteriaCanHaveSed(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SED)) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.SED)) {
             if (BooleanUtils.isTrue(certResult.isSed())) {
                 listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.sedNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
@@ -62,7 +62,7 @@ public class SedReviewer {
     }
 
     private void removeSedIfNotApplicable(CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SED)) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.SED)) {
             certResult.setSed(null);
         }
     }

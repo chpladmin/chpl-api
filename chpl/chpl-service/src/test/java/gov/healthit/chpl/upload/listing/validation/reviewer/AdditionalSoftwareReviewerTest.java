@@ -59,7 +59,7 @@ public class AdditionalSoftwareReviewerTest {
 
     @Test
     public void review_nullAdditionalSoftware_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -81,7 +81,7 @@ public class AdditionalSoftwareReviewerTest {
 
     @Test
     public void review_emptyAdditionalSoftware_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -103,7 +103,7 @@ public class AdditionalSoftwareReviewerTest {
 
     @Test
     public void review_additionalSoftwareNotAllowedForCriteria_hasWarningAdditionalSoftwareSetNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
             .thenReturn(false);
 
         List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
@@ -134,7 +134,7 @@ public class AdditionalSoftwareReviewerTest {
 
     @Test
     public void review_additionalSoftwareNotAllowedForRemovedCriteria_noErrors() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
             .thenReturn(false);
 
         List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
@@ -162,7 +162,7 @@ public class AdditionalSoftwareReviewerTest {
 
     @Test
     public void review_additionalSoftwareNotExpected_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
             .thenReturn(true);
 
         List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
@@ -193,7 +193,7 @@ public class AdditionalSoftwareReviewerTest {
 
     @Test
     public void review_additionalSoftwareNotExpectedRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
             .thenReturn(true);
 
         List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
@@ -222,7 +222,7 @@ public class AdditionalSoftwareReviewerTest {
 
     @Test
     public void review_additionalSoftwareExpected_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -246,7 +246,7 @@ public class AdditionalSoftwareReviewerTest {
 
     @Test
     public void review_additionalSoftwareExpectedRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -268,7 +268,7 @@ public class AdditionalSoftwareReviewerTest {
 
     @Test
     public void review_additionalSoftwareExpectedAndHasAdditionalSoftware_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
             .thenReturn(true);
 
         List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
@@ -298,7 +298,7 @@ public class AdditionalSoftwareReviewerTest {
 
     @Test
     public void review_noAdditionalSoftwareExpectedAndHasNone_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -320,7 +320,7 @@ public class AdditionalSoftwareReviewerTest {
 
     @Test
     public void review_additionalSoftwareInvalidChplId_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
             .thenReturn(true);
 
         List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
@@ -348,7 +348,7 @@ public class AdditionalSoftwareReviewerTest {
 
     @Test
     public void review_additionalSoftwareInvalidChplIdRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
             .thenReturn(true);
 
         List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
@@ -374,7 +374,7 @@ public class AdditionalSoftwareReviewerTest {
 
     @Test
     public void review_additionalSoftwareValidChplId_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
             .thenReturn(true);
 
         List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
@@ -401,7 +401,7 @@ public class AdditionalSoftwareReviewerTest {
 
     @Test
     public void review_additionalSoftwareBothChplIdAndNameWithData_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
             .thenReturn(true);
 
         List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
@@ -432,7 +432,7 @@ public class AdditionalSoftwareReviewerTest {
 
     @Test
     public void review_additionalSoftwareBothChplIdAndNameWithDataRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
             .thenReturn(true);
 
         List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
@@ -461,7 +461,7 @@ public class AdditionalSoftwareReviewerTest {
 
     @Test
     public void review_additionalSoftwareBothChplIdAndVersionWithData_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
             .thenReturn(true);
 
         List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
@@ -492,7 +492,7 @@ public class AdditionalSoftwareReviewerTest {
 
     @Test
     public void review_additionalSoftwareBothChplIdAndVersionWithDataRemovedCriteria_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
             .thenReturn(true);
 
         List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
@@ -521,7 +521,7 @@ public class AdditionalSoftwareReviewerTest {
 
     @Test
     public void review_additionalSoftwareValidName_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
             .thenReturn(true);
 
         List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();

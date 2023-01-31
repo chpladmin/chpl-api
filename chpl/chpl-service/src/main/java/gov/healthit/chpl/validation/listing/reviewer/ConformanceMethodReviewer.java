@@ -95,7 +95,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
     }
 
     private void reviewCriteriaCanHaveConformanceMethods(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.CONFORMANCE_METHOD)) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.CONFORMANCE_METHOD)) {
             if (!CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
                 listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.conformanceMethodNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
@@ -206,7 +206,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
     }
 
     private void reviewConformanceMethodsRequired(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.CONFORMANCE_METHOD)
+        if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.CONFORMANCE_METHOD)
                 && CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
             if (CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
                 addCriterionError(listing, certResult, "listing.criteria.conformanceMethod.missingConformanceMethod",
@@ -216,7 +216,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
     }
 
     private void removeConformanceMethodsIfNotApplicable(CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.CONFORMANCE_METHOD)) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.CONFORMANCE_METHOD)) {
             certResult.setConformanceMethods(null);
         }
     }

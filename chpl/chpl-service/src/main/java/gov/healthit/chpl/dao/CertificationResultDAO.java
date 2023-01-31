@@ -23,7 +23,6 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.domain.CertificationResultTestData;
-import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
@@ -32,7 +31,6 @@ import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
-import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
@@ -47,7 +45,6 @@ import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEnti
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultTestDataEntity;
-import gov.healthit.chpl.entity.listing.CertificationResultTestFunctionalityEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultTestProcedureEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultTestStandardEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultTestTaskEntity;
@@ -1164,96 +1161,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         return entityManager.createQuery(hql, CertificationResultTestProcedureEntity.class)
                 .setParameter("listingId", listingId)
                 .getResultList();
-    }
-
-    /******************************************************
-     * Test Functionality for Certification Results
-     *
-     *******************************************************/
-
-    public List<CertificationResultTestFunctionalityDTO> getTestFunctionalityForCertificationResult(
-            Long certificationResultId) {
-
-        List<CertificationResultTestFunctionalityEntity> entities = getTestFunctionalityForCertification(
-                certificationResultId);
-        List<CertificationResultTestFunctionalityDTO> dtos = new ArrayList<CertificationResultTestFunctionalityDTO>();
-
-        for (CertificationResultTestFunctionalityEntity entity : entities) {
-            CertificationResultTestFunctionalityDTO dto = new CertificationResultTestFunctionalityDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
-    }
-
-    public Long createTestFunctionalityMapping(Long certResultId, CertificationResultTestFunctionality testFunctionality)
-            throws EntityCreationException {
-        try {
-            CertificationResultTestFunctionalityEntity entity = new CertificationResultTestFunctionalityEntity();
-            entity.setCertificationResultId(certResultId);
-            entity.setTestFunctionalityId(testFunctionality.getTestFunctionalityId());
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
-            create(entity);
-            return entity.getId();
-        } catch (Exception ex) {
-            throw new EntityCreationException(ex);
-        }
-    }
-
-    public CertificationResultTestFunctionalityDTO addTestFunctionalityMapping(
-            CertificationResultTestFunctionalityDTO dto) throws EntityCreationException {
-        CertificationResultTestFunctionalityEntity mapping = new CertificationResultTestFunctionalityEntity();
-        mapping.setCertificationResultId(dto.getCertificationResultId());
-        mapping.setTestFunctionalityId(dto.getTestFunctionalityId());
-        mapping.setCreationDate(new Date());
-        mapping.setDeleted(false);
-        mapping.setLastModifiedDate(new Date());
-        mapping.setLastModifiedUser(AuthUtil.getAuditId());
-        entityManager.persist(mapping);
-        entityManager.flush();
-
-        return new CertificationResultTestFunctionalityDTO(mapping);
-    }
-
-    public void deleteTestFunctionalityMapping(Long mappingId) {
-        CertificationResultTestFunctionalityEntity toDelete = getCertificationResultTestFunctionalityById(mappingId);
-        if (toDelete != null) {
-            toDelete.setDeleted(true);
-            toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
-            entityManager.persist(toDelete);
-            entityManager.flush();
-        }
-    }
-
-    private CertificationResultTestFunctionalityEntity getCertificationResultTestFunctionalityById(Long id) {
-        CertificationResultTestFunctionalityEntity entity = null;
-
-        Query query = entityManager.createQuery("SELECT crtf " + "FROM CertificationResultTestFunctionalityEntity crtf "
-                + "LEFT OUTER JOIN FETCH crtf.testFunctionality tf " + "JOIN FETCH tf.certificationEdition edition "
-                + "WHERE (NOT crtf.deleted = true) " + "AND (crtf.id = :entityid) ",
-                CertificationResultTestFunctionalityEntity.class);
-        query.setParameter("entityid", id);
-        List<CertificationResultTestFunctionalityEntity> result = query.getResultList();
-
-        if (result.size() > 0) {
-            entity = result.get(0);
-        }
-        return entity;
-    }
-
-    private List<CertificationResultTestFunctionalityEntity> getTestFunctionalityForCertification(
-            Long certificationResultId) {
-        Query query = entityManager.createQuery("SELECT crtf " + "FROM CertificationResultTestFunctionalityEntity crtf "
-                + "LEFT OUTER JOIN FETCH crtf.testFunctionality tf " + "JOIN FETCH tf.certificationEdition edition "
-                + "WHERE (NOT crtf.deleted = true) " + "AND (crtf.certificationResultId = :certificationResultId) ",
-                CertificationResultTestFunctionalityEntity.class);
-        query.setParameter("certificationResultId", certificationResultId);
-
-        List<CertificationResultTestFunctionalityEntity> result = query.getResultList();
-        if (result == null) {
-            return null;
-        }
-        return result;
     }
 
     /******************************************************

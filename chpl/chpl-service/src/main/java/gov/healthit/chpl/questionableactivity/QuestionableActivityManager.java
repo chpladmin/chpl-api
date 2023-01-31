@@ -156,21 +156,21 @@ public class QuestionableActivityManager {
             CertificationResult newCertResult, Date activityDate, Long activityUser, String activityReason) {
         QuestionableActivityCertificationResultDTO certActivity = null;
 
-        if (certResultRules.hasCertOption(origCertResult.getCriterion().getNumber(), CertificationResultRules.G1_SUCCESS)) {
+        if (certResultRules.hasCertOption(origCertResult.getCriterion().getId(), CertificationResultRules.G1_SUCCESS)) {
             certActivity = certResultQuestionableActivityProvider.checkG1SuccessUpdated(origCertResult, newCertResult);
             if (certActivity != null) {
                 createCertificationActivity(certActivity, origCertResult.getId(), activityDate,
                         activityUser, QuestionableActivityTriggerConcept.G1_SUCCESS_EDITED, activityReason);
             }
         }
-        if (certResultRules.hasCertOption(origCertResult.getCriterion().getNumber(), CertificationResultRules.G2_SUCCESS)) {
+        if (certResultRules.hasCertOption(origCertResult.getCriterion().getId(), CertificationResultRules.G2_SUCCESS)) {
             certActivity = certResultQuestionableActivityProvider.checkG2SuccessUpdated(origCertResult, newCertResult);
             if (certActivity != null) {
                 createCertificationActivity(certActivity, origCertResult.getId(), activityDate,
                         activityUser, QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED, activityReason);
             }
         }
-        if (certResultRules.hasCertOption(origCertResult.getCriterion().getNumber(), CertificationResultRules.GAP)) {
+        if (certResultRules.hasCertOption(origCertResult.getCriterion().getId(), CertificationResultRules.GAP)) {
             certActivity = certResultQuestionableActivityProvider.checkGapUpdated(origCertResult, newCertResult);
             if (certActivity != null) {
                 createCertificationActivity(certActivity, origCertResult.getId(), activityDate,

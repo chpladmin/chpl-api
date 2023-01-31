@@ -47,7 +47,7 @@ public class PrivacyAndSecurityFrameworkReviewerTest {
 
     @Test
     public void review_nullPAndSNotRequiredForCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
             .thenReturn(false);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -69,7 +69,7 @@ public class PrivacyAndSecurityFrameworkReviewerTest {
 
     @Test
     public void review_emptyPAndSNotRequiredForCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
             .thenReturn(false);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -91,7 +91,7 @@ public class PrivacyAndSecurityFrameworkReviewerTest {
 
     @Test
     public void review_nullPAndSRequiredForCriteria_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -115,7 +115,7 @@ public class PrivacyAndSecurityFrameworkReviewerTest {
 
     @Test
     public void review_nullPAndSRequiredForRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -137,7 +137,7 @@ public class PrivacyAndSecurityFrameworkReviewerTest {
 
     @Test
     public void review_emptyPAndSRequiredForCriteria_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -161,7 +161,7 @@ public class PrivacyAndSecurityFrameworkReviewerTest {
 
     @Test
     public void review_emptyPAndSRequiredForRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -184,7 +184,7 @@ public class PrivacyAndSecurityFrameworkReviewerTest {
 
     @Test
     public void review_providedPAndSNotValidForCriteria_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
             .thenReturn(false);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -209,7 +209,7 @@ public class PrivacyAndSecurityFrameworkReviewerTest {
 
     @Test
     public void review_providedPAndSNotValidForRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
             .thenReturn(false);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -231,7 +231,7 @@ public class PrivacyAndSecurityFrameworkReviewerTest {
 
     @Test
     public void review_providedPAndSNotValidValue_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -255,7 +255,7 @@ public class PrivacyAndSecurityFrameworkReviewerTest {
 
     @Test
     public void review_providedPAndSNotValidValueForRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -277,7 +277,7 @@ public class PrivacyAndSecurityFrameworkReviewerTest {
 
     @Test
     public void review_providedPAndSValidValue_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()

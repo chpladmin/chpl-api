@@ -75,9 +75,9 @@ public class TestDataReviewerTest {
 
     @Test
     public void review_nullTestDataNoGapCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -100,9 +100,9 @@ public class TestDataReviewerTest {
 
     @Test
     public void review_emptyTestDataNoGapCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -124,9 +124,9 @@ public class TestDataReviewerTest {
 
     @Test
     public void review_nullTestDataWithGapCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(true);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -149,9 +149,9 @@ public class TestDataReviewerTest {
 
     @Test
     public void review_emptyTestDataWithGapCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(true);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -173,9 +173,9 @@ public class TestDataReviewerTest {
 
     @Test
     public void review_testDataNotApplicableToCriteria_hasWarningAndTestDataSetNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(true);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(false);
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
@@ -209,9 +209,9 @@ public class TestDataReviewerTest {
 
     @Test
     public void review_testDataNotApplicableToRemovedCriteria_noWarning() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(true);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(false);
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
@@ -241,9 +241,9 @@ public class TestDataReviewerTest {
 
     @Test
     public void review_testDataNameInvalid_hasWarning() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
@@ -284,9 +284,9 @@ public class TestDataReviewerTest {
 
     @Test
     public void review_testDataNameInvalidForRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
@@ -323,9 +323,9 @@ public class TestDataReviewerTest {
 
     @Test
     public void review_testDataEmptyName_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
@@ -365,9 +365,9 @@ public class TestDataReviewerTest {
 
     @Test
     public void review_testDataEmptyNameRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
@@ -404,9 +404,9 @@ public class TestDataReviewerTest {
 
     @Test
     public void review_testDataEmptyVersion_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
@@ -439,9 +439,9 @@ public class TestDataReviewerTest {
 
     @Test
     public void review_testDataEmptyVersionForRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
@@ -471,9 +471,9 @@ public class TestDataReviewerTest {
 
     @Test
     public void review_testDataNullVersion_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
@@ -506,9 +506,9 @@ public class TestDataReviewerTest {
 
     @Test
     public void review_testDataNullVersionForRemovedCritiria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()
@@ -538,9 +538,9 @@ public class TestDataReviewerTest {
 
     @Test
     public void review_testDataMissingOnG1WithoutGap_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -563,9 +563,9 @@ public class TestDataReviewerTest {
 
     @Test
     public void review_testDataMissingOnG1RemovedWithoutGap_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -586,9 +586,9 @@ public class TestDataReviewerTest {
 
     @Test
     public void review_testDataMissingOnG1WithGap_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(true);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -609,9 +609,9 @@ public class TestDataReviewerTest {
 
     @Test
     public void review_testDataMissingOnG2WithoutGap_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -634,9 +634,9 @@ public class TestDataReviewerTest {
 
     @Test
     public void review_testDataMissingOnG2RemovedWithoutGap_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -657,9 +657,9 @@ public class TestDataReviewerTest {
 
     @Test
     public void review_testDataMissingOnG2WithGap_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(true);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -680,9 +680,9 @@ public class TestDataReviewerTest {
 
     @Test
     public void review_validTestData_noErrors() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_DATA)))
             .thenReturn(true);
         List<CertificationResultTestData> testData = new ArrayList<CertificationResultTestData>();
         testData.add(CertificationResultTestData.builder()

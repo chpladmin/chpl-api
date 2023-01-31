@@ -29,7 +29,7 @@ public class CertificationResultReviewer {
     private TestToolReviewer testToolReviewer;
     private TestDataReviewer testDataReviewer;
     private ConformanceMethodReviewer conformanceMethodReviewer;
-    private TestFunctionalityReviewer testFunctionalityReviewer;
+    private FunctionalityTestedReviewer functionalityTestedReviewer;
     private TestStandardReviewer testStandardReviewer;
     private OptionalStandardReviewer optionalStandardReviewer;
     private SvapReviewer svapReviewer;
@@ -51,7 +51,7 @@ public class CertificationResultReviewer {
             @Qualifier("listingUploadTestToolReviewer") TestToolReviewer testToolReviewer,
             @Qualifier("listingUploadTestDataReviewer") TestDataReviewer testDataReviewer,
             @Qualifier("conformanceMethodReviewer") ConformanceMethodReviewer conformanceMethodReviewer,
-            @Qualifier("listingUploadTestFunctionalityReviewer") TestFunctionalityReviewer testFunctionalityReviewer,
+            @Qualifier("listingUploadFunctionalityTestedReviewer") FunctionalityTestedReviewer functionalityTestedReviewer,
             @Qualifier("listingUploadTestStandardReviewer") TestStandardReviewer testStandardReviewer,
             @Qualifier("listingUploadOptionalStandardReviewer") OptionalStandardReviewer optionalStandardReviewer,
             @Qualifier("listingUploadSvapReviewer") SvapReviewer svapReviewer,
@@ -68,7 +68,7 @@ public class CertificationResultReviewer {
         this.testToolReviewer = testToolReviewer;
         this.testDataReviewer = testDataReviewer;
         this.conformanceMethodReviewer = conformanceMethodReviewer;
-        this.testFunctionalityReviewer = testFunctionalityReviewer;
+        this.functionalityTestedReviewer = functionalityTestedReviewer;
         this.testStandardReviewer = testStandardReviewer;
         this.optionalStandardReviewer = optionalStandardReviewer;
         this.svapReviewer = svapReviewer;
@@ -107,7 +107,7 @@ public class CertificationResultReviewer {
         conformanceMethodReviewer.review(listing);
         testToolReviewer.review(listing);
         testDataReviewer.review(listing);
-        testFunctionalityReviewer.review(listing);
+        functionalityTestedReviewer.review(listing);
         testStandardReviewer.review(listing);
         optionalStandardReviewer.review(listing);
         svapReviewer.review(listing);
@@ -132,22 +132,22 @@ public class CertificationResultReviewer {
     }
 
     private void removeCertResultFieldsNotApplicable(CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.GAP)) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.GAP)) {
             certResult.setGap(null);
         }
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.ATTESTATION_ANSWER)) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.ATTESTATION_ANSWER)) {
             certResult.setAttestationAnswer(null);
         }
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.API_DOCUMENTATION)) {
             certResult.setApiDocumentation(null);
         }
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.EXPORT_DOCUMENTATION)) {
             certResult.setExportDocumentation(null);
         }
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.USE_CASES)) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.USE_CASES)) {
             certResult.setUseCases(null);
         }
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.SERVICE_BASE_URL_LIST)) {
             certResult.setServiceBaseUrlList(null);
         }
     }
@@ -163,7 +163,7 @@ public class CertificationResultReviewer {
     }
 
     private void reviewGap(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.GAP)
+        if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.GAP)
                 && certResult.isGap() == null) {
             if (!ObjectUtils.isEmpty(certResult.getGapStr())) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidGap",
@@ -173,7 +173,7 @@ public class CertificationResultReviewer {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingGap",
                         Util.formatCriteriaNumber(certResult.getCriterion())));
             }
-        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.GAP)) {
+        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.GAP)) {
             if (certResult.isGap() != null | !ObjectUtils.isEmpty(certResult.getGapStr())) {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.gapNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
@@ -192,7 +192,7 @@ public class CertificationResultReviewer {
     }
 
     private void reviewAttestationAnswer(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.ATTESTATION_ANSWER)
+        if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.ATTESTATION_ANSWER)
                 && certResult.getAttestationAnswer() == null) {
             if (!ObjectUtils.isEmpty(certResult.getAttestationAnswerStr())) {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidAttestationAnswer",
@@ -203,7 +203,7 @@ public class CertificationResultReviewer {
                 listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingAttestationAnswer",
                         Util.formatCriteriaNumber(certResult.getCriterion())));
             }
-        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.ATTESTATION_ANSWER)) {
+        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.ATTESTATION_ANSWER)) {
             if (!ObjectUtils.isEmpty(certResult.getAttestationAnswer())
                     || !ObjectUtils.isEmpty(certResult.getAttestationAnswerStr())) {
                 listing.getWarningMessages().add(
@@ -214,11 +214,11 @@ public class CertificationResultReviewer {
     }
 
     private void reviewApiDocumentation(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.API_DOCUMENTATION)
+        if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.API_DOCUMENTATION)
                 && ObjectUtils.isEmpty(certResult.getApiDocumentation())) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingApiDocumentation",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
-        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
+        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.API_DOCUMENTATION)) {
             if (!ObjectUtils.isEmpty(certResult.getApiDocumentation())) {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.apiDocumentationNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
@@ -228,11 +228,11 @@ public class CertificationResultReviewer {
     }
 
     private void reviewExportDocumentation(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)
+        if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.EXPORT_DOCUMENTATION)
                 && ObjectUtils.isEmpty(certResult.getExportDocumentation())) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingExportDocumentation",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
-        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)) {
+        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.EXPORT_DOCUMENTATION)) {
             if (!ObjectUtils.isEmpty(certResult.getExportDocumentation())) {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.exportDocumentationNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
@@ -242,18 +242,18 @@ public class CertificationResultReviewer {
     }
 
     private void reviewUseCases(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.USE_CASES)
+        if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.USE_CASES)
                 && ObjectUtils.isEmpty(certResult.getUseCases())
                 && certResult.getAttestationAnswer() != null && certResult.getAttestationAnswer().equals(Boolean.TRUE)) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingUseCases",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
-        } else if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.USE_CASES)
+        } else if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.USE_CASES)
                 && !ObjectUtils.isEmpty(certResult.getUseCases())
                 && (certResult.getAttestationAnswer() == null || certResult.getAttestationAnswer().equals(Boolean.FALSE))) {
             listing.getWarningMessages().add(
                     msgUtil.getMessage("listing.criteria.useCasesWithoutAttestation",
                             Util.formatCriteriaNumber(certResult.getCriterion())));
-        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.USE_CASES)) {
+        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.USE_CASES)) {
             if (!ObjectUtils.isEmpty(certResult.getUseCases())) {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.useCasesNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
@@ -263,11 +263,11 @@ public class CertificationResultReviewer {
     }
 
     private void reviewServiceBaseUrlList(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)
+        if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.SERVICE_BASE_URL_LIST)
                 && ObjectUtils.isEmpty(certResult.getServiceBaseUrlList())) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingServiceBaseUrlList",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
-        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)) {
+        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.SERVICE_BASE_URL_LIST)) {
             if (!ObjectUtils.isEmpty(certResult.getServiceBaseUrlList())) {
                 listing.getWarningMessages().add(
                         msgUtil.getMessage("listing.criteria.serviceBaseUrlListNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
