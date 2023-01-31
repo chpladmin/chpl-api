@@ -70,7 +70,7 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.PRODUCT_NAMES));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.TEST_DATA));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.TEST_PROCEDURES));
-        backingManager.addCacheIfAbsent(createEternalCache(CacheNames.TEST_FUNCTIONALITY_MAPS));
+        backingManager.addCacheIfAbsent(createEternalCache(CacheNames.FUNCTIONALITY_TESTED_MAPS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.COMPLAINTS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.UPLOADED_LISTING_DETAILS));
 

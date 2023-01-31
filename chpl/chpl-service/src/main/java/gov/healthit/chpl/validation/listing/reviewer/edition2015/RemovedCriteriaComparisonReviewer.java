@@ -1,17 +1,18 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
-import org.apache.commons.lang3.ObjectUtils;
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
-import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -142,28 +143,28 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
     }
 
     private boolean isGapChanged(CertificationResult existingCert, CertificationResult updatedCert) {
-        if (certResultRules.hasCertOption(updatedCert.getCriterion().getNumber(), CertificationResultRules.GAP)) {
-            return !ObjectUtils.equals(existingCert.isGap(), updatedCert.isGap());
+        if (certResultRules.hasCertOption(updatedCert.getCriterion().getId(), CertificationResultRules.GAP)) {
+            return !Objects.equals(existingCert.isGap(), updatedCert.isGap());
         }
         return false;
     }
 
     private boolean isG1SuccessChanged(CertificationResult existingCert, CertificationResult updatedCert) {
-        if (certResultRules.hasCertOption(updatedCert.getCriterion().getNumber(), CertificationResultRules.G1_SUCCESS)) {
-            return !ObjectUtils.equals(existingCert.isG1Success(), updatedCert.isG1Success());
+        if (certResultRules.hasCertOption(updatedCert.getCriterion().getId(), CertificationResultRules.G1_SUCCESS)) {
+            return !Objects.equals(existingCert.isG1Success(), updatedCert.isG1Success());
         }
         return false;
     }
 
     private boolean isG2SuccessChanged(CertificationResult existingCert, CertificationResult updatedCert) {
-        if (certResultRules.hasCertOption(updatedCert.getCriterion().getNumber(), CertificationResultRules.G2_SUCCESS)) {
-            return !ObjectUtils.equals(existingCert.isG2Success(), updatedCert.isG2Success());
+        if (certResultRules.hasCertOption(updatedCert.getCriterion().getId(), CertificationResultRules.G2_SUCCESS)) {
+            return !Objects.equals(existingCert.isG2Success(), updatedCert.isG2Success());
         }
         return false;
     }
 
     private boolean isAdditionalSoftwareChanged(CertificationResult existingCert, CertificationResult updatedCert) {
-        if (certResultRules.hasCertOption(updatedCert.getCriterion().getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
+        if (certResultRules.hasCertOption(updatedCert.getCriterion().getId(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
             for (CertificationResultAdditionalSoftware updatedAdditionalSoftware : updatedCert.getAdditionalSoftware()) {
                 boolean isInExistingCert =
                         existingCert.getAdditionalSoftware().stream()
@@ -186,20 +187,20 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
     }
 
     private boolean isFunctionalityTestedChanged(CertificationResult existingCert, CertificationResult updatedCert) {
-        if (certResultRules.hasCertOption(updatedCert.getCriterion().getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
-            for (CertificationResultTestFunctionality updatedTestFunctionality : updatedCert.getTestFunctionality()) {
+        if (certResultRules.hasCertOption(updatedCert.getCriterion().getId(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
+            for (CertificationResultFunctionalityTested updatedFunctionalityTested : updatedCert.getFunctionalitiesTested()) {
                 boolean isInExistingCert =
-                        existingCert.getTestFunctionality().stream()
-                        .anyMatch(existingTestFunctionality -> existingTestFunctionality.matches(updatedTestFunctionality));
+                        existingCert.getFunctionalitiesTested().stream()
+                        .anyMatch(existingFunctionalityTested -> existingFunctionalityTested.matches(updatedFunctionalityTested));
                 if (!isInExistingCert) {
                     return true;
                 }
             }
 
-            for (CertificationResultTestFunctionality existingTestFunctionality : existingCert.getTestFunctionality()) {
+            for (CertificationResultFunctionalityTested existingFunctionalityTested : existingCert.getFunctionalitiesTested()) {
                 boolean isInUpdatedCert =
-                        updatedCert.getTestFunctionality().stream()
-                        .anyMatch(updatedTestFunctionality -> updatedTestFunctionality.matches(existingTestFunctionality));
+                        updatedCert.getFunctionalitiesTested().stream()
+                        .anyMatch(updatedFunctionalityTested -> updatedFunctionalityTested.matches(existingFunctionalityTested));
                 if (!isInUpdatedCert) {
                     return true;
                 }
@@ -209,7 +210,7 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
     }
 
     private boolean isTestStandardsChanged(CertificationResult existingCert, CertificationResult updatedCert) {
-        if (certResultRules.hasCertOption(updatedCert.getCriterion().getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
+        if (certResultRules.hasCertOption(updatedCert.getCriterion().getId(), CertificationResultRules.STANDARDS_TESTED)) {
             for (CertificationResultTestStandard updatedTestStandard : updatedCert.getTestStandards()) {
                 boolean isInExistingCert =
                         existingCert.getTestStandards().stream()
@@ -232,7 +233,7 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
     }
 
     private boolean isTestDataChanged(CertificationResult existingCert, CertificationResult updatedCert) {
-        if (certResultRules.hasCertOption(updatedCert.getCriterion().getNumber(), CertificationResultRules.TEST_DATA)) {
+        if (certResultRules.hasCertOption(updatedCert.getCriterion().getId(), CertificationResultRules.TEST_DATA)) {
             for (CertificationResultTestData updatedTestData : updatedCert.getTestDataUsed()) {
                 boolean isInExistingCert =
                         existingCert.getTestDataUsed().stream()
@@ -255,7 +256,7 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
     }
 
     private boolean isTestProceduresChanged(CertificationResult existingCert, CertificationResult updatedCert) {
-        if (certResultRules.hasCertOption(updatedCert.getCriterion().getNumber(), CertificationResultRules.TEST_PROCEDURE)) {
+        if (certResultRules.hasCertOption(updatedCert.getCriterion().getId(), CertificationResultRules.TEST_PROCEDURE)) {
             for (CertificationResultTestProcedure updatedTestProcedure : updatedCert.getTestProcedures()) {
                 boolean isInExistingCert =
                         existingCert.getTestProcedures().stream()
@@ -278,7 +279,7 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
     }
 
     private boolean isTestToolsChanged(CertificationResult existingCert, CertificationResult updatedCert) {
-        if (certResultRules.hasCertOption(updatedCert.getCriterion().getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
+        if (certResultRules.hasCertOption(updatedCert.getCriterion().getId(), CertificationResultRules.TEST_TOOLS_USED)) {
             for (CertificationResultTestTool updatedTestTool : updatedCert.getTestToolsUsed()) {
                 boolean isInExistingCert =
                         existingCert.getTestToolsUsed().stream()
@@ -301,22 +302,22 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
     }
 
     private boolean isApiDocumentationChanged(CertificationResult existingCert, CertificationResult updatedCert) {
-        if (certResultRules.hasCertOption(updatedCert.getCriterion().getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
-            return !ObjectUtils.equals(updatedCert.getApiDocumentation(), existingCert.getApiDocumentation());
+        if (certResultRules.hasCertOption(updatedCert.getCriterion().getId(), CertificationResultRules.API_DOCUMENTATION)) {
+            return !Objects.equals(updatedCert.getApiDocumentation(), existingCert.getApiDocumentation());
         }
         return false;
     }
 
     private boolean isPrivacySecurityFrameworkChanged(CertificationResult existingCert, CertificationResult updatedCert) {
-        if (certResultRules.hasCertOption(updatedCert.getCriterion().getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
-            return !ObjectUtils.equals(updatedCert.getPrivacySecurityFramework(), existingCert.getPrivacySecurityFramework());
+        if (certResultRules.hasCertOption(updatedCert.getCriterion().getId(), CertificationResultRules.PRIVACY_SECURITY)) {
+            return !Objects.equals(updatedCert.getPrivacySecurityFramework(), existingCert.getPrivacySecurityFramework());
         }
         return false;
     }
 
     private boolean isSedChanged(CertificationResult existingCert, CertificationResult updatedCert) {
-        if (certResultRules.hasCertOption(updatedCert.getCriterion().getNumber(), CertificationResultRules.SED)) {
-            return !ObjectUtils.equals(updatedCert.isSed(), existingCert.isSed());
+        if (certResultRules.hasCertOption(updatedCert.getCriterion().getId(), CertificationResultRules.SED)) {
+            return !Objects.equals(updatedCert.isSed(), existingCert.isSed());
         }
         return false;
     }

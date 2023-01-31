@@ -7,6 +7,7 @@ import java.util.List;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
+import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
 import lombok.Data;
 
 @Data
@@ -33,7 +34,7 @@ public class CertificationResultDTO implements Serializable {
     private Long lastModifiedUser;
 
     private List<CertificationResultUcdProcessDTO> ucdProcesses;
-    private List<CertificationResultTestFunctionalityDTO> testFunctionality;
+    private List<CertificationResultFunctionalityTested> functionalitiesTested;
     private List<CertificationResultTestProcedureDTO> testProcedures;
     private List<CertificationResultTestDataDTO> testData;
     private List<CertificationResultTestToolDTO> testTools;
@@ -48,7 +49,7 @@ public class CertificationResultDTO implements Serializable {
         testTools = new ArrayList<CertificationResultTestToolDTO>();
         testData = new ArrayList<CertificationResultTestDataDTO>();
         testProcedures = new ArrayList<CertificationResultTestProcedureDTO>();
-        testFunctionality = new ArrayList<CertificationResultTestFunctionalityDTO>();
+        functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         testTasks = new ArrayList<CertificationResultTestTaskDTO>();
     }
 

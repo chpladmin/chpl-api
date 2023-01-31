@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestTask;
 
 @Component("unattestedCriteriaWithDataReviewer")
@@ -48,8 +48,8 @@ public class UnattestedCriteriaWithDataReviewer implements Reviewer {
                 if (cert.getTestDataUsed() != null && cert.getTestDataUsed().size() > 0) {
                     cert.getTestDataUsed().clear();
                 }
-                if (cert.getTestFunctionality() != null && cert.getTestFunctionality().size() > 0) {
-                    cert.getTestFunctionality().clear();
+                if (cert.getFunctionalitiesTested() != null && cert.getFunctionalitiesTested().size() > 0) {
+                    cert.getFunctionalitiesTested().clear();
                 }
                 if (cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
                     cert.getTestProcedures().clear();
