@@ -28,8 +28,10 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
+import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReportSummary;
 import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingReportService;
 import gov.healthit.chpl.scheduler.job.realworldtesting.RealWorldTestingReportSummaryCalculator;
+import gov.healthit.chpl.util.NullSafeEvaluator;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "realWorldTestingReportEmailJobLogger")
@@ -89,7 +91,7 @@ public class RealWorldTestingReportEmailJob implements Job {
         return chplHtmlEmailBuilder.initialize()
                 .heading(env.getProperty("rwt.report.subject"))
                 .paragraph(String.format(env.getProperty("rwt.report.body")), getAcbNamesAsBrSeparatedList(context))
-                .paragraph("Summary", getEmailSummaryParagraph(rows))
+                .paragraph("Real World Testing Report Summary", getEmailSummaryParagraph(rows))
                 .footer(true)
                 .build();
     }
@@ -156,7 +158,19 @@ public class RealWorldTestingReportEmailJob implements Job {
     }
 
     private String getEmailSummaryParagraph(List<RealWorldTestingReport> rows) {
-        RealWorldTestingReportSummaryCalculator.calculateSummariesByEligibityYear(rows, 2022);
-        return RealWorldTestingReportSummaryCalculator.calculateSummariesByEligibityYear(rows, 2022).toString();
+        RealWorldTestingReportSummary summary = RealWorldTestingReportSummaryCalculator.calculateSummariesByEligibityYear(rows, 2022);
+        StringBuffer paragraph = new StringBuffer();
+        paragraph.append("Real World Testing for ").append(summary.getRwtEligibilityYear()).append(":<br/>")
+                .append("<ul>")
+                .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalListings(), 0)).append(" Total listing for this period</li>")
+                .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithdrawn(), 0)).append(" Withdrawn, no longer eligible</li>")
+                .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalActive(), 0)).append(" Active</li>")
+                .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalEligibleViaIcs(), 0)).append(" Eligible via ICS</li>")
+                .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithPlansUrl(), 0)).append(" Have RWT plans URL</li>")
+                .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithPlansUrlValidated(), 0)).append(" RWT plans validated</li>")
+                .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithResultsUrl(), 0)).append(" Have RWT results URL</li>")
+                .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithResultsUrlValidated(), 0)).append(" RWT results validated</li>")
+                .append("</ul>");
+        return paragraph.toString();
     }
 }
