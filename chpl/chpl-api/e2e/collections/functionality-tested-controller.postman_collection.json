@@ -1,0 +1,125 @@
+{
+	"info": {
+		"name": "functionality-tested-controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET /functionalities-tested - return 200 status and response body not empty",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"expect GET /functionalities-tested request to return 200 status and response body to not be empty\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(jsonData.response).not.eq(null);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/functionalities-tested",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"functionalities-tested"
+					]
+				},
+				"description": "GET /functionalities-tested request to return 200 status and response body to not be empty"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /functionalities-tested - response has correct schema",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const schema = {\r",
+							"  \"results\": [\r",
+							"    {\r",
+							"    \"iTestd\": 0,\r",
+							"    \"name\": \"string\",\r",
+							"    \"description\": \"string\",\r",
+							"    \"practiceType\": {\r",
+							"      \"id\": 0,\r",
+							"      \"creationDate\": \"2023-01-18T20:48:37.258Z\",\r",
+							"      \"deleted\": true,\r",
+							"      \"description\": \"string\",\r",
+							"      \"lastModifiedDate\": \"2023-01-18T20:48:37.258Z\",\r",
+							"      \"lastModifiedUser\": 0,\r",
+							"      \"name\": \"string\"\r",
+							"    },\r",
+							"    \"criteria\": [\r",
+							"      {\r",
+							"        \"id\": 0,\r",
+							"        \"number\": \"string\",\r",
+							"        \"title\": \"string\",\r",
+							"        \"certificationEditionId\": 0,\r",
+							"        \"certificationEdition\": \"string\",\r",
+							"        \"description\": \"string\",\r",
+							"        \"removed\": true\r",
+							"      }\r",
+							"    ]\r",
+							"  }]\r",
+							"};\r",
+							"pm.test(\"Validate that /functionalities-tested end point has correct schema\", () => {\r",
+							"            pm.response.to.have.jsonSchema(schema);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/functionalities-tested",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"functionalities-tested"
+					]
+				},
+				"description": "GET /functionalities-tested end point has correct schema"
+			},
+			"response": []
+		}
+	]
+}
