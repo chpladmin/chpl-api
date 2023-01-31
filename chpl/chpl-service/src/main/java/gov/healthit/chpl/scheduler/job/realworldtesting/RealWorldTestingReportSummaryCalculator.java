@@ -11,17 +11,18 @@ import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReportSummary;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 
 public class RealWorldTestingReportSummaryCalculator {
-
     public static RealWorldTestingReportSummary calculateSummariesByEligibityYear(List<RealWorldTestingReport> rows, Integer eligibilityYear) {
         List<RealWorldTestingReport> filteredRows = filterByEligibilityYear(rows, eligibilityYear);
-
         return RealWorldTestingReportSummary.builder()
                 .rwtEligibilityYear(eligibilityYear)
                 .totalListings(calculateTotalListings(filteredRows))
                 .totalActive(calculateActiveListings(filteredRows))
                 .totalWithdrawn(calculateWithdrawnListings(filteredRows))
                 .totalWithPlansUrl(calculateWithPlansUrl(filteredRows))
+                .totalWithPlansUrlValidated(calculateWithPlansUrlDate(filteredRows))
+                .totalWithResultsUrlValidated(calculateWithResultsUrlDate(filteredRows))
                 .totalWithResultsUrl(calculateWithResultsUrl(filteredRows))
+                .totalEligibleViaIcs(calculateRwtEligibleDueToIcs(filteredRows))
                 .build();
     }
 
@@ -53,9 +54,27 @@ public class RealWorldTestingReportSummaryCalculator {
                 .collect(Collectors.counting());
     }
 
+    private static Long calculateWithPlansUrlDate(List<RealWorldTestingReport> rows) {
+        return rows.stream()
+                .filter(row -> hasPlansUrlDate(row))
+                .collect(Collectors.counting());
+    }
+
+    private static Long calculateWithResultsUrlDate(List<RealWorldTestingReport> rows) {
+        return rows.stream()
+                .filter(row -> hasResultsUrlDate(row))
+                .collect(Collectors.counting());
+    }
+
     private static Long calculateWithResultsUrl(List<RealWorldTestingReport> rows) {
         return rows.stream()
                 .filter(row -> hasResultsUrl(row))
+                .collect(Collectors.counting());
+    }
+
+    private static Long calculateRwtEligibleDueToIcs(List<RealWorldTestingReport> rows) {
+        return rows.stream()
+                .filter(row -> isRwtEligibleDueToIcs(row))
                 .collect(Collectors.counting());
     }
 
@@ -68,12 +87,23 @@ public class RealWorldTestingReportSummaryCalculator {
                 || row.getCurrentStatus().equals(CertificationStatusType.WithdrawnByDeveloper.toString());
     }
 
-    public static boolean hasPlansUrl(RealWorldTestingReport row) {
+    private static Boolean hasPlansUrl(RealWorldTestingReport row) {
         return !StringUtils.isEmpty(row.getRwtPlansUrl());
     }
 
-    public static boolean hasResultsUrl(RealWorldTestingReport row) {
+    private static Boolean hasResultsUrl(RealWorldTestingReport row) {
         return !StringUtils.isEmpty(row.getRwtResultsUrl());
     }
 
+    private static Boolean isRwtEligibleDueToIcs(RealWorldTestingReport row) {
+        return NullSafeEvaluator.eval(() -> row.getIcs(), false);
+    }
+
+    private static Boolean hasPlansUrlDate(RealWorldTestingReport row) {
+        return row.getRwtPlansCheckDate() != null;
+    }
+
+    private static Boolean hasResultsUrlDate(RealWorldTestingReport row) {
+        return row.getRwtResultsCheckDate() != null;
+    }
 }
