@@ -79,9 +79,9 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_nullTestToolsNoGapCriteria_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -106,9 +106,9 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_nullTestToolsRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -131,9 +131,9 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_emptyTestToolsNoGapCriteria_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -157,9 +157,9 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_emptyTestToolsRemovedCriteria_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -181,9 +181,9 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_nullTestToolsWithGapCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(true);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -206,9 +206,9 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_emptyTestToolsWithGapCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(true);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -230,9 +230,9 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_criteriaDoesNotSupportTestTools_hasWarningAndTestToolsSetNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(true);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(false);
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
         testTools.add(CertificationResultTestTool.builder()
@@ -264,9 +264,9 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_removedCriteriaDoesNotSupportTestTools_noWarning() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(true);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(false);
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
         testTools.add(CertificationResultTestTool.builder()
@@ -294,9 +294,9 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_removesTestToolsWithoutId_hasWarning() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
         testTools.add(CertificationResultTestTool.builder()
@@ -330,9 +330,9 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_ignoresTestToolsWithoutIdForRemovedCriteria_noWarning() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
         testTools.add(CertificationResultTestTool.builder()
@@ -364,9 +364,9 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_testToolWithoutNameNoId_hasWarnig() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
@@ -402,9 +402,9 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_testToolWithoutNameNoIdForRemovedCriteria_notRemovedAndNoWarning() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
@@ -438,9 +438,9 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_testToolWithoutNameWithId_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
@@ -477,9 +477,9 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_testToolWithoutNameWithIdForRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
@@ -514,9 +514,9 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_testToolMissingVersion_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
@@ -552,9 +552,9 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_testToolMissingVersionForRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
@@ -588,9 +588,9 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_retiredTestToolWithoutListingIcs_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
@@ -629,9 +629,9 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_retiredTestToolWithoutListingIcsForRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
@@ -668,9 +668,9 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_retiredTestToolWithIcs_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
@@ -710,9 +710,9 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_retiredTestToolsWithAllData_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
 
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
@@ -748,9 +748,9 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_testToolsNotApplicableForCriteria_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(true);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
         testTools.add(CertificationResultTestTool.builder()
@@ -781,9 +781,9 @@ public class TestToolReviewerTest {
 
     @Test
     public void review_testToolsNotApplicableForRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(true);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
             .thenReturn(true);
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
         testTools.add(CertificationResultTestTool.builder()

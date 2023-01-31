@@ -97,7 +97,7 @@ public class OptionalStandardReviewerTest {
 
     @Test
     public void review_nullOptionalStandards_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -119,7 +119,7 @@ public class OptionalStandardReviewerTest {
 
     @Test
     public void review_emptyOptionalStandards_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -141,7 +141,7 @@ public class OptionalStandardReviewerTest {
 
     @Test
     public void optionalStandardsNotApplicableToCriteria_hasWarningAndStandardsSetNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
             .thenReturn(false);
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
         optionalStandards.add(CertificationResultOptionalStandard.builder()
@@ -171,7 +171,7 @@ public class OptionalStandardReviewerTest {
 
     @Test
     public void optionalStandardsNotApplicableToRemovedCriteria_noWarnings() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
             .thenReturn(false);
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
         optionalStandards.add(CertificationResultOptionalStandard.builder()
@@ -198,7 +198,7 @@ public class OptionalStandardReviewerTest {
 
     @Test
     public void review_optionalStandardsWithoutId_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
             .thenReturn(true);
 
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
@@ -232,7 +232,7 @@ public class OptionalStandardReviewerTest {
 
     @Test
     public void review_optionalStandardsWithoutIdForRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
             .thenReturn(true);
 
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
@@ -264,7 +264,7 @@ public class OptionalStandardReviewerTest {
 
     @Test
     public void review_optionalStandardWithIdOnInvalidCriterion_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
             .thenReturn(true);
 
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
@@ -295,7 +295,7 @@ public class OptionalStandardReviewerTest {
 
     @Test
     public void review_optionalStandardWithIdOnInvalidRemovedCriterion_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
             .thenReturn(true);
 
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
@@ -324,7 +324,7 @@ public class OptionalStandardReviewerTest {
 
     @Test
     public void review_optionalStandardWithoutCitationAndWithoutId_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
             .thenReturn(true);
 
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
@@ -359,7 +359,7 @@ public class OptionalStandardReviewerTest {
 
     @Test
     public void review_optionalStandardWithoutCitationAndWithoutIdForRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
             .thenReturn(true);
 
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
@@ -392,7 +392,7 @@ public class OptionalStandardReviewerTest {
 
     @Test
     public void review_optionalStandardsWithoutCitationWithId_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
         .thenReturn(true);
 
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
@@ -429,7 +429,7 @@ public class OptionalStandardReviewerTest {
 
     @Test
     public void review_optionalStandardsWithoutCitationWithIdForRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
         .thenReturn(true);
 
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
@@ -462,7 +462,7 @@ public class OptionalStandardReviewerTest {
 
     @Test
     public void review_validOptionalStandard_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
             .thenReturn(true);
 
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();

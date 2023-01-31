@@ -1,5 +1,23 @@
 # Release Notes
 
+## Version 39.2.0
+_23 January 2023_
+
+### Features
+* Remove Listings from Shared Store related to Direct Reviews
+* Stop accepting measures at the criteria level during upload
+* Create a system job to backfill 'Cures Update' Questionable Activity
+* Detect Questionable Activity if Cures Update is Removed when a listing is updated
+* Add /qms-standard endpoints supporting CRUD operations
+* Add new ics-relationships endpoints for listings
+* Deprecate /certified_products/{id}/ics_relationships endpoints
+* Give ROLE_STARTUP permission to run DRCacheRefresh job
+
+### Bug Fixes
+* Clear shared store listings in ICS Family of edited listing
+
+---
+
 ## Version 39.1.0
 _9 January 2023_
 

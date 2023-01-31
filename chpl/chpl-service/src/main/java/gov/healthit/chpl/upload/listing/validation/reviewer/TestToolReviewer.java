@@ -60,7 +60,7 @@ public class TestToolReviewer {
     }
 
     private void reviewCriteriaCanHaveTestToolData(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.TEST_TOOLS_USED)) {
             if (!CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
                 listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.testToolsNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
@@ -70,7 +70,7 @@ public class TestToolReviewer {
     }
 
     private void removeTestToolsIfNotApplicable(CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.TEST_TOOLS_USED)) {
             certResult.setTestToolsUsed(null);
         }
     }
@@ -92,7 +92,7 @@ public class TestToolReviewer {
 
     private void reviewTestToolsRequiredWhenCertResultIsNotGap(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!isGapEligibileAndHasGap(certResult)
-                && certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_TOOLS_USED)
+                && certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.TEST_TOOLS_USED)
                 && CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
             listing.getErrorMessages().add(msgUtil.getMessage(
                             "listing.criteria.missingTestTool",
@@ -102,7 +102,7 @@ public class TestToolReviewer {
 
     private boolean isGapEligibileAndHasGap(CertificationResult certResult) {
         boolean result = false;
-        if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.GAP)
+        if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.GAP)
                 && certResult.isGap() != null && certResult.isGap()) {
             result = true;
         }
