@@ -75,7 +75,7 @@ public enum Headings {
     MEASURE_ASSOCIATED_CRITERIA("Measure Associated Criteria"),
     GAP("GAP"),
     PRIVACY_AND_SECURITY("Privacy and Security Framework"),
-    TEST_FUNCTIONALITY("Functionality Tested"),
+    FUNCTIONALITIES_TESTED("Functionality Tested"),
     OPTIONAL_STANDARD("Standard Tested Against", "Optional Standard"),
     HAS_ADDITIONAL_SOFTWARE("Additional Software"),
     ADDITIONAL_SOFTWARE_LISTING("CP Source"),

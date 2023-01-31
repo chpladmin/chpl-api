@@ -25,7 +25,6 @@ import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestDataDAO;
-import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
@@ -45,7 +44,6 @@ import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.NonconformityTypeEnum;
 import gov.healthit.chpl.domain.Product;
-import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
 import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
@@ -61,10 +59,10 @@ import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.TestDataCriteriaMapDTO;
-import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestProcedureCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
 import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
@@ -88,7 +86,7 @@ public class DimensionalDataManager {
     private EducationTypeDAO educationTypeDao;
     private AgeRangeDAO ageRangeDao;
     private OptionalStandardDAO optionalStandardDao;
-    private TestFunctionalityDAO testFuncDao;
+    private FunctionalityTestedDAO functionalityTestedDao;
     private TestStandardDAO testStandardDao;
     private TestProcedureDAO testProcedureDao;
     private TestDataDAO testDataDao;
@@ -110,7 +108,7 @@ public class DimensionalDataManager {
     @SuppressWarnings("checkstyle:parameternumber")
     public DimensionalDataManager(CacheableDimensionalDataManager cacheableDimensionalDataManager,
                                   CertificationBodyDAO certificationBodyDao, CertificationCriterionDAO certificationCriterionDao,
-                                  EducationTypeDAO educationTypeDao, AgeRangeDAO ageRangeDao, TestFunctionalityDAO testFuncDao,
+                                  EducationTypeDAO educationTypeDao, AgeRangeDAO ageRangeDao, FunctionalityTestedDAO functionalityTestedDao,
                                   TestStandardDAO testStandardDao, TestProcedureDAO testProcedureDao,
                                   TestDataDAO testDataDao, AccessibilityStandardDAO asDao, UcdProcessDAO ucdDao,
                                   QmsStandardDAO qmsDao, TargetedUserDAO tuDao, DeveloperStatusDAO devStatusDao,
@@ -124,7 +122,7 @@ public class DimensionalDataManager {
         this.educationTypeDao = educationTypeDao;
         this.ageRangeDao = ageRangeDao;
         this.optionalStandardDao = optionalStandardDao;
-        this.testFuncDao = testFuncDao;
+        this.functionalityTestedDao = functionalityTestedDao;
         this.testStandardDao = testStandardDao;
         this.testProcedureDao = testProcedureDao;
         this.testDataDao = testDataDao;
@@ -206,19 +204,6 @@ public class DimensionalDataManager {
         }
 
         return optionalStds;
-    }
-
-    @Transactional
-    public Set<TestFunctionality> getTestFunctionality() {
-        LOGGER.debug("Getting all test functionality from the database (not cached).");
-        List<TestFunctionalityDTO> dtos = this.testFuncDao.findAll();
-        Set<TestFunctionality> testFuncs = new HashSet<TestFunctionality>();
-
-        for (TestFunctionalityDTO dto : dtos) {
-            testFuncs.add(new TestFunctionality(dto));
-        }
-
-        return testFuncs;
     }
 
     @Transactional

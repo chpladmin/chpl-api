@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity.listing;
+package gov.healthit.chpl.functionalityTested;
 
 import java.util.Date;
 
@@ -13,7 +13,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.entity.TestFunctionalityEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,26 +23,26 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
-@Table(name = "certification_result_test_functionality")
-public class CertificationResultTestFunctionalityEntity {
+@Table(name = "certification_result_functionality_tested")
+public class CertificationResultFunctionalityTestedEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "certification_result_test_functionality_id")
+    @Column(name = "id")
     private Long id;
 
     @Basic(optional = false)
     @Column(name = "certification_result_id", nullable = false)
     private Long certificationResultId;
 
-    @Column(name = "test_functionality_id")
-    private Long testFunctionalityId;
+    @Column(name = "functionality_tested_id")
+    private Long functionalityTestedId;
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "test_functionality_id", unique = true, nullable = true, insertable = false, updatable = false)
-    private TestFunctionalityEntity testFunctionality;
+    @JoinColumn(name = "functionality_tested_id", unique = true, nullable = true, insertable = false, updatable = false)
+    private FunctionalityTestedEntity functionalityTested;
 
     @Column(name = "deleted", insertable = false)
     private Boolean deleted;
@@ -56,4 +55,13 @@ public class CertificationResultTestFunctionalityEntity {
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
+
+    public CertificationResultFunctionalityTested toDomain() {
+        return CertificationResultFunctionalityTested.builder()
+                .id(this.getId())
+                .functionalityTestedId(this.getFunctionalityTestedId())
+                .name(this.getFunctionalityTested() != null ? this.getFunctionalityTested().getNumber() : null)
+                .description(this.getFunctionalityTested() != null ? this.getFunctionalityTested().getName() : null)
+                .build();
+    }
 }

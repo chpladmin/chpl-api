@@ -97,6 +97,12 @@ public class CertificationCriterionService {
         return getCertificationResultSortIndex(valueA) - getCertificationResultSortIndex(valueB);
     }
 
+    public int sortCriteria(CertificationCriterion c1, CertificationCriterion c2) {
+        String valueA = formatCriteriaNumber(c1);
+        String valueB = formatCriteriaNumber(c2);
+        return getCertificationResultSortIndex(valueA) - getCertificationResultSortIndex(valueB);
+    }
+
     public static boolean hasCuresInTitle(String title) {
         return title != null && title.contains(CURES_TITLE);
     }

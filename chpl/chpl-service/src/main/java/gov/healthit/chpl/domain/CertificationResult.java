@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections.CollectionUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -21,11 +22,15 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalityTested.FunctionalityTested;
+import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionality;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;
@@ -36,8 +41,8 @@ import lombok.ToString;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Builder
 @AllArgsConstructor
+@Builder
 @ToString
 public class CertificationResult implements Serializable {
     private static final long serialVersionUID = -4917413876078419868L;
@@ -155,8 +160,11 @@ public class CertificationResult implements Serializable {
     @XmlTransient
     private List<ConformanceMethod> allowedConformanceMethods;
 
+    @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found via a GET request to the endpoint /fuctionalities-tested.",
+        removalDate = "2023-08-01")
     @XmlTransient
-    private List<TestFunctionality> allowedTestFunctionalities;
+    private List<FunctionalityTested> allowedTestFunctionalities;
 
     @XmlTransient
     private List<Svap> allowedSvaps;
@@ -174,8 +182,15 @@ public class CertificationResult implements Serializable {
      * (a)(1)(ii). You can find a list of potential values in the 2014 or 2015 Functionality and Standards Reference
      * Tables. It is applicable for 2014 and 2015 Edition.
      */
-    @XmlElementWrapper(name = "testFunctionalityList", nillable = true, required = false)
-    @XmlElement(name = "testFunctionality")
+    @XmlElementWrapper(name = "functionalitiesTested", nillable = true, required = false)
+    @XmlElement(name = "functionalityTested")
+    @Builder.Default
+    private List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
+
+    @XmlTransient
+    @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. Please use 'functionalitiesTested'.",
+            removalDate = "2023-08-01")
     @Builder.Default
     private List<CertificationResultTestFunctionality> testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
 
@@ -272,6 +287,7 @@ public class CertificationResult implements Serializable {
     private String number;
 
     public CertificationResult() {
+        this.functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         this.testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
         this.testToolsUsed = new ArrayList<CertificationResultTestTool>();
         this.testStandards = new ArrayList<CertificationResultTestStandard>();
@@ -309,70 +325,70 @@ public class CertificationResult implements Serializable {
         this.setId(certResult.getId());
         this.setSuccess(certResult.getSuccess());
         this.setSed(certResult.getSed() == null ? Boolean.FALSE : certResult.getSed());
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.GAP)) {
+        if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.GAP)) {
             this.setGap(null);
         } else if (certResult.getGap() == null) {
             this.setGap(Boolean.FALSE);
         } else {
             this.setGap(certResult.getGap());
         }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_SUCCESS)) {
+        if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.G1_SUCCESS)) {
             this.setG1Success(null);
         } else if (certResult.getG1Success() == null) {
             this.setG1Success(Boolean.FALSE);
         } else {
             this.setG1Success(certResult.getG1Success());
         }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_SUCCESS)) {
+        if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.G2_SUCCESS)) {
             this.setG2Success(null);
         } else if (certResult.getG2Success() == null) {
             this.setG2Success(Boolean.FALSE);
         } else {
             this.setG2Success(certResult.getG2Success());
         }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ATTESTATION_ANSWER)) {
+        if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.ATTESTATION_ANSWER)) {
             this.setAttestationAnswer(null);
         } else if (certResult.getAttestationAnswer() == null) {
             this.setAttestationAnswer(false);
         } else {
             this.setAttestationAnswer(certResult.getAttestationAnswer());
         }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
+        if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.API_DOCUMENTATION)) {
             this.setApiDocumentation(null);
         } else if (certResult.getApiDocumentation() == null) {
             this.setApiDocumentation("");
         } else {
             this.setApiDocumentation(certResult.getApiDocumentation());
         }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.EXPORT_DOCUMENTATION)) {
+        if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.EXPORT_DOCUMENTATION)) {
             this.setExportDocumentation(null);
         } else if (certResult.getExportDocumentation() == null) {
             this.setExportDocumentation("");
         } else {
             this.setExportDocumentation(certResult.getExportDocumentation());
         }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.DOCUMENTATION_URL)) {
+        if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.DOCUMENTATION_URL)) {
             this.setDocumentationUrl(null);
         } else if (certResult.getDocumentationUrl() == null) {
             this.setDocumentationUrl("");
         } else {
             this.setDocumentationUrl(certResult.getDocumentationUrl());
         }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.USE_CASES)) {
+        if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.USE_CASES)) {
             this.setUseCases(null);
         } else if (certResult.getUseCases() == null) {
             this.setUseCases("");
         } else {
             this.setUseCases(certResult.getUseCases());
         }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.SERVICE_BASE_URL_LIST)) {
+        if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.SERVICE_BASE_URL_LIST)) {
             this.setServiceBaseUrlList(null);
         } else if (certResult.getServiceBaseUrlList() == null) {
             this.setServiceBaseUrlList("");
         } else {
             this.setServiceBaseUrlList(certResult.getServiceBaseUrlList());
         }
-        if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
+        if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.PRIVACY_SECURITY)) {
             this.setPrivacySecurityFramework(null);
         } else if (certResult.getPrivacySecurityFramework() == null) {
             this.setPrivacySecurityFramework("");
@@ -385,7 +401,18 @@ public class CertificationResult implements Serializable {
         }
 
         this.setOptionalStandards(getOptionalStandards(certResult, certRules));
-        this.setTestFunctionality(getTestFunctionalities(certResult, certRules));
+        this.setFunctionalitiesTested(getFunctionalitiesTested(certResult, certRules));
+        if (!CollectionUtils.isEmpty(this.getFunctionalitiesTested())) {
+            this.setTestFunctionality(this.getFunctionalitiesTested().stream()
+                    .map(funcTested -> CertificationResultTestFunctionality.builder()
+                            .certificationResultId(funcTested.getCertificationResultId())
+                            .description(funcTested.getDescription())
+                            .id(funcTested.getId())
+                            .name(funcTested.getName())
+                            .testFunctionalityId(funcTested.getFunctionalityTestedId())
+                            .build())
+                    .collect(Collectors.toList()));
+        }
         this.setConformanceMethods(getConformanceMethods(certResult, certRules));
         this.setTestProcedures(getTestProcedures(certResult, certRules));
         this.setTestDataUsed(getTestData(certResult, certRules));
@@ -396,7 +423,7 @@ public class CertificationResult implements Serializable {
     }
 
     private List<CertificationResultSvap> getSvaps(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.SVAP)) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.SVAP)) {
             return certResult.getSvaps();
         } else {
             return null;
@@ -404,7 +431,7 @@ public class CertificationResult implements Serializable {
     }
 
     private List<CertificationResultOptionalStandard> getOptionalStandards(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.OPTIONAL_STANDARD)) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.OPTIONAL_STANDARD)) {
             return certResult.getOptionalStandards().stream()
                     .collect(Collectors.toList());
         } else {
@@ -412,18 +439,16 @@ public class CertificationResult implements Serializable {
         }
     }
 
-    private List<CertificationResultTestFunctionality> getTestFunctionalities(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
-            return certResult.getTestFunctionality().stream()
-                    .map(item -> new CertificationResultTestFunctionality(item))
-                    .collect(Collectors.toList());
+    private List<CertificationResultFunctionalityTested> getFunctionalitiesTested(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
+            return certResult.getFunctionalitiesTested();
         } else {
             return null;
         }
     }
 
     private List<CertificationResultConformanceMethod> getConformanceMethods(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.CONFORMANCE_METHOD)) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.CONFORMANCE_METHOD)) {
             return certResult.getConformanceMethods().stream()
                     .map(item -> new CertificationResultConformanceMethod(item))
                     .collect(Collectors.toList());
@@ -433,7 +458,7 @@ public class CertificationResult implements Serializable {
     }
 
     private List<CertificationResultTestProcedure> getTestProcedures(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PROCEDURE)) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.TEST_PROCEDURE)) {
             return certResult.getTestProcedures().stream()
                     .map(item -> new CertificationResultTestProcedure(item))
                     .collect(Collectors.toList());
@@ -444,7 +469,7 @@ public class CertificationResult implements Serializable {
 
 
     private List<CertificationResultTestData> getTestData(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_DATA)) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.TEST_DATA)) {
             return certResult.getTestData().stream()
                     .map(item -> new CertificationResultTestData(item))
                     .collect(Collectors.toList());
@@ -454,7 +479,7 @@ public class CertificationResult implements Serializable {
     }
 
     private List<CertificationResultTestTool> getTestTools(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.TEST_TOOLS_USED)) {
             return certResult.getTestTools().stream()
                     .map(item -> new CertificationResultTestTool(item))
                     .collect(Collectors.toList());
@@ -464,7 +489,7 @@ public class CertificationResult implements Serializable {
     }
 
     private List<CertificationResultTestStandard> getTestStandards(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.STANDARDS_TESTED)) {
             return certResult.getTestStandards().stream()
                     .map(item -> new CertificationResultTestStandard(item))
                     .collect(Collectors.toList());
@@ -474,7 +499,7 @@ public class CertificationResult implements Serializable {
     }
 
     private List<CertificationResultAdditionalSoftware> getAdditionalSoftware(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
             return certResult.getAdditionalSoftware().stream()
                     .map(item -> new CertificationResultAdditionalSoftware(item))
                     .collect(Collectors.toList());
@@ -587,10 +612,20 @@ public class CertificationResult implements Serializable {
         this.testDataUsed = testDataUsed;
     }
 
-    public List<CertificationResultTestFunctionality> getTestFunctionality() {
-        return testFunctionality;
+    public List<CertificationResultFunctionalityTested> getFunctionalitiesTested() {
+        return functionalitiesTested;
     }
 
+    public void setFunctionalitiesTested(List<CertificationResultFunctionalityTested> functionalitiesTested) {
+        this.functionalitiesTested = functionalitiesTested;
+    }
+
+    @Deprecated
+    public List<CertificationResultTestFunctionality> getTestFunctionality() {
+        return this.testFunctionality;
+    }
+
+    @Deprecated
     public void setTestFunctionality(List<CertificationResultTestFunctionality> testFunctionality) {
         this.testFunctionality = testFunctionality;
     }
@@ -659,12 +694,14 @@ public class CertificationResult implements Serializable {
         this.allowedConformanceMethods = allowedConformanceMethods;
     }
 
-    public List<TestFunctionality> getAllowedTestFunctionalities() {
+    @Deprecated
+    public List<FunctionalityTested> getAllowedTestFunctionalities() {
         return allowedTestFunctionalities;
     }
 
-    public void setAllowedTestFunctionalities(List<TestFunctionality> testFunctionalities) {
-        this.allowedTestFunctionalities = testFunctionalities;
+    @Deprecated
+    public void setAllowedTestFunctionalities(List<FunctionalityTested> allowedTestFunctionalities) {
+        this.allowedTestFunctionalities = allowedTestFunctionalities;
     }
 
     public CertificationCriterion getCriterion() {
