@@ -12,6 +12,7 @@ public class RealWorldTestingReportSummary {
    private Long totalListings;
    private Long totalWithdrawn;
    private Long totalActive;
+   private Long totalEligibleViaIcs;
    private Long totalWithPlansUrl;
    private Long totalWithPlansUrlValidated;
    private Long totalWithResultsUrl;
