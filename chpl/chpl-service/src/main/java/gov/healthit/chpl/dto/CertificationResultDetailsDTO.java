@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
+import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import lombok.Data;
@@ -35,7 +36,7 @@ public class CertificationResultDetailsDTO implements Serializable {
     private CertificationCriterionDTO criterion;
 
     private List<CertificationResultOptionalStandard> optionalStandards;
-    private List<CertificationResultTestFunctionalityDTO> testFunctionality;
+    private List<CertificationResultFunctionalityTested> functionalitiesTested;
     private List<CertificationResultConformanceMethodEntity> conformanceMethods;
     private List<CertificationResultTestProcedureDTO> testProcedures;
     private List<CertificationResultTestDataDTO> testData;
@@ -78,9 +79,9 @@ public class CertificationResultDetailsDTO implements Serializable {
                     .collect(Collectors.toList());
         }
 
-        if (entity.getCertificationResultTestFunctionalities() != null) {
-            this.testFunctionality = entity.getCertificationResultTestFunctionalities().stream()
-                    .map(e -> new CertificationResultTestFunctionalityDTO(e))
+        if (entity.getCertificationResultFunctionalitiesTested() != null) {
+            this.functionalitiesTested = entity.getCertificationResultFunctionalitiesTested().stream()
+                    .map(e -> e.toDomain())
                     .collect(Collectors.toList());
         }
 

@@ -8,8 +8,8 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -99,10 +99,10 @@ public class UnattestedCriteriaWithDataReviewer {
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Test Data"));
         }
-        if (!CollectionUtils.isEmpty(certResult.getTestFunctionality())) {
+        if (!CollectionUtils.isEmpty(certResult.getFunctionalitiesTested())) {
             listing.getWarningMessages().add(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
-                            Util.formatCriteriaNumber(certResult.getCriterion()), "Test Functionality"));
+                            Util.formatCriteriaNumber(certResult.getCriterion()), "Functionality Tested"));
         }
         if (!CollectionUtils.isEmpty(certResult.getTestProcedures())) {
             listing.getWarningMessages().add(

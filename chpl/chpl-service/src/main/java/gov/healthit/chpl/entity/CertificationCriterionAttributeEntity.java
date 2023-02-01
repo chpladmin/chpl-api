@@ -40,6 +40,9 @@ public class CertificationCriterionAttributeEntity {
     @Column(name = "conformance_method")
     private Boolean conformanceMethod;
 
+    @Column(name = "functionality_tested")
+    private Boolean functionalityTested;
+
     @Column(name = "optional_standard")
     private Boolean optionalStandard;
 

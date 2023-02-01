@@ -175,7 +175,7 @@ public class ConformanceMethodReviewerTest {
             .thenAnswer(i -> String.format(DEFAULT_CM_ADDED_MSG, i.getArgument(1), i.getArgument(2)));
 
         certResultRules = Mockito.mock(CertificationResultRules.class);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(),
                 ArgumentMatchers.eq(CertificationResultRules.CONFORMANCE_METHOD)))
             .thenReturn(true);
 
@@ -231,7 +231,7 @@ public class ConformanceMethodReviewerTest {
 
     @Test
     public void review_conformanceMethodsNotApplicableForAttestedCriterion_hasWarningAndConformanceMethodsSetNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(),
                 ArgumentMatchers.eq(CertificationResultRules.CONFORMANCE_METHOD)))
             .thenReturn(false);
 
@@ -267,7 +267,7 @@ public class ConformanceMethodReviewerTest {
 
     @Test
     public void review_conformanceMethodsNotApplicableForUnattestedCriterion_noWarningAndConformanceMethodsSetNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(),
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(),
                 ArgumentMatchers.eq(CertificationResultRules.CONFORMANCE_METHOD)))
             .thenReturn(false);
 

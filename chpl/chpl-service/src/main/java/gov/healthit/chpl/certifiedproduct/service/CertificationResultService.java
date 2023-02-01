@@ -1,8 +1,11 @@
 package gov.healthit.chpl.certifiedproduct.service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,9 +16,8 @@ import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.TestFunctionality;
+import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.TestTool;
 import gov.healthit.chpl.domain.TestToolCriteriaMap;
@@ -23,39 +25,49 @@ import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.functionalityTested.FunctionalityTested;
+import gov.healthit.chpl.functionalityTested.FunctionalityTestedManager;
 import gov.healthit.chpl.manager.CertificationResultManager;
-import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.svap.dao.SvapDAO;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
 import gov.healthit.chpl.util.CertificationResultRules;
+import lombok.NoArgsConstructor;
 
 @Component
 public class CertificationResultService {
     private CertificationResultRules certRules;
     private CertificationResultManager certResultManager;
-    private TestingFunctionalityManager testFunctionalityManager;
+    private FunctionalityTestedManager functionalityTestedManager;
     private CertificationResultDetailsDAO certificationResultDetailsDAO;
     private SvapDAO svapDao;
     private OptionalStandardDAO optionalStandardDAO;
     private ConformanceMethodDAO conformanceMethodDAO;
     private TestToolDAO testToolDAO;
+    private CertificationCriterionService criterionService;
+
+    private CertificationResultComparator certResultComparator;
 
     @Autowired
     public CertificationResultService(CertificationResultRules certRules, CertificationResultManager certResultManager,
-            TestingFunctionalityManager testFunctionalityManager, CertificationResultDetailsDAO certificationResultDetailsDAO,
-            SvapDAO svapDAO, OptionalStandardDAO optionalStandardDAO, TestToolDAO testToolDAO, ConformanceMethodDAO conformanceMethodDAO) {
+            FunctionalityTestedManager functionalityTestedManager, CertificationResultDetailsDAO certificationResultDetailsDAO,
+            SvapDAO svapDAO, OptionalStandardDAO optionalStandardDAO, TestToolDAO testToolDAO,
+            ConformanceMethodDAO conformanceMethodDAO, CertificationCriterionService criterionService) {
         this.certRules = certRules;
         this.certResultManager = certResultManager;
-        this.testFunctionalityManager = testFunctionalityManager;
+        this.functionalityTestedManager = functionalityTestedManager;
         this.certificationResultDetailsDAO = certificationResultDetailsDAO;
         this.svapDao = svapDAO;
         this.optionalStandardDAO = optionalStandardDAO;
         this.conformanceMethodDAO = conformanceMethodDAO;
         this.testToolDAO = testToolDAO;
+        this.criterionService = criterionService;
+
+        this.certResultComparator = new CertificationResultComparator();
     }
 
     public List<CertificationResult> getCertificationResults(CertifiedProductSearchDetails searchDetails) throws EntityRetrievalException {
@@ -66,6 +78,7 @@ public class CertificationResultService {
 
         return getCertificationResultDetailsDTOs(searchDetails.getId()).stream()
                 .map(dto -> getCertificationResult(dto, searchDetails, svapCriteriaMap, optionalStandardCriteriaMap, testToolCriteriaMap, conformanceMethodCriteriaMap))
+                .sorted(certResultComparator)
                 .collect(Collectors.toList());
     }
 
@@ -94,13 +107,13 @@ public class CertificationResultService {
         result.setAllowedConformanceMethods(getAvailableConformanceMethodsForCriteria(result, conformanceMethodCriteriaMap));
         result.setAllowedOptionalStandards(getAvailableOptionalStandardsForCriteria(result, optionalStandardCriteriaMap));
         result.setAllowedSvaps(getAvailableSvapForCriteria(result, svapCriteriaMap));
-        result.setAllowedTestFunctionalities(getAvailableTestFunctionalities(result, searchDetails));
+        result.setAllowedTestFunctionalities(getAvailableFunctionalitiesTested(result, searchDetails));
         result.setAllowedTestTools(getAvailableTestToolForCriteria(result, testToolCriteriaMap));
         return result;
     }
 
     private void populateTestTasks(CertificationResultDetailsDTO certResult, CertifiedProductSearchDetails searchDetails, CertificationCriterion criteria) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TASK)) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.TEST_TASK)) {
             List<CertificationResultTestTaskDTO> testTask = certResultManager.getTestTasksForCertificationResult(certResult.getId());
             for (CertificationResultTestTaskDTO currResult : testTask) {
                 boolean alreadyExists = false;
@@ -120,7 +133,7 @@ public class CertificationResultService {
     }
 
     private void populateSed(CertificationResultDetailsDTO certResult, CertifiedProductSearchDetails searchDetails, CertificationResult result, CertificationCriterion criteria) {
-        if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.UCD_FIELDS)) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.UCD_FIELDS)) {
             List<CertificationResultUcdProcessDTO> ucdProcesses = certResultManager.getUcdProcessesForCertificationResult(result.getId());
             for (CertificationResultUcdProcessDTO currResult : ucdProcesses) {
                 boolean alreadyExists = false;
@@ -162,15 +175,14 @@ public class CertificationResultService {
                 .collect(Collectors.toList());
     }
 
-    private List<TestFunctionality> getAvailableTestFunctionalities(CertificationResult cr, CertifiedProductSearchDetails cp) {
-        String edition = cp.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
+    private List<FunctionalityTested> getAvailableFunctionalitiesTested(CertificationResult cr, CertifiedProductSearchDetails cp) {
         Long practiceTypeId = null;
         if (cp.getPracticeType().containsKey("id")) {
             if (cp.getPracticeType().get("id") != null) {
                 practiceTypeId = Long.valueOf(cp.getPracticeType().get("id").toString());
             }
         }
-        return testFunctionalityManager.getTestFunctionalities(cr.getCriterion().getId(), edition, practiceTypeId);
+        return functionalityTestedManager.getFunctionalitiesTested(cr.getCriterion().getId(), practiceTypeId);
     }
 
     private List<TestTool> getAvailableTestToolForCriteria(CertificationResult result, List<TestToolCriteriaMap> testToolCriteriaMap) {
@@ -178,6 +190,21 @@ public class CertificationResultService {
                 .filter(ttcm -> ttcm.getCriterion().getId().equals(result.getCriterion().getId()))
                 .map(ttm -> ttm.getTestTool())
                 .collect(Collectors.toList());
+    }
+
+    @NoArgsConstructor
+    private class CertificationResultComparator implements Comparator<CertificationResult> {
+        private boolean descending = false;
+
+        @Override
+        public int compare(CertificationResult certResult1, CertificationResult certResult2) {
+            if (ObjectUtils.anyNull(certResult1.getCriterion(), certResult2.getCriterion())
+                    || StringUtils.isAnyEmpty(certResult1.getCriterion().getNumber(), certResult2.getCriterion().getNumber())) {
+                return 0;
+            }
+            int sortFactor = descending ? -1 : 1;
+            return (criterionService.sortCriteria(certResult1.getCriterion(), certResult2.getCriterion())) * sortFactor;
+        }
     }
 
 }

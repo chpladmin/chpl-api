@@ -3,9 +3,9 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import java.util.Iterator;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -55,7 +55,7 @@ public class TestDataReviewer {
     }
 
     private void reviewCriteriaCanHaveTestData(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_DATA)) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.TEST_DATA)) {
             if (!CollectionUtils.isEmpty(certResult.getTestDataUsed())) {
                 listing.getWarningMessages().add(msgUtil.getMessage(
                     "listing.criteria.testDataNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
@@ -65,7 +65,7 @@ public class TestDataReviewer {
     }
 
     private void removeTestDataIfNotApplicable(CertificationResult certResult) {
-        if (!certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.TEST_DATA)) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.TEST_DATA)) {
             certResult.setTestDataUsed(null);
         }
     }
@@ -101,7 +101,7 @@ public class TestDataReviewer {
 
     private boolean isGapEligibileAndHasGap(CertificationResult certResult) {
         boolean result = false;
-        if (certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.GAP)
+        if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.GAP)
                 && certResult.isGap() != null && certResult.isGap()) {
             result = true;
         }

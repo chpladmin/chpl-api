@@ -1,17 +1,20 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.functionalityTested;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlAccessOrder;
 import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorOrder;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;
@@ -25,11 +28,12 @@ import lombok.ToString;
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorOrder(value = XmlAccessOrder.ALPHABETICAL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Builder
 @AllArgsConstructor
 @ToString
-public class CertificationResultTestFunctionality implements Serializable {
+@Builder
+public class CertificationResultFunctionalityTested implements Serializable {
     private static final long serialVersionUID = -1647645050538126758L;
 
     /**
@@ -42,7 +46,7 @@ public class CertificationResultTestFunctionality implements Serializable {
      * Functionality tested internal ID
      */
     @XmlElement(required = true)
-    private Long testFunctionalityId;
+    private Long functionalityTestedId;
 
     /**
      * Description of functionality tested
@@ -56,32 +60,20 @@ public class CertificationResultTestFunctionality implements Serializable {
     @XmlElement(required = true)
     private String name;
 
-    /**
-     * Edition (2014, 2015) to which the functionality tested is applicable.
-     */
-    @XmlElement(required = true)
-    private String year;
+    @XmlTransient
+    @JsonIgnore
+    private Long certificationResultId;
 
-    public CertificationResultTestFunctionality() {
+    public CertificationResultFunctionalityTested() {
     }
 
-    public CertificationResultTestFunctionality(CertificationResultTestFunctionalityDTO dto) {
-        this.id = dto.getId();
-        this.testFunctionalityId = dto.getTestFunctionalityId();
-        this.description = dto.getTestFunctionalityName();
-        this.name = dto.getTestFunctionalityNumber();
-        this.year = dto.getTestFunctionalityEdition();
-    }
-
-    public boolean matches(CertificationResultTestFunctionality anotherFunc) {
+    public boolean matches(CertificationResultFunctionalityTested anotherFunc) {
         boolean result = false;
-        if (this.getTestFunctionalityId() != null && anotherFunc.getTestFunctionalityId() != null
-                && this.getTestFunctionalityId().longValue() == anotherFunc.getTestFunctionalityId().longValue()) {
+        if (this.getFunctionalityTestedId() != null && anotherFunc.getFunctionalityTestedId() != null
+                && this.getFunctionalityTestedId().longValue() == anotherFunc.getFunctionalityTestedId().longValue()) {
             result = true;
         } else if (!StringUtils.isEmpty(this.getName()) && !StringUtils.isEmpty(anotherFunc.getName())
-                && this.getName().equalsIgnoreCase(anotherFunc.getName()) && !StringUtils.isEmpty(this.getYear())
-                && !StringUtils.isEmpty(anotherFunc.getYear())
-                && this.getYear().equalsIgnoreCase(anotherFunc.getYear())) {
+                && this.getName().equalsIgnoreCase(anotherFunc.getName())) {
             result = true;
         }
         return result;
@@ -95,20 +87,20 @@ public class CertificationResultTestFunctionality implements Serializable {
         this.id = id;
     }
 
-    public Long getTestFunctionalityId() {
-        return testFunctionalityId;
+    public Long getFunctionalityTestedId() {
+        return functionalityTestedId;
     }
 
-    public void setTestFunctionalityId(final Long testFunctionalityId) {
-        this.testFunctionalityId = testFunctionalityId;
+    public void setFunctionalityTestedId(Long functionalityTestedId) {
+        this.functionalityTestedId = functionalityTestedId;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(final String name) {
-        this.description = name;
+    public void setDescription(final String description) {
+        this.description = description;
     }
 
     public String getName() {
@@ -119,12 +111,12 @@ public class CertificationResultTestFunctionality implements Serializable {
         this.name = name;
     }
 
-    public String getYear() {
-        return year;
+    public Long getCertificationResultId() {
+        return this.certificationResultId;
     }
 
-    public void setYear(final String year) {
-        this.year = year;
+    public void setCertificationResultId(Long certificationResultId) {
+        this.certificationResultId = certificationResultId;
     }
 
 }

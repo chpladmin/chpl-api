@@ -11,6 +11,7 @@ import gov.healthit.chpl.validation.listing.reviewer.duplicate.AccessibilityStan
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AdditionalSoftwareDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AtlDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.ConformanceMethodDuplicateReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.duplicate.FunctionalityTestedDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.IcsSourceDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.MeasureDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.OptionalStandardDuplicateReviewer;
@@ -19,14 +20,13 @@ import gov.healthit.chpl.validation.listing.reviewer.duplicate.QmsStandardDuplic
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.SvapDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TargetedUserDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestDataDuplicateReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestFunctionalityDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestProcedureDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestStandardDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.TestToolDuplicateReviewer;
 
 @Component("duplicateDataReviewer")
 public class DuplicateDataReviewer implements Reviewer {
-    private TestFunctionalityDuplicateReviewer testFunctionalityDuplicateReviewer;
+    private FunctionalityTestedDuplicateReviewer functionalityTestedDuplicateReviewer;
     private TestDataDuplicateReviewer testDataDuplicateReviewer;
     private TestToolDuplicateReviewer testToolDuplicateReviewer;
     private ConformanceMethodDuplicateReviewer conformanceMethodDuplicateReviewer;
@@ -47,7 +47,7 @@ public class DuplicateDataReviewer implements Reviewer {
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
     public DuplicateDataReviewer(
-            @Qualifier("testFunctionalityDuplicateReviewer") TestFunctionalityDuplicateReviewer testFunctionalityDuplicateReviewer,
+            @Qualifier("functionalityTestedDuplicateReviewer") FunctionalityTestedDuplicateReviewer functionalityTestedDuplicateReviewer,
             @Qualifier("testDataDuplicateReviewer") TestDataDuplicateReviewer testDataDuplicateReviewer,
             @Qualifier("testToolDuplicateReviewer") TestToolDuplicateReviewer testToolDuplicateReviewer,
             @Qualifier("testProcedureDuplicateReviewer") TestProcedureDuplicateReviewer testProcedureDuplicateReviewer,
@@ -64,7 +64,7 @@ public class DuplicateDataReviewer implements Reviewer {
             @Qualifier("targetedUserDuplicateReviewer") TargetedUserDuplicateReviewer targetedUserDuplicateReviewer,
             @Qualifier("promotingInteroperabilityUserCountDuplicateReviewer") PromotingInteroperabilityUserCountReviewer piuReviewer,
             ValidationUtils validationUtils) {
-        this.testFunctionalityDuplicateReviewer = testFunctionalityDuplicateReviewer;
+        this.functionalityTestedDuplicateReviewer = functionalityTestedDuplicateReviewer;
         this.testDataDuplicateReviewer = testDataDuplicateReviewer;
         this.testToolDuplicateReviewer = testToolDuplicateReviewer;
         this.testProcedureDuplicateReviewer = testProcedureDuplicateReviewer;
@@ -103,7 +103,7 @@ public class DuplicateDataReviewer implements Reviewer {
                 testStandardDuplicateReviewer.review(listing, cr);
                 optionalStandardDuplicateReviewer.review(listing, cr);
                 svapDuplicateReviewer.review(listing, cr);
-                testFunctionalityDuplicateReviewer.review(listing, cr);
+                functionalityTestedDuplicateReviewer.review(listing, cr);
             }
         }
     }

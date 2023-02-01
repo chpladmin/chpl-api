@@ -51,7 +51,7 @@ public class DeveloperAttestationReportDataCollector {
     private static final Integer MAX_PAGE_SIZE = 100;
 
     private static final Long INFORMATION_BLOCKING_ATTESTATION_ID = 1L;
-    private static final Long ASSURANCES_ATTESTATION_ID = 2L;
+    private static final Long ASSURANCES_ATTESTATION_ID = 7L;
     private static final Long COMMUNICATIONS_ATTESTATION_ID = 3L;
     private static final Long API_ATTESTATION_ID = 4L;
     private static final Long RWT_ATTESTATION_ID = 5L;

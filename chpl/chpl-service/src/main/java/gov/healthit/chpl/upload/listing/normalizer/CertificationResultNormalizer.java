@@ -1,53 +1,61 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
+import java.util.Comparator;
 import java.util.Iterator;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
+import lombok.NoArgsConstructor;
 
 @Component
 public class CertificationResultNormalizer {
     private CertificationCriterionNormalizer criterionNormalizer;
     private AdditionalSoftwareNormalizer additionalSoftwareNormalizer;
     private TestDataNormalizer testDataNormalizer;
-    private TestFunctionalityNormalizer testFunctionalityNormalizer;
+    private FunctionalityTestedNormalizer functionalityTestedNormalizer;
     private ConformanceMethodNormalizer conformanceMethodNormalizer;
     private OptionalStandardNormalizer optionalStandardNormalizer;
     private TestToolNormalizer testToolNormalizer;
     private SvapNormalizer svapNormalizer;
     private CertificationResultRules certResultRules;
+    private CertificationCriterionService criterionService;
 
     @Autowired
     public CertificationResultNormalizer(CertificationCriterionNormalizer criterionNormalizer,
         AdditionalSoftwareNormalizer additionalSoftwareNormalizer,
         TestDataNormalizer testDataNormalizer,
-        TestFunctionalityNormalizer testFunctionalityNormalizer,
+        FunctionalityTestedNormalizer functionalityTestedNormalizer,
         ConformanceMethodNormalizer conformanceMethodNormalizer,
         OptionalStandardNormalizer optionalStandardNormalizer,
         TestToolNormalizer testToolNormalizer,
         SvapNormalizer svapNormalizer,
-        CertificationResultRules certResultRules) {
+        CertificationResultRules certResultRules,
+        CertificationCriterionService criterionService) {
         this.criterionNormalizer = criterionNormalizer;
         this.additionalSoftwareNormalizer = additionalSoftwareNormalizer;
         this.testDataNormalizer = testDataNormalizer;
-        this.testFunctionalityNormalizer = testFunctionalityNormalizer;
+        this.functionalityTestedNormalizer = functionalityTestedNormalizer;
         this.conformanceMethodNormalizer = conformanceMethodNormalizer;
         this.optionalStandardNormalizer = optionalStandardNormalizer;
         this.testToolNormalizer = testToolNormalizer;
         this.svapNormalizer = svapNormalizer;
         this.certResultRules = certResultRules;
+        this.criterionService = criterionService;
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
         this.criterionNormalizer.normalize(listing);
         this.additionalSoftwareNormalizer.normalize(listing);
         this.testDataNormalizer.normalize(listing);
-        this.testFunctionalityNormalizer.normalize(listing);
+        this.functionalityTestedNormalizer.normalize(listing);
         this.conformanceMethodNormalizer.normalize(listing);
         this.optionalStandardNormalizer.normalize(listing);
         this.testToolNormalizer.normalize(listing);
@@ -55,13 +63,14 @@ public class CertificationResultNormalizer {
 
         setSedTrueIfApplicableToCriteria(listing);
         removeCertificationResultsWithNullCriterion(listing);
+        listing.getCertificationResults().sort(new CertificationResultComparator());
     }
 
     private void setSedTrueIfApplicableToCriteria(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
             .filter(certResult -> certResult.getCriterion() != null
                     && BooleanUtils.isTrue(certResult.isSuccess())
-                    && certResultRules.hasCertOption(certResult.getCriterion().getNumber(), CertificationResultRules.SED))
+                    && certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.SED))
             .forEach(certResult -> certResult.setSed(true));
     }
 
@@ -73,6 +82,21 @@ public class CertificationResultNormalizer {
             if (certResult.getCriterion() == null || certResult.getCriterion().getId() == null) {
                 certResultIter.remove();
             }
+        }
+    }
+
+    @NoArgsConstructor
+    private class CertificationResultComparator implements Comparator<CertificationResult> {
+        private boolean descending = false;
+
+        @Override
+        public int compare(CertificationResult certResult1, CertificationResult certResult2) {
+            if (ObjectUtils.anyNull(certResult1.getCriterion(), certResult2.getCriterion())
+                    || StringUtils.isAnyEmpty(certResult1.getCriterion().getNumber(), certResult2.getCriterion().getNumber())) {
+                return 0;
+            }
+            int sortFactor = descending ? -1 : 1;
+            return (criterionService.sortCriteria(certResult1.getCriterion(), certResult2.getCriterion())) * sortFactor;
         }
     }
 }
