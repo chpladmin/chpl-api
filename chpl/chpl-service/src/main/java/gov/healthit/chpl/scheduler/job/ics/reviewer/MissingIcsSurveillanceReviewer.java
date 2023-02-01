@@ -93,8 +93,8 @@ public class MissingIcsSurveillanceReviewer extends IcsErrorsReviewer {
         }
         return surveillances.stream()
                 .flatMap(surv -> surv.getRequirements().stream())
-                .filter(req -> !StringUtils.isEmpty(req.getRequirementTypeOther()))
-                .filter(req -> req.getRequirementTypeOther().equals(ICS_REQUIREMENT_TYPE))
+                .filter(req -> req.getRequirementType() != null && !StringUtils.isEmpty(req.getRequirementType().getTitle()))
+                .filter(req -> req.getRequirementType().getTitle().equals(ICS_REQUIREMENT_TYPE))
                 .count() > 0;
 
     }

@@ -15,12 +15,14 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
+import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.manager.SurveillanceManager;
 
 public class MissingIcsSurveillanceReviewerTest {
+    private static final String ICS_REQUIREMENT_TITLE = "Inherited Certified Status";
     private static final String ERROR_MESSAGE = "ICS surveillance required for listings that use ICS more than 3 consecutive times";
 
     private SurveillanceManager survManager;
@@ -447,7 +449,9 @@ public class MissingIcsSurveillanceReviewerTest {
                 .id(1L)
                 .requirements(Stream.of(SurveillanceRequirement.builder()
                         .id(1L)
-                        .requirementTypeOther("Inherited Certified Status")
+                        .requirementType(RequirementType.builder()
+                                .title(ICS_REQUIREMENT_TITLE)
+                                .build())
                         .build())
                         .collect(Collectors.toSet()))
                 .build())
@@ -509,7 +513,9 @@ public class MissingIcsSurveillanceReviewerTest {
                 .id(1L)
                 .requirements(Stream.of(SurveillanceRequirement.builder()
                         .id(1L)
-                        .requirementTypeOther("Inherited Certified Status")
+                        .requirementType(RequirementType.builder()
+                                .title(ICS_REQUIREMENT_TITLE)
+                                .build())
                         .build())
                         .collect(Collectors.toSet()))
                 .build())
@@ -571,7 +577,9 @@ public class MissingIcsSurveillanceReviewerTest {
                     .id(1L)
                     .requirements(Stream.of(SurveillanceRequirement.builder()
                             .id(1L)
-                            .requirementTypeOther("Inherited Certified Status")
+                            .requirementType(RequirementType.builder()
+                                    .title(ICS_REQUIREMENT_TITLE)
+                                    .build())
                             .build())
                             .collect(Collectors.toSet()))
                     .build())
@@ -633,7 +641,9 @@ public class MissingIcsSurveillanceReviewerTest {
             .id(1L)
             .requirements(Stream.of(SurveillanceRequirement.builder()
                     .id(1L)
-                    .requirementTypeOther("Inherited Certified Status")
+                    .requirementType(RequirementType.builder()
+                            .title(ICS_REQUIREMENT_TITLE)
+                            .build())
                     .build())
                     .collect(Collectors.toSet()))
             .build())
@@ -695,7 +705,9 @@ public class MissingIcsSurveillanceReviewerTest {
             .id(1L)
             .requirements(Stream.of(SurveillanceRequirement.builder()
                     .id(1L)
-                    .requirementTypeOther("Inherited Certified Status")
+                    .requirementType(RequirementType.builder()
+                            .title(ICS_REQUIREMENT_TITLE)
+                            .build())
                     .build())
                     .collect(Collectors.toSet()))
             .build())
@@ -758,7 +770,9 @@ public class MissingIcsSurveillanceReviewerTest {
                     .id(1L)
                     .requirements(Stream.of(SurveillanceRequirement.builder()
                             .id(1L)
-                            .requirementTypeOther("Inherited Certified Status")
+                            .requirementType(RequirementType.builder()
+                                    .title(ICS_REQUIREMENT_TITLE)
+                                    .build())
                             .build())
                             .collect(Collectors.toSet()))
                     .build())
