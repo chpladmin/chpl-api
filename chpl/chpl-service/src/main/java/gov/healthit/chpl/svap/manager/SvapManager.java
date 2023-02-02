@@ -70,14 +70,10 @@ public class SvapManager {
         return svapDao.getAll();
     }
 
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SVAP, "
-            + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).SUMMARY_DOWNLOAD)")
     public File getSvapSummaryFile() throws IOException {
         return fileUtils.getNewestFileMatchingName("^" + svapReportName + "-.+\\.csv$");
     }
 
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SVAP, "
-            + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).SUMMARY_DOWNLOAD)")
     public File getSvapSummaryDefinitionFile() throws IOException {
         return fileUtils.getDownloadFile(svapReportSchemaName);
     }
