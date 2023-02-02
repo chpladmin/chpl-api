@@ -137,14 +137,6 @@ public class ProductController {
             @RequestBody(required = true) final UpdateProductsRequest productInfo)
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
             JsonProcessingException, ValidationException {
-
-        return update(productInfo);
-    }
-
-    private ResponseEntity<Product> update(final UpdateProductsRequest productInfo)
-            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-            JsonProcessingException, ValidationException {
-
         Product result = null;
         HttpHeaders responseHeaders = new HttpHeaders();
 

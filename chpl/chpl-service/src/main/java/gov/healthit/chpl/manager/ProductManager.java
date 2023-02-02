@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.AccessDeniedException;
@@ -29,6 +30,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
@@ -321,6 +323,7 @@ public class ProductManager extends SecuredManager {
 
     private Product updateProduct(Product product)
             throws EntityRetrievalException, EntityCreationException, ValidationException, JsonProcessingException {
+        normalizeProduct(product);
 
         Product existingProduct = productDao.getById(product.getId());
         if (product.equals(existingProduct)) {
@@ -340,12 +343,31 @@ public class ProductManager extends SecuredManager {
 
     private Product createProduct(Product product)
             throws ValidationException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
+        normalizeProduct(product);
         runNewProductValidations(product);
         Long productId = productDao.create(product.getOwner().getId(), product);
         Product createdProduct = productDao.getById(productId);
         String activityMsg = "Product " + product.getName() + " was created.";
         activityManager.addActivity(ActivityConcept.PRODUCT, createdProduct.getId(), activityMsg, null, createdProduct);
         return createdProduct;
+    }
+
+    private void normalizeProduct(Product product) {
+        if (product.getContact() != null) {
+            product.getContact().setEmail(StringUtils.normalizeSpace(product.getContact().getEmail()));
+            product.getContact().setFullName(StringUtils.normalizeSpace(product.getContact().getFullName()));
+            product.getContact().setPhoneNumber(StringUtils.normalizeSpace(product.getContact().getPhoneNumber()));
+            product.getContact().setTitle(StringUtils.normalizeSpace(product.getContact().getTitle()));
+
+            //if all empty contact info is passed in, set the contact to null
+            PointOfContact contact = product.getContact();
+            if (StringUtils.isAllEmpty(contact.getEmail(), contact.getFullName(), contact.getPhoneNumber(),
+                    contact.getTitle()) && contact.getContactId() == null) {
+                product.setContact(null);
+            }
+        }
+        product.setName(StringUtils.normalizeSpace(product.getName()));
+        product.setReportFileLocation(StringUtils.normalizeSpace(product.getReportFileLocation()));
     }
 
     public void runNewProductValidations(Product product) throws ValidationException {
