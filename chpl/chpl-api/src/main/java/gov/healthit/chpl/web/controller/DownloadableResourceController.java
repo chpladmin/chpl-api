@@ -140,8 +140,7 @@ public class DownloadableResourceController {
 
     @Operation(summary = "Download a summary of SVAP activity as a CSV.",
             description = "Once per day, a summary of SVAP activity is written out to a CSV "
-                    + "file on the CHPL servers. This method allows ROLE_ADMIN, ROLE_ONC, "
-                    + "and ROLE_ONC_STAFF users to download that file.",
+                    + "file on the CHPL servers. This method allows any user to download that file.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
