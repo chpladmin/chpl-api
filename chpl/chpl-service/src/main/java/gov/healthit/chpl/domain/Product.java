@@ -293,10 +293,10 @@ public class Product implements Serializable {
         } else {
             // Make copies of both lists and order them
             List<ProductOwner> clonedThis = ownerHistory.stream()
-                    .sorted(Comparator.comparing(ProductOwner::getTransferDate))
+                    .sorted(Comparator.comparing(ProductOwner::getTransferDay))
                     .toList();
             List<ProductOwner> clonedOther = other.stream()
-                    .sorted(Comparator.comparing(ProductOwner::getTransferDate))
+                    .sorted(Comparator.comparing(ProductOwner::getTransferDay))
                     .toList();
             return clonedThis.equals(clonedOther);
         }

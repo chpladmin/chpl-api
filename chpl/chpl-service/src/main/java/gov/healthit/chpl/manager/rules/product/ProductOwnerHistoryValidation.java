@@ -7,10 +7,17 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 
+import gov.healthit.chpl.dao.ProductDAO;
+import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductOwner;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
 public class ProductOwnerHistoryValidation extends ValidationRule<ProductValidationContext> {
+    private ProductDAO productDao;
+
+    public ProductOwnerHistoryValidation(ProductDAO productDao) {
+        this.productDao = productDao;
+    }
 
     @Override
     public boolean isValid(ProductValidationContext context) {
@@ -20,12 +27,20 @@ public class ProductOwnerHistoryValidation extends ValidationRule<ProductValidat
                         statusHistoryEntry.getTransferDay()))
                 .count();
             if (numDaysWithMultipleHistoryEntries > 0) {
-                getMessages().add(context.getErrorMessageUtil().getMessage("product.ownerStatusHistory.notSameDay"));
+                getMessages().add(context.getErrorMessageUtil().getMessage("product.ownerHistory.notSameDay"));
                 return false;
             }
 
             if (ownerHistoryHasSameOwnerTwiceInARow(context.getProduct().getOwnerHistory())) {
-                getMessages().add(context.getErrorMessageUtil().getMessage("product.ownerStatusHistory.sameOwner"));
+                getMessages().add(context.getErrorMessageUtil().getMessage("product.ownerHistory.sameOwner"));
+                return false;
+            }
+
+            if (mostRecentPastOwnerHasNoOtherProducts(context.getProduct().getOwnerHistory(), context.getProduct())) {
+                ProductOwner mostRecentPastOwner = getMostRecentPastOwner(context.getProduct().getOwnerHistory());
+                getMessages().add(context.getErrorMessageUtil().getMessage(
+                        "product.ownerHistory.cannotTransferDevelopersOnlyProduct",
+                        mostRecentPastOwner.getDeveloper().getName()));
                 return false;
             }
         }
@@ -53,12 +68,39 @@ public class ProductOwnerHistoryValidation extends ValidationRule<ProductValidat
         return false;
     }
 
+    private boolean mostRecentPastOwnerHasNoOtherProducts(List<ProductOwner> ownerHistory, Product product) {
+        ProductOwner mostRecentPastOwner = getMostRecentPastOwner(ownerHistory);
+
+        List<Product> mostRecentPastOwnerProducts = productDao.getByDeveloper(mostRecentPastOwner.getDeveloper().getId());
+        if (CollectionUtils.isEmpty(mostRecentPastOwnerProducts)) {
+            return true;
+        } else if (mostRecentPastOwnerProducts.size() == 1) {
+            return mostRecentPastOwnerProducts.get(0).getId().equals(product.getId());
+        }
+        return false;
+    }
+
+    private ProductOwner getMostRecentPastOwner(List<ProductOwner> ownerHistory) {
+        sortOwnerHistoryByTransferDay(ownerHistory);
+        return ownerHistory.get(0);
+    }
+
     private void sortOwnerHistoryByOwnerId(List<ProductOwner> ownerHistory) {
         ownerHistory.sort(new Comparator<ProductOwner>() {
 
             @Override
             public int compare(ProductOwner o1, ProductOwner o2) {
                 return o1.getDeveloper().getId().compareTo(o2.getDeveloper().getId());
+            }
+        });
+    }
+
+    private void sortOwnerHistoryByTransferDay(List<ProductOwner> ownerHistory) {
+        ownerHistory.sort(new Comparator<ProductOwner>() {
+
+            @Override
+            public int compare(ProductOwner o1, ProductOwner o2) {
+                return o1.getTransferDay().compareTo(o2.getTransferDay()) * -1;
             }
         });
     }
