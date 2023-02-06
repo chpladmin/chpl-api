@@ -59,7 +59,7 @@ public class SvapReviewerTest {
 
     @Test
     public void review_nullSvaps_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -81,7 +81,7 @@ public class SvapReviewerTest {
 
     @Test
     public void review_emptySvaps_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
             .thenReturn(true);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -103,7 +103,7 @@ public class SvapReviewerTest {
 
     @Test
     public void svapsNotApplicableToCriteria_hasWarningAndStandardsSetNull() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
             .thenReturn(false);
         List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
         svaps.add(CertificationResultSvap.builder()
@@ -133,7 +133,7 @@ public class SvapReviewerTest {
 
     @Test
     public void svapsNotApplicableToRemovedCriteria_noWarning() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
             .thenReturn(false);
         List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
         svaps.add(CertificationResultSvap.builder()
@@ -160,7 +160,7 @@ public class SvapReviewerTest {
 
     @Test
     public void review_svapWithoutId_hasWarning() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
             .thenReturn(true);
 
         List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
@@ -196,7 +196,7 @@ public class SvapReviewerTest {
 
     @Test
     public void review_svapWithoutIdForRemovedCriteria_noWarning() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
             .thenReturn(true);
 
         List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
@@ -229,7 +229,7 @@ public class SvapReviewerTest {
 
     @Test
     public void review_svapWithoutCitationAndWithoutId_hasWarning() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
             .thenReturn(true);
 
         List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
@@ -264,7 +264,7 @@ public class SvapReviewerTest {
 
     @Test
     public void review_svapWithoutCitationAndWithoutIdForRemovedCriteria_noWarning() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
             .thenReturn(true);
 
         List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
@@ -297,7 +297,7 @@ public class SvapReviewerTest {
 
     @Test
     public void review_svapsWithoutCitationWithId_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
         .thenReturn(true);
 
         List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
@@ -332,7 +332,7 @@ public class SvapReviewerTest {
 
     @Test
     public void review_svapsWithoutCitationWithIdForRemovedCriteria_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
         .thenReturn(true);
 
         List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
@@ -365,7 +365,7 @@ public class SvapReviewerTest {
 
     @Test
     public void review_validSvapMarkedReplaced_hasError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
         .thenReturn(true);
 
         List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
@@ -405,7 +405,7 @@ public class SvapReviewerTest {
 
     @Test
     public void review_validSvapMarkedReplacedWithIcs_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
         .thenReturn(true);
 
         List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
@@ -443,7 +443,7 @@ public class SvapReviewerTest {
 
     @Test
     public void review_validSvapMarkedReplacedForRemovedCriteria_noWarning() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
         .thenReturn(true);
 
         List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
@@ -478,7 +478,7 @@ public class SvapReviewerTest {
 
     @Test
     public void review_validSvap_noError() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.SVAP)))
             .thenReturn(true);
 
         List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();

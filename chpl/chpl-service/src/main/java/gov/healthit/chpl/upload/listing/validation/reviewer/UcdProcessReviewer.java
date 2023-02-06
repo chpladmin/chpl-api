@@ -85,7 +85,7 @@ public class UcdProcessReviewer implements Reviewer {
             listing.getSed().getUcdProcesses().stream()
                 .filter(ucdProcess -> !CollectionUtils.isEmpty(ucdProcess.getCriteria()))
                 .flatMap(ucdProcess -> ucdProcess.getCriteria().stream())
-                .filter(ucdCriterion -> !certResultRules.hasCertOption(ucdCriterion.getNumber(), CertificationResultRules.UCD_FIELDS))
+                .filter(ucdCriterion -> !certResultRules.hasCertOption(ucdCriterion.getId(), CertificationResultRules.UCD_FIELDS))
                 .filter(ucdCriterion -> BooleanUtils.isFalse(ucdCriterion.getRemoved()))
                 .forEach(notAllowedUcdCriterion ->
                     listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.ucdProcessNotApplicable", Util.formatCriteriaNumber(notAllowedUcdCriterion))));

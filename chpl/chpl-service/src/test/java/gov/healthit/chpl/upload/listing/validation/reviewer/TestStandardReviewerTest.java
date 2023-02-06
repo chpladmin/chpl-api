@@ -83,7 +83,7 @@ public class TestStandardReviewerTest {
 
     @Test
     public void review_testStandardsPresentAndAllowed_hasWarningAndRemovedTestStandard() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.STANDARDS_TESTED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.STANDARDS_TESTED)))
             .thenReturn(true);
 
         List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
@@ -114,7 +114,7 @@ public class TestStandardReviewerTest {
 
     @Test
     public void review_testStandardsPresentAndAllowedForRemovedCriteria_noWarning() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.STANDARDS_TESTED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.STANDARDS_TESTED)))
             .thenReturn(true);
 
         List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
@@ -142,7 +142,7 @@ public class TestStandardReviewerTest {
 
     @Test
     public void review_testStandardsPresentAndNotAllowed_hasWarningAndNullTestStandards() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.STANDARDS_TESTED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.STANDARDS_TESTED)))
             .thenReturn(false);
 
         List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
@@ -173,7 +173,7 @@ public class TestStandardReviewerTest {
 
     @Test
     public void review_testStandardsPresentAndNotAllowedForRemovedCriteria_noWarnings() {
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyString(), ArgumentMatchers.eq(CertificationResultRules.STANDARDS_TESTED)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.STANDARDS_TESTED)))
             .thenReturn(false);
 
         List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();

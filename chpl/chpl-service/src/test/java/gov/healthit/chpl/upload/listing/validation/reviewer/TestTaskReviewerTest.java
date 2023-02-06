@@ -64,15 +64,15 @@ public class TestTaskReviewerTest {
         Mockito.when(criteriaService.get(ArgumentMatchers.eq(a7.getId()))).thenReturn(a7);
 
         certResultRules = Mockito.mock(CertificationResultRules.class);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a1.getNumber()), ArgumentMatchers.eq(CertificationResultRules.TEST_TASK)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a1.getId()), ArgumentMatchers.eq(CertificationResultRules.TEST_TASK)))
             .thenReturn(true);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a2.getNumber()), ArgumentMatchers.eq(CertificationResultRules.TEST_TASK)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a2.getId()), ArgumentMatchers.eq(CertificationResultRules.TEST_TASK)))
             .thenReturn(true);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a3.getNumber()), ArgumentMatchers.eq(CertificationResultRules.TEST_TASK)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a3.getId()), ArgumentMatchers.eq(CertificationResultRules.TEST_TASK)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a6.getNumber()), ArgumentMatchers.eq(CertificationResultRules.TEST_TASK)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a6.getId()), ArgumentMatchers.eq(CertificationResultRules.TEST_TASK)))
             .thenReturn(false);
-        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a7.getNumber()), ArgumentMatchers.eq(CertificationResultRules.TEST_TASK)))
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.eq(a7.getId()), ArgumentMatchers.eq(CertificationResultRules.TEST_TASK)))
             .thenReturn(true);
 
         reviewer = new TestTaskReviewer(criteriaService, new ValidationUtils(), certResultRules, "1,2",

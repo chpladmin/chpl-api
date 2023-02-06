@@ -248,6 +248,16 @@ const accessibilityStandardsControllerTests = {
   },
 };
 
+const functionalityTestedControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/functionality-tested-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/functionality-tested-controller-tests.xml',
+    },
+  },
+};
+
 const jobs = [
   cb => newman.run(acbControllerTests,cb),
   cb => newman.run(accessibilityStandardsControllerTests,cb),
@@ -258,6 +268,7 @@ const jobs = [
   cb => newman.run(complaintControllerTests,cb),
   cb => newman.run(developerControllerDataTests,cb),
   cb => newman.run(developerControllerNoDataTests,cb),
+  cb => newman.run(functionalityTestedControllerTests,cb),
   cb => newman.run(productsControllerTests,cb),
   cb => newman.run(productVersionControllerTests,cb),
   cb => newman.run(statusControllerTests,cb),

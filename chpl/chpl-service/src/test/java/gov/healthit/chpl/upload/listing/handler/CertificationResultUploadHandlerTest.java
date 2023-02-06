@@ -15,7 +15,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
+import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
@@ -330,7 +330,7 @@ public class CertificationResultUploadHandlerTest {
     }
 
     @Test
-    public void buildCertResult_TestFunctionalityNoColumn_ReturnsEmptyList() {
+    public void buildCertResult_functionalityTestedNoColumn_ReturnsEmptyList() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1");
@@ -338,12 +338,12 @@ public class CertificationResultUploadHandlerTest {
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
         assertNotNull(certResult);
-        assertNotNull(certResult.getTestFunctionality());
-        assertEquals(0, certResult.getTestFunctionality().size());
+        assertNotNull(certResult.getFunctionalitiesTested());
+        assertEquals(0, certResult.getFunctionalitiesTested().size());
     }
 
     @Test
-    public void buildCertResult_TestFunctionalityEmptyData_ReturnsEmptyList() {
+    public void buildCertResult_functionalityTestedEmptyData_ReturnsEmptyList() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",Functionality Tested").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,");
@@ -351,12 +351,12 @@ public class CertificationResultUploadHandlerTest {
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
         assertNotNull(certResult);
-        assertNotNull(certResult.getTestFunctionality());
-        assertEquals(0, certResult.getTestFunctionality().size());
+        assertNotNull(certResult.getFunctionalitiesTested());
+        assertEquals(0, certResult.getFunctionalitiesTested().size());
     }
 
     @Test
-    public void buildCertResult_TestFunctionalityWithData_ParsesCorrectly() {
+    public void buildCertResult_functionalityTestedWithData_ParsesCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",Functionality Tested").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,func");
@@ -364,16 +364,16 @@ public class CertificationResultUploadHandlerTest {
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
         assertNotNull(certResult);
-        assertNotNull(certResult.getTestFunctionality());
-        assertEquals(1, certResult.getTestFunctionality().size());
-        CertificationResultTestFunctionality func = certResult.getTestFunctionality().get(0);
+        assertNotNull(certResult.getFunctionalitiesTested());
+        assertEquals(1, certResult.getFunctionalitiesTested().size());
+        CertificationResultFunctionalityTested func = certResult.getFunctionalitiesTested().get(0);
         assertNotNull(func);
         assertNotNull(func.getName());
         assertEquals("func", func.getName());
     }
 
     @Test
-    public void buildCertResult_TestFunctionalityMultipleRowsWithData_ParsesCorrectly() {
+    public void buildCertResult_functionalityTestedMultipleRowsWithData_ParsesCorrectly() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",Functionality Tested").get(0);
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,func\n,func2");
@@ -381,20 +381,20 @@ public class CertificationResultUploadHandlerTest {
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
         assertNotNull(certResult);
-        assertNotNull(certResult.getTestFunctionality());
-        assertEquals(2, certResult.getTestFunctionality().size());
-        CertificationResultTestFunctionality func = certResult.getTestFunctionality().get(0);
+        assertNotNull(certResult.getFunctionalitiesTested());
+        assertEquals(2, certResult.getFunctionalitiesTested().size());
+        CertificationResultFunctionalityTested func = certResult.getFunctionalitiesTested().get(0);
         assertNotNull(func);
         assertNotNull(func.getName());
         assertEquals("func", func.getName());
-        func = certResult.getTestFunctionality().get(1);
+        func = certResult.getFunctionalitiesTested().get(1);
         assertNotNull(func);
         assertNotNull(func.getName());
         assertEquals("func2", func.getName());
     }
 
     @Test
-    public void buildCertResult_TestFunctionalityDuplicateData_ParsesFirstValue() {
+    public void buildCertResult_functionalityTestedDuplicateData_ParsesFirstValue() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN
                 + ",Functionality Tested,Functionality Tested").get(0);
         assertNotNull(headingRecord);
@@ -403,9 +403,9 @@ public class CertificationResultUploadHandlerTest {
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
         assertNotNull(certResult);
-        assertNotNull(certResult.getTestFunctionality());
-        assertEquals(1, certResult.getTestFunctionality().size());
-        CertificationResultTestFunctionality func = certResult.getTestFunctionality().get(0);
+        assertNotNull(certResult.getFunctionalitiesTested());
+        assertEquals(1, certResult.getFunctionalitiesTested().size());
+        CertificationResultFunctionalityTested func = certResult.getFunctionalitiesTested().get(0);
         assertNotNull(func);
         assertNotNull(func.getName());
         assertEquals("func", func.getName());
