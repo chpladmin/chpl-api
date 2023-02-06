@@ -62,6 +62,7 @@ import gov.healthit.chpl.manager.rules.developer.DeveloperValidationFactory;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
 import gov.healthit.chpl.scheduler.job.developer.MergeDeveloperJob;
+import gov.healthit.chpl.search.annotation.ReplaceListingSearchCache;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.AuthUtil;
@@ -246,9 +247,10 @@ public class DeveloperManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
+            CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#updatedDev.id")
+    @ReplaceListingSearchCache
     public Developer update(Developer updatedDev, boolean doUpdateValidations)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
         Developer beforeDev = getById(updatedDev.getId());
