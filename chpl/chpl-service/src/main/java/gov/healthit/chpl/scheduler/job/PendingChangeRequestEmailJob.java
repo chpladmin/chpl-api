@@ -29,7 +29,7 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
-import gov.healthit.chpl.changerequest.search.ChangeRequestSearchManager;
+import gov.healthit.chpl.changerequest.search.ChangeRequestSearchServiceV1;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchRequest;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResponse;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult;
@@ -66,7 +66,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
     private ChangeRequestStatusTypeDAO changeRequestStatusTypeDao;
 
     @Autowired
-    private ChangeRequestSearchManager changeRequestSearchManager;
+    private ChangeRequestSearchServiceV1 changeRequestSearchManager;
 
     @Autowired
     private ChangeRequestManager changeRequestManager;

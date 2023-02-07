@@ -44,9 +44,10 @@ public class SearchComplaintsController {
     @DeprecatedApi(friendlyUrl = "/complaints/search", removalDate = "2023-08-30",
             message = "This endpoint is resolving to a deprecated endpoint. As of 2023-08-30 this endpoint will resolve to /complaints/search/v2. "
             + "The endpoint /complaints/search/v2 interprets date range start and end search parameters as inclusive.")
-    @Operation(summary = "Search complaints accessible to the logged-in user based on a set of filters.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, and ROLE_ONC_STAFF can get all complaints. "
-                    + "ROLE_ACB can get complaints related to ONC-ACBs to which they have permissins.",
+    @Operation(summary = "Search complaints on the CHPL",
+        description = "This endpoint will always use the oldest, valid version of the "
+                + "/complaints/search/vX endpoint. The current version being used is v1. For the "
+                + "current documentation, see /complaints/search/v1.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

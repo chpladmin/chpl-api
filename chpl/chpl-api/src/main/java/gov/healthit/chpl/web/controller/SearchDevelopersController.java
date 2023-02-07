@@ -51,7 +51,7 @@ public class SearchDevelopersController {
     @DeprecatedApi(friendlyUrl = "/developers/search", removalDate = "2023-08-30",
         message = "This endpoint is resolving to a deprecated endpoint. As of 2023-08-30 this endpoint will resolve to /developers/search/v2. "
         + "The endpoint /developers/search/v2 interprets date range start and end search parameters as inclusive.")
-    @Operation(summary = "Search the CHPL",
+    @Operation(summary = "Search developers on the CHPL",
         description = "This endpoint will always use the oldest, valid version of the "
                 + "/developers/search/vX endpoint. The current version being used is v1. For the "
                 + "current documentation, see /developers/search/v1.",
