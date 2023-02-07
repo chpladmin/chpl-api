@@ -145,10 +145,6 @@
         additivity="false">
         <AppenderRef ref="removeCriteriaJob" />
     </Logger>
-    <Logger name="addCuresUpdateToListingsJobLogger" level="INFO"
-        additivity="false">
-        <AppenderRef ref="addCuresUpdateToListingsJob" />
-    </Logger>
     <Logger name="listingsSnapshotCsvCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="listingsSnapshotCsvCreatorJob" />
     </Logger>

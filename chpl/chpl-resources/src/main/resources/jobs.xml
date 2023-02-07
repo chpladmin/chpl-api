@@ -12,6 +12,10 @@
             <name>interruptJob</name>
             <group>systemJobs</group>
         </delete-job>
+        <delete-job>
+            <name>addCuresUpdateToListingsJob</name>
+            <group>systemJobs</group>
+        </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
@@ -724,17 +728,7 @@
             <recover>false</recover>
         </job>
 
-        <!-- Updates Listing's Cures Updated indicator -->
-        <job>
-            <name>addCuresUpdateToListingsJob</name>
-            <group>systemJobs</group>
-            <description>Updates Listing's Cures Updated indicator</description>
-            <job-class>gov.healthit.chpl.scheduler.job.AddCuresUpdateToListingsJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-        </job>
-
-        <job>
+         <job>
             <name>Listings Snapshot</name>
             <group>chplJobs</group>
             <description>Generate a CSV snapshot of listings in the system on January 1, 2020.</description>
