@@ -112,10 +112,6 @@
         <AppenderRef ref="pendingChangeRequestEmailJob" />
         <AppenderRef ref="pendingChangeRequestEmailJobJson" />
     </Logger>
-    <Logger name="interruptJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="interruptJob" />
-        <AppenderRef ref="interruptJobJson" />
-    </Logger>
     <Logger name="massRequirePasswordChangeJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="massRequirePasswordChangeJob" />
         <AppenderRef ref="massRequirePasswordChangeJobJson" />

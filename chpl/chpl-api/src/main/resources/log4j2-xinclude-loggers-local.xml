@@ -87,9 +87,6 @@
     <Logger name="pendingChangeRequestEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="pendingChangeRequestEmailJob" />
     </Logger>
-    <Logger name="interruptJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="interruptJob" />
-    </Logger>
     <Logger name="massRequirePasswordChangeJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="massRequirePasswordChangeJob" />
     </Logger>
