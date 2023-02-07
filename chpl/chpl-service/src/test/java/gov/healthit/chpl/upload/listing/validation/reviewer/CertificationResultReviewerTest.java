@@ -7,13 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collections;
 
-import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -22,7 +19,6 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.ConformanceMethodReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.GapAllowedReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.OldCriteriaWithoutIcsReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
 
 public class CertificationResultReviewerTest {
@@ -34,9 +30,6 @@ public class CertificationResultReviewerTest {
     @Before
     public void before() throws EntityRetrievalException {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        FF4j ff4j = Mockito.mock(FF4j.class);
-        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.ERD_PHASE_2)))
-            .thenReturn(false);
 
         Mockito.when(msgUtil.getMessage("listing.missingCertificationResults"))
             .thenReturn(MISSING_CERT_RESULTS);
@@ -54,11 +47,10 @@ public class CertificationResultReviewerTest {
                 Mockito.mock(OptionalStandardReviewer.class),
                 Mockito.mock(SvapReviewer.class),
                 Mockito.mock(UnattestedCriteriaWithDataReviewer.class),
-                Mockito.mock(OldCriteriaWithoutIcsReviewer.class),
                 Mockito.mock(SedG32015Reviewer.class),
                 Mockito.mock(CertificationResultRules.class),
                 new ValidationUtils(Mockito.mock(CertificationCriterionService.class)),
-                msgUtil, ff4j);
+                msgUtil);
     }
 
     @Test
