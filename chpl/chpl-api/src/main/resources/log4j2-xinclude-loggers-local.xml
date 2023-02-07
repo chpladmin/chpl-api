@@ -138,18 +138,9 @@
     <Logger name="deprecatedApiUsageEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="deprecatedApiUsageEmailJob" />
     </Logger>
-    <Logger name="listingsSnapshotCsvCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="listingsSnapshotCsvCreatorJob" />
-    </Logger>
     <Logger name="removeCriteriaJobLogger" level="INFO"
         additivity="false">
         <AppenderRef ref="removeCriteriaJob" />
-    </Logger>
-    <Logger name="listingsSnapshotCsvCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="listingsSnapshotCsvCreatorJob" />
-    </Logger>
-    <Logger name="listingsWithCriterionSnapshotCsvCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="listingsWithCriterionSnapshotCsvCreatorJob" />
     </Logger>
     <Logger name="sendEmailJobLogger" level="INFO"
         additivity="false">
