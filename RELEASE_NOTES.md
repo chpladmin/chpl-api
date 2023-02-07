@@ -1,5 +1,16 @@
 # Release Notes
 
+## Version 39.3.0
+_6 February 2023_
+
+### Features
+* Remove security restrictions for the SVAP download file
+* Synchronize method to allow for better results during cache refreshes
+* Add GET /functionalities-tested endpoint
+* Deprecate testFunctionality and allowedTestFunctionality
+
+---
+
 ## Version 39.2.0
 _23 January 2023_
 

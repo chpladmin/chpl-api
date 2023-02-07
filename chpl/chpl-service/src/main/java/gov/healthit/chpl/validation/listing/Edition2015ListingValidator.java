@@ -54,7 +54,6 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteria
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaTestTaskComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaUcdComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaPreErdPhase2Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
@@ -83,10 +82,6 @@ public class Edition2015ListingValidator extends Validator {
     @Autowired
     @Qualifier("requiredData2015Reviewer")
     private RequiredData2015Reviewer requiredDataReviewer;
-
-    @Autowired
-    @Qualifier("requiredAndRelatedCriteriaPreErdPhase2Reviewer")
-    private RequiredAndRelatedCriteriaPreErdPhase2Reviewer requiredAndRelatedCriteriaPreErdPhase2Reviewer;
 
     @Autowired
     @Qualifier("requiredAndRelatedCriteriaErdPhase2GracePeriodReviewer")
@@ -265,16 +260,12 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(unsupportedCharacterReviewer);
         reviewers.add(fieldLengthReviewer);
         reviewers.add(requiredDataReviewer);
-        if (ff4j.check(FeatureList.ERD_PHASE_2)
-                && !ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD_END)) {
+        if (!ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD_END)) {
             //use this reviewer during the grace period
             reviewers.add(requiredAndRelatedCriteriaErdPhase2GracePeriodReviewer);
-        } else if (ff4j.check(FeatureList.ERD_PHASE_2)) {
-            //use this reviewer after the grace period
-            reviewers.add(requiredAndRelatedCriteriaReviewer);
         } else {
-            //use this reviewer before ERD-Phase-2
-            reviewers.add(requiredAndRelatedCriteriaPreErdPhase2Reviewer);
+            //use this reviewer after the grace period ends
+            reviewers.add(requiredAndRelatedCriteriaReviewer);
         }
         reviewers.add(testingLabReviewer);
         reviewers.add(validDataReviewer);
@@ -302,9 +293,8 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(measureReviewer);
         reviewers.add(accessibilityStandardReviewer);
         reviewers.add(qmsStandardReviewer);
-        //after the grace period this reviewer should be included
-        if (ff4j.check(FeatureList.ERD_PHASE_2)
-                && ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD_END)) {
+        //after the grace period ends this reviewer should be included
+        if (ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD_END)) {
             reviewers.add(privacyAndSecurityCriteriaReviewer);
         }
         return reviewers;
@@ -321,9 +311,8 @@ public class Edition2015ListingValidator extends Validator {
         comparisonReviewers.add(ucdCriteriaComparisonReviewer);
         comparisonReviewers.add(functionalityTestedAllowedByRoleReviewer);
         comparisonReviewers.add(listingStatusAndUserRoleReviewer);
-        //before ERD-Phase-2 and during the grace period the comparison reviewer should be included
-        if (!ff4j.check(FeatureList.ERD_PHASE_2)
-                || (ff4j.check(FeatureList.ERD_PHASE_2) && !ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD_END))) {
+        //during the grace period the comparison reviewer should be included
+        if (!ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD_END)) {
             comparisonReviewers.add(privacyAndSecurityCriteriaReviewerPreErdPhase2);
         }
         comparisonReviewers.add(realWorldTestingReviewer);

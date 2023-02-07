@@ -14,11 +14,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmission;
 import gov.healthit.chpl.attestation.manager.AttestationCertificationBodyService;
@@ -69,10 +67,8 @@ public class DeveloperAttestationReportDataCollector {
     private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
     private AttestationPeriodService attestationPeriodService;
     private AttestationCertificationBodyService attestationCertificationBodyService;
-    private FF4j ff4j;
 
     private List<CertificationCriterion> assurancesCriteria;
-    private List<CertificationCriterion> apiCriteriaPreErdPhase2;
     private List<CertificationCriterion> apiCriteria;
     private List<CertificationCriterion> rwtCriteria;
     private Map<Long, List<ListingSearchResult>> developerListings = new HashMap<Long, List<ListingSearchResult>>();
@@ -88,9 +84,7 @@ public class DeveloperAttestationReportDataCollector {
             RealWorldTestingCriteriaService realWorldTestingCriteriaService,
             CertificationCriterionService certificationCriterionService,
             @Value("${assurancesCriteriaKeys}") String[] assurancesCriteriaKeys,
-            @Value("${apiCriteriaKeysPreErdPhase2}") String[] apiCriteriaKeysPreErdPhase2,
-            @Value("${apiCriteriaKeys}") String[] apiCriteriaKeys,
-            FF4j ff4j) {
+            @Value("${apiCriteriaKeys}") String[] apiCriteriaKeys) {
 
         this.devAttestationPeriodCalculator = devAttestationPeriodCalculator;
         this.userDeveloperMapDao = userDeveloperMapDao;
@@ -101,16 +95,11 @@ public class DeveloperAttestationReportDataCollector {
         this.developerCertificationBodyMapDAO = developerCertificationBodyMapDAO;
         this.attestationPeriodService = attestationPeriodService;
         this.attestationCertificationBodyService = attestationCertificationBodyService;
-        this.ff4j = ff4j;
 
         Integer currentYear = Calendar.getInstance().get(Calendar.YEAR);
         rwtCriteria = realWorldTestingCriteriaService.getEligibleCriteria(currentYear);
 
         assurancesCriteria = Arrays.asList(assurancesCriteriaKeys).stream()
-                .map(key -> certificationCriterionService.get(key))
-                .collect(Collectors.toList());
-
-        apiCriteriaPreErdPhase2 = Arrays.asList(apiCriteriaKeysPreErdPhase2).stream()
                 .map(key -> certificationCriterionService.get(key))
                 .collect(Collectors.toList());
 
@@ -316,8 +305,7 @@ public class DeveloperAttestationReportDataCollector {
     }
 
     private String getApiValidation(Developer developer, Logger logger) {
-        List<CertificationCriterion> apiCriteriaFromFlag = ff4j.check(FeatureList.ERD_PHASE_2) ? apiCriteria : apiCriteriaPreErdPhase2;
-        List<ListingSearchResult> apiEligibleListings = getActiveListingDataWithAnyCriteriaForDeveloper(developer, apiCriteriaFromFlag, logger);
+        List<ListingSearchResult> apiEligibleListings = getActiveListingDataWithAnyCriteriaForDeveloper(developer, apiCriteria, logger);
         if (!CollectionUtils.isEmpty(apiEligibleListings)) {
             return API_VALIDATION_TRUE;
         } else {
