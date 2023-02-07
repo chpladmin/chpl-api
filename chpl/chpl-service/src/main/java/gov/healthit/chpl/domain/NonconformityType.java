@@ -51,6 +51,10 @@ public class NonconformityType implements Serializable {
         this.id = id;
     }
 
+    public CertificationEdition getCertificationEdition() {
+        return certificationEdition;
+    }
+
     public void setCertificationEdition(CertificationEdition certificationEdition) {
         this.certificationEdition = certificationEdition;
     }
