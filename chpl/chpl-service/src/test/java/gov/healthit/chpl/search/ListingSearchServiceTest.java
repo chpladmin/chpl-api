@@ -1651,6 +1651,8 @@ public class ListingSearchServiceTest {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setCertificationDate(LocalDate.parse("2020-06-25"));
         allListings.get(1).setCertificationDate(LocalDate.parse("2020-06-27"));
+        allListings.get(2).setCertificationDate(LocalDate.parse("2020-07-01"));
+        allListings.get(2).setCertificationDate(LocalDate.parse("2020-06-01"));
 
         Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()

@@ -454,8 +454,8 @@ public class ListingSearchService {
             } else if (startDate != null && endDate == null) {
                 return listing.getCertificationDate().isEqual(startDate) || listing.getCertificationDate().isAfter(startDate);
             } else {
-                return listing.getCertificationDate().isEqual(startDate) || listing.getCertificationDate().isEqual(endDate)
-                        || (listing.getCertificationDate().isBefore(endDate) && listing.getCertificationDate().isAfter(startDate));
+                return (listing.getCertificationDate().isEqual(endDate) || listing.getCertificationDate().isBefore(endDate))
+                        && (listing.getCertificationDate().isEqual(startDate) || listing.getCertificationDate().isAfter(startDate));
             }
         }
         return false;

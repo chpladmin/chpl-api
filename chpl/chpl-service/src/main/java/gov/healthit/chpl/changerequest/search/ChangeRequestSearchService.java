@@ -164,10 +164,10 @@ public class ChangeRequestSearchService {
                 return changeRequest.getCurrentStatus().getStatusChangeDateTime().isEqual(startDateTime)
                         || changeRequest.getCurrentStatus().getStatusChangeDateTime().isAfter(startDateTime);
             } else {
-                return changeRequest.getCurrentStatus().getStatusChangeDateTime().isEqual(startDateTime)
-                        || changeRequest.getCurrentStatus().getStatusChangeDateTime().isEqual(endDateTime)
-                        || (changeRequest.getCurrentStatus().getStatusChangeDateTime().isBefore(endDateTime)
-                                && changeRequest.getCurrentStatus().getStatusChangeDateTime().isAfter(startDateTime));
+                return (changeRequest.getCurrentStatus().getStatusChangeDateTime().isEqual(endDateTime)
+                        || changeRequest.getCurrentStatus().getStatusChangeDateTime().isBefore(endDateTime))
+                       && (changeRequest.getCurrentStatus().getStatusChangeDateTime().isEqual(startDateTime)
+                        || changeRequest.getCurrentStatus().getStatusChangeDateTime().isAfter(startDateTime));
             }
         }
         return false;
@@ -189,10 +189,10 @@ public class ChangeRequestSearchService {
                 return changeRequest.getSubmittedDateTime().isEqual(startDateTime)
                         || changeRequest.getSubmittedDateTime().isAfter(startDateTime);
             } else {
-                return changeRequest.getSubmittedDateTime().isEqual(startDateTime)
-                        || changeRequest.getSubmittedDateTime().isEqual(endDateTime)
-                        || (changeRequest.getSubmittedDateTime().isBefore(endDateTime)
-                                && changeRequest.getSubmittedDateTime().isAfter(startDateTime));
+                return (changeRequest.getSubmittedDateTime().isEqual(endDateTime)
+                        || changeRequest.getSubmittedDateTime().isBefore(endDateTime))
+                      && (changeRequest.getSubmittedDateTime().isEqual(startDateTime)
+                        || changeRequest.getSubmittedDateTime().isAfter(startDateTime));
             }
         }
         return false;

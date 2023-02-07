@@ -213,10 +213,8 @@ public class ComplaintSearchService {
             } else if (startDate != null && endDate == null) {
                 return complaint.getClosedDate().isEqual(startDate) || complaint.getClosedDate().isAfter(startDate);
             } else {
-                return complaint.getClosedDate().isEqual(startDate)
-                        || complaint.getClosedDate().isEqual(endDate)
-                        || (complaint.getClosedDate().isBefore(endDate)
-                                && complaint.getClosedDate().isAfter(startDate));
+                return (complaint.getClosedDate().isEqual(endDate) || complaint.getClosedDate().isBefore(endDate))
+                      && (complaint.getClosedDate().isEqual(startDate) || complaint.getClosedDate().isAfter(startDate));
             }
         }
         return false;
@@ -234,10 +232,8 @@ public class ComplaintSearchService {
             } else if (startDate != null && endDate == null) {
                 return complaint.getReceivedDate().isEqual(startDate) || complaint.getReceivedDate().isAfter(startDate);
             } else {
-                return complaint.getReceivedDate().isEqual(startDate)
-                        || complaint.getReceivedDate().isEqual(endDate)
-                        || (complaint.getReceivedDate().isBefore(endDate)
-                                && complaint.getReceivedDate().isAfter(startDate));
+                return (complaint.getReceivedDate().isEqual(endDate) || complaint.getReceivedDate().isBefore(endDate))
+                      && (complaint.getReceivedDate().isEqual(startDate) || complaint.getReceivedDate().isAfter(startDate));
             }
         }
         return false;
