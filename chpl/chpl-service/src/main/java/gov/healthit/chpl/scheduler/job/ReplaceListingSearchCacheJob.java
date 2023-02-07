@@ -6,6 +6,7 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.search.ListingSearchManager;
@@ -16,15 +17,20 @@ import net.sf.ehcache.Element;
 
 @Log4j2
 public class ReplaceListingSearchCacheJob implements Job {
+    public static final String JOB_NAME = "replaceListingSearchCacheJob";
 
     @Autowired
     private ListingSearchManager listingSearchManager;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+
         LOGGER.info("Retrieving data for listing search cache.");
-        List<ListingSearchResult> allListings = listingSearchManager.getAllListings();
-        CacheManager.getInstance().getCache(null).replace(new Element(CacheNames.COLLECTIONS_SEARCH, allListings));
+        List<ListingSearchResult> allListings = listingSearchManager.getAllListingsFromDb();
+        CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).acquireWriteLockOnKey(CacheNames.COLLECTIONS_SEARCH);
+        CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).replace(new Element(CacheNames.COLLECTIONS_SEARCH, allListings));
+        CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).releaseWriteLockOnKey(CacheNames.COLLECTIONS_SEARCH);
         LOGGER.info("Completed retrieving data for listing search cache.");
     }
 }

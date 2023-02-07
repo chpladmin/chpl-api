@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import gov.healthit.chpl.caching.CacheNames;
@@ -19,6 +18,8 @@ import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.StatusEventSearchResult;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
 
 @Service
 @Log4j2
@@ -33,8 +34,20 @@ public class ListingSearchManager {
         this.drService = drService;
     }
 
-    @Cacheable(value = CacheNames.COLLECTIONS_SEARCH, sync = true)
-    public List<ListingSearchResult> getAllListings() {
+//    @Cacheable(value = CacheNames.COLLECTIONS_SEARCH, sync = true)
+//    public List<ListingSearchResult> getAllListings() {
+//        List<ListingSearchResult> results = searchDao.getListingSearchResults();
+//        LOGGER.info("Populating Direct Review fields for search");
+//        Date start = new Date();
+//        results.parallelStream()
+//            .forEach(searchResult -> populateDirectReviews(searchResult));
+//        Date end = new Date();
+//        LOGGER.info("Completed Populating Direct Review fields  for search [ " + (end.getTime() - start.getTime()) + " ms ]");
+//        return results;
+//    }
+
+    public List<ListingSearchResult> getAllListingsFromDb() {
+        LOGGER.info("Getting COLLECTION_SEARCH from DB");
         List<ListingSearchResult> results = searchDao.getListingSearchResults();
         LOGGER.info("Populating Direct Review fields for search");
         Date start = new Date();
@@ -43,6 +56,16 @@ public class ListingSearchManager {
         Date end = new Date();
         LOGGER.info("Completed Populating Direct Review fields  for search [ " + (end.getTime() - start.getTime()) + " ms ]");
         return results;
+    }
+
+    public List<ListingSearchResult> getAllListings() {
+        if (!CacheManager.getInstance().cacheExists(CacheNames.COLLECTIONS_SEARCH)
+                || CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).get(CacheNames.COLLECTIONS_SEARCH) == null) {
+            LOGGER.info("Adding COLLECTION_SEARCH to cache");
+            CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).put(new Element(CacheNames.COLLECTIONS_SEARCH, getAllListingsFromDb()));
+        }
+        LOGGER.info("Getting COLLECTION_SEARCH from cache");
+        return (List<ListingSearchResult>) CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).get(CacheNames.COLLECTIONS_SEARCH).getObjectValue();
     }
 
     private void populateDirectReviews(ListingSearchResult searchResult) {

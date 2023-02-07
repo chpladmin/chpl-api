@@ -892,7 +892,7 @@
         
         <job>
             <name>replaceListingSearchCacheJob</name>
-            <group>systemJobs</group>
+            <group>chplBackgroundJobs</group>
             <description>Fetches Listing Search data from the database and replaces the cache with the new data</description>
             <job-class>gov.healthit.chpl.scheduler.job.ReplaceListingSearchCacheJob</job-class>
             <durability>true</durability>
