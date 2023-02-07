@@ -350,10 +350,6 @@ public class SearchController {
         @Parameter(description = "A comma-separated list of certification statuses (ex: \"Active,Retired,Withdrawn by Developer\"). Results may match any of the provided statuses.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationStatuses")
         @RequestParam(value = "certificationStatuses", required = false, defaultValue = "") String certificationStatusesDelimited,
-        @Parameter(description = "A comma-separated list of certification edition years (ex: \"2014,2015\" finds listings with either edition 2014 or 2015). Allowable values are 2011, 2014, 2015. Results may match any of the provided edition years.",
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationEditions", deprecated = true)
-        @RequestParam(value = "certificationEditions", required = false, defaultValue = "")
-        @Deprecated String certificationEditionsDelimited,
         @Parameter(description = "A comma-separated list of derived certification editions (ex: \"2015,2015 Cures Update\" finds listings that are either 2015 or 2015 Cures Update). Allowable values are 2011, 2014, 2015, and \"2015 Cures Update\". Results may match any of the provided derived editions.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "derivedCertificationEditions")
         @RequestParam(value = "derivedCertificationEditions", required = false, defaultValue = "") String derivedCertificationEditionsDelimited,
@@ -443,7 +439,6 @@ public class SearchController {
                 .searchTerm(searchTerm.trim())
                 .certificationStatuses(convertToSetWithDelimeter(certificationStatusesDelimited, ","))
                 .derivedCertificationEditions(convertToSetWithDelimeter(derivedCertificationEditionsDelimited, ","))
-                .certificationEditions(convertToSetWithDelimeter(certificationEditionsDelimited, ","))
                 .certificationCriteriaIdStrings(convertToSetWithDelimeter(certificationCriteriaIdsDelimited, ","))
                 .certificationCriteriaOperatorString(certificationCriteriaOperatorStr)
                 .cqms(convertToSetWithDelimeter(cqmsDelimited, ","))
