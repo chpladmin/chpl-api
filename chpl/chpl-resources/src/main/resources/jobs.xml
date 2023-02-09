@@ -9,12 +9,24 @@
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
         <delete-job>
-            <name>updateMeasuresJob</name>
+            <name>interruptJob</name>
             <group>systemJobs</group>
         </delete-job>
         <delete-job>
-            <name>rwtQuestionableActivityCreatorJob</name>
+            <name>addCuresUpdateToListingsJob</name>
             <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>curesUpdateDesignationQuestionableActivityCreatorJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>Listings Snapshot</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>Listings With Criterion Snapshot</name>
+            <group>chplJobs</group>
         </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
@@ -189,10 +201,6 @@
                     <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value> <!-- Semi-colon delimited string -->
                 </entry>
                 <entry>
-                    <key>email</key>
-                    <value>amore@ainq.com</value>
-                </entry>
-                <entry>
                     <key>editableJobFields</key>
                     <value>email-Subscribers</value>
                 </entry>
@@ -329,22 +337,6 @@
                 <entry>
                     <key>acbSpecific</key>
                     <value>true</value>
-                </entry>
-            </job-data-map>
-        </job>
-
-        <!-- Job used to trigger interruptions of other jobs -->
-        <job>
-            <name>interruptJob</name>
-            <group>systemJobs</group>
-            <description>Triggers interruption of other running job</description>
-            <job-class>gov.healthit.chpl.scheduler.job.InterruptJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>parameters</key>
-                    <value>[{"label": "Job Name", "key": "jobName"}, {"label": "Group Name", "key": "jobGroup"}]</value>
                 </entry>
             </job-data-map>
         </job>
@@ -748,63 +740,6 @@
             <recover>false</recover>
         </job>
 
-        <!-- Updates Listing's Cures Updated indicator -->
-        <job>
-            <name>addCuresUpdateToListingsJob</name>
-            <group>systemJobs</group>
-            <description>Updates Listing's Cures Updated indicator</description>
-            <job-class>gov.healthit.chpl.scheduler.job.AddCuresUpdateToListingsJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-        </job>
-
-        <job>
-            <name>Listings Snapshot</name>
-            <group>chplJobs</group>
-            <description>Generate a CSV snapshot of listings in the system on January 1, 2020.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.snapshot.ListingsSnapshotCsvCreatorJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN</value>
-                </entry>
-                <entry>
-                    <key>edition</key>
-                    <value>2015</value>
-                </entry>
-                <entry>
-                    <key>snapshotDate</key>
-                    <value>2020-01-01</value>
-                </entry>
-            </job-data-map>
-        </job>
-
-        <job>
-            <name>Listings With Criterion Snapshot</name>
-            <group>chplJobs</group>
-            <description>Generate a CSV snapshot of listings in the system attesting to 170.315 (f)(5) on January 1, 2020.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.snapshot.ListingsWithCriterionSnapshotCsvCreatorJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>edition</key>
-                    <value>2015</value>
-                </entry>
-                <entry>
-                    <key>snapshotDate</key>
-                    <value>2020-01-01</value>
-                </entry>
-                <!-- 170.315 (f)(5) -->
-                <entry>
-                    <key>criterionId</key>
-                    <value>47</value>
-                </entry>
-            </job-data-map>
-        </job>
-
         <job>
             <name>sendEmailJob</name>
             <group>chplBackgroundJobs</group>
@@ -873,15 +808,6 @@
         </job>
 
         <job>
-            <name>curesUpdateDesignationQuestionableActivityCreatorJob</name>
-            <group>systemJobs</group>
-            <description>Retroactively adds missing Cures Update Designation Questionable Activity</description>
-            <job-class>gov.healthit.chpl.scheduler.job.onetime.CuresDesignationRemovedQuestionableActivityCreatorJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-        </job>
-        
-        <job>
             <name>missingAttestationChangeRequestEmailJob</name>
             <group>systemJobs</group>
             <description>Sends Email to Developer who have not submitted Attestation Change Request</description>
@@ -889,6 +815,6 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
-        
+
     </schedule>
 </job-scheduling-data>
