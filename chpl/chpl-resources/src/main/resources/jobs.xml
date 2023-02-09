@@ -17,6 +17,10 @@
             <group>systemJobs</group>
         </delete-job>
         <delete-job>
+            <name>curesUpdateDesignationQuestionableActivityCreatorJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
             <name>Listings Snapshot</name>
             <group>chplJobs</group>
         </delete-job>
@@ -804,15 +808,6 @@
         </job>
 
         <job>
-            <name>curesUpdateDesignationQuestionableActivityCreatorJob</name>
-            <group>systemJobs</group>
-            <description>Retroactively adds missing Cures Update Designation Questionable Activity</description>
-            <job-class>gov.healthit.chpl.scheduler.job.onetime.CuresDesignationRemovedQuestionableActivityCreatorJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-        </job>
-        
-        <job>
             <name>missingAttestationChangeRequestEmailJob</name>
             <group>systemJobs</group>
             <description>Sends Email to Developer who have not submitted Attestation Change Request</description>
@@ -820,6 +815,6 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
-        
+
     </schedule>
 </job-scheduling-data>
