@@ -173,38 +173,44 @@ public class RealWorldTestingReportService {
     }
 
     private RealWorldTestingReport addMessages(RealWorldTestingReport report) {
+        String plansMessage = "";
         if (isWithdrawn(report.getCurrentStatus())) {
-            report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.listingWithdrawnMessage"));
+            plansMessage = errorMsg.getMessage("realWorldTesting.report.listingWithdrawnMessage");
         } else if (isRwtPlansEmpty(report)) {
             if (BooleanUtils.isTrue(report.getIcs())
                     && (arePlansLateWarning(report.getRwtEligibilityYear()) || arePlansLateError(report.getRwtEligibilityYear()))) {
-                report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.eligibleByIcs.missingPlansError",
-                        report.getRwtEligibilityYear().toString()));
+                plansMessage =errorMsg.getMessage("realWorldTesting.report.eligibleByIcs.missingPlansError",
+                        report.getRwtEligibilityYear().toString());
             } else if (arePlansLateWarning(report.getRwtEligibilityYear())) {
-                report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingPlansWarning",
+                plansMessage = errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingPlansWarning",
                         report.getRwtEligibilityYear().toString(),
-                        getPlansLateDate(report.getRwtEligibilityYear()).toString()));
+                        getPlansLateDate(report.getRwtEligibilityYear()).toString());
             } else if (arePlansLateError(report.getRwtEligibilityYear())) {
-                report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingPlansError",
+                plansMessage = errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingPlansError",
                         report.getRwtEligibilityYear().toString(),
-                        getPlansLateDate(report.getRwtEligibilityYear()).toString()));
+                        getPlansLateDate(report.getRwtEligibilityYear()).toString());
             }
         }
+        report.setRwtPlansMessage(plansMessage);
+
+        String reportsMessage = "";
         if (isRwtResultsEmpty(report)) {
             if (BooleanUtils.isTrue(report.getIcs())
                     && (areResultsLateWarning(report.getRwtEligibilityYear()) || areResultsLateError(report.getRwtEligibilityYear()))) {
-                report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.eligibleByIcs.missingResultsError",
-                        report.getRwtEligibilityYear().toString()));
+                reportsMessage = errorMsg.getMessage("realWorldTesting.report.eligibleByIcs.missingResultsError",
+                        report.getRwtEligibilityYear().toString());
             } else if (areResultsLateWarning(report.getRwtEligibilityYear())) {
-                report.setRwtResultsMessage(errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingResultsWarning",
+                reportsMessage = errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingResultsWarning",
                         report.getRwtEligibilityYear().toString(),
-                        getResultsLateDate(report.getRwtEligibilityYear()).toString()));
+                        getResultsLateDate(report.getRwtEligibilityYear()).toString());
             } else if (areResultsLateError(report.getRwtEligibilityYear())) {
-                report.setRwtResultsMessage(errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingResultsError",
+                reportsMessage = errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingResultsError",
                         report.getRwtEligibilityYear().toString(),
-                        getResultsLateDate(report.getRwtEligibilityYear()).toString()));
+                        getResultsLateDate(report.getRwtEligibilityYear()).toString());
             }
         }
+        report.setRwtResultsMessage(reportsMessage);
+
         return report;
     }
 
