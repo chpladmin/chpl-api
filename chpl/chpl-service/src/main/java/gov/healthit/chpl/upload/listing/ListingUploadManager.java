@@ -223,6 +223,23 @@ public class ListingUploadManager {
         return listing;
     }
 
+    @Transactional
+    //TODO: Pre-Authorize to ROLE_ADMIN only
+    public List<List<String>> getUploadedCsvRecords(Long confirmedListingId) throws EntityRetrievalException {
+        ListingUpload listingUpload = listingUploadDao.getByConfirmedListingIdIncludingRecords(confirmedListingId);
+        LOGGER.debug("Confirmed listing " + confirmedListingId + " has uploaded listing ID " + listingUpload.getId());
+        List<CSVRecord> allCsvRecords = listingUpload.getRecords();
+        if (allCsvRecords == null) {
+            LOGGER.warn("Confirmed listing " + confirmedListingId + " has no CSV records associated with it.");
+            return null;
+        }
+        LOGGER.debug("Confirmed listing " + confirmedListingId + " has " + allCsvRecords.size() + " CSV records associated with it.");
+        List<List<String>> records = new ArrayList<List<String>>();
+        allCsvRecords.stream()
+                .forEach(csvRecord -> records.add(csvRecord.stream().collect(Collectors.toList())));
+        return records;
+    }
+
     private void copyUserEnteredDeveloperDataToRegularDeveloperData(CertifiedProductSearchDetails listing) {
         listing.getDeveloper().setName(listing.getDeveloper().getUserEnteredName());
         listing.getDeveloper().setAddress(listing.getDeveloper().getUserEnteredAddress());

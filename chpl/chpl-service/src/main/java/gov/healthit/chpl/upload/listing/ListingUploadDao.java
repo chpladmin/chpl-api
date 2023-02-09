@@ -165,6 +165,18 @@ public class ListingUploadDao extends BaseDAOImpl {
         return convert(entities.get(0), true);
     }
 
+    public ListingUpload getByConfirmedListingIdIncludingRecords(Long confirmedListingId) throws EntityRetrievalException {
+        Query query = entityManager.createQuery(GET_ENTITY_HQL_BEGIN
+                + "WHERE ul.certifiedProductId = :confirmedListingId "
+                + "AND ul.deleted = false", ListingUploadEntity.class);
+        query.setParameter("confirmedListingId", confirmedListingId);
+        List<ListingUploadEntity> entities = query.getResultList();
+        if (entities == null || entities.size() == 0) {
+            throw new EntityRetrievalException();
+        }
+        return convert(entities.get(0), true);
+    }
+
     public ListingUpload getByChplProductNumber(String chplProductNumber) {
         Query query = entityManager.createQuery(GET_ENTITY_HQL_BEGIN
                 + "WHERE ul.deleted = false "
