@@ -179,13 +179,15 @@ public class ReprocessFromUploadedCsvStrategy implements ParticipantUpdateStrate
 
     private boolean testTaskMatches(TestTask testTask1, TestTask testTask2) {
         boolean result = false;
-        if (StringUtils.equals(testTask1.getDescription(), testTask2.getDescription())
+        if (StringUtils.equalsIgnoreCase(StringUtils.normalizeSpace(testTask1.getDescription()),
+                StringUtils.normalizeSpace(testTask2.getDescription()))
                 && Objects.equals(testTask1.getTaskErrors(), testTask2.getTaskErrors())
                 && Objects.equals(testTask1.getTaskErrorsStddev(), testTask2.getTaskErrorsStddev())
                 && Objects.equals(testTask1.getTaskPathDeviationObserved(), testTask2.getTaskPathDeviationObserved())
                 && Objects.equals(testTask1.getTaskPathDeviationOptimal(), testTask2.getTaskPathDeviationOptimal())
                 && Objects.equals(testTask1.getTaskRating(), testTask2.getTaskRating())
-                && StringUtils.equals(testTask1.getTaskRatingScale(), testTask2.getTaskRatingScale())
+                && StringUtils.equalsIgnoreCase(StringUtils.normalizeSpace(testTask1.getTaskRatingScale()),
+                        StringUtils.normalizeSpace(testTask2.getTaskRatingScale()))
                 && Objects.equals(testTask1.getTaskRatingStddev(), testTask2.getTaskRatingStddev())
                 && Objects.equals(testTask1.getTaskSuccessAverage(), testTask2.getTaskSuccessAverage())
                 && Objects.equals(testTask1.getTaskSuccessStddev(), testTask2.getTaskSuccessStddev())
@@ -194,7 +196,8 @@ public class ReprocessFromUploadedCsvStrategy implements ParticipantUpdateStrate
                         testTask2.getTaskTimeDeviationObservedAvg())
                 && Objects.equals(testTask1.getTaskTimeDeviationOptimalAvg(),
                         testTask2.getTaskTimeDeviationOptimalAvg())
-                && Objects.equals(testTask1.getTaskTimeStddev(), testTask2.getTaskTimeStddev())) {
+                && Objects.equals(testTask1.getTaskTimeStddev(), testTask2.getTaskTimeStddev())
+                && testTask1.getTestParticipants().size() == testTask2.getTestParticipants().size()) {
             result = true;
         }
         return result;
@@ -202,16 +205,16 @@ public class ReprocessFromUploadedCsvStrategy implements ParticipantUpdateStrate
 
     private boolean testParticipantMatches(TestParticipant testParticipant1, TestParticipant testParticipant2) {
         boolean result = false;
-        if (StringUtils.equals(testParticipant1.getAgeRange(), testParticipant2.getAgeRange())
+        if (StringUtils.equalsIgnoreCase(testParticipant1.getAgeRange(), testParticipant2.getAgeRange())
                 && Objects.equals(testParticipant1.getAgeRangeId(), testParticipant2.getAgeRangeId())
-                && StringUtils.equals(testParticipant1.getAssistiveTechnologyNeeds(),
+                && StringUtils.equalsIgnoreCase(testParticipant1.getAssistiveTechnologyNeeds(),
                         testParticipant2.getAssistiveTechnologyNeeds())
                 && Objects.equals(testParticipant1.getComputerExperienceMonths(),
                         testParticipant2.getComputerExperienceMonths())
-                && StringUtils.equals(testParticipant1.getEducationTypeName(), testParticipant2.getEducationTypeName())
+                && StringUtils.equalsIgnoreCase(testParticipant1.getEducationTypeName(), testParticipant2.getEducationTypeName())
                 && Objects.equals(testParticipant1.getEducationTypeId(), testParticipant2.getEducationTypeId())
-                && StringUtils.equals(testParticipant1.getGender(), testParticipant2.getGender())
-                && StringUtils.equals(testParticipant1.getOccupation(), testParticipant2.getOccupation())
+                && StringUtils.equalsIgnoreCase(testParticipant1.getGender(), testParticipant2.getGender())
+                && StringUtils.equalsIgnoreCase(testParticipant1.getOccupation(), testParticipant2.getOccupation())
                 && Objects.equals(testParticipant1.getProductExperienceMonths(),
                         testParticipant2.getProductExperienceMonths())
                 && Objects.equals(testParticipant1.getProfessionalExperienceMonths(),

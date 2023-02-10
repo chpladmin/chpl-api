@@ -94,7 +94,7 @@ public class ListingUploadEntity {
     public ListingUpload toDomain() {
         return ListingUpload.builder()
                 .id(this.getId())
-                .acb(this.getCertificationBody() != null ? this.getCertificationBody().buildCertificationBody() :
+                .acb(this.getCertificationBody() != null ? this.getCertificationBody().toDomain() :
                     CertificationBody.builder()
                         .id(this.getCertificationBodyId())
                     .build())
