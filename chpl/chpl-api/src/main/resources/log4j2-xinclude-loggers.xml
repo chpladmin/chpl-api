@@ -235,4 +235,9 @@
         <AppenderRef ref="missingAttestationChangeRequestEmailJob" />
         <AppenderRef ref="missingAttestationChangeRequestEmailJobJson" />
     </Logger>
+    <Logger name="replaceListingSearchCacheJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="replaceListingSearchCacheJob" />
+        <AppenderRef ref="replaceListingSearchCacheJobJson" />
+    </Logger>
+    
 </Loggers>

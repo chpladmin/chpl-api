@@ -89,7 +89,6 @@ public class DeveloperManager extends SecuredManager {
     private ErrorMessageUtil msgUtil;
     private ResourcePermissions resourcePermissions;
     private DeveloperValidationFactory developerValidationFactory;
-    private ValidationUtils validationUtils;
     private SchedulerManager schedulerManager;
 
     @Autowired
@@ -98,8 +97,7 @@ public class DeveloperManager extends SecuredManager {
             UserManager userManager, CertificationBodyManager acbManager,
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
-            DeveloperValidationFactory developerValidationFactory, ValidationUtils validationUtils,
-            SchedulerManager schedulerManager) {
+            DeveloperValidationFactory developerValidationFactory, SchedulerManager schedulerManager) {
         this.developerDao = developerDao;
         this.productManager = productManager;
         this.versionManager = versionManager;
@@ -111,7 +109,6 @@ public class DeveloperManager extends SecuredManager {
         this.msgUtil = msgUtil;
         this.resourcePermissions = resourcePermissions;
         this.developerValidationFactory = developerValidationFactory;
-        this.validationUtils = validationUtils;
         this.schedulerManager = schedulerManager;
     }
 
