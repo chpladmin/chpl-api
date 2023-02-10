@@ -87,9 +87,6 @@
     <Logger name="pendingChangeRequestEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="pendingChangeRequestEmailJob" />
     </Logger>
-    <Logger name="interruptJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="interruptJob" />
-    </Logger>
     <Logger name="massRequirePasswordChangeJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="massRequirePasswordChangeJob" />
     </Logger>
@@ -141,22 +138,9 @@
     <Logger name="deprecatedApiUsageEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="deprecatedApiUsageEmailJob" />
     </Logger>
-    <Logger name="listingsSnapshotCsvCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="listingsSnapshotCsvCreatorJob" />
-    </Logger>
     <Logger name="removeCriteriaJobLogger" level="INFO"
         additivity="false">
         <AppenderRef ref="removeCriteriaJob" />
-    </Logger>
-    <Logger name="addCuresUpdateToListingsJobLogger" level="INFO"
-        additivity="false">
-        <AppenderRef ref="addCuresUpdateToListingsJob" />
-    </Logger>
-    <Logger name="listingsSnapshotCsvCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="listingsSnapshotCsvCreatorJob" />
-    </Logger>
-    <Logger name="listingsWithCriterionSnapshotCsvCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="listingsWithCriterionSnapshotCsvCreatorJob" />
     </Logger>
     <Logger name="sendEmailJobLogger" level="INFO"
         additivity="false">
@@ -170,9 +154,6 @@
     </Logger>
     <Logger name="developerAttestationCheckinReportJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="developerAttestationCheckinReportJob" />
-    </Logger>
-    <Logger name="curesDesignationRemovedQuestionableActivityCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="curesDesignationRemovedQuestionableActivityCreatorJob" />
     </Logger>
     <Logger name="missingAttestationChangeRequestEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="missingAttestationChangeRequestEmailJob" />
