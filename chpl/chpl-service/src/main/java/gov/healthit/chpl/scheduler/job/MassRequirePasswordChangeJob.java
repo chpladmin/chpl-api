@@ -2,10 +2,8 @@ package gov.healthit.chpl.scheduler.job;
 
 import java.util.List;
 
-import org.quartz.InterruptableJob;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.UnableToInterruptJobException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -32,7 +30,7 @@ import gov.healthit.chpl.manager.auth.UserManager;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-public class MassRequirePasswordChangeJob extends QuartzJob implements InterruptableJob {
+public class MassRequirePasswordChangeJob extends QuartzJob {
     private boolean interrupted;
 
     @Autowired
@@ -91,10 +89,5 @@ public class MassRequirePasswordChangeJob extends QuartzJob implements Interrupt
                 | JWTCreationException | JWTValidationException | ChplAccountEmailNotConfirmedException e) {
             LOGGER.debug("Unable to update users {}", e.getLocalizedMessage());
         }
-    }
-
-    @Override
-    public void interrupt() throws UnableToInterruptJobException {
-        this.interrupted = true;
     }
 }
