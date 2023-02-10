@@ -39,6 +39,7 @@ import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.manager.rules.product.ProductValidationContext;
 import gov.healthit.chpl.manager.rules.product.ProductValidationFactory;
+import gov.healthit.chpl.search.annotation.ReplaceListingSearchCache;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -123,8 +124,9 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).CREATE)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
+    @ReplaceListingSearchCache
     public Long create(Long developerId, Product product)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         product.setOwner(Developer.builder().id(developerId).build());
@@ -144,9 +146,9 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE_OWNERSHIP, #product)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
-    }, allEntries = true)
+            CacheNames.COLLECTIONS_LISTINGS }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#product.id")
+    @ReplaceListingSearchCache
     public Product updateProductOwnership(Product product)
             throws EntityRetrievalException, EntityCreationException, ValidationException, JsonProcessingException {
         Map<Long, CertifiedProductSearchDetails> preUpdateListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
@@ -186,9 +188,10 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE, #product)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#product.id")
+    @ReplaceListingSearchCache
     public Product update(Product product)
             throws EntityRetrievalException, EntityCreationException, ValidationException, JsonProcessingException {
         return updateProduct(product);
@@ -198,9 +201,10 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).MERGE, #productIdsToMerge)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#toCreate.id")
+    @ReplaceListingSearchCache
     public Product merge(List<Long> productIdsToMerge, Product toCreate)
             throws EntityRetrievalException, ValidationException, EntityCreationException, JsonProcessingException {
 
@@ -241,9 +245,10 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).SPLIT, #oldProduct)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#productToCreate.id")
+    @ReplaceListingSearchCache
     public Product split(Product oldProduct, Product productToCreate, String newProductCode,
             List<ProductVersionDTO> newProductVersions)
             throws AccessDeniedException, ValidationException, EntityRetrievalException, EntityCreationException, JsonProcessingException {

@@ -101,6 +101,7 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.qmsStandard.QmsStandard;
 import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
 import gov.healthit.chpl.scheduler.job.TriggerDeveloperBanJob;
+import gov.healthit.chpl.search.annotation.ReplaceListingSearchCache;
 import gov.healthit.chpl.service.CuresUpdateService;
 import gov.healthit.chpl.sharedstore.listing.ListingIcsSharedStoreHandler;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
@@ -355,10 +356,10 @@ public class CertifiedProductManager extends SecuredManager {
     })
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH,
             CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.COMPLAINTS
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#updateRequest.listing.id")
+    @ReplaceListingSearchCache
     public CertifiedProductDTO update(ListingUpdateRequest updateRequest)
             throws AccessDeniedException, JsonProcessingException, InvalidArgumentsException, IOException,
             ValidationException, MissingReasonException, CertifiedProductUpdateException {

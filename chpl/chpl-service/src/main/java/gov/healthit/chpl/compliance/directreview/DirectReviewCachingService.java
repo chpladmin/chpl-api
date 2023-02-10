@@ -30,6 +30,7 @@ import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewContainer;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.exception.JiraRequestFailedException;
+import gov.healthit.chpl.search.annotation.ReplaceListingSearchCache;
 import gov.healthit.chpl.validation.compliance.DirectReviewValidator;
 import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.Cache;
@@ -77,12 +78,14 @@ public class DirectReviewCachingService {
         this.directReviewListingSharedStoreHandler = directReviewListingSharedStoreHandler;
     }
 
-    @CacheEvict(value = { CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH }, allEntries = true)
+    @CacheEvict(value = { CacheNames.COLLECTIONS_LISTINGS }, allEntries = true)
+    @ReplaceListingSearchCache
     public void populateDirectReviewsCache() {
         populateDirectReviewsCache(LOGGER);
     }
 
-    @CacheEvict(value = { CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH }, allEntries = true)
+    @CacheEvict(value = { CacheNames.COLLECTIONS_LISTINGS }, allEntries = true)
+    @ReplaceListingSearchCache
     public void populateDirectReviewsCache(Logger logger) {
         logger.info("Fetching all direct review data.");
         HttpStatus calculatedHttpStatus = null;

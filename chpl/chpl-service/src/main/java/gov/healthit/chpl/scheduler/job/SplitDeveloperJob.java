@@ -252,6 +252,7 @@ public class SplitDeveloperJob implements Job {
         CacheManager.getInstance().getCache(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED).removeAll();
         CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_DEVELOPERS).removeAll();
         CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_LISTINGS).removeAll();
+        //TODO Need to figure this out
         CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).removeAll();
         CacheManager.getInstance().getCache(CacheNames.GET_DECERTIFIED_DEVELOPERS).removeAll();
     }

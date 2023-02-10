@@ -41,6 +41,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceReportingActivityJob;
+import gov.healthit.chpl.search.annotation.ReplaceListingSearchCache;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
@@ -113,9 +114,9 @@ public class SurveillanceManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).CREATE, #survToInsert)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
-    }, allEntries = true)
+            CacheNames.COLLECTIONS_LISTINGS }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#survToInsert.certifiedProduct.id")
+    @ReplaceListingSearchCache
     public Long createSurveillance(Surveillance survToInsert)
             throws UserPermissionRetrievalException, EntityRetrievalException, JsonProcessingException, EntityCreationException,
             ValidationException {
@@ -142,10 +143,9 @@ public class SurveillanceManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).UPDATE, #survToUpdate)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH,
-            CacheNames.COMPLAINTS
-    }, allEntries = true)
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COMPLAINTS }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#survToUpdate.certifiedProduct.id")
+    @ReplaceListingSearchCache
     public void updateSurveillance(final Surveillance survToUpdate) throws EntityRetrievalException,
             EntityCreationException, JsonProcessingException, ValidationException {
         CertifiedProductSearchDetails beforeListing = cpDetailsManager
@@ -169,9 +169,10 @@ public class SurveillanceManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).DELETE, #survToDelete)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.COMPLAINTS
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COMPLAINTS
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#survToDelete.certifiedProduct.id")
+    @ReplaceListingSearchCache
     public void deleteSurveillance(Surveillance survToDelete, String reason)
             throws InvalidArgumentsException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
         if (survToDelete == null) {

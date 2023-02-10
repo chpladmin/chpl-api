@@ -25,6 +25,7 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
+import gov.healthit.chpl.search.annotation.ReplaceListingSearchCache;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import lombok.extern.log4j.Log4j2;
@@ -87,10 +88,10 @@ public class CertificationBodyManager extends SecuredManager {
             CacheNames.GET_DECERTIFIED_DEVELOPERS,
             CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.COLLECTIONS_LISTINGS,
-            CacheNames.COLLECTIONS_SEARCH,
             CacheNames.COMPLAINTS
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.ACB_ID, id = "#acb.id")
+    @ReplaceListingSearchCache
     // no other caches have ACB data so we do not need to clear all
     public CertificationBodyDTO update(CertificationBodyDTO acb)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
@@ -113,9 +114,9 @@ public class CertificationBodyManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).RETIRE)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
-    }, allEntries = true)
+            CacheNames.COLLECTIONS_LISTINGS }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.ACB_ID, id = "#acb.id")
+    @ReplaceListingSearchCache
     public CertificationBodyDTO retire(CertificationBodyDTO acb)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, IllegalArgumentException,
             SchedulerException, ValidationException {
@@ -141,9 +142,9 @@ public class CertificationBodyManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).UNRETIRE)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
-    }, allEntries = true)
+            CacheNames.COLLECTIONS_LISTINGS }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.ACB_ID, id = "#acbId")
+    @ReplaceListingSearchCache
     public CertificationBodyDTO unretire(Long acbId) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateCertifiedBodyException {
         CertificationBodyDTO beforeAcb = certificationBodyDao.getById(acbId);

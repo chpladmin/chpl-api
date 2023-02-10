@@ -32,6 +32,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.search.annotation.ReplaceListingSearchCache;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -114,8 +115,8 @@ public class ProductVersionManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).CREATE)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
-    }, allEntries = true)
+            CacheNames.COLLECTIONS_LISTINGS }, allEntries = true)
+    @ReplaceListingSearchCache
     public Long create(Long productId, ProductVersion version)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // check that the developer of this version is Active
@@ -150,8 +151,8 @@ public class ProductVersionManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).CREATE)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
-    }, allEntries = true)
+            CacheNames.COLLECTIONS_LISTINGS }, allEntries = true)
+    @ReplaceListingSearchCache
     public ProductVersionDTO create(ProductVersionDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // check that the developer of this version is Active
@@ -184,9 +185,9 @@ public class ProductVersionManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).UPDATE, #version)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
-    }, allEntries = true)
+            CacheNames.COLLECTIONS_LISTINGS }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.VERSION_ID, id = "#version.id")
+    @ReplaceListingSearchCache
     public ProductVersionDTO update(ProductVersionDTO version)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 
@@ -229,9 +230,9 @@ public class ProductVersionManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).MERGE, #versionIdsToMerge)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
-    }, allEntries = true)
+            CacheNames.COLLECTIONS_LISTINGS }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.VERSION_ID, id = "#toCreate.id")
+    @ReplaceListingSearchCache
     public ProductVersionDTO merge(List<Long> versionIdsToMerge, ProductVersionDTO toCreate)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 
@@ -274,9 +275,9 @@ public class ProductVersionManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).SPLIT, #oldVersion)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
-    }, allEntries = true)
+            CacheNames.COLLECTIONS_LISTINGS }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.VERSION_ID, id = "#newVersion.id")
+    @ReplaceListingSearchCache
     public ProductVersionDTO split(ProductVersionDTO oldVersion, ProductVersionDTO newVersion,
             String newVersionCode, List<Long> newVersionListingIds)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {

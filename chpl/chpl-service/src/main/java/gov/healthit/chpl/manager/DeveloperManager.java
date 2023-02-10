@@ -355,8 +355,8 @@ public class DeveloperManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
-    }, allEntries = true)
+            CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS }, allEntries = true)
+    @ReplaceListingSearchCache
     public ChplOneTimeTrigger merge(List<Long> developerIdsToMerge, Developer developerToCreate)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
             SchedulerException, ValidationException {
@@ -404,9 +404,9 @@ public class DeveloperManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).SPLIT, #oldDeveloper)")
     @CacheEvict(value = {
-            CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
-    }, allEntries = true)
+            CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#oldDeveloper.id")
+    @ReplaceListingSearchCache
     public ChplOneTimeTrigger split(Developer oldDeveloper, Developer developerToCreate,
             List<Long> productIdsToMove) throws ValidationException, SchedulerException {
         normalizeSpaces(developerToCreate);

@@ -38,6 +38,9 @@ public class DirectReviewCacheRefreshJob extends QuartzJob {
             LOGGER.error(e.getMessage(), e);
         }
 
+        
+        
+        //TODO - Need to figure this out
         LOGGER.info("Refreshing searchable listing data");
         CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).removeAll();
         listingSearchManager.getAllListings();

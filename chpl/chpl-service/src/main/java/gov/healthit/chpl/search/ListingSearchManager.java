@@ -34,37 +34,21 @@ public class ListingSearchManager {
         this.drService = drService;
     }
 
-//    @Cacheable(value = CacheNames.COLLECTIONS_SEARCH, sync = true)
-//    public List<ListingSearchResult> getAllListings() {
-//        List<ListingSearchResult> results = searchDao.getListingSearchResults();
-//        LOGGER.info("Populating Direct Review fields for search");
-//        Date start = new Date();
-//        results.parallelStream()
-//            .forEach(searchResult -> populateDirectReviews(searchResult));
-//        Date end = new Date();
-//        LOGGER.info("Completed Populating Direct Review fields  for search [ " + (end.getTime() - start.getTime()) + " ms ]");
-//        return results;
-//    }
-
     public List<ListingSearchResult> getAllListingsFromDb() {
-        LOGGER.info("Getting COLLECTION_SEARCH from DB");
         List<ListingSearchResult> results = searchDao.getListingSearchResults();
-        LOGGER.info("Populating Direct Review fields for search");
         Date start = new Date();
         results.parallelStream()
             .forEach(searchResult -> populateDirectReviews(searchResult));
         Date end = new Date();
-        LOGGER.info("Completed Populating Direct Review fields  for search [ " + (end.getTime() - start.getTime()) + " ms ]");
+        LOGGER.info("Completed Populating Direct Review fields for search [ " + (end.getTime() - start.getTime()) + " ms ]");
         return results;
     }
 
     public List<ListingSearchResult> getAllListings() {
         if (!CacheManager.getInstance().cacheExists(CacheNames.COLLECTIONS_SEARCH)
                 || CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).get(CacheNames.COLLECTIONS_SEARCH) == null) {
-            LOGGER.info("Adding COLLECTION_SEARCH to cache");
             CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).put(new Element(CacheNames.COLLECTIONS_SEARCH, getAllListingsFromDb()));
         }
-        LOGGER.info("Getting COLLECTION_SEARCH from cache");
         return (List<ListingSearchResult>) CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).get(CacheNames.COLLECTIONS_SEARCH).getObjectValue();
     }
 

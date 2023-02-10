@@ -48,6 +48,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
+import gov.healthit.chpl.search.annotation.ReplaceListingSearchCache;
 import gov.healthit.chpl.service.CuresUpdateService;
 import lombok.extern.log4j.Log4j2;
 
@@ -118,8 +119,9 @@ public class ListingConfirmationManager {
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES, CacheNames.DEVELOPER_NAMES
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES, CacheNames.DEVELOPER_NAMES
     }, allEntries = true)
+    @ReplaceListingSearchCache
     public CertifiedProductSearchDetails create(CertifiedProductSearchDetails listing)
         throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
         if (listing.getDeveloper().getId() == null) {
