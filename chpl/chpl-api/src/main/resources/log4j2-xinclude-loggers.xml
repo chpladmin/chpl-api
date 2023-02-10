@@ -72,13 +72,13 @@
         <AppenderRef ref="brokenSurveillanceRulesEmailJob" />
         <AppenderRef ref="brokenSurveillanceRulesEmailJobJson" />
     </Logger>
-    <Logger name="inheritanceErrorsReportCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="inheritanceErrorsReportCreatorJob" />
-        <AppenderRef ref="inheritanceErrorsReportCreatorJobJson" />
+    <Logger name="icsErrorsReportCreatorJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="icsErrorsReportCreatorJob" />
+        <AppenderRef ref="icsErrorsReportCreatorJobJson" />
     </Logger>
-    <Logger name="inheritanceErrorsReportEmailJobLogger" additivity="false">
-        <AppenderRef ref="inheritanceErrorsReportEmailJob" />
-        <AppenderRef ref="inheritanceErrorsReportEmailJobJson" />
+    <Logger name="icsErrorsReportEmailJobLogger" additivity="false">
+        <AppenderRef ref="icsErrorsReportEmailJob" />
+        <AppenderRef ref="icsErrorsReportEmailJobJson" />
     </Logger>
     <Logger name="cacheStatusAgeJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="cacheStatusAgeJob" />
