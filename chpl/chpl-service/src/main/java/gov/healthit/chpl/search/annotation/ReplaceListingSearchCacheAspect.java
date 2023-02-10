@@ -27,8 +27,8 @@ public class ReplaceListingSearchCacheAspect {
 
     @AfterReturning(pointcut = "@annotation(gov.healthit.chpl.search.annotation.ReplaceListingSearchCache)")
     public void executeListingSearchCacheReplaceJob(JoinPoint joinPoint) throws Throwable {
-        LOGGER.info("ReplaceListingSearchCacheJob should be scheduled.");
-
+        LOGGER.info("ReplaceListingSearchCacheJob called after: {}", joinPoint.getSignature().toShortString() );
+              
         ChplOneTimeTrigger replaceListingSearchCacheTrigger = new ChplOneTimeTrigger();
         ChplJob replaceListingSearchCacheJob = new ChplJob();
         replaceListingSearchCacheJob.setName(ReplaceListingSearchCacheJob.JOB_NAME);

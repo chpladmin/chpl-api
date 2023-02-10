@@ -25,12 +25,11 @@ public class ReplaceListingSearchCacheJob implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-
-        LOGGER.info("Retrieving data for listing search cache.");
+        LOGGER.info("********* Starting the Replace Listing Search Cache job. *********");
         List<ListingSearchResult> allListings = listingSearchManager.getAllListingsFromDb();
         CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).acquireWriteLockOnKey(CacheNames.COLLECTIONS_SEARCH);
         CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).replace(new Element(CacheNames.COLLECTIONS_SEARCH, allListings));
         CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).releaseWriteLockOnKey(CacheNames.COLLECTIONS_SEARCH);
-        LOGGER.info("Completed retrieving data for listing search cache.");
+        LOGGER.info("********* Completed the Replace Listing Search Cache job. *********");
     }
 }
