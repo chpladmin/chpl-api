@@ -128,8 +128,8 @@ public class ListingUploadController {
     public void streamUploadedFile(@PathVariable("id") Long confirmedListingId,
             HttpServletResponse response) throws EntityRetrievalException, IOException {
         List<List<String>> rows = listingUploadManager.getUploadedCsvRecords(confirmedListingId);
-        File file = new File("listing-" + confirmedListingId + "-upload.csv");
 
+        File file = new File("listing-" + confirmedListingId + "-upload.csv");
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
             writer.write('\ufeff');

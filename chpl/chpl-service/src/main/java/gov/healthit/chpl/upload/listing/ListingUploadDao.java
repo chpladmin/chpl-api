@@ -172,7 +172,7 @@ public class ListingUploadDao extends BaseDAOImpl {
         query.setParameter("confirmedListingId", confirmedListingId);
         List<ListingUploadEntity> entities = query.getResultList();
         if (entities == null || entities.size() == 0) {
-            throw new EntityRetrievalException();
+            throw new EntityRetrievalException("There is no confirmed listing with ID " + confirmedListingId);
         }
         return convert(entities.get(0), true);
     }

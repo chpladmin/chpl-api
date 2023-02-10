@@ -224,7 +224,8 @@ public class ListingUploadManager {
     }
 
     @Transactional
-    //TODO: Pre-Authorize to ROLE_ADMIN only
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
+            + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).GET_UPLOADED_CSV)")
     public List<List<String>> getUploadedCsvRecords(Long confirmedListingId) throws EntityRetrievalException {
         ListingUpload listingUpload = listingUploadDao.getByConfirmedListingIdIncludingRecords(confirmedListingId);
         LOGGER.debug("Confirmed listing " + confirmedListingId + " has uploaded listing ID " + listingUpload.getId());
