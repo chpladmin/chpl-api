@@ -76,7 +76,7 @@ public class CertificationBodyEntity implements Serializable {
     @Column(name = "deleted", nullable = false, insertable = false)
     private Boolean deleted;
 
-    public CertificationBody buildCertificationBody() {
+    public CertificationBody toDomain() {
         return CertificationBody.builder()
                 .acbCode(this.getAcbCode())
                 .address(this.getAddress() == null ? null
