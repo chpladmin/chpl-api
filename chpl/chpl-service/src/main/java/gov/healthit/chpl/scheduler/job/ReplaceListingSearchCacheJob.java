@@ -34,15 +34,8 @@ public class ReplaceListingSearchCacheJob implements Job {
 	        LOGGER.info("Starting retreival of all listings");
 	        List<ListingSearchResult> allListings = listingSearchManager.getAllListingsFromDb();
 	        LOGGER.info("Completed retreival of all listings");
-	        LOGGER.info("Acquiring lock on cache");
-	        if (tryToGetWriteLock()) {
-		        LOGGER.info("Replacing cache");
-		        CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).replace(new Element(CacheNames.COLLECTIONS_SEARCH, allListings));
-		        LOGGER.info("Releasing lock on cache");
-		        CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).releaseWriteLockOnKey(CacheNames.COLLECTIONS_SEARCH);
-	        } else {
-	        	LOGGER.info("Could not acquire a write lock on the cache after {}ms", WRITE_LOCK_ACQUIRE_TIMEOUT);	
-	        }
+	        LOGGER.info("Replacing cache");
+	        CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).replace(new Element(CacheNames.COLLECTIONS_SEARCH, allListings));
         } catch (Exception e) {
         	LOGGER.error("There was an error trying to update the COLLECTION_SEARCH cache.", e);
         }
