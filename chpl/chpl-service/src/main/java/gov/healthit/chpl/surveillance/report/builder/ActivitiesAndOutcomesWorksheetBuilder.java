@@ -1137,7 +1137,6 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
                 .filter(req -> req.getResult() != null  && req.getResult().getName().equalsIgnoreCase(SurveillanceResultType.NON_CONFORMITY))
                 .flatMap(req -> req.getNonconformities().stream())
                 .filter(survNC -> survNC.getType() != null)
-                //.map(nc -> nc.getType().getNumber())
                 .map(nc -> nc.getType().getFormattedTitle())
                 .collect(Collectors.joining(" and "));
     }
