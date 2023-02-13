@@ -191,9 +191,9 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
-    <RollingFile name="inheritanceErrorsReportCreatorJob"
-        fileName="${logDir}/scheduler/inheritanceErrorsReportCreatorJob.log"
-        filePattern="${logDir}/scheduler/history/inheritanceErrorsReportCreatorJob-%d{yyyy-MM-dd}.log"
+    <RollingFile name="icsErrorsReportCreatorJob"
+        fileName="${logDir}/scheduler/icsErrorsReportCreatorJob.log"
+        filePattern="${logDir}/scheduler/history/icsErrorsReportCreatorJob-%d{yyyy-MM-dd}.log"
         filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>
@@ -203,9 +203,9 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
-    <RollingFile name="inheritanceErrorsReportEmailJob"
-        fileName="${logDir}/scheduler/inheritanceErrorsReportEmailJob.log"
-        filePattern="${logDir}/scheduler/history/inheritanceErrorsReportEmailJob-%d{yyyy-MM-dd}.log"
+    <RollingFile name="icsErrorsReportEmailJob"
+        fileName="${logDir}/scheduler/icsErrorsReportEmailJob.log"
+        filePattern="${logDir}/scheduler/history/icsErrorsReportEmailJob-%d{yyyy-MM-dd}.log"
         filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>
@@ -302,18 +302,6 @@
     <RollingFile name="pendingChangeRequestEmailJob"
         fileName="${logDir}/scheduler/pendingChangeRequestEmailJob.log"
         filePattern="${logDir}/scheduler/history/pendingChangeRequestEmailJob-%d{yyyy-MM-dd}.log"
-        filePermissions="rw-rw-r--">
-        <PatternLayout>
-            <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>
-        </PatternLayout>
-        <Policies>
-            <TimeBasedTriggeringPolicy
-                interval="1" modulate="true" />
-        </Policies>
-    </RollingFile>
-    <RollingFile name="interruptJob"
-        fileName="${logDir}/scheduler/interruptJob.log"
-        filePattern="${logDir}/scheduler/history/interruptJob-%d{yyyy-MM-dd}.log"
         filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>
@@ -564,42 +552,6 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
-    <RollingFile name="addCuresUpdateToListingsJob"
-        fileName="${logDir}/scheduler/addCuresUpdateToListingsJob.log"
-        filePattern="${logDir}/scheduler/history/addCuresUpdateToListingsJob-%d{yyyy-MM-dd}.log"
-        filePermissions="rw-rw-r--">
-        <PatternLayout>
-            <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
-                </PatternLayout>
-        <Policies>
-            <TimeBasedTriggeringPolicy
-                interval="1" modulate="true" />
-        </Policies>
-    </RollingFile>
-    <RollingFile name="listingsSnapshotCsvCreatorJob"
-        fileName="${logDir}/scheduler/listingsSnapshotCsvCreatorJob.log"
-        filePattern="${logDir}/scheduler/history/listingsSnapshotCsvCreatorJob-%d{yyyy-MM-dd}.log"
-        filePermissions="rw-rw-r--">
-        <PatternLayout>
-            <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>
-        </PatternLayout>
-        <Policies>
-            <TimeBasedTriggeringPolicy
-                interval="1" modulate="true" />
-        </Policies>
-    </RollingFile>
-    <RollingFile name="listingsWithCriterionSnapshotCsvCreatorJob"
-        fileName="${logDir}/scheduler/listingsWithCriterionSnapshotCsvCreatorJob.log"
-        filePattern="${logDir}/scheduler/history/listingsWithCriterionSnapshotCsvCreatorJob-%d{yyyy-MM-dd}.log"
-        filePermissions="rw-rw-r--">
-        <PatternLayout>
-            <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>
-        </PatternLayout>
-        <Policies>
-            <TimeBasedTriggeringPolicy
-                interval="1" modulate="true" />
-        </Policies>
-    </RollingFile>
     <RollingFile name="sendEmailJob"
         fileName="${logDir}/scheduler/sendEmailJob.log"
         filePattern="${logDir}/scheduler/history/sendEmailJob-%d{yyyy-MM-dd}.log"
@@ -655,19 +607,6 @@
     <RollingFile name="developerAttestationCheckinReportJob"
         fileName="${logDir}/scheduler/developerAttestationCheckinReportJob.log"
         filePattern="${logDir}/scheduler/history/developerAttestationCheckinReportJob-%d{yyyy-MM-dd}.log"
-        filePermissions="rw-rw-r--">
-        <PatternLayout>
-            <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
-        </PatternLayout>
-        <Policies>
-            <TimeBasedTriggeringPolicy
-                interval="1" modulate="true" />
-        </Policies>
-    </RollingFile>
-
-    <RollingFile name="curesDesignationRemovedQuestionableActivityCreatorJob"
-        fileName="${logDir}/scheduler/curesDesignationRemovedQuestionableActivityCreatorJob.log"
-        filePattern="${logDir}/scheduler/history/curesDesignationRemovedQuestionableActivityCreatorJobb-%d{yyyy-MM-dd}.log"
         filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity.scheduler;
+package gov.healthit.chpl.scheduler.job.ics;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -12,17 +12,20 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.CertificationBodyEntity;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-/**
- * Entity containing needed data for Listings with ICS errors.
- * @author alarned
- *
- */
 @Entity
 @Table(name = "inheritance_errors_report")
-@Data
-public class InheritanceErrorsReportEntity {
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class IcsErrorsReportEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,21 +33,8 @@ public class InheritanceErrorsReportEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Basic(optional = false)
-    @Column(name = "chpl_product_number")
-    private String chplProductNumber;
-
-    @Basic(optional = false)
-    @Column(name = "developer")
-    private String developer;
-
-    @Basic(optional = false)
-    @Column(name = "product")
-    private String product;
-
-    @Basic(optional = false)
-    @Column(name = "version")
-    private String version;
+    @Column(name = "certified_product_id")
+    private Long certifiedProductId;
 
     @Basic(optional = true)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -52,18 +42,15 @@ public class InheritanceErrorsReportEntity {
     private CertificationBodyEntity certificationBody;
 
     @Basic(optional = false)
-    @Column(name = "url")
-    private String url;
-
-    @Basic(optional = false)
     @Column(name = "reason")
     private String reason;
 
-    @Basic(optional = false)
-    @Column(name = "deleted")
-    private Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
+    public IcsErrorsReportItem toDomain() {
+        return IcsErrorsReportItem.builder()
+                .id(this.getId())
+                .listingId(this.getCertifiedProductId())
+                .certificationBody(this.getCertificationBody().toDomain())
+                .reason(this.getReason())
+                .build();
+    }
 }
