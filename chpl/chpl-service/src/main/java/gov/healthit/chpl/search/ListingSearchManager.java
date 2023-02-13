@@ -33,8 +33,8 @@ public class ListingSearchManager {
         this.drService = drService;
     }
 
-    @Cacheable(value = CacheNames.COLLECTIONS_SEARCH)
-    public synchronized List<ListingSearchResult> getAllListings() {
+    @Cacheable(value = CacheNames.COLLECTIONS_SEARCH, sync = true)
+    public List<ListingSearchResult> getAllListings() {
         List<ListingSearchResult> results = searchDao.getListingSearchResults();
         LOGGER.info("Populating Direct Review fields for search");
         Date start = new Date();
