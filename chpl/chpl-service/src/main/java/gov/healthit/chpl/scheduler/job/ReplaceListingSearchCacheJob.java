@@ -36,7 +36,7 @@ public class ReplaceListingSearchCacheJob implements Job {
 	        LOGGER.info("Completed retreival of all listings");
 	        LOGGER.info("Acquiring lock on cache");
 	        if (tryToGetWriteLock()) {
-		        LOGGER.info("Repalceing cache");
+		        LOGGER.info("Replacing cache");
 		        CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).replace(new Element(CacheNames.COLLECTIONS_SEARCH, allListings));
 		        LOGGER.info("Releasing lock on cache");
 		        CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).releaseWriteLockOnKey(CacheNames.COLLECTIONS_SEARCH);
