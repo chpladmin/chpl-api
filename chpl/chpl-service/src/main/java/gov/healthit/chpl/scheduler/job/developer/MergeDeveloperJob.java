@@ -26,6 +26,7 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.search.annotation.ReplaceListingSearchCache;
 import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.CacheManager;
 
@@ -58,6 +59,7 @@ public class MergeDeveloperJob implements Job {
     private Developer postMergeDeveloper;
 
     @Override
+    @ReplaceListingSearchCache
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
@@ -134,8 +136,6 @@ public class MergeDeveloperJob implements Job {
         CacheManager.getInstance().getCache(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED).removeAll();
         CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_DEVELOPERS).removeAll();
         CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_LISTINGS).removeAll();
-        //TODO:  Need to figure this out
-        CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).removeAll();
         CacheManager.getInstance().getCache(CacheNames.GET_DECERTIFIED_DEVELOPERS).removeAll();
     }
 
