@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,7 +29,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlType;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
-import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -281,17 +279,6 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             products.add(product);
         }
         return products;
-    }
-
-    public List<Long> findIdsByEditionAndCreatedBeforeDate(String edition, LocalDate creationDate) {
-        Query query = entityManager.createQuery("SELECT cpd.id "
-                + "FROM CertifiedProductDetailsEntity cpd "
-                + "WHERE (NOT deleted = true) "
-                + "AND cpd.year = :edition "
-                + "AND cpd.creationDate < :creationDate", Long.class);
-        query.setParameter("edition", edition.trim());
-        query.setParameter("creationDate", new Date(DateUtil.toEpochMillis(creationDate)));
-        return query.getResultList();
     }
 
     @Transactional(readOnly = true)
