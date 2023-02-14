@@ -168,7 +168,7 @@ public class ProductManager extends SecuredManager {
         Developer updatedProductOwner = devDao.getById(updatedProduct.getOwner().getId());
         LOGGER.info("Getting details for " + affectedListings.size() + " listings with affected CHPL Product Numbers");
         for (CertifiedProductDetailsDTO affectedListing : affectedListings) {
-            CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(affectedListing.getId());
+            CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetailsNoCache(affectedListing.getId());
             LOGGER.info("Complete retrieving details for id: " + details.getId());
             postUpdateListingDetails.put(details.getId(), details);
         }
