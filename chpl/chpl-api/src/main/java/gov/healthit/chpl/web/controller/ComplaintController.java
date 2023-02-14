@@ -1,7 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,8 +29,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
-import gov.healthit.chpl.web.controller.results.ComplaintResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -52,24 +49,6 @@ public class ComplaintController {
         this.complaintManager = complaintManager;
         this.complaintSearchService = complaintSearchService;
         this.errorMessageUtil = errorMessageUtil;
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/complaints",
-            message = "This endpoint is deprecated and will be removed. Please use /complaints/search.",
-            removalDate = "2022-06-01")
-    @Operation(summary = "List all complaints the current user can view.",
-            description = "Security Restrictions: Only complaints owned by the current user's ACB will be returned",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody ComplaintResults getComplaints() {
-        ComplaintResults results = new ComplaintResults();
-        List<Complaint> complaints = complaintManager.getAllComplaints();
-        results.setResults(complaints);
-        return results;
     }
 
     @Operation(summary = "Search complaints accessible to the logged-in user based on a set of filters.",

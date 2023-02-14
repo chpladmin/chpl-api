@@ -94,30 +94,6 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 .collect(Collectors.<ChangeRequestSearchResult>toList());
     }
 
-    @Deprecated
-    public List<ChangeRequest> getAllWithDetails() throws EntityRetrievalException {
-        return getEntities().stream()
-                .map(entity -> ChangeRequestConverter.convert(entity))
-                .map(cr -> populateDependentObjects(cr))
-                .collect(Collectors.<ChangeRequest>toList());
-    }
-
-    @Deprecated
-    public List<ChangeRequest> getAllWithDetailsForAcbs(List<Long> acbIds) throws EntityRetrievalException {
-        return getEntitiesByAcbs(acbIds).stream()
-                .map(entity -> ChangeRequestConverter.convert(entity))
-                .map(cr -> populateDependentObjects(cr))
-                .collect(Collectors.<ChangeRequest>toList());
-    }
-
-    @Deprecated
-    public List<ChangeRequest> getAllWithDetailsForDevelopers(List<Long> developerIds) throws EntityRetrievalException {
-        return getEntitiesByDevelopers(developerIds).stream()
-                .map(entity -> ChangeRequestConverter.convert(entity))
-                .map(cr -> populateDependentObjects(cr))
-                .collect(Collectors.<ChangeRequest>toList());
-    }
-
     public List<Long> getUpdatableStatusIds() {
         List<Long> statuses = new ArrayList<Long>();
         statuses.add(pendingAcbAction);
@@ -175,38 +151,6 @@ public class ChangeRequestDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private List<ChangeRequestEntity> getEntitiesByAcbs(List<Long> acbIds)
-            throws EntityRetrievalException {
-
-        String hql = "SELECT DISTINCT cr "
-                + "FROM ChangeRequestEntity cr  "
-                + "JOIN FETCH cr.changeRequestType crt "
-                + "JOIN FETCH cr.developer dev "
-                + "LEFT JOIN FETCH dev.address "
-                + "LEFT JOIN FETCH dev.contact "
-                + "LEFT JOIN FETCH dev.statusEvents statusEvents "
-                + "LEFT JOIN FETCH statusEvents.developerStatus "
-                + "LEFT JOIN FETCH dev.attestations devAtt "
-                + "LEFT JOIN FETCH devAtt.attestationPeriod per "
-                + "LEFT JOIN FETCH cr.certificationBodies cb "
-                + "LEFT JOIN FETCH cb.address "
-                + "JOIN FETCH cr.statuses crStatus "
-                + "JOIN FETCH crStatus.changeRequestStatusType "
-                + "LEFT JOIN FETCH crStatus.certificationBody acb "
-                + "LEFT JOIN FETCH acb.address "
-                + "JOIN FETCH crStatus.userPermission "
-                + "INNER JOIN DeveloperCertificationBodyMapEntity devAcbMap ON devAcbMap.developer.id = dev.id "
-                + "WHERE devAcbMap.certificationBody.id IN (:acbIds) "
-                + "AND cr.deleted = false ";
-
-        List<ChangeRequestEntity> results = entityManager
-                .createQuery(hql, ChangeRequestEntity.class)
-                .setParameter("acbIds", acbIds)
-                .getResultList();
-
-        return results;
-    }
-
     private List<ChangeRequestEntity> getEntitiesByDevelopers(List<Long> developerIds)
             throws EntityRetrievalException {
         String hql = "SELECT DISTINCT cr "
@@ -257,35 +201,6 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 .createQuery(hql, ChangeRequestAttestationSubmissionEntity.class)
                 .setParameter("crTypeId", crTypeId)
                 .setParameter("periodId", periodId)
-                .getResultList();
-
-        return results;
-    }
-
-    @Deprecated
-    private List<ChangeRequestEntity> getEntities()
-            throws EntityRetrievalException {
-        String hql = "SELECT DISTINCT cr "
-                + "FROM ChangeRequestEntity cr  "
-                + "JOIN FETCH cr.changeRequestType crt "
-                + "JOIN FETCH cr.developer dev "
-                + "LEFT JOIN FETCH dev.address "
-                + "LEFT JOIN FETCH dev.contact "
-                + "LEFT JOIN FETCH dev.statusEvents statusEvents "
-                + "LEFT JOIN FETCH statusEvents.developerStatus "
-                + "LEFT JOIN FETCH dev.attestations devAtt "
-                + "LEFT JOIN FETCH devAtt.attestationPeriod per "
-                + "LEFT JOIN FETCH cr.certificationBodies cb "
-                + "LEFT JOIN FETCH cb.address "
-                + "JOIN FETCH cr.statuses crStatus "
-                + "JOIN FETCH crStatus.changeRequestStatusType "
-                + "LEFT JOIN FETCH crStatus.certificationBody acb "
-                + "LEFT JOIN FETCH acb.address "
-                + "JOIN FETCH crStatus.userPermission "
-                + "WHERE cr.deleted = false ";
-
-        List<ChangeRequestEntity> results = entityManager
-                .createQuery(hql, ChangeRequestEntity.class)
                 .getResultList();
 
         return results;

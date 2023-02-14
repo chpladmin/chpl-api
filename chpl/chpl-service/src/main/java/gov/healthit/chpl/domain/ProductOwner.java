@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -14,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
@@ -40,16 +38,6 @@ public class ProductOwner implements Serializable {
      */
     @XmlElement(required = true)
     private Developer developer;
-
-    /**
-     * Date product owner was transferred to the associated developer. Given in
-     * milliseconds since epoch.
-     */
-    @XmlTransient
-    @Deprecated
-    @DeprecatedResponseField(removalDate = "2022-05-01",
-        message = "This field is deprecated and will be removed from the response data in a future release. Please replace usage of the 'transferDate' field with 'transferDay'.")
-    private Long transferDate;
 
     @XmlElement(required = true, nillable = false)
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -83,16 +71,6 @@ public class ProductOwner implements Serializable {
 
     public void setTransferDay(LocalDate transferDay) {
         this.transferDay = transferDay;
-    }
-
-    @Deprecated
-    public Long getTransferDate() {
-        return transferDate;
-    }
-
-    @Deprecated
-    public void setTransferDate(Long transferDate) {
-        this.transferDate = transferDate;
     }
 
     @Override

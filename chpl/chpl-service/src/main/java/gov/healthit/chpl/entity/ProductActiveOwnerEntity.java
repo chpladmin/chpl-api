@@ -71,7 +71,6 @@ public class ProductActiveOwnerEntity implements Serializable {
                 .id(this.getId())
                 .developer(this.getDeveloper() != null ? this.getDeveloper().toDomain() : null)
                 .transferDay(this.getTransferDay())
-                .transferDate(DateUtil.toDate(this.getTransferDay()).getTime())
                 .build();
     }
 }
