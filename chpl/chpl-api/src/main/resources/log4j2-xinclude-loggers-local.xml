@@ -57,11 +57,11 @@
     <Logger name="brokenSurveillanceRulesEmailJobLogger"  level="INFO" additivity="false">
         <AppenderRef ref="brokenSurveillanceRulesEmailJob" />
     </Logger>
-    <Logger name="inheritanceErrorsReportCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="inheritanceErrorsReportCreatorJob" />
+    <Logger name="icsErrorsReportCreatorJobLogger" level="DEBUG" additivity="false">
+        <AppenderRef ref="icsErrorsReportCreatorJob" />
     </Logger>
-    <Logger name="inheritanceErrorsReportEmailJobLogger" additivity="false">
-        <AppenderRef ref="inheritanceErrorsReportEmailJob" />
+    <Logger name="icsErrorsReportEmailJobLogger" additivity="false">
+        <AppenderRef ref="icsErrorsReportEmailJob" />
     </Logger>
     <Logger name="cacheStatusAgeJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="cacheStatusAgeJob" />
