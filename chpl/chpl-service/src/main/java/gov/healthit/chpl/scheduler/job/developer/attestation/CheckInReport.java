@@ -29,6 +29,14 @@ public class CheckInReport {
     private String apiNoncompliantResponse;
     private String signature;
     private String signatureEmail;
+    private Long totalSurveillances;
+    private Long totalSurveillanceNonconformities;
+    private Long openSurveillanceNonconformities;
+    private Long totalDirectReviewNonconformities;
+    private Long openDirectReviewNonconformities;
+    private String assurancesValidation;
+    private String realWorldTestingValidation;
+    private String apiValidation;
 
     public List<String> toListOfStrings() {
         return List.of(developerName,
@@ -50,7 +58,12 @@ public class CheckInReport {
                 rwtResponse != null ? rwtResponse : "",
                 rwtNoncompliantResponse != null ? rwtNoncompliantResponse : "",
                 signature != null ? signature : "",
-                signatureEmail != null ? signatureEmail : "");
+                signatureEmail != null ? signatureEmail : "",
+                totalSurveillances != null ? totalSurveillances.toString() : "0",
+                totalSurveillanceNonconformities != null ? totalSurveillanceNonconformities.toString() : "0",
+                openSurveillanceNonconformities != null ? openSurveillanceNonconformities.toString() : "0",
+                totalDirectReviewNonconformities != null ? totalDirectReviewNonconformities.toString() : "0",
+                openDirectReviewNonconformities != null ? openDirectReviewNonconformities.toString() : "0");
     }
 
     public static List<String> getHeaders() {
@@ -73,6 +86,11 @@ public class CheckInReport {
                 "Real World Testing Response",
                 "Real World Testing Optional Response",
                 "Submitted by Name",
-                "Submitted by Email");
+                "Submitted by Email",
+                "Total Surveillance",
+                "Total Surveillance Non-conformities",
+                "Open Surveillance Non-conformities",
+                "Total Direct Review Non-conformities",
+                "Open Direct Review Non-conformities");
     }
 }
