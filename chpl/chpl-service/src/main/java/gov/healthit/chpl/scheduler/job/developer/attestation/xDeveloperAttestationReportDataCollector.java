@@ -45,7 +45,7 @@ import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingCriteriaService;
 
 @Component
-public class DeveloperAttestationReportDataCollector {
+public class xDeveloperAttestationReportDataCollector {
     private static final Integer MAX_PAGE_SIZE = 100;
 
     private static final Long INFORMATION_BLOCKING_ATTESTATION_ID = 1L;
@@ -76,7 +76,7 @@ public class DeveloperAttestationReportDataCollector {
     private List<CertificationCriterion> rwtCriteria;
     private Map<Long, List<ListingSearchResult>> developerListings = new HashMap<Long, List<ListingSearchResult>>();
 
-    public DeveloperAttestationReportDataCollector(DeveloperAttestationPeriodCalculator devAttestationPeriodCalculator,
+    public xDeveloperAttestationReportDataCollector(DeveloperAttestationPeriodCalculator devAttestationPeriodCalculator,
             UserDeveloperMapDAO userDeveloperMapDao, ListingSearchService listingSearchService,
             AttestationSubmissionService attestationSubmissionService,
             DirectReviewSearchService directReviewService,
@@ -116,7 +116,7 @@ public class DeveloperAttestationReportDataCollector {
             CertificationStatusType.SuspendedByOnc.getName())
             .collect(Collectors.toSet());
 
-    public List<DeveloperAttestationReport> collect(List<Long> selectedAcbIds, Logger logger) {
+    public List<xDeveloperAttestationReport> collect(List<Long> selectedAcbIds, Logger logger) {
         AttestationPeriod mostRecentPastPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
         logger.info("Most recent past attestation period: {} - {} ", mostRecentPastPeriod.getPeriodStart().toString(), mostRecentPastPeriod.getPeriodEnd().toString());
         logger.info("Selected AcbsId: {}", selectedAcbIds.stream()
@@ -125,10 +125,10 @@ public class DeveloperAttestationReportDataCollector {
 
         List<Developer> developers = devAttestationPeriodCalculator.getDevelopersWithActiveListingsDuringMostRecentPastAttestationPeriod(logger);
 
-        List<DeveloperAttestationReport> reportRows = developers.stream()
+        List<xDeveloperAttestationReport> reportRows = developers.stream()
                 .filter(dev -> isDeveloperManagedBySelectedAcbs(dev, selectedAcbIds))
                 .map(dev -> toDeveloperAttestationReport(dev, mostRecentPastPeriod, logger))
-                .sorted(Comparator.comparing(DeveloperAttestationReport::getDeveloperName))
+                .sorted(Comparator.comparing(xDeveloperAttestationReport::getDeveloperName))
                 .toList();
 
         logger.info("Total Report Rows found: {}", reportRows.size());
@@ -136,11 +136,11 @@ public class DeveloperAttestationReportDataCollector {
         return reportRows;
     }
 
-    private DeveloperAttestationReport toDeveloperAttestationReport(Developer dev,
+    private xDeveloperAttestationReport toDeveloperAttestationReport(Developer dev,
             AttestationPeriod mostRecentPastPeriod, Logger logger) {
         AttestationSubmission attestation = getDeveloperAttestation(dev.getId(), mostRecentPastPeriod.getId());
 
-        return DeveloperAttestationReport.builder()
+        return xDeveloperAttestationReport.builder()
             .developerName(dev.getName())
             .developerCode(dev.getDeveloperCode())
             .developerId(dev.getId())

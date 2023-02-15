@@ -26,16 +26,16 @@ import gov.healthit.chpl.manager.SchedulerManager;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "developerAttestationReportJobLogger")
-public class DeveloperAttestationReportJob implements Job {
+public class xDeveloperAttestationReportJob implements Job {
 
     @Autowired
     private JpaTransactionManager txManager;
 
     @Autowired
-    private DeveloperAttestationReportDataCollector developerAttestationReportDataCollection;
+    private xDeveloperAttestationReportDataCollector developerAttestationReportDataCollection;
 
     @Autowired
-    private DeveloperAttestationReportCsvWriter developerAttestationReportCsvWriter;
+    private xDeveloperAttestationReportCsvWriter developerAttestationReportCsvWriter;
 
     @Autowired
     private CertificationBodyDAO certificationBodyDAO;
@@ -73,7 +73,7 @@ public class DeveloperAttestationReportJob implements Job {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
-                    List<DeveloperAttestationReport> reportRows = developerAttestationReportDataCollection.collect(getAcbIds(context), LOGGER);
+                    List<xDeveloperAttestationReport> reportRows = developerAttestationReportDataCollection.collect(getAcbIds(context), LOGGER);
                     File csv = developerAttestationReportCsvWriter.generateFile(reportRows);
                     chplEmailFactory.emailBuilder()
                             .recipient(context.getMergedJobDataMap().getString("email"))

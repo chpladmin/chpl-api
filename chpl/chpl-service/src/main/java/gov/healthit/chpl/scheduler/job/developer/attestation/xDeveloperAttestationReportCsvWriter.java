@@ -18,15 +18,15 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "developerAttestationReportJobLogger")
 @Component
-public class DeveloperAttestationReportCsvWriter {
+public class xDeveloperAttestationReportCsvWriter {
     private Environment env;
 
     @Autowired
-    public DeveloperAttestationReportCsvWriter(Environment env) {
+    public xDeveloperAttestationReportCsvWriter(Environment env) {
         this.env = env;
     }
 
-    public File generateFile(List<DeveloperAttestationReport> rows) {
+    public File generateFile(List<xDeveloperAttestationReport> rows) {
         File outputFile = getOutputFile(env.getProperty("developer.attestation.report.filename") + LocalDate.now().toString());
         if (rows == null || rows.size() == 0) {
             return outputFile;
