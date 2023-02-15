@@ -69,7 +69,7 @@ public class RealWorldTestingReportService {
             RealWorldTestingEligiblityService rwtEligservice = rwtEligServiceFactory.getInstance();
 
             reports = getListingWith2015Edition(logger).stream()
-                  .filter(listing -> isInListOfAcbs(listing, acbIds))
+                  .filter(listing -> !isWithdrawn(listing) && isInListOfAcbs(listing, acbIds))
                   .map(listing -> getRealWorldTestingReport(listing, rwtEligservice, logger))
                   .filter(report -> report.getRwtEligibilityYear() != null
                           || report.getRwtPlansCheckDate() != null
@@ -173,9 +173,10 @@ public class RealWorldTestingReportService {
     }
 
     private RealWorldTestingReport addMessages(RealWorldTestingReport report) {
-        if (isWithdrawn(report.getCurrentStatus())) {
-            report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.listingWithdrawnMessage"));
-        } else if (isRwtPlansEmpty(report)) {
+        //if (isWithdrawn(report.getCurrentStatus())) {
+        //    report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.listingWithdrawnMessage"));
+        //} else 
+    	if (isRwtPlansEmpty(report)) {
             if (BooleanUtils.isTrue(report.getIcs())
                     && (arePlansLateWarning(report.getRwtEligibilityYear()) || arePlansLateError(report.getRwtEligibilityYear()))) {
                 report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.eligibleByIcs.missingPlansError",
@@ -189,11 +190,13 @@ public class RealWorldTestingReportService {
                         report.getRwtEligibilityYear().toString(),
                         getPlansLateDate(report.getRwtEligibilityYear()).toString()));
             }
+        } else {
+        	report.setRwtPlansMessage("");
         }
         if (isRwtResultsEmpty(report)) {
             if (BooleanUtils.isTrue(report.getIcs())
                     && (areResultsLateWarning(report.getRwtEligibilityYear()) || areResultsLateError(report.getRwtEligibilityYear()))) {
-                report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.eligibleByIcs.missingResultsError",
+                report.setRwtResultsMessage(errorMsg.getMessage("realWorldTesting.report.eligibleByIcs.missingResultsError",
                         report.getRwtEligibilityYear().toString()));
             } else if (areResultsLateWarning(report.getRwtEligibilityYear())) {
                 report.setRwtResultsMessage(errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingResultsWarning",
@@ -204,15 +207,24 @@ public class RealWorldTestingReportService {
                         report.getRwtEligibilityYear().toString(),
                         getResultsLateDate(report.getRwtEligibilityYear()).toString()));
             }
+        } else {
+        	report.setRwtResultsMessage("");
         }
         return report;
     }
 
-    private boolean isWithdrawn(String statusName) {
-        return withdrawnStatuses.stream()
-                .map(status -> status.getName())
-                .filter(sn -> sn.equalsIgnoreCase(statusName))
-                .findAny().isPresent();
+    private boolean isWithdrawn(CertifiedProductDetailsDTO listing) {
+    	try {
+			String statusName = certificationStatusEventsService.getCurrentCertificationStatusEvent(listing.getId()).getStatus().getName();
+			return withdrawnStatuses.stream()
+	                .map(status -> status.getName())
+	                .filter(sn -> sn.equalsIgnoreCase(statusName))
+	                .findAny().isPresent();
+		} catch (EntityRetrievalException e) {
+			// TODO Need to log message
+			return false;
+		}
+        
     }
 
     private boolean arePlansLateWarning(Integer rwtEligYear) {
