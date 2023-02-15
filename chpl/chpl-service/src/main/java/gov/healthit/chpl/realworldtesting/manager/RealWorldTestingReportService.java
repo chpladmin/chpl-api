@@ -69,7 +69,7 @@ public class RealWorldTestingReportService {
             RealWorldTestingEligiblityService rwtEligservice = rwtEligServiceFactory.getInstance();
 
             reports = getListingWith2015Edition(logger).stream()
-                  .filter(listing -> isInListOfAcbs(listing, acbIds))
+                  .filter(listing -> !isWithdrawn(listing, logger) && isInListOfAcbs(listing, acbIds))
                   .map(listing -> getRealWorldTestingReport(listing, rwtEligservice, logger))
                   .filter(report -> report.getRwtEligibilityYear() != null
                           || report.getRwtPlansCheckDate() != null
@@ -174,9 +174,7 @@ public class RealWorldTestingReportService {
 
     private RealWorldTestingReport addMessages(RealWorldTestingReport report) {
         String plansMessage = "";
-        if (isWithdrawn(report.getCurrentStatus())) {
-            plansMessage = errorMsg.getMessage("realWorldTesting.report.listingWithdrawnMessage");
-        } else if (isRwtPlansEmpty(report)) {
+        if (isRwtPlansEmpty(report)) {
             if (BooleanUtils.isTrue(report.getIcs())
                     && (arePlansLateWarning(report.getRwtEligibilityYear()) || arePlansLateError(report.getRwtEligibilityYear()))) {
                 plansMessage =errorMsg.getMessage("realWorldTesting.report.eligibleByIcs.missingPlansError",
@@ -214,11 +212,18 @@ public class RealWorldTestingReportService {
         return report;
     }
 
-    private boolean isWithdrawn(String statusName) {
-        return withdrawnStatuses.stream()
-                .map(status -> status.getName())
-                .filter(sn -> sn.equalsIgnoreCase(statusName))
-                .findAny().isPresent();
+    private boolean isWithdrawn(CertifiedProductDetailsDTO listing, Logger logger) {
+        try {
+        	CertificationStatusEvent currentStatus = certificationStatusEventsService.getCurrentCertificationStatusEvent(listing.getId());
+            return withdrawnStatuses.stream()
+                    .map(status -> status.getName())
+                    .filter(sn -> sn.equalsIgnoreCase(currentStatus.getStatus().getName()))
+                    .findAny().isPresent();
+        } catch (EntityRetrievalException e) {
+        	logger.error("Could not find current status for listing: {}", listing.getId(), e);
+            return false;
+        }
+        
     }
 
     private boolean arePlansLateWarning(Integer rwtEligYear) {
