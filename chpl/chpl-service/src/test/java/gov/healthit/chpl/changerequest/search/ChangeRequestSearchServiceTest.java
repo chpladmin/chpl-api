@@ -18,6 +18,7 @@ import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult.CurrentS
 import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.DateUtil;
 
 public class ChangeRequestSearchServiceTest {
 
@@ -372,11 +373,11 @@ public class ChangeRequestSearchServiceTest {
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
         assertEquals(5, searchResponse.getResults().size());
-        assertEquals(LocalDateTime.parse("2022-01-01T00:00"), searchResponse.getResults().get(0).getCurrentStatus().getStatusChangeDateTime());
-        assertEquals(LocalDateTime.parse("1980-01-01T00:00"), searchResponse.getResults().get(1).getCurrentStatus().getStatusChangeDateTime());
-        assertEquals(LocalDateTime.parse("1970-02-01T00:00"), searchResponse.getResults().get(2).getCurrentStatus().getStatusChangeDateTime());
-        assertEquals(LocalDateTime.parse("1970-01-01T02:00"), searchResponse.getResults().get(3).getCurrentStatus().getStatusChangeDateTime());
-        assertEquals(LocalDateTime.parse("1970-01-01T00:00"), searchResponse.getResults().get(4).getCurrentStatus().getStatusChangeDateTime());
+        assertEquals(localDateTime(LocalDateTime.parse("2022-01-01T00:00")), searchResponse.getResults().get(0).getCurrentStatus().getStatusChangeDateTime());
+        assertEquals(localDateTime(LocalDateTime.parse("1980-01-01T00:00")), searchResponse.getResults().get(1).getCurrentStatus().getStatusChangeDateTime());
+        assertEquals(localDateTime(LocalDateTime.parse("1970-02-01T00:00")), searchResponse.getResults().get(2).getCurrentStatus().getStatusChangeDateTime());
+        assertEquals(localDateTime(LocalDateTime.parse("1970-01-01T02:00")), searchResponse.getResults().get(3).getCurrentStatus().getStatusChangeDateTime());
+        assertEquals(localDateTime(LocalDateTime.parse("1970-01-01T00:00")), searchResponse.getResults().get(4).getCurrentStatus().getStatusChangeDateTime());
     }
 
     @Test
@@ -399,11 +400,11 @@ public class ChangeRequestSearchServiceTest {
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
         assertEquals(5, searchResponse.getResults().size());
-        assertEquals(LocalDateTime.parse("1970-01-01T00:00"), searchResponse.getResults().get(0).getCurrentStatus().getStatusChangeDateTime());
-        assertEquals(LocalDateTime.parse("1970-01-01T02:00"), searchResponse.getResults().get(1).getCurrentStatus().getStatusChangeDateTime());
-        assertEquals(LocalDateTime.parse("1970-02-01T00:00"), searchResponse.getResults().get(2).getCurrentStatus().getStatusChangeDateTime());
-        assertEquals(LocalDateTime.parse("1980-01-01T00:00"), searchResponse.getResults().get(3).getCurrentStatus().getStatusChangeDateTime());
-        assertEquals(LocalDateTime.parse("2022-01-01T00:00"), searchResponse.getResults().get(4).getCurrentStatus().getStatusChangeDateTime());
+        assertEquals(localDateTime(LocalDateTime.parse("1970-01-01T00:00")), searchResponse.getResults().get(0).getCurrentStatus().getStatusChangeDateTime());
+        assertEquals(localDateTime(LocalDateTime.parse("1970-01-01T02:00")), searchResponse.getResults().get(1).getCurrentStatus().getStatusChangeDateTime());
+        assertEquals(localDateTime(LocalDateTime.parse("1970-02-01T00:00")), searchResponse.getResults().get(2).getCurrentStatus().getStatusChangeDateTime());
+        assertEquals(localDateTime(LocalDateTime.parse("1980-01-01T00:00")), searchResponse.getResults().get(3).getCurrentStatus().getStatusChangeDateTime());
+        assertEquals(localDateTime(LocalDateTime.parse("2022-01-01T00:00")), searchResponse.getResults().get(4).getCurrentStatus().getStatusChangeDateTime());
     }
 
     @Test
@@ -603,8 +604,8 @@ public class ChangeRequestSearchServiceTest {
     @Test
     public void search_submittedDateTimeStartEqualsChangeRequestSubmittedDate_findsMatching() throws ValidationException {
         List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
-        allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
-        allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("1980-01-01T00:00"));
+        allChangeRequests.get(0).setSubmittedDateTime(localDateTime(LocalDateTime.parse("2020-06-25T00:00")));
+        allChangeRequests.get(1).setSubmittedDateTime(localDateTime(LocalDateTime.parse("1980-01-01T00:00")));
 
         Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
         ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
@@ -622,8 +623,8 @@ public class ChangeRequestSearchServiceTest {
     @Test
     public void search_submittedDateTimeStartBeforeChangeRequestSubmittedDate_findsMatching() throws ValidationException {
         List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
-        allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
-        allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("1980-01-01T00:00"));
+        allChangeRequests.get(0).setSubmittedDateTime(localDateTime(LocalDateTime.parse("2020-06-25T00:00")));
+        allChangeRequests.get(1).setSubmittedDateTime(localDateTime(LocalDateTime.parse("1980-01-01T00:00")));
 
         Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
         ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
@@ -641,8 +642,8 @@ public class ChangeRequestSearchServiceTest {
     @Test
     public void search_submittedDateTimeStartAfterChangeRequestSubmittedDate_findsNothing() throws ValidationException {
         List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
-        allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
-        allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("1980-01-01T00:00"));
+        allChangeRequests.get(0).setSubmittedDateTime(localDateTime(LocalDateTime.parse("2020-06-25T00:00")));
+        allChangeRequests.get(1).setSubmittedDateTime(localDateTime(LocalDateTime.parse("1980-01-01T00:00")));
 
         Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
         ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
@@ -660,8 +661,8 @@ public class ChangeRequestSearchServiceTest {
     @Test
     public void search_submittedDateTimeEndEqualsChangeRequestSubmittedDate_findsMatching() throws ValidationException {
         List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
-        allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
-        allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("2022-01-01T00:00"));
+        allChangeRequests.get(0).setSubmittedDateTime(localDateTime(LocalDateTime.parse("2020-06-25T00:00")));
+        allChangeRequests.get(1).setSubmittedDateTime(localDateTime(LocalDateTime.parse("2022-01-01T00:00")));
 
         Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
         ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
@@ -679,8 +680,8 @@ public class ChangeRequestSearchServiceTest {
     @Test
     public void search_submittedDateTimeEndAfterChangeRequestSubmittedDate_findsMatching() throws ValidationException {
         List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
-        allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
-        allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("2022-01-01T00:00"));
+        allChangeRequests.get(0).setSubmittedDateTime(localDateTime(LocalDateTime.parse("2020-06-25T00:00")));
+        allChangeRequests.get(1).setSubmittedDateTime(localDateTime(LocalDateTime.parse("2022-01-01T00:00")));
 
         Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
         ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
@@ -698,8 +699,8 @@ public class ChangeRequestSearchServiceTest {
     @Test
     public void search_submittedDateTimeEndBeforeChangeRequestSubmittedDate_findsNothing() throws ValidationException {
         List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
-        allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
-        allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("2020-01-01T00:00"));
+        allChangeRequests.get(0).setSubmittedDateTime(localDateTime(LocalDateTime.parse("2020-06-25T00:00")));
+        allChangeRequests.get(1).setSubmittedDateTime(localDateTime(LocalDateTime.parse("2020-01-01T00:00")));
 
         Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
         ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
@@ -717,8 +718,8 @@ public class ChangeRequestSearchServiceTest {
     @Test
     public void search_submittedDateTimeBetweenStartAndEnd_findsMatching() throws ValidationException {
         List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
-        allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
-        allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("2020-01-01T00:00"));
+        allChangeRequests.get(0).setSubmittedDateTime(localDateTime(LocalDateTime.parse("2020-06-25T00:00")));
+        allChangeRequests.get(1).setSubmittedDateTime(localDateTime(LocalDateTime.parse("2020-01-01T00:00")));
 
         Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
         ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
@@ -737,8 +738,8 @@ public class ChangeRequestSearchServiceTest {
     @Test
     public void search_submittedDateTimeEqualsStartAndBeforeEnd_findsMatching() throws ValidationException {
         List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
-        allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
-        allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("2020-01-01T00:00"));
+        allChangeRequests.get(0).setSubmittedDateTime(localDateTime(LocalDateTime.parse("2020-06-25T00:00")));
+        allChangeRequests.get(1).setSubmittedDateTime(localDateTime(LocalDateTime.parse("2020-01-01T00:00")));
 
         Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
         ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
@@ -757,8 +758,8 @@ public class ChangeRequestSearchServiceTest {
     @Test
     public void search_submittedDateTimeEqualsEndAndAfterStart_findsMatching() throws ValidationException {
         List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
-        allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
-        allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("2020-01-01T00:00"));
+        allChangeRequests.get(0).setSubmittedDateTime(localDateTime(LocalDateTime.parse("2020-06-25T00:00")));
+        allChangeRequests.get(1).setSubmittedDateTime(localDateTime(LocalDateTime.parse("2020-01-01T00:00")));
 
         Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
         ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
@@ -777,8 +778,8 @@ public class ChangeRequestSearchServiceTest {
     @Test
     public void search_submittedDateTimeEqualsEndAndStart_findsMatching() throws ValidationException {
         List<ChangeRequestSearchResult> allChangeRequests = createChangeRequestSearchResultCollection(50);
-        allChangeRequests.get(0).setSubmittedDateTime(LocalDateTime.parse("2020-06-25T00:00"));
-        allChangeRequests.get(1).setSubmittedDateTime(LocalDateTime.parse("2020-01-01T00:00"));
+        allChangeRequests.get(0).setSubmittedDateTime(localDateTime(LocalDateTime.parse("2020-06-25T00:00")));
+        allChangeRequests.get(1).setSubmittedDateTime(localDateTime(LocalDateTime.parse("2020-01-01T00:00")));
 
         Mockito.when(changeRequestDao.getAll()).thenReturn(allChangeRequests);
         ChangeRequestSearchRequest searchRequest = ChangeRequestSearchRequest.builder()
@@ -1030,7 +1031,11 @@ public class ChangeRequestSearchServiceTest {
         return CurrentStatusSearchResult.builder()
                 .id(id)
                 .name(name)
-                .statusChangeDateTime(localDateTime)
+                .statusChangeDateTime(localDateTime(localDateTime))
                 .build();
+    }
+
+    private LocalDateTime localDateTime(LocalDateTime localDateTime) {
+        return DateUtil.fromEasternToSystem(localDateTime);
     }
 }

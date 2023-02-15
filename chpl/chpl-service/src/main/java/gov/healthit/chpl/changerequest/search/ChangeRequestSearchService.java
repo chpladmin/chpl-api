@@ -21,6 +21,7 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -206,6 +207,7 @@ public class ChangeRequestSearchService {
         LocalDateTime date = null;
         try {
             date = LocalDateTime.parse(timestampString, dateFormatter);
+            date = DateUtil.fromEasternToSystem(date);
         } catch (DateTimeParseException ex) {
             LOGGER.error("Cannot parse " + timestampString + " as LocalDateTime of the format " + ChangeRequestSearchRequest.TIMESTAMP_SEARCH_FORMAT);
         }
