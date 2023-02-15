@@ -3,7 +3,6 @@ package gov.healthit.chpl.manager.rules.product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -28,7 +27,7 @@ public class ProductValidationFactory {
         case NAME:
             return new ProductNameValidation();
         case OWNER:
-            return new ProductOwnerValidation(resourcePermissions);
+            return new ProductOwnerValidation(productDao, resourcePermissions);
         case OWNER_HISTORY:
             return new ProductOwnerHistoryValidation(productDao);
         default:

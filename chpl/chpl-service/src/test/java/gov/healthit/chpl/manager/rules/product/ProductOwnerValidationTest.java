@@ -2,7 +2,6 @@ package gov.healthit.chpl.manager.rules.product;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.stream.Stream;
@@ -14,6 +13,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
@@ -28,11 +28,17 @@ public class ProductOwnerValidationTest {
     private static final String PRODUCT_OWNER_DOES_NOT_EXIST = "An owner with ID %s was specified for the product but that developer does not exist.";
     private static final String PRODUCT_OWNER_STATUS_DOES_NOT_EXIST = "The product '%s' cannot be created since the status of developer '%s' cannot be determined.";
     private static final String PRODUCT_OWNER_STATUS_NOT_ACTIVE = "The product owner must be Active. Currently, the product owner has a status of '%s'.";
+    private static final String PRODUCT_OWNER_HISTORY_OWNER_NO_PRODUCTS = "%s has no other products so this product cannot be transferred. A developer may not have 0 products.";
 
+    private ProductDAO productDao;
     private ErrorMessageUtil msgUtil;
 
     @Before
-    public void setup() {
+    public void setup() throws EntityRetrievalException {
+        productDao = Mockito.mock(ProductDAO.class);
+        Mockito.when(productDao.getById(ArgumentMatchers.anyLong()))
+            .thenReturn(Product.builder().build());
+
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
 
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("product.ownerRequired")))
@@ -46,6 +52,10 @@ public class ProductOwnerValidationTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("product.ownerMustBeActive"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(PRODUCT_OWNER_STATUS_NOT_ACTIVE, i.getArgument(1), ""));
+        Mockito.when(msgUtil.getMessage(
+                ArgumentMatchers.eq("product.ownerHistory.cannotTransferDevelopersOnlyProduct"),
+                ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(PRODUCT_OWNER_HISTORY_OWNER_NO_PRODUCTS, i.getArgument(1), ""));
     }
 
     @Test
@@ -60,7 +70,7 @@ public class ProductOwnerValidationTest {
 
                 .build();
 
-        ProductOwnerValidation validation = new ProductOwnerValidation(Mockito.mock(ResourcePermissions.class));
+        ProductOwnerValidation validation = new ProductOwnerValidation(productDao, Mockito.mock(ResourcePermissions.class));
         boolean isValid = validation.isValid(context);
         assertFalse(isValid);
         assertTrue(validation.getMessages().contains(PRODUCT_OWNER_MISSING));
@@ -80,7 +90,7 @@ public class ProductOwnerValidationTest {
 
                 .build();
 
-        ProductOwnerValidation validation = new ProductOwnerValidation(Mockito.mock(ResourcePermissions.class));
+        ProductOwnerValidation validation = new ProductOwnerValidation(productDao, Mockito.mock(ResourcePermissions.class));
         boolean isValid = validation.isValid(context);
         assertFalse(isValid);
         assertTrue(validation.getMessages().contains(PRODUCT_OWNER_MISSING));
@@ -103,7 +113,7 @@ public class ProductOwnerValidationTest {
 
                 .build();
 
-        ProductOwnerValidation validation = new ProductOwnerValidation(Mockito.mock(ResourcePermissions.class));
+        ProductOwnerValidation validation = new ProductOwnerValidation(productDao, Mockito.mock(ResourcePermissions.class));
         boolean isValid = validation.isValid(context);
         assertFalse(isValid);
         assertTrue(validation.getMessages().contains(String.format(PRODUCT_OWNER_DOES_NOT_EXIST, "1")));
@@ -130,7 +140,7 @@ public class ProductOwnerValidationTest {
 
                 .build();
 
-        ProductOwnerValidation validation = new ProductOwnerValidation(Mockito.mock(ResourcePermissions.class));
+        ProductOwnerValidation validation = new ProductOwnerValidation(productDao, Mockito.mock(ResourcePermissions.class));
         boolean isValid = validation.isValid(context);
         assertFalse(isValid);
         assertTrue(validation.getMessages().contains(String.format(PRODUCT_OWNER_STATUS_DOES_NOT_EXIST, "name", "developer 1")));
@@ -157,10 +167,117 @@ public class ProductOwnerValidationTest {
 
                 .build();
 
-        ProductOwnerValidation validation = new ProductOwnerValidation(Mockito.mock(ResourcePermissions.class));
+        ProductOwnerValidation validation = new ProductOwnerValidation(productDao, Mockito.mock(ResourcePermissions.class));
         boolean isValid = validation.isValid(context);
         assertFalse(isValid);
         assertTrue(validation.getMessages().contains(String.format(PRODUCT_OWNER_STATUS_DOES_NOT_EXIST, "name", "developer 1")));
+    }
+
+    @Test
+    public void review_productOwnerChangesAndNoOtherProducts_hasError() throws EntityRetrievalException {
+        DeveloperDAO devDao = Mockito.mock(DeveloperDAO.class);
+        Mockito.when(devDao.getById(ArgumentMatchers.eq(1L))).thenReturn(Developer.builder()
+                .id(1L)
+                .name("developer 1")
+                .statusEvents(Stream.of(
+                        getDeveloperStatusEvent(1L, "Active", LocalDate.parse("2022-01-01")))
+                        .toList())
+                .build());
+
+        Mockito.when(productDao.getById(ArgumentMatchers.eq(1L)))
+            .thenReturn(Product.builder()
+                    .id(1L)
+                    .name("name")
+                    .owner(Developer.builder()
+                            .id(2L)
+                            .name("old dev")
+                            .build())
+                    .build());
+
+        Mockito.when(productDao.getByDeveloper(ArgumentMatchers.eq(2L)))
+            .thenReturn(Stream.of(Product.builder()
+                    .id(1L)
+                    .name("name")
+                    .build()).toList());
+
+        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+
+        ProductValidationContext context = ProductValidationContext.builder()
+                .developerDao(devDao)
+                .errorMessageUtil(msgUtil)
+                .product(Product.builder()
+                        .id(1L)
+                        .name("name")
+                        .owner(Developer.builder()
+                                .id(1L)
+                                .name("developer 1")
+                                .build())
+                        .build())
+
+                .build();
+
+        ProductOwnerValidation validation = new ProductOwnerValidation(productDao, resourcePermissions);
+        boolean isValid = validation.isValid(context);
+        assertFalse(isValid);
+        assertTrue(validation.getMessages().contains(String.format(PRODUCT_OWNER_HISTORY_OWNER_NO_PRODUCTS, "old dev")));
+    }
+
+    @Test
+    public void review_productOwnerChangesAndHasOtherProducts_noError() throws EntityRetrievalException {
+        DeveloperDAO devDao = Mockito.mock(DeveloperDAO.class);
+        Mockito.when(devDao.getById(ArgumentMatchers.eq(1L))).thenReturn(Developer.builder()
+                .id(1L)
+                .name("developer 1")
+                .statusEvents(Stream.of(
+                        getDeveloperStatusEvent(1L, "Active", LocalDate.parse("2022-01-01")))
+                        .toList())
+                .build());
+
+        Mockito.when(productDao.getById(ArgumentMatchers.eq(1L)))
+            .thenReturn(Product.builder()
+                    .id(1L)
+                    .name("name")
+                    .owner(Developer.builder()
+                            .id(2L)
+                            .name("old dev")
+                            .build())
+                    .build());
+
+        Mockito.when(productDao.getByDeveloper(ArgumentMatchers.eq(2L)))
+            .thenReturn(Stream.of(Product.builder()
+                    .id(1L)
+                    .name("name")
+                    .build(),
+                    Product.builder()
+                    .id(3L)
+                    .name("other product")
+                    .build()).toList());
+
+        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+
+        ProductValidationContext context = ProductValidationContext.builder()
+                .developerDao(devDao)
+                .errorMessageUtil(msgUtil)
+                .product(Product.builder()
+                        .id(1L)
+                        .name("name")
+                        .owner(Developer.builder()
+                                .id(1L)
+                                .name("developer 1")
+                                .build())
+                        .build())
+
+                .build();
+
+        ProductOwnerValidation validation = new ProductOwnerValidation(productDao, resourcePermissions);
+        boolean isValid = validation.isValid(context);
+        assertTrue(isValid);
     }
 
     @Test
@@ -192,7 +309,7 @@ public class ProductOwnerValidationTest {
 
                 .build();
 
-        ProductOwnerValidation validation = new ProductOwnerValidation(resourcePermissions);
+        ProductOwnerValidation validation = new ProductOwnerValidation(productDao, resourcePermissions);
         boolean isValid = validation.isValid(context);
         assertFalse(isValid);
         assertTrue(validation.getMessages().contains(String.format(PRODUCT_OWNER_STATUS_NOT_ACTIVE, "Suspended by ONC")));
@@ -227,7 +344,7 @@ public class ProductOwnerValidationTest {
 
                 .build();
 
-        ProductOwnerValidation validation = new ProductOwnerValidation(resourcePermissions);
+        ProductOwnerValidation validation = new ProductOwnerValidation(productDao, resourcePermissions);
         boolean isValid = validation.isValid(context);
         assertTrue(isValid);
         assertTrue(CollectionUtils.isEmpty(validation.getMessages()));
@@ -262,7 +379,7 @@ public class ProductOwnerValidationTest {
 
                 .build();
 
-        ProductOwnerValidation validation = new ProductOwnerValidation(resourcePermissions);
+        ProductOwnerValidation validation = new ProductOwnerValidation(productDao, resourcePermissions);
         boolean isValid = validation.isValid(context);
         assertTrue(isValid);
         assertTrue(CollectionUtils.isEmpty(validation.getMessages()));
@@ -298,7 +415,7 @@ public class ProductOwnerValidationTest {
 
                 .build();
 
-        ProductOwnerValidation validation = new ProductOwnerValidation(resourcePermissions);
+        ProductOwnerValidation validation = new ProductOwnerValidation(productDao, resourcePermissions);
         boolean isValid = validation.isValid(context);
         assertTrue(isValid);
         assertTrue(CollectionUtils.isEmpty(validation.getMessages()));
@@ -332,7 +449,7 @@ public class ProductOwnerValidationTest {
 
                 .build();
 
-        ProductOwnerValidation validation = new ProductOwnerValidation(resourcePermissions);
+        ProductOwnerValidation validation = new ProductOwnerValidation(productDao, resourcePermissions);
         boolean isValid = validation.isValid(context);
         assertTrue(isValid);
         assertTrue(CollectionUtils.isEmpty(validation.getMessages()));

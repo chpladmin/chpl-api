@@ -70,12 +70,15 @@ public class ProductOwnerHistoryValidation extends ValidationRule<ProductValidat
 
     private boolean mostRecentPastOwnerHasNoOtherProducts(List<ProductOwner> ownerHistory, Product product) {
         ProductOwner mostRecentPastOwner = getMostRecentPastOwner(ownerHistory);
+        return developerHasNoOtherProducts(mostRecentPastOwner.getDeveloper().getId(), product.getId());
+    }
 
-        List<Product> mostRecentPastOwnerProducts = productDao.getByDeveloper(mostRecentPastOwner.getDeveloper().getId());
-        if (CollectionUtils.isEmpty(mostRecentPastOwnerProducts)) {
+    private boolean developerHasNoOtherProducts(Long developerId, Long productId) {
+        List<Product> developerProducts = productDao.getByDeveloper(developerId);
+        if (CollectionUtils.isEmpty(developerProducts)) {
             return true;
-        } else if (mostRecentPastOwnerProducts.size() == 1) {
-            return mostRecentPastOwnerProducts.get(0).getId().equals(product.getId());
+        } else if (developerProducts.size() == 1) {
+            return developerProducts.get(0).getId().equals(productId);
         }
         return false;
     }

@@ -3,6 +3,7 @@ package gov.healthit.chpl.web.controller;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -150,16 +151,16 @@ public class ProductController {
             result = mergeProducts(productInfo);
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         } else if (productInfo.getProductIds().size() == 1) {
-            if (productInfo.getNewDeveloperId() != null) {
+            if (didOwnerChange(productInfo)) {
                 List<DuplicateChplProdNumber> duplicateChplProdNbrs = getDuplicateChplProdNumbersCausedByDeveloperChange(
-                        productInfo.getProductIds().get(0), productInfo.getNewDeveloperId());
+                        productInfo.getProductIds().get(0), productInfo.getProduct().getOwner().getId());
 
                 if (duplicateChplProdNbrs.size() != 0) {
                     throw new ValidationException(
                             getDuplicateChplProductNumberErrorMessages(duplicateChplProdNbrs), null);
                 }
             }
-            if (didOwnerHistoryChange(productInfo)) {
+            if (didOwnerChange(productInfo) || didOwnerHistoryChange(productInfo)) {
                 result = productManager.updateProductOwnership(productInfo.getProduct());
             } else {
                 result = productManager.update(productInfo.getProduct());
@@ -175,6 +176,18 @@ public class ProductController {
         // this point
         Product updatedProduct = productManager.getById(result.getId());
         return new ResponseEntity<Product>(updatedProduct, responseHeaders, HttpStatus.OK);
+    }
+
+    private boolean didOwnerChange(UpdateProductsRequest request) {
+        try {
+            Product origProduct = productManager.getById(request.getProduct().getId());
+            if (origProduct != null) {
+                return !Objects.equals(origProduct.getOwner().getId(), request.getProduct().getOwner().getId());
+            }
+        } catch (EntityRetrievalException e) {
+            return false;
+        }
+        return false;
     }
 
     private Boolean didOwnerHistoryChange(UpdateProductsRequest request) {
