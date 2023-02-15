@@ -9,14 +9,14 @@ import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2
-public class DeveloperAttestationCheckInReportSummaryDataCollector {
+public class CheckInReportSummaryDataCollector {
     private static final String PENDING_DEVELOPER_ACTION = "Pending Developer Action";
     private static final String PENDING_ACB_ACTION = "Pending ONC-ACB Action";
     private static final String REJECTED = "Rejected";
     private static final String CANCELLED = "Cancelled by Requester";
 
-    public DeveloperAttestationCheckInReportSummary collect(List<DeveloperAttestationCheckInReport> developerAttestationCheckInReports) {
-        return DeveloperAttestationCheckInReportSummary.builder()
+    public CheckInReportSummary collect(List<CheckInReport> developerAttestationCheckInReports) {
+        return CheckInReportSummary.builder()
                 .developerCount(calculateDeveloperCount(developerAttestationCheckInReports))
                 .attestationsApprovedCount(calculateAttestationApprovedCount(developerAttestationCheckInReports))
                 .pendingAcbActionCount(calculatePendingAcbActionCount(developerAttestationCheckInReports))
@@ -25,29 +25,29 @@ public class DeveloperAttestationCheckInReportSummaryDataCollector {
                 .build();
     }
 
-    private Long calculateDeveloperCount(List<DeveloperAttestationCheckInReport> developerAttestationCheckInReports) {
+    private Long calculateDeveloperCount(List<CheckInReport> developerAttestationCheckInReports) {
         return Long.valueOf(developerAttestationCheckInReports.size());
     }
 
-    private Long calculateAttestationApprovedCount(List<DeveloperAttestationCheckInReport> developerAttestationCheckInReports) {
+    private Long calculateAttestationApprovedCount(List<CheckInReport> developerAttestationCheckInReports) {
         return developerAttestationCheckInReports.stream()
                 .filter(row -> row.getPublished())
                 .count();
     }
 
-    private Long calculatePendingAcbActionCount(List<DeveloperAttestationCheckInReport> developerAttestationCheckInReports) {
+    private Long calculatePendingAcbActionCount(List<CheckInReport> developerAttestationCheckInReports) {
         return developerAttestationCheckInReports.stream()
                 .filter(row -> NullSafeEvaluator.eval(() -> row.getCurrentStatusName(), "").equals(PENDING_ACB_ACTION))
                 .count();
     }
 
-    private Long calculatePendingDeveloperActionCount(List<DeveloperAttestationCheckInReport> developerAttestationCheckInReports) {
+    private Long calculatePendingDeveloperActionCount(List<CheckInReport> developerAttestationCheckInReports) {
         return developerAttestationCheckInReports.stream()
                 .filter(row -> NullSafeEvaluator.eval(() -> row.getCurrentStatusName(), "").equals(PENDING_DEVELOPER_ACTION))
                 .count();
     }
 
-    private Long calculateNoSubmissionCount(List<DeveloperAttestationCheckInReport> developerAttestationCheckInReports) {
+    private Long calculateNoSubmissionCount(List<CheckInReport> developerAttestationCheckInReports) {
         return developerAttestationCheckInReports.stream()
                 .filter(row -> NullSafeEvaluator.eval(() -> row.getCurrentStatusName(), "").equals(REJECTED)
                         || NullSafeEvaluator.eval(() -> row.getCurrentStatusName(), "").equals(CANCELLED)

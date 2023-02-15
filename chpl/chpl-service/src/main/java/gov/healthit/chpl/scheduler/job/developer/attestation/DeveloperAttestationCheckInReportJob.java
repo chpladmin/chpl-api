@@ -27,13 +27,13 @@ public class DeveloperAttestationCheckInReportJob implements Job {
     private JpaTransactionManager txManager;
 
     @Autowired
-    private DeveloperAttestationCheckInReportDataCollector developerAttestationCheckInReportDataCollection;
+    private CheckInReportDataCollector developerAttestationCheckInReportDataCollection;
 
     @Autowired
-    private DeveloperAttestationCheckInReportSummaryDataCollector developerAttestationCheckInReportSummaryDataCollection;
+    private CheckInReportSummaryDataCollector developerAttestationCheckInReportSummaryDataCollection;
 
     @Autowired
-    private DeveloperAttestationCheckInReportCsvWriter developerAttestationCheckInReportCsvWriter;
+    private CheckInReportCsvWriter developerAttestationCheckInReportCsvWriter;
 
     @Autowired
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
@@ -77,8 +77,8 @@ public class DeveloperAttestationCheckInReportJob implements Job {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
-                    List<DeveloperAttestationCheckInReport> reportRows = developerAttestationCheckInReportDataCollection.collect();
-                    DeveloperAttestationCheckInReportSummary reportSummary = developerAttestationCheckInReportSummaryDataCollection.collect(reportRows);
+                    List<CheckInReport> reportRows = developerAttestationCheckInReportDataCollection.collect();
+                    CheckInReportSummary reportSummary = developerAttestationCheckInReportSummaryDataCollection.collect(reportRows);
                     File csv = developerAttestationCheckInReportCsvWriter.generateFile(reportRows);
                     chplEmailFactory.emailBuilder()
                             .recipient(context.getMergedJobDataMap().getString("email"))

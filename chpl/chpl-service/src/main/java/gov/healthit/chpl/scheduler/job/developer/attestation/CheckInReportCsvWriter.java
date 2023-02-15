@@ -18,15 +18,15 @@ import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2
-public class DeveloperAttestationCheckInReportCsvWriter {
+public class CheckInReportCsvWriter {
     private String reportFileName;
 
     @Autowired
-    public DeveloperAttestationCheckInReportCsvWriter(@Value("${developer.attestation.checkin.report.filename}") String reportFileName) {
+    public CheckInReportCsvWriter(@Value("${developer.attestation.checkin.report.filename}") String reportFileName) {
         this.reportFileName = reportFileName;
     }
 
-    public File generateFile(List<DeveloperAttestationCheckInReport> rows) {
+    public File generateFile(List<CheckInReport> rows) {
         File outputFile = getOutputFile();
         if (rows == null || rows.size() == 0) {
             return outputFile;
@@ -36,7 +36,7 @@ public class DeveloperAttestationCheckInReportCsvWriter {
                 Charset.forName("UTF-8").newEncoder());
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
             writer.write('\ufeff');
-            csvPrinter.printRecord(DeveloperAttestationCheckInReport.getHeaders());
+            csvPrinter.printRecord(CheckInReport.getHeaders());
             rows.stream()
                     .forEach(row -> {
                         try {

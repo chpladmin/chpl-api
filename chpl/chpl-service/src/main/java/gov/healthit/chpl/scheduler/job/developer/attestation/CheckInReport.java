@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class DeveloperAttestationCheckInReport {
+public class CheckInReport {
     private String developerName;
     private String developerCode;
     private Long developerId;
