@@ -302,7 +302,7 @@ public class CheckInReportDataCollector {
                 searchResponse = listingSearchService.findListings(searchRequest);
                 searchResults.addAll(searchResponse.getResults());
             }
-            logger.info("Found {} total listings for developer {}.", searchResults.size(), searchRequest.getDeveloper());
+            logger.info("Found {} total listings for developer {}.", searchResults.size(), searchRequest.getDeveloperId());
         } catch (ValidationException ex) {
             logger.error("Could not retrieve listings from search request.", ex);
         }
