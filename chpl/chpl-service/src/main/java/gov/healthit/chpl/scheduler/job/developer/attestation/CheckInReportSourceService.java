@@ -25,8 +25,11 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.util.DateUtil;
+import gov.healthit.chpl.util.NullSafeEvaluator;
+import lombok.extern.log4j.Log4j2;
 
 @Component
+@Log4j2
 public class CheckInReportSourceService {
 	
 	private AttestationSubmissionService attestationManager;
@@ -57,7 +60,9 @@ public class CheckInReportSourceService {
 					.changeRequest(fromChangeRequest)
 					.source(CheckInReportSource.CHANGE_REQUEST)
 					.build();
-		} else if (fromDeveloper.getDatePublished().atTime(LocalTime.MIDNIGHT).isAfter(fromChangeRequest.getSubmittedDateTime())) {
+		} else if (fromDeveloper.getDatePublished().atTime(LocalTime.MAX).isAfter(fromChangeRequest.getSubmittedDateTime())) {
+			LOGGER.info("Date of most recent change request {}", fromChangeRequest.getSubmittedDateTime());
+			LOGGER.info("Date of most recent published attestation {}", fromDeveloper.getDatePublished().atTime(LocalTime.MAX));
 			return CheckInAttestation.builder()
 					.attestationSubmission(fromDeveloper)
 					.source(CheckInReportSource.DEVELOPER_ATTESTATION)
@@ -86,10 +91,8 @@ public class CheckInReportSourceService {
 		
 		try {
 			return changeRequestSearchManager.searchChangeRequests(request).getResults().stream()
-					.sorted((result1, result2) -> result1.getSubmittedDateTime().compareTo(result2.getSubmittedDateTime()) * -1)
 					.map(result -> {
 						try {
-							//return changeRequestAttestationService.getByChangeRequestId(result.getId());
 							return changeRequestManager.getChangeRequest(result.getId());
 						} catch (Exception e) {
 							//TODO:  NEED TO MAKE SURE WE LOG THIS
@@ -97,6 +100,7 @@ public class CheckInReportSourceService {
 						}
 					})
 					.filter(cr -> cr != null && ((ChangeRequestAttestationSubmission)cr.getDetails()).getAttestationPeriod().getId().equals(period.getId()))
+					.sorted((result1, result2) -> result1.getSubmittedDateTime().compareTo(result2.getSubmittedDateTime()) * -1)
 					.findFirst()
 					.orElse(null);
 		} catch (Exception e) {
