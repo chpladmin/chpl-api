@@ -377,6 +377,7 @@ public class ProductManager extends SecuredManager {
         rules.add(productValidationFactory.getRule(ProductValidationFactory.OWNER_HISTORY));
         Set<String> validationErrors = runValidations(rules, product);
         if (!CollectionUtils.isEmpty(validationErrors)) {
+            LOGGER.error("New product validation errors: \n" + validationErrors);
             throw new ValidationException(validationErrors);
         }
     }
@@ -387,6 +388,7 @@ public class ProductManager extends SecuredManager {
         rules.add(productValidationFactory.getRule(ProductValidationFactory.OWNER));
         Set<String> validationErrors = runValidations(rules, product);
         if (!CollectionUtils.isEmpty(validationErrors)) {
+            LOGGER.error("Existing product validation errors: \n" + validationErrors);
             throw new ValidationException(validationErrors);
         }
     }

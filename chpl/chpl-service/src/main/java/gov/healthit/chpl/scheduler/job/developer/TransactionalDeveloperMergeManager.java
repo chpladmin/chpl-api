@@ -62,7 +62,7 @@ public class TransactionalDeveloperMergeManager {
     @Autowired
     private DirectReviewUpdateEmailService directReviewEmailService;
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#developerToCreate.id")
     public Developer merge(List<Developer> beforeDevelopers, Developer developerToCreate)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, Exception {
