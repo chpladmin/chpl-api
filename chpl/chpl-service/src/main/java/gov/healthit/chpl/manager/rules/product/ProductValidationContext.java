@@ -15,12 +15,15 @@ import lombok.NoArgsConstructor;
 public class ProductValidationContext {
     private DeveloperDAO developerDao;
     private Product product;
+    private boolean isMergingOwner;
     private ErrorMessageUtil errorMessageUtil;
 
     public ProductValidationContext(Product product, DeveloperDAO developerDao,
+            boolean isMergingOwner,
             ErrorMessageUtil errorMessageUtil) {
         this.product = product;
         this.developerDao = developerDao;
+        this.isMergingOwner = isMergingOwner;
         this.errorMessageUtil = errorMessageUtil;
     }
 }

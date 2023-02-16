@@ -57,14 +57,16 @@ public class ProductOwnerValidation extends ValidationRule<ProductValidationCont
             return false;
         }
 
-        //the owner could be changing without an entry in the history
-        Product existingProduct = getExistingProduct(context.getProduct().getId());
-        if (ownerIsChanging(existingProduct, context.getProduct())
-                && developerHasNoOtherProducts(existingProduct.getOwner().getId(), context.getProduct().getId())) {
-            getMessages().add(context.getErrorMessageUtil().getMessage(
-                    "product.ownerHistory.cannotTransferDevelopersOnlyProduct",
-                    existingProduct.getOwner().getName()));
-            return false;
+        if (!context.isMergingOwner()) {
+            //the owner could be changing without an entry in the history
+            Product existingProduct = getExistingProduct(context.getProduct().getId());
+            if (ownerIsChanging(existingProduct, context.getProduct())
+                    && developerHasNoOtherProducts(existingProduct.getOwner().getId(), context.getProduct().getId())) {
+                getMessages().add(context.getErrorMessageUtil().getMessage(
+                        "product.ownerHistory.cannotTransferDevelopersOnlyProduct",
+                        existingProduct.getOwner().getName()));
+                return false;
+            }
         }
         return true;
     }

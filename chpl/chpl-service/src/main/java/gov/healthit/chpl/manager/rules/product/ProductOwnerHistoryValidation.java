@@ -36,12 +36,14 @@ public class ProductOwnerHistoryValidation extends ValidationRule<ProductValidat
                 return false;
             }
 
-            if (mostRecentPastOwnerHasNoOtherProducts(context.getProduct().getOwnerHistory(), context.getProduct())) {
-                ProductOwner mostRecentPastOwner = getMostRecentPastOwner(context.getProduct().getOwnerHistory());
-                getMessages().add(context.getErrorMessageUtil().getMessage(
-                        "product.ownerHistory.cannotTransferDevelopersOnlyProduct",
-                        mostRecentPastOwner.getDeveloper().getName()));
-                return false;
+            if (!context.isMergingOwner()) {
+                if (mostRecentPastOwnerHasNoOtherProducts(context.getProduct().getOwnerHistory(), context.getProduct())) {
+                    ProductOwner mostRecentPastOwner = getMostRecentPastOwner(context.getProduct().getOwnerHistory());
+                    getMessages().add(context.getErrorMessageUtil().getMessage(
+                            "product.ownerHistory.cannotTransferDevelopersOnlyProduct",
+                            mostRecentPastOwner.getDeveloper().getName()));
+                    return false;
+                }
             }
         }
         return true;

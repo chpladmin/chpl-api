@@ -100,7 +100,7 @@ public class TransactionalDeveloperMergeManager {
             product.setOwner(Developer.builder()
                     .id(createdDeveloperId)
                     .build());
-            productManager.update(product);
+            productManager.updateProductForOwnerMerge(product);
 
             // get the listing details again - this time they will have the new developer code
             List<Future<CertifiedProductSearchDetails>> afterListingFutures
