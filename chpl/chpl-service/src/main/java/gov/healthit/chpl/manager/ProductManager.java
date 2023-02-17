@@ -409,7 +409,7 @@ public class ProductManager extends SecuredManager {
             Product product, boolean isMergingOwner) {
         Set<String> errorMessages = new HashSet<String>();
         ProductValidationContext context
-            = new ProductValidationContext(product, devDao, isMergingOwner, msgUtil);
+            = new ProductValidationContext(product, isMergingOwner, msgUtil);
 
         for (ValidationRule<ProductValidationContext> rule : rules) {
             if (!rule.isValid(context)) {

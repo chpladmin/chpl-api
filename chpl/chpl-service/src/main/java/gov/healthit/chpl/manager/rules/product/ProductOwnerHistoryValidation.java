@@ -7,15 +7,21 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductOwner;
 import gov.healthit.chpl.manager.rules.ValidationRule;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class ProductOwnerHistoryValidation extends ValidationRule<ProductValidationContext> {
     private ProductDAO productDao;
+    private DeveloperDAO developerDao;
 
-    public ProductOwnerHistoryValidation(ProductDAO productDao) {
+    public ProductOwnerHistoryValidation(DeveloperDAO developerDao, ProductDAO productDao) {
+        this.developerDao = developerDao;
         this.productDao = productDao;
     }
 
@@ -39,10 +45,12 @@ public class ProductOwnerHistoryValidation extends ValidationRule<ProductValidat
             if (!context.isMergingOwner()) {
                 if (mostRecentPastOwnerHasNoOtherProducts(context.getProduct().getOwnerHistory(), context.getProduct())) {
                     ProductOwner mostRecentPastOwner = getMostRecentPastOwner(context.getProduct().getOwnerHistory());
-                    getMessages().add(context.getErrorMessageUtil().getMessage(
-                            "product.ownerHistory.cannotTransferDevelopersOnlyProduct",
-                            mostRecentPastOwner.getDeveloper().getName()));
-                    return false;
+                    if (!mostRecentPastOwner.getDeveloper().getDeleted()) {
+                        getMessages().add(context.getErrorMessageUtil().getMessage(
+                                "product.ownerHistory.cannotTransferDevelopersOnlyProduct",
+                                mostRecentPastOwner.getDeveloper().getName()));
+                        return false;
+                    }
                 }
             }
         }
@@ -87,7 +95,14 @@ public class ProductOwnerHistoryValidation extends ValidationRule<ProductValidat
 
     private ProductOwner getMostRecentPastOwner(List<ProductOwner> ownerHistory) {
         sortOwnerHistoryByTransferDay(ownerHistory);
-        return ownerHistory.get(0);
+        ProductOwner owner = ownerHistory.get(0);
+        try {
+            Developer dev = developerDao.getById(owner.getDeveloper().getId(), true);
+            owner.setDeveloper(dev);
+        } catch (Exception ex) {
+            LOGGER.error("No developer found (including deleted) with ID : " + owner.getDeveloper().getId());
+        }
+        return owner;
     }
 
     private void sortOwnerHistoryByOwnerId(List<ProductOwner> ownerHistory) {

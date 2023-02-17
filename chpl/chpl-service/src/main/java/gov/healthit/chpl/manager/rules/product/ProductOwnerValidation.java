@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
@@ -17,10 +18,13 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class ProductOwnerValidation extends ValidationRule<ProductValidationContext> {
-    private ResourcePermissions resourcePermissions;
+    private DeveloperDAO developerDao;
     private ProductDAO productDao;
+    private ResourcePermissions resourcePermissions;
 
-    public ProductOwnerValidation(ProductDAO productDao, ResourcePermissions resourcePermissions) {
+    public ProductOwnerValidation(DeveloperDAO developerDao, ProductDAO productDao,
+            ResourcePermissions resourcePermissions) {
+        this.developerDao = developerDao;
         this.productDao = productDao;
         this.resourcePermissions = resourcePermissions;
     }
@@ -35,7 +39,7 @@ public class ProductOwnerValidation extends ValidationRule<ProductValidationCont
         Long developerId = context.getProduct().getOwner().getId();
         Developer productOwner = null;
         try {
-            productOwner = context.getDeveloperDao().getById(developerId);
+            productOwner = developerDao.getById(developerId);
         } catch (EntityRetrievalException ex) {
             LOGGER.error("Product owner with ID " + developerId + " may not exist.", ex);
         }
@@ -62,10 +66,13 @@ public class ProductOwnerValidation extends ValidationRule<ProductValidationCont
             Product existingProduct = getExistingProduct(context.getProduct().getId());
             if (ownerIsChanging(existingProduct, context.getProduct())
                     && developerHasNoOtherProducts(existingProduct.getOwner().getId(), context.getProduct().getId())) {
-                getMessages().add(context.getErrorMessageUtil().getMessage(
-                        "product.ownerHistory.cannotTransferDevelopersOnlyProduct",
-                        existingProduct.getOwner().getName()));
-                return false;
+                Developer owner = getOwner(existingProduct.getOwner().getId());
+                if (owner != null && !owner.getDeleted()) {
+                    getMessages().add(context.getErrorMessageUtil().getMessage(
+                            "product.ownerHistory.cannotTransferDevelopersOnlyProduct",
+                            existingProduct.getOwner().getName()));
+                    return false;
+                }
             }
         }
         return true;
@@ -100,5 +107,15 @@ public class ProductOwnerValidation extends ValidationRule<ProductValidationCont
             return developerProducts.get(0).getId().equals(productId);
         }
         return false;
+    }
+
+    private Developer getOwner(Long developerId) {
+        Developer owner = null;
+        try {
+            owner = developerDao.getById(developerId, true);
+        } catch (Exception ex) {
+            LOGGER.error("No developer found (including deleted) with ID : " + developerId);
+        }
+        return owner;
     }
 }
