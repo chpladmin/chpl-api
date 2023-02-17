@@ -27,6 +27,7 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
@@ -65,7 +66,7 @@ public class TransactionalDeveloperMergeManager {
     @Transactional(rollbackFor = Exception.class)
     @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#developerToCreate.id")
     public Developer merge(List<Developer> beforeDevelopers, Developer developerToCreate)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, Exception {
+            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, ValidationException, Exception {
         List<Long> developerIdsToMerge = beforeDevelopers.stream()
                 .map(Developer::getId)
                 .collect(Collectors.toList());
