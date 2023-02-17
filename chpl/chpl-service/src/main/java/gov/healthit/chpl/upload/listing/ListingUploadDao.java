@@ -171,7 +171,7 @@ public class ListingUploadDao extends BaseDAOImpl {
         if (entities == null || entities.size() == 0) {
             throw new EntityRetrievalException("There is no upload file associated with listing ID " + confirmedListingId);
         }
-        return convert(entities.get(0), true);
+        return entities.get(0).toDomainWithRecords();
     }
 
     public ListingUpload getByChplProductNumber(String chplProductNumber) {
