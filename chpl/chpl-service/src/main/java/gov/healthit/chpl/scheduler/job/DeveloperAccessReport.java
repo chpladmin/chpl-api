@@ -327,9 +327,9 @@ public class DeveloperAccessReport extends QuartzJob {
                 DeveloperAcbMap map = new DeveloperAcbMap();
                 map.setDeveloperId(Long.valueOf(queryResult[0].toString()));
                 map.setDeveloperName(queryResult[1].toString());
-                map.setContactName(queryResult[2].toString());
-                map.setContactEmail(queryResult[3].toString());
-                map.setContactPhoneNumber(queryResult[4].toString());
+                map.setContactName(queryResult[2] != null ? queryResult[2].toString() : "");
+                map.setContactEmail(queryResult[3] != null ? queryResult[3].toString() : "");
+                map.setContactPhoneNumber(queryResult[4] != null ? queryResult[4].toString() : "");
                 CertificationBodyDTO acb = new CertificationBodyDTO();
                 acb.setId(Long.valueOf(queryResult[5].toString()));
                 acb.setName(queryResult[6].toString());
