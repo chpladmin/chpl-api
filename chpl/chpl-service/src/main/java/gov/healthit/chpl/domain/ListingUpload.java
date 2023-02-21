@@ -41,6 +41,9 @@ public class ListingUpload implements Serializable {
     private ListingUploadStatus status;
     @XmlTransient
     @JsonIgnore
+    private Long certifiedProductId;
+    @XmlTransient
+    @JsonIgnore
     private List<CSVRecord> records;
 
     public ListingUpload() {

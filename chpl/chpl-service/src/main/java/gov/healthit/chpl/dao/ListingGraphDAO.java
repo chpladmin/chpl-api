@@ -80,8 +80,10 @@ public class ListingGraphDAO extends BaseDAOImpl {
     public Integer getLargestIcs(List<Long> listingIds) {
         Query query = entityManager
                 .createQuery(
-                        "SELECT MAX(to_number(listing.icsCode, '99')) " + "FROM CertifiedProductEntity listing "
-                                + "WHERE listing.id IN (:listingIds) " + "AND listing.deleted <> true",
+                        "SELECT MAX(to_number(listing.icsCode, '99')) "
+                                + "FROM CertifiedProductEntity listing "
+                                + "WHERE listing.id IN (:listingIds) "
+                                + "AND listing.deleted <> true",
                         BigDecimal.class);
         query.setParameter("listingIds", listingIds);
         BigDecimal result = (BigDecimal) query.getSingleResult();

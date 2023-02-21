@@ -6,6 +6,6 @@
         <Property name="logDir">/opt/tomcat8/logs</Property>
     </Properties>
     <xi:include href="log4j2-xinclude-file-appenders.xml" />
-    <xi:include href="log4j2-xinclude-file-appenders-json.xml" />    
+    <xi:include href="log4j2-xinclude-file-appenders-console.xml" />    
     <xi:include href="log4j2-xinclude-loggers.xml" />
 </Configuration>

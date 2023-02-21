@@ -122,7 +122,7 @@ public class ComplaintEntity {
                 .certificationBody(this.getCertificationBody() == null
                     ? CertificationBody.builder()
                             .id(this.getCertificationBodyId())
-                            .build() : this.getCertificationBody().buildCertificationBody())
+                            .build() : this.getCertificationBody().toDomain())
                 .closedDate(this.getClosedDate())
                 .complainantContacted(this.isComplainantContacted())
                 .complainantType(this.getComplainantType() == null ? null

@@ -57,9 +57,9 @@
         </trigger>
         <trigger>
             <cron>
-                <name>generateInheritanceErrorsReport</name>
-                <group>inheritanceErrorsReportTrigger</group>
-                <job-name>inheritanceErrorsReportCreator</job-name>
+                <name>generateIcsErrorsReport</name>
+                <group>icsErrorsReportTrigger</group>
+                <job-name>icsErrorsReportCreator</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
                 <cron-expression>0 50 7 * * ?</cron-expression> <!-- At 0750 UTC every day -->

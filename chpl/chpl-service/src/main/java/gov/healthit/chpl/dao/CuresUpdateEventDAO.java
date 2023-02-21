@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -40,17 +39,6 @@ public class CuresUpdateEventDAO  extends BaseDAOImpl {
             dto = new CuresUpdateEventDTO(entity);
         }
         return dto;
-    }
-
-    public List<CuresUpdateEventDTO> findByCertifiedProductId(Long certifiedProductId) {
-        List<CuresUpdateEventEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
-        List<CuresUpdateEventDTO> dtos = new ArrayList<>();
-
-        for (CuresUpdateEventEntity entity : entities) {
-            CuresUpdateEventDTO dto = new CuresUpdateEventDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
     }
 
     private CuresUpdateEventEntity getEntityById(Long id) throws EntityRetrievalException {
