@@ -57,11 +57,11 @@
     <Logger name="brokenSurveillanceRulesEmailJobLogger"  level="INFO" additivity="false">
         <AppenderRef ref="brokenSurveillanceRulesEmailJob" />
     </Logger>
-    <Logger name="inheritanceErrorsReportCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="inheritanceErrorsReportCreatorJob" />
+    <Logger name="icsErrorsReportCreatorJobLogger" level="DEBUG" additivity="false">
+        <AppenderRef ref="icsErrorsReportCreatorJob" />
     </Logger>
-    <Logger name="inheritanceErrorsReportEmailJobLogger" additivity="false">
-        <AppenderRef ref="inheritanceErrorsReportEmailJob" />
+    <Logger name="icsErrorsReportEmailJobLogger" additivity="false">
+        <AppenderRef ref="icsErrorsReportEmailJob" />
     </Logger>
     <Logger name="cacheStatusAgeJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="cacheStatusAgeJob" />
@@ -86,9 +86,6 @@
     </Logger>
     <Logger name="pendingChangeRequestEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="pendingChangeRequestEmailJob" />
-    </Logger>
-    <Logger name="interruptJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="interruptJob" />
     </Logger>
     <Logger name="massRequirePasswordChangeJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="massRequirePasswordChangeJob" />
@@ -141,22 +138,9 @@
     <Logger name="deprecatedApiUsageEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="deprecatedApiUsageEmailJob" />
     </Logger>
-    <Logger name="listingsSnapshotCsvCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="listingsSnapshotCsvCreatorJob" />
-    </Logger>
     <Logger name="removeCriteriaJobLogger" level="INFO"
         additivity="false">
         <AppenderRef ref="removeCriteriaJob" />
-    </Logger>
-    <Logger name="addCuresUpdateToListingsJobLogger" level="INFO"
-        additivity="false">
-        <AppenderRef ref="addCuresUpdateToListingsJob" />
-    </Logger>
-    <Logger name="listingsSnapshotCsvCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="listingsSnapshotCsvCreatorJob" />
-    </Logger>
-    <Logger name="listingsWithCriterionSnapshotCsvCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="listingsWithCriterionSnapshotCsvCreatorJob" />
     </Logger>
     <Logger name="sendEmailJobLogger" level="INFO"
         additivity="false">
@@ -171,10 +155,10 @@
     <Logger name="developerAttestationCheckinReportJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="developerAttestationCheckinReportJob" />
     </Logger>
-    <Logger name="curesDesignationRemovedQuestionableActivityCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="curesDesignationRemovedQuestionableActivityCreatorJob" />
-    </Logger>
     <Logger name="missingAttestationChangeRequestEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="missingAttestationChangeRequestEmailJob" />
+    </Logger>
+    <Logger name="updateParticipantsJobLogger" level="DEBUG" additivity="false">
+        <AppenderRef ref="updateParticipantsJob" />
     </Logger>
 </Loggers>

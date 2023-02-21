@@ -43,29 +43,20 @@ Open Direct Review Non-conformities,Yes,<int>,"The total number of open (unresol
 170.315 (a)(14): Implantable Device List,Yes,TRUE; FALSE,Implantable Device List
 "170.315 (a)(15): Social, Psychological, and Behavioral Determinants Data",Yes,TRUE; FALSE,"Social, Psychological, and Behavioral Determinants Data"
 170.315 (b)(1): Transitions of Care (Cures Update),Yes,TRUE; FALSE,Transitions of Care (Cures Update)
-170.315 (b)(1): Transitions of Care,Yes,TRUE; FALSE,Transitions of Care
 170.315 (b)(2): Clinical Information Reconciliation and Incorporation (Cures Update),Yes,TRUE; FALSE,Clinical Information Reconciliation and Incorporation (Cures Update)
-170.315 (b)(2): Clinical Information Reconciliation and Incorporation,Yes,TRUE; FALSE,Clinical Information Reconciliation and Incorporation
 170.315 (b)(3): Electronic Prescribing (Cures Update),Yes,TRUE; FALSE,Electronic Prescribing (Cures Update)
-170.315 (b)(3): Electronic Prescribing,Yes,TRUE; FALSE,Electronic Prescribing
 170.315 (b)(6): Data Export,Yes,TRUE; FALSE,Data Export
 170.315 (b)(7): Security Tags - Summary of Care - Send (Cures Update),Yes,TRUE; FALSE,Data Segmentation for Privacy - Send (Cures Update)
-170.315 (b)(7): Data Segmentation for Privacy - Send,Yes,TRUE; FALSE,Data Segmentation for Privacy - Send
 170.315 (b)(8): Security Tags - Summary of Care - Receive (Cures Update),Yes,TRUE; FALSE,Data Segmentation for Privacy - Receive (Cures Update)
-170.315 (b)(8): Data Segmentation for Privacy - Receive,Yes,TRUE; FALSE,Data Segmentation for Privacy - Receive
 170.315 (b)(9): Care Plan (Cures Update),Yes,TRUE; FALSE,Care Plan (Cures Update)
-170.315 (b)(9): Care Plan,Yes,TRUE; FALSE,Care Plan
 170.315 (b)(10): Electronic Health Information Export (Cures Update),Yes,TRUE; FALSE,Clinical Information export
 170.315 (c)(1): Clinical Quality Measures - Record and Export,Yes,TRUE; FALSE,Clinical Quality Measures - Record and Export
 170.315 (c)(2): Clinical Quality Measures - Import and Calculate,Yes,TRUE; FALSE,Clinical Quality Measures - Import and Calculate
 170.315 (c)(3): Clinical Quality Measures - Report (Cures Update),Yes,TRUE; FALSE,Clinical Quality Measures - Report (Cures Update)
-170.315 (c)(3): Clinical Quality Measures - Report,Yes,TRUE; FALSE,Clinical Quality Measures - Report
 170.315 (c)(4): Clinical Quality Measures - Filter,Yes,TRUE; FALSE,Clinical Quality Measures - Filter
 "170.315 (d)(1): Authentication, Access Control, Authorization",Yes,TRUE; FALSE,"Authentication, Access Control, Authorization"
 170.315 (d)(2): Auditable Events and Tamper-Resistance (Cures Update),Yes,TRUE; FALSE,Auditable Events and Tamper-Resistance (Cures Update)
-170.315 (d)(2): Auditable Events and Tamper-Resistance,Yes,TRUE; FALSE,Auditable Events and Tamper-Resistance
 170.315 (d)(3): Audit Report(s) (Cures Update),Yes,TRUE; FALSE,Audit Report(s) (Cures Update)
-170.315 (d)(3): Audit Report(s),Yes,TRUE; FALSE,Audit Report(s)
 170.315 (d)(4): Amendments,Yes,TRUE; FALSE,Amendments
 170.315 (d)(5): Automatic Access Time-out,Yes,TRUE; FALSE,Automatic Access Time-out
 170.315 (d)(6): Emergency Access,Yes,TRUE; FALSE,Emergency Access
@@ -73,19 +64,16 @@ Open Direct Review Non-conformities,Yes,<int>,"The total number of open (unresol
 170.315 (d)(8): Integrity,Yes,TRUE; FALSE,Integrity
 170.315 (d)(9): Trusted Connection,Yes,TRUE; FALSE,Trusted Connection
 170.315 (d)(10): Auditing Actions on Health Information (Cures Update),Yes,TRUE; FALSE,Auditing Actions on Health Information (Cures Update)
-170.315 (d)(10): Auditing Actions on Health Information,Yes,TRUE; FALSE,Auditing Actions on Health Information
 170.315 (d)(11): Accounting of Disclosures,Yes,TRUE; FALSE,Accounting of Disclosures
 170.315 (d)(12): Encrypt authentication credentials (Cures Update),Yes,TRUE; FALSE,Encrypt authentication credentials
 170.315 (d)(13): Multi-factor authentication (Cures Update),Yes,TRUE; FALSE,Multi-factor authentication
 "170.315 (e)(1): View, Download, and Transmit to 3rd Party (Cures Update)",Yes,TRUE; FALSE,"View, Download, and Transmit to 3rd Party (Cures Update)"
-"170.315 (e)(1): View, Download, and Transmit to 3rd Party",Yes,TRUE; FALSE,"View, Download, and Transmit to 3rd Party"
 170.315 (e)(3): Patient Health Information Capture,Yes,TRUE; FALSE,Patient Health Information Capture
 170.315 (f)(1): Transmission to Immunization Registries,Yes,TRUE; FALSE,Transmission to Immunization Registries
 170.315 (f)(2): Transmission to Public Health Agencies - Syndromic Surveillance,Yes,TRUE; FALSE,Transmission to Public Health Agencies - Syndromic Surveillance
 170.315 (f)(3): Transmission to Public Health Agencies - Reportable Laboratory Tests and Values/Results,Yes,TRUE; FALSE,Transmission to Public Health Agencies - Reportable Laboratory Tests and Values/Results
 170.315 (f)(4): Transmission to Cancer Registries,Yes,TRUE; FALSE,Transmission to Cancer Registries
 170.315 (f)(5): Transmission to Public Health Agencies - Electronic Case Reporting (Cures Update),Yes,TRUE; FALSE,Transmission to Public Health Agencies - Electronic Case Reporting (Cures Update)
-170.315 (f)(5): Transmission to Public Health Agencies - Electronic Case Reporting,Yes,TRUE; FALSE,Transmission to Public Health Agencies - Electronic Case Reporting
 170.315 (f)(6): Transmission to Public Health Agencies - Antimicrobial Use and Resistance Reporting,Yes,TRUE; FALSE,Transmission to Public Health Agencies - Antimicrobial Use and Resistance Reporting
 170.315 (f)(7): Transmission to Public Health Agencies - Health Care Surveys,Yes,TRUE; FALSE,Transmission to Public Health Agencies - Health Care Surveys
 170.315 (g)(1): Automated Numerator Recording,Yes,TRUE; FALSE,Automated Numerator Recording
@@ -94,11 +82,8 @@ Open Direct Review Non-conformities,Yes,<int>,"The total number of open (unresol
 170.315 (g)(4): Quality Management System,Yes,TRUE; FALSE,Quality Management System
 170.315 (g)(5): Accessibility-Centered Design,Yes,TRUE; FALSE,Accessibility-Centered Design
 170.315 (g)(6): Consolidated CDA Creation Performance (Cures Update),Yes,TRUE; FALSE,Consolidated CDA Creation (Cures Update)
-170.315 (g)(6): Consolidated CDA Creation,Yes,TRUE; FALSE,Consolidated CDA Creation
 170.315 (g)(7): Application Access - Patient Selection,Yes,TRUE; FALSE,Application Access - Patient Selection
-170.315 (g)(8): Application Access - Data Category Request,Yes,TRUE; FALSE,Application Access - Data Category Request
 170.315 (g)(9): Application Access - All Data Request (Cures Update),Yes,TRUE; FALSE,Application Access - All Data Request (Cures Update)
-170.315 (g)(9): Application Access - All Data Request,Yes,TRUE; FALSE,Application Access - All Data Request
 170.315(g)(10): Standardized API for patient and population services (Cures Update),Yes,TRUE; FALSE,Standardized API for patient and population services
 170.315 (h)(1): Direct Project,Yes,TRUE; FALSE,Direct Project
 "170.315 (h)(2): Direct Project, Edge Protocol, and XDR/XDM",Yes,TRUE; FALSE,"Direct Project, Edge Protocol, and XDR/XDM"

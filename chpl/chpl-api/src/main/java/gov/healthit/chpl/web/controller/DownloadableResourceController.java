@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.svap.manager.SvapManager;
@@ -37,7 +35,6 @@ public class DownloadableResourceController {
     private SurveillanceManager survManager;
     private SvapManager svapManager;
     private FileUtils fileUtils;
-    private FF4j ff4j;
 
     @Value("${directReviewsReportName}")
     private String directReviewsReportName;
@@ -50,13 +47,12 @@ public class DownloadableResourceController {
             ErrorMessageUtil msgUtil,
             SurveillanceManager survManager,
             SvapManager svapManager,
-            FileUtils fileUtils, FF4j ff4j) {
+            FileUtils fileUtils) {
         this.env = env;
         this.msgUtil = msgUtil;
         this.survManager = survManager;
         this.svapManager = svapManager;
         this.fileUtils = fileUtils;
-        this.ff4j = ff4j;
     }
 
     @Operation(summary = "Download the entire CHPL as XML.",
@@ -79,7 +75,6 @@ public class DownloadableResourceController {
         String edition = editionInput;
         String format = formatInput;
         String responseType = "text/csv";
-        String filenameToStream = null;
 
         if (!StringUtils.isEmpty(edition)) {
             // make sure it's a 4 character year
@@ -106,12 +101,7 @@ public class DownloadableResourceController {
             } else if (edition.equals("2014")) {
                 toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2014Name"));
             } else if (edition.equals("2015")) {
-                if (ff4j.check(FeatureList.ERD_PHASE_2)) {
-                    toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015ErdPhase2Name"));
-                } else {
-                    toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015Name"));
-                }
-                filenameToStream = env.getProperty("schemaCsv2015Name");
+                toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015Name"));
             }
 
             if (!toDownload.exists()) {
@@ -131,17 +121,12 @@ public class DownloadableResourceController {
         }
 
         LOGGER.info("Downloading " + toDownload.getName());
-        if (filenameToStream != null) {
-            fileUtils.streamFileAsResponse(toDownload, responseType, response, filenameToStream);
-        } else {
-            fileUtils.streamFileAsResponse(toDownload, responseType, response);
-        }
+        fileUtils.streamFileAsResponse(toDownload, responseType, response);
     }
 
     @Operation(summary = "Download a summary of SVAP activity as a CSV.",
             description = "Once per day, a summary of SVAP activity is written out to a CSV "
-                    + "file on the CHPL servers. This method allows ROLE_ADMIN, ROLE_ONC, "
-                    + "and ROLE_ONC_STAFF users to download that file.",
+                    + "file on the CHPL servers. This method allows any user to download that file.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
