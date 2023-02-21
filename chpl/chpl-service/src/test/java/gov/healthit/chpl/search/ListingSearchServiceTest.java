@@ -889,6 +889,52 @@ public class ListingSearchServiceTest {
     }
 
     @Test
+    public void search_listingIdProvided_findsMatchingListings() throws ValidationException {
+        List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
+        allListings.get(0).setId(1L);
+        allListings.get(1).setId(2L);
+
+        Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
+        Set<Long> listingIds = new LinkedHashSet<Long>();
+        listingIds.add(1L);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .listingIds(listingIds)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_multiplelistingIdsProvided_findsMatchingListings() throws ValidationException {
+        List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
+        allListings.get(0).setId(1L);
+        allListings.get(1).setId(2L);
+        allListings.get(2).setId(3L);
+        allListings.get(3).setId(4L);
+        allListings.get(4).setId(5L);
+
+        Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
+        Set<Long> listingIds = new LinkedHashSet<Long>();
+        listingIds.add(1L);
+        listingIds.add(4L);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .listingIds(listingIds)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
+    }
+
+    @Test
     public void search_singleAcbNameProvided_findsMatchingListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setCertificationBody(acb("ACB 1"));
