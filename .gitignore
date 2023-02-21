@@ -17,7 +17,6 @@ local.properties
 .loadpath
 target/
 chpl/chpl-api/src/main/webapp/META-INF/
-chpl/chpl-api/src/main/webapp/.gitignore
 
 # External tool builders
 .externalToolBuilders/
