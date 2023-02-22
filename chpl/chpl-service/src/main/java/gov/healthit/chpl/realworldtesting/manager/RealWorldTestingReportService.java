@@ -177,7 +177,7 @@ public class RealWorldTestingReportService {
         if (isRwtPlansEmpty(report)) {
             if (BooleanUtils.isTrue(report.getIcs())
                     && (arePlansLateWarning(report.getRwtEligibilityYear()) || arePlansLateError(report.getRwtEligibilityYear()))) {
-                plansMessage =errorMsg.getMessage("realWorldTesting.report.eligibleByIcs.missingPlansError",
+                plansMessage = errorMsg.getMessage("realWorldTesting.report.eligibleByIcs.missingPlansError",
                         report.getRwtEligibilityYear().toString());
             } else if (arePlansLateWarning(report.getRwtEligibilityYear())) {
                 plansMessage = errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingPlansWarning",
