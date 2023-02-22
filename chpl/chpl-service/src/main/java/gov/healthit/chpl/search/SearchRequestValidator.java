@@ -57,6 +57,7 @@ public class SearchRequestValidator {
 
     public void validate(SearchRequest request) throws ValidationException {
         Set<String> errors = new LinkedHashSet<String>();
+        errors.addAll(getListingIdErrors(request.getListingIdStrings()));
         errors.addAll(getCertificationStatusErrors(request.getCertificationStatuses()));
         errors.addAll(getDerivedCertificationEditionErrors(request.getDerivedCertificationEditions()));
         errors.addAll(getCertificationEditionErrors(request.getCertificationEditions()));
@@ -75,6 +76,23 @@ public class SearchRequestValidator {
         if (errors != null && errors.size() > 0) {
             throw new ValidationException(errors);
         }
+    }
+
+    private Set<String> getListingIdErrors(Set<String> listingIdStrings) {
+        Set<String> listingIdErrors = new LinkedHashSet<String>();
+        listingIdErrors.addAll(getListingIdFormatErrors(listingIdStrings));
+        return listingIdErrors;
+    }
+
+    private Set<String> getListingIdFormatErrors(Set<String> listingIdStrings) {
+        if (!CollectionUtils.isEmpty(listingIdStrings)) {
+            return listingIdStrings.stream()
+                .filter(listingId -> !StringUtils.isBlank(listingId))
+                .filter(listingId -> !isParseableLong(listingId.trim()))
+                .map(listingId -> msgUtil.getMessage("search.listingId.invalid", listingId))
+                .collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
     }
 
     private Set<String> getCertificationStatusErrors(Set<String> certificationStatuses) {

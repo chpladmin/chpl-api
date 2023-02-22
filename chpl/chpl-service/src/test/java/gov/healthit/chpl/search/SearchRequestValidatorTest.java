@@ -29,6 +29,7 @@ import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class SearchRequestValidatorTest {
+    private static final String INVALID_LISTING_ID_FORMAT = "Listing ID %s is invalid. It must be a positive whole number.";
     private static final String INVALID_CERTIFICATION_STATUS = "Could not find certification status with value '%s'.";
     private static final String INVALID_CERTIFICATION_EDITION = "Could not find certification edition with value '%s'.";
     private static final String INVALID_DERIVED_CERTIFICATION_EDITION = "Could not find derived certification edition with value '%s'.";
@@ -60,6 +61,8 @@ public class SearchRequestValidatorTest {
         Mockito.when(drService.doesCacheHaveAnyOkData()).thenReturn(true);
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.listingId.invalid"), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(INVALID_LISTING_ID_FORMAT, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.certificationStatuses.invalid"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_CERTIFICATION_STATUS, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.certificationEdition.invalid"), ArgumentMatchers.anyString()))
@@ -99,6 +102,35 @@ public class SearchRequestValidatorTest {
 
         validator = new SearchRequestValidator(dimensionalDataManager, drService, msgUtil);
     }
+
+    @Test
+    public void validate_validListingIdFormat_noErrors() {
+        SearchRequest request = SearchRequest.builder()
+            .listingIdStrings(Stream.of("1", "2").collect(Collectors.toSet()))
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_invalidListingIdFormat_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .listingIdStrings(Stream.of("3 ", " 4 ", " 01", " ", "", null, "BAD").collect(Collectors.toSet()))
+            .build();
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_LISTING_ID_FORMAT, "BAD", "")));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
 
     @Test
     public void validate_invalidCertificationStatusNullDimensionalData_addsError() {
