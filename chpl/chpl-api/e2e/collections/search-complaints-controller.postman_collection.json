@@ -1,0 +1,120 @@
+{
+	"info": {
+		"name": "search-complaints-controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET /complaints/search/v2 - correct response and status for ONC users",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"emailONC\"),password:pm.environment.get(\"passwordONC\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"expect GET /complaints/search/v2 request to return 200 status and response body to not be empty\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(jsonData.response).not.eq(null);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"expect response has inclusive date search values in GET /complaints/search/v2 response\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.results[0].closedDate).to.eql('2022-09-07');\r",
+							"    pm.expect(jsonData.results[0].receivedDate).to.eql('2022-08-25');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/rest/complaints/search/v2?closedDateStart=2022-09-07&closedDateEnd=2022-09-07&receivedDateStart=2022-08-25&receivedDateEnd=2022-08-25",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"complaints",
+						"search",
+						"v2"
+					],
+					"query": [
+						{
+							"key": "closedDateStart",
+							"value": "2022-09-07"
+						},
+						{
+							"key": "closedDateEnd",
+							"value": "2022-09-07"
+						},
+						{
+							"key": "receivedDateStart",
+							"value": "2022-08-25"
+						},
+						{
+							"key": "receivedDateEnd",
+							"value": "2022-08-25"
+						}
+					]
+				},
+				"description": "GET /complaints/search/v2 - correct response and status for ONC users"
+			},
+			"response": []
+		}
+	]
+}
