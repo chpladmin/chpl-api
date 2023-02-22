@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.ff4j.FF4j;
+import org.quartz.JobDataMap;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -28,6 +30,7 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
+import gov.healthit.chpl.changerequest.search.ChangeRequestSearchRequest;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationService;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -36,15 +39,22 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.schedule.ChplJob;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.form.validation.FormValidator;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.manager.SchedulerManager;
+import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.scheduler.job.changerequest.ChangeRequestReportEmailJob;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -75,6 +85,8 @@ public class ChangeRequestManager {
     @Value("${changerequest.attestation}")
     private Long attestationChangeRequestTypeId;
 
+    private UserManager userManager;
+    private SchedulerManager schedulerManager;
     private ChangeRequestDAO changeRequestDAO;
     private ChangeRequestTypeDAO changeRequestTypeDAO;
     private ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO;
@@ -95,7 +107,9 @@ public class ChangeRequestManager {
     private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
-    public ChangeRequestManager(ChangeRequestDAO changeRequestDAO,
+    public ChangeRequestManager(UserManager userManager,
+            SchedulerManager schedulerManager,
+            ChangeRequestDAO changeRequestDAO,
             ChangeRequestTypeDAO changeRequestTypeDAO,
             ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO,
             CertifiedProductDAO certifiedProductDAO,
@@ -111,6 +125,8 @@ public class ChangeRequestManager {
             ValidationUtils validationUtils,
             FormValidator formValidator,
             FF4j ff4j) {
+        this.userManager = userManager;
+        this.schedulerManager = schedulerManager;
         this.changeRequestDAO = changeRequestDAO;
         this.changeRequestTypeDAO = changeRequestTypeDAO;
         this.changeRequestStatusTypeDAO = changeRequestStatusTypeDAO;
@@ -202,6 +218,32 @@ public class ChangeRequestManager {
 
         ChangeRequest newCr = getChangeRequest(cr.getId());
         return newCr;
+    }
+
+    @Transactional(readOnly = true)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
+            + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).SEARCH)")
+    public ChplOneTimeTrigger triggerChangeRequestsReport(ChangeRequestSearchRequest searchRequest)
+            throws SchedulerException, ValidationException {
+        UserDTO jobUser = null;
+        try {
+            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
+        } catch (UserRetrievalException ex) {
+            LOGGER.error("Could not find user to execute job.");
+        }
+
+        ChplOneTimeTrigger changeRequestsReportTrigger = new ChplOneTimeTrigger();
+        ChplJob changeRequestsReportJob = new ChplJob();
+        changeRequestsReportJob.setName(ChangeRequestReportEmailJob.JOB_NAME);
+        changeRequestsReportJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put(ChangeRequestReportEmailJob.USER_KEY, jobUser);
+        jobDataMap.put(ChangeRequestReportEmailJob.SEARCH_REQUEST, searchRequest);
+        changeRequestsReportJob.setJobDataMap(jobDataMap);
+        changeRequestsReportTrigger.setJob(changeRequestsReportJob);
+        changeRequestsReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
+        changeRequestsReportTrigger = schedulerManager.createBackgroundJobTrigger(changeRequestsReportTrigger);
+        return changeRequestsReportTrigger;
     }
 
     private Developer getDeveloperFromDb(ChangeRequest changeRequest) throws InvalidArgumentsException, EntityRetrievalException {

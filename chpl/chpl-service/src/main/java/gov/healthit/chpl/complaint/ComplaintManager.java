@@ -25,7 +25,7 @@ import gov.healthit.chpl.complaint.rules.ComplaintValidationContext;
 import gov.healthit.chpl.complaint.rules.ComplaintValidationFactory;
 import gov.healthit.chpl.complaint.search.ComplaintSearchRequest;
 import gov.healthit.chpl.complaint.search.ComplaintSearchResponse;
-import gov.healthit.chpl.complaint.search.ComplaintSearchService;
+import gov.healthit.chpl.complaint.search.ComplaintSearchServiceV1;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
@@ -52,7 +52,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ComplaintManager extends SecuredManager {
 
-    private ComplaintSearchService searchService;
+    private ComplaintSearchServiceV1 searchService;
     private ComplaintDAO complaintDAO;
     private ComplaintValidationFactory complaintValidationFactory;
     private CertifiedProductDAO certifiedProductDAO;
@@ -65,7 +65,7 @@ public class ComplaintManager extends SecuredManager {
     @Autowired
     public ComplaintManager(ComplaintDAO complaintDAO,
             ComplaintValidationFactory complaintValidationFactory, CertifiedProductDAO certifiedProductDAO,
-            ComplaintSearchService searchService,
+            ComplaintSearchServiceV1 searchService,
             ChplProductNumberUtil chplProductNumberUtil, ErrorMessageUtil errorMessageUtil,
             ActivityManager activityManager, SchedulerManager schedulerManager,
             UserManager userManager) {

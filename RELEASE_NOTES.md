@@ -1,5 +1,19 @@
 # Release Notes
 
+## Version 39.4.0
+_21 February 2023_
+
+### Features
+* Add error message when Surveillance Requirement or Non-conformity does not match Listing Edition
+* Add system job to correctly deduplicate participants
+* Add check for missing ICS Surveillance to ICS Errors Report
+* Remove "no longer needed" one-time jobs
+
+### Bug Fixes
+* Fix display of Non-Conformity Types on Surveillance Reports
+
+---
+
 ## Version 39.3.0
 _6 February 2023_
 
