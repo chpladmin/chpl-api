@@ -56,6 +56,7 @@ public class RealWorldTestingReportService {
         this.env = env;
         this.certificationStatusEventsService = certificationStatusEventsService;
         this.rwtEligServiceFactory = rwtEligServiceFactory;
+        
         withdrawnStatuses = List.of(CertificationStatusType.WithdrawnByDeveloper,
                 CertificationStatusType.WithdrawnByAcb,
                 CertificationStatusType.WithdrawnByDeveloperUnderReview,
@@ -69,7 +70,7 @@ public class RealWorldTestingReportService {
             RealWorldTestingEligiblityService rwtEligservice = rwtEligServiceFactory.getInstance();
 
             reports = getListingWith2015Edition(logger).stream()
-                  .filter(listing -> !isWithdrawn(listing) && isInListOfAcbs(listing, acbIds))
+                  .filter(listing -> isInListOfAcbs(listing, acbIds))
                   .map(listing -> getRealWorldTestingReport(listing, rwtEligservice, logger))
                   .filter(report -> report.getRwtEligibilityYear() != null
                           || report.getRwtPlansCheckDate() != null
@@ -173,60 +174,59 @@ public class RealWorldTestingReportService {
     }
 
     private RealWorldTestingReport addMessages(RealWorldTestingReport report) {
-        //if (isWithdrawn(report.getCurrentStatus())) {
-        //    report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.listingWithdrawnMessage"));
-        //} else 
-    	if (isRwtPlansEmpty(report)) {
-            if (BooleanUtils.isTrue(report.getIcs())
-                    && (arePlansLateWarning(report.getRwtEligibilityYear()) || arePlansLateError(report.getRwtEligibilityYear()))) {
-                report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.eligibleByIcs.missingPlansError",
-                        report.getRwtEligibilityYear().toString()));
-            } else if (arePlansLateWarning(report.getRwtEligibilityYear())) {
-                report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingPlansWarning",
-                        report.getRwtEligibilityYear().toString(),
-                        getPlansLateDate(report.getRwtEligibilityYear()).toString()));
-            } else if (arePlansLateError(report.getRwtEligibilityYear())) {
-                report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingPlansError",
-                        report.getRwtEligibilityYear().toString(),
-                        getPlansLateDate(report.getRwtEligibilityYear()).toString()));
-            }
+        if (isWithdrawn(report)) {
+            report.setRwtPlansMessage(errorMsg.getMessage("realWorldTesting.report.listingWithdrawnMessage"));
+            report.setRwtResultsMessage("");
         } else {
-        	report.setRwtPlansMessage("");
-        }
-        if (isRwtResultsEmpty(report)) {
-            if (BooleanUtils.isTrue(report.getIcs())
-                    && (areResultsLateWarning(report.getRwtEligibilityYear()) || areResultsLateError(report.getRwtEligibilityYear()))) {
-                report.setRwtResultsMessage(errorMsg.getMessage("realWorldTesting.report.eligibleByIcs.missingResultsError",
-                        report.getRwtEligibilityYear().toString()));
-            } else if (areResultsLateWarning(report.getRwtEligibilityYear())) {
-                report.setRwtResultsMessage(errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingResultsWarning",
-                        report.getRwtEligibilityYear().toString(),
-                        getResultsLateDate(report.getRwtEligibilityYear()).toString()));
-            } else if (areResultsLateError(report.getRwtEligibilityYear())) {
-                report.setRwtResultsMessage(errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingResultsError",
-                        report.getRwtEligibilityYear().toString(),
-                        getResultsLateDate(report.getRwtEligibilityYear()).toString()));
-            }
-        } else {
-        	report.setRwtResultsMessage("");
+            report.setRwtPlansMessage(getPlansMessage(report));
+            report.setRwtResultsMessage(getResultsMessage(report));
         }
         return report;
     }
 
-    private boolean isWithdrawn(CertifiedProductDetailsDTO listing) {
-    	try {
-			String statusName = certificationStatusEventsService.getCurrentCertificationStatusEvent(listing.getId()).getStatus().getName();
-			return withdrawnStatuses.stream()
-	                .map(status -> status.getName())
-	                .filter(sn -> sn.equalsIgnoreCase(statusName))
-	                .findAny().isPresent();
-		} catch (EntityRetrievalException e) {
-			// TODO Need to log message
-			return false;
-		}
-        
+	private String getResultsMessage(RealWorldTestingReport report) {
+		if (isRwtResultsEmpty(report)) {
+            if (BooleanUtils.isTrue(report.getIcs()) 
+            		&& (areResultsLateWarning(report.getRwtEligibilityYear()) || areResultsLateError(report.getRwtEligibilityYear()))) {
+                return errorMsg.getMessage("realWorldTesting.report.eligibleByIcs.missingResultsError", report.getRwtEligibilityYear().toString());
+            } else if (areResultsLateWarning(report.getRwtEligibilityYear())) {
+                return errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingResultsWarning",
+                        report.getRwtEligibilityYear().toString(),
+                        getResultsLateDate(report.getRwtEligibilityYear()).toString());
+            } else if (areResultsLateError(report.getRwtEligibilityYear())) {
+                return errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingResultsError",
+                        report.getRwtEligibilityYear().toString(),
+                        getResultsLateDate(report.getRwtEligibilityYear()).toString());
+            } else {
+            	return "";
+            }
+        } else {
+        	return "";
+        }
+	}
+	
+    private String getPlansMessage(RealWorldTestingReport report) {
+    	if (isRwtPlansEmpty(report)) {
+	    	if (BooleanUtils.isTrue(report.getIcs())
+	                && (arePlansLateWarning(report.getRwtEligibilityYear()) || arePlansLateError(report.getRwtEligibilityYear()))) {
+	            return errorMsg.getMessage("realWorldTesting.report.eligibleByIcs.missingPlansError", report.getRwtEligibilityYear().toString());
+	        } else if (arePlansLateWarning(report.getRwtEligibilityYear())) {
+	            return errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingPlansWarning",
+	                    report.getRwtEligibilityYear().toString(),
+	                    getPlansLateDate(report.getRwtEligibilityYear()).toString());
+	        } else if (arePlansLateError(report.getRwtEligibilityYear())) {
+	            return errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingPlansError",
+	                    report.getRwtEligibilityYear().toString(),
+	                    getPlansLateDate(report.getRwtEligibilityYear()).toString());
+	        } else {
+	        	return "";
+	        }
+    	} else {
+    		return "";
+    	}
+    		
     }
-
+    
     private boolean arePlansLateWarning(Integer rwtEligYear) {
         return isLocalDateEqualOrAfter(LocalDate.now(), getPlansStartDate(rwtEligYear))
                 && LocalDate.now().isBefore(getPlansLateDate(rwtEligYear));
@@ -275,6 +275,14 @@ public class RealWorldTestingReportService {
         String mmdd = env.getProperty("rwtResultsDueDate");
         String mmddyyyy = mmdd + "/" + String.valueOf(rwtEligYear + 1);
         return LocalDate.parse(mmddyyyy, formatter);
+    }
+
+    private boolean isWithdrawn(RealWorldTestingReport record) {
+    	String statusName = record.getCurrentStatus();
+		return withdrawnStatuses.stream()
+                .map(status -> status.getName())
+                .filter(sn -> sn.equalsIgnoreCase(statusName))
+                .findAny().isPresent();
     }
 
 }

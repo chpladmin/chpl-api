@@ -22,8 +22,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
@@ -64,6 +66,7 @@ public class RealWorldTestingReportEmailJob implements Job {
         LOGGER.info("********* Starting the Real World Report Email job for " + context.getMergedJobDataMap().getString("email") + " *********");
         try {
             setAcbIds(context);
+            
             List<RealWorldTestingReport> reportRows = rwtReportService.getRealWorldTestingReports(acbIds, LOGGER);
             sendEmail(context, reportRows);
         } catch (Exception e) {
@@ -85,7 +88,7 @@ public class RealWorldTestingReportEmailJob implements Job {
                 .recipient(context.getMergedJobDataMap().getString("email"))
                 .subject(env.getProperty("rwt.report.subject"))
                 .htmlMessage(createHtmlMessage(context, rows))
-                .fileAttachments(new ArrayList<File>(Arrays.asList(generateCsvFile(context, rows))))
+                .fileAttachments(List.of(generateCsvFile(context, rows)))
                 .sendEmail();
         LOGGER.info("Completed Sending email to: " + context.getMergedJobDataMap().getString("email"));
     }
