@@ -20,6 +20,7 @@ import lombok.NoArgsConstructor;
 public class SearchRequest implements Serializable {
     private static final long serialVersionUID = 1179207628667101580L;
     public static final String CERTIFICATION_DATE_SEARCH_FORMAT = "yyyy-MM-dd";
+    public static final int MAX_LISTING_IDS = 100;
     public static final int DEFAULT_PAGE_SIZE = 20;
     public static final int MAX_PAGE_SIZE = 100;
 

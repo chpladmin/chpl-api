@@ -57,7 +57,7 @@ public class SearchRequestValidator {
 
     public void validate(SearchRequest request) throws ValidationException {
         Set<String> errors = new LinkedHashSet<String>();
-        errors.addAll(getListingIdErrors(request.getListingIdStrings()));
+        errors.addAll(getListingIdErrors(request));
         errors.addAll(getCertificationStatusErrors(request.getCertificationStatuses()));
         errors.addAll(getDerivedCertificationEditionErrors(request.getDerivedCertificationEditions()));
         errors.addAll(getCertificationEditionErrors(request.getCertificationEditions()));
@@ -78,8 +78,17 @@ public class SearchRequestValidator {
         }
     }
 
-    private Set<String> getListingIdErrors(Set<String> listingIdStrings) {
+    private Set<String> getListingIdErrors(SearchRequest request) {
+        Set<String> listingIdStrings = request.getListingIdStrings();
+        Set<Long> listingIds = request.getListingIds();
         Set<String> listingIdErrors = new LinkedHashSet<String>();
+        if (!CollectionUtils.isEmpty(listingIdStrings)
+                && listingIdStrings.size() > SearchRequest.MAX_LISTING_IDS) {
+            listingIdErrors.add(msgUtil.getMessage("search.listingIds.moreThanAllowed", listingIdStrings.size(), SearchRequest.MAX_LISTING_IDS));
+        } else if (!CollectionUtils.isEmpty(listingIds)
+                && listingIds.size() > SearchRequest.MAX_LISTING_IDS) {
+            listingIdErrors.add(msgUtil.getMessage("search.listingIds.moreThanAllowed", listingIds.size(), SearchRequest.MAX_LISTING_IDS));
+        }
         listingIdErrors.addAll(getListingIdFormatErrors(listingIdStrings));
         return listingIdErrors;
     }
