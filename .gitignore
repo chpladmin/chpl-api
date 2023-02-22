@@ -16,7 +16,7 @@ local.properties
 .settings/
 .loadpath
 target/
-chpl/chpl-api/src/main/webapp/META-INF/M
+chpl/chpl-api/src/main/webapp/META-INF/
 
 # External tool builders
 .externalToolBuilders/
