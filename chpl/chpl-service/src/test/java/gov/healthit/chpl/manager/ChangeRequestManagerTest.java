@@ -60,7 +60,7 @@ public class ChangeRequestManagerTest {
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong()))
                 .thenReturn(getBasicChangeRequest());
 
-        ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
+        ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, null, changeRequestDAO,
                 null, null, null, null, null, null, null, null, null, null, null, null,
                 null, null, null, ff4j);
 
@@ -80,7 +80,7 @@ public class ChangeRequestManagerTest {
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong()))
                 .thenThrow(EntityRetrievalException.class);
 
-        ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
+        ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, null, changeRequestDAO,
                 null, null, null, null, null, null, null, null, null, null, null,
                 null, null, null, null, ff4j);
 
@@ -99,7 +99,7 @@ public class ChangeRequestManagerTest {
                 .thenReturn(Arrays.asList(getBasicChangeRequest(), getBasicChangeRequest(), getBasicChangeRequest()));
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
-        ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
+        ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, null, changeRequestDAO,
                 null, null, null, null, null, null, null, null, null, null, null,
                 resourcePermissions, null, null, null, ff4j);
 
@@ -134,7 +134,7 @@ public class ChangeRequestManagerTest {
         Mockito.when(crStatusService.updateChangeRequestStatus(ArgumentMatchers.any(ChangeRequest.class)))
                 .thenAnswer(i -> i.getArgument(0));
 
-        ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
+        ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, null, changeRequestDAO,
                 null,
                 null,
                 null,
@@ -172,7 +172,7 @@ public class ChangeRequestManagerTest {
                 Mockito.when(crValidationService.validate(ArgumentMatchers.any())).thenReturn(new ArrayList<String>(
                         Arrays.asList("This is an error.")));
 
-        ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
+        ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, null, changeRequestDAO,
                 null,
                 null,
                 null,
@@ -221,7 +221,7 @@ public class ChangeRequestManagerTest {
         Mockito.when(crStatusService.updateChangeRequestStatus(ArgumentMatchers.any(ChangeRequest.class)))
                 .thenAnswer(i -> i.getArgument(0));
 
-        ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
+        ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, null, changeRequestDAO,
                 null,
                 null,
                 null,
@@ -271,7 +271,8 @@ public class ChangeRequestManagerTest {
         Mockito.when(crStatusService.updateChangeRequestStatus(ArgumentMatchers.any(ChangeRequest.class)))
                 .thenAnswer(i -> i.getArgument(0));
 
-        ChangeRequestManager changeRequestManager = new ChangeRequestManager(changeRequestDAO,
+        ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, null,
+                changeRequestDAO,
                 null,
                 null,
                 null,
