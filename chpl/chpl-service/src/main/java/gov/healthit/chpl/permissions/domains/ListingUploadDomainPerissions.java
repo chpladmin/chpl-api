@@ -9,6 +9,7 @@ import gov.healthit.chpl.permissions.domains.listingUpload.CreateActionPermissio
 import gov.healthit.chpl.permissions.domains.listingUpload.DeleteActionPermissions;
 import gov.healthit.chpl.permissions.domains.listingUpload.GetAllActionPermissions;
 import gov.healthit.chpl.permissions.domains.listingUpload.GetByIdActionPermissions;
+import gov.healthit.chpl.permissions.domains.listingUpload.GetUploadedCsvActionPermissions;
 import gov.healthit.chpl.permissions.domains.listingUpload.ValidateByIdsActionPermissions;
 
 @Component
@@ -19,6 +20,7 @@ public class ListingUploadDomainPerissions extends DomainPermissions {
     public static final String VALIDATE_BY_IDS = "VALIDATE_BY_IDS";
     public static final String CONFIRM = "CONFIRM";
     public static final String DELETE = "DELETE";
+    public static final String GET_UPLOADED_CSV = "GET_UPLOADED_CSV";
 
     @Autowired
     public ListingUploadDomainPerissions(
@@ -27,12 +29,14 @@ public class ListingUploadDomainPerissions extends DomainPermissions {
             @Qualifier("getListingUploadByIdActionPermissions") GetByIdActionPermissions getByIdActionPermissions,
             @Qualifier("validateListingUploadByIdsActionPermissions") ValidateByIdsActionPermissions validateByIdsActionPermissions,
             @Qualifier("confirmListingUploadActionPermissions") ConfirmActionPermissions confirmActionPermissions,
-            @Qualifier("deleteListingUploadActionPermissions") DeleteActionPermissions deleteActionPermissions) {
+            @Qualifier("deleteListingUploadActionPermissions") DeleteActionPermissions deleteActionPermissions,
+            @Qualifier("getUploadedCsvActionPermissions") GetUploadedCsvActionPermissions getUploadedCsvActionPermissions) {
         getActionPermissions().put(CREATE, createActionPermissions);
         getActionPermissions().put(GET_ALL, getAllActionPermissions);
         getActionPermissions().put(GET_BY_ID, getByIdActionPermissions);
         getActionPermissions().put(VALIDATE_BY_IDS, validateByIdsActionPermissions);
         getActionPermissions().put(CONFIRM, confirmActionPermissions);
         getActionPermissions().put(DELETE, deleteActionPermissions);
+        getActionPermissions().put(GET_UPLOADED_CSV, getUploadedCsvActionPermissions);
     }
 }

@@ -1,9 +1,12 @@
 package gov.healthit.chpl.web.controller;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -14,7 +17,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +53,7 @@ import gov.healthit.chpl.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.upload.listing.ListingUploadManager;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.ListingUploadResponse;
@@ -69,13 +76,14 @@ public class ListingUploadController {
 
     private ListingUploadManager listingUploadManager;
     private ChplEmailFactory chplEmailFactory;
-
+    private FileUtils fileUtils;
 
     @Autowired
     public ListingUploadController(ListingUploadManager listingUploadManager,
-            ChplEmailFactory chplEmailFactory) {
+            ChplEmailFactory chplEmailFactory, FileUtils fileUtils) {
         this.listingUploadManager = listingUploadManager;
         this.chplEmailFactory = chplEmailFactory;
+        this.fileUtils = fileUtils;
     }
 
     @Operation(summary = "Get all uploaded listings to which the current user has access.",
@@ -110,6 +118,28 @@ public class ListingUploadController {
     public CertifiedProductSearchDetails geUserEnteredDeveloper(@PathVariable("id") Long id)
             throws ValidationException, EntityRetrievalException {
         return listingUploadManager.getSubmittedListing(id);
+    }
+
+    @Operation(summary = "Get the upload file originally used to confirm this listing.",
+            description = "Security Restrictions: ROLE_ADMIN.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @RequestMapping(value = "/{id:^-?\\d+$}/uploaded-file", method = RequestMethod.GET, produces = "text/csv")
+    public void streamUploadedFile(@PathVariable("id") Long confirmedListingId,
+            HttpServletResponse response) throws EntityRetrievalException, IOException {
+        List<List<String>> rows = listingUploadManager.getUploadedCsvRecords(confirmedListingId);
+
+        File file = new File("listing-" + confirmedListingId + "-upload.csv");
+        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
+                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
+            writer.write('\ufeff');
+            for (List<String> row : rows) {
+                csvPrinter.printRecord(row);
+            }
+        } catch (final IOException ex) {
+            LOGGER.error("Could not write file " + file.getName(), ex);
+        }
+        fileUtils.streamFileAsResponse(file, "text/csv", response);
     }
 
     @Operation(summary = "Upload a file with certified products",
