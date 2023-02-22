@@ -224,7 +224,6 @@ public class RealWorldTestingReportService {
     	} else {
     		return "";
     	}
-    		
     }
     
     private boolean arePlansLateWarning(Integer rwtEligYear) {
