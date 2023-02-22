@@ -259,10 +259,9 @@ public class SearchRequestValidator {
         }
 
         Set<String> errors = new LinkedHashSet<String>();
-        LocalDate startDate = null, endDate = null;
         if (!StringUtils.isEmpty(certificationDateStart)) {
             try {
-                startDate = LocalDate.parse(certificationDateStart, dateFormatter);
+                 LocalDate.parse(certificationDateStart, dateFormatter);
             } catch (DateTimeParseException ex) {
                 errors.add(msgUtil.getMessage("search.certificationDate.invalid", certificationDateStart, SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT));
             }
@@ -270,7 +269,7 @@ public class SearchRequestValidator {
 
         if (!StringUtils.isEmpty(certificationDateEnd)) {
             try {
-                endDate = LocalDate.parse(certificationDateEnd, dateFormatter);
+                LocalDate.parse(certificationDateEnd, dateFormatter);
             } catch (DateTimeParseException ex) {
                 errors.add(msgUtil.getMessage("search.certificationDate.invalid", certificationDateEnd, SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT));
             }
