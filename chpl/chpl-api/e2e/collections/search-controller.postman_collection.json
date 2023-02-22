@@ -5,7 +5,7 @@
 	},
 	"item": [
 		{
-			"name": "GET /search/v2",
+			"name": "GET /search/v3",
 			"event": [
 				{
 					"listen": "test",
@@ -13,12 +13,12 @@
 						"exec": [
 							"var jsonData = pm.response.json();\r",
 							"\r",
-							"pm.test(\"expect GET /search/v2 request to return 200 status and response body to not be empty\", function () {\r",
+							"pm.test(\"expect GET /search/v3 request to return 200 status and response body to not be empty\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
 							"    pm.expect(jsonData.response).not.eq(null);\r",
 							"});\r",
 							"\r",
-							"pm.test(\"expect listing data fields in GET /search/v2 response\", function () {\r",
+							"pm.test(\"expect listing data fields in GET /search/v3 response\", function () {\r",
 							"    pm.expect(jsonData.results[0]).to.have.property('chplProductNumber');\r",
 							"    pm.expect(jsonData.results[0]).to.have.property('edition');\r",
 							"    pm.expect(jsonData.results[0]).to.have.property('certificationBody');\r",
@@ -50,7 +50,7 @@
 							"    pm.expect(jsonData.results[0]).to.have.property('rwtResultsUrl');\r",
 							"});\r",
 							"\r",
-							"pm.test(\"expect listing data in GET /search/v2 response\", function () {\r",
+							"pm.test(\"expect listing data in GET /search/v3 response\", function () {\r",
 							"    pm.expect(pm.response.text()).to.include(\"2015\");    \r",
 							"    pm.expect(pm.response.text()).to.include(\"Drummond Group\");\r",
 							"    pm.expect(pm.response.text()).to.include(\"Active\");    \r",
@@ -75,14 +75,14 @@
 					}
 				],
 				"url": {
-					"raw": "{{url}}/rest/search/v2",
+					"raw": "{{url}}/rest/search/v3",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"rest",
 						"search",
-						"v2"
+						"v3"
 					]
 				}
 			},

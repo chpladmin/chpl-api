@@ -469,7 +469,28 @@ public class DeveloperSearchServiceTest {
     }
 
     @Test
-    public void search_decertificationStartDateEqualsDeveloperDecertificationDate_findsNoMatches() throws ValidationException {
+    public void search_decertificationStartDateAfterDecertificationDateEnd_noMatches() throws ValidationException {
+        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        allDevelopers.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
+        allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-06-01"));
+        allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-07-01"));
+
+        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .decertificationDateStart("2020-07-01")
+            .decertificationDateEnd("2020-06-01")
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_decertificationStartDateEqualsDeveloperDecertificationDate_findsMatches() throws ValidationException {
         List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-06-01"));
@@ -483,8 +504,8 @@ public class DeveloperSearchServiceTest {
         DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(0, searchResponse.getRecordCount());
-        assertEquals(0, searchResponse.getResults().size());
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
     }
 
     @Test
@@ -507,7 +528,7 @@ public class DeveloperSearchServiceTest {
     }
 
     @Test
-    public void search_decertificationEndDateEqualsDeveloperDecertificationDate_findsNoMatches() throws ValidationException {
+    public void search_decertificationEndDateEqualsDeveloperDecertificationDate_findsMatches() throws ValidationException {
         List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
@@ -521,8 +542,8 @@ public class DeveloperSearchServiceTest {
         DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(0, searchResponse.getRecordCount());
-        assertEquals(0, searchResponse.getResults().size());
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
     }
 
     @Test
@@ -565,7 +586,7 @@ public class DeveloperSearchServiceTest {
     }
 
     @Test
-    public void search_developerDecertificationDateEqualsStartAndBeforeEnd_findsNoMatches() throws ValidationException {
+    public void search_developerDecertificationDateEqualsStartAndBeforeEnd_findsMatches() throws ValidationException {
         List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
@@ -580,12 +601,12 @@ public class DeveloperSearchServiceTest {
         DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(0, searchResponse.getRecordCount());
-        assertEquals(0, searchResponse.getResults().size());
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
     }
 
     @Test
-    public void search_developerDecertificationDateEqualsEndAndAfterStart_findsNoMatches() throws ValidationException {
+    public void search_developerDecertificationDateEqualsEndAndAfterStart_findsMatches() throws ValidationException {
         List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
@@ -600,12 +621,12 @@ public class DeveloperSearchServiceTest {
         DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(0, searchResponse.getRecordCount());
-        assertEquals(0, searchResponse.getResults().size());
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
     }
 
     @Test
-    public void search_developerDecertificationDateEqualsEndAndStart_findsNoMatches() throws ValidationException {
+    public void search_developerDecertificationDateEqualsEndAndStart_findsMatches() throws ValidationException {
         List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
@@ -620,8 +641,8 @@ public class DeveloperSearchServiceTest {
         DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(0, searchResponse.getRecordCount());
-        assertEquals(0, searchResponse.getResults().size());
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
     }
 
     private List<DeveloperSearchResult> createDeveloperSearchResultCollection(int collectionSize) {

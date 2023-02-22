@@ -209,12 +209,12 @@ public class ComplaintSearchService {
         LocalDate endDate = parseLocalDate(rangeEnd);
         if (complaint.getClosedDate() != null) {
             if (startDate == null && endDate != null) {
-                return complaint.getClosedDate().isBefore(endDate);
+                return complaint.getClosedDate().isEqual(endDate) || complaint.getClosedDate().isBefore(endDate);
             } else if (startDate != null && endDate == null) {
-                return complaint.getClosedDate().isAfter(startDate);
+                return complaint.getClosedDate().isEqual(startDate) || complaint.getClosedDate().isAfter(startDate);
             } else {
-                return complaint.getClosedDate().isBefore(endDate)
-                                && complaint.getClosedDate().isAfter(startDate);
+                return (complaint.getClosedDate().isEqual(endDate) || complaint.getClosedDate().isBefore(endDate))
+                      && (complaint.getClosedDate().isEqual(startDate) || complaint.getClosedDate().isAfter(startDate));
             }
         }
         return false;
@@ -228,12 +228,12 @@ public class ComplaintSearchService {
         LocalDate endDate = parseLocalDate(rangeEnd);
         if (complaint.getReceivedDate() != null) {
             if (startDate == null && endDate != null) {
-                return complaint.getReceivedDate().isBefore(endDate);
+                return complaint.getReceivedDate().isEqual(endDate) || complaint.getReceivedDate().isBefore(endDate);
             } else if (startDate != null && endDate == null) {
-                return complaint.getReceivedDate().isAfter(startDate);
+                return complaint.getReceivedDate().isEqual(startDate) || complaint.getReceivedDate().isAfter(startDate);
             } else {
-                return complaint.getReceivedDate().isBefore(endDate)
-                                && complaint.getReceivedDate().isAfter(startDate);
+                return (complaint.getReceivedDate().isEqual(endDate) || complaint.getReceivedDate().isBefore(endDate))
+                      && (complaint.getReceivedDate().isEqual(startDate) || complaint.getReceivedDate().isAfter(startDate));
             }
         }
         return false;

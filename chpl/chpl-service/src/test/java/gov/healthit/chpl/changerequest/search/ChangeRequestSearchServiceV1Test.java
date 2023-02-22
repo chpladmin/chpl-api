@@ -19,9 +19,9 @@ import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
-public class ChangeRequestSearchManagerTest {
+public class ChangeRequestSearchServiceV1Test {
 
-    private ChangeRequestSearchManager changeRequestSearchManager;
+    private ChangeRequestSearchServiceV1 changeRequestSearchService;
     private ChangeRequestDAO changeRequestDao;
 
     @Before
@@ -31,7 +31,7 @@ public class ChangeRequestSearchManagerTest {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
 
-        changeRequestSearchManager = new ChangeRequestSearchManager(null, null, changeRequestDao,
+        changeRequestSearchService = new ChangeRequestSearchServiceV1(changeRequestDao,
                 searchRequestValidator, resourcePermissions);
     }
 
@@ -43,7 +43,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(100, searchResponse.getRecordCount());
@@ -58,7 +58,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(2)
             .pageSize(100)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(100, searchResponse.getRecordCount());
@@ -75,7 +75,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(0, searchResponse.getRecordCount());
@@ -97,7 +97,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
@@ -124,7 +124,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
@@ -151,7 +151,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
@@ -178,7 +178,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
@@ -205,7 +205,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
@@ -232,7 +232,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
@@ -259,7 +259,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
@@ -286,7 +286,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
@@ -313,7 +313,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
@@ -340,7 +340,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
@@ -367,7 +367,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
@@ -394,7 +394,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
@@ -417,7 +417,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(2, searchResponse.getRecordCount());
@@ -435,7 +435,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
@@ -453,7 +453,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
@@ -472,7 +472,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
@@ -491,7 +491,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(2, searchResponse.getRecordCount());
@@ -509,7 +509,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(0, searchResponse.getRecordCount());
@@ -528,7 +528,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
@@ -551,7 +551,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(3, searchResponse.getRecordCount());
@@ -570,7 +570,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
@@ -593,7 +593,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(3, searchResponse.getRecordCount());
@@ -612,7 +612,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(0, searchResponse.getRecordCount());
@@ -631,7 +631,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
@@ -650,7 +650,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(0, searchResponse.getRecordCount());
@@ -669,7 +669,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(0, searchResponse.getRecordCount());
@@ -688,7 +688,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
@@ -707,7 +707,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(0, searchResponse.getRecordCount());
@@ -727,7 +727,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
@@ -747,7 +747,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(0, searchResponse.getRecordCount());
@@ -767,7 +767,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(0, searchResponse.getRecordCount());
@@ -787,7 +787,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(0, searchResponse.getRecordCount());
@@ -806,7 +806,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(0, searchResponse.getRecordCount());
@@ -825,7 +825,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
@@ -844,7 +844,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(0, searchResponse.getRecordCount());
@@ -863,7 +863,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(0, searchResponse.getRecordCount());
@@ -882,7 +882,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
@@ -901,7 +901,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(0, searchResponse.getRecordCount());
@@ -921,7 +921,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
@@ -941,7 +941,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(0, searchResponse.getRecordCount());
@@ -961,7 +961,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(0, searchResponse.getRecordCount());
@@ -981,7 +981,7 @@ public class ChangeRequestSearchManagerTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(0, searchResponse.getRecordCount());

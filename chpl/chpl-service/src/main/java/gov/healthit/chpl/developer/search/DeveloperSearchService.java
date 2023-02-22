@@ -126,11 +126,12 @@ public class DeveloperSearchService {
         LocalDate endDate = parseLocalDate(decertificationDateRangeEnd);
         if (developer.getDecertificationDate() != null) {
             if (startDate == null && endDate != null) {
-                return developer.getDecertificationDate().isBefore(endDate);
+                return developer.getDecertificationDate().isEqual(endDate) || developer.getDecertificationDate().isBefore(endDate);
             } else if (startDate != null && endDate == null) {
-                return developer.getDecertificationDate().isAfter(startDate);
+                return developer.getDecertificationDate().isEqual(startDate) || developer.getDecertificationDate().isAfter(startDate);
             } else {
-                return developer.getDecertificationDate().isBefore(endDate) && developer.getDecertificationDate().isAfter(startDate);
+                return (developer.getDecertificationDate().isEqual(endDate) || developer.getDecertificationDate().isBefore(endDate))
+                        && (developer.getDecertificationDate().isEqual(startDate) || developer.getDecertificationDate().isAfter(startDate));
             }
         }
         return false;

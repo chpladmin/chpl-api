@@ -1,7 +1,6 @@
 package gov.healthit.chpl.upload.listing;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,13 +10,11 @@ import javax.persistence.Query;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
@@ -53,7 +50,7 @@ public class ListingUploadDao extends BaseDAOImpl {
         toCreate.setLastModifiedUser(AuthUtil.getAuditId());
         create(toCreate);
 
-        return convert(toCreate);
+        return toCreate.toDomain();
     }
 
     public void updateErrorAndWarningCounts(ListingUpload listingUpload) {
@@ -114,7 +111,7 @@ public class ListingUploadDao extends BaseDAOImpl {
                 Stream.of(ListingUploadStatus.CONFIRMED, ListingUploadStatus.REJECTED).collect(Collectors.toList()));
         List<ListingUploadEntity> entities = query.getResultList();
         List<ListingUpload> availableUploadedLisitngs = entities.stream()
-                .map(entity -> convert(entity))
+                .map(entity -> entity.toDomain())
                 .collect(Collectors.<ListingUpload>toList());
         return availableUploadedLisitngs;
     }
@@ -125,7 +122,7 @@ public class ListingUploadDao extends BaseDAOImpl {
                 + "AND ul.deleted = false", ListingUploadEntity.class);
         List<ListingUploadEntity> entities = query.getResultList();
         List<ListingUpload> allUploadedListings = entities.stream()
-                .map(entity -> convert(entity))
+                .map(entity -> entity.toDomain())
                 .collect(Collectors.<ListingUpload>toList());
         return allUploadedListings;
     }
@@ -139,7 +136,7 @@ public class ListingUploadDao extends BaseDAOImpl {
         if (entities == null || entities.size() == 0) {
             throw new EntityRetrievalException();
         }
-        return convert(entities.get(0));
+        return entities.get(0).toDomain();
     }
 
     ListingUploadEntity getEntityByIdIncludingDeleted(Long id) throws EntityRetrievalException {
@@ -162,7 +159,19 @@ public class ListingUploadDao extends BaseDAOImpl {
         if (entities == null || entities.size() == 0) {
             throw new EntityRetrievalException();
         }
-        return convert(entities.get(0), true);
+        return entities.get(0).toDomainWithRecords();
+    }
+
+    public ListingUpload getByConfirmedListingIdIncludingRecords(Long confirmedListingId) throws EntityRetrievalException {
+        Query query = entityManager.createQuery(GET_ENTITY_HQL_BEGIN
+                + "WHERE ul.certifiedProductId = :confirmedListingId "
+                + "AND ul.deleted = false", ListingUploadEntity.class);
+        query.setParameter("confirmedListingId", confirmedListingId);
+        List<ListingUploadEntity> entities = query.getResultList();
+        if (entities == null || entities.size() == 0) {
+            throw new EntityRetrievalException("There is no upload file associated with listing ID " + confirmedListingId);
+        }
+        return entities.get(0).toDomainWithRecords();
     }
 
     public ListingUpload getByChplProductNumber(String chplProductNumber) {
@@ -172,38 +181,9 @@ public class ListingUploadDao extends BaseDAOImpl {
         query.setParameter("chplProductNumber", chplProductNumber);
         List<ListingUploadEntity> entities = query.getResultList();
         if (entities != null && entities.size() > 0) {
-            return convert(entities.get(0));
+            return entities.get(0).toDomain();
         }
         return null;
-    }
-
-    private ListingUpload convert(ListingUploadEntity entity) {
-        return convert(entity, false);
-    }
-
-    private ListingUpload convert(ListingUploadEntity entity, boolean includeRecords) {
-        ListingUpload listingUpload = new ListingUpload();
-        listingUpload.setId(entity.getId());
-        CertificationBody acb = null;
-        if (entity.getCertificationBody() != null) {
-            acb = new CertificationBody(entity.getCertificationBody());
-        } else {
-            acb = new CertificationBody();
-            acb.setId(entity.getCertificationBodyId());
-        }
-        listingUpload.setAcb(acb);
-        listingUpload.setChplProductNumber(entity.getChplProductNumber());
-        listingUpload.setCertificationDate(entity.getCertificationDate());
-        listingUpload.setDeveloper(entity.getDeveloperName());
-        listingUpload.setProduct(entity.getProductName());
-        listingUpload.setVersion(entity.getVersionName());
-        listingUpload.setErrorCount(entity.getErrorCount());
-        listingUpload.setWarningCount(entity.getWarningCount());
-        listingUpload.setStatus(entity.getStatus());
-        if (includeRecords) {
-            listingUpload.setRecords(recordsFromString(entity.getFileContents()));
-        }
-        return listingUpload;
     }
 
     private String printToString(List<CSVRecord> csvRecords) throws IOException {
@@ -219,17 +199,5 @@ public class ListingUploadDao extends BaseDAOImpl {
         printer.flush();
         printer.close();
         return writer.toString();
-    }
-
-    private List<CSVRecord> recordsFromString(String csvRecordStr) {
-        List<CSVRecord> records = null;
-        try {
-            StringReader in = new StringReader(csvRecordStr);
-            CSVParser csvParser = CSVFormat.EXCEL.parse(in);
-            records = csvParser.getRecords();
-        } catch (IOException ex) {
-            LOGGER.error("Could not convert the string: '" + csvRecordStr + "' to CSV records.");
-        }
-        return records;
     }
 }

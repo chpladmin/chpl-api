@@ -15,6 +15,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -119,6 +120,27 @@ public class ListingSearchService {
             searchRequest.setPageNumber(searchResponse.getPageNumber() + 1);
             searchResponse = findListings(searchRequest);
             searchResults.addAll(searchResponse.getResults());
+        }
+        return searchResults;
+    }
+
+
+    public List<ListingSearchResult> getAllPagesOfSearchResults(SearchRequest searchRequest, Logger logger) {
+        List<ListingSearchResult> searchResults = new ArrayList<ListingSearchResult>();
+        try {
+            logger.debug(searchRequest.toString());
+            ListingSearchResponse searchResponse = findListings(searchRequest);
+            searchResults.addAll(searchResponse.getResults());
+            while (searchResponse.getRecordCount() > searchResults.size()) {
+                searchRequest.setPageSize(searchResponse.getPageSize());
+                searchRequest.setPageNumber(searchResponse.getPageNumber() + 1);
+                logger.debug(searchRequest.toString());
+                searchResponse = findListings(searchRequest);
+                searchResults.addAll(searchResponse.getResults());
+            }
+            logger.debug("Found {} total listings for search request {}.", searchResults.size(), searchRequest);
+        } catch (ValidationException ex) {
+            logger.error("Could not retrieve listings from search request.", ex);
         }
         return searchResults;
     }
@@ -428,11 +450,12 @@ public class ListingSearchService {
         LocalDate endDate = parseLocalDate(certificationDateRangeEnd);
         if (listing.getCertificationDate() != null) {
             if (startDate == null && endDate != null) {
-                return listing.getCertificationDate().isBefore(endDate);
+                return listing.getCertificationDate().isEqual(endDate) || listing.getCertificationDate().isBefore(endDate);
             } else if (startDate != null && endDate == null) {
-                return listing.getCertificationDate().isAfter(startDate);
+                return listing.getCertificationDate().isEqual(startDate) || listing.getCertificationDate().isAfter(startDate);
             } else {
-                return listing.getCertificationDate().isBefore(endDate) && listing.getCertificationDate().isAfter(startDate);
+                return (listing.getCertificationDate().isEqual(endDate) || listing.getCertificationDate().isBefore(endDate))
+                        && (listing.getCertificationDate().isEqual(startDate) || listing.getCertificationDate().isAfter(startDate));
             }
         }
         return false;
@@ -447,11 +470,12 @@ public class ListingSearchService {
         LocalDate endDate = parseLocalDate(decertificationDateRangeEnd);
         if (listing.getDecertificationDate() != null) {
             if (startDate == null && endDate != null) {
-                return listing.getDecertificationDate().isBefore(endDate);
+                return listing.getDecertificationDate().isEqual(endDate) || listing.getDecertificationDate().isBefore(endDate);
             } else if (startDate != null && endDate == null) {
-                return listing.getDecertificationDate().isAfter(startDate);
+                return listing.getDecertificationDate().isEqual(startDate) || listing.getDecertificationDate().isAfter(startDate);
             } else {
-                return (listing.getDecertificationDate().isBefore(endDate) && listing.getDecertificationDate().isAfter(startDate));
+                return listing.getDecertificationDate().isEqual(startDate) || listing.getDecertificationDate().isEqual(endDate)
+                        || (listing.getDecertificationDate().isBefore(endDate) && listing.getDecertificationDate().isAfter(startDate));
             }
         }
         return false;
