@@ -196,10 +196,7 @@ public class MergeDeveloperJob implements Job {
 
         String developerList = "<ul>";
         for (Developer dev : developers) {
-            developerList += String.format("<li><a href=\"%s/#/organizations/developers/%d\">%s</a></li>",
-                    env.getProperty("chplUrlBegin"),
-                    dev.getId(),
-                    dev.getName());
+            developerList += String.format("<li>%s</li>", dev.getName());
         }
         developerList += "</ul>";
 
