@@ -74,8 +74,8 @@ public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
             listingMetadata.setAcbId(Long.valueOf(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()));
         }
 
-        //there is at least one activity record that has a null certification date field
-        //due to a bug in the system at the time of the activity
+        //there is at least one activity record for listing ID 4801
+        //that has a null certification date field due to a bug in the system at the time of the activity
         listingMetadata.setCertificationDate(listing.getCertificationDate());
         if (listing.getDeveloper() != null) {
             listingMetadata.setDeveloperName(listing.getDeveloper().getName());

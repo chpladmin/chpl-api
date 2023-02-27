@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -29,7 +28,6 @@ public class ProductNameValidationTest {
     @Test
     public void review_nullProductName_hasError() {
         ProductValidationContext context = ProductValidationContext.builder()
-                .developerDao(Mockito.mock(DeveloperDAO.class))
                 .errorMessageUtil(msgUtil)
                 .product(Product.builder()
                         .name(null)
@@ -46,7 +44,6 @@ public class ProductNameValidationTest {
     @Test
     public void review_emptyProductName_hasError() {
         ProductValidationContext context = ProductValidationContext.builder()
-                .developerDao(Mockito.mock(DeveloperDAO.class))
                 .errorMessageUtil(msgUtil)
                 .product(Product.builder()
                         .name("")
@@ -63,7 +60,6 @@ public class ProductNameValidationTest {
     @Test
     public void review_blankProductName_hasError() {
         ProductValidationContext context = ProductValidationContext.builder()
-                .developerDao(Mockito.mock(DeveloperDAO.class))
                 .errorMessageUtil(msgUtil)
                 .product(Product.builder()
                         .name("   ")
@@ -80,7 +76,6 @@ public class ProductNameValidationTest {
     @Test
     public void review_hasProductName_noError() {
         ProductValidationContext context = ProductValidationContext.builder()
-                .developerDao(Mockito.mock(DeveloperDAO.class))
                 .errorMessageUtil(msgUtil)
                 .product(Product.builder()
                         .name("name")

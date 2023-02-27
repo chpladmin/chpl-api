@@ -885,6 +885,10 @@ public class CertifiedProductSearchDetails implements Serializable {
                 result = currEvent;
             }
         }
+
+        if (result == null) {
+            return null;
+        }
         return result.getEventDate();
     }
 
