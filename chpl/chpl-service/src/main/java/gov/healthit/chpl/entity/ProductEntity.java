@@ -23,6 +23,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.domain.Product;
@@ -42,6 +43,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@DynamicUpdate
 @Table(name = "product")
 public class ProductEntity implements Serializable {
     private static final long serialVersionUID = -5332080900089062551L;

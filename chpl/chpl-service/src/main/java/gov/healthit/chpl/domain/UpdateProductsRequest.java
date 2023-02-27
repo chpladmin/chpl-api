@@ -7,7 +7,6 @@ public class UpdateProductsRequest implements Serializable {
     private static final long serialVersionUID = -5814847900559692235L;
     private List<Long> productIds;
     private Product product;
-    private Long newDeveloperId;
 
     public List<Long> getProductIds() {
         return productIds;
@@ -23,13 +22,5 @@ public class UpdateProductsRequest implements Serializable {
 
     public void setProduct(final Product product) {
         this.product = product;
-    }
-
-    public Long getNewDeveloperId() {
-        return newDeveloperId;
-    }
-
-    public void setNewDeveloperId(final Long newDeveloperId) {
-        this.newDeveloperId = newDeveloperId;
     }
 }
