@@ -34,6 +34,7 @@ import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.form.Form;
+import gov.healthit.chpl.questionableactivity.listing.RwtPlansUpdatedOutsideNormalPeriod;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ListingSearchResponse;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
@@ -48,12 +49,6 @@ import lombok.extern.log4j.Log4j2;
 public class CheckInReportDataCollector {
 	private static final Integer MAX_PAGE_SIZE = 100;
 
-    private static final Long INFO_BLOCKING_CONDITION = 1L;
-    private static final Long ASSURANCES_CONDITION = 7L;
-    private static final Long COMMUNICATIONS_CONDITION = 3L;
-    private static final Long API_CONDITION = 4L;
-    private static final Long RWT_CONDITION = 5L;
-    
     private static final String RWT_VALIDATION_TRUE = "Has listing(s) with RWT criteria";
     private static final String RWT_VALIDATION_FALSE = "No listings with RWT criteria";
     private static final String ASSURANCES_VALIDATION_TRUE = "Has listing(s) with Assurances criteria (b)(6) or (b)(10)";
@@ -152,11 +147,11 @@ public class CheckInReportDataCollector {
 
     private CheckInReport convert(ChangeRequest cr) {
     	ChangeRequestAttestationSubmission crAttestation = (ChangeRequestAttestationSubmission) cr.getDetails();
-    	CheckInReport checkInReport = convert(cr.getDeveloper(), crAttestation.getForm());
-    	checkInReport.setSubmittedDate(cr.getSubmittedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+    	CheckInReport checkInReport = convert(cr.getDeveloper(), crAttestation.getForm(), crAttestation.getAttestationPeriod().getId());
+    	checkInReport.setSubmittedDate(cr.getSubmittedDateTime());
     	checkInReport.setPublished(false);
     	checkInReport.setCurrentStatusName(cr.getCurrentStatus().getChangeRequestStatusType().getName());
-    	checkInReport.setLastStatusChangeDate(cr.getCurrentStatus().getStatusChangeDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+    	checkInReport.setLastStatusChangeDate(cr.getCurrentStatus().getStatusChangeDateTime());
     	checkInReport.setRelevantAcbs(cr.getCertificationBodies().stream()
                 .map(acb -> acb.getName())
                 .collect(Collectors.joining("; ")));
@@ -166,26 +161,28 @@ public class CheckInReportDataCollector {
     }
     
     private CheckInReport convert(Developer developer, AttestationSubmission attestation) {
-    	CheckInReport checkInReport = convert(developer, attestation.getForm());
+    	CheckInReport checkInReport = convert(developer, attestation.getForm(), attestation.getAttestationPeriod().getId());
     	checkInReport.setPublished(true);
+    	checkInReport.setSignature(attestation.getSignature());
+    	checkInReport.setSignatureEmail(attestation.getSignatureEmail());
     	return checkInReport;
     }
     
-    private CheckInReport convert(Developer developer, Form form) {
+    private CheckInReport convert(Developer developer, Form form, Long attestationPeriod) {
     	return CheckInReport.builder()
                 .developerName(developer.getName())
                 .developerCode(developer.getDeveloperCode())
                 .developerId(developer.getId())
-                .informationBlockingResponse(getAttestationResponse(form, INFO_BLOCKING_CONDITION))
-                .informationBlockingNoncompliantResponse(getAttestationOptionalResponse(form, INFO_BLOCKING_CONDITION))
-                .assurancesResponse(getAttestationResponse(form, ASSURANCES_CONDITION))
-                .assurancesNoncompliantResponse(getAttestationOptionalResponse(form, ASSURANCES_CONDITION))
-                .communicationsResponse(getAttestationResponse(form, COMMUNICATIONS_CONDITION))
-                .communicationsNoncompliantResponse(getAttestationOptionalResponse(form, COMMUNICATIONS_CONDITION))
-                .rwtResponse(getAttestationResponse(form, RWT_CONDITION))
-                .rwtNoncompliantResponse(getAttestationOptionalResponse(form, RWT_CONDITION))
-                .apiResponse(getAttestationResponse(form, API_CONDITION))
-                .apiNoncompliantResponse(getAttestationOptionalResponse(form, API_CONDITION))
+                .informationBlockingResponse(getAttestationResponse(form, AttestatationFormMetaData.getInformationBlockingConditionId(attestationPeriod)))
+                .informationBlockingNoncompliantResponse(getAttestationOptionalResponse(form, AttestatationFormMetaData.getInformationBlockingConditionId(attestationPeriod)))
+                .assurancesResponse(getAttestationResponse(form, AttestatationFormMetaData.getAssurancesConditionId(attestationPeriod)))
+                .assurancesNoncompliantResponse(getAttestationOptionalResponse(form, AttestatationFormMetaData.getAssurancesConditionId(attestationPeriod)))
+                .communicationsResponse(getAttestationResponse(form, AttestatationFormMetaData.getCommunicationConditionId(attestationPeriod)))
+                .communicationsNoncompliantResponse(getAttestationOptionalResponse(form, AttestatationFormMetaData.getCommunicationConditionId(attestationPeriod)))
+                .rwtResponse(getAttestationResponse(form, AttestatationFormMetaData.getRwtConditionId(attestationPeriod)))
+                .rwtNoncompliantResponse(getAttestationOptionalResponse(form, AttestatationFormMetaData.getRwtConditionId(attestationPeriod)))
+                .apiResponse(getAttestationResponse(form, AttestatationFormMetaData.getApiConditionId(attestationPeriod)))
+                .apiNoncompliantResponse(getAttestationOptionalResponse(form, AttestatationFormMetaData.getApiConditionId(attestationPeriod)))
                 .totalSurveillances(getTotalSurveillances(developer, LOGGER))
                 .totalSurveillanceNonconformities(getTotalSurveillanceNonconformities(developer, LOGGER))
                 .openSurveillanceNonconformities(getOpenSurveillanceNonconformities(developer, LOGGER))

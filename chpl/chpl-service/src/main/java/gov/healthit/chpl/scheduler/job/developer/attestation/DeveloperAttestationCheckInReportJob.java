@@ -32,13 +32,13 @@ public class DeveloperAttestationCheckInReportJob implements Job {
     private JpaTransactionManager txManager;
 
     @Autowired
-    private CheckInReportDataCollector developerAttestationCheckInReportDataCollection;
+    private CheckInReportDataCollector checkInReportDataCollection;
 
     @Autowired
-    private CheckInReportSummaryDataCollector developerAttestationCheckInReportSummaryDataCollection;
+    private CheckInReportSummaryDataCollector checkInReportSummaryDataCollection;
 
     @Autowired
-    private CheckInReportCsvWriter developerAttestationCheckInReportCsvWriter;
+    private CheckInReportCsvWriter checkInReportCsvWriter;
 
     @Autowired
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
@@ -87,9 +87,9 @@ public class DeveloperAttestationCheckInReportJob implements Job {
                 try {
                 	setSecurityContext(userDao.getById(User.ADMIN_USER_ID));
                     
-                    List<CheckInReport> reportRows = developerAttestationCheckInReportDataCollection.collect();
-                    CheckInReportSummary reportSummary = developerAttestationCheckInReportSummaryDataCollection.collect(reportRows);
-                    File csv = developerAttestationCheckInReportCsvWriter.generateFile(reportRows);
+                    List<CheckInReport> reportRows = checkInReportDataCollection.collect();
+                    CheckInReportSummary reportSummary = checkInReportSummaryDataCollection.collect(reportRows);
+                    File csv = checkInReportCsvWriter.generateFile(reportRows);
                     chplEmailFactory.emailBuilder()
                             .recipient(context.getMergedJobDataMap().getString("email"))
                             .subject(emailSubject)
