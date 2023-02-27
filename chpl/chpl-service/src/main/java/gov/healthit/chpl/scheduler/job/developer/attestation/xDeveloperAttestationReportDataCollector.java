@@ -1,6 +1,5 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -35,9 +34,7 @@ import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.UserDeveloperMapDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.search.ListingSearchService;
-import gov.healthit.chpl.search.domain.ListingSearchResponse;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
@@ -327,7 +324,7 @@ public class xDeveloperAttestationReportDataCollector {
                     .pageSize(MAX_PAGE_SIZE)
                     .pageNumber(0)
                     .build();
-            List<ListingSearchResult> searchResults = getAllPagesOfSearchResults(searchRequest, logger);
+            List<ListingSearchResult> searchResults = listingSearchService.getAllPagesOfSearchResults(searchRequest, logger);
             developerListings.put(developer.getId(), searchResults);
             return searchResults;
         }
@@ -344,27 +341,7 @@ public class xDeveloperAttestationReportDataCollector {
                 .pageSize(MAX_PAGE_SIZE)
                 .pageNumber(0)
                 .build();
-        return getAllPagesOfSearchResults(searchRequest, logger);
-    }
-
-    private List<ListingSearchResult> getAllPagesOfSearchResults(SearchRequest searchRequest, Logger logger) {
-        List<ListingSearchResult> searchResults = new ArrayList<ListingSearchResult>();
-        try {
-            logger.debug(searchRequest.toString());
-            ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
-            searchResults.addAll(searchResponse.getResults());
-            while (searchResponse.getRecordCount() > searchResults.size()) {
-                searchRequest.setPageSize(searchResponse.getPageSize());
-                searchRequest.setPageNumber(searchResponse.getPageNumber() + 1);
-                logger.debug(searchRequest.toString());
-                searchResponse = listingSearchService.findListings(searchRequest);
-                searchResults.addAll(searchResponse.getResults());
-            }
-            logger.info("Found {} total listings for developer {}.", searchResults.size(), searchRequest.getDeveloper());
-        } catch (ValidationException ex) {
-            logger.error("Could not retrieve listings from search request.", ex);
-        }
-        return searchResults;
+        return listingSearchService.getAllPagesOfSearchResults(searchRequest, logger);
     }
 
     private Map<Pair<Long, Long>, Boolean> getDeveloperAcbMapping(Developer developer, Logger logger) {

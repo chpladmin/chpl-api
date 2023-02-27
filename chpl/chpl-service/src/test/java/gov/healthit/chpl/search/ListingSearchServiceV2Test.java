@@ -35,10 +35,10 @@ import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 
 @SuppressWarnings("checkstyle:magicnumber")
-public class ListingSearchServiceTest {
+public class ListingSearchServiceV2Test {
 
     private ListingSearchManager listingSearchManager;
-    private ListingSearchService listingSearchService;
+    private ListingSearchServiceV2 listingSearchService;
 
     @Before
     public void setup() {
@@ -47,7 +47,7 @@ public class ListingSearchServiceTest {
         Mockito.when(drService.doesCacheHaveAnyOkData()).thenReturn(true);
         listingSearchManager = Mockito.mock(ListingSearchManager.class);
 
-        listingSearchService = new ListingSearchService(searchRequestValidator,
+        listingSearchService = new ListingSearchServiceV2(searchRequestValidator,
                 listingSearchManager, drService);
     }
 
@@ -1491,7 +1491,7 @@ public class ListingSearchServiceTest {
     }
 
     @Test
-    public void search_certificationStartDateEqualsListingCertificationDate_findsMatchingListings() throws ValidationException {
+    public void search_certificationStartDateEqualsListingCertificationDate_findsNoMatchingListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setCertificationDate(LocalDate.parse("2020-06-25"));
         allListings.get(1).setCertificationDate(LocalDate.parse("2020-06-01"));
@@ -1505,8 +1505,8 @@ public class ListingSearchServiceTest {
         ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
@@ -1529,7 +1529,7 @@ public class ListingSearchServiceTest {
     }
 
     @Test
-    public void search_certificationEndDateEqualsListingCertificationDate_findsMatchingListings() throws ValidationException {
+    public void search_certificationEndDateEqualsListingCertificationDate_findsNoMatchingListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setCertificationDate(LocalDate.parse("2020-06-25"));
         allListings.get(1).setCertificationDate(LocalDate.parse("2020-06-27"));
@@ -1543,8 +1543,8 @@ public class ListingSearchServiceTest {
         ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
@@ -1587,7 +1587,7 @@ public class ListingSearchServiceTest {
     }
 
     @Test
-    public void search_listingCertificationDateEqualsStartAndBeforeEnd_findsListings() throws ValidationException {
+    public void search_listingCertificationDateEqualsStartAndBeforeEnd_findsNoListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setCertificationDate(LocalDate.parse("2020-06-25"));
         allListings.get(1).setCertificationDate(LocalDate.parse("2020-06-27"));
@@ -1602,12 +1602,12 @@ public class ListingSearchServiceTest {
         ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
-    public void search_listingCertificationDateEqualsEndAndAfterStart_findsListings() throws ValidationException {
+    public void search_listingCertificationDateEqualsEndAndAfterStart_findsNoListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setCertificationDate(LocalDate.parse("2020-06-25"));
         allListings.get(1).setCertificationDate(LocalDate.parse("2020-06-27"));
@@ -1622,12 +1622,12 @@ public class ListingSearchServiceTest {
         ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
-    public void search_listingCertificationDateEqualsEndAndStart_findsListings() throws ValidationException {
+    public void search_listingCertificationDateEqualsEndAndStart_findsNoListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setCertificationDate(LocalDate.parse("2020-06-25"));
         allListings.get(1).setCertificationDate(LocalDate.parse("2020-06-27"));
@@ -1642,8 +1642,8 @@ public class ListingSearchServiceTest {
         ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
@@ -1651,8 +1651,6 @@ public class ListingSearchServiceTest {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setCertificationDate(LocalDate.parse("2020-06-25"));
         allListings.get(1).setCertificationDate(LocalDate.parse("2020-06-27"));
-        allListings.get(2).setCertificationDate(LocalDate.parse("2020-07-01"));
-        allListings.get(2).setCertificationDate(LocalDate.parse("2020-06-01"));
 
         Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
@@ -1669,7 +1667,7 @@ public class ListingSearchServiceTest {
     }
 
     @Test
-    public void search_decertificationStartDateEqualsListingDecertificationDate_findsMatchingListings() throws ValidationException {
+    public void search_decertificationStartDateEqualsListingDecertificationDate_findsNoMatchingListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allListings.get(1).setDecertificationDate(LocalDate.parse("2020-06-01"));
@@ -1683,8 +1681,8 @@ public class ListingSearchServiceTest {
         ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
@@ -1707,7 +1705,7 @@ public class ListingSearchServiceTest {
     }
 
     @Test
-    public void search_decertificationEndDateEqualsListingDecertificationDate_findsMatchingListings() throws ValidationException {
+    public void search_decertificationEndDateEqualsListingDecertificationDate_findsNoMatchingListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allListings.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
@@ -1721,8 +1719,8 @@ public class ListingSearchServiceTest {
         ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
@@ -1765,7 +1763,7 @@ public class ListingSearchServiceTest {
     }
 
     @Test
-    public void search_listingDecertificationDateEqualsStartAndBeforeEnd_findsMatchingListings() throws ValidationException {
+    public void search_listingDecertificationDateEqualsStartAndBeforeEnd_findsNoMatchingListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allListings.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
@@ -1780,12 +1778,12 @@ public class ListingSearchServiceTest {
         ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
-    public void search_listingDecertificationDateEqualsEndAndAfterStart_findsMatchingListings() throws ValidationException {
+    public void search_listingDecertificationDateEqualsEndAndAfterStart_findsNoMatchingListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allListings.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
@@ -1800,12 +1798,12 @@ public class ListingSearchServiceTest {
         ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
-    public void search_listingDecertificationDateEqualsEndAndStart_findsMatchingListings() throws ValidationException {
+    public void search_listingDecertificationDateEqualsEndAndStart_findsNoMatchingListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
         allListings.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allListings.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
@@ -1820,8 +1818,8 @@ public class ListingSearchServiceTest {
         ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test

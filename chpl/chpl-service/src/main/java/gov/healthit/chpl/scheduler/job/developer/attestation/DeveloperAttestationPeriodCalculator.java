@@ -1,7 +1,6 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -23,9 +22,7 @@ import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.search.ListingSearchService;
-import gov.healthit.chpl.search.domain.ListingSearchResponse;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.util.DateUtil;
@@ -133,26 +130,6 @@ public class DeveloperAttestationPeriodCalculator {
                 .pageSize(MAX_PAGE_SIZE)
                 .pageNumber(0)
                 .build();
-        return getAllPagesOfSearchResults(searchRequest, logger);
-    }
-
-    private List<ListingSearchResult> getAllPagesOfSearchResults(SearchRequest searchRequest, Logger logger) {
-        List<ListingSearchResult> searchResults = new ArrayList<ListingSearchResult>();
-        try {
-            logger.debug(searchRequest.toString());
-            ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
-            searchResults.addAll(searchResponse.getResults());
-            while (searchResponse.getRecordCount() > searchResults.size()) {
-                searchRequest.setPageSize(searchResponse.getPageSize());
-                searchRequest.setPageNumber(searchResponse.getPageNumber() + 1);
-                logger.debug(searchRequest.toString());
-                searchResponse = listingSearchService.findListings(searchRequest);
-                searchResults.addAll(searchResponse.getResults());
-            }
-            logger.debug("Found {} total listings for developer {}.", searchResults.size(), searchRequest.getDeveloperId());
-        } catch (ValidationException ex) {
-            logger.error("Could not retrieve listings from search request.", ex);
-        }
-        return searchResults;
+        return listingSearchService.getAllPagesOfSearchResults(searchRequest, logger);
     }
 }

@@ -1136,10 +1136,8 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         return surv.getRequirements().stream()
                 .filter(req -> req.getResult() != null  && req.getResult().getName().equalsIgnoreCase(SurveillanceResultType.NON_CONFORMITY))
                 .flatMap(req -> req.getNonconformities().stream())
-                .filter(survNC -> survNC.getType() != null
-                            && survNC.getType().getNumber() != null
-                            && survNC.getType().getNumber().equalsIgnoreCase(SurveillanceResultType.NON_CONFORMITY))
-                .map(nc -> nc.getType().getNumber())
+                .filter(survNC -> survNC.getType() != null)
+                .map(nc -> nc.getType().getFormattedTitle())
                 .collect(Collectors.joining(" and "));
     }
 

@@ -15,7 +15,7 @@ import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
-import gov.healthit.chpl.changerequest.search.ChangeRequestSearchManager;
+import gov.healthit.chpl.changerequest.search.ChangeRequestSearchServiceV1;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchRequest;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResponse;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult;
@@ -31,13 +31,13 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2(topic = "missingAttestationChangeRequestEmailJobLogger")
 public class MissingAttestationChangeRequestDeveloperCollector implements DeveloperCollector {
     private AttestationPeriodService attestationPeriodService;
-    private ChangeRequestSearchManager changeRequestSearchManager;
+    private ChangeRequestSearchServiceV1 changeRequestSearchManager;
     private DeveloperAttestationPeriodCalculator developerAttestationPeriodCalculator;
     private ChangeRequestManager changeRequestManager;
 
     @Autowired
     public MissingAttestationChangeRequestDeveloperCollector(AttestationPeriodService attestationPeriodService,
-            ChangeRequestSearchManager changeRequestSearchManager, DeveloperAttestationPeriodCalculator developerAttestationPeriodCalculator,
+            ChangeRequestSearchServiceV1 changeRequestSearchManager, DeveloperAttestationPeriodCalculator developerAttestationPeriodCalculator,
             ChangeRequestManager changeRequestManager) {
         this.attestationPeriodService = attestationPeriodService;
         this.changeRequestSearchManager = changeRequestSearchManager;

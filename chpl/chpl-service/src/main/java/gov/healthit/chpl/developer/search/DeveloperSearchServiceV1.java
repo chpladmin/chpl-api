@@ -21,17 +21,18 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
-@Component("developerSearchService")
+@Component("developerSearchServiceV1")
 @NoArgsConstructor
 @Log4j2
-public class DeveloperSearchService {
+@Deprecated
+public class DeveloperSearchServiceV1 {
     private SearchRequestValidator searchRequestValidator;
     private SearchRequestNormalizer searchRequestNormalizer;
     private DeveloperManager developerManager;
     private DateTimeFormatter dateFormatter;
 
     @Autowired
-    public DeveloperSearchService(@Qualifier("developerSearchRequestValidator") SearchRequestValidator searchRequestValidator,
+    public DeveloperSearchServiceV1(@Qualifier("developerSearchRequestValidator") SearchRequestValidator searchRequestValidator,
             DeveloperManager developerManager) {
         this.searchRequestValidator = searchRequestValidator;
         this.developerManager = developerManager;
@@ -126,12 +127,11 @@ public class DeveloperSearchService {
         LocalDate endDate = parseLocalDate(decertificationDateRangeEnd);
         if (developer.getDecertificationDate() != null) {
             if (startDate == null && endDate != null) {
-                return developer.getDecertificationDate().isEqual(endDate) || developer.getDecertificationDate().isBefore(endDate);
+                return developer.getDecertificationDate().isBefore(endDate);
             } else if (startDate != null && endDate == null) {
-                return developer.getDecertificationDate().isEqual(startDate) || developer.getDecertificationDate().isAfter(startDate);
+                return developer.getDecertificationDate().isAfter(startDate);
             } else {
-                return (developer.getDecertificationDate().isEqual(endDate) || developer.getDecertificationDate().isBefore(endDate))
-                        && (developer.getDecertificationDate().isEqual(startDate) || developer.getDecertificationDate().isAfter(startDate));
+                return developer.getDecertificationDate().isBefore(endDate) && developer.getDecertificationDate().isAfter(startDate);
             }
         }
         return false;
