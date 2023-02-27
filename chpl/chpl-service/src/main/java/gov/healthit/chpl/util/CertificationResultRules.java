@@ -158,6 +158,13 @@ public class CertificationResultRules {
                         .optionName(OPTIONAL_STANDARD)
                         .build());
             }
+            if (attribute.getPrivacySecurityFramework()) {
+                rules.get(attribute.getCriterion().getId()).add(
+                        CertificationResultOption.builder()
+                        .canHaveOption(true)
+                        .optionName(PRIVACY_SECURITY)
+                        .build());
+            }
             if (attribute.getServiceBaseUrlList()) {
                 rules.get(attribute.getCriterion().getId()).add(
                         CertificationResultOption.builder()
