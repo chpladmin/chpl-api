@@ -15,6 +15,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 import gov.healthit.chpl.domain.ProductOwner;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.util.DateUtil;
@@ -30,6 +32,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@DynamicUpdate
 @Table(name = "product_active_owner_history_map")
 public class ProductActiveOwnerEntity implements Serializable {
     private static final long serialVersionUID = -8325348768063869639L;
