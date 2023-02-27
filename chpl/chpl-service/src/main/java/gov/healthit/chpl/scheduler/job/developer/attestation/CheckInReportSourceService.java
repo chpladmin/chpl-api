@@ -1,31 +1,20 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation;
 
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.apache.logging.log4j.core.tools.picocli.CommandLine.Command;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmission;
-import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.attestation.manager.AttestationSubmissionService;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
-import gov.healthit.chpl.changerequest.domain.service.ChangeRequestAttestationService;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
-import gov.healthit.chpl.changerequest.search.ChangeRequestSearchManager;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchRequest;
-import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult;
+import gov.healthit.chpl.changerequest.search.ChangeRequestSearchService;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.DeveloperManager;
-import gov.healthit.chpl.util.DateUtil;
-import gov.healthit.chpl.util.NullSafeEvaluator;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -33,14 +22,14 @@ import lombok.extern.log4j.Log4j2;
 public class CheckInReportSourceService {
 	
 	private AttestationSubmissionService attestationManager;
-	private ChangeRequestSearchManager changeRequestSearchManager;
+	private ChangeRequestSearchService changeRequestSearchService;
 	private ChangeRequestManager changeRequestManager;
 	
 	public CheckInReportSourceService(AttestationSubmissionService attestationManager, 
-			ChangeRequestSearchManager changeRequestSearchManager,
+			ChangeRequestSearchService changeRequestSearchService,
 			ChangeRequestManager changeRequestManager) {
 		this.attestationManager = attestationManager;
-		this.changeRequestSearchManager = changeRequestSearchManager;
+		this.changeRequestSearchService = changeRequestSearchService;
 		this.changeRequestManager = changeRequestManager;
 	}
 	
@@ -90,7 +79,7 @@ public class CheckInReportSourceService {
 				.build();
 		
 		try {
-			return changeRequestSearchManager.searchChangeRequests(request).getResults().stream()
+			return changeRequestSearchService.searchChangeRequests(request).getResults().stream()
 					.map(result -> {
 						try {
 							return changeRequestManager.getChangeRequest(result.getId());
