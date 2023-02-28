@@ -1,6 +1,5 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +27,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.search.ListingSearchService;
-import gov.healthit.chpl.search.domain.ListingSearchResponse;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -76,6 +74,7 @@ public class CheckInReportDataCollector {
     }
 
     private CheckInReport getCheckInReport(Developer developer) {
+        List<ListingSearchResult> allActiveListingsForDeveloper = getActiveListingDataForDeveloper(developer, LOGGER);
         CheckInAttestation checkInAttestation = checkInReportSourceService.getCheckinReport(developer, attestationManager.getMostRecentPastAttestationPeriod());
 
         LOGGER.info("Getting data for Developer: {} ({})", developer.getName(), developer.getId());
@@ -86,10 +85,10 @@ public class CheckInReportDataCollector {
             checkInReport = convert(developer);
         } else if (checkInAttestation.getSource().equals(CheckInReportSource.CHANGE_REQUEST)) {
             LOGGER.info("..........Change Request attestations found", developer.getName(), developer.getId());
-            checkInReport = convert(checkInAttestation.getChangeRequest());
+            checkInReport = convert(checkInAttestation.getChangeRequest(), allActiveListingsForDeveloper);
         } else if (checkInAttestation.getSource().equals(CheckInReportSource.DEVELOPER_ATTESTATION)) {
             LOGGER.info("..........Published attestations found", developer.getName(), developer.getId());
-            checkInReport = convert(developer, checkInAttestation.getAttestationSubmission());
+            checkInReport = convert(developer, checkInAttestation.getAttestationSubmission(), allActiveListingsForDeveloper);
         }
         return checkInReport;
     }
@@ -100,9 +99,9 @@ public class CheckInReportDataCollector {
                 .relevantAcbs(acbs.stream().map(acb -> acb.getName()).collect(Collectors.joining("; "))).build();
     }
 
-    private CheckInReport convert(ChangeRequest cr) {
+    private CheckInReport convert(ChangeRequest cr, List<ListingSearchResult> allActiveListingsForDeveloper) {
         ChangeRequestAttestationSubmission crAttestation = (ChangeRequestAttestationSubmission) cr.getDetails();
-        CheckInReport checkInReport = convert(cr.getDeveloper(), crAttestation.getForm(), crAttestation.getAttestationPeriod().getId());
+        CheckInReport checkInReport = convert(cr.getDeveloper(), crAttestation.getForm(), allActiveListingsForDeveloper, crAttestation.getAttestationPeriod().getId());
         checkInReport.setSubmittedDate(cr.getSubmittedDateTime());
         checkInReport.setPublished(false);
         checkInReport.setCurrentStatusName(cr.getCurrentStatus().getChangeRequestStatusType().getName());
@@ -113,9 +112,9 @@ public class CheckInReportDataCollector {
         return checkInReport;
     }
 
-    private CheckInReport convert(Developer developer, AttestationSubmission attestation) {
+    private CheckInReport convert(Developer developer, AttestationSubmission attestation, List<ListingSearchResult> allActiveListingsForDeveloper) {
         List<CertificationBody> acbs = developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(developer.getId());
-        CheckInReport checkInReport = convert(developer, attestation.getForm(), attestation.getAttestationPeriod().getId());
+        CheckInReport checkInReport = convert(developer, attestation.getForm(), allActiveListingsForDeveloper, attestation.getAttestationPeriod().getId());
         checkInReport.setPublished(true);
         checkInReport.setSignature(attestation.getSignature());
         checkInReport.setSignatureEmail(attestation.getSignatureEmail());
@@ -123,7 +122,7 @@ public class CheckInReportDataCollector {
         return checkInReport;
     }
 
-    private CheckInReport convert(Developer developer, Form form, Long attestationPeriod) {
+    private CheckInReport convert(Developer developer, Form form, List<ListingSearchResult> allActiveListingsForDeveloper, Long attestationPeriod) {
         return CheckInReport.builder()
                 .developerName(developer.getName())
                 .developerCode(developer.getDeveloperCode())
@@ -137,14 +136,16 @@ public class CheckInReportDataCollector {
                 .rwtResponse(getAttestationResponse(form, AttestatationFormMetaData.getRwtConditionId(attestationPeriod)))
                 .rwtNoncompliantResponse(getAttestationOptionalResponse(form, AttestatationFormMetaData.getRwtConditionId(attestationPeriod)))
                 .apiResponse(getAttestationResponse(form, AttestatationFormMetaData.getApiConditionId(attestationPeriod)))
-                .apiNoncompliantResponse(getAttestationOptionalResponse(form, AttestatationFormMetaData.getApiConditionId(attestationPeriod))).totalSurveillances(getTotalSurveillances(developer, LOGGER))
-                .totalSurveillanceNonconformities(getTotalSurveillanceNonconformities(developer, LOGGER))
-                .openSurveillanceNonconformities(getOpenSurveillanceNonconformities(developer, LOGGER))
+                .apiNoncompliantResponse(getAttestationOptionalResponse(form, AttestatationFormMetaData.getApiConditionId(attestationPeriod)))
+                .totalSurveillances(getTotalSurveillances(developer, allActiveListingsForDeveloper, LOGGER))
+                .totalSurveillanceNonconformities(getTotalSurveillanceNonconformities(developer, allActiveListingsForDeveloper, LOGGER))
+                .openSurveillanceNonconformities(getOpenSurveillanceNonconformities(developer, allActiveListingsForDeveloper, LOGGER))
                 .totalDirectReviewNonconformities(getTotalDirectReviewNonconformities(developer, LOGGER))
                 .openDirectReviewNonconformities(getOpenDirectReviewNonconformities(developer, LOGGER))
-                .assurancesValidation(checkInReportValidation.getAssurancesValidation(developer, LOGGER))
-                .realWorldTestingValidation(checkInReportValidation.getRealWorldTestingValidation(developer, LOGGER))
-                .apiValidation(checkInReportValidation.getApiValidation(developer, LOGGER)).build();
+                .assurancesValidation(checkInReportValidation.getAssurancesValidation(allActiveListingsForDeveloper))
+                .realWorldTestingValidation(checkInReportValidation.getRealWorldTestingValidation(allActiveListingsForDeveloper))
+                .apiValidation(checkInReportValidation.getApiValidation(allActiveListingsForDeveloper))
+                .build();
     }
 
     private List<Developer> getDevelopersActiveListingsDuringMostRecentPastAttestationPeriod() {
@@ -166,25 +167,35 @@ public class CheckInReportDataCollector {
         return form.formatOptionalResponsesForCondition(conditionId);
     }
 
-    private Long getTotalSurveillances(Developer developer, Logger logger) {
-        return getActiveListingDataForDeveloper(developer, logger).stream().map(listing -> addSurveillanceCount(listing)).collect(Collectors.summingLong(Long::longValue));
+    private Long getTotalSurveillances(Developer developer, List<ListingSearchResult> allActiveListingsForDeveloper, Logger logger) {
+        return allActiveListingsForDeveloper.stream()
+                .map(listing -> addSurveillanceCount(listing))
+                .collect(Collectors.summingLong(Long::longValue));
     }
 
-    private Long getTotalSurveillanceNonconformities(Developer developer, Logger logger) {
-        return getActiveListingDataForDeveloper(developer, logger).stream().map(listing -> addOpenAndClosedNonconformityCount(listing)).collect(Collectors.summingLong(Long::longValue));
+    private Long getTotalSurveillanceNonconformities(Developer developer, List<ListingSearchResult> allActiveListingsForDeveloper, Logger logger) {
+        return allActiveListingsForDeveloper.stream()
+                .map(listing -> addOpenAndClosedNonconformityCount(listing))
+                .collect(Collectors.summingLong(Long::longValue));
     }
 
-    private Long getOpenSurveillanceNonconformities(Developer developer, Logger logger) {
-        return getActiveListingDataForDeveloper(developer, logger).stream().map(listing -> listing.getOpenSurveillanceNonConformityCount()).collect(Collectors.summingLong(Long::longValue));
+    private Long getOpenSurveillanceNonconformities(Developer developer, List<ListingSearchResult> allActiveListingsForDeveloper, Logger logger) {
+        return allActiveListingsForDeveloper.stream()
+                .map(listing -> listing.getOpenSurveillanceNonConformityCount())
+                .collect(Collectors.summingLong(Long::longValue));
     }
 
     private Long getTotalDirectReviewNonconformities(Developer developer, Logger logger) {
-        return directReviewSearchService.getDeveloperDirectReviews(developer.getId(), logger).stream().flatMap(dr -> dr.getNonConformities().stream()).count();
+        return directReviewSearchService.getDeveloperDirectReviews(developer.getId(), logger).stream()
+                .flatMap(dr -> dr.getNonConformities().stream())
+                .count();
     }
 
     private Long getOpenDirectReviewNonconformities(Developer developer, Logger logger) {
-        return directReviewSearchService.getDeveloperDirectReviews(developer.getId(), logger).stream().flatMap(dr -> dr.getNonConformities().stream())
-                .filter(nc -> nc.getNonConformityStatus().equalsIgnoreCase(DirectReviewNonConformity.STATUS_OPEN)).count();
+        return directReviewSearchService.getDeveloperDirectReviews(developer.getId(), logger).stream()
+                .flatMap(dr -> dr.getNonConformities().stream())
+                .filter(nc -> nc.getNonConformityStatus().equalsIgnoreCase(DirectReviewNonConformity.STATUS_OPEN))
+                .count();
     }
 
     private Long addSurveillanceCount(ListingSearchResult listing) {
@@ -201,31 +212,18 @@ public class CheckInReportDataCollector {
         if (developerListings.get(developer.getId()) != null) {
             return developerListings.get(developer.getId());
         } else {
-            SearchRequest searchRequest = SearchRequest.builder().certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet())).developerId(developer.getId())
-                    .certificationStatuses(activeStatuses).pageSize(MAX_PAGE_SIZE).pageNumber(0).build();
-            List<ListingSearchResult> searchResults = getAllPagesOfSearchResults(searchRequest, logger);
-            developerListings.put(developer.getId(), searchResults);
-            return searchResults;
-        }
-    }
-
-    private List<ListingSearchResult> getAllPagesOfSearchResults(SearchRequest searchRequest, Logger logger) {
-        List<ListingSearchResult> searchResults = new ArrayList<ListingSearchResult>();
-        try {
-            logger.debug(searchRequest.toString());
-            ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
-            searchResults.addAll(searchResponse.getResults());
-            while (searchResponse.getRecordCount() > searchResults.size()) {
-                searchRequest.setPageSize(searchResponse.getPageSize());
-                searchRequest.setPageNumber(searchResponse.getPageNumber() + 1);
-                logger.debug(searchRequest.toString());
-                searchResponse = listingSearchService.findListings(searchRequest);
-                searchResults.addAll(searchResponse.getResults());
+            try {
+                SearchRequest searchRequest = SearchRequest.builder()
+                        .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
+                        .developerId(developer.getId())
+                        .certificationStatuses(activeStatuses).pageSize(MAX_PAGE_SIZE).pageNumber(0).build();
+                List<ListingSearchResult> searchResults = listingSearchService.getAllPagesOfSearchResults(searchRequest);
+                developerListings.put(developer.getId(), searchResults);
+                return searchResults;
+            } catch (ValidationException ex) {
+                logger.error("Could not retrieve listings from search request.", ex);
+                return null;
             }
-            logger.info("Found {} total listings for developer {}.", searchResults.size(), searchRequest.getDeveloperId());
-        } catch (ValidationException ex) {
-            logger.error("Could not retrieve listings from search request.", ex);
         }
-        return searchResults;
     }
 }
