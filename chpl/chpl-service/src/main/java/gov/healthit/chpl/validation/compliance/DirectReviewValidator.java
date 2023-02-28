@@ -32,14 +32,6 @@ public class DirectReviewValidator {
     }
 
     private void reviewNonConformity(DirectReview directReview, DirectReviewNonConformity nonConformity) {
-        if (StringUtils.isEmpty(nonConformity.getCapStatus())) {
-            directReview.getErrorMessages().add(
-                    msgUtil.getMessage("compliance.directReview.missingCapStatus", directReview.getJiraKey()));
-        }
-        if (StringUtils.isEmpty(nonConformity.getNonConformityType())) {
-            directReview.getErrorMessages().add(
-                    msgUtil.getMessage("compliance.directReview.missingNonConformityType", directReview.getJiraKey()));
-        }
         if (StringUtils.isEmpty(nonConformity.getNonConformityStatus())) {
             directReview.getErrorMessages().add(
                     msgUtil.getMessage("compliance.directReview.missingNonConformityStatus", directReview.getJiraKey()));
