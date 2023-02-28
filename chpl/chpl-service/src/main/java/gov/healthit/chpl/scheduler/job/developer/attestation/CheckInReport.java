@@ -63,7 +63,11 @@ public class CheckInReport {
                 totalSurveillanceNonconformities != null ? totalSurveillanceNonconformities.toString() : "0",
                 openSurveillanceNonconformities != null ? openSurveillanceNonconformities.toString() : "0",
                 totalDirectReviewNonconformities != null ? totalDirectReviewNonconformities.toString() : "0",
-                openDirectReviewNonconformities != null ? openDirectReviewNonconformities.toString() : "0");
+                openDirectReviewNonconformities != null ? openDirectReviewNonconformities.toString() : "0",
+                assurancesValidation != null ? assurancesValidation : "",
+                realWorldTestingValidation != null ? realWorldTestingValidation : "",
+                apiValidation != null ? apiValidation : "");
+
     }
 
     public static List<String> getHeaders() {
@@ -91,6 +95,9 @@ public class CheckInReport {
                 "Total Surveillance Non-conformities",
                 "Open Surveillance Non-conformities",
                 "Total Direct Review Non-conformities",
-                "Open Direct Review Non-conformities");
+                "Open Direct Review Non-conformities",
+                "Assurances",
+                "Real World Testing",
+                "API");
     }
 }
