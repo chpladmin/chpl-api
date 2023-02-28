@@ -18,8 +18,8 @@ import org.springframework.core.env.Environment;
 import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.compliance.DirectReview;
-import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.domain.compliance.DirectReviewContainer;
+import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.DeveloperManager;
 import lombok.extern.log4j.Log4j2;
@@ -118,20 +118,20 @@ public class DirectReviewCsvPresenter {
         csvRow.add(nc != null && nc.getNonConformityType() != null ? nc.getNonConformityType() : "");
         csvRow.add(nc != null && nc.getNonConformityStatus() != null ? nc.getNonConformityStatus() : "");
 
-        if (nc != null && nc.getCapApprovalDate() != null) {
-            csvRow.add(dateFormatter.format(nc.getCapApprovalDate()));
+        if (nc != null && nc.getCapApprovalDateInternal() != null) {
+            csvRow.add(dateFormatter.format(nc.getCapApprovalDateInternal()));
         } else {
-            csvRow.add("");
+            csvRow.add(nc.getCapApprovalDate());
         }
-        if (nc != null && nc.getCapMustCompleteDate() != null) {
-            csvRow.add(dateFormatter.format(nc.getCapMustCompleteDate()));
+        if (nc != null && nc.getCapMustCompleteDateInternal() != null) {
+            csvRow.add(dateFormatter.format(nc.getCapMustCompleteDateInternal()));
         } else {
-            csvRow.add("");
+            csvRow.add(nc.getCapMustCompleteDate());
         }
-        if (nc != null && nc.getCapEndDate() != null) {
-            csvRow.add(dateFormatter.format(nc.getCapEndDate()));
+        if (nc != null && nc.getCapEndDateInternal() != null) {
+            csvRow.add(dateFormatter.format(nc.getCapEndDateInternal()));
         } else {
-            csvRow.add("");
+            csvRow.add(nc.getCapEndDate());
         }
         if (nc != null && nc.getDeveloperAssociatedListings() != null && nc.getDeveloperAssociatedListings().size() > 0) {
             List<String> dalChplIds = nc.getDeveloperAssociatedListings().stream()

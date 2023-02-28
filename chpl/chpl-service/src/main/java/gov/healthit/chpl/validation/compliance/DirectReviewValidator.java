@@ -32,9 +32,9 @@ public class DirectReviewValidator {
     }
 
     private void reviewNonConformity(DirectReview directReview, DirectReviewNonConformity nonConformity) {
-        if (nonConformity.getCapApprovalDate() == null) {
+        if (StringUtils.isEmpty(nonConformity.getCapStatus())) {
             directReview.getErrorMessages().add(
-                    msgUtil.getMessage("compliance.directReview.missingCapApprovalDate", directReview.getJiraKey()));
+                    msgUtil.getMessage("compliance.directReview.missingCapStatus", directReview.getJiraKey()));
         }
         if (StringUtils.isEmpty(nonConformity.getNonConformityType())) {
             directReview.getErrorMessages().add(
