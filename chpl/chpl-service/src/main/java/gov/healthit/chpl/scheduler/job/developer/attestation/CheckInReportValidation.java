@@ -15,6 +15,7 @@ import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingCriteriaService;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class CheckInReportValidation {
@@ -25,7 +26,7 @@ public class CheckInReportValidation {
     private static final String API_VALIDATION_TRUE = "Has listing(s) with API criteria (g)(7)-(g)(10)";
     private static final String API_VALIDATION_FALSE = "No listings with API criteria (g)(7)-(g)(10)";
 
-    // private AttestatationFormMetaData attestatationFormMetaData;
+    private ErrorMessageUtil errorMessageUtil;
 
     private List<CertificationCriterion> assurancesCriteria;
     private List<CertificationCriterion> apiCriteria;
@@ -34,11 +35,11 @@ public class CheckInReportValidation {
     @Autowired
     public CheckInReportValidation(RealWorldTestingCriteriaService realWorldTestingCriteriaService,
             CertificationCriterionService certificationCriterionService,
-            // AttestatationFormMetaData attestationFormMetaData,
+            ErrorMessageUtil errorMessageUtil,
             @Value("${assurancesCriteriaKeys}") String[] assurancesCriteriaKeys,
             @Value("${apiCriteriaKeys}") String[] apiCriteriaKeys) {
 
-        // this.attestatationFormMetaData = attestationFormMetaData;
+        this.errorMessageUtil = errorMessageUtil;
 
         Integer currentYear = Calendar.getInstance().get(Calendar.YEAR);
         rwtCriteria = realWorldTestingCriteriaService.getEligibleCriteria(currentYear);
@@ -48,75 +49,95 @@ public class CheckInReportValidation {
 
     public String getRealWorldTestingValidationMessage(List<ListingSearchResult> allActiveListingsForDeveloper) {
         if (isRealWorldTestingValid(allActiveListingsForDeveloper)) {
-            return RWT_VALIDATION_TRUE;
+            return errorMessageUtil.getMessage("attestatation.check.in.report.rwtValidationTrue");
         } else {
-            return RWT_VALIDATION_FALSE;
+            return errorMessageUtil.getMessage("attestatation.check.in.report.rwtValidationFalse");
         }
     }
 
     public String getAssurancesValidationMessage(List<ListingSearchResult> allActiveListingsForDeveloper) {
         if (isAssurancesValid(allActiveListingsForDeveloper)) {
-            return ASSURANCES_VALIDATION_TRUE;
+            return errorMessageUtil.getMessage("attestatation.check.in.report.assurancesValidationTrue");
         } else {
-            return ASSURANCES_VALIDATION_FALSE;
+            return errorMessageUtil.getMessage("attestatation.check.in.report.assurancesValidationFalse");
         }
     }
 
     public String getApiValidationMessage(List<ListingSearchResult> allActiveListingsForDeveloper) {
         if (isApiValid(allActiveListingsForDeveloper)) {
-            return API_VALIDATION_TRUE;
+            return errorMessageUtil.getMessage("attestatation.check.in.report.apiValidationTrue");
         } else {
-            return API_VALIDATION_FALSE;
+            return errorMessageUtil.getMessage("attestatation.check.in.report.apiValidationFalse");
         }
     }
 
     public String getApiWarningMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
-        if (isApiValid(allActiveListingsForDeveloper)
-                && doesFormResponseEqualResponse(attestationForm,
-                        AttestatationFormMetaData.getApiConditionId(),
-                        AttestatationFormMetaData.getNotAppicableResponseId())) {
-            return "API response is not consistent with CHPL data";
-        } else if (!isApiValid(allActiveListingsForDeveloper)
-                && doesFormResponseEqualResponse(attestationForm,
-                        AttestatationFormMetaData.getApiConditionId(),
-                        AttestatationFormMetaData.getCompliantResponseId())) {
-            return "API response is not consistent with CHPL data";
+        if (isApiValidAndResponseIsNotApplicable(allActiveListingsForDeveloper, attestationForm)
+                || isNotApiValidAndResponseIsCompliant(allActiveListingsForDeveloper, attestationForm)) {
+            return errorMessageUtil.getMessage("attestatation.check.in.report.apiResponseNotConsistent");
         } else {
             return null;
         }
+    }
 
+    private Boolean isApiValidAndResponseIsNotApplicable(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
+        return isApiValid(allActiveListingsForDeveloper)
+                && doesFormResponseEqualResponse(attestationForm,
+                        AttestatationFormMetaData.getApiConditionId(),
+                        AttestatationFormMetaData.getNotAppicableResponseId());
+    }
+
+    private Boolean isNotApiValidAndResponseIsCompliant(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
+        return !isApiValid(allActiveListingsForDeveloper)
+                && doesFormResponseEqualResponse(attestationForm,
+                        AttestatationFormMetaData.getApiConditionId(),
+                        AttestatationFormMetaData.getNotAppicableResponseId());
     }
 
     public String getAssurancesWarningMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
-        if (isAssurancesValid(allActiveListingsForDeveloper)
-                && doesFormResponseEqualResponse(attestationForm,
-                        AttestatationFormMetaData.getAssurancesConditionId(),
-                        AttestatationFormMetaData.getNotAppicableResponseId())) {
-            return "Assurances response is not consistent with CHPL data";
-        } else if (!isAssurancesValid(allActiveListingsForDeveloper)
-                && doesFormResponseEqualResponse(attestationForm,
-                        AttestatationFormMetaData.getAssurancesConditionId(),
-                        AttestatationFormMetaData.getCompliantResponseId())) {
-            return "Assurnaces response is not consistent with CHPL data";
+        if (isAssurancesValidAndResponseIsNotApplicable(allActiveListingsForDeveloper, attestationForm)
+                || isNotAssurancesValidAndResponseIsCompliant(allActiveListingsForDeveloper, attestationForm)) {
+            return errorMessageUtil.getMessage("attestatation.check.in.report.assurancesResponseNotConsistent");
         } else {
             return null;
         }
     }
 
+    private Boolean isAssurancesValidAndResponseIsNotApplicable(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
+        return isAssurancesValid(allActiveListingsForDeveloper)
+                && doesFormResponseEqualResponse(attestationForm,
+                        AttestatationFormMetaData.getAssurancesConditionId(),
+                        AttestatationFormMetaData.getNotAppicableResponseId());
+    }
+
+    private Boolean isNotAssurancesValidAndResponseIsCompliant(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
+        return !isAssurancesValid(allActiveListingsForDeveloper)
+                && doesFormResponseEqualResponse(attestationForm,
+                        AttestatationFormMetaData.getAssurancesConditionId(),
+                        AttestatationFormMetaData.getNotAppicableResponseId());
+    }
+
     public String getRealWordTestingWarningMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
-        if (isRealWorldTestingValid(allActiveListingsForDeveloper)
-                && doesFormResponseEqualResponse(attestationForm,
-                        AttestatationFormMetaData.getRwtConditionId(),
-                        AttestatationFormMetaData.getNotAppicableResponseId())) {
-            return "Assurances response is not consistent with CHPL data";
-        } else if (!isRealWorldTestingValid(allActiveListingsForDeveloper)
-                && doesFormResponseEqualResponse(attestationForm,
-                        AttestatationFormMetaData.getRwtConditionId(),
-                        AttestatationFormMetaData.getCompliantResponseId())) {
-            return "Assurnaces response is not consistent with CHPL data";
+        if (isRwtValidAndResponseIsNotApplicable(allActiveListingsForDeveloper, attestationForm)
+                || isNotRwtValidAndResponseIsCompliant(allActiveListingsForDeveloper, attestationForm)) {
+            return errorMessageUtil.getMessage("attestatation.check.in.report.rwtResponseNotConsistent");
         } else {
             return null;
         }
+    }
+
+    private Boolean isRwtValidAndResponseIsNotApplicable(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
+        return isRealWorldTestingValid(allActiveListingsForDeveloper)
+                && doesFormResponseEqualResponse(attestationForm,
+                        AttestatationFormMetaData.getRwtConditionId(),
+                        AttestatationFormMetaData.getNotAppicableResponseId());
+    }
+
+    private Boolean isNotRwtValidAndResponseIsCompliant(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
+        return !isRealWorldTestingValid(allActiveListingsForDeveloper)
+                && doesFormResponseEqualResponse(attestationForm,
+                        AttestatationFormMetaData.getRwtConditionId(),
+                        AttestatationFormMetaData.getNotAppicableResponseId());
     }
 
     private Boolean doesFormResponseEqualResponse(Form attestationForm, Long conditionIdToCheck, Long expectedResult) {
