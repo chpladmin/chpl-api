@@ -3,6 +3,7 @@ package gov.healthit.chpl.scheduler.job.summarystatistics.data;
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +24,11 @@ public class DirectReviewDataCreator extends StatisticsDataCreator  {
 
     public Long getTotalDirectReviews() {
         if (directReviewSearchService.doesCacheHaveAnyOkData()) {
-            return Long.valueOf(directReviewSearchService.getAll().size());
+            int totalDrs = directReviewSearchService.getAll().stream()
+                .filter(drContainer -> !CollectionUtils.isEmpty(drContainer.getDirectReviews()))
+                .map(drContainer -> drContainer.getDirectReviews().size())
+                .reduce(0, Integer::sum);
+            return Long.valueOf(totalDrs);
         } else {
             return null;
         }
