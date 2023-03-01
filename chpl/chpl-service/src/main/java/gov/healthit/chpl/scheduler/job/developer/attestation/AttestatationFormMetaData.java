@@ -3,35 +3,46 @@ package gov.healthit.chpl.scheduler.job.developer.attestation;
 import java.time.LocalDate;
 
 public class AttestatationFormMetaData {
-	private static final Long INFO_BLOCKING_CONDITION = 1L;
+    private static final Long INFO_BLOCKING_CONDITION = 1L;
     private static final Long ASSURANCES_CONDITION = 7L;
     private static final Long ASSURANCES_CONDITION_ORIG = 2L;
     private static final Long COMMUNICATIONS_CONDITION = 3L;
     private static final Long API_CONDITION = 4L;
     private static final Long RWT_CONDITION = 5L;
-    
-    public static Long getInformationBlockingConditionId(Long attestionPeriodId) {
-    	return INFO_BLOCKING_CONDITION;
+
+    private static final Long NOT_APPLICABLE_RESPONSE_ID = 3L;
+    private static final Long COMPLIANT_RESPONSE_ID = 1L;
+
+    public static Long getInformationBlockingConditionId() {
+        return INFO_BLOCKING_CONDITION;
     }
-    
-    public static Long getAssurancesConditionId(Long attestationPeriodId) {
-    	//TODO This needs to be handled better...
-    	if (LocalDate.now().isBefore(LocalDate.of(2023, 4, 1))) {
-    		return ASSURANCES_CONDITION_ORIG;
-    	} else {
-    		return ASSURANCES_CONDITION;
-    	}
+
+    public static Long getAssurancesConditionId() {
+        // TODO This needs to be handled better...
+        if (LocalDate.now().isBefore(LocalDate.of(2023, 4, 1))) {
+            return ASSURANCES_CONDITION_ORIG;
+        } else {
+            return ASSURANCES_CONDITION;
+        }
     }
-    
-    public static Long getCommunicationConditionId(Long attestionPeriodId) {
-    	return COMMUNICATIONS_CONDITION;
+
+    public static Long getCommunicationConditionId() {
+        return COMMUNICATIONS_CONDITION;
     }
-    
-    public static Long getApiConditionId(Long attestionPeriodId) {
-    	return API_CONDITION;
+
+    public static Long getApiConditionId() {
+        return API_CONDITION;
     }
-    
-    public static Long getRwtConditionId(Long attestionPeriodId) {
-    	return RWT_CONDITION;
+
+    public static Long getRwtConditionId() {
+        return RWT_CONDITION;
+    }
+
+    public static Long getNotAppicableResponseId() {
+        return NOT_APPLICABLE_RESPONSE_ID;
+    }
+
+    public static Long getCompliantResponseId() {
+        return COMPLIANT_RESPONSE_ID;
     }
 }

@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,24 +128,25 @@ public class CheckInReportDataCollector {
                 .developerName(developer.getName())
                 .developerCode(developer.getDeveloperCode())
                 .developerId(developer.getId())
-                .informationBlockingResponse(getAttestationResponse(form, AttestatationFormMetaData.getInformationBlockingConditionId(attestationPeriod)))
-                .informationBlockingNoncompliantResponse(getAttestationOptionalResponse(form, AttestatationFormMetaData.getInformationBlockingConditionId(attestationPeriod)))
-                .assurancesResponse(getAttestationResponse(form, AttestatationFormMetaData.getAssurancesConditionId(attestationPeriod)))
-                .assurancesNoncompliantResponse(getAttestationOptionalResponse(form, AttestatationFormMetaData.getAssurancesConditionId(attestationPeriod)))
-                .communicationsResponse(getAttestationResponse(form, AttestatationFormMetaData.getCommunicationConditionId(attestationPeriod)))
-                .communicationsNoncompliantResponse(getAttestationOptionalResponse(form, AttestatationFormMetaData.getCommunicationConditionId(attestationPeriod)))
-                .rwtResponse(getAttestationResponse(form, AttestatationFormMetaData.getRwtConditionId(attestationPeriod)))
-                .rwtNoncompliantResponse(getAttestationOptionalResponse(form, AttestatationFormMetaData.getRwtConditionId(attestationPeriod)))
-                .apiResponse(getAttestationResponse(form, AttestatationFormMetaData.getApiConditionId(attestationPeriod)))
-                .apiNoncompliantResponse(getAttestationOptionalResponse(form, AttestatationFormMetaData.getApiConditionId(attestationPeriod)))
+                .informationBlockingResponse(getAttestationResponse(form, AttestatationFormMetaData.getInformationBlockingConditionId()))
+                .informationBlockingNoncompliantResponse(getAttestationOptionalResponse(form, AttestatationFormMetaData.getInformationBlockingConditionId()))
+                .assurancesResponse(getAttestationResponse(form, AttestatationFormMetaData.getAssurancesConditionId()))
+                .assurancesNoncompliantResponse(getAttestationOptionalResponse(form, AttestatationFormMetaData.getAssurancesConditionId()))
+                .communicationsResponse(getAttestationResponse(form, AttestatationFormMetaData.getCommunicationConditionId()))
+                .communicationsNoncompliantResponse(getAttestationOptionalResponse(form, AttestatationFormMetaData.getCommunicationConditionId()))
+                .rwtResponse(getAttestationResponse(form, AttestatationFormMetaData.getRwtConditionId()))
+                .rwtNoncompliantResponse(getAttestationOptionalResponse(form, AttestatationFormMetaData.getRwtConditionId()))
+                .apiResponse(getAttestationResponse(form, AttestatationFormMetaData.getApiConditionId()))
+                .apiNoncompliantResponse(getAttestationOptionalResponse(form, AttestatationFormMetaData.getApiConditionId()))
                 .totalSurveillances(getTotalSurveillances(developer, allActiveListingsForDeveloper, LOGGER))
                 .totalSurveillanceNonconformities(getTotalSurveillanceNonconformities(developer, allActiveListingsForDeveloper, LOGGER))
                 .openSurveillanceNonconformities(getOpenSurveillanceNonconformities(developer, allActiveListingsForDeveloper, LOGGER))
                 .totalDirectReviewNonconformities(getTotalDirectReviewNonconformities(developer, LOGGER))
                 .openDirectReviewNonconformities(getOpenDirectReviewNonconformities(developer, LOGGER))
-                .assurancesValidation(checkInReportValidation.getAssurancesValidation(allActiveListingsForDeveloper))
-                .realWorldTestingValidation(checkInReportValidation.getRealWorldTestingValidation(allActiveListingsForDeveloper))
-                .apiValidation(checkInReportValidation.getApiValidation(allActiveListingsForDeveloper))
+                .assurancesValidation(checkInReportValidation.getAssurancesValidationMessage(allActiveListingsForDeveloper))
+                .realWorldTestingValidation(checkInReportValidation.getRealWorldTestingValidationMessage(allActiveListingsForDeveloper))
+                .apiValidation(checkInReportValidation.getApiValidationMessage(allActiveListingsForDeveloper))
+                .warnings(getWarnings(allActiveListingsForDeveloper, form))
                 .build();
     }
 
@@ -225,5 +227,16 @@ public class CheckInReportDataCollector {
                 return null;
             }
         }
+    }
+
+    private String getWarnings(List<ListingSearchResult> allActiveListingsForDeveloper, Form form) {
+        List<String> warnings = new ArrayList<String>();
+        warnings.add(checkInReportValidation.getApiWarningMessage(allActiveListingsForDeveloper, form));
+        warnings.add(checkInReportValidation.getAssurancesWarningMessage(allActiveListingsForDeveloper, form));
+        warnings.add(checkInReportValidation.getRealWordTestingWarningMessage(allActiveListingsForDeveloper, form));
+
+        return warnings.stream()
+                .filter(w -> w != null)
+                .collect(Collectors.joining("; "));
     }
 }

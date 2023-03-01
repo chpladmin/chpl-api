@@ -37,6 +37,7 @@ public class CheckInReport {
     private String assurancesValidation;
     private String realWorldTestingValidation;
     private String apiValidation;
+    private String warnings;
 
     public List<String> toListOfStrings() {
         return List.of(developerName,
@@ -66,7 +67,8 @@ public class CheckInReport {
                 openDirectReviewNonconformities != null ? openDirectReviewNonconformities.toString() : "0",
                 assurancesValidation != null ? assurancesValidation : "",
                 realWorldTestingValidation != null ? realWorldTestingValidation : "",
-                apiValidation != null ? apiValidation : "");
+                apiValidation != null ? apiValidation : "",
+                warnings != null ? warnings : "");
 
     }
 
@@ -98,6 +100,7 @@ public class CheckInReport {
                 "Open Direct Review Non-conformities",
                 "Assurances",
                 "Real World Testing",
-                "API");
+                "API",
+                "Warnings");
     }
 }
