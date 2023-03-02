@@ -49,7 +49,11 @@ public class CheckInReportDataCollector {
 
     private Map<Long, List<ListingSearchResult>> developerListings = new HashMap<Long, List<ListingSearchResult>>();
 
-    private Set<String> activeStatuses = Stream.of(CertificationStatusType.Active.getName(), CertificationStatusType.SuspendedByAcb.getName(), CertificationStatusType.SuspendedByOnc.getName()).collect(Collectors.toSet());
+    private Set<String> activeStatuses = Stream.of(
+            CertificationStatusType.Active.getName(),
+            CertificationStatusType.SuspendedByAcb.getName(),
+            CertificationStatusType.SuspendedByOnc.getName())
+            .collect(Collectors.toSet());
 
     public CheckInReportDataCollector(AttestationManager attestationManager, DeveloperAttestationPeriodCalculator developerAttestationPeriodCalculator,
             DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO, ListingSearchService listingSearchService,
@@ -70,7 +74,6 @@ public class CheckInReportDataCollector {
 
     public List<CheckInReport> collect() throws EntityRetrievalException {
         return getDevelopersActiveListingsDuringMostRecentPastAttestationPeriod().stream()
-                // .filter(developer -> developer.getId().equals(1993L))
                 .map(developer -> getCheckInReport(developer)).sorted((o1, o2) -> o1.getDeveloperName().compareTo(o2.getDeveloperName())).toList();
     }
 
@@ -96,8 +99,15 @@ public class CheckInReportDataCollector {
 
     private CheckInReport convert(Developer developer) {
         List<CertificationBody> acbs = developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(developer.getId());
-        return CheckInReport.builder().developerName(developer.getName()).developerCode(developer.getDeveloperCode()).developerId(developer.getId()).published(false)
-                .relevantAcbs(acbs.stream().map(acb -> acb.getName()).collect(Collectors.joining("; "))).build();
+        return CheckInReport.builder()
+                .developerName(developer.getName())
+                .developerCode(developer.getDeveloperCode())
+                .developerId(developer.getId())
+                .published(false)
+                .relevantAcbs(acbs.stream()
+                        .map(acb -> acb.getName())
+                        .collect(Collectors.joining("; ")))
+                .build();
     }
 
     private CheckInReport convert(ChangeRequest cr, List<ListingSearchResult> allActiveListingsForDeveloper) {

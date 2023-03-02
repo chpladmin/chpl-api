@@ -43,8 +43,12 @@ public class CheckInReportValidation {
 
         Integer currentYear = Calendar.getInstance().get(Calendar.YEAR);
         rwtCriteria = realWorldTestingCriteriaService.getEligibleCriteria(currentYear);
-        assurancesCriteria = Arrays.asList(assurancesCriteriaKeys).stream().map(key -> certificationCriterionService.get(key)).collect(Collectors.toList());
-        apiCriteria = Arrays.asList(apiCriteriaKeys).stream().map(key -> certificationCriterionService.get(key)).collect(Collectors.toList());
+        assurancesCriteria = Arrays.asList(assurancesCriteriaKeys).stream()
+                .map(key -> certificationCriterionService.get(key))
+                .collect(Collectors.toList());
+        apiCriteria = Arrays.asList(apiCriteriaKeys).stream()
+                .map(key -> certificationCriterionService.get(key))
+                .collect(Collectors.toList());
     }
 
     public String getRealWorldTestingValidationMessage(List<ListingSearchResult> allActiveListingsForDeveloper) {
@@ -148,7 +152,6 @@ public class CheckInReportValidation {
                                 .findAny().isPresent())
                 .findAny()
                 .isPresent();
-
     }
 
     private Boolean isRealWorldTestingValid(List<ListingSearchResult> allActiveListingsForDeveloper) {

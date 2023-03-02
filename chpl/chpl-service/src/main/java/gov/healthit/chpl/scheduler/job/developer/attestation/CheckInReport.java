@@ -69,7 +69,6 @@ public class CheckInReport {
                 realWorldTestingValidation != null ? realWorldTestingValidation : "",
                 apiValidation != null ? apiValidation : "",
                 warnings != null ? warnings : "");
-
     }
 
     public static List<String> getHeaders() {

@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 @Builder
 public class CheckInAttestation {
-	private AttestationSubmission attestationSubmission;
-	private ChangeRequest changeRequest;
-	private CheckInReportSource source;
+    private AttestationSubmission attestationSubmission;
+    private ChangeRequest changeRequest;
+    private CheckInReportSource source;
 }
