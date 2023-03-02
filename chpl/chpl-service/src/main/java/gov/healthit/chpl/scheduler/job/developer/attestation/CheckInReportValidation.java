@@ -94,26 +94,26 @@ public class CheckInReportValidation {
                         AttestatationFormMetaData.getNotAppicableResponseId());
     }
 
-    public String getAssurancesWarningMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
-        if (isAssurancesValidAndResponseIsNotApplicable(allActiveListingsForDeveloper, attestationForm)
-                || isNotAssurancesValidAndResponseIsCompliant(allActiveListingsForDeveloper, attestationForm)) {
+    public String getAssurancesWarningMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm, Long attestationPeriodId) {
+        if (isAssurancesValidAndResponseIsNotApplicable(allActiveListingsForDeveloper, attestationForm, attestationPeriodId)
+                || isNotAssurancesValidAndResponseIsCompliant(allActiveListingsForDeveloper, attestationForm, attestationPeriodId)) {
             return errorMessageUtil.getMessage("attestatation.check.in.report.assurancesResponseNotConsistent");
         } else {
             return null;
         }
     }
 
-    private Boolean isAssurancesValidAndResponseIsNotApplicable(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
+    private Boolean isAssurancesValidAndResponseIsNotApplicable(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm, Long attestationPeriodId) {
         return isAssurancesValid(allActiveListingsForDeveloper)
                 && doesFormResponseEqualResponse(attestationForm,
-                        AttestatationFormMetaData.getAssurancesConditionId(),
+                        AttestatationFormMetaData.getAssurancesConditionId(attestationPeriodId),
                         AttestatationFormMetaData.getNotAppicableResponseId());
     }
 
-    private Boolean isNotAssurancesValidAndResponseIsCompliant(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
+    private Boolean isNotAssurancesValidAndResponseIsCompliant(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm, Long attestationPeriodId) {
         return !isAssurancesValid(allActiveListingsForDeveloper)
                 && doesFormResponseEqualResponse(attestationForm,
-                        AttestatationFormMetaData.getAssurancesConditionId(),
+                        AttestatationFormMetaData.getAssurancesConditionId(attestationPeriodId),
                         AttestatationFormMetaData.getNotAppicableResponseId());
     }
 

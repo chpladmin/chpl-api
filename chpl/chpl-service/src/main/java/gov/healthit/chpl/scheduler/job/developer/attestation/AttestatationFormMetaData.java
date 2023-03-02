@@ -1,7 +1,5 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation;
 
-import java.time.LocalDate;
-
 public class AttestatationFormMetaData {
     private static final Long INFO_BLOCKING_CONDITION = 1L;
     private static final Long ASSURANCES_CONDITION = 7L;
@@ -17,9 +15,8 @@ public class AttestatationFormMetaData {
         return INFO_BLOCKING_CONDITION;
     }
 
-    public static Long getAssurancesConditionId() {
-        // TODO This needs to be handled better...
-        if (LocalDate.now().isBefore(LocalDate.of(2023, 4, 1))) {
+    public static Long getAssurancesConditionId(Long attestationPeriodId) {
+        if (attestationPeriodId <= 3) {
             return ASSURANCES_CONDITION_ORIG;
         } else {
             return ASSURANCES_CONDITION;

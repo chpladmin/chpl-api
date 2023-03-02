@@ -123,15 +123,15 @@ public class CheckInReportDataCollector {
         return checkInReport;
     }
 
-    private CheckInReport convert(Developer developer, Form form, List<ListingSearchResult> allActiveListingsForDeveloper, Long attestationPeriod) {
+    private CheckInReport convert(Developer developer, Form form, List<ListingSearchResult> allActiveListingsForDeveloper, Long attestationPeriodId) {
         return CheckInReport.builder()
                 .developerName(developer.getName())
                 .developerCode(developer.getDeveloperCode())
                 .developerId(developer.getId())
                 .informationBlockingResponse(getAttestationResponse(form, AttestatationFormMetaData.getInformationBlockingConditionId()))
                 .informationBlockingNoncompliantResponse(getAttestationOptionalResponse(form, AttestatationFormMetaData.getInformationBlockingConditionId()))
-                .assurancesResponse(getAttestationResponse(form, AttestatationFormMetaData.getAssurancesConditionId()))
-                .assurancesNoncompliantResponse(getAttestationOptionalResponse(form, AttestatationFormMetaData.getAssurancesConditionId()))
+                .assurancesResponse(getAttestationResponse(form, AttestatationFormMetaData.getAssurancesConditionId(attestationPeriodId)))
+                .assurancesNoncompliantResponse(getAttestationOptionalResponse(form, AttestatationFormMetaData.getAssurancesConditionId(attestationPeriodId)))
                 .communicationsResponse(getAttestationResponse(form, AttestatationFormMetaData.getCommunicationConditionId()))
                 .communicationsNoncompliantResponse(getAttestationOptionalResponse(form, AttestatationFormMetaData.getCommunicationConditionId()))
                 .rwtResponse(getAttestationResponse(form, AttestatationFormMetaData.getRwtConditionId()))
@@ -146,7 +146,7 @@ public class CheckInReportDataCollector {
                 .assurancesValidation(checkInReportValidation.getAssurancesValidationMessage(allActiveListingsForDeveloper))
                 .realWorldTestingValidation(checkInReportValidation.getRealWorldTestingValidationMessage(allActiveListingsForDeveloper))
                 .apiValidation(checkInReportValidation.getApiValidationMessage(allActiveListingsForDeveloper))
-                .warnings(getWarnings(allActiveListingsForDeveloper, form))
+                .warnings(getWarnings(allActiveListingsForDeveloper, form, attestationPeriodId))
                 .build();
     }
 
@@ -229,10 +229,10 @@ public class CheckInReportDataCollector {
         }
     }
 
-    private String getWarnings(List<ListingSearchResult> allActiveListingsForDeveloper, Form form) {
+    private String getWarnings(List<ListingSearchResult> allActiveListingsForDeveloper, Form form, Long attestationPeriodId) {
         List<String> warnings = new ArrayList<String>();
         warnings.add(checkInReportValidation.getApiWarningMessage(allActiveListingsForDeveloper, form));
-        warnings.add(checkInReportValidation.getAssurancesWarningMessage(allActiveListingsForDeveloper, form));
+        warnings.add(checkInReportValidation.getAssurancesWarningMessage(allActiveListingsForDeveloper, form, attestationPeriodId));
         warnings.add(checkInReportValidation.getRealWordTestingWarningMessage(allActiveListingsForDeveloper, form));
 
         return warnings.stream()
