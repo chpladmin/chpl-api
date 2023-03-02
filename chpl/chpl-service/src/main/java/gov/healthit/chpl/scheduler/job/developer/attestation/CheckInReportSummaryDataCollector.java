@@ -49,9 +49,10 @@ public class CheckInReportSummaryDataCollector {
 
     private Long calculateNoSubmissionCount(List<CheckInReport> developerAttestationCheckInReports) {
         return developerAttestationCheckInReports.stream()
-                .filter(row -> NullSafeEvaluator.eval(() -> row.getCurrentStatusName(), "").equals(REJECTED)
-                        || NullSafeEvaluator.eval(() -> row.getCurrentStatusName(), "").equals(CANCELLED)
-                        || NullSafeEvaluator.eval(() -> row.getCurrentStatusName(), "").equals(""))
+                .filter(row -> !NullSafeEvaluator.eval(() -> row.getPublished(), false)
+                        && (NullSafeEvaluator.eval(() -> row.getCurrentStatusName(), "").equals(REJECTED)
+                                || NullSafeEvaluator.eval(() -> row.getCurrentStatusName(), "").equals(CANCELLED)
+                                || NullSafeEvaluator.eval(() -> row.getCurrentStatusName(), "").equals("")))
                 .count();
     }
 }
