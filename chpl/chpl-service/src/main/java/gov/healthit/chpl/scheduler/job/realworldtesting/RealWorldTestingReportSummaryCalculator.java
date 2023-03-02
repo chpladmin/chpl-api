@@ -10,7 +10,12 @@ import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReportSummary;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 
-public class RealWorldTestingReportSummaryCalculator {
+public final class RealWorldTestingReportSummaryCalculator {
+
+    private RealWorldTestingReportSummaryCalculator() {
+
+    }
+
     public static RealWorldTestingReportSummary calculateSummariesByEligibityYear(List<RealWorldTestingReport> rows, Integer eligibilityYear) {
         List<RealWorldTestingReport> filteredRows = filterByEligibilityYear(rows, eligibilityYear);
         return RealWorldTestingReportSummary.builder()
