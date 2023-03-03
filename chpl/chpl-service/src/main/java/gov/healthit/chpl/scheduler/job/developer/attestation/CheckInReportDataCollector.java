@@ -72,9 +72,11 @@ public class CheckInReportDataCollector {
 
     }
 
-    public List<CheckInReport> collect() throws EntityRetrievalException {
+    public List<CheckInReport> collect(List<Long> acbIds) throws EntityRetrievalException {
         return getDevelopersActiveListingsDuringMostRecentPastAttestationPeriod().stream()
-                .map(developer -> getCheckInReport(developer)).sorted((o1, o2) -> o1.getDeveloperName().compareTo(o2.getDeveloperName())).toList();
+                .filter(developer -> isDeveloperManagedBySelectedAcbs(developer, acbIds))
+                .map(developer -> getCheckInReport(developer))
+                .sorted((o1, o2) -> o1.getDeveloperName().compareTo(o2.getDeveloperName())).toList();
     }
 
     private CheckInReport getCheckInReport(Developer developer) {
@@ -248,5 +250,12 @@ public class CheckInReportDataCollector {
         return warnings.stream()
                 .filter(w -> w != null)
                 .collect(Collectors.joining("; "));
+    }
+
+    private Boolean isDeveloperManagedBySelectedAcbs(Developer developer, List<Long> acbIds) {
+        return developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(developer.getId()).stream()
+                .filter(acb -> acbIds.contains(acb.getId()))
+                .findAny()
+                .isPresent();
     }
 }

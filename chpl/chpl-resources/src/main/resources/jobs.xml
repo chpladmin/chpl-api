@@ -793,6 +793,10 @@
                     <key>authorities</key>
                     <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value>
                 </entry>
+                <entry>
+                    <key>acbSpecific</key>
+                    <value>true</value>
+                </entry>
             </job-data-map>
         </job>
 
@@ -804,7 +808,7 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
-
+        
         <job>
             <name>updateParticipantsJob</name>
             <group>systemJobs</group>
