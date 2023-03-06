@@ -87,15 +87,15 @@ public class CheckInReportValidation {
     private Boolean isApiValidAndResponseIsNotApplicable(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
         return isApiValid(allActiveListingsForDeveloper)
                 && doesFormResponseEqualResponse(attestationForm,
-                        AttestatationFormMetaData.getApiConditionId(),
-                        AttestatationFormMetaData.getNotAppicableResponseId());
+                        AttestationFormMetaData.getApiConditionId(),
+                        AttestationFormMetaData.getNotAppicableResponseId());
     }
 
     private Boolean isNotApiValidAndResponseIsCompliant(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
         return !isApiValid(allActiveListingsForDeveloper)
                 && doesFormResponseEqualResponse(attestationForm,
-                        AttestatationFormMetaData.getApiConditionId(),
-                        AttestatationFormMetaData.getNotAppicableResponseId());
+                        AttestationFormMetaData.getApiConditionId(),
+                        AttestationFormMetaData.getNotAppicableResponseId());
     }
 
     public String getAssurancesWarningMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm, Long attestationPeriodId) {
@@ -110,15 +110,15 @@ public class CheckInReportValidation {
     private Boolean isAssurancesValidAndResponseIsNotApplicable(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm, Long attestationPeriodId) {
         return isAssurancesValid(allActiveListingsForDeveloper)
                 && doesFormResponseEqualResponse(attestationForm,
-                        AttestatationFormMetaData.getAssurancesConditionId(attestationPeriodId),
-                        AttestatationFormMetaData.getNotAppicableResponseId());
+                        AttestationFormMetaData.getAssurancesConditionId(attestationPeriodId),
+                        AttestationFormMetaData.getNotAppicableResponseId());
     }
 
     private Boolean isNotAssurancesValidAndResponseIsCompliant(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm, Long attestationPeriodId) {
         return !isAssurancesValid(allActiveListingsForDeveloper)
                 && doesFormResponseEqualResponse(attestationForm,
-                        AttestatationFormMetaData.getAssurancesConditionId(attestationPeriodId),
-                        AttestatationFormMetaData.getNotAppicableResponseId());
+                        AttestationFormMetaData.getAssurancesConditionId(attestationPeriodId),
+                        AttestationFormMetaData.getNotAppicableResponseId());
     }
 
     public String getRealWordTestingWarningMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
@@ -133,15 +133,15 @@ public class CheckInReportValidation {
     private Boolean isRwtValidAndResponseIsNotApplicable(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
         return isRealWorldTestingValid(allActiveListingsForDeveloper)
                 && doesFormResponseEqualResponse(attestationForm,
-                        AttestatationFormMetaData.getRwtConditionId(),
-                        AttestatationFormMetaData.getNotAppicableResponseId());
+                        AttestationFormMetaData.getRwtConditionId(),
+                        AttestationFormMetaData.getNotAppicableResponseId());
     }
 
     private Boolean isNotRwtValidAndResponseIsCompliant(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
         return !isRealWorldTestingValid(allActiveListingsForDeveloper)
                 && doesFormResponseEqualResponse(attestationForm,
-                        AttestatationFormMetaData.getRwtConditionId(),
-                        AttestatationFormMetaData.getNotAppicableResponseId());
+                        AttestationFormMetaData.getRwtConditionId(),
+                        AttestationFormMetaData.getNotAppicableResponseId());
     }
 
     private Boolean doesFormResponseEqualResponse(Form attestationForm, Long conditionIdToCheck, Long expectedResult) {

@@ -1,6 +1,6 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation;
 
-public class AttestatationFormMetaData {
+public class AttestationFormMetaData {
     private static final Long INFO_BLOCKING_CONDITION = 1L;
     private static final Long ASSURANCES_CONDITION = 7L;
     private static final Long ASSURANCES_CONDITION_ORIG = 2L;
