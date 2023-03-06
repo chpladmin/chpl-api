@@ -17,6 +17,7 @@ public class CheckInReport {
     private String currentStatusName;
     private LocalDateTime lastStatusChangeDate;
     private String relevantAcbs;
+    private String attestationPeriod;
     private String informationBlockingResponse;
     private String informationBlockingNoncompliantResponse;
     private String assurancesResponse;
@@ -48,6 +49,7 @@ public class CheckInReport {
                 currentStatusName != null ? currentStatusName : "",
                 lastStatusChangeDate != null ? lastStatusChangeDate.toString() : "",
                 relevantAcbs != null ? relevantAcbs : "",
+                attestationPeriod != null ? attestationPeriod : "",
                 informationBlockingResponse != null ? informationBlockingResponse : "",
                 informationBlockingNoncompliantResponse != null ? informationBlockingNoncompliantResponse : "",
                 assurancesResponse != null ? assurancesResponse : "",
@@ -80,6 +82,7 @@ public class CheckInReport {
                 "Change Request Current Status",
                 "Change Request Last Status Change Date",
                 "ONC-ACBs",
+                "Attestattions Period",
                 "Information Blocking Response",
                 "Information Blocking Optional Response",
                 "Assurances Response",

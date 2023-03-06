@@ -73,9 +73,14 @@ public class CheckInReportDataCollector {
     }
 
     public List<CheckInReport> collect(List<Long> acbIds) throws EntityRetrievalException {
+        AttestationPeriod mostRecentAttestationPeriod = attestationManager.getMostRecentPastAttestationPeriod();
         return getDevelopersActiveListingsDuringMostRecentPastAttestationPeriod().stream()
                 .filter(developer -> isDeveloperManagedBySelectedAcbs(developer, acbIds))
                 .map(developer -> getCheckInReport(developer))
+                .map(report -> {
+                    report.setAttestationPeriod(String.format("%s - %s", mostRecentAttestationPeriod.getPeriodStart().toString(), mostRecentAttestationPeriod.getPeriodEnd().toString()));
+                    return report;
+                })
                 .sorted((o1, o2) -> o1.getDeveloperName().compareTo(o2.getDeveloperName())).toList();
     }
 
