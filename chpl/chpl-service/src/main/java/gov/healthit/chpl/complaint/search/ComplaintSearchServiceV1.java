@@ -26,7 +26,8 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
-public class ComplaintSearchService {
+@Deprecated
+public class ComplaintSearchServiceV1 {
     private ComplaintDAO complaintDao;
     private ResourcePermissions resourcePermissions;
     private ComplaintSearchRequestValidator validator;
@@ -34,7 +35,7 @@ public class ComplaintSearchService {
     private DateTimeFormatter dateFormatter;
 
     @Autowired
-    public ComplaintSearchService(ComplaintDAO complaintDao,
+    public ComplaintSearchServiceV1(ComplaintDAO complaintDao,
             ComplaintSearchRequestNormalizer normalizer,
             ComplaintSearchRequestValidator validator,
             ResourcePermissions resourcePermissions) {
@@ -209,12 +210,12 @@ public class ComplaintSearchService {
         LocalDate endDate = parseLocalDate(rangeEnd);
         if (complaint.getClosedDate() != null) {
             if (startDate == null && endDate != null) {
-                return complaint.getClosedDate().isEqual(endDate) || complaint.getClosedDate().isBefore(endDate);
+                return complaint.getClosedDate().isBefore(endDate);
             } else if (startDate != null && endDate == null) {
-                return complaint.getClosedDate().isEqual(startDate) || complaint.getClosedDate().isAfter(startDate);
+                return complaint.getClosedDate().isAfter(startDate);
             } else {
-                return (complaint.getClosedDate().isEqual(endDate) || complaint.getClosedDate().isBefore(endDate))
-                      && (complaint.getClosedDate().isEqual(startDate) || complaint.getClosedDate().isAfter(startDate));
+                return complaint.getClosedDate().isBefore(endDate)
+                                && complaint.getClosedDate().isAfter(startDate);
             }
         }
         return false;
@@ -228,12 +229,12 @@ public class ComplaintSearchService {
         LocalDate endDate = parseLocalDate(rangeEnd);
         if (complaint.getReceivedDate() != null) {
             if (startDate == null && endDate != null) {
-                return complaint.getReceivedDate().isEqual(endDate) || complaint.getReceivedDate().isBefore(endDate);
+                return complaint.getReceivedDate().isBefore(endDate);
             } else if (startDate != null && endDate == null) {
-                return complaint.getReceivedDate().isEqual(startDate) || complaint.getReceivedDate().isAfter(startDate);
+                return complaint.getReceivedDate().isAfter(startDate);
             } else {
-                return (complaint.getReceivedDate().isEqual(endDate) || complaint.getReceivedDate().isBefore(endDate))
-                      && (complaint.getReceivedDate().isEqual(startDate) || complaint.getReceivedDate().isAfter(startDate));
+                return complaint.getReceivedDate().isBefore(endDate)
+                                && complaint.getReceivedDate().isAfter(startDate);
             }
         }
         return false;

@@ -24,8 +24,10 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
 import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.CacheManager;
 
@@ -54,6 +56,9 @@ public class MergeDeveloperJob implements Job {
     @Autowired
     private ChplEmailFactory chplEmailFactory;
 
+    @Autowired
+    private ChplHtmlEmailBuilder emailBuilder;
+
     private List<Developer> preMergeDevelopers;
     private Developer postMergeDeveloper;
 
@@ -77,7 +82,7 @@ public class MergeDeveloperJob implements Job {
                 confirmDevelopersExistBeforeMerge();
                 //merge within transaction so changes will be rolled back
                 postMergeDeveloper = mergeManager.merge(preMergeDevelopers, newDeveloper);
-            } catch (Exception e) {
+            } catch  (Exception e) {
                 LOGGER.error("Error completing merge of developers '"
                         + StringUtils.join(preMergeDevelopers.stream()
                             .map(Developer::getName)
@@ -144,13 +149,13 @@ public class MergeDeveloperJob implements Job {
         String subject = getSubject(mergeException == null);
         String htmlMessage = "";
         if (mergeException == null) {
-            htmlMessage = createHtmlEmailBodySuccess(newDeveloper, oldDevelopers);
+            htmlMessage = createHtmlEmailBodySuccess(subject, newDeveloper, oldDevelopers);
         } else {
             String[] errorEmailRecipients = internalErrorEmailRecipients.split(",");
             for (int i = 0; i < errorEmailRecipients.length; i++) {
                 recipients.add(errorEmailRecipients[i].trim());
             }
-            htmlMessage = createHtmlEmailBodyFailure(oldDevelopers, mergeException);
+            htmlMessage = createHtmlEmailBodyFailure(subject, oldDevelopers, mergeException);
         }
 
         for (String emailAddress : recipients) {
@@ -170,7 +175,6 @@ public class MergeDeveloperJob implements Job {
         chplEmailFactory.emailBuilder().recipient(recipientEmail)
                 .subject(subject)
                 .htmlMessage(htmlMessage)
-                .acbAtlHtmlFooter()
                 .sendEmail();
     }
 
@@ -182,35 +186,56 @@ public class MergeDeveloperJob implements Job {
         }
     }
 
-    private String createHtmlEmailBodySuccess(Developer createdDeveloper, List<Developer> preMergeDevelopers) {
-        String htmlMessage = String.format("<p>The Developer <a href=\"%s/#/organizations/developers/%d\">%s</a> has been "
-                + "created. It was merged from the following developers: </p>"
-                + "<ul>",
+    private String createHtmlEmailBodySuccess(String title, Developer createdDeveloper, List<Developer> developers) {
+        String summaryText = String
+                .format("The Developer <a href=\"%s/#/organizations/developers/%d\">%s</a> has been "
+                        + "created. It was merged from the following developers: ",
                 env.getProperty("chplUrlBegin"), // root of URL
                 createdDeveloper.getId(),
                 createdDeveloper.getName());
-        for (Developer dev : preMergeDevelopers) {
-            htmlMessage += String.format("<li><a href=\"%s/#/organizations/developers/%d\">%s</a></li>",
-                    env.getProperty("chplUrlBegin"),
-                    dev.getId(),
-                    dev.getName());
+
+        String developerList = "<ul>";
+        for (Developer dev : developers) {
+            developerList += String.format("<li>%s</li>", dev.getName());
         }
-        htmlMessage += "</ul>";
+        developerList += "</ul>";
+
+        String htmlMessage = emailBuilder.initialize()
+                .heading(title)
+                .paragraph(null, summaryText)
+                .paragraph(null, developerList)
+                .footer(false)
+                .build();
         return htmlMessage;
     }
 
-    private String createHtmlEmailBodyFailure(List<Developer> preMergeDevelopers, Exception ex) {
-        String htmlMessage = "The developers <ul> ";
-        for (Developer dev : preMergeDevelopers) {
-            htmlMessage += String.format("<li><a href=\"%s/#/organizations/developers/%d\">%s</a></li>",
+    private String createHtmlEmailBodyFailure(String title, List<Developer> developers, Exception ex) {
+        String developerList = "<ul>";
+        for (Developer dev : developers) {
+            developerList += String.format("<li><a href=\"%s/#/organizations/developers/%d\">%s</a></li>",
                     env.getProperty("chplUrlBegin"),
                     dev.getId(),
                     dev.getName());
         }
-        htmlMessage += String.format(
-                "</ul>"
-                + " could not be merged into a new developer. The error was: %s",
-                ex.getMessage());
+        developerList += "</ul>";
+
+        String exceptionMessage = "";
+        if (ex instanceof ValidationException) {
+            ValidationException validationEx = (ValidationException) ex;
+            exceptionMessage = validationEx.getErrorMessages().stream()
+                    .collect(Collectors.joining("<br />"));
+        } else {
+            exceptionMessage = ex.getMessage();
+        }
+
+        String htmlMessage = emailBuilder.initialize()
+                .heading(title)
+                .paragraph(null, "The below developers could not be merged into a new developer: ")
+                .paragraph(null, developerList)
+                .paragraph(null, String.format("The error was: %s", exceptionMessage))
+                .footer(false)
+                .build();
+
         return htmlMessage;
     }
 }

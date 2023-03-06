@@ -28,7 +28,13 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReport;
+import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingReportSummary;
 import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingReportService;
+import gov.healthit.chpl.scheduler.job.realworldtesting.RealWorldTestingReportSummaryCalculator;
+import gov.healthit.chpl.util.NullSafeEvaluator;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "realWorldTestingReportEmailJobLogger")
@@ -58,6 +64,7 @@ public class RealWorldTestingReportEmailJob implements Job {
         LOGGER.info("********* Starting the Real World Report Email job for " + context.getMergedJobDataMap().getString("email") + " *********");
         try {
             setAcbIds(context);
+
             List<RealWorldTestingReport> reportRows = rwtReportService.getRealWorldTestingReports(acbIds, LOGGER);
             sendEmail(context, reportRows);
         } catch (Exception e) {
@@ -78,16 +85,17 @@ public class RealWorldTestingReportEmailJob implements Job {
         chplEmailFactory.emailBuilder()
                 .recipient(context.getMergedJobDataMap().getString("email"))
                 .subject(env.getProperty("rwt.report.subject"))
-                .htmlMessage(createHtmlMessage(context))
-                .fileAttachments(new ArrayList<File>(Arrays.asList(generateCsvFile(context, rows))))
+                .htmlMessage(createHtmlMessage(context, rows))
+                .fileAttachments(List.of(generateCsvFile(context, rows)))
                 .sendEmail();
         LOGGER.info("Completed Sending email to: " + context.getMergedJobDataMap().getString("email"));
     }
 
-    private String createHtmlMessage(JobExecutionContext context) {
+    private String createHtmlMessage(JobExecutionContext context, List<RealWorldTestingReport> rows) {
         return chplHtmlEmailBuilder.initialize()
                 .heading(env.getProperty("rwt.report.subject"))
                 .paragraph(String.format(env.getProperty("rwt.report.body")), getAcbNamesAsBrSeparatedList(context))
+                .paragraph("Real World Testing Report Summary", getEmailSummaryParagraph(rows))
                 .footer(true)
                 .build();
     }
@@ -151,5 +159,49 @@ public class RealWorldTestingReportEmailJob implements Job {
             LOGGER.error("Could not retreive ACB name based on value: " + acbId, e);
             return "";
         }
+    }
+
+    private String getEmailSummaryParagraph(List<RealWorldTestingReport> rows) {
+        Integer currentRwtYear = getCurrentRwtYear();
+        List<Integer> rwtYears = List.of(currentRwtYear, currentRwtYear - 1);
+        StringBuffer paragraph = new StringBuffer();
+        rwtYears.forEach(year -> {
+            RealWorldTestingReportSummary summary = RealWorldTestingReportSummaryCalculator.calculateSummariesByEligibityYear(rows, year);
+            paragraph.append("Real World Testing for ").append(summary.getRwtEligibilityYear()).append(":<br/>")
+                    .append("<ul>")
+                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalListings(), 0)).append(" Total listing for this period</li>")
+                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithdrawn(), 0)).append(" Withdrawn, no longer eligible</li>")
+                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalActive(), 0)).append(" Active</li>")
+                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalEligibleViaIcs(), 0)).append(" Eligible via ICS</li>")
+                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithPlansUrl(), 0)).append(" Have RWT plans URL</li>")
+                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithPlansUrlValidated(), 0)).append(" RWT plans validated</li>")
+                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithResultsUrl(), 0)).append(" Have RWT results URL</li>")
+                    .append("<li>").append(NullSafeEvaluator.eval(() -> summary.getTotalWithResultsUrlValidated(), 0)).append(" RWT results validated</li>")
+                    .append("</ul>").append("<br />");
+        });
+        return paragraph.toString();
+    }
+
+    private Integer getCurrentRwtYear() {
+        DayAndMonth rwtPlanStartDayAndMonth = getRwtPlanStartDayAndMonth();
+        LocalDate rwtPlanStartDate = LocalDate.of(LocalDate.now().getYear(), rwtPlanStartDayAndMonth.getMonth(), rwtPlanStartDayAndMonth.getDay());
+        if (rwtPlanStartDate.equals(LocalDate.now()) || rwtPlanStartDate.isBefore(LocalDate.now())) {
+            return LocalDate.now().getYear() + 1;
+        } else {
+            return LocalDate.now().getYear();
+        }
+    }
+
+    private DayAndMonth getRwtPlanStartDayAndMonth() {
+        String[] dateParts = env.getProperty("rwtPlanStartDayOfYear").split("/");
+        return new DayAndMonth(Integer.valueOf(dateParts[1]), Integer.valueOf(dateParts[0]));
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    private static class DayAndMonth {
+        private Integer day;
+        private Integer month;
     }
 }
