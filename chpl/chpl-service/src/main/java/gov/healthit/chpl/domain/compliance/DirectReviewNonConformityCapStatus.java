@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 
 public enum DirectReviewNonConformityCapStatus {
     CAP_APPROVED("CAP approved"),
-    CAP_NOT_APPROVED("CAP not approved"),
+    CAP_REJECTED("CAP rejected"),
     CAP_NOT_PROVIDED("No CAP provided for approval"),
     FAILED_TO_COMPLETE("Failed to complete"),
     RESOLVED_WITHOUT_CAP("Resolved without CAP"),

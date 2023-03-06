@@ -13,8 +13,6 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -36,6 +34,8 @@ public class DirectReviewNonConformity implements Serializable {
     private static final String NOT_APPLICABLE = "Not applicable";
     private static final String NOT_DETERMINED = "Not determined";
     private static final String NOT_COMPLETED = "Not completed";
+    private static final String TO_BE_DETERMINED = "To be determined";
+    private static final String DEFAULT = "Unknown";
 
     @JsonProperty(value = "requirement", access = Access.WRITE_ONLY)
     @JsonAlias("customfield_11018")
@@ -81,7 +81,7 @@ public class DirectReviewNonConformity implements Serializable {
     private String nonConformityResolution;
 
     @JsonProperty(value = "capStatus", access = Access.WRITE_ONLY)
-    @JsonAlias("customfield_TBD")
+    @JsonAlias({"customfield_12300", "customfield_12400"})
     @XmlTransient
     private String capStatus;
 
@@ -125,8 +125,21 @@ public class DirectReviewNonConformity implements Serializable {
     public String getCapApprovalDate() {
         if (getCapApprovalDateInternal() != null) {
             return getCapApprovalDateInternal().toString();
+        } else {
+            DirectReviewNonConformityCapStatus capStatusValue = DirectReviewNonConformityCapStatus.getByName(getCapStatus());
+            switch (capStatusValue) {
+            case CAP_APPROVED:
+            case FAILED_TO_COMPLETE:
+            case TBD:
+                return TO_BE_DETERMINED;
+            case RESOLVED_WITHOUT_CAP:
+            case CAP_NOT_PROVIDED:
+            case CAP_REJECTED:
+                return getCapStatus();
+            default:
+                return DEFAULT;
+            }
         }
-        return getCapStatus();
     }
 
     @JsonProperty(value = "capMustCompleteDate")
@@ -134,22 +147,21 @@ public class DirectReviewNonConformity implements Serializable {
     public String getCapMustCompleteDate() {
         if (getCapMustCompleteDateInternal() != null) {
             return getCapMustCompleteDateInternal().toString();
-        } else if (!StringUtils.isEmpty(getCapStatus())) {
+        } else {
             DirectReviewNonConformityCapStatus capStatusValue = DirectReviewNonConformityCapStatus.getByName(getCapStatus());
             switch (capStatusValue) {
-            case RESOLVED_WITHOUT_CAP:
-                return NOT_APPLICABLE;
-            case TBD:
-            case CAP_NOT_PROVIDED:
-            case CAP_NOT_APPROVED:
-                return NOT_DETERMINED;
             case CAP_APPROVED:
             case FAILED_TO_COMPLETE:
+            case TBD:
+            case CAP_REJECTED:
+            case CAP_NOT_PROVIDED:
+                return TO_BE_DETERMINED;
+            case RESOLVED_WITHOUT_CAP:
+                return NOT_APPLICABLE;
             default:
-                return "";
+                return DEFAULT;
             }
         }
-        return "";
     }
 
     @JsonProperty(value = "capEndDate")
@@ -157,7 +169,20 @@ public class DirectReviewNonConformity implements Serializable {
     public String getCapEndDate() {
         if (getCapEndDateInternal() != null) {
             return getCapEndDateInternal().toString();
+        } else {
+            DirectReviewNonConformityCapStatus capStatusValue = DirectReviewNonConformityCapStatus.getByName(getCapStatus());
+            switch (capStatusValue) {
+            case CAP_APPROVED:
+            case FAILED_TO_COMPLETE:
+            case TBD:
+            case CAP_REJECTED:
+            case CAP_NOT_PROVIDED:
+                return NOT_COMPLETED;
+            case RESOLVED_WITHOUT_CAP:
+                return TO_BE_DETERMINED;
+            default:
+                return DEFAULT;
+            }
         }
-        return NOT_COMPLETED;
     }
 }

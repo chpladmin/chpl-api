@@ -102,6 +102,48 @@ public class DirectReviewNonConformityDeserializationTest {
     }
 
     @Test
+    public void deserializeJson_parsesNonConformityCapStatus() {
+        String capStatus = "CAP Approved";
+        String json = "{"
+                + "\"total\": 1,"
+                + "\"issues\": ["
+                + "{ "
+                + "\"key\": \"DR-12345\", "
+                + "\"fields\": {"
+                + "\"customfield_12300\": \"" + capStatus + "\" "
+                + "}"
+                + "}"
+                + "]"
+                + "}";
+
+        DirectReviewNonConformity nc = parseJsonToNonConformity(json);
+        assertNotNull(nc);
+        assertNotNull(nc.getCapStatus());
+        assertEquals(capStatus, nc.getCapStatus());
+    }
+
+    @Test
+    public void deserializeJson_parsesNonConformityCapStatusFromDEVJira() {
+        String capStatus = "CAP Approved";
+        String json = "{"
+                + "\"total\": 1,"
+                + "\"issues\": ["
+                + "{ "
+                + "\"key\": \"DR-12345\", "
+                + "\"fields\": {"
+                + "\"customfield_12400\": \"" + capStatus + "\" "
+                + "}"
+                + "}"
+                + "]"
+                + "}";
+
+        DirectReviewNonConformity nc = parseJsonToNonConformity(json);
+        assertNotNull(nc);
+        assertNotNull(nc.getCapStatus());
+        assertEquals(capStatus, nc.getCapStatus());
+    }
+
+    @Test
     public void deserializeJson_parsesNonConformitySummary() {
         String nonConformitySummary = "summary";
         String json = "{"
