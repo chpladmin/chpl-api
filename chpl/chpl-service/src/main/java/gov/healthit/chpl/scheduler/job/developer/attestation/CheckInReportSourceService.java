@@ -72,7 +72,7 @@ public class CheckInReportSourceService {
                 try {
                     return changeRequestManager.getChangeRequest(result.getId());
                 } catch (Exception e) {
-                    // TODO: NEED TO MAKE SURE WE LOG THIS
+                    LOGGER.error("Could not retrieve Change Request where Id: {}", result.getId(), e);
                     return null;
                 }
             }).filter(cr -> cr != null && ((ChangeRequestAttestationSubmission) cr.getDetails()).getAttestationPeriod()
@@ -81,7 +81,7 @@ public class CheckInReportSourceService {
                             result2) -> result1.getSubmittedDateTime().compareTo(result2.getSubmittedDateTime()) * -1)
                     .findFirst().orElse(null);
         } catch (Exception e) {
-            // TODO: NEED TO MAKE SURE WE LOG THIS
+            LOGGER.error("Could not execute Change Request search with the following request: {}", request.toString(), e);
             return null;
         }
     }
