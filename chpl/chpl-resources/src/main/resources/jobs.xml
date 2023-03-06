@@ -36,6 +36,14 @@
             <name>Inherited Certification Status Errors Report</name>
             <group>chplJobs</group>
         </delete-job>
+        <delete-job>
+            <name>Inherited Certification Status Errors Report</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>Developer Attestations Report Email</name>
+            <group>chplJobs</group>
+        </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
