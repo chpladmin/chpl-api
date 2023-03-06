@@ -53,32 +53,32 @@ public class CheckInReportValidation {
 
     public String getRealWorldTestingValidationMessage(List<ListingSearchResult> allActiveListingsForDeveloper) {
         if (isRealWorldTestingValid(allActiveListingsForDeveloper)) {
-            return errorMessageUtil.getMessage("attestatation.check.in.report.rwtValidationTrue");
+            return errorMessageUtil.getMessage("attestatation.checkInReport.rwtValidationTrue");
         } else {
-            return errorMessageUtil.getMessage("attestatation.check.in.report.rwtValidationFalse");
+            return errorMessageUtil.getMessage("attestatation.checkInReport.rwtValidationFalse");
         }
     }
 
     public String getAssurancesValidationMessage(List<ListingSearchResult> allActiveListingsForDeveloper) {
         if (isAssurancesValid(allActiveListingsForDeveloper)) {
-            return errorMessageUtil.getMessage("attestatation.check.in.report.assurancesValidationTrue");
+            return errorMessageUtil.getMessage("attestatation.checkInReport.assurancesValidationTrue");
         } else {
-            return errorMessageUtil.getMessage("attestatation.check.in.report.assurancesValidationFalse");
+            return errorMessageUtil.getMessage("attestatation.checkInReport.assurancesValidationFalse");
         }
     }
 
     public String getApiValidationMessage(List<ListingSearchResult> allActiveListingsForDeveloper) {
         if (isApiValid(allActiveListingsForDeveloper)) {
-            return errorMessageUtil.getMessage("attestatation.check.in.report.apiValidationTrue");
+            return errorMessageUtil.getMessage("attestatation.checkInReport.apiValidationTrue");
         } else {
-            return errorMessageUtil.getMessage("attestatation.check.in.report.apiValidationFalse");
+            return errorMessageUtil.getMessage("attestatation.checkInReport.apiValidationFalse");
         }
     }
 
     public String getApiWarningMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
         if (isApiValidAndResponseIsNotApplicable(allActiveListingsForDeveloper, attestationForm)
                 || isNotApiValidAndResponseIsCompliant(allActiveListingsForDeveloper, attestationForm)) {
-            return errorMessageUtil.getMessage("attestatation.check.in.report.apiResponseNotConsistent");
+            return errorMessageUtil.getMessage("attestatation.checkInReport.apiResponseNotConsistent");
         } else {
             return null;
         }
@@ -101,7 +101,7 @@ public class CheckInReportValidation {
     public String getAssurancesWarningMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm, Long attestationPeriodId) {
         if (isAssurancesValidAndResponseIsNotApplicable(allActiveListingsForDeveloper, attestationForm, attestationPeriodId)
                 || isNotAssurancesValidAndResponseIsCompliant(allActiveListingsForDeveloper, attestationForm, attestationPeriodId)) {
-            return errorMessageUtil.getMessage("attestatation.check.in.report.assurancesResponseNotConsistent");
+            return errorMessageUtil.getMessage("attestatation.checkInReport.assurancesResponseNotConsistent");
         } else {
             return null;
         }
@@ -124,7 +124,7 @@ public class CheckInReportValidation {
     public String getRealWordTestingWarningMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
         if (isRwtValidAndResponseIsNotApplicable(allActiveListingsForDeveloper, attestationForm)
                 || isNotRwtValidAndResponseIsCompliant(allActiveListingsForDeveloper, attestationForm)) {
-            return errorMessageUtil.getMessage("attestatation.check.in.report.rwtResponseNotConsistent");
+            return errorMessageUtil.getMessage("attestatation.checkInReport.rwtResponseNotConsistent");
         } else {
             return null;
         }
