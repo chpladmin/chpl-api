@@ -32,7 +32,6 @@ public class DirectReviewNonConformity implements Serializable {
     public static final String STATUS_OPEN = "OPEN";
     public static final String STATUS_CLOSED = "CLOSED";
     private static final String NOT_APPLICABLE = "Not applicable";
-    private static final String NOT_DETERMINED = "Not determined";
     private static final String NOT_COMPLETED = "Not completed";
     private static final String TO_BE_DETERMINED = "To be determined";
     private static final String DEFAULT = "Unknown";
@@ -81,7 +80,8 @@ public class DirectReviewNonConformity implements Serializable {
     private String nonConformityResolution;
 
     @JsonProperty(value = "capStatus", access = Access.WRITE_ONLY)
-    @JsonAlias({"customfield_12300", "customfield_12400"})
+    @JsonAlias("customfield_12300")
+    @JsonDeserialize(using = SimpleValueDeserializer.class)
     @XmlTransient
     private String capStatus;
 
