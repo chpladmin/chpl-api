@@ -1,5 +1,26 @@
 # Release Notes
 
+## Version 39.5.0
+_6 March 2023_
+
+### Features
+* Add summary data to Real World Testing report
+* Re-organize system jobs to avoid running together
+* Add ADMIN-only ability to download CSV used to create listing
+* Version the change-requests/search endpoints and add a v2
+* Version the /complaints/search endpoints and add a v2
+* Version the GET /developers/search endpoint and add v2
+* Deprecate listing search service v2 in favor of /search/v3
+
+### Bug Fixes
+* Handle null developer contact name in Developer Access Report
+* Product ownership change should correctly record listing activity
+* Ensure a developer cannot have 0 products
+* Support blank contact fields supplied during product edit
+* Place the ICS error indicator in correct column in RWT Email
+
+---
+
 ## Version 39.4.0
 _21 February 2023_
 
