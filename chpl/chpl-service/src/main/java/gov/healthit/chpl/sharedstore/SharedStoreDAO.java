@@ -9,6 +9,7 @@ import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.Root;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -16,7 +17,7 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 @Component
 public class SharedStoreDAO extends BaseDAOImpl {
 
-    @Transactional()
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void add(SharedStore data) {
         SharedStoreEntity entity = SharedStoreEntity.builder()
                 .primaryKey(SharedStorePrimaryKey.builder()
@@ -40,12 +41,12 @@ public class SharedStoreDAO extends BaseDAOImpl {
         }
     }
 
-    @Transactional()
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void remove(String type, String key) {
         remove(type, List.of(key));
     }
 
-    @Transactional()
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void remove(String type, List<String> keys) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaDelete<SharedStoreEntity> delete = cb.createCriteriaDelete(SharedStoreEntity.class);
@@ -56,7 +57,7 @@ public class SharedStoreDAO extends BaseDAOImpl {
         entityManager.createQuery(delete).executeUpdate();
     }
 
-    @Transactional()
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void removeByDomain(String domain) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaDelete<SharedStoreEntity> delete = cb.createCriteriaDelete(SharedStoreEntity.class);
@@ -68,8 +69,9 @@ public class SharedStoreDAO extends BaseDAOImpl {
     private SharedStoreEntity getEntity(String domain, String key) {
         List<SharedStoreEntity> result = entityManager.createQuery(
                 "FROM SharedStoreEntity sse "
-                + "WHERE sse.primaryKey.domain = :domain "
-                + "AND sse.primaryKey.key = :key ", SharedStoreEntity.class)
+                        + "WHERE sse.primaryKey.domain = :domain "
+                        + "AND sse.primaryKey.key = :key ",
+                SharedStoreEntity.class)
                 .setParameter("domain", domain)
                 .setParameter("key", key)
                 .getResultList();
