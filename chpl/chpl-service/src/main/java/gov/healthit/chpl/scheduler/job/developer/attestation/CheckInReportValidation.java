@@ -5,7 +5,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,18 +20,6 @@ import gov.healthit.chpl.util.NullSafeEvaluator;
 
 @Component
 public class CheckInReportValidation {
-    // private static final String RWT_VALIDATION_TRUE = "Has listing(s) with
-    // RWT criteria";
-    // private static final String RWT_VALIDATION_FALSE = "No listings with RWT
-    // criteria";
-    // private static final String ASSURANCES_VALIDATION_TRUE = "Has listing(s)
-    // with Assurances criteria (b)(6) or (b)(10)";
-    // private static final String ASSURANCES_VALIDATION_FALSE = "No listings
-    // with Assurances criteria (b)(6) or (b)(10)";
-    // private static final String API_VALIDATION_TRUE = "Has listing(s) with
-    // API criteria (g)(7)-(g)(10)";
-    // private static final String API_VALIDATION_FALSE = "No listings with API
-    // criteria (g)(7)-(g)(10)";
     private static final String YES = "Yes";
     private static final String NO = "No";
 
@@ -168,24 +155,25 @@ public class CheckInReportValidation {
     }
 
     private Boolean isRealWorldTestingValid(List<ListingSearchResult> allActiveListingsForDeveloper) {
-        return !CollectionUtils.isEmpty(getActiveListingDataWithAnyCriteriaForDeveloper(allActiveListingsForDeveloper, rwtCriteria));
+        return getDoesListingAttestToAnySpecifiedCriteria(allActiveListingsForDeveloper, rwtCriteria);
     }
 
     private Boolean isAssurancesValid(List<ListingSearchResult> allActiveListingsForDeveloper) {
-        return !CollectionUtils.isEmpty(getActiveListingDataWithAnyCriteriaForDeveloper(allActiveListingsForDeveloper, assurancesCriteria));
+        return getDoesListingAttestToAnySpecifiedCriteria(allActiveListingsForDeveloper, assurancesCriteria);
     }
 
     private Boolean isApiValid(List<ListingSearchResult> allActiveListingsForDeveloper) {
-        return !CollectionUtils.isEmpty(getActiveListingDataWithAnyCriteriaForDeveloper(allActiveListingsForDeveloper, apiCriteria));
+        return getDoesListingAttestToAnySpecifiedCriteria(allActiveListingsForDeveloper, apiCriteria);
     }
 
-    private List<ListingSearchResult> getActiveListingDataWithAnyCriteriaForDeveloper(List<ListingSearchResult> allActiveListingsForDeveloper, List<CertificationCriterion> criteria) {
+    private Boolean getDoesListingAttestToAnySpecifiedCriteria(List<ListingSearchResult> allActiveListingsForDeveloper, List<CertificationCriterion> criteria) {
         return allActiveListingsForDeveloper.stream()
                 .filter(result -> result.getCriteriaMet().stream()
                         .filter(met -> isCriteriaInList(met.getId(), criteria))
                         .findAny()
                         .isPresent())
-                .toList();
+                .findAny()
+                .isPresent();
     }
 
     private boolean isCriteriaInList(Long criteriaId, List<CertificationCriterion> criteria) {
