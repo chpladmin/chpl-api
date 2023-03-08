@@ -10,21 +10,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingCriteriaService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.NullSafeEvaluator;
 
 @Component
 public class CheckInReportValidation {
-    private static final String RWT_VALIDATION_TRUE = "Has listing(s) with RWT criteria";
-    private static final String RWT_VALIDATION_FALSE = "No listings with RWT criteria";
-    private static final String ASSURANCES_VALIDATION_TRUE = "Has listing(s) with Assurances criteria (b)(6) or (b)(10)";
-    private static final String ASSURANCES_VALIDATION_FALSE = "No listings with Assurances criteria (b)(6) or (b)(10)";
-    private static final String API_VALIDATION_TRUE = "Has listing(s) with API criteria (g)(7)-(g)(10)";
-    private static final String API_VALIDATION_FALSE = "No listings with API criteria (g)(7)-(g)(10)";
+    // private static final String RWT_VALIDATION_TRUE = "Has listing(s) with
+    // RWT criteria";
+    // private static final String RWT_VALIDATION_FALSE = "No listings with RWT
+    // criteria";
+    // private static final String ASSURANCES_VALIDATION_TRUE = "Has listing(s)
+    // with Assurances criteria (b)(6) or (b)(10)";
+    // private static final String ASSURANCES_VALIDATION_FALSE = "No listings
+    // with Assurances criteria (b)(6) or (b)(10)";
+    // private static final String API_VALIDATION_TRUE = "Has listing(s) with
+    // API criteria (g)(7)-(g)(10)";
+    // private static final String API_VALIDATION_FALSE = "No listings with API
+    // criteria (g)(7)-(g)(10)";
+    private static final String YES = "Yes";
+    private static final String NO = "No";
 
     private ErrorMessageUtil errorMessageUtil;
 
@@ -51,27 +61,30 @@ public class CheckInReportValidation {
                 .collect(Collectors.toList());
     }
 
-    public String getRealWorldTestingValidationMessage(List<ListingSearchResult> allActiveListingsForDeveloper) {
+    public String getRealWorldTestingValidationMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
+        String warning = NullSafeEvaluator.eval(() -> getRealWordTestingWarningMessage(allActiveListingsForDeveloper, attestationForm), "");
         if (isRealWorldTestingValid(allActiveListingsForDeveloper)) {
-            return errorMessageUtil.getMessage("attestatation.checkInReport.rwtValidationTrue");
+            return YES + (warning != "" ? " - " : "") + warning;
         } else {
-            return errorMessageUtil.getMessage("attestatation.checkInReport.rwtValidationFalse");
+            return NO + (warning != "" ? " - " : "") + warning;
         }
     }
 
-    public String getAssurancesValidationMessage(List<ListingSearchResult> allActiveListingsForDeveloper) {
+    public String getAssurancesValidationMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm, AttestationPeriod period) {
+        String warning = NullSafeEvaluator.eval(() -> getAssurancesWarningMessage(allActiveListingsForDeveloper, attestationForm, period.getId()), "");
         if (isAssurancesValid(allActiveListingsForDeveloper)) {
-            return errorMessageUtil.getMessage("attestatation.checkInReport.assurancesValidationTrue");
+            return YES + (warning != "" ? " - " : "") + warning;
         } else {
-            return errorMessageUtil.getMessage("attestatation.checkInReport.assurancesValidationFalse");
+            return NO + (warning != "" ? " - " : "") + warning;
         }
     }
 
-    public String getApiValidationMessage(List<ListingSearchResult> allActiveListingsForDeveloper) {
+    public String getApiValidationMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
+        String warning = NullSafeEvaluator.eval(() -> getApiWarningMessage(allActiveListingsForDeveloper, attestationForm), "");
         if (isApiValid(allActiveListingsForDeveloper)) {
-            return errorMessageUtil.getMessage("attestatation.checkInReport.apiValidationTrue");
+            return YES + (warning != "" ? " - " : "") + warning;
         } else {
-            return errorMessageUtil.getMessage("attestatation.checkInReport.apiValidationFalse");
+            return NO + (warning != "" ? " - " : "") + warning;
         }
     }
 

@@ -160,10 +160,9 @@ public class CheckInReportDataCollector {
                 .openSurveillanceNonconformities(getOpenSurveillanceNonconformities(developer, allActiveListingsForDeveloper, LOGGER))
                 .totalDirectReviewNonconformities(getTotalDirectReviewNonconformities(developer, LOGGER))
                 .openDirectReviewNonconformities(getOpenDirectReviewNonconformities(developer, LOGGER))
-                .assurancesValidation(checkInReportValidation.getAssurancesValidationMessage(allActiveListingsForDeveloper))
-                .realWorldTestingValidation(checkInReportValidation.getRealWorldTestingValidationMessage(allActiveListingsForDeveloper))
-                .apiValidation(checkInReportValidation.getApiValidationMessage(allActiveListingsForDeveloper))
-                .warnings(getWarnings(allActiveListingsForDeveloper, form, attestationPeriodId))
+                .assurancesValidation(checkInReportValidation.getAssurancesValidationMessage(allActiveListingsForDeveloper, form, attestationManager.getMostRecentPastAttestationPeriod()))
+                .realWorldTestingValidation(checkInReportValidation.getRealWorldTestingValidationMessage(allActiveListingsForDeveloper, form))
+                .apiValidation(checkInReportValidation.getApiValidationMessage(allActiveListingsForDeveloper, form))
                 .build();
     }
 
