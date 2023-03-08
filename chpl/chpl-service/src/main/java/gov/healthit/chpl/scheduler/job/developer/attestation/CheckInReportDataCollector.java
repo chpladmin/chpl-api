@@ -74,7 +74,7 @@ public class CheckInReportDataCollector {
 
     public List<CheckInReport> collect(List<Long> acbIds) throws EntityRetrievalException {
         AttestationPeriod mostRecentAttestationPeriod = attestationManager.getMostRecentPastAttestationPeriod();
-        return getDevelopersActiveListingsDuringMostRecentPastAttestationPeriod().stream()
+        return getDevelopersActiveListingsDuringMostRecentPastAttestationPeriod().parallelStream()
                 .filter(developer -> isDeveloperManagedBySelectedAcbs(developer, acbIds))
                 .map(developer -> getCheckInReport(developer))
                 .map(report -> {
