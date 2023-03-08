@@ -35,7 +35,7 @@ public class ActivityDAO extends BaseDAOImpl {
         this.userMapper = userMapper;
     }
 
-    public void create(ActivityDTO dto) throws EntityCreationException, EntityRetrievalException {
+    public Long create(ActivityDTO dto) throws EntityCreationException, EntityRetrievalException {
 
         // find the activity concept id for this concept
         Query conceptIdQuery = entityManager.createQuery("SELECT ac "
@@ -63,6 +63,7 @@ public class ActivityDAO extends BaseDAOImpl {
         // have to be logged in
         entity.setLastModifiedUser(dto.getLastModifiedUser());
         create(entity);
+        return entity.getId();
     }
 
     public ActivityDTO getById(Long id) throws EntityRetrievalException {
