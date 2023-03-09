@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +45,7 @@ public class ActivityManager extends SecuredManager {
     private ChplProductNumberChangedListener chplProductNumberChangedListener;
 
     @Autowired
-    public ActivityManager(ActivityDAO activityDAO, DeveloperDAO devDao,
+    public ActivityManager(@Qualifier("activityDAO") ActivityDAO activityDAO, DeveloperDAO devDao,
             QuestionableActivityListener questionableActivityListener,
             ChplProductNumberChangedListener chplProductNumberChangedListener) {
         this.activityDAO = activityDAO;

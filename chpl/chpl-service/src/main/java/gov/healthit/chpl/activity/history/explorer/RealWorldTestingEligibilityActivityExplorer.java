@@ -8,6 +8,7 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.activity.history.query.ListingActivityQuery;
@@ -25,7 +26,7 @@ public class RealWorldTestingEligibilityActivityExplorer extends ListingActivity
     private ActivityDAO activityDao;
 
     @Autowired
-    public RealWorldTestingEligibilityActivityExplorer(ActivityDAO activityDao) {
+    public RealWorldTestingEligibilityActivityExplorer(@Qualifier("activityDAO") ActivityDAO activityDao) {
         this.activityDao = activityDao;
     }
 
