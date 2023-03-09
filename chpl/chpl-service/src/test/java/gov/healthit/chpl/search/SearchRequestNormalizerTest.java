@@ -36,6 +36,32 @@ public class SearchRequestNormalizerTest {
     }
 
     @Test
+    public void normalize_listingIdStrings_trimsCorrectly() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .listingIdStrings(Stream.of("1 ", " 2 ", "", " ", null, "3", "notanumber").collect(Collectors.toSet()))
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(3, searchRequest.getListingIds().size());
+        assertTrue(searchRequest.getListingIds().contains(1L));
+        assertTrue(searchRequest.getListingIds().contains(2L));
+        assertTrue(searchRequest.getListingIds().contains(3L));
+    }
+
+    @Test
+    public void normalize_listingIdLongs_noChange() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .listingIds(Stream.of(1L, 2L, 3L).collect(Collectors.toSet()))
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(3, searchRequest.getListingIds().size());
+        assertTrue(searchRequest.getListingIds().contains(1L));
+        assertTrue(searchRequest.getListingIds().contains(2L));
+        assertTrue(searchRequest.getListingIds().contains(3L));
+    }
+
+    @Test
     public void normalize_certificationBodies_trimsCorrectly() {
         SearchRequest searchRequest = SearchRequest.builder()
                 .certificationBodies(Stream.of("ICSA Labs ", " Drummond ", "", " ", null, "test").collect(Collectors.toSet()))
@@ -74,7 +100,6 @@ public class SearchRequestNormalizerTest {
         assertTrue(searchRequest.getDerivedCertificationEditions().contains("2014"));
         assertTrue(searchRequest.getDerivedCertificationEditions().contains("2015 CURES UPDATE"));
     }
-
 
     @Test
     public void normalize_certificationCriteriaIdStrings_trimsCorrectly() {

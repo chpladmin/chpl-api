@@ -347,6 +347,9 @@ public class SearchController {
         @Parameter(description = "CHPL ID, Developer (or previous developer) Name, Product Name, ONC-ACB Certification ID",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "searchTerm")
         @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,
+        @Parameter(description = "A comma-separated list of listing IDs to be queried together (ex: \"1,2\" finds the listing with ID 1 and the listing with ID 2.",
+            allowEmptyValue = true, in = ParameterIn.QUERY, name = "listingIds")
+        @RequestParam(value = "listingIds", required = false, defaultValue = "") String listingIdsDelimited,
         @Parameter(description = "A comma-separated list of certification statuses (ex: \"Active,Retired,Withdrawn by Developer\"). Results may match any of the provided statuses.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationStatuses")
         @RequestParam(value = "certificationStatuses", required = false, defaultValue = "") String certificationStatusesDelimited,
@@ -437,6 +440,7 @@ public class SearchController {
 
         SearchRequest searchRequest = SearchRequest.builder()
                 .searchTerm(searchTerm.trim())
+                .listingIdStrings(convertToSetWithDelimeter(listingIdsDelimited, ","))
                 .certificationStatuses(convertToSetWithDelimeter(certificationStatusesDelimited, ","))
                 .derivedCertificationEditions(convertToSetWithDelimeter(derivedCertificationEditionsDelimited, ","))
                 .certificationCriteriaIdStrings(convertToSetWithDelimeter(certificationCriteriaIdsDelimited, ","))
