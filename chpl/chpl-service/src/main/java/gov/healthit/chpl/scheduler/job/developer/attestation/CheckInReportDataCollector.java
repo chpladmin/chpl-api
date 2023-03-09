@@ -1,6 +1,5 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +46,8 @@ public class CheckInReportDataCollector {
     private CheckInReportSourceService checkInReportSourceService;
     private CheckInReportValidation checkInReportValidation;
 
+    private Boolean checkInReportParallel;
+
     private Map<Long, List<ListingSearchResult>> developerListings = new HashMap<Long, List<ListingSearchResult>>();
 
     private Set<String> activeStatuses = Stream.of(
@@ -60,7 +61,8 @@ public class CheckInReportDataCollector {
             DirectReviewSearchService directReviewSearchService, CertificationCriterionService certificationCriterionService, RealWorldTestingCriteriaService realWorldTestingCriteriaService,
             CheckInReportSourceService checkInReportSourceService, CheckInReportValidation checkInReportValidation,
             @Value("${assurancesCriteriaKeys}") String[] assurancesCriteriaKeys,
-            @Value("${apiCriteriaKeys}") String[] apiCriteriaKeys) {
+            @Value("${apiCriteriaKeys}") String[] apiCriteriaKeys,
+            @Value("${checkInReportParallel}") Boolean checkInReportParallel) {
 
         this.attestationManager = attestationManager;
         this.developerAttestationPeriodCalculator = developerAttestationPeriodCalculator;
@@ -69,12 +71,34 @@ public class CheckInReportDataCollector {
         this.directReviewSearchService = directReviewSearchService;
         this.checkInReportSourceService = checkInReportSourceService;
         this.checkInReportValidation = checkInReportValidation;
-
+        this.checkInReportParallel = checkInReportParallel;
     }
 
     public List<CheckInReport> collect(List<Long> acbIds) throws EntityRetrievalException {
+        // Based on the system property, this can be run in parallel or
+        // serially.
+        if (checkInReportParallel) {
+            return getCheckInReportsParallel(acbIds);
+        } else {
+            return getCheckInReportsSerial(acbIds);
+        }
+    }
+
+    private List<CheckInReport> getCheckInReportsParallel(List<Long> acbIds) {
         AttestationPeriod mostRecentAttestationPeriod = attestationManager.getMostRecentPastAttestationPeriod();
         return getDevelopersActiveListingsDuringMostRecentPastAttestationPeriod().parallelStream()
+                .filter(developer -> isDeveloperManagedBySelectedAcbs(developer, acbIds))
+                .map(developer -> getCheckInReport(developer))
+                .map(report -> {
+                    report.setAttestationPeriod(String.format("%s - %s", mostRecentAttestationPeriod.getPeriodStart().toString(), mostRecentAttestationPeriod.getPeriodEnd().toString()));
+                    return report;
+                })
+                .sorted((o1, o2) -> o1.getDeveloperName().compareTo(o2.getDeveloperName())).toList();
+    }
+
+    private List<CheckInReport> getCheckInReportsSerial(List<Long> acbIds) {
+        AttestationPeriod mostRecentAttestationPeriod = attestationManager.getMostRecentPastAttestationPeriod();
+        return getDevelopersActiveListingsDuringMostRecentPastAttestationPeriod().stream()
                 .filter(developer -> isDeveloperManagedBySelectedAcbs(developer, acbIds))
                 .map(developer -> getCheckInReport(developer))
                 .map(report -> {
@@ -95,7 +119,7 @@ public class CheckInReportDataCollector {
             LOGGER.info("..........No attestations found", developer.getName(), developer.getId());
             checkInReport = convert(developer);
         } else if (checkInAttestation.getSource().equals(CheckInReportSource.CHANGE_REQUEST)) {
-            LOGGER.info("..........Change Request attestations found", developer.getName(), developer.getId());
+            LOGGER.info("..........Chane Request attestations found", developer.getName(), developer.getId());
             checkInReport = convert(checkInAttestation.getChangeRequest(), allActiveListingsForDeveloper);
         } else if (checkInAttestation.getSource().equals(CheckInReportSource.DEVELOPER_ATTESTATION)) {
             LOGGER.info("..........Published attestations found", developer.getName(), developer.getId());
@@ -243,17 +267,6 @@ public class CheckInReportDataCollector {
                 return null;
             }
         }
-    }
-
-    private String getWarnings(List<ListingSearchResult> allActiveListingsForDeveloper, Form form, Long attestationPeriodId) {
-        List<String> warnings = new ArrayList<String>();
-        warnings.add(checkInReportValidation.getApiWarningMessage(allActiveListingsForDeveloper, form));
-        warnings.add(checkInReportValidation.getAssurancesWarningMessage(allActiveListingsForDeveloper, form, attestationPeriodId));
-        warnings.add(checkInReportValidation.getRealWordTestingWarningMessage(allActiveListingsForDeveloper, form));
-
-        return warnings.stream()
-                .filter(w -> w != null)
-                .collect(Collectors.joining("; "));
     }
 
     private Boolean isDeveloperManagedBySelectedAcbs(Developer developer, List<Long> acbIds) {
