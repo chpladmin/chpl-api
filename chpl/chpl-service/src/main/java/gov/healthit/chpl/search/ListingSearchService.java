@@ -80,6 +80,7 @@ public class ListingSearchService {
         LOGGER.debug("Total listings: " + listings.size());
         List<ListingSearchResult> matchedListings = listings.stream()
             .filter(listing -> matchesSearchTerm(listing, searchRequest.getSearchTerm()))
+            .filter(listing -> matchesListingIds(listing, searchRequest.getListingIds()))
             .filter(listing -> matchesAcbNames(listing, searchRequest.getCertificationBodies()))
             .filter(listing -> matchesCertificationStatuses(listing, searchRequest.getCertificationStatuses()))
             .filter(listing -> matchesDerivedCertificationEditions(listing, searchRequest.getDerivedCertificationEditions()))
@@ -177,6 +178,15 @@ public class ListingSearchService {
         return uppercaseChplProductNumbers.stream()
                 .filter(chplProductNumber -> chplProductNumber.contains(searchTerm))
                 .findAny().isPresent();
+    }
+
+    private boolean matchesListingIds(ListingSearchResult listing, Set<Long> listingIds) {
+        if (CollectionUtils.isEmpty(listingIds)) {
+            return true;
+        }
+
+        return listingIds.stream()
+                .anyMatch(listingId -> listingId.equals(listing.getId()));
     }
 
     private boolean matchesAcbNames(ListingSearchResult listing, Set<String> acbNames) {
