@@ -16,6 +16,7 @@ public class AttestationFormMetaData {
     }
 
     public static Long getAssurancesConditionId(Long attestationPeriodId) {
+        // OCD-4134 will address this in a better manner
         if (attestationPeriodId <= 3) {
             return ASSURANCES_CONDITION_ORIG;
         } else {
