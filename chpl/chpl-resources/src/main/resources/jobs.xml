@@ -9,38 +9,6 @@
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
         <delete-job>
-            <name>interruptJob</name>
-            <group>systemJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>addCuresUpdateToListingsJob</name>
-            <group>systemJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>curesUpdateDesignationQuestionableActivityCreatorJob</name>
-            <group>systemJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>Listings Snapshot</name>
-            <group>chplJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>Listings With Criterion Snapshot</name>
-            <group>chplJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>inheritanceErrorsReportCreator</name>
-            <group>systemJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>Inherited Certification Status Errors Report</name>
-            <group>chplJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>Inherited Certification Status Errors Report</name>
-            <group>chplJobs</group>
-        </delete-job>
-        <delete-job>
             <name>Developer Attestations Report Email</name>
             <group>chplJobs</group>
         </delete-job>
