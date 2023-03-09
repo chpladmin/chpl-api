@@ -1,8 +1,8 @@
 package gov.healthit.chpl.sharedstore;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaBuilder.In;
 import javax.persistence.criteria.CriteriaDelete;
@@ -17,18 +17,14 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 @Component
 public class SharedStoreDAO extends BaseDAOImpl {
 
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    public void add(SharedStore data) {
-        SharedStoreEntity entity = SharedStoreEntity.builder()
-                .primaryKey(SharedStorePrimaryKey.builder()
-                        .domain(data.getDomain())
-                        .key(data.getKey())
-                        .build())
-                .value(data.getValue())
-                .putDate(LocalDateTime.now())
-                .build();
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
 
-        create(entity);
+    public void add(SharedStore data) {
+        Query query = entityManager.createNamedQuery("upsert");
+        query.setParameter("domain", data.getDomain());
+        query.setParameter("key", data.getKey());
+        query.setParameter("value", data.getValue());
+        query.executeUpdate();
     }
 
     @Transactional(readOnly = true)
@@ -41,12 +37,12 @@ public class SharedStoreDAO extends BaseDAOImpl {
         }
     }
 
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void remove(String type, String key) {
         remove(type, List.of(key));
     }
 
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void remove(String type, List<String> keys) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaDelete<SharedStoreEntity> delete = cb.createCriteriaDelete(SharedStoreEntity.class);
@@ -57,7 +53,7 @@ public class SharedStoreDAO extends BaseDAOImpl {
         entityManager.createQuery(delete).executeUpdate();
     }
 
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void removeByDomain(String domain) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaDelete<SharedStoreEntity> delete = cb.createCriteriaDelete(SharedStoreEntity.class);
