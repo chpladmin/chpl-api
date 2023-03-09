@@ -78,7 +78,7 @@ public class CheckInReportValidation {
     public String getApiWarningMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
         if (isApiValidAndResponseIsNotApplicable(allActiveListingsForDeveloper, attestationForm)
                 || isNotApiValidAndResponseIsCompliant(allActiveListingsForDeveloper, attestationForm)) {
-            return errorMessageUtil.getMessage("attestatation.checkInReport.apiResponseNotConsistent");
+            return errorMessageUtil.getMessage("attestation.checkInReport.apiResponseNotConsistent");
         } else {
             return null;
         }
@@ -101,7 +101,7 @@ public class CheckInReportValidation {
     public String getAssurancesWarningMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm, Long attestationPeriodId) {
         if (isAssurancesValidAndResponseIsNotApplicable(allActiveListingsForDeveloper, attestationForm, attestationPeriodId)
                 || isNotAssurancesValidAndResponseIsCompliant(allActiveListingsForDeveloper, attestationForm, attestationPeriodId)) {
-            return errorMessageUtil.getMessage("attestatation.checkInReport.assurancesResponseNotConsistent");
+            return errorMessageUtil.getMessage("attestation.checkInReport.assurancesResponseNotConsistent");
         } else {
             return null;
         }
@@ -124,7 +124,7 @@ public class CheckInReportValidation {
     public String getRealWordTestingWarningMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
         if (isRwtValidAndResponseIsNotApplicable(allActiveListingsForDeveloper, attestationForm)
                 || isNotRwtValidAndResponseIsCompliant(allActiveListingsForDeveloper, attestationForm)) {
-            return errorMessageUtil.getMessage("attestatation.checkInReport.rwtResponseNotConsistent");
+            return errorMessageUtil.getMessage("attestation.checkInReport.rwtResponseNotConsistent");
         } else {
             return null;
         }

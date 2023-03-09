@@ -81,7 +81,7 @@ public class CheckInReport {
                 "Change Request Current Status",
                 "Change Request Last Status Change Date",
                 "ONC-ACBs",
-                "Attestattions Period",
+                "Attestations Period",
                 "Information Blocking Response",
                 "Information Blocking Optional Response",
                 "Assurances Response",
