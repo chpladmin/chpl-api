@@ -118,18 +118,18 @@ public class DirectReviewCsvPresenter {
         csvRow.add(nc != null && nc.getNonConformityType() != null ? nc.getNonConformityType() : "");
         csvRow.add(nc != null && nc.getNonConformityStatus() != null ? nc.getNonConformityStatus() : "");
 
-        if (nc != null && nc.getCapApprovalDateInternal() != null) {
-            csvRow.add(dateFormatter.format(nc.getCapApprovalDateInternal()));
+        if (nc != null && nc.getProvidedCapApprovalDate() != null) {
+            csvRow.add(dateFormatter.format(nc.getProvidedCapApprovalDate()));
         } else {
             csvRow.add(nc.getCapApprovalDate());
         }
-        if (nc != null && nc.getCapMustCompleteDateInternal() != null) {
-            csvRow.add(dateFormatter.format(nc.getCapMustCompleteDateInternal()));
+        if (nc != null && nc.getProvidedCapMustCompleteDate() != null) {
+            csvRow.add(dateFormatter.format(nc.getProvidedCapMustCompleteDate()));
         } else {
             csvRow.add(nc.getCapMustCompleteDate());
         }
-        if (nc != null && nc.getCapEndDateInternal() != null) {
-            csvRow.add(dateFormatter.format(nc.getCapEndDateInternal()));
+        if (nc != null && nc.getProvidedCapEndDate() != null) {
+            csvRow.add(dateFormatter.format(nc.getProvidedCapEndDate()));
         } else {
             csvRow.add(nc.getCapEndDate());
         }

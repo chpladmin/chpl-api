@@ -18,7 +18,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -79,17 +81,17 @@ public class DirectReviewNonConformity implements Serializable {
     @XmlTransient
     private String nonConformityResolution;
 
-    @JsonProperty(value = "capStatus", access = Access.WRITE_ONLY)
+    @JsonProperty(value = "capStatus")
     @JsonAlias("customfield_12300")
     @JsonDeserialize(using = SimpleValueDeserializer.class)
-    @XmlTransient
     private String capStatus;
 
-    @JsonProperty(value = "capApprovalDateInternal", access = Access.WRITE_ONLY)
+    @JsonProperty(value = "providedCapApprovalDate")
     @JsonAlias("customfield_11022")
     @JsonDeserialize(using = DateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     @XmlTransient
-    private LocalDate capApprovalDateInternal;
+    private LocalDate providedCapApprovalDate;
 
     @JsonProperty(value = "capStartDate", access = Access.WRITE_ONLY)
     @JsonAlias("customfield_11023")
@@ -97,17 +99,19 @@ public class DirectReviewNonConformity implements Serializable {
     @XmlTransient
     private LocalDate capStartDate;
 
-    @JsonProperty(value = "capMustCompleteDateInternal", access = Access.WRITE_ONLY)
+    @JsonProperty(value = "providedCapMustCompleteDate")
     @JsonAlias("customfield_11024")
     @JsonDeserialize(using = DateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     @XmlTransient
-    private LocalDate capMustCompleteDateInternal;
+    private LocalDate providedCapMustCompleteDate;
 
-    @JsonProperty(value = "capEndDateInternal", access = Access.WRITE_ONLY)
+    @JsonProperty(value = "providedCapEndDate")
     @JsonAlias("customfield_11025")
     @JsonDeserialize(using = DateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     @XmlTransient
-    private LocalDate capEndDateInternal;
+    private LocalDate providedCapEndDate;
 
     @JsonProperty(value = "lastUpdated")
     @JsonAlias("updated")
@@ -123,8 +127,8 @@ public class DirectReviewNonConformity implements Serializable {
     @JsonProperty(value = "capApprovalDate")
     @XmlElement(required = false, nillable = true)
     public String getCapApprovalDate() {
-        if (getCapApprovalDateInternal() != null) {
-            return getCapApprovalDateInternal().toString();
+        if (getProvidedCapApprovalDate() != null) {
+            return getProvidedCapApprovalDate().toString();
         } else {
             DirectReviewNonConformityCapStatus capStatusValue = DirectReviewNonConformityCapStatus.getByName(getCapStatus());
             switch (capStatusValue) {
@@ -145,8 +149,8 @@ public class DirectReviewNonConformity implements Serializable {
     @JsonProperty(value = "capMustCompleteDate")
     @XmlElement(required = false, nillable = true)
     public String getCapMustCompleteDate() {
-        if (getCapMustCompleteDateInternal() != null) {
-            return getCapMustCompleteDateInternal().toString();
+        if (getProvidedCapMustCompleteDate() != null) {
+            return getProvidedCapMustCompleteDate().toString();
         } else {
             DirectReviewNonConformityCapStatus capStatusValue = DirectReviewNonConformityCapStatus.getByName(getCapStatus());
             switch (capStatusValue) {
@@ -167,8 +171,8 @@ public class DirectReviewNonConformity implements Serializable {
     @JsonProperty(value = "capEndDate")
     @XmlElement(required = false, nillable = true)
     public String getCapEndDate() {
-        if (getCapEndDateInternal() != null) {
-            return getCapEndDateInternal().toString();
+        if (getProvidedCapEndDate() != null) {
+            return getProvidedCapEndDate().toString();
         } else {
             DirectReviewNonConformityCapStatus capStatusValue = DirectReviewNonConformityCapStatus.getByName(getCapStatus());
             switch (capStatusValue) {
