@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
+import gov.healthit.chpl.domain.compliance.DirectReviewNonConformityCapStatus;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
@@ -35,6 +36,9 @@ public class DirectReviewValidator {
         if (StringUtils.isEmpty(nonConformity.getCapStatus())) {
             directReview.getErrorMessages().add(
                     msgUtil.getMessage("compliance.directReview.missingCapStatus", directReview.getJiraKey()));
+        } else if (DirectReviewNonConformityCapStatus.getByName(nonConformity.getCapStatus()) == null) {
+            directReview.getErrorMessages().add(
+                    msgUtil.getMessage("compliance.directReview.invalidCapStatus", directReview.getJiraKey(), nonConformity.getCapStatus()));
         }
         if (StringUtils.isEmpty(nonConformity.getNonConformityStatus())) {
             directReview.getErrorMessages().add(
