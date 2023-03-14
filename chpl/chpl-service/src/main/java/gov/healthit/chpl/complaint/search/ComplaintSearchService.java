@@ -81,6 +81,9 @@ public class ComplaintSearchService {
             .filter(complaint -> matchesDeveloperContacted(complaint, searchRequest.getDeveloperContacted()))
             .filter(complaint -> matchesComplainantTypes(complaint, searchRequest.getComplainantTypeNames()))
             .filter(complaint -> matchesStatusNames(complaint, searchRequest.getCurrentStatusNames()))
+            .filter(complaint -> matchesListingIds(complaint, searchRequest.getListingIds()))
+            .filter(complaint -> matchesSurveillanceIds(complaint, searchRequest.getSurveillanceIds()))
+            .filter(complaint -> matchesCriteriaIds(complaint, searchRequest.getCertificationCriteriaIds()))
             .filter(complaint -> matchesClosedDateRange(complaint, searchRequest.getClosedDateStart(), searchRequest.getClosedDateEnd()))
             .filter(complaint -> matchesReceivedDateRange(complaint, searchRequest.getReceivedDateStart(), searchRequest.getReceivedDateEnd()))
             .filter(complaint -> matchesOpenDuringDateRange(complaint, searchRequest.getOpenDuringRangeStart(), searchRequest.getOpenDuringRangeEnd()))
@@ -199,6 +202,39 @@ public class ComplaintSearchService {
         List<String> statusNamesUpperCase = statusNames.stream().map(sn -> sn.toUpperCase()).collect(Collectors.toList());
         return (statusNamesUpperCase.contains(Complaint.COMPLAINT_OPEN.toUpperCase()) && complaint.getClosedDate() == null)
                 || (statusNamesUpperCase.contains(Complaint.COMPLAINT_CLOSED.toUpperCase()) && complaint.getClosedDate() != null);
+    }
+
+    private boolean matchesListingIds(Complaint complaint, Set<Long> searchListingIds) {
+        if (CollectionUtils.isEmpty(searchListingIds)) {
+            return true;
+        } else if (CollectionUtils.isEmpty(complaint.getListings())) {
+            return false;
+        }
+
+        List<Long> complaintListingIds = complaint.getListings().stream().map(map -> map.getListingId()).toList();
+        return CollectionUtils.containsAny(searchListingIds, complaintListingIds);
+    }
+
+    private boolean matchesSurveillanceIds(Complaint complaint, Set<Long> searchSurveillanceIds) {
+        if (CollectionUtils.isEmpty(searchSurveillanceIds)) {
+            return true;
+        } else if (CollectionUtils.isEmpty(complaint.getSurveillances())) {
+            return false;
+        }
+
+        List<Long> complaintSurveillanceIds = complaint.getSurveillances().stream().map(map -> map.getSurveillanceId()).toList();
+        return CollectionUtils.containsAny(searchSurveillanceIds, complaintSurveillanceIds);
+    }
+
+    private boolean matchesCriteriaIds(Complaint complaint, Set<Long> searchCriteriaIds) {
+        if (CollectionUtils.isEmpty(searchCriteriaIds)) {
+            return true;
+        } else if (CollectionUtils.isEmpty(complaint.getCriteria())) {
+            return false;
+        }
+
+        List<Long> complaintCriteriaIds = complaint.getCriteria().stream().map(map -> map.getCertificationCriterionId()).toList();
+        return CollectionUtils.containsAny(searchCriteriaIds, complaintCriteriaIds);
     }
 
     private boolean matchesClosedDateRange(Complaint complaint, String rangeStart, String rangeEnd) {

@@ -62,6 +62,24 @@ public class ComplaintSearchRequest implements Serializable {
     @JsonDeserialize(using = CommaDelimitedStringToSetOfStrings.class)
     @Builder.Default
     private Set<String> currentStatusNames = new HashSet<String>();
+    @JsonDeserialize(using = CommaDelimitedStringToSetOfStrings.class)
+    @Builder.Default
+    private Set<String> listingIdStrings = new HashSet<String>();
+    @JsonIgnore
+    @Builder.Default
+    private Set<Long> listingIds = new HashSet<Long>();
+    @JsonDeserialize(using = CommaDelimitedStringToSetOfStrings.class)
+    @Builder.Default
+    private Set<String> surveillanceIdStrings = new HashSet<String>();
+    @JsonIgnore
+    @Builder.Default
+    private Set<Long> surveillanceIds = new HashSet<Long>();
+    @JsonDeserialize(using = CommaDelimitedStringToSetOfStrings.class)
+    @Builder.Default
+    private Set<String> certificationCriteriaIdStrings = new HashSet<String>();
+    @JsonIgnore
+    @Builder.Default
+    private Set<Long> certificationCriteriaIds = new HashSet<Long>();
     private String closedDateStart;
     private String closedDateEnd;
     private String receivedDateStart;
