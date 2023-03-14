@@ -138,7 +138,7 @@ public class DirectReviewNonConformity implements Serializable {
                 return TO_BE_DETERMINED;
             case RESOLVED_WITHOUT_CAP:
             case CAP_NOT_PROVIDED:
-            case CAP_REJECTED:
+            case CAP_NOT_APPROVED:
                 return getCapStatus();
             default:
                 return DEFAULT;
@@ -157,7 +157,7 @@ public class DirectReviewNonConformity implements Serializable {
             case CAP_APPROVED:
             case FAILED_TO_COMPLETE:
             case TBD:
-            case CAP_REJECTED:
+            case CAP_NOT_APPROVED:
             case CAP_NOT_PROVIDED:
                 return TO_BE_DETERMINED;
             case RESOLVED_WITHOUT_CAP:
@@ -179,7 +179,7 @@ public class DirectReviewNonConformity implements Serializable {
             case CAP_APPROVED:
             case FAILED_TO_COMPLETE:
             case TBD:
-            case CAP_REJECTED:
+            case CAP_NOT_APPROVED:
             case CAP_NOT_PROVIDED:
                 return NOT_COMPLETED;
             case RESOLVED_WITHOUT_CAP:
