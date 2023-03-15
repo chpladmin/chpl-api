@@ -767,7 +767,7 @@
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF;ROLE_ACB</value>
                 </entry>
                 <entry>
                     <key>acbSpecific</key>
