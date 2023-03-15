@@ -1,6 +1,7 @@
 package gov.healthit.chpl.scheduler.job.onetime.questionableActivity;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoField;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -74,7 +75,7 @@ public class FixupQuestionableActivity  implements Job {
             .filter(lqa -> lqa.getActivityId() == null)
             .peek(lqa -> LOGGER.info("Looking for listing activities on " + lqa.getActivityDate() + " for listing " + lqa.getListingId()
                     + ". Listing Questionable Activity ID " + lqa.getId()))
-            .forEach(lqa -> addActivityIdIfNotPresent(lqa));
+            .forEach(lqa -> addActivityId(lqa));
 
         LOGGER.info("Linking Activity to Certification Result Questionable Activity");
         List<QuestionableActivityCertificationResultDTO> certResultQuestionableActivity
@@ -83,7 +84,7 @@ public class FixupQuestionableActivity  implements Job {
             .filter(crqa -> crqa.getActivityId() == null)
             .peek(crqa -> LOGGER.info("Looking for listing activities on " + crqa.getActivityDate() + " for listing " + crqa.getListing().getId()
                     + ". Certification Result Questionable Activity ID " + crqa.getId()))
-            .forEach(crqa -> addActivityIdIfNotPresent(crqa));
+            .forEach(crqa -> addActivityId(crqa));
 
         LOGGER.info("Linking Activity to Developer Questionable Activity");
         List<QuestionableActivityDeveloperDTO> developerQuestionableActivity
@@ -92,7 +93,7 @@ public class FixupQuestionableActivity  implements Job {
             .filter(dqa -> dqa.getActivityId() == null)
             .peek(dqa -> LOGGER.info("Looking for developer activities on " + dqa.getActivityDate() + " for developer " + dqa.getDeveloperId()
                     + ". Developer Questionable Activity ID " + dqa.getId()))
-            .forEach(dqa -> addActivityIdIfNotPresent(dqa));
+            .forEach(dqa -> addActivityId(dqa));
 
         LOGGER.info("Linking Activity to Product Questionable Activity");
         List<QuestionableActivityProductDTO> productQuestionableActivity
@@ -101,7 +102,7 @@ public class FixupQuestionableActivity  implements Job {
             .filter(pqa -> pqa.getActivityId() == null)
             .peek(pqa -> LOGGER.info("Looking for product activities on " + pqa.getActivityDate() + " for product " + pqa.getProductId()
                     + ". Product Questionable Activity ID " + pqa.getId()))
-            .forEach(pqa -> addActivityIdIfNotPresent(pqa));
+            .forEach(pqa -> addActivityId(pqa));
 
         LOGGER.info("Linking Activity to Version Questionable Activity");
         List<QuestionableActivityVersionDTO> versionQuestionableActivity
@@ -110,10 +111,10 @@ public class FixupQuestionableActivity  implements Job {
             .filter(vqa -> vqa.getActivityId() == null)
             .peek(vqa -> LOGGER.info("Looking for version activities on " + vqa.getActivityDate() + " for version " + vqa.getVersionId()
                     + ". Version Questionable Activity ID " + vqa.getId()))
-            .forEach(vqa -> addActivityIdIfNotPresent(vqa));
+            .forEach(vqa -> addActivityId(vqa));
     }
 
-    private void addActivityIdIfNotPresent(QuestionableActivityListingDTO questionableActivity) {
+    private void addActivityId(QuestionableActivityListingDTO questionableActivity) {
         ActivityConcept concept = ActivityConcept.CERTIFIED_PRODUCT;
         ActivityDTO activity = getActivity(concept, questionableActivity.getActivityDate(), questionableActivity.getListingId());
         if (activity != null) {
@@ -122,7 +123,7 @@ public class FixupQuestionableActivity  implements Job {
         }
     }
 
-    private void addActivityIdIfNotPresent(QuestionableActivityCertificationResultDTO questionableActivity) {
+    private void addActivityId(QuestionableActivityCertificationResultDTO questionableActivity) {
         ActivityConcept concept = ActivityConcept.CERTIFIED_PRODUCT;
         ActivityDTO activity = getActivity(concept, questionableActivity.getActivityDate(), questionableActivity.getListing().getId());
         if (activity != null) {
@@ -131,7 +132,7 @@ public class FixupQuestionableActivity  implements Job {
         }
     }
 
-    private void addActivityIdIfNotPresent(QuestionableActivityDeveloperDTO questionableActivity) {
+    private void addActivityId(QuestionableActivityDeveloperDTO questionableActivity) {
         ActivityConcept concept = ActivityConcept.DEVELOPER;
         ActivityDTO activity = getActivity(concept, questionableActivity.getActivityDate(), questionableActivity.getDeveloperId());
         if (activity != null) {
@@ -140,7 +141,7 @@ public class FixupQuestionableActivity  implements Job {
         }
     }
 
-    private void addActivityIdIfNotPresent(QuestionableActivityProductDTO questionableActivity) {
+    private void addActivityId(QuestionableActivityProductDTO questionableActivity) {
         ActivityConcept concept = ActivityConcept.PRODUCT;
         ActivityDTO activity = getActivity(concept, questionableActivity.getActivityDate(), questionableActivity.getProductId());
         if (activity != null) {
@@ -149,7 +150,7 @@ public class FixupQuestionableActivity  implements Job {
         }
     }
 
-    private void addActivityIdIfNotPresent(QuestionableActivityVersionDTO questionableActivity) {
+    private void addActivityId(QuestionableActivityVersionDTO questionableActivity) {
         ActivityConcept concept = ActivityConcept.VERSION;
         ActivityDTO activity = getActivity(concept, questionableActivity.getActivityDate(), questionableActivity.getVersionId());
         if (activity != null) {
@@ -160,23 +161,39 @@ public class FixupQuestionableActivity  implements Job {
 
     private ActivityDTO getActivity(ActivityConcept concept, Date activityDate, Long objectId) {
         ActivityDTO activity = null;
-        List<ActivityDTO> activitiesOnDate = activityDao.findByConcept(concept, activityDate, activityDate);
+        //Check activity for the whole second.
+        //For various periods of time we have not recorded the Questionable Activity date as the same
+        //Activity date. We sometimes had code to use the Activity date and other times had code that used
+        //new Date() as the Questionable Activity date so it would be milliseconds off of the Activity date.
+        //I think querying for activity events during the same second is acceptable especially since
+        //we are not proceeding if there is more than 1 match.
+        //The results are MUCH better when doing it this way.
+        LocalDateTime activityDateTimeStart = DateUtil.toLocalDateTime(activityDate.getTime()).with(ChronoField.MILLI_OF_SECOND, 0);
+        LocalDateTime activityDateTimeEnd = DateUtil.toLocalDateTime(activityDate.getTime()).with(ChronoField.MILLI_OF_SECOND, 999);
+
+        List<ActivityDTO> activitiesOnDate = activityDao.findByConcept(concept, DateUtil.toDate(activityDateTimeStart),
+                DateUtil.toDate(activityDateTimeEnd));
         if (CollectionUtils.isEmpty(activitiesOnDate)) {
-            LOGGER.info("No " + concept + " activities were found on " + activityDate);
+            LOGGER.warn("No " + concept + " activities were found between " + activityDateTimeStart
+                    + " and " + activityDateTimeEnd);
         } else {
             List<ActivityDTO> activitiesForObjectOnDate = activitiesOnDate.stream()
                 .filter(actForObj -> actForObj.getActivityObjectId().equals(objectId))
                 .collect(Collectors.toList());
             if (CollectionUtils.isEmpty(activitiesForObjectOnDate)) {
-                LOGGER.info("No " + concept + " activities were found for " + concept + " "
-                        + objectId + " on " + activityDate);
+                LOGGER.warn("No " + concept + " activities were found for " + concept + " "
+                        + objectId + " between " + activityDateTimeStart + " and "
+                        + activityDateTimeEnd);
             } else if (activitiesForObjectOnDate.size() > 1) {
-                LOGGER.info("Multiple " + concept + " activities were found for " + concept + " "
-                        + objectId + " on " + activityDate + "."
+                LOGGER.warn("Multiple " + concept + " activities were found for " + concept + " "
+                        + objectId + " between " + activityDateTimeStart + " and "
+                        + activityDateTimeEnd + "."
                         + " [" + activitiesForObjectOnDate.stream().map(act -> act.getId() + "")
                             .collect(Collectors.joining(",")) + "]");
             } else {
                 activity = activitiesForObjectOnDate.get(0);
+                LOGGER.info("Found activity ID " + activity.getId() + " for " + concept + " "
+                        + objectId + " between " + activityDateTimeStart + " and " + activityDateTimeEnd);
             }
         }
         return activity;
