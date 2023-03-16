@@ -12,6 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Where;
+
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import lombok.Getter;
@@ -23,6 +25,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @Table(name = "questionable_activity_listing")
+@Where(clause = " deleted = false ")
 public class QuestionableActivityListingEntity implements QuestionableActivityEntity {
 
     @Id

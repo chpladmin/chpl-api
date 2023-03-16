@@ -23,6 +23,7 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityDAO;
+import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResultDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloperDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
@@ -59,6 +60,12 @@ public class FixupQuestionableActivity  implements Job {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Fixup Questionable Activity job. *********");
         LocalDateTime startDt = LocalDateTime.parse(START_DATE_STR);
+
+        //Remove all criteria added/criteria removed questionable activity from startDt onward
+
+        //Re-process all listing activity from startDt onward checking for criteria added
+        //and criteria removed questionable activity after editing threshold only
+
 
         linkQuestionableActivityToActivity(startDt);
 
@@ -217,6 +224,12 @@ public class FixupQuestionableActivity  implements Job {
     @Component("updatableQuestionableActivityDao")
     @NoArgsConstructor
     private static class UpdatableQuestionableActivityDao extends BaseDAOImpl {
+
+        @Transactional
+        public void deleteQuestionableActivityForTriggerBetweenDates(QuestionableActivityTriggerConcept trigger,
+                Date startDate, Date endDate) {
+
+        }
 
         @Transactional
         public void updateActivityIdForListingQuestionableActivity(Long questionableActivityId, Long activityId) {
