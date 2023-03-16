@@ -76,7 +76,7 @@
         <AppenderRef ref="icsErrorsReportCreatorJob" />
         <AppenderRef ref="icsErrorsReportCreatorJobJson" />
     </Logger>
-    <Logger name="icsErrorsReportEmailJobLogger" additivity="false">
+    <Logger name="icsErrorsReportEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="icsErrorsReportEmailJob" />
         <AppenderRef ref="icsErrorsReportEmailJobJson" />
     </Logger>

@@ -60,7 +60,7 @@
     <Logger name="icsErrorsReportCreatorJobLogger" level="DEBUG" additivity="false">
         <AppenderRef ref="icsErrorsReportCreatorJob" />
     </Logger>
-    <Logger name="icsErrorsReportEmailJobLogger" additivity="false">
+    <Logger name="icsErrorsReportEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="icsErrorsReportEmailJob" />
     </Logger>
     <Logger name="cacheStatusAgeJobLogger" level="INFO" additivity="false">
