@@ -54,7 +54,7 @@ public class QuestionableActivityReprocessor {
     }
 
     public void reprocess(QuestionableActivityTriggerConcept trigger, ListingActivity activityChecker,
-            LocalDateTime since, LocalDateTime until) {
+            LocalDateTime since, LocalDateTime until, boolean requiresThreshold) {
         LOGGER.info("Reprocessing all activity for " + trigger.getName() + " between " + since + " and " + until);
         QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
         List<QuestionableActivityListingDTO> allQuestionableActivity = questionableActivityDao.findListingActivityBetweenDates(
@@ -80,7 +80,8 @@ public class QuestionableActivityReprocessor {
             currPageOfActivities.stream()
                 .forEach(listingActivity -> {
                     try {
-                        reprocessListingActivityForTrigger(listingActivity, previouslyExistingQuestionableActivity, triggerDto, activityChecker);
+                        reprocessListingActivityForTrigger(listingActivity, previouslyExistingQuestionableActivity,
+                                triggerDto, activityChecker, requiresThreshold);
                     } catch (Exception ex) {
                         LOGGER.error("Error reprocessing listing activity " + listingActivity.getId() + " for " + triggerDto.getName(), ex);
                     }
@@ -94,7 +95,7 @@ public class QuestionableActivityReprocessor {
 
     private void reprocessListingActivityForTrigger(ActivityDTO activity,
             List<QuestionableActivityListingDTO> previouslyExistingQuestionableActivity, QuestionableActivityTriggerDTO trigger,
-            ListingActivity activityChecker)
+            ListingActivity activityChecker, boolean requiresThreshold)
             throws IOException {
         LOGGER.info("Reprocessing " + activity.getConcept().name() + " activity for object ID " + activity.getActivityObjectId()
             + " with activity ID " + activity.getId() + " for " + trigger.getName());
@@ -108,11 +109,8 @@ public class QuestionableActivityReprocessor {
         CertifiedProductSearchDetails origListing = JSONUtils.fromJSON(activity.getOriginalData(), CertifiedProductSearchDetails.class);
         CertifiedProductSearchDetails newListing = JSONUtils.fromJSON(activity.getNewData(), CertifiedProductSearchDetails.class);
 
-        //TODO: not all questionable activities have this constraint of the threshold so might need to pass in something else
         Date confirmDate = certifiedProductDao.getConfirmDate(origListing.getId());
-        if (confirmDate != null && newListing.getLastModifiedDate() != null
-                && (newListing.getLastModifiedDate().longValue() - confirmDate.getTime()
-                        > getListingActivityThresholdInMillis())) {
+        if (!requiresThreshold || isActivityAfterThreshold(confirmDate, newListing.getLastModifiedDate())) {
             List<QuestionableActivityListingDTO> questionableActivities = activityChecker.check(origListing, newListing);
             if (!CollectionUtils.isEmpty(questionableActivities)) {
                 LOGGER.info("Inserting " + questionableActivities.size() + " '" + trigger.getName() + "' questionable activities for listing ID "
@@ -137,6 +135,12 @@ public class QuestionableActivityReprocessor {
                     + " on " + activity.getActivityDate());
             }
         }
+    }
+
+    private boolean isActivityAfterThreshold(Date confirmDate, Long lastModifiedDate) {
+        return (confirmDate != null && lastModifiedDate != null
+                && (lastModifiedDate.longValue() - confirmDate.getTime()
+                        > getListingActivityThresholdInMillis()));
     }
 
     private String getReasonIfAvailable(QuestionableActivityListingDTO questionableActivity, List<QuestionableActivityListingDTO> previousCriteriaAddedQuestionableActivity) {
