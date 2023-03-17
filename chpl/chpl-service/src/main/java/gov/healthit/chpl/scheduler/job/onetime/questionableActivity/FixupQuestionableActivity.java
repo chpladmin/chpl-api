@@ -1,12 +1,9 @@
 package gov.healthit.chpl.scheduler.job.onetime.questionableActivity;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoField;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.transaction.Transactional;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.quartz.DisallowConcurrentExecution;
@@ -15,11 +12,8 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.dao.ActivityDAO;
-import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityDAO;
@@ -29,14 +23,9 @@ import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloperD
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProductDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersionDTO;
-import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityCertificationResultEntity;
-import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityDeveloperEntity;
-import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityListingEntity;
-import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityProductEntity;
-import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityVersionEntity;
+import gov.healthit.chpl.questionableactivity.listing.AddedCertificationsActivity;
+import gov.healthit.chpl.questionableactivity.listing.DeletedCertificationsActivity;
 import gov.healthit.chpl.util.DateUtil;
-import gov.healthit.chpl.util.UserMapper;
-import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
@@ -55,29 +44,34 @@ public class FixupQuestionableActivity  implements Job {
     @Qualifier("transactionalActivityDao")
     private TransactionalActivityDao activityDao;
 
+    @Autowired
+    private QuestionableActivityReprocessor reprocessor;
+
+    @Autowired
+    private AddedCertificationsActivity addedCertificationsActivity;
+
+    @Autowired
+    private DeletedCertificationsActivity deletedCertificationsActivity;
+
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Fixup Questionable Activity job. *********");
         LocalDateTime startDt = LocalDateTime.parse(START_DATE_STR);
+        LocalDateTime endDt = LocalDateTime.now();
 
-        //Remove all criteria added/criteria removed questionable activity from startDt onward
+        reprocessor.reprocess(QuestionableActivityTriggerConcept.CRITERIA_ADDED, addedCertificationsActivity, startDt, endDt);
+        reprocessor.reprocess(QuestionableActivityTriggerConcept.CRITERIA_REMOVED, deletedCertificationsActivity, startDt, endDt);
 
-        //Re-process all listing activity from startDt onward checking for criteria added
-        //and criteria removed questionable activity after editing threshold only
-
-
-        linkQuestionableActivityToActivity(startDt);
+        linkQuestionableActivityToActivity(startDt, endDt);
 
         LOGGER.info("********* Completed the Fixup Questionable Activity job. *********");
     }
 
-    private void linkQuestionableActivityToActivity(LocalDateTime startDt) {
-        LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
-
+    private void linkQuestionableActivityToActivity(LocalDateTime startDt, LocalDateTime endDt) {
         LOGGER.info("Linking Activity to Listing Questionable Activity");
         List<QuestionableActivityListingDTO> listingQuestionableActivity
-            = questionableActivityDao.findListingActivityBetweenDates(DateUtil.toDate(startDt), DateUtil.toDate(tomorrow));
+            = questionableActivityDao.findListingActivityBetweenDates(DateUtil.toDate(startDt), DateUtil.toDate(endDt));
         listingQuestionableActivity.stream()
             .filter(lqa -> lqa.getActivityId() == null)
             .peek(lqa -> LOGGER.info("Looking for listing activities on " + lqa.getActivityDate() + " for listing " + lqa.getListingId()
@@ -86,7 +80,7 @@ public class FixupQuestionableActivity  implements Job {
 
         LOGGER.info("Linking Activity to Certification Result Questionable Activity");
         List<QuestionableActivityCertificationResultDTO> certResultQuestionableActivity
-            = questionableActivityDao.findCertificationResultActivityBetweenDates(DateUtil.toDate(startDt), DateUtil.toDate(tomorrow));
+            = questionableActivityDao.findCertificationResultActivityBetweenDates(DateUtil.toDate(startDt), DateUtil.toDate(endDt));
         certResultQuestionableActivity.stream()
             .filter(crqa -> crqa.getActivityId() == null)
             .peek(crqa -> LOGGER.info("Looking for listing activities on " + crqa.getActivityDate() + " for listing " + crqa.getListing().getId()
@@ -95,7 +89,7 @@ public class FixupQuestionableActivity  implements Job {
 
         LOGGER.info("Linking Activity to Developer Questionable Activity");
         List<QuestionableActivityDeveloperDTO> developerQuestionableActivity
-            = questionableActivityDao.findDeveloperActivityBetweenDates(DateUtil.toDate(startDt), DateUtil.toDate(tomorrow));
+            = questionableActivityDao.findDeveloperActivityBetweenDates(DateUtil.toDate(startDt), DateUtil.toDate(endDt));
         developerQuestionableActivity.stream()
             .filter(dqa -> dqa.getActivityId() == null)
             .peek(dqa -> LOGGER.info("Looking for developer activities on " + dqa.getActivityDate() + " for developer " + dqa.getDeveloperId()
@@ -104,7 +98,7 @@ public class FixupQuestionableActivity  implements Job {
 
         LOGGER.info("Linking Activity to Product Questionable Activity");
         List<QuestionableActivityProductDTO> productQuestionableActivity
-            = questionableActivityDao.findProductActivityBetweenDates(DateUtil.toDate(startDt), DateUtil.toDate(tomorrow));
+            = questionableActivityDao.findProductActivityBetweenDates(DateUtil.toDate(startDt), DateUtil.toDate(endDt));
         productQuestionableActivity.stream()
             .filter(pqa -> pqa.getActivityId() == null)
             .peek(pqa -> LOGGER.info("Looking for product activities on " + pqa.getActivityDate() + " for product " + pqa.getProductId()
@@ -113,7 +107,7 @@ public class FixupQuestionableActivity  implements Job {
 
         LOGGER.info("Linking Activity to Version Questionable Activity");
         List<QuestionableActivityVersionDTO> versionQuestionableActivity
-            = questionableActivityDao.findVersionActivityBetweenDates(DateUtil.toDate(startDt), DateUtil.toDate(tomorrow));
+            = questionableActivityDao.findVersionActivityBetweenDates(DateUtil.toDate(startDt), DateUtil.toDate(endDt));
         versionQuestionableActivity.stream()
             .filter(vqa -> vqa.getActivityId() == null)
             .peek(vqa -> LOGGER.info("Looking for version activities on " + vqa.getActivityDate() + " for version " + vqa.getVersionId()
@@ -175,125 +169,34 @@ public class FixupQuestionableActivity  implements Job {
         //I think querying for activity events during the same second is acceptable especially since
         //we are not proceeding if there is more than 1 match.
         //The results are MUCH better when doing it this way.
-        LocalDateTime activityDateTimeStart = DateUtil.toLocalDateTime(activityDate.getTime()).with(ChronoField.MILLI_OF_SECOND, 0);
-        LocalDateTime activityDateTimeEnd = DateUtil.toLocalDateTime(activityDate.getTime()).with(ChronoField.MILLI_OF_SECOND, 999);
+        LocalDateTime oneSecondAfterActivityDate = DateUtil.toLocalDateTime(activityDate.getTime()).plusSeconds(1);
+        LocalDateTime oneSecondBeforeActivityDate = DateUtil.toLocalDateTime(activityDate.getTime()).minusSeconds(1);
 
-        List<ActivityDTO> activitiesOnDate = activityDao.findByConcept(concept, DateUtil.toDate(activityDateTimeStart),
-                DateUtil.toDate(activityDateTimeEnd));
+        List<ActivityDTO> activitiesOnDate = activityDao.findByConcept(concept, DateUtil.toDate(oneSecondBeforeActivityDate),
+                DateUtil.toDate(oneSecondAfterActivityDate));
         if (CollectionUtils.isEmpty(activitiesOnDate)) {
-            LOGGER.warn("No " + concept + " activities were found between " + activityDateTimeStart
-                    + " and " + activityDateTimeEnd);
+            LOGGER.warn("No " + concept + " activities were found between " + oneSecondBeforeActivityDate
+                    + " and " + oneSecondAfterActivityDate);
         } else {
             List<ActivityDTO> activitiesForObjectOnDate = activitiesOnDate.stream()
                 .filter(actForObj -> actForObj.getActivityObjectId().equals(objectId))
                 .collect(Collectors.toList());
             if (CollectionUtils.isEmpty(activitiesForObjectOnDate)) {
                 LOGGER.warn("No " + concept + " activities were found for " + concept + " "
-                        + objectId + " between " + activityDateTimeStart + " and "
-                        + activityDateTimeEnd);
+                        + objectId + " between " + oneSecondBeforeActivityDate + " and "
+                        + oneSecondAfterActivityDate);
             } else if (activitiesForObjectOnDate.size() > 1) {
                 LOGGER.warn("Multiple " + concept + " activities were found for " + concept + " "
-                        + objectId + " between " + activityDateTimeStart + " and "
-                        + activityDateTimeEnd + "."
+                        + objectId + " between " + oneSecondBeforeActivityDate + " and "
+                        + oneSecondAfterActivityDate + "."
                         + " [" + activitiesForObjectOnDate.stream().map(act -> act.getId() + "")
                             .collect(Collectors.joining(",")) + "]");
             } else {
                 activity = activitiesForObjectOnDate.get(0);
                 LOGGER.info("Found activity ID " + activity.getId() + " for " + concept + " "
-                        + objectId + " between " + activityDateTimeStart + " and " + activityDateTimeEnd);
+                        + objectId + " between " + oneSecondBeforeActivityDate + " and " + oneSecondAfterActivityDate);
             }
         }
         return activity;
-    }
-
-    @Component("transactionalActivityDao")
-    private static class TransactionalActivityDao extends ActivityDAO {
-
-        @Autowired
-        TransactionalActivityDao(UserMapper userMapper) {
-            super(userMapper);
-        }
-
-        @Transactional
-        @Override
-        public List<ActivityDTO> findByConcept(ActivityConcept concept, Date startDate, Date endDate) {
-            return super.findByConcept(concept, startDate, endDate);
-        }
-    }
-
-    @Component("updatableQuestionableActivityDao")
-    @NoArgsConstructor
-    private static class UpdatableQuestionableActivityDao extends BaseDAOImpl {
-
-        @Transactional
-        public void deleteQuestionableActivityForTriggerBetweenDates(QuestionableActivityTriggerConcept trigger,
-                Date startDate, Date endDate) {
-
-        }
-
-        @Transactional
-        public void updateActivityIdForListingQuestionableActivity(Long questionableActivityId, Long activityId) {
-            LOGGER.info("Setting activity ID " + activityId + " for questionable activity " + questionableActivityId);
-            QuestionableActivityListingEntity entity
-                = entityManager.find(QuestionableActivityListingEntity.class, questionableActivityId);
-            if (entity == null) {
-                LOGGER.error("No listing questionable activity found with ID " + questionableActivityId);
-            } else {
-                entity.setActivityId(activityId);
-                update(entity);
-            }
-        }
-
-        @Transactional
-        public void updateActivityIdForCertificationResultQuestionableActivity(Long questionableActivityId, Long activityId) {
-            LOGGER.info("Setting activity ID " + activityId + " for questionable activity " + questionableActivityId);
-            QuestionableActivityCertificationResultEntity entity
-                = entityManager.find(QuestionableActivityCertificationResultEntity.class, questionableActivityId);
-            if (entity == null) {
-                LOGGER.error("No certification result questionable activity found with ID " + questionableActivityId);
-            } else {
-                entity.setActivityId(activityId);
-                update(entity);
-            }
-        }
-
-        @Transactional
-        public void updateActivityIdForDeveloperQuestionableActivity(Long questionableActivityId, Long activityId) {
-            LOGGER.info("Setting activity ID " + activityId + " for questionable activity " + questionableActivityId);
-            QuestionableActivityDeveloperEntity entity
-                = entityManager.find(QuestionableActivityDeveloperEntity.class, questionableActivityId);
-            if (entity == null) {
-                LOGGER.error("No developer questionable activity found with ID " + questionableActivityId);
-            } else {
-                entity.setActivityId(activityId);
-                update(entity);
-            }
-        }
-
-        @Transactional
-        public void updateActivityIdForProductQuestionableActivity(Long questionableActivityId, Long activityId) {
-            LOGGER.info("Setting activity ID " + activityId + " for questionable activity " + questionableActivityId);
-            QuestionableActivityProductEntity entity
-                = entityManager.find(QuestionableActivityProductEntity.class, questionableActivityId);
-            if (entity == null) {
-                LOGGER.error("No product questionable activity found with ID " + questionableActivityId);
-            } else {
-                entity.setActivityId(activityId);
-                update(entity);
-            }
-        }
-
-        @Transactional
-        public void updateActivityIdForVersionQuestionableActivity(Long questionableActivityId, Long activityId) {
-            LOGGER.info("Setting activity ID " + activityId + " for questionable activity " + questionableActivityId);
-            QuestionableActivityVersionEntity entity
-                = entityManager.find(QuestionableActivityVersionEntity.class, questionableActivityId);
-            if (entity == null) {
-                LOGGER.error("No version questionable activity found with ID " + questionableActivityId);
-            } else {
-                entity.setActivityId(activityId);
-                update(entity);
-            }
-        }
     }
 }
