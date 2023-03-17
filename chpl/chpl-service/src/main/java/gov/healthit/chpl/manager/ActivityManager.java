@@ -64,7 +64,7 @@ public class ActivityManager extends SecuredManager {
         }
 
         Date activityDate = new Date();
-        ActivityDTO activity = addActivity(concept, objectId, activityDescription, originalData, newData, activityDate, asUser);
+        ActivityDTO activity = addActivity(concept, objectId, activityDescription, originalData, newData, null, activityDate, asUser);
         if (activity != null) {
             questionableActivityListener.checkQuestionableActivity(activity, originalData, newData);
             chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
@@ -81,7 +81,7 @@ public class ActivityManager extends SecuredManager {
         }
 
         Date activityDate = new Date();
-        ActivityDTO activity = addActivity(concept, objectId, activityDescription, originalData, newData, activityDate, asUser);
+        ActivityDTO activity = addActivity(concept, objectId, activityDescription, originalData, newData, reason, activityDate, asUser);
         if (activity != null) {
             questionableActivityListener.checkQuestionableActivity(activity, originalData, newData, reason);
             chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
@@ -93,7 +93,7 @@ public class ActivityManager extends SecuredManager {
             Object newData, Long asUser) throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         Date activityDate = new Date();
-        ActivityDTO activity = addActivity(concept, objectId, activityDescription, originalData, newData, activityDate, asUser);
+        ActivityDTO activity = addActivity(concept, objectId, activityDescription, originalData, newData, null, activityDate, asUser);
         if (activity != null) {
             questionableActivityListener.checkQuestionableActivity(activity, originalData, newData);
             chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
@@ -101,7 +101,7 @@ public class ActivityManager extends SecuredManager {
     }
 
     private ActivityDTO addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
-            Object newData, Date timestamp, Long asUser)
+            Object newData, String reason, Date timestamp, Long asUser)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         String originalDataStr = JSONUtils.toJSON(originalData);
@@ -125,6 +125,7 @@ public class ActivityManager extends SecuredManager {
             dto.setNewData(JSONUtils.toJSON(newData));
             dto.setActivityDate(timestamp);
             dto.setActivityObjectId(objectId);
+            dto.setReason(reason);
             dto.setCreationDate(new Date());
             dto.setLastModifiedDate(new Date());
             dto.setLastModifiedUser(asUser);

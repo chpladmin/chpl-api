@@ -57,6 +57,7 @@ public class ActivityDAO extends BaseDAOImpl {
         entity.setActivityDate(dto.getActivityDate());
         entity.setActivityObjectConceptId(conceptId);
         entity.setActivityObjectId(dto.getActivityObjectId());
+        entity.setReason(dto.getReason());
         entity.setCreationDate(new Date());
         entity.setLastModifiedDate(new Date());
         // user may be null because when they get an API Key they do not
@@ -386,7 +387,7 @@ public class ActivityDAO extends BaseDAOImpl {
     }
 
     private ActivityDTO mapEntityToDto(ActivityEntity entity) {
-        ActivityDTO activity = new ActivityDTO(entity);
+        ActivityDTO activity = entity.toDomain();
         if (entity.getUser() != null) {
             activity.setUser(userMapper.from(entity.getUser()));
         }
