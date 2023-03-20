@@ -22,6 +22,12 @@ public class UpdatedCertificationStatusHistoryActivity implements ListingActivit
 
     @Override
     public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+        //TODO: If this activity can be determined to be only a certification status change
+        //where the previous status gets added as the first one in the history then
+        //this is not questionable
+
+        //TODO: Make sure if you change the date of the current certification status (not 'Active') that something is recorded
+
         QuestionableActivityListingDTO activity = null;
         List<CertificationStatusEvent> prevEvents = origListing.getCertificationEvents();
         List<CertificationStatusEvent> currEvents = newListing.getCertificationEvents();

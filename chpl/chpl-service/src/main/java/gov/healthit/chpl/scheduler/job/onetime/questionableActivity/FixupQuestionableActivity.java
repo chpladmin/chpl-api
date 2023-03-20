@@ -26,6 +26,8 @@ import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersionDTO
 import gov.healthit.chpl.questionableactivity.listing.AddedCertificationsActivity;
 import gov.healthit.chpl.questionableactivity.listing.DeletedCertificationsActivity;
 import gov.healthit.chpl.questionableactivity.listing.NonActiveCertificateEdited;
+import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationDateActivity;
+import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationStatusDate;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -57,6 +59,12 @@ public class FixupQuestionableActivity  implements Job {
     @Autowired
     private NonActiveCertificateEdited nonActiveCertificateEditedActivity;
 
+    @Autowired
+    private UpdatedCertificationStatusDate updateCurrentCertificationStatusDateActivity;
+
+    @Autowired
+    private UpdatedCertificationDateActivity updateCertificationDateActivity;
+
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
@@ -67,6 +75,10 @@ public class FixupQuestionableActivity  implements Job {
         reprocessor.reprocess(QuestionableActivityTriggerConcept.CRITERIA_ADDED, addedCertificationsActivity, startDt, endDt, true);
         reprocessor.reprocess(QuestionableActivityTriggerConcept.CRITERIA_REMOVED, deletedCertificationsActivity, startDt, endDt, true);
         reprocessor.reprocess(QuestionableActivityTriggerConcept.NON_ACTIVE_CERTIFIFCATE_EDITED, nonActiveCertificateEditedActivity, startDt, endDt, false);
+        reprocessor.reprocess(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_DATE_EDITED_CURRENT, updateCurrentCertificationStatusDateActivity,
+                startDt, endDt, false);
+        reprocessor.reprocess(QuestionableActivityTriggerConcept.CERTIFICATION_DATE_EDITED, updateCertificationDateActivity,
+                startDt, endDt, true);
 
         linkQuestionableActivityToActivity(startDt, endDt);
 

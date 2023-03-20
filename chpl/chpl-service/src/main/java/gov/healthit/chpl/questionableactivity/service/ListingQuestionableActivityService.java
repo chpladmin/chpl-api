@@ -34,7 +34,7 @@ import gov.healthit.chpl.questionableactivity.listing.RwtResultsUpdatedOutsideNo
 import gov.healthit.chpl.questionableactivity.listing.UpdateCurrentCertificationStatusActivity;
 import gov.healthit.chpl.questionableactivity.listing.Updated2011EditionListingActivity;
 import gov.healthit.chpl.questionableactivity.listing.Updated2014EditionListingActivity;
-import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationStatusDate;
+import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationDateActivity;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationStatusHistoryActivity;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationStatusWithdrawnByDeveloperUnderReviewActivity;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedCriteriaB3AndListingHasIcsActivity;
@@ -97,7 +97,7 @@ public class ListingQuestionableActivityService {
                         - confirmDate.getTime() > getListingActivityThresholdInMillis())) {
 
             processListingActivity(UpdateCurrentCertificationStatusActivity.class.getName(), origListing, newListing, activity, activityReason);
-            processListingActivity(UpdatedCertificationStatusDate.class.getName(), origListing, newListing, activity, activityReason);
+            processListingActivity(UpdatedCertificationDateActivity.class.getName(), origListing, newListing, activity, activityReason);
             processListingActivity(DeletedSurveillanceActivity.class.getName(), origListing, newListing, activity, activityReason);
             processListingActivity(AddedCqmsActivity.class.getName(), origListing, newListing, activity, activityReason);
             processListingActivity(DeletedCqmsActivity.class.getName(), origListing, newListing, activity, activityReason);
