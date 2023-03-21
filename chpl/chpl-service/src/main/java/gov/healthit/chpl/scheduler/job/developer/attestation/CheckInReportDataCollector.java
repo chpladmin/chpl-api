@@ -110,40 +110,45 @@ public class CheckInReportDataCollector {
 
     private CheckInReport getCheckInReport(Developer developer) {
         List<ListingSearchResult> allActiveListingsForDeveloper = getActiveListingDataForDeveloper(developer, LOGGER);
-        CheckInAttestation checkInAttestation = checkInReportSourceService.getCheckinReport(developer, attestationManager.getMostRecentPastAttestationPeriod());
-
+        CheckInAttestation checkInAttestation = checkInReportSourceService.getCheckinReport(developer, attestationManager.getMostRecentPastAttestationPeriod(), LOGGER);
         LOGGER.info("Getting data for Developer: {} ({})", developer.getName(), developer.getId());
+        return convert(developer, checkInAttestation, allActiveListingsForDeveloper);
+    }
 
-        CheckInReport checkInReport = null;
-        if (checkInAttestation == null) {
-            LOGGER.info("..........No attestations found", developer.getName(), developer.getId());
-            checkInReport = convert(developer);
-        } else if (checkInAttestation.getSource().equals(CheckInReportSource.CHANGE_REQUEST)) {
-            LOGGER.info("..........Chane Request attestations found", developer.getName(), developer.getId());
-            checkInReport = convert(checkInAttestation.getChangeRequest(), allActiveListingsForDeveloper);
-        } else if (checkInAttestation.getSource().equals(CheckInReportSource.DEVELOPER_ATTESTATION)) {
-            LOGGER.info("..........Published attestations found", developer.getName(), developer.getId());
-            checkInReport = convert(developer, checkInAttestation.getAttestationSubmission(), allActiveListingsForDeveloper);
+    private CheckInReport convert(Developer developer, CheckInAttestation checkInAttestation, List<ListingSearchResult> allActiveListingsForDeveloper) {
+        CheckInReport checkInReport = new CheckInReport();
+        Form form = null;
+        checkInReport = addDeveloperInformation(checkInReport, developer);
+        if (checkInAttestation.getChangeRequest() != null) {
+            form = ((ChangeRequestAttestationSubmission) checkInAttestation.getChangeRequest().getDetails()).getForm();
+            checkInReport = addChangeRequestInformation(checkInReport, checkInAttestation.getChangeRequest());
+            checkInReport = addRespsonses(checkInReport, form, ((ChangeRequestAttestationSubmission) checkInAttestation.getChangeRequest().getDetails()).getAttestationPeriod().getId());
         }
+        if (checkInAttestation.getAttestationSubmission() != null) {
+            form = checkInAttestation.getAttestationSubmission().getForm();
+            checkInReport = addPublishedAttestationInformation(checkInReport, developer, checkInAttestation.getAttestationSubmission());
+            checkInReport = addRespsonses(checkInReport, form, checkInAttestation.getAttestationSubmission().getAttestationPeriod().getId());
+        }
+        checkInReport = addComplianceInformation(checkInReport, developer, allActiveListingsForDeveloper);
+        checkInReport = addValidation(checkInReport, form, allActiveListingsForDeveloper);
         return checkInReport;
     }
 
-    private CheckInReport convert(Developer developer) {
+    private CheckInReport addDeveloperInformation(CheckInReport checkInReport, Developer developer) {
         List<CertificationBody> acbs = developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(developer.getId());
-        return CheckInReport.builder()
-                .developerName(developer.getName())
-                .developerCode(developer.getDeveloperCode())
-                .developerId(developer.getId())
-                .published(false)
-                .relevantAcbs(acbs.stream()
-                        .map(acb -> acb.getName())
-                        .collect(Collectors.joining("; ")))
-                .build();
+        checkInReport.setDeveloperName(developer.getName());
+        checkInReport.setDeveloperCode(developer.getDeveloperCode());
+        checkInReport.setDeveloperId(developer.getId());
+        checkInReport.setPublished(false);
+        checkInReport.setRelevantAcbs(acbs.stream()
+                .map(acb -> acb.getName())
+                .collect(Collectors.joining("; ")));
+        return checkInReport;
     }
 
-    private CheckInReport convert(ChangeRequest cr, List<ListingSearchResult> allActiveListingsForDeveloper) {
+    private CheckInReport addChangeRequestInformation(CheckInReport checkInReport, ChangeRequest cr) {
         ChangeRequestAttestationSubmission crAttestation = (ChangeRequestAttestationSubmission) cr.getDetails();
-        CheckInReport checkInReport = convert(cr.getDeveloper(), crAttestation.getForm(), allActiveListingsForDeveloper, crAttestation.getAttestationPeriod().getId());
+
         checkInReport.setSubmittedDate(cr.getSubmittedDateTime());
         checkInReport.setPublished(false);
         checkInReport.setCurrentStatusName(cr.getCurrentStatus().getChangeRequestStatusType().getName());
@@ -154,9 +159,8 @@ public class CheckInReportDataCollector {
         return checkInReport;
     }
 
-    private CheckInReport convert(Developer developer, AttestationSubmission attestation, List<ListingSearchResult> allActiveListingsForDeveloper) {
+    private CheckInReport addPublishedAttestationInformation(CheckInReport checkInReport, Developer developer, AttestationSubmission attestation) {
         List<CertificationBody> acbs = developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(developer.getId());
-        CheckInReport checkInReport = convert(developer, attestation.getForm(), allActiveListingsForDeveloper, attestation.getAttestationPeriod().getId());
         checkInReport.setPublished(true);
         checkInReport.setSignature(attestation.getSignature());
         checkInReport.setSignatureEmail(attestation.getSignatureEmail());
@@ -164,30 +168,34 @@ public class CheckInReportDataCollector {
         return checkInReport;
     }
 
-    private CheckInReport convert(Developer developer, Form form, List<ListingSearchResult> allActiveListingsForDeveloper, Long attestationPeriodId) {
-        return CheckInReport.builder()
-                .developerName(developer.getName())
-                .developerCode(developer.getDeveloperCode())
-                .developerId(developer.getId())
-                .informationBlockingResponse(getAttestationResponse(form, AttestationFormMetaData.getInformationBlockingConditionId()))
-                .informationBlockingNoncompliantResponse(getAttestationOptionalResponse(form, AttestationFormMetaData.getInformationBlockingConditionId()))
-                .assurancesResponse(getAttestationResponse(form, AttestationFormMetaData.getAssurancesConditionId(attestationPeriodId)))
-                .assurancesNoncompliantResponse(getAttestationOptionalResponse(form, AttestationFormMetaData.getAssurancesConditionId(attestationPeriodId)))
-                .communicationsResponse(getAttestationResponse(form, AttestationFormMetaData.getCommunicationConditionId()))
-                .communicationsNoncompliantResponse(getAttestationOptionalResponse(form, AttestationFormMetaData.getCommunicationConditionId()))
-                .rwtResponse(getAttestationResponse(form, AttestationFormMetaData.getRwtConditionId()))
-                .rwtNoncompliantResponse(getAttestationOptionalResponse(form, AttestationFormMetaData.getRwtConditionId()))
-                .apiResponse(getAttestationResponse(form, AttestationFormMetaData.getApiConditionId()))
-                .apiNoncompliantResponse(getAttestationOptionalResponse(form, AttestationFormMetaData.getApiConditionId()))
-                .totalSurveillances(getTotalSurveillances(developer, allActiveListingsForDeveloper, LOGGER))
-                .totalSurveillanceNonconformities(getTotalSurveillanceNonconformities(developer, allActiveListingsForDeveloper, LOGGER))
-                .openSurveillanceNonconformities(getOpenSurveillanceNonconformities(developer, allActiveListingsForDeveloper, LOGGER))
-                .totalDirectReviewNonconformities(getTotalDirectReviewNonconformities(developer, LOGGER))
-                .openDirectReviewNonconformities(getOpenDirectReviewNonconformities(developer, LOGGER))
-                .assurancesValidation(checkInReportValidation.getAssurancesValidationMessage(allActiveListingsForDeveloper, form, attestationManager.getMostRecentPastAttestationPeriod()))
-                .realWorldTestingValidation(checkInReportValidation.getRealWorldTestingValidationMessage(allActiveListingsForDeveloper, form))
-                .apiValidation(checkInReportValidation.getApiValidationMessage(allActiveListingsForDeveloper, form))
-                .build();
+    private CheckInReport addRespsonses(CheckInReport checkInReport, Form form, Long attestationPeriodId) {
+        checkInReport.setInformationBlockingResponse(getAttestationResponse(form, AttestationFormMetaData.getInformationBlockingConditionId()));
+        checkInReport.setInformationBlockingNoncompliantResponse(getAttestationOptionalResponse(form, AttestationFormMetaData.getInformationBlockingConditionId()));
+        checkInReport.setAssurancesResponse(getAttestationResponse(form, AttestationFormMetaData.getAssurancesConditionId(attestationPeriodId)));
+        checkInReport.setAssurancesNoncompliantResponse(getAttestationOptionalResponse(form, AttestationFormMetaData.getAssurancesConditionId(attestationPeriodId)));
+        checkInReport.setCommunicationsResponse(getAttestationResponse(form, AttestationFormMetaData.getCommunicationConditionId()));
+        checkInReport.setCommunicationsNoncompliantResponse(getAttestationOptionalResponse(form, AttestationFormMetaData.getCommunicationConditionId()));
+        checkInReport.setRwtResponse(getAttestationResponse(form, AttestationFormMetaData.getRwtConditionId()));
+        checkInReport.setRwtNoncompliantResponse(getAttestationOptionalResponse(form, AttestationFormMetaData.getRwtConditionId()));
+        checkInReport.setApiResponse(getAttestationResponse(form, AttestationFormMetaData.getApiConditionId()));
+        checkInReport.setApiNoncompliantResponse(getAttestationOptionalResponse(form, AttestationFormMetaData.getApiConditionId()));
+        return checkInReport;
+    }
+
+    private CheckInReport addComplianceInformation(CheckInReport checkInReport, Developer developer, List<ListingSearchResult> allActiveListingsForDeveloper) {
+        checkInReport.setTotalSurveillances(getTotalSurveillances(developer, allActiveListingsForDeveloper, LOGGER));
+        checkInReport.setTotalSurveillanceNonconformities(getTotalSurveillanceNonconformities(developer, allActiveListingsForDeveloper, LOGGER));
+        checkInReport.setOpenSurveillanceNonconformities(getOpenSurveillanceNonconformities(developer, allActiveListingsForDeveloper, LOGGER));
+        checkInReport.setTotalDirectReviewNonconformities(getTotalDirectReviewNonconformities(developer, LOGGER));
+        checkInReport.setOpenDirectReviewNonconformities(getOpenDirectReviewNonconformities(developer, LOGGER));
+        return checkInReport;
+    }
+
+    private CheckInReport addValidation(CheckInReport checkInReport, Form form, List<ListingSearchResult> allActiveListingsForDeveloper) {
+        checkInReport.setAssurancesValidation(checkInReportValidation.getAssurancesValidationMessage(allActiveListingsForDeveloper, form, attestationManager.getMostRecentPastAttestationPeriod()));
+        checkInReport.setRealWorldTestingValidation(checkInReportValidation.getRealWorldTestingValidationMessage(allActiveListingsForDeveloper, form));
+        checkInReport.setApiValidation(checkInReportValidation.getApiValidationMessage(allActiveListingsForDeveloper, form));
+        return checkInReport;
     }
 
     private List<Developer> getDevelopersActiveListingsDuringMostRecentPastAttestationPeriod() {

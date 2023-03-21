@@ -10,5 +10,5 @@ import lombok.Data;
 public class CheckInAttestation {
     private AttestationSubmission attestationSubmission;
     private ChangeRequest changeRequest;
-    private CheckInReportSource source;
+    // private CheckInReportSource source;
 }

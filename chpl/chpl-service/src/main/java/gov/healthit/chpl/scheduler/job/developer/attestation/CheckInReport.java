@@ -3,11 +3,15 @@ package gov.healthit.chpl.scheduler.job.developer.attestation;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CheckInReport {
     private String developerName;
     private String developerCode;
