@@ -56,6 +56,9 @@ public class ComplaintSearchRequestValidator {
         errors.addAll(getAcbIdsErrors(request));
         errors.addAll(getComplainantTypeNameErrors(request));
         errors.addAll(getCurrentStatusErrors(request));
+        errors.addAll(getListingIdFormatErrors(request.getListingIdStrings()));
+        errors.addAll(getSurveillanceIdFormatErrors(request.getSurveillanceIdStrings()));
+        errors.addAll(getCriteriaIdFormatErrors(request.getCertificationCriteriaIdStrings()));
         errors.addAll(getClosedDateErrors(request));
         errors.addAll(getReceivedDateErrors(request));
         errors.addAll(getOpenDuringRangeErrors(request));
@@ -161,6 +164,48 @@ public class ComplaintSearchRequestValidator {
                 .map(name -> msgUtil.getMessage("search.complaint.complaintStatus.invalid", name,
                         complaintStatuses.stream().collect(Collectors.joining(", "))))
                 .collect(Collectors.toSet());
+    }
+
+    private Set<String> getListingIdFormatErrors(Set<String> listingIdStrings) {
+        if (listingIdStrings != null && listingIdStrings.size() > 0) {
+            return listingIdStrings.stream()
+                .filter(listingId -> !StringUtils.isBlank(listingId))
+                .filter(listingId -> !isParseableLong(listingId.trim()))
+                .map(listingId -> msgUtil.getMessage("search.complaint.listingId.invalid", listingId))
+                .collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
+    }
+
+    private Set<String> getSurveillanceIdFormatErrors(Set<String> survIdStrings) {
+        if (survIdStrings != null && survIdStrings.size() > 0) {
+            return survIdStrings.stream()
+                .filter(survId -> !StringUtils.isBlank(survId))
+                .filter(survId -> !isParseableLong(survId.trim()))
+                .map(survId -> msgUtil.getMessage("search.complaint.surveillanceId.invalid", survId))
+                .collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
+    }
+
+    private Set<String> getCriteriaIdFormatErrors(Set<String> criteriaIdStrings) {
+        if (criteriaIdStrings != null && criteriaIdStrings.size() > 0) {
+            return criteriaIdStrings.stream()
+                .filter(criteriaId -> !StringUtils.isBlank(criteriaId))
+                .filter(criteriaId -> !isParseableLong(criteriaId.trim()))
+                .map(criteriaId -> msgUtil.getMessage("search.complaint.certificationCriteriaId.invalid", criteriaId))
+                .collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
+    }
+
+    private boolean isParseableLong(String value) {
+        try {
+            Long.parseLong(value);
+        } catch (Exception ex) {
+            return false;
+        }
+        return true;
     }
 
     private Set<String> getClosedDateErrors(ComplaintSearchRequest request) {

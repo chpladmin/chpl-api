@@ -247,6 +247,18 @@ public class SearchComplaintsController {
             @Parameter(description = "A comma-separated list of complainant type names (ex: \"Developer,Patient,Provider\"). Results may match any of the provided types.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "complainantTypes")
             @RequestParam(value = "complainantTypes", required = false, defaultValue = "") String complainantTypeNamesDelimited,
+            @Parameter(description = "A comma-separated list of listing IDs 'or'ed together "
+                    + "(ex: \"1,2\" finds complaints associated with either listing 1 or listing 2).",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "listingIds")
+            @RequestParam(value = "listingIds", required = false, defaultValue = "") String listingIdsDelimited,
+            @Parameter(description = "A comma-separated list of surveillance IDs 'or'ed together "
+                    + "(ex: \"1,2\" finds complaints associated with either surveillance 1 or surveillance 2).",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "surveillanceIds")
+            @RequestParam(value = "surveillanceIds", required = false, defaultValue = "") String surveillanceIdsDelimited,
+            @Parameter(description = "A comma-separated list of criteria IDs 'or'ed together "
+                    + "(ex: \"1,2\" finds complaints associated with either criterion 1 or criterion 2).",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "criteriaIds")
+            @RequestParam(value = "criteriaIds", required = false, defaultValue = "") String criteriaIdsDelimited,
             @Parameter(description = "To return only complaints closed on or after this date. Required format is " + ComplaintSearchRequest.DATE_SEARCH_FORMAT,
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "closedDateStart")
             @RequestParam(value = "closedDateStart", required = false, defaultValue = "") String closedDateStart,
@@ -292,6 +304,9 @@ public class SearchComplaintsController {
                 .certificationBodyNames(convertToSetWithDelimeter(certificationBodiesDelimited, ","))
                 .currentStatusNames(convertToSetWithDelimeter(currentStatusNamesDelimited, ","))
                 .complainantTypeNames(convertToSetWithDelimeter(complainantTypeNamesDelimited, ","))
+                .listingIdStrings(convertToSetWithDelimeter(listingIdsDelimited, ","))
+                .surveillanceIdStrings(convertToSetWithDelimeter(surveillanceIdsDelimited, ","))
+                .certificationCriteriaIdStrings(convertToSetWithDelimeter(criteriaIdsDelimited, ","))
                 .closedDateStart(closedDateStart)
                 .closedDateEnd(closedDateEnd)
                 .receivedDateStart(receivedDateStart)

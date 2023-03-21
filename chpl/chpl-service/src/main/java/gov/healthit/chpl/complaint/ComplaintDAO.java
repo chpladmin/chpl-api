@@ -1,6 +1,5 @@
 package gov.healthit.chpl.complaint;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,31 +55,6 @@ public class ComplaintDAO extends BaseDAOImpl {
     @Cacheable(CacheNames.COMPLAINTS)
     public List<Complaint> getAllComplaints() {
         Query query = entityManager.createQuery(GET_COMPLAINTS_HQL, ComplaintEntity.class);
-        List<ComplaintEntity> results = query.getResultList();
-        return convertToComplaints(results);
-    }
-
-    @Deprecated
-    public List<Complaint> getAllComplaintsForAcbs(List<Long> acbIds) {
-        Query query = entityManager.createQuery(GET_COMPLAINTS_HQL
-                + " AND c.certificationBodyId IN (:acbIds)",
-                ComplaintEntity.class);
-        query.setParameter("acbIds", acbIds);
-        List<ComplaintEntity> results = query.getResultList();
-        return convertToComplaints(results);
-    }
-
-    @Deprecated
-    public List<Complaint> getAllComplaintsBetweenDates(Long acbId, LocalDate startDate, LocalDate endDate) {
-        Query query = entityManager.createQuery(GET_COMPLAINTS_HQL
-                + " AND c.certificationBodyId = :acbId "
-                + "AND c.receivedDate <= :endDate "
-                + "AND (c.closedDate IS NULL OR c.closedDate >= :startDate)",
-                ComplaintEntity.class);
-        query.setParameter("acbId", acbId);
-        query.setParameter("startDate", startDate);
-        query.setParameter("endDate", endDate);
-
         List<ComplaintEntity> results = query.getResultList();
         return convertToComplaints(results);
     }
