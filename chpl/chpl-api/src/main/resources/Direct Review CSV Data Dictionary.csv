@@ -5,9 +5,9 @@ Developer Link,Yes,<URL>,Link to the CHPL developer page
 Developer Status,Yes,Active; Suspended by ONC; Under certification ban by ONC,The current status of the developer within the program
 Non-Conformity Type,"Required if Direct Review Result = ""Non-conformity""",<string>,The type of non-conformity found during the review; contains reference to regulation and description
 Non-Conformity Status,"Required if Direct Review Result = ""Non-Conformity""",Open; Closed,Indicates whether the non-conformity is open or closed (has been resolved)
-CAP Approval Date,No,<MM/DD/YYYY>,The date ONC approved the corrective action plan proposed by the developer
-Must Complete Date,"Required if ""CAP Approval Date"" is not null",<MM/DD/YYYY>,"The date that the corrective action must be completed in order to avoid termination of the certified product’s certification status and/or a certification ban of the developer, as applicable"
-Was Complete Date,No,<MM/DD/YYYY>,The date that the corrective action was completed
+CAP Approval Date,No,<MM/DD/YYYY> or <string>,The date ONC approved the corrective action plan proposed by the developer or status if no date is provided
+Must Complete Date,"Required if ""CAP Approval Date"" is not null",<MM/DD/YYYY> or <string>,"The date that the corrective action must be completed in order to avoid termination of the certified product’s certification status and/or a certification ban of the developer, as applicable, or status if no date is provided"
+Was Complete Date,No,<MM/DD/YYYY> or <string>,The date that the corrective action was completed or status if no date is provided
 Developer-Associated Listings,No,List of CHPL IDs associated with this Direct Review,"List of all of the certified products associated with this direct review, as applicable"
 Non-conformity Last Updated Date,No,<MM/DD/YYYY HH:MM>,The updated date and time in the system of the non-conformity activity
 Retrieved from Jira Time,Yes,<MM/DD/YYYY HH:MM>,The last time this information was refreshed from the database

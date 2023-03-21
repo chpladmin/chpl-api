@@ -15,6 +15,7 @@ import gov.healthit.chpl.search.domain.SearchSetOperator;
 public class SearchRequestNormalizer {
 
     public void normalize(SearchRequest request) {
+        normalizeListingIds(request);
         normalizeCertificationStatuses(request);
         normalizeDerivedCertificationEditions(request);
         normalizeCertificationEditions(request);
@@ -29,6 +30,17 @@ public class SearchRequestNormalizer {
         normalizeRwtOptions(request);
         normalizeRwtOptionsOperator(request);
         normalizeOrderBy(request);
+    }
+
+    private void normalizeListingIds(SearchRequest request) {
+        if (!CollectionUtils.isEmpty(request.getListingIdStrings()) && CollectionUtils.isEmpty(request.getListingIds())) {
+            request.setListingIds(request.getListingIdStrings().stream()
+                    .filter(listingIdString -> !StringUtils.isBlank(listingIdString))
+                    .map(listingIdString -> listingIdString.trim())
+                    .filter(listingIdString -> isParseableLong(listingIdString))
+                    .map(listingIdString -> Long.parseLong(listingIdString))
+                    .collect(Collectors.toSet()));
+        }
     }
 
     private void normalizeCertificationStatuses(SearchRequest request) {

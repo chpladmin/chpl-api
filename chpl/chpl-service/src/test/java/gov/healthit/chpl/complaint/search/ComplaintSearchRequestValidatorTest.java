@@ -27,6 +27,9 @@ public class ComplaintSearchRequestValidatorTest {
     private static final String INVALID_COMPLAINANT_TYPE = "The complainant type name '%s' is not valid.";
     private static final String INVALID_STATUS = "The complaint status '%s' is not valid. Value must be one of %s.";
     private static final String INVALID_ACB = "There is no ONC-ACB in the system with the ID '%s'.";
+    private static final String INVALID_LISTING_ID = "The listing ID '%s' is not a valid number.";
+    private static final String INVALID_SURVEILLANCE_ID = "The surveillance ID '%s' is not a valid number.";
+    private static final String INVALID_CRITERION_ID = "The certification criterion ID '%s' is not a valid number.";
     private static final String INVALID_CLOSED_DATE = "The closed date value '%s' is not a valid date. It must be in the format %s.";
     private static final String INVALID_RECEIVED_DATE = "The received date value '%s' is not a valid date. It must be in the format %s.";
     private static final String INVALID_OPEN_RANGE_DATE = "The open range date value '%s' is not a valid date. It must be in the format %s.";
@@ -56,6 +59,12 @@ public class ComplaintSearchRequestValidatorTest {
             .thenAnswer(i -> String.format(INVALID_COMPLAINANT_TYPE, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.complaint.complaintStatus.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_STATUS, i.getArgument(1), i.getArgument(2)));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.complaint.listingId.invalid"), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(INVALID_LISTING_ID, i.getArgument(1), ""));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.complaint.surveillanceId.invalid"), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(INVALID_SURVEILLANCE_ID, i.getArgument(1), ""));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.complaint.certificationCriteriaId.invalid"), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(INVALID_CRITERION_ID, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.complaint.closedDate.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_CLOSED_DATE, i.getArgument(1), i.getArgument(2)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.complaint.receivedDate.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
@@ -755,6 +764,54 @@ public class ComplaintSearchRequestValidatorTest {
             assertEquals(1L, ex.getErrorMessages().size());
             assertTrue(ex.getErrorMessages().contains(String.format(INVALID_STATUS, "junk", "Open, Closed")));
         }
+    }
+
+    @Test
+    public void validate_invalidListingIdFormat_addsError() {
+        ComplaintSearchRequest request = ComplaintSearchRequest.builder()
+            .listingIdStrings(Stream.of("3 ", " 4 ", " 01", " ", "", null, "BAD").collect(Collectors.toSet()))
+            .build();
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_LISTING_ID, "BAD", "")));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_invalidSurveillanceIdFormat_addsError() {
+        ComplaintSearchRequest request = ComplaintSearchRequest.builder()
+            .surveillanceIdStrings(Stream.of("3 ", " 4 ", " 01", " ", "", null, "BAD").collect(Collectors.toSet()))
+            .build();
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_SURVEILLANCE_ID, "BAD", "")));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_invalidCertificationCriteriaIdFormat_addsError() {
+        ComplaintSearchRequest request = ComplaintSearchRequest.builder()
+            .certificationCriteriaIdStrings(Stream.of("3 ", " 4 ", " 01", " ", "", null, "BAD").collect(Collectors.toSet()))
+            .build();
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_CRITERION_ID, "BAD", "")));
+            return;
+        }
+        fail("Should not execute.");
     }
 
     @Test

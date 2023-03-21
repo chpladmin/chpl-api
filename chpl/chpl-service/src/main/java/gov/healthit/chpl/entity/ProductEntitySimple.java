@@ -76,7 +76,6 @@ public class ProductEntitySimple implements Serializable {
                 .owner(this.getDeveloperId() == null ? null
                         : Developer.builder()
                         .id(this.getDeveloperId())
-                        .developerId(this.getDeveloperId())
                         .build())
                 .reportFileLocation(this.getReportFileLocation())
                 .build();

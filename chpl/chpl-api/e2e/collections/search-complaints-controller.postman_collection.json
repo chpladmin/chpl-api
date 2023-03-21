@@ -1,18 +1,382 @@
 {
 	"info": {
 		"name": "search-complaints-controller",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8125082"
 	},
 	"item": [
 		{
-			"name": "GET /complaints/search/v2 - correct response and status for ONC users",
+			"name": "ROLE_ONC",
+			"item": [
+				{
+					"name": "GET /complaints/search/v2 - correct response and status for ONC users",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"expect GET /complaints/search/v2 request to return 200 status and response body to not be empty\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(jsonData.response).not.eq(null);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"expect response has inclusive date search values in GET /complaints/search/v2 response\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.results[0].closedDate).to.eql('2022-09-07');\r",
+									"    pm.expect(jsonData.results[0].receivedDate).to.eql('2022-08-25');\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}/rest/complaints/search/v2?closedDateStart=2022-09-07&closedDateEnd=2022-09-07&receivedDateStart=2022-08-25&receivedDateEnd=2022-08-25",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"complaints",
+								"search",
+								"v2"
+							],
+							"query": [
+								{
+									"key": "closedDateStart",
+									"value": "2022-09-07"
+								},
+								{
+									"key": "closedDateEnd",
+									"value": "2022-09-07"
+								},
+								{
+									"key": "receivedDateStart",
+									"value": "2022-08-25"
+								},
+								{
+									"key": "receivedDateEnd",
+									"value": "2022-08-25"
+								}
+							]
+						},
+						"description": "GET /complaints/search/v2 - correct response and status for ONC users"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /complaints/search - 200 status for ONC users",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ONC users should get 200 status and response is not null for /complaints/search end point\", function () {\r",
+									"    var actualResponseBody = pm.response.json();\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(actualResponseBody).not.eql(null);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}/rest/complaints/search",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"complaints",
+								"search"
+							]
+						},
+						"description": "GET /complaints/search - 200 status and valid response for ONC users"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /complaints/search - 200 status and no response when passing invalid date parameters",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Users should get 200 status and no response for /complaints/search end point when passing invalid date parameters\", function () {\r",
+									"    var actualResponseBody = pm.response.json();\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(jsonData.results.length).to.eql(0);\r",
+									" });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/complaints/search?receivedDateStart=2022-01-31&receivedDateEnd=2021-01-01&closedDateStart=2020-01-02&closedDateEnd=2019-01-02",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"complaints",
+								"search"
+							],
+							"query": [
+								{
+									"key": "receivedDateStart",
+									"value": "2022-01-31"
+								},
+								{
+									"key": "receivedDateEnd",
+									"value": "2021-01-01"
+								},
+								{
+									"key": "closedDateStart",
+									"value": "2020-01-02"
+								},
+								{
+									"key": "closedDateEnd",
+									"value": "2019-01-02"
+								}
+							]
+						},
+						"description": "GET /complaints/search - 200 status and no results for invalid date parameters"
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var ReqBody= {",
+							"        userName:pm.environment.get(\"emailONC\"),password:pm.environment.get(\"passwordONC\")",
+							"    };",
+							"pm.sendRequest({",
+							"    url: pm.environment.get(\"authurl\"),",
+							"    method: \"POST\",",
+							"    header: {",
+							"        \"Content-Type\": \"application/json\",",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")",
+							"    },",
+							"    body: JSON.stringify(ReqBody)",
+							"}, function (err, response) {",
+							"   var jsonData = response.json();",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "GET /complaints/search - 200 status for ONC Staff user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"ONC_STAFF users should get 200 status and response is not null for /complaints/search end point\", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/complaints/search",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"complaints",
+						"search"
+					]
+				},
+				"description": "GET /complaints/search - 200 status and valid response for ONC Staff user"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /complaints/search - 200 status for ACB users",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
 						"exec": [
 							"var ReqBody= {\r",
-							"        userName:pm.environment.get(\"emailONC\"),password:pm.environment.get(\"passwordONC\")\r",
+							"        userName:pm.environment.get(\"emailACB\"),password:pm.environment.get(\"passwordACB\")\r",
 							"    };\r",
 							"pm.sendRequest({\r",
 							"    url: pm.environment.get(\"authurl\"),\r",
@@ -34,26 +398,16 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"var jsonData = pm.response.json();\r",
-							"\r",
-							"pm.test(\"expect GET /complaints/search/v2 request to return 200 status and response body to not be empty\", function () {\r",
+							"pm.test(\"ACB users should get 200 status and response is not null for /complaints/search end point\", function () {\r",
+							"    var actualResponseBody = pm.response.json();\r",
 							"    pm.response.to.have.status(200);\r",
-							"    pm.expect(jsonData.response).not.eq(null);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"expect response has inclusive date search values in GET /complaints/search/v2 response\", function () {\r",
-							"    var jsonData = pm.response.json();\r",
-							"    pm.expect(jsonData.results[0].closedDate).to.eql('2022-09-07');\r",
-							"    pm.expect(jsonData.results[0].receivedDate).to.eql('2022-08-25');\r",
+							"    pm.expect(actualResponseBody).not.eql(null);\r",
 							"});"
 						],
 						"type": "text/javascript"
 					}
 				}
 			],
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -78,41 +432,18 @@
 						"type": "text"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
-					"raw": "{{url}}/rest/complaints/search/v2?closedDateStart=2022-09-07&closedDateEnd=2022-09-07&receivedDateStart=2022-08-25&receivedDateEnd=2022-08-25",
+					"raw": "{{url}}/rest/complaints/search",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"rest",
 						"complaints",
-						"search",
-						"v2"
-					],
-					"query": [
-						{
-							"key": "closedDateStart",
-							"value": "2022-09-07"
-						},
-						{
-							"key": "closedDateEnd",
-							"value": "2022-09-07"
-						},
-						{
-							"key": "receivedDateStart",
-							"value": "2022-08-25"
-						},
-						{
-							"key": "receivedDateEnd",
-							"value": "2022-08-25"
-						}
+						"search"
 					]
 				},
-				"description": "GET /complaints/search/v2 - correct response and status for ONC users"
+				"description": "GET /complaints/search - 200 status and valid response for ACB users"
 			},
 			"response": []
 		}

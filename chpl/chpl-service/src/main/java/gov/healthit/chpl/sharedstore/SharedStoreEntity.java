@@ -6,8 +6,11 @@ import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +24,14 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "shared_store", schema = "shared_store")
+@NamedNativeQueries({
+        @NamedNativeQuery(
+                name = "upsert",
+                query = "INSERT INTO " + BaseDAOImpl.SHARED_STORE_SCHEMA_NAME + ".shared_store "
+                        + "(domain, key, value) "
+                        + "VALUES (:domain, :key, :value) "
+                        + "ON CONFLICT (domain, key) DO NOTHING ")
+})
 public class SharedStoreEntity implements Serializable {
     private static final long serialVersionUID = -9211908180405673195L;
 

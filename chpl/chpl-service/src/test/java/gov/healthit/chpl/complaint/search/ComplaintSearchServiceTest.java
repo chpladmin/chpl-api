@@ -20,6 +20,7 @@ import gov.healthit.chpl.complaint.domain.ComplaintCriterionMap;
 import gov.healthit.chpl.complaint.domain.ComplaintListingMap;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -441,6 +442,90 @@ public class ComplaintSearchServiceTest {
         assertNotNull(searchResponse);
         assertEquals(3, searchResponse.getRecordCount());
         assertEquals(3, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_listingIdsProvidedAndHasMatches_findsMatches() throws ValidationException {
+        ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
+            .listingIds(Stream.of(100L, 200L).collect(Collectors.toSet()))
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ComplaintSearchResponse searchResponse = complaintSearchService.searchComplaints(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_listingIdsProvidedAndHasNoMatches_noMatches() throws ValidationException {
+        ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
+            .listingIds(Stream.of(200L).collect(Collectors.toSet()))
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ComplaintSearchResponse searchResponse = complaintSearchService.searchComplaints(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_surveillanceIdsProvidedAndHasMatches_findsMatches() throws ValidationException {
+        ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
+            .surveillanceIds(Stream.of(50L, 200L).collect(Collectors.toSet()))
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ComplaintSearchResponse searchResponse = complaintSearchService.searchComplaints(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_surveillanceIdsProvidedAndHasNoMatches_noMatches() throws ValidationException {
+        ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
+            .surveillanceIds(Stream.of(10L).collect(Collectors.toSet()))
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ComplaintSearchResponse searchResponse = complaintSearchService.searchComplaints(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_criteriaIdsProvidedAndHasMatches_findsMatches() throws ValidationException {
+        ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
+            .certificationCriteriaIds(Stream.of(1L, 2L).collect(Collectors.toSet()))
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ComplaintSearchResponse searchResponse = complaintSearchService.searchComplaints(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_criteriaIdsProvidedAndHasNoMatches_noMatches() throws ValidationException {
+        ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
+            .certificationCriteriaIds(Stream.of(10L).collect(Collectors.toSet()))
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ComplaintSearchResponse searchResponse = complaintSearchService.searchComplaints(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
     }
 
     @Test
@@ -1269,6 +1354,11 @@ public class ComplaintSearchServiceTest {
                                 .developerName("Epic")
                                 .listingId(100L)
                                 .build())
+                            .collect(Collectors.toSet()))
+                    .surveillances(Stream.of(ComplaintSurveillanceMap.builder()
+                            .complaintId(3L)
+                            .surveillanceId(50L)
+                            .build())
                             .collect(Collectors.toSet()))
                 .build()).collect(Collectors.toList());
     }

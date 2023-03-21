@@ -57,6 +57,7 @@ public class SearchRequestValidator {
 
     public void validate(SearchRequest request) throws ValidationException {
         Set<String> errors = new LinkedHashSet<String>();
+        errors.addAll(getListingIdErrors(request));
         errors.addAll(getCertificationStatusErrors(request.getCertificationStatuses()));
         errors.addAll(getDerivedCertificationEditionErrors(request.getDerivedCertificationEditions()));
         errors.addAll(getCertificationEditionErrors(request.getCertificationEditions()));
@@ -75,6 +76,32 @@ public class SearchRequestValidator {
         if (errors != null && errors.size() > 0) {
             throw new ValidationException(errors);
         }
+    }
+
+    private Set<String> getListingIdErrors(SearchRequest request) {
+        Set<String> listingIdStrings = request.getListingIdStrings();
+        Set<Long> listingIds = request.getListingIds();
+        Set<String> listingIdErrors = new LinkedHashSet<String>();
+        if (!CollectionUtils.isEmpty(listingIdStrings)
+                && listingIdStrings.size() > SearchRequest.MAX_LISTING_IDS) {
+            listingIdErrors.add(msgUtil.getMessage("search.listingIds.moreThanAllowed", listingIdStrings.size(), SearchRequest.MAX_LISTING_IDS));
+        } else if (!CollectionUtils.isEmpty(listingIds)
+                && listingIds.size() > SearchRequest.MAX_LISTING_IDS) {
+            listingIdErrors.add(msgUtil.getMessage("search.listingIds.moreThanAllowed", listingIds.size(), SearchRequest.MAX_LISTING_IDS));
+        }
+        listingIdErrors.addAll(getListingIdFormatErrors(listingIdStrings));
+        return listingIdErrors;
+    }
+
+    private Set<String> getListingIdFormatErrors(Set<String> listingIdStrings) {
+        if (!CollectionUtils.isEmpty(listingIdStrings)) {
+            return listingIdStrings.stream()
+                .filter(listingId -> !StringUtils.isBlank(listingId))
+                .filter(listingId -> !isParseableLong(listingId.trim()))
+                .map(listingId -> msgUtil.getMessage("search.listingId.invalid", listingId))
+                .collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
     }
 
     private Set<String> getCertificationStatusErrors(Set<String> certificationStatuses) {
