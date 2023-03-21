@@ -46,6 +46,9 @@ public class CertificationCriterionAttributeEntity {
     @Column(name = "optional_standard")
     private Boolean optionalStandard;
 
+    @Column(name = "privacy_security_framework")
+    private Boolean privacySecurityFramework;
+
     @Column(name = "service_base_url_list")
     private Boolean serviceBaseUrlList;
 

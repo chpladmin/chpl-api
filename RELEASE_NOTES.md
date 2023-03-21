@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version 39.6.0
+_20 March 2023_
+
+### Features
+* Use CAP Status to determine various direct review date values
+* Add listingIds parameter to /search/v3 endpoint
+
+### Bug Fixes
+* Correctly read developer-associated listings from the shared store
+* Correctly use DR container object to calculate total DR statistics
+
+---
+
 ## Version 39.5.0
 _6 March 2023_
 
