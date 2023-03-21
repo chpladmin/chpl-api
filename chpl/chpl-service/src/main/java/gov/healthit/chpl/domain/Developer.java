@@ -14,10 +14,10 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,20 +31,10 @@ public class Developer implements Serializable {
     private static final long serialVersionUID = 7341544844577617247L;
 
     /**
-     * This property exists solely to be able to deserialize developer activity events.
-     * When deserializing the activity we sometimes care about the developer ID.
-     * This property should not be visible in the generated XSD (and eventually gone from the JSON).
-     */
-    @Deprecated
-    @XmlTransient
-    @DeprecatedResponseField(removalDate = "2022-12-15",
-        message = "This field is deprecated and will be removed from the response data in a future release. Please replace usage of the 'developerId' field with 'id'.")
-    private Long developerId;
-
-    /**
      * The internal ID of the developer.
      */
     @XmlElement(required = true)
+    @JsonAlias("developerId")
     private Long id;
 
     /**
@@ -130,16 +120,6 @@ public class Developer implements Serializable {
 
     public Developer() {
         this.statusEvents = new ArrayList<DeveloperStatusEvent>();
-    }
-
-    @Deprecated
-    public Long getDeveloperId() {
-        return developerId;
-    }
-
-    @Deprecated
-    public void setDeveloperId(Long developerId) {
-        this.developerId = developerId;
     }
 
     public Long getId() {

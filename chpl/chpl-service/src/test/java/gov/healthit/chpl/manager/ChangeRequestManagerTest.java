@@ -6,7 +6,6 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 import org.ff4j.FF4j;
 import org.junit.Before;
@@ -65,7 +64,7 @@ public class ChangeRequestManagerTest {
                 null, null, null, ff4j);
 
         // Run
-        ChangeRequest cr = changeRequestManager.getChangeRequest(1l);
+        ChangeRequest cr = changeRequestManager.getChangeRequest(1L);
 
         // Check - ChangeRequest should implement 'equals' but does not.
         // This indicates there is a problem.
@@ -85,29 +84,10 @@ public class ChangeRequestManagerTest {
                 null, null, null, null, ff4j);
 
         // Run
-        changeRequestManager.getChangeRequest(11l);
+        changeRequestManager.getChangeRequest(11L);
 
         // Check
         fail("Exception was not thrown");
-    }
-
-    @Test
-    public void getAllChangeRequestsForUser_None_ReturnsValidList() throws EntityRetrievalException {
-        // Setup
-        ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
-        Mockito.when(changeRequestDAO.getAllWithDetails())
-                .thenReturn(Arrays.asList(getBasicChangeRequest(), getBasicChangeRequest(), getBasicChangeRequest()));
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
-        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
-        ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, null, changeRequestDAO,
-                null, null, null, null, null, null, null, null, null, null, null,
-                resourcePermissions, null, null, null, ff4j);
-
-        // Run
-        List<ChangeRequest> crs = changeRequestManager.getAllChangeRequestsForUser();
-
-        // Check
-        assertEquals(3l, crs.size());
     }
 
     @Test
@@ -300,30 +280,30 @@ public class ChangeRequestManagerTest {
 
     private ChangeRequest getBasicChangeRequest() {
         return ChangeRequest.builder()
-                .id(1l)
+                .id(1L)
                 .developer(Developer.builder()
-                        .id(Long.valueOf(20l))
+                        .id(Long.valueOf(20L))
                         .developerCode("1234")
                         .name("Dev 1")
                         .build())
                 .changeRequestType(ChangeRequestType.builder()
-                        .id(1l)
+                        .id(1L)
                         .name("Website Change Request")
                         .build())
                 .currentStatus(ChangeRequestStatus.builder()
-                        .id(Long.valueOf(8l))
+                        .id(Long.valueOf(8L))
                         .comment("Comment")
                         .changeRequestStatusType(ChangeRequestStatusType.builder()
-                                .id(1l)
+                                .id(1L)
                                 .name("Pending ONC-ACB Action")
                                 .build())
                         .build())
                 .certificationBody(CertificationBody.builder()
-                        .id(1l)
+                        .id(1L)
                         .acbCode("1234")
                         .name("ACB 1234")
                         .build())
-                .details(new HashMap<String, Object>() )
+                .details(new HashMap<String, Object>())
                 .build();
     }
 

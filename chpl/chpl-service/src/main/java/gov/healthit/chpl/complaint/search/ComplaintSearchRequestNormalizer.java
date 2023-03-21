@@ -30,6 +30,9 @@ public class ComplaintSearchRequestNormalizer {
         normalizeCertificationBodyNames(request);
         normalizeComplainantTypeNames(request);
         normalizeCurrentStatusNames(request);
+        normalizeListingIds(request);
+        normalizeSurveillanceIds(request);
+        normalizeCertificationCriterionIds(request);
         normalizeClosedDates(request);
         normalizeReceivedDates(request);
         normalizeOpenDuringRangeDates(request);
@@ -145,6 +148,51 @@ public class ComplaintSearchRequestNormalizer {
                     .map(statusName -> StringUtils.normalizeSpace(statusName))
                     .collect(Collectors.toSet()));
         }
+    }
+
+    private void normalizeListingIds(ComplaintSearchRequest request) {
+        if (request.getListingIdStrings() != null && request.getListingIdStrings().size() > 0
+                && (request.getListingIds() == null || request.getListingIds().size() == 0)) {
+            request.setListingIds(request.getListingIdStrings().stream()
+                    .filter(listingIdString -> !StringUtils.isBlank(listingIdString))
+                    .map(listingIdString -> listingIdString.trim())
+                    .filter(listingIdString -> isParseableLong(listingIdString))
+                    .map(listingIdString -> Long.parseLong(listingIdString))
+                    .collect(Collectors.toSet()));
+        }
+    }
+
+    private void normalizeSurveillanceIds(ComplaintSearchRequest request) {
+        if (request.getSurveillanceIdStrings() != null && request.getSurveillanceIdStrings().size() > 0
+                && (request.getSurveillanceIds() == null || request.getSurveillanceIds().size() == 0)) {
+            request.setSurveillanceIds(request.getSurveillanceIdStrings().stream()
+                    .filter(survIdString -> !StringUtils.isBlank(survIdString))
+                    .map(survIdString -> survIdString.trim())
+                    .filter(survIdString -> isParseableLong(survIdString))
+                    .map(survIdString -> Long.parseLong(survIdString))
+                    .collect(Collectors.toSet()));
+        }
+    }
+
+    private void normalizeCertificationCriterionIds(ComplaintSearchRequest request) {
+        if (request.getCertificationCriteriaIdStrings() != null && request.getCertificationCriteriaIdStrings().size() > 0
+                && (request.getCertificationCriteriaIds() == null || request.getCertificationCriteriaIds().size() == 0)) {
+            request.setCertificationCriteriaIds(request.getCertificationCriteriaIdStrings().stream()
+                    .filter(criterionIdString -> !StringUtils.isBlank(criterionIdString))
+                    .map(criterionIdString -> criterionIdString.trim())
+                    .filter(criterionIdString -> isParseableLong(criterionIdString))
+                    .map(criterionIdString -> Long.parseLong(criterionIdString))
+                    .collect(Collectors.toSet()));
+        }
+    }
+
+    private boolean isParseableLong(String value) {
+        try {
+            Long.parseLong(value);
+        } catch (Exception ex) {
+            return false;
+        }
+        return true;
     }
 
     private void normalizeClosedDates(ComplaintSearchRequest request) {

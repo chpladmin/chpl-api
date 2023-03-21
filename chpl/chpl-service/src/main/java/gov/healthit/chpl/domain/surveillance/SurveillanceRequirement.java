@@ -8,7 +8,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -244,17 +243,7 @@ public class SurveillanceRequirement implements Serializable {
         return nonconformities;
     }
 
-
     public void setNonconformities(List<SurveillanceNonconformity> nonconformities) {
         this.nonconformities = nonconformities;
     }
-
-    @XmlTransient
-    @Deprecated //this field should be removed from Json responses but left in the API code
-    @DeprecatedResponseField(removalDate = "2023-01-01",
-        message = "This field is deprecated and will be removed from the response data in a future release.")
-    public String getRequirementName() {
-        return NullSafeEvaluator.eval(() -> getRequirementType().getFormattedTitle(), "");
-    }
-
 }

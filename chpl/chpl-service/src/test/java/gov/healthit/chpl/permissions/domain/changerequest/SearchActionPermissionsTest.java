@@ -21,9 +21,9 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
-import gov.healthit.chpl.permissions.domains.changerequest.GetAllActionPermissions;
+import gov.healthit.chpl.permissions.domains.changerequest.SearchActionPermissions;
 
-public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
+public class SearchActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Mock
     private ResourcePermissions resourcePermissions;
@@ -32,7 +32,7 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
     private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
 
     @InjectMocks
-    private GetAllActionPermissions permissions;
+    private SearchActionPermissions permissions;
 
     @Before
     public void setup() {

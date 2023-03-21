@@ -1,8 +1,6 @@
 package gov.healthit.chpl.changerequest.manager;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -180,26 +178,6 @@ public class ChangeRequestManager {
             + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).GET_BY_ID, returnObject)")
     public ChangeRequest getChangeRequest(Long changeRequestId) throws EntityRetrievalException {
         return changeRequestDAO.get(changeRequestId);
-    }
-
-    @Transactional(readOnly = true)
-    @Deprecated
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
-            + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).GET_ALL)")
-    public List<ChangeRequest> getAllChangeRequestsForUser() throws EntityRetrievalException {
-        List<ChangeRequest> results = new ArrayList<ChangeRequest>();
-        if (resourcePermissions.isUserRoleAcbAdmin()) {
-            results = changeRequestDAO.getAllWithDetailsForAcbs(resourcePermissions.getAllAcbsForCurrentUser().stream()
-                    .map(acb -> acb.getId())
-                    .toList());
-        } else if (resourcePermissions.isUserRoleDeveloperAdmin()) {
-            results = changeRequestDAO.getAllWithDetailsForDevelopers(resourcePermissions.getAllDevelopersForCurrentUser().stream()
-                    .map(dev -> dev.getId())
-                    .toList());
-        } else if (resourcePermissions.isUserRoleOnc() || resourcePermissions.isUserRoleAdmin()) {
-            results = changeRequestDAO.getAllWithDetails();
-        }
-        return results;
     }
 
     @Transactional
