@@ -28,6 +28,7 @@ import gov.healthit.chpl.questionableactivity.listing.DeletedCertificationsActiv
 import gov.healthit.chpl.questionableactivity.listing.NonActiveCertificateEdited;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationDateActivity;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationStatusDate;
+import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationStatusHistoryActivity;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -65,6 +66,9 @@ public class FixupQuestionableActivity  implements Job {
     @Autowired
     private UpdatedCertificationDateActivity updateCertificationDateActivity;
 
+    @Autowired
+    private UpdatedCertificationStatusHistoryActivity updatedCertificationStatusHistoryActivity;
+
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
@@ -79,6 +83,8 @@ public class FixupQuestionableActivity  implements Job {
                 startDt, endDt, false);
         reprocessor.reprocess(QuestionableActivityTriggerConcept.CERTIFICATION_DATE_EDITED, updateCertificationDateActivity,
                 startDt, endDt, true);
+        reprocessor.reprocess(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_HISTORY, updatedCertificationStatusHistoryActivity,
+                startDt, endDt, false);
 
         linkQuestionableActivityToActivity(startDt, endDt);
 

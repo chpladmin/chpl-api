@@ -93,9 +93,17 @@ public class CertificationStatusEvent implements Serializable {
         this.status = status;
     }
 
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(final String reason) {
+        this.reason = reason;
+    }
+
     /**
      * Check to see if this CSE matches another one.
-     * 
+     *
      * @param other
      *            CSE to check against
      * @return true if the IDs match
@@ -110,11 +118,4 @@ public class CertificationStatusEvent implements Serializable {
         return result;
     }
 
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(final String reason) {
-        this.reason = reason;
-    }
 }

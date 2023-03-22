@@ -110,7 +110,7 @@ public class QuestionableActivityReprocessor {
         CertifiedProductSearchDetails newListing = JSONUtils.fromJSON(activity.getNewData(), CertifiedProductSearchDetails.class);
 
         Date confirmDate = certifiedProductDao.getConfirmDate(origListing.getId());
-        if (!requiresThreshold || isActivityAfterThreshold(confirmDate, newListing.getLastModifiedDate())) {
+        if (!requiresThreshold || isActivityWithinThreshold(confirmDate, newListing.getLastModifiedDate())) {
             List<QuestionableActivityListingDTO> questionableActivities = activityChecker.check(origListing, newListing);
             if (!CollectionUtils.isEmpty(questionableActivities)) {
                 LOGGER.info("Inserting " + questionableActivities.size() + " '" + trigger.getName() + "' questionable activities for listing ID "
@@ -134,10 +134,12 @@ public class QuestionableActivityReprocessor {
                 LOGGER.info("No '" + trigger.getName() + "' questionable activities for listing ID " + origListing.getId()
                     + " on " + activity.getActivityDate());
             }
+        } else {
+            LOGGER.info("Activity is not questionable since it was shortly after listing confirmation.");
         }
     }
 
-    private boolean isActivityAfterThreshold(Date confirmDate, Long lastModifiedDate) {
+    private boolean isActivityWithinThreshold(Date confirmDate, Long lastModifiedDate) {
         return (confirmDate != null && lastModifiedDate != null
                 && (lastModifiedDate.longValue() - confirmDate.getTime()
                         > getListingActivityThresholdInMillis()));
