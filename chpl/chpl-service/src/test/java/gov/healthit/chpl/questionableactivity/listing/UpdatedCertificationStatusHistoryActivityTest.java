@@ -231,7 +231,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
     @Test
     public void check_existingHistoryWithdrawnDateChanges_activityReturned() {
         CertificationStatusEvent activeStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1568592000000L)
+                .eventDate(1568577600000L)
                 .id(18469L)
                 .status(CertificationStatus.builder()
                         .id(1L)
@@ -249,7 +249,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
                 .build();
 
         CertificationStatusEvent updatedWithdrawnStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1640830400000L)
+                .eventDate(1640816000000L)
                 .id(25324L)
                 .status(CertificationStatus.builder()
                         .id(2L)
@@ -278,7 +278,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
     @Test
     public void check_historyAddedForWithdrawnThenRetired_activityReturned() {
         CertificationStatusEvent activeStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1568592000000L)
+                .eventDate(1568577600000L)
                 .id(18469L)
                 .status(CertificationStatus.builder()
                         .id(1L)
@@ -287,7 +287,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
                 .build();
 
         CertificationStatusEvent withdrawnStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1640830400000L)
+                .eventDate(1640816000000L)
                 .id(25323L)
                 .status(CertificationStatus.builder()
                         .id(2L)

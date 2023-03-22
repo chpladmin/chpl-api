@@ -113,14 +113,14 @@ public class UpdatedCertificationDateActivityTest {
     @Test
     public void check_millisValueChangedButNotCalendarDay_noActivityReturned() {
         CertificationStatusEvent activeStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1568592000000L)
+                .eventDate(1568577600000L)
                 .id(18469L)
                 .status(CertificationStatus.builder()
                         .name(CertificationStatusType.Active.getName())
                         .build())
                 .build();
         CertificationStatusEvent updatedActiveStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1568591000000L)
+                .eventDate(1568577480000L)
                 .id(25323L)
                 .status(CertificationStatus.builder()
                         .name(CertificationStatusType.Active.getName())
@@ -143,7 +143,7 @@ public class UpdatedCertificationDateActivityTest {
     @Test
     public void check_noCertificationEventsAddedButCertificationDateChanged_returnsActivity() {
         CertificationStatusEvent activeStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1568592000000L)
+                .eventDate(1568577600000L)
                 .id(18469L)
                 .status(CertificationStatus.builder()
                         .name(CertificationStatusType.Active.getName())
@@ -176,7 +176,7 @@ public class UpdatedCertificationDateActivityTest {
     @Test
     public void check_certificationEventAddedAndCertificationDateChanged_returnsActivity() {
         CertificationStatusEvent activeStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1568592000000L)
+                .eventDate(1568577600000L)
                 .id(18469L)
                 .status(CertificationStatus.builder()
                         .name(CertificationStatusType.Active.getName())
