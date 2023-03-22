@@ -10,13 +10,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.email.ChplEmailFactory;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 
 @Component("directReviewUpdateEmailService")
@@ -35,25 +35,20 @@ public class DirectReviewUpdateEmailService {
     private String unknownChangesEmailSubject;
 
     private DirectReviewCachingService directReviewService;
-    private Environment env;
     private ChplEmailFactory chplEmailFactory;
-
+    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
     @Autowired
-    public DirectReviewUpdateEmailService(DirectReviewCachingService directReviewService, Environment env,
-            ChplEmailFactory chplEmailFactory) {
+    public DirectReviewUpdateEmailService(DirectReviewCachingService directReviewService,
+            ChplEmailFactory chplEmailFactory, ChplHtmlEmailBuilder chplHtmlEmailBuilder) {
         this.directReviewService = directReviewService;
-        this.env = env;
         this.chplEmailFactory = chplEmailFactory;
+        this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
     }
 
     /**
      * A developer and possibly listings under that developer have changed in some way.
-     * @param originalDevelopers
-     * @param changedDevelopers
-     * @param originalListings
-     * @param changedListings
-     */
+    */
     public void sendEmail(List<Developer> originalDevelopers, List<Developer> changedDevelopers,
             Map<Long, CertifiedProductSearchDetails> originalListings,
             Map<Long, CertifiedProductSearchDetails> changedListings,
@@ -100,25 +95,34 @@ public class DirectReviewUpdateEmailService {
             recipients = chplChangesEmailAddress.split(",");
         }
 
-        String htmlMessage = formatDeveloperActionHtml(originalDevelopers, changedDevelopers);
-        htmlMessage += "<p>The following direct reviews associated with the original developer"
+        String developerList = "The following direct reviews associated with the original developer"
                 + (originalDevelopers.size() == 1 ? " " : "s ")
                 + "may need updates: "
                 + "<ul>";
         for (DirectReview dr : drs) {
-            htmlMessage += String.format("<li>%s</li>", dr.getJiraKey());
+            developerList += String.format("<li>%s</li>", dr.getJiraKey());
         }
-        htmlMessage += "</ul></p>";
+        developerList += "</ul>";
 
-        String chplProductNumberChangedHtml = formatChplProductNumbersChangedHtml(originalListings, changedListings);
-        if (StringUtils.isNotEmpty(chplProductNumberChangedHtml)) {
-            htmlMessage += "Any direct reviews with the following developer-associated listings "
-            + "may require updates due to changes in the CHPL Product Number: "
-            + "<ul>" + chplProductNumberChangedHtml + "</ul>";
+        String chplProductNumbersChangedHtml = "";
+        String chplProductNumbersChangedList = formatChplProductNumbersChangedHtml(originalListings, changedListings);
+        if (StringUtils.isNotEmpty(chplProductNumbersChangedList)) {
+            chplProductNumbersChangedHtml = "Additionally, any direct reviews with the following "
+                    + "developer-associated listings may require updates due to changes "
+                    + "in the CHPL Product Number: "
+            + "<ul>" + chplProductNumbersChangedList + "</ul>";
         }
+
+        String htmlMessage = chplHtmlEmailBuilder.initialize()
+                .heading(chplChangesEmailSubject)
+                .paragraph(null, formatDeveloperActionSummary(originalDevelopers, changedDevelopers))
+                .paragraph(null, developerList)
+                .paragraph(null, chplProductNumbersChangedHtml)
+                .footer(false)
+                .build();
 
         chplEmailFactory.emailBuilder().recipients(recipients)
-                .subject(env.getProperty("directReview.chplChanges.emailSubject"))
+                .subject(chplChangesEmailSubject)
                 .htmlMessage(htmlMessage)
                 .sendEmail();
     }
@@ -131,29 +135,35 @@ public class DirectReviewUpdateEmailService {
         logger.info("Sending email about unknown direct reviews.");
 
         String[] recipients = new String[] {};
-        String emailAddressProperty = env.getProperty("directReview.unknownChanges.email");
+        String emailAddressProperty = unknownChangesEmailAddress;
         if (!StringUtils.isEmpty(emailAddressProperty)) {
             recipients = emailAddressProperty.split(",");
         }
 
-        String htmlMessage = formatDeveloperActionHtml(originalDevelopers, changedDevelopers);
-        htmlMessage += "<p>Any direct reviews related to the original developers may need updated.</p>";
-
-        String chplProductNumberChangedHtml = formatChplProductNumbersChangedHtml(originalListings, changedListings);
-        if (StringUtils.isNotEmpty(chplProductNumberChangedHtml)) {
-            htmlMessage += "<p>Additionally, any direct reviews with the following "
+        String chplProductNumbersChangedHtml = "";
+        String chplProductNumbersChangedList = formatChplProductNumbersChangedHtml(originalListings, changedListings);
+        if (StringUtils.isNotEmpty(chplProductNumbersChangedList)) {
+            chplProductNumbersChangedHtml = "Additionally, any direct reviews with the following "
                     + "developer-associated listings may require updates due to changes "
                     + "in the CHPL Product Number: "
-            + "<ul>" + chplProductNumberChangedHtml + "</ul>";
+            + "<ul>" + chplProductNumbersChangedList + "</ul>";
         }
 
+        String htmlMessage = chplHtmlEmailBuilder.initialize()
+                .heading(unknownChangesEmailSubject)
+                .paragraph(null, formatDeveloperActionSummary(originalDevelopers, changedDevelopers))
+                .paragraph(null, "Any direct reviews related to the original developers may need updated.")
+                .paragraph(null, chplProductNumbersChangedHtml)
+                .footer(false)
+                .build();
+
         chplEmailFactory.emailBuilder().recipients(recipients)
-                .subject(env.getProperty("directReview.unknownChanges.emailSubject"))
+                .subject(unknownChangesEmailSubject)
                 .htmlMessage(htmlMessage)
                 .sendEmail();
     }
 
-    private String formatDeveloperActionHtml(List<Developer> originalDevelopers,
+    private String formatDeveloperActionSummary(List<Developer> originalDevelopers,
             List<Developer> changedDevelopers) {
         String html = "";
         if (!ObjectUtils.allNotNull(originalDevelopers, changedDevelopers)) {
@@ -165,8 +175,8 @@ public class DirectReviewUpdateEmailService {
                     newDeveloper = changedDeveloper;
                 }
             }
-            html = String.format("<p>The developer %s (ID: %s) was split. "
-                    + "The new developer is %s (ID: %s).</p>",
+            html = String.format("The developer %s (ID: %s) was split. "
+                    + "The new developer is %s (ID: %s).",
                     originalDevelopers.get(0).getName(),
                     originalDevelopers.get(0).getId(),
                     newDeveloper.getName(),
@@ -178,21 +188,21 @@ public class DirectReviewUpdateEmailService {
             List<String> originalDeveloperIds = originalDevelopers.stream()
                     .map(dev -> dev.getId().toString())
                     .collect(Collectors.toList());
-            html = String.format("<p>The developers %s (IDs: %s) were merged into a single new developer. "
-                    + "The newly created developer is %s (ID: %s).</p>",
+            html = String.format("The developers %s (IDs: %s) were merged into a single new developer. "
+                    + "The newly created developer is %s (ID: %s).",
                     String.join(",", originalDeveloperNames),
                     String.join(",", originalDeveloperIds),
                     changedDevelopers.get(0).getName(),
                     changedDevelopers.get(0).getId());
         } else if (originalDevelopers.size() == 1 && changedDevelopers.size() == 1) {
-            html = String.format("<p>A product changed ownership from developer %s (IDs: %s) "
-                    + "to developer %s (ID: %s).</p>",
+            html = String.format("A product changed ownership from developer %s (IDs: %s) "
+                    + "to developer %s (ID: %s).",
                     originalDevelopers.get(0).getName(),
                     originalDevelopers.get(0).getId(),
                     changedDevelopers.get(0).getName(),
                     changedDevelopers.get(0).getId());
         } else {
-            html += "<p>A change to developers occurred.</p>";
+            html += "A change to developers occurred.";
         }
         return html;
     }

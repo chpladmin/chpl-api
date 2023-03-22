@@ -232,7 +232,7 @@ public class MergeDeveloperJob implements Job {
                 .heading(title)
                 .paragraph(null, "The below developers could not be merged into a new developer: ")
                 .paragraph(null, developerList)
-                .paragraph(null, String.format("The error was: %s", exceptionMessage))
+                .paragraph(null, String.format("Reason for failure: %s", exceptionMessage))
                 .footer(false)
                 .build();
 

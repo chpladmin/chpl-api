@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -39,9 +40,11 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
@@ -81,6 +84,9 @@ public class SplitDeveloperJob implements Job {
 
     @Autowired
     private ChplEmailFactory chplEmailFactory;
+
+    @Autowired
+    private ChplHtmlEmailBuilder emailBuilder;
 
     @Value("${internalErrorEmailRecipients}")
     private String internalErrorEmailRecipients;
@@ -262,13 +268,13 @@ public class SplitDeveloperJob implements Job {
         String subject = getSubject(splitException == null);
         String htmlMessage = "";
         if (splitException == null) {
-            htmlMessage = createHtmlEmailBodySuccess(newDeveloper, productIds);
+            htmlMessage = createHtmlEmailBodySuccess(subject, newDeveloper, productIds);
         } else {
             String[] errorEmailRecipients = internalErrorEmailRecipients.split(",");
             for (int i = 0; i < errorEmailRecipients.length; i++) {
                 recipients.add(errorEmailRecipients[i].trim());
             }
-            htmlMessage = createHtmlEmailBodyFailure(newDeveloper, splitException);
+            htmlMessage = createHtmlEmailBodyFailure(subject, newDeveloper, splitException);
         }
 
         for (String emailAddress : recipients) {
@@ -288,7 +294,6 @@ public class SplitDeveloperJob implements Job {
         chplEmailFactory.emailBuilder().recipient(recipientEmail)
                 .subject(subject)
                 .htmlMessage(htmlMessage)
-                .acbAtlHtmlFooter()
                 .sendEmail();
     }
 
@@ -300,8 +305,7 @@ public class SplitDeveloperJob implements Job {
         }
     }
 
-    private String createHtmlEmailBodySuccess(Developer createdDeveloper,
-            List<Long> productIds) {
+    private String createHtmlEmailBodySuccess(String title, Developer createdDeveloper, List<Long> productIds) {
         List<Product> products = new ArrayList<Product>(productIds.size());
         for (Long productId : productIds) {
             try {
@@ -312,33 +316,55 @@ public class SplitDeveloperJob implements Job {
             }
         }
 
-        String htmlMessage = String.format("<p>The Developer <a href=\"%s/#/organizations/developers/%d\">%s</a> has been "
+        String summaryText = String.format("<p>The Developer <a href=\"%s/#/organizations/developers/%d\">%s</a> has been "
                 + "created. It was split from <a href=\"%s/#/organizations/developers/%d\">%s</a> and has had the following "
-                + "products assigned to it: "
-                + "<ul>",
+                + "products assigned to it: ",
                 env.getProperty("chplUrlBegin"), // root of URL
                 createdDeveloper.getId(),
                 createdDeveloper.getName(),
                 env.getProperty("chplUrlBegin"),
                 preSplitDeveloper.getId(),
                 preSplitDeveloper.getName());
+
+        String productList = "<ul>";
         for (Product product : products) {
-            htmlMessage += String.format("<li>%s</li>", product.getName());
+            productList += String.format("<li>%s</li>", product.getName());
         }
-        htmlMessage += "</ul>";
+        productList += "</ul>";
+
+        String htmlMessage = emailBuilder.initialize()
+                .heading(title)
+                .paragraph(null, summaryText)
+                .paragraph(null, productList)
+                .footer(false)
+                .build();
         return htmlMessage;
     }
 
-    private String createHtmlEmailBodyFailure(Developer newDeveloper,
-            Exception ex) {
-        String htmlMessage = String.format("<p>The Developer <a href=\"%s/#/organizations/developers/%d\">%s</a> could not "
-                + "be split into a new developer \"%s\".</p>"
-                + "<p>The error was: %s</p>",
+    private String createHtmlEmailBodyFailure(String title, Developer newDeveloper, Exception ex) {
+        String summaryText = String.format("The Developer <a href=\"%s/#/organizations/developers/%d\">%s</a> could not "
+                + "be split into a new developer \"%s\".",
                 env.getProperty("chplUrlBegin"), // root of URL
                 preSplitDeveloper.getId(),
                 preSplitDeveloper.getName(),
-                newDeveloper.getName(),
-                ex.getMessage());
+                newDeveloper.getName());
+
+        String exceptionMessage = "";
+        if (ex instanceof ValidationException) {
+            ValidationException validationEx = (ValidationException) ex;
+            exceptionMessage = validationEx.getErrorMessages().stream()
+                    .collect(Collectors.joining("<br />"));
+        } else {
+            exceptionMessage = ex.getMessage();
+        }
+
+        String htmlMessage = emailBuilder.initialize()
+                .heading(title)
+                .paragraph(null, summaryText)
+                .paragraph(null, String.format("Reason for failure: %s", exceptionMessage))
+                .footer(false)
+                .build();
+
         return htmlMessage;
     }
 }
