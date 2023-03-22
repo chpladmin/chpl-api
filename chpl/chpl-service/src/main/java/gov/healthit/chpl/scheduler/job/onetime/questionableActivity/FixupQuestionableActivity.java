@@ -27,7 +27,6 @@ import gov.healthit.chpl.questionableactivity.listing.AddedCertificationsActivit
 import gov.healthit.chpl.questionableactivity.listing.DeletedCertificationsActivity;
 import gov.healthit.chpl.questionableactivity.listing.NonActiveCertificateEdited;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationDateActivity;
-import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationStatusDate;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationStatusHistoryActivity;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
