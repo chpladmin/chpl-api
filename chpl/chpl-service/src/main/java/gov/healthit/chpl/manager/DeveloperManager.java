@@ -348,6 +348,54 @@ public class DeveloperManager extends SecuredManager {
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
+            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).JOIN)")
+    @Transactional(readOnly = false)
+    @CacheEvict(value = {
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
+            CacheNames.COLLECTIONS_DEVELOPERS,
+            CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.DEVELOPER_NAMES,
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
+    }, allEntries = true)
+    public ChplOneTimeTrigger join(Long owningDeveloperId, List<Long> joiningDeveloperIds)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            SchedulerException, ValidationException {
+        List<Developer> beforeDevelopers = new ArrayList<Developer>();
+        for (Long developerId : joiningDeveloperIds) {
+            beforeDevelopers.add(developerDao.getById(developerId));
+        }
+
+        // Check to see if the join will create any duplicate chplProductNumbers
+        Developer owningDeveloper = developerDao.getById(owningDeveloperId);
+        List<DuplicateChplProdNumber> duplicateChplProdNumbers = getDuplicateChplProductNumbersBasedOnDevMerge(
+                joiningDeveloperIds, owningDeveloper.getDeveloperCode());
+        if (duplicateChplProdNumbers.size() != 0) {
+            throw new ValidationException(getDuplicateChplProductNumberErrorMessages(duplicateChplProdNumbers), null);
+        }
+
+        UserDTO jobUser = null;
+        try {
+            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
+        } catch (UserRetrievalException ex) {
+            LOGGER.error("Could not find user to execute job.");
+        }
+
+        ChplOneTimeTrigger joinDevelopersTrigger = new ChplOneTimeTrigger();
+//        ChplJob joinDevelopersJob = new ChplJob();
+//        joinDevelopersJob.setName(MergeDeveloperJob.JOB_NAME);
+//        joinDevelopersJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
+//        JobDataMap jobDataMap = new JobDataMap();
+//        jobDataMap.put(MergeDeveloperJob.OLD_DEVELOPERS_KEY, beforeDevelopers);
+////        jobDataMap.put(MergeDeveloperJob.NEW_DEVELOPER_KEY, developerToCreate);
+//        jobDataMap.put(MergeDeveloperJob.USER_KEY, jobUser);
+//        joinDevelopersJob.setJobDataMap(jobDataMap);
+//        joinDevelopersTrigger.setJob(joinDevelopersJob);
+//        joinDevelopersTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
+//        joinDevelopersTrigger = schedulerManager.createBackgroundJobTrigger(joinDevelopersTrigger);
+        return joinDevelopersTrigger;
+    }
+
+    @Deprecated
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).MERGE, #developerIdsToMerge)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
@@ -373,7 +421,7 @@ public class DeveloperManager extends SecuredManager {
         List<DuplicateChplProdNumber> duplicateChplProdNumbers = getDuplicateChplProductNumbersBasedOnDevMerge(
                 developerIdsToMerge, developerToCreate.getDeveloperCode());
         if (duplicateChplProdNumbers.size() != 0) {
-            throw new ValidationException(getDuplicateChplProductNumberErrorMessages(duplicateChplProdNumbers), null);
+            throw new ValidationException(getDuplicateChplProductNumberErrorMessagesMerge(duplicateChplProdNumbers), null);
         }
 
         UserDTO jobUser = null;
@@ -438,6 +486,16 @@ public class DeveloperManager extends SecuredManager {
     }
 
     private Set<String> getDuplicateChplProductNumberErrorMessages(List<DuplicateChplProdNumber> duplicateChplProdNumbers) {
+        Set<String> messages = new HashSet<String>();
+        for (DuplicateChplProdNumber dup : duplicateChplProdNumbers) {
+            messages.add(msgUtil.getMessage("developer.join.duplicateChplProductNumbers", dup.getOrigChplProductNumberA(),
+                    dup.getOrigChplProductNumberB()));
+        }
+        return messages;
+    }
+
+    @Deprecated
+    private Set<String> getDuplicateChplProductNumberErrorMessagesMerge(List<DuplicateChplProdNumber> duplicateChplProdNumbers) {
         Set<String> messages = new HashSet<String>();
         for (DuplicateChplProdNumber dup : duplicateChplProdNumbers) {
             messages.add(msgUtil.getMessage("developer.merge.dupChplProdNbrs", dup.getOrigChplProductNumberA(),

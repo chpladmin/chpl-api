@@ -31,6 +31,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.CacheManager;
 
+@Deprecated
 @DisallowConcurrentExecution
 @Log4j2(topic = "mergeDeveloperJobLogger")
 public class MergeDeveloperJob implements Job {

@@ -3,6 +3,7 @@ package gov.healthit.chpl.web.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +24,7 @@ import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.compliance.directreview.DirectReviewCachingService;
+import gov.healthit.chpl.developer.join.JoinDevelopersRequest;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.MergeDevelopersRequest;
 import gov.healthit.chpl.domain.PermissionDeletedResponse;
@@ -45,6 +47,7 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.DeveloperAttestationSubmissionResults;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
@@ -162,12 +165,40 @@ public class DeveloperController {
         return new ResponseEntity<Developer>(result, responseHeaders, HttpStatus.OK);
     }
 
+    @Operation(summary = "Updates one or more developers to join another developer organization.",
+            description = "Updates all products owned by the developers in the request body to become "
+                    + "owned by the developer on the request URL. The product ownership history "
+                    + "for all relevant products is updated and any listings under those products "
+                    + "with newer-style CHPL Product Numbers will have their CHPL Product Numbers "
+                    + "updated using the Developer Code of the developer being joined. This endpoint will "
+                    + "cause an email to be sent to the user making the request when the work is complete."
+                    + "Security Restrictions: ROLE_ADMIN or ROLE_ONC.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/{developerId}/join", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
+    public ChplOneTimeTrigger join(@PathVariable("developerId") Long developerId,
+            @RequestBody(required = true) JoinDevelopersRequest joinRequest)
+            throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException, JsonProcessingException,
+            ValidationException, SchedulerException {
+        if (CollectionUtils.isEmpty(joinRequest.getDeveloperIds())) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("developer.join.missingDeveloperIds"));
+        }
+        return developerManager.join(developerId, joinRequest.getDeveloperIds());
+    }
+
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/developers/merge", httpMethod = "POST", removalDate = "2023-10-01",
+            message = "Developer merge is deprecated and will be removed. "
+                    + "Going forward, PUT to /developers/{developerId}/join .")
     @Operation(summary = "Merge developers.",
             description = "If multiple developer IDs are passed in, the service performs a merge "
                     + "meaning that a new developer is created with all of the information provided (name, address, "
                     + "etc.) and all of the products previously assigned to the specified developerId's are "
                     + "reassigned to the newly created developer. The old developers are then deleted.\n"
-                    + "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB if all developers involved are active.",
+                    + "Security Restrictions: ROLE_ADMIN or ROLE_ONC.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

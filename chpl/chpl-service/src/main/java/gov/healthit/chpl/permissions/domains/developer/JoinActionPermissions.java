@@ -4,9 +4,8 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
-@Deprecated
-@Component("developerMergeActionPermissions")
-public class MergeActionPermissions extends ActionPermissions {
+@Component("developerJoinActionPermissions")
+public class JoinActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {
