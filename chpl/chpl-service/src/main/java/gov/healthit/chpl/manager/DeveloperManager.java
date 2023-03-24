@@ -61,7 +61,7 @@ import gov.healthit.chpl.manager.rules.developer.DeveloperValidationContext;
 import gov.healthit.chpl.manager.rules.developer.DeveloperValidationFactory;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
-import gov.healthit.chpl.scheduler.job.developer.MergeDeveloperJob;
+import gov.healthit.chpl.scheduler.job.developer.JoinDeveloperJob;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.AuthUtil;
@@ -380,71 +380,18 @@ public class DeveloperManager extends SecuredManager {
         }
 
         ChplOneTimeTrigger joinDevelopersTrigger = new ChplOneTimeTrigger();
-//        ChplJob joinDevelopersJob = new ChplJob();
-//        joinDevelopersJob.setName(MergeDeveloperJob.JOB_NAME);
-//        joinDevelopersJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
-//        JobDataMap jobDataMap = new JobDataMap();
-//        jobDataMap.put(MergeDeveloperJob.OLD_DEVELOPERS_KEY, beforeDevelopers);
-////        jobDataMap.put(MergeDeveloperJob.NEW_DEVELOPER_KEY, developerToCreate);
-//        jobDataMap.put(MergeDeveloperJob.USER_KEY, jobUser);
-//        joinDevelopersJob.setJobDataMap(jobDataMap);
-//        joinDevelopersTrigger.setJob(joinDevelopersJob);
-//        joinDevelopersTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
-//        joinDevelopersTrigger = schedulerManager.createBackgroundJobTrigger(joinDevelopersTrigger);
-        return joinDevelopersTrigger;
-    }
-
-    @Deprecated
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
-            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).MERGE, #developerIdsToMerge)")
-    @Transactional(readOnly = false)
-    @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
-            CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
-    }, allEntries = true)
-    public ChplOneTimeTrigger merge(List<Long> developerIdsToMerge, Developer developerToCreate)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-            SchedulerException, ValidationException {
-        List<Developer> beforeDevelopers = new ArrayList<Developer>();
-        for (Long developerId : developerIdsToMerge) {
-            beforeDevelopers.add(developerDao.getById(developerId));
-        }
-
-        normalizeSpaces(developerToCreate);
-        Set<String> errors = runCreateValidations(developerToCreate, beforeDevelopers);
-        if (errors != null && errors.size() > 0) {
-            throw new ValidationException(errors);
-        }
-
-        // Check to see if the merge will create any duplicate chplProductNumbers
-        List<DuplicateChplProdNumber> duplicateChplProdNumbers = getDuplicateChplProductNumbersBasedOnDevMerge(
-                developerIdsToMerge, developerToCreate.getDeveloperCode());
-        if (duplicateChplProdNumbers.size() != 0) {
-            throw new ValidationException(getDuplicateChplProductNumberErrorMessagesMerge(duplicateChplProdNumbers), null);
-        }
-
-        UserDTO jobUser = null;
-        try {
-            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
-        } catch (UserRetrievalException ex) {
-            LOGGER.error("Could not find user to execute job.");
-        }
-
-        ChplOneTimeTrigger mergeDeveloperTrigger = new ChplOneTimeTrigger();
-        ChplJob mergeDeveloperJob = new ChplJob();
-        mergeDeveloperJob.setName(MergeDeveloperJob.JOB_NAME);
-        mergeDeveloperJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
+        ChplJob joinDevelopersJob = new ChplJob();
+        joinDevelopersJob.setName(JoinDeveloperJob.JOB_NAME);
+        joinDevelopersJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put(MergeDeveloperJob.OLD_DEVELOPERS_KEY, beforeDevelopers);
-        jobDataMap.put(MergeDeveloperJob.NEW_DEVELOPER_KEY, developerToCreate);
-        jobDataMap.put(MergeDeveloperJob.USER_KEY, jobUser);
-        mergeDeveloperJob.setJobDataMap(jobDataMap);
-        mergeDeveloperTrigger.setJob(mergeDeveloperJob);
-        mergeDeveloperTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
-        mergeDeveloperTrigger = schedulerManager.createBackgroundJobTrigger(mergeDeveloperTrigger);
-        return mergeDeveloperTrigger;
-
+        jobDataMap.put(JoinDeveloperJob.JOINING_DEVELOPERS, beforeDevelopers);
+        jobDataMap.put(JoinDeveloperJob.DEVELOPER_TO_JOIN, owningDeveloper);
+        jobDataMap.put(JoinDeveloperJob.USER_KEY, jobUser);
+        joinDevelopersJob.setJobDataMap(jobDataMap);
+        joinDevelopersTrigger.setJob(joinDevelopersJob);
+        joinDevelopersTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
+        joinDevelopersTrigger = schedulerManager.createBackgroundJobTrigger(joinDevelopersTrigger);
+        return joinDevelopersTrigger;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "

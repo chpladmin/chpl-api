@@ -65,6 +65,9 @@ public class ListingStoreRemoveAspect {
             case DEVELOPER_ID:
                 removeListingsFromStoreByDeveloperId(id);
                 break;
+//            case DEVELOPERS:
+//                removeListingsFromStoreByDevelopers();
+//                break;
             case LISTING_ID:
                 removeListingFromStoreByListingId(id);
                 break;

@@ -1,11 +1,9 @@
 package gov.healthit.chpl.scheduler.job.developer;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -31,22 +29,20 @@ import gov.healthit.chpl.exception.ValidationException;
 import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.CacheManager;
 
-@Deprecated
 @DisallowConcurrentExecution
-@Log4j2(topic = "mergeDeveloperJobLogger")
-public class MergeDeveloperJob implements Job {
-    public static final String JOB_NAME = "mergeDeveloperJob";
-    public static final String OLD_DEVELOPERS_KEY = "oldDevelopers";
-    public static final String NEW_DEVELOPER_KEY = "newDeveloper";
-    public static final String PRODUCT_IDS_TO_MOVE_KEY = "productIdsToMove";
+@Log4j2(topic = "joinDeveloperJobLogger")
+public class JoinDeveloperJob implements Job {
+    public static final String JOB_NAME = "joinDeveloperJob";
+    public static final String DEVELOPER_TO_JOIN = "toJoinDeveloper";
+    public static final String JOINING_DEVELOPERS = "joiningDevelopers";
     public static final String USER_KEY = "user";
 
     @Autowired
     private Environment env;
 
     @Autowired
-    @Qualifier("transactionalDeveloperMergeManager")
-    private TransactionalDeveloperMergeManager mergeManager;
+    @Qualifier("transactionalJoinDeveloperManager")
+    private TransactionalJoinDeveloperManager joinManager;
 
     @Autowired
     private DeveloperDAO devDao;
@@ -60,14 +56,13 @@ public class MergeDeveloperJob implements Job {
     @Autowired
     private ChplHtmlEmailBuilder emailBuilder;
 
-    private List<Developer> preMergeDevelopers;
-    private Developer postMergeDeveloper;
+    private List<Developer> preJoinDevelopers;
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
-        LOGGER.info("********* Starting the Merge Developer job. *********");
+        LOGGER.info("********* Starting the Join Developer job. *********");
 
         JobDataMap jobDataMap = jobContext.getMergedJobDataMap();
         UserDTO user = (UserDTO) jobDataMap.get(USER_KEY);
@@ -75,44 +70,44 @@ public class MergeDeveloperJob implements Job {
             LOGGER.fatal("No user could be found in the job data.");
         } else {
             setSecurityContext(user);
+//
+//            preJoinDevelopers = (List<Developer>) jobDataMap.get(JOINING_DEVELOPERS);
+//            Developer developerToJoin = (Developer) jobDataMap.get(DEVELOPER_TO_JOIN);
+//            Exception joinException = null;
+//            try {
+//                confirmDevelopersExistBeforeJoin();
+//                //join within transaction so changes will be rolled back
+//                postMergeDeveloper = mergeManager.merge(preJoinDevelopers, developerToJoin);
+//            } catch  (Exception e) {
+//                LOGGER.error("Error joining developers '"
+//                        + StringUtils.join(preJoinDevelopers.stream()
+//                            .map(Developer::getName)
+//                            .collect(Collectors.toList()), ",")
+//                        + "' to developer '"
+//                        + developerToJoin.getName() + "'.", e);
+//                joinException = e;
+//            }
 
-            preMergeDevelopers = (List<Developer>) jobDataMap.get(OLD_DEVELOPERS_KEY);
-            Developer newDeveloper = (Developer) jobDataMap.get(NEW_DEVELOPER_KEY);
-            Exception mergeException = null;
-            try {
-                confirmDevelopersExistBeforeMerge();
-                //merge within transaction so changes will be rolled back
-                postMergeDeveloper = mergeManager.merge(preMergeDevelopers, newDeveloper);
-            } catch  (Exception e) {
-                LOGGER.error("Error completing merge of developers '"
-                        + StringUtils.join(preMergeDevelopers.stream()
-                            .map(Developer::getName)
-                            .collect(Collectors.toList()), ",")
-                        + "' to new developer '"
-                        + newDeveloper.getName() + "'.", e);
-                mergeException = e;
-            }
-
-            if (postMergeDeveloper != null) {
-                clearCachesRelatedToDevelopers();
-            }
-
-            //send email about success/failure of job
-            if (!StringUtils.isEmpty(user.getEmail())) {
-                List<String> recipients = new ArrayList<String>();
-                recipients.add(user.getEmail());
-                try {
-                    sendJobCompletionEmails(postMergeDeveloper != null ? postMergeDeveloper : newDeveloper,
-                            preMergeDevelopers, mergeException, recipients);
-                } catch (IOException e) {
-                    LOGGER.error(e);
-                }
-            } else {
-                LOGGER.warn("The user " + user.getUsername()
-                    + " does not have a configured email address so no email will be sent.");
-            }
+//            if (postMergeDeveloper != null) {
+//                clearCachesRelatedToDevelopers();
+//            }
+//
+//            //send email about success/failure of job
+//            if (!StringUtils.isEmpty(user.getEmail())) {
+//                List<String> recipients = new ArrayList<String>();
+//                recipients.add(user.getEmail());
+//                try {
+//                    sendJobCompletionEmails(postMergeDeveloper != null ? postMergeDeveloper : newDeveloper,
+//                            preMergeDevelopers, joinException, recipients);
+//                } catch (IOException e) {
+//                    LOGGER.error(e);
+//                }
+//            } else {
+//                LOGGER.warn("The user " + user.getUsername()
+//                    + " does not have a configured email address so no email will be sent.");
+//            }
         }
-        LOGGER.info("********* Completed the Merge Developer job. *********");
+        LOGGER.info("********* Completed the Join Developer job. *********");
     }
 
     private void setSecurityContext(UserDTO user) {
@@ -127,9 +122,9 @@ public class MergeDeveloperJob implements Job {
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
-    private void confirmDevelopersExistBeforeMerge() throws EntityRetrievalException {
-        List<Long> preMergeDeveloperIds = preMergeDevelopers.stream().map(dev -> dev.getId()).collect(Collectors.toList());
-        for (Long developerId : preMergeDeveloperIds) {
+    private void confirmDevelopersExistBeforeJoin() throws EntityRetrievalException {
+        List<Long> preJoinDeveloperIds = preJoinDevelopers.stream().map(dev -> dev.getId()).collect(Collectors.toList());
+        for (Long developerId : preJoinDeveloperIds) {
             devDao.getById(developerId);
         }
     }

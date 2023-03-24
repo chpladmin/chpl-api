@@ -194,10 +194,7 @@ public class DeveloperController {
             message = "Developer merge is deprecated and will be removed. "
                     + "Going forward, PUT to /developers/{developerId}/join .")
     @Operation(summary = "Merge developers.",
-            description = "If multiple developer IDs are passed in, the service performs a merge "
-                    + "meaning that a new developer is created with all of the information provided (name, address, "
-                    + "etc.) and all of the products previously assigned to the specified developerId's are "
-                    + "reassigned to the newly created developer. The old developers are then deleted.\n"
+            description = "Please use /developers/{developerId}/join ."
                     + "Security Restrictions: ROLE_ADMIN or ROLE_ONC.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -208,11 +205,7 @@ public class DeveloperController {
     public ChplOneTimeTrigger merge(@RequestBody(required = true) MergeDevelopersRequest mergeRequest)
             throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException, JsonProcessingException,
             ValidationException, SchedulerException {
-        if (mergeRequest.getDeveloperIds().size() <= 1) {
-            throw new InvalidArgumentsException(
-                    "More than 1 developer ID must be present in the request body to perform a merge.");
-        }
-        return developerManager.merge(mergeRequest.getDeveloperIds(), mergeRequest.getDeveloper());
+        return null;
     }
 
     @Operation(

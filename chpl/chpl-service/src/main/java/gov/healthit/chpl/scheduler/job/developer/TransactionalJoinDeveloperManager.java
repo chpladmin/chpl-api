@@ -37,10 +37,10 @@ import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
-@Component("transactionalDeveloperMergeManager")
+@Component("transactionalJoinDeveloperManager")
 @NoArgsConstructor
-@Log4j2(topic = "mergeDeveloperJobLogger")
-public class TransactionalDeveloperMergeManager {
+@Log4j2(topic = "joinDeveloperJobLogger")
+public class TransactionalJoinDeveloperManager {
 
     @Autowired
     private DeveloperManager devManager;
@@ -64,7 +64,7 @@ public class TransactionalDeveloperMergeManager {
     private DirectReviewUpdateEmailService directReviewEmailService;
 
     @Transactional(rollbackFor = Exception.class)
-    @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#developerToCreate.id")
+    @ListingStoreRemove(removeBy = RemoveBy.DEVELOPERS, id = "#beforeDevelopers")
     public Developer merge(List<Developer> beforeDevelopers, Developer developerToCreate)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, ValidationException, Exception {
         List<Long> developerIdsToMerge = beforeDevelopers.stream()
