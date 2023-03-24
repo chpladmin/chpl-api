@@ -68,7 +68,6 @@ import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.util.ValidationUtils;
 import lombok.extern.log4j.Log4j2;
 
 @Lazy
@@ -88,7 +87,6 @@ public class DeveloperManager extends SecuredManager {
     private ErrorMessageUtil msgUtil;
     private ResourcePermissions resourcePermissions;
     private DeveloperValidationFactory developerValidationFactory;
-    private ValidationUtils validationUtils;
     private SchedulerManager schedulerManager;
 
     @Autowired
@@ -97,7 +95,7 @@ public class DeveloperManager extends SecuredManager {
             UserManager userManager, CertificationBodyManager acbManager,
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
-            DeveloperValidationFactory developerValidationFactory, ValidationUtils validationUtils,
+            DeveloperValidationFactory developerValidationFactory,
             SchedulerManager schedulerManager) {
         this.developerDao = developerDao;
         this.productManager = productManager;
@@ -110,7 +108,6 @@ public class DeveloperManager extends SecuredManager {
         this.msgUtil = msgUtil;
         this.resourcePermissions = resourcePermissions;
         this.developerValidationFactory = developerValidationFactory;
-        this.validationUtils = validationUtils;
         this.schedulerManager = schedulerManager;
     }
 
@@ -366,7 +363,7 @@ public class DeveloperManager extends SecuredManager {
 
         // Check to see if the join will create any duplicate chplProductNumbers
         Developer owningDeveloper = developerDao.getById(owningDeveloperId);
-        List<DuplicateChplProdNumber> duplicateChplProdNumbers = getDuplicateChplProductNumbersBasedOnDevMerge(
+        List<DuplicateChplProdNumber> duplicateChplProdNumbers = getDuplicateChplProductNumbersBasedOnDevJoin(
                 joiningDeveloperIds, owningDeveloper.getDeveloperCode());
         if (duplicateChplProdNumbers.size() != 0) {
             throw new ValidationException(getDuplicateChplProductNumberErrorMessages(duplicateChplProdNumbers), null);
@@ -441,17 +438,7 @@ public class DeveloperManager extends SecuredManager {
         return messages;
     }
 
-    @Deprecated
-    private Set<String> getDuplicateChplProductNumberErrorMessagesMerge(List<DuplicateChplProdNumber> duplicateChplProdNumbers) {
-        Set<String> messages = new HashSet<String>();
-        for (DuplicateChplProdNumber dup : duplicateChplProdNumbers) {
-            messages.add(msgUtil.getMessage("developer.merge.dupChplProdNbrs", dup.getOrigChplProductNumberA(),
-                    dup.getOrigChplProductNumberB()));
-        }
-        return messages;
-    }
-
-    private List<DuplicateChplProdNumber> getDuplicateChplProductNumbersBasedOnDevMerge(List<Long> developerIds,
+    private List<DuplicateChplProdNumber> getDuplicateChplProductNumbersBasedOnDevJoin(List<Long> developerIds,
             String newDeveloperCode) {
 
         // key = new chpl prod nbr, value = orig chpl prod nbr
@@ -538,10 +525,6 @@ public class DeveloperManager extends SecuredManager {
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.ADDRESS));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.ACTIVE_STATUS));
         return runValidations(rules, developer, beforeDevelopers);
-    }
-
-    private Set<String> runValidations(List<ValidationRule<DeveloperValidationContext>> rules, Developer developer) {
-        return runChangeValidations(rules, developer, null);
     }
 
     private Set<String> runChangeValidations(List<ValidationRule<DeveloperValidationContext>> rules,
