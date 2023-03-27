@@ -22,7 +22,7 @@ public class AttestationFormMetaData {
 
     public static Long getAssurancesConditionId(Long attestationPeriodId) {
         // OCD-4134 will address this in a better manner
-        if (attestationPeriodId <= 2) {
+        if (attestationPeriodId <= 3L) {
             return ASSURANCES_CONDITION_ORIG;
         } else {
             return ASSURANCES_CONDITION;
@@ -55,7 +55,7 @@ public class AttestationFormMetaData {
 
     public static Long getAssurancesCompliantIsApplicableResponseId(Long attestationPeriodId) {
         // OCD-4134 will address this in a better manner
-        if (attestationPeriodId <= 2) {
+        if (attestationPeriodId <= 3L) {
             return ASSURANCES_COMPLIANT_IS_APPLICABLE_RESPONSE_ID_ORIG;
         } else {
             return ASSURANCES_COMPLIANT_IS_APPLICABLE_RESPONSE_ID;
@@ -64,7 +64,7 @@ public class AttestationFormMetaData {
 
     public static Long getAssurancesCompliantIsNotApplicableResponseId(Long attestationPeriodId) {
         // OCD-4134 will address this in a better manner
-        if (attestationPeriodId <= 2) {
+        if (attestationPeriodId <= 3L) {
             return ASSURANCES_COMPLIANT_IS_NOT_APPLICABLE_RESPONSE_ID_ORIG;
         } else {
             return ASSURANCES_COMPLIANT_IS_NOT_APPLICABLE_RESPONSE_ID;
