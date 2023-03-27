@@ -9,6 +9,7 @@ public class AttestationFormMetaData {
     private static final Long RWT_CONDITION = 5L;
 
     private static final Long NOT_APPLICABLE_RESPONSE_ID = 3L;
+    private static final Long NON_COMPLIANT_RESPONSE_ID = 2L;
     private static final Long COMPLIANT_RESPONSE_ID = 1L;
 
     public static Long getInformationBlockingConditionId() {
@@ -42,5 +43,9 @@ public class AttestationFormMetaData {
 
     public static Long getCompliantResponseId() {
         return COMPLIANT_RESPONSE_ID;
+    }
+
+    public static Long getNonCompliantResponseId() {
+        return NON_COMPLIANT_RESPONSE_ID;
     }
 }
