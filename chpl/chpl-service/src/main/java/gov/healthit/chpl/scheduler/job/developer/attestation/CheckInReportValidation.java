@@ -130,7 +130,10 @@ public class CheckInReportValidation {
                         AttestationFormMetaData.getNotAppicableResponseId())
                         || doesFormResponseEqualResponse(attestationForm,
                                 AttestationFormMetaData.getAssurancesConditionId(attestationPeriodId),
-                                AttestationFormMetaData.getCompliantResponseId()));
+                                AttestationFormMetaData.getAssurancesCompliantIsApplicableResponseId(attestationPeriodId))
+                        || doesFormResponseEqualResponse(attestationForm,
+                                AttestationFormMetaData.getAssurancesConditionId(attestationPeriodId),
+                                AttestationFormMetaData.getAssurancesCompliantIsNotApplicableResponseId(attestationPeriodId)));
     }
 
     public String getRealWordTestingWarningMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
