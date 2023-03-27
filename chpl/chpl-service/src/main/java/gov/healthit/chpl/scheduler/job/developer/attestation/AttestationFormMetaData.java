@@ -11,6 +11,10 @@ public class AttestationFormMetaData {
     private static final Long NOT_APPLICABLE_RESPONSE_ID = 3L;
     private static final Long NON_COMPLIANT_RESPONSE_ID = 2L;
     private static final Long COMPLIANT_RESPONSE_ID = 1L;
+    private static final Long ASSURANCES_COMPLIANT_IS_APPLICABLE_RESPONSE_ID_ORIG = 4L;
+    private static final Long ASSURANCES_COMPLIANT_IS_NOT_APPLICABLE_RESPONSE_ID_ORIG = 5L;
+    private static final Long ASSURANCES_COMPLIANT_IS_APPLICABLE_RESPONSE_ID = 4L;
+    private static final Long ASSURANCES_COMPLIANT_IS_NOT_APPLICABLE_RESPONSE_ID = 5L;
 
     public static Long getInformationBlockingConditionId() {
         return INFO_BLOCKING_CONDITION;
@@ -18,7 +22,7 @@ public class AttestationFormMetaData {
 
     public static Long getAssurancesConditionId(Long attestationPeriodId) {
         // OCD-4134 will address this in a better manner
-        if (attestationPeriodId <= 3) {
+        if (attestationPeriodId <= 2) {
             return ASSURANCES_CONDITION_ORIG;
         } else {
             return ASSURANCES_CONDITION;
@@ -47,5 +51,23 @@ public class AttestationFormMetaData {
 
     public static Long getNonCompliantResponseId() {
         return NON_COMPLIANT_RESPONSE_ID;
+    }
+
+    public static Long getAssurancesCompliantIsApplicableResponseId(Long attestationPeriodId) {
+        // OCD-4134 will address this in a better manner
+        if (attestationPeriodId <= 2) {
+            return ASSURANCES_COMPLIANT_IS_APPLICABLE_RESPONSE_ID_ORIG;
+        } else {
+            return ASSURANCES_COMPLIANT_IS_APPLICABLE_RESPONSE_ID;
+        }
+    }
+
+    public static Long getAssurancesCompliantIsNotApplicableResponseId(Long attestationPeriodId) {
+        // OCD-4134 will address this in a better manner
+        if (attestationPeriodId <= 2) {
+            return ASSURANCES_COMPLIANT_IS_NOT_APPLICABLE_RESPONSE_ID_ORIG;
+        } else {
+            return ASSURANCES_COMPLIANT_IS_NOT_APPLICABLE_RESPONSE_ID;
+        }
     }
 }
