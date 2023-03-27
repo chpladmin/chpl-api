@@ -99,7 +99,6 @@ public class CheckInReportDataCollector {
     private List<CheckInReport> getCheckInReportsSerial(List<Long> acbIds) {
         AttestationPeriod mostRecentAttestationPeriod = attestationManager.getMostRecentPastAttestationPeriod();
         return getDevelopersActiveListingsDuringMostRecentPastAttestationPeriod().stream()
-                .filter(developer -> developer.getId().equals(2069L))
                 .filter(developer -> isDeveloperManagedBySelectedAcbs(developer, acbIds))
                 .map(developer -> getCheckInReport(developer))
                 .map(report -> {
