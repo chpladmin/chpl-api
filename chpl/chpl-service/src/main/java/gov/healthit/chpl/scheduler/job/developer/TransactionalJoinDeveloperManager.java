@@ -140,7 +140,7 @@ public class TransactionalJoinDeveloperManager {
             .forEach(developerJoined -> {
                 LOGGER.info("Logging activity that developer " + developerJoined.getName() + " joined " + developerToJoin.getName());
                 try {
-                    activityManager.addActivity(ActivityConcept.DEVELOPER, developerToJoin.getId(),
+                    activityManager.addActivity(ActivityConcept.DEVELOPER, developerJoined.getId(),
                         "Developer " + developerJoined.getName() + " joined " + developerToJoin.getName(),
                         developerJoined, developerToJoin);
                 } catch (JsonProcessingException | EntityRetrievalException | EntityCreationException ex) {
