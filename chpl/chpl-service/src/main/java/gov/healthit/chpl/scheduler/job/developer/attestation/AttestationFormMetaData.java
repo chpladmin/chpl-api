@@ -12,9 +12,9 @@ public class AttestationFormMetaData {
     private static final Long NON_COMPLIANT_RESPONSE_ID = 2L;
     private static final Long COMPLIANT_RESPONSE_ID = 1L;
     private static final Long ASSURANCES_COMPLIANT_IS_APPLICABLE_RESPONSE_ID_ORIG = 4L;
+    private static final Long ASSURANCES_COMPLIANT_IS_APPLICABLE_RESPONSE_ID = 9L;
     private static final Long ASSURANCES_COMPLIANT_IS_NOT_APPLICABLE_RESPONSE_ID_ORIG = 5L;
-    private static final Long ASSURANCES_COMPLIANT_IS_APPLICABLE_RESPONSE_ID = 4L;
-    private static final Long ASSURANCES_COMPLIANT_IS_NOT_APPLICABLE_RESPONSE_ID = 5L;
+    private static final Long ASSURANCES_COMPLIANT_IS_NOT_APPLICABLE_RESPONSE_ID = 10L;
 
     public static Long getInformationBlockingConditionId() {
         return INFO_BLOCKING_CONDITION;

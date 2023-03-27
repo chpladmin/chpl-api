@@ -99,6 +99,7 @@ public class CheckInReportDataCollector {
     private List<CheckInReport> getCheckInReportsSerial(List<Long> acbIds) {
         AttestationPeriod mostRecentAttestationPeriod = attestationManager.getMostRecentPastAttestationPeriod();
         return getDevelopersActiveListingsDuringMostRecentPastAttestationPeriod().stream()
+                .filter(developer -> developer.getId().equals(2069L))
                 .filter(developer -> isDeveloperManagedBySelectedAcbs(developer, acbIds))
                 .map(developer -> getCheckInReport(developer))
                 .map(report -> {
@@ -123,14 +124,16 @@ public class CheckInReportDataCollector {
             form = ((ChangeRequestAttestationSubmission) checkInAttestation.getChangeRequest().getDetails()).getForm();
             checkInReport = addChangeRequestInformation(checkInReport, checkInAttestation.getChangeRequest());
             checkInReport = addRespsonses(checkInReport, form, ((ChangeRequestAttestationSubmission) checkInAttestation.getChangeRequest().getDetails()).getAttestationPeriod().getId());
+            checkInReport = addValidation(checkInReport, form, ((ChangeRequestAttestationSubmission) checkInAttestation.getChangeRequest().getDetails()).getAttestationPeriod(), allActiveListingsForDeveloper);
         }
         if (checkInAttestation.getAttestationSubmission() != null) {
             form = checkInAttestation.getAttestationSubmission().getForm();
             checkInReport = addPublishedAttestationInformation(checkInReport, developer, checkInAttestation.getAttestationSubmission());
             checkInReport = addRespsonses(checkInReport, form, checkInAttestation.getAttestationSubmission().getAttestationPeriod().getId());
+            checkInReport = addValidation(checkInReport, form, checkInAttestation.getAttestationSubmission().getAttestationPeriod(), allActiveListingsForDeveloper);
         }
         checkInReport = addComplianceInformation(checkInReport, developer, allActiveListingsForDeveloper);
-        checkInReport = addValidation(checkInReport, form, allActiveListingsForDeveloper);
+
         return checkInReport;
     }
 
@@ -191,8 +194,8 @@ public class CheckInReportDataCollector {
         return checkInReport;
     }
 
-    private CheckInReport addValidation(CheckInReport checkInReport, Form form, List<ListingSearchResult> allActiveListingsForDeveloper) {
-        checkInReport.setAssurancesValidation(checkInReportValidation.getAssurancesValidationMessage(allActiveListingsForDeveloper, form, attestationManager.getMostRecentPastAttestationPeriod()));
+    private CheckInReport addValidation(CheckInReport checkInReport, Form form, AttestationPeriod period, List<ListingSearchResult> allActiveListingsForDeveloper) {
+        checkInReport.setAssurancesValidation(checkInReportValidation.getAssurancesValidationMessage(allActiveListingsForDeveloper, form, period));
         checkInReport.setRealWorldTestingValidation(checkInReportValidation.getRealWorldTestingValidationMessage(allActiveListingsForDeveloper, form));
         checkInReport.setApiValidation(checkInReportValidation.getApiValidationMessage(allActiveListingsForDeveloper, form));
         return checkInReport;
