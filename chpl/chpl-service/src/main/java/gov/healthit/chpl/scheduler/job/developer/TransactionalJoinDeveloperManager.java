@@ -30,7 +30,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
-import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
@@ -41,9 +40,6 @@ import lombok.extern.log4j.Log4j2;
 @NoArgsConstructor
 @Log4j2(topic = "joinDeveloperJobLogger")
 public class TransactionalJoinDeveloperManager {
-
-    @Autowired
-    private DeveloperManager devManager;
 
     @Autowired
     private ProductManager productManager;
@@ -64,30 +60,27 @@ public class TransactionalJoinDeveloperManager {
     private DirectReviewUpdateEmailService directReviewEmailService;
 
     @Transactional(rollbackFor = Exception.class)
-    @ListingStoreRemove(removeBy = RemoveBy.DEVELOPERS, id = "#beforeDevelopers")
-    public Developer merge(List<Developer> beforeDevelopers, Developer developerToCreate)
+    @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#developerToJoin.id")
+    public void join(List<Developer> developersJoining, Developer developerToJoin)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, ValidationException, Exception {
-        List<Long> developerIdsToMerge = beforeDevelopers.stream()
+        List<Long> developerIdsJoining = developersJoining.stream()
                 .map(Developer::getId)
                 .collect(Collectors.toList());
-        LOGGER.info("Creating new developer " + developerToCreate.getName());
-        Long createdDeveloperId = devManager.create(developerToCreate);
 
-        Map<Long, CertifiedProductSearchDetails> preMergeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
-        Map<Long, CertifiedProductSearchDetails> postMergeListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
+        Map<Long, CertifiedProductSearchDetails> preJoinListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
+        Map<Long, CertifiedProductSearchDetails> postJoinListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
         // search for any products assigned to the list of developers passed in
-        List<Product> developerProducts = productManager.getByDevelopers(developerIdsToMerge);
+        List<Product> developerProducts = productManager.getByDevelopers(developerIdsJoining);
         for (Product product : developerProducts) {
             List<CertifiedProductDetailsDTO> affectedListings = cpManager.getByProduct(product.getId());
             LOGGER.info("Found " + affectedListings.size() + " affected listings under product " + product.getName());
             // need to get details for affected listings now before the product is re-assigned
             // so that any listings with a generated new-style CHPL ID have the old developer code
-            List<Future<CertifiedProductSearchDetails>> beforeListingFutures
-                = getCertifiedProductSearchDetailsFutures(affectedListings, true);
+            List<Future<CertifiedProductSearchDetails>> beforeListingFutures = getCertifiedProductSearchDetailsFutures(affectedListings, true);
             for (Future<CertifiedProductSearchDetails> future : beforeListingFutures) {
                 CertifiedProductSearchDetails details = future.get();
                 LOGGER.info("Complete retrieving details for id: " + details.getId());
-                preMergeListingDetails.put(details.getId(), details);
+                preJoinListingDetails.put(details.getId(), details);
             }
 
             // add an item to the ownership history of each product
@@ -98,48 +91,64 @@ public class TransactionalJoinDeveloperManager {
             historyToAdd.setTransferDay(LocalDate.now());
             product.getOwnerHistory().add(historyToAdd);
             // reassign those products to the new developer
-            product.setOwner(Developer.builder()
-                    .id(createdDeveloperId)
-                    .build());
-            productManager.updateProductForOwnerMerge(product);
+            product.setOwner(developerToJoin);
+            productManager.updateProductForOwnerJoin(product);
 
             // get the listing details again - this time they will have the new developer code
-            List<Future<CertifiedProductSearchDetails>> afterListingFutures
-                = getCertifiedProductSearchDetailsFutures(affectedListings, false);
+            List<Future<CertifiedProductSearchDetails>> afterListingFutures = getCertifiedProductSearchDetailsFutures(affectedListings, false);
             for (Future<CertifiedProductSearchDetails> future : afterListingFutures) {
                 CertifiedProductSearchDetails details = future.get();
                 LOGGER.info("Complete retrieving details for id: " + details.getId());
-                postMergeListingDetails.put(details.getId(), details);
+                postJoinListingDetails.put(details.getId(), details);
             }
         }
 
-        // - mark the passed in developers as deleted
-        for (Long developerId : developerIdsToMerge) {
+        // mark the passed in developers as deleted
+        for (Long developerId : developerIdsJoining) {
             devDao.delete(developerId);
         }
 
-        LOGGER.info("Logging listing activity for developer merge.");
-        for (Long id : postMergeListingDetails.keySet()) {
-            CertifiedProductSearchDetails preMergeListing = preMergeListingDetails.get(id);
-            CertifiedProductSearchDetails postMergeListing = postMergeListingDetails.get(id);
-            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, preMergeListing.getId(),
-                    "Updated certified product " + postMergeListing.getChplProductNumber() + ".", preMergeListing,
-                    postMergeListing);
-        }
+        logListingActivities(preJoinListingDetails, postJoinListingDetails);
 
-        Developer createdDeveloper = devManager.getById(createdDeveloperId);
-        directReviewEmailService.sendEmail(beforeDevelopers, Arrays.asList(createdDeveloper),
-                preMergeListingDetails, postMergeListingDetails, LOGGER);
+        directReviewEmailService.sendEmail(developersJoining, Arrays.asList(developerToJoin),
+                preJoinListingDetails, postJoinListingDetails, LOGGER);
 
-        LOGGER.info("Logging developer merge activity.");
-        Developer afterDeveloper = devManager.getById(createdDeveloperId);
-        String beforeDevNames = String.join(",",
-                beforeDevelopers.stream().map(Developer::getName).collect(Collectors.toList()));
-        activityManager.addActivity(ActivityConcept.DEVELOPER, afterDeveloper.getId(),
-                "Merged developers " + beforeDevNames + " into " + afterDeveloper.getName(),
-                beforeDevelopers, afterDeveloper);
+        logDeveloperJoinActivities(developersJoining, developerToJoin);
+    }
 
-        return createdDeveloper;
+    private void logListingActivities(Map<Long, CertifiedProductSearchDetails> preJoinListingDetails,
+            Map<Long, CertifiedProductSearchDetails> postJoinListingDetails) {
+        LOGGER.info("Logging listing activity for developer join.");
+        postJoinListingDetails.keySet().stream()
+            .forEach(postJoinListingId -> {
+                CertifiedProductSearchDetails preJoinListing = preJoinListingDetails.get(postJoinListingId);
+                CertifiedProductSearchDetails postJoinListing = postJoinListingDetails.get(postJoinListingId);
+                try {
+                    activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, preJoinListing.getId(),
+                        "Updated certified product " + postJoinListing.getChplProductNumber() + ".", preJoinListing,
+                        postJoinListing);
+                } catch (JsonProcessingException | EntityRetrievalException | EntityCreationException ex) {
+                    LOGGER.warn("Unable to log listing activity for listing " + postJoinListingId + " during developer join.", ex);
+                }  catch (Exception ex) {
+                    LOGGER.warn("Unexpected error logging listing activity for listing " + postJoinListingId + " during developer join.", ex);
+                }
+            });
+    }
+
+    private void logDeveloperJoinActivities(List<Developer> developersJoining, Developer developerToJoin) {
+        developersJoining.stream()
+            .forEach(developerJoined -> {
+                LOGGER.info("Logging activity that developer " + developerJoined.getName() + " joined " + developerToJoin.getName());
+                try {
+                    activityManager.addActivity(ActivityConcept.DEVELOPER, developerToJoin.getId(),
+                        "Developer " + developerJoined.getName() + " joined " + developerToJoin.getName(),
+                        developerJoined, developerToJoin);
+                } catch (JsonProcessingException | EntityRetrievalException | EntityCreationException ex) {
+                    LOGGER.warn("Unable to log developer join activity.", ex);
+                }  catch (Exception ex) {
+                    LOGGER.warn("Unexpected error logging developer join activity.", ex);
+                }
+            });
     }
 
     private List<Future<CertifiedProductSearchDetails>> getCertifiedProductSearchDetailsFutures(

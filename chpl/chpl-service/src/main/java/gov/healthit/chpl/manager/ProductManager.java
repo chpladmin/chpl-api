@@ -203,7 +203,7 @@ public class ProductManager extends SecuredManager {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#product.id")
-    public Product updateProductForOwnerMerge(Product product)
+    public Product updateProductForOwnerJoin(Product product)
             throws EntityRetrievalException, EntityCreationException, ValidationException, JsonProcessingException {
         return updateProduct(product, true);
     }
@@ -333,7 +333,7 @@ public class ProductManager extends SecuredManager {
         return afterProduct;
     }
 
-    private Product updateProduct(Product product, boolean isMergingOwner)
+    private Product updateProduct(Product product, boolean isOwnerJoiningAnotherDeveloper)
             throws EntityRetrievalException, EntityCreationException, ValidationException, JsonProcessingException {
         normalizeProduct(product);
 
@@ -343,8 +343,8 @@ public class ProductManager extends SecuredManager {
             LOGGER.info(product.toString());
             return existingProduct;
         }
-        runExistingProductValidations(existingProduct, isMergingOwner);
-        runNewProductValidations(product, isMergingOwner);
+        runExistingProductValidations(existingProduct, isOwnerJoiningAnotherDeveloper);
+        runNewProductValidations(product, isOwnerJoiningAnotherDeveloper);
 
         productDao.update(product);
         Product productAfter = productDao.getById(product.getId());
@@ -382,23 +382,23 @@ public class ProductManager extends SecuredManager {
         product.setReportFileLocation(StringUtils.normalizeSpace(product.getReportFileLocation()));
     }
 
-    public void runNewProductValidations(Product product, boolean isMergingOwner) throws ValidationException {
+    public void runNewProductValidations(Product product, boolean isOwnerJoiningAnotherDeveloper) throws ValidationException {
         List<ValidationRule<ProductValidationContext>> rules = new ArrayList<ValidationRule<ProductValidationContext>>();
         rules.add(productValidationFactory.getRule(ProductValidationFactory.NAME));
         rules.add(productValidationFactory.getRule(ProductValidationFactory.OWNER));
         rules.add(productValidationFactory.getRule(ProductValidationFactory.OWNER_HISTORY));
-        Set<String> validationErrors = runValidations(rules, product, isMergingOwner);
+        Set<String> validationErrors = runValidations(rules, product, isOwnerJoiningAnotherDeveloper);
         if (!CollectionUtils.isEmpty(validationErrors)) {
             LOGGER.error("New product validation errors: \n" + validationErrors);
             throw new ValidationException(validationErrors);
         }
     }
 
-    public void runExistingProductValidations(Product product, boolean isMergingOwner) throws ValidationException {
+    public void runExistingProductValidations(Product product, boolean isOwnerJoiningAnotherDeveloper) throws ValidationException {
         List<ValidationRule<ProductValidationContext>> rules = new ArrayList<ValidationRule<ProductValidationContext>>();
         rules.add(productValidationFactory.getRule(ProductValidationFactory.NAME));
         rules.add(productValidationFactory.getRule(ProductValidationFactory.OWNER));
-        Set<String> validationErrors = runValidations(rules, product, isMergingOwner);
+        Set<String> validationErrors = runValidations(rules, product, isOwnerJoiningAnotherDeveloper);
         if (!CollectionUtils.isEmpty(validationErrors)) {
             LOGGER.error("Existing product validation errors: \n" + validationErrors);
             throw new ValidationException(validationErrors);
@@ -406,10 +406,10 @@ public class ProductManager extends SecuredManager {
     }
 
     private Set<String> runValidations(List<ValidationRule<ProductValidationContext>> rules,
-            Product product, boolean isMergingOwner) {
+            Product product, boolean isOwnerJoiningAnotherDeveloper) {
         Set<String> errorMessages = new HashSet<String>();
         ProductValidationContext context
-            = new ProductValidationContext(product, isMergingOwner, msgUtil);
+            = new ProductValidationContext(product, isOwnerJoiningAnotherDeveloper, msgUtil);
 
         for (ValidationRule<ProductValidationContext> rule : rules) {
             if (!rule.isValid(context)) {
