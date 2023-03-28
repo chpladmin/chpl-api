@@ -128,7 +128,8 @@ public class SplitDeveloperJob implements Job {
             directReviewEmailService.sendEmail(
                     Arrays.asList(preSplitDeveloper),
                     Arrays.asList(preSplitDeveloper, postSplitDeveloper),
-                    preSplitListingDetails, postSplitListingDetails, LOGGER);
+                    preSplitListingDetails, postSplitListingDetails,
+                    DirectReviewUpdateEmailService.CONTEXT_DEVELOPER_SPLIT, LOGGER);
 
             //send email about success/failure of job
             if (!StringUtils.isEmpty(user.getEmail())) {

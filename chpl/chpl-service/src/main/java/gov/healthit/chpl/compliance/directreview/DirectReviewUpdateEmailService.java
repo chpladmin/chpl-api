@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -18,9 +19,13 @@ import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
+import gov.healthit.chpl.util.Util;
 
 @Component("directReviewUpdateEmailService")
 public class DirectReviewUpdateEmailService {
+    public static final String CONTEXT_PRODUCT_OWNERSHIP = "PRODUCT_OWNERSHIP";
+    public static final String CONTEXT_DEVELOPER_SPLIT = "DEVELOPER_SPLIT";
+    public static final String CONTEXT_DEVELOPER_JOIN = "DEVELOPER_JOIN";
 
     @Value("${directReview.chplChanges.email}")
     private String chplChangesEmailAddress;
@@ -52,6 +57,7 @@ public class DirectReviewUpdateEmailService {
     public void sendEmail(List<Developer> originalDevelopers, List<Developer> changedDevelopers,
             Map<Long, CertifiedProductSearchDetails> originalListings,
             Map<Long, CertifiedProductSearchDetails> changedListings,
+            String activityContext,
             Logger logger) {
         List<DirectReview> originalDeveloperDrs = new ArrayList<DirectReview>();
         for (Developer originalDeveloper : originalDevelopers) {
@@ -66,14 +72,14 @@ public class DirectReviewUpdateEmailService {
         if (originalDeveloperDrs == null) {
             try {
                 sendUnknownDirectReviewEmails(originalDevelopers, changedDevelopers, originalListings,
-                        changedListings, logger);
+                        changedListings, activityContext, logger);
             } catch (Exception ex) {
                 logger.error("Could not send email to Jira team: " + ex.getMessage());
             }
         } else if (originalDeveloperDrs != null && originalDeveloperDrs.size() > 0) {
             try {
                 sendDirectReviewEmails(originalDeveloperDrs, originalDevelopers, changedDevelopers, originalListings,
-                        changedListings, logger);
+                        changedListings, activityContext, logger);
             } catch (Exception ex) {
                 logger.error("Could not send email to Jira team: " + ex.getMessage());
             }
@@ -86,6 +92,7 @@ public class DirectReviewUpdateEmailService {
             List<Developer> originalDevelopers, List<Developer> changedDevelopers,
             Map<Long, CertifiedProductSearchDetails> originalListings,
             Map<Long, CertifiedProductSearchDetails> changedListings,
+            String activityContext,
             Logger logger)
         throws EmailNotSentException {
         logger.info("Sending email about direct reviews potentially needing changes.");
@@ -115,7 +122,7 @@ public class DirectReviewUpdateEmailService {
 
         String htmlMessage = chplHtmlEmailBuilder.initialize()
                 .heading(chplChangesEmailSubject)
-                .paragraph(null, formatDeveloperActionSummary(originalDevelopers, changedDevelopers))
+                .paragraph(null, formatDeveloperActionSummary(originalDevelopers, changedDevelopers, activityContext))
                 .paragraph(null, developerList)
                 .paragraph(null, chplProductNumbersChangedHtml)
                 .footer(false)
@@ -131,6 +138,7 @@ public class DirectReviewUpdateEmailService {
             List<Developer> changedDevelopers,
             Map<Long, CertifiedProductSearchDetails> originalListings,
             Map<Long, CertifiedProductSearchDetails> changedListings,
+            String activityContext,
             Logger logger) throws EmailNotSentException {
         logger.info("Sending email about unknown direct reviews.");
 
@@ -151,7 +159,7 @@ public class DirectReviewUpdateEmailService {
 
         String htmlMessage = chplHtmlEmailBuilder.initialize()
                 .heading(unknownChangesEmailSubject)
-                .paragraph(null, formatDeveloperActionSummary(originalDevelopers, changedDevelopers))
+                .paragraph(null, formatDeveloperActionSummary(originalDevelopers, changedDevelopers, activityContext))
                 .paragraph(null, "Any direct reviews related to the original developers may need updated.")
                 .paragraph(null, chplProductNumbersChangedHtml)
                 .footer(false)
@@ -164,11 +172,14 @@ public class DirectReviewUpdateEmailService {
     }
 
     private String formatDeveloperActionSummary(List<Developer> originalDevelopers,
-            List<Developer> changedDevelopers) {
+            List<Developer> changedDevelopers, String activityContext) {
         String html = "";
-        if (!ObjectUtils.allNotNull(originalDevelopers, changedDevelopers)) {
+        if (!ObjectUtils.allNotNull(originalDevelopers, changedDevelopers)
+                || CollectionUtils.isEmpty(originalDevelopers)
+                || CollectionUtils.isEmpty(changedDevelopers)
+                || StringUtils.isEmpty(activityContext)) {
             return html;
-        } else if (originalDevelopers.size() == 1 && changedDevelopers.size() > 1) {
+        } else if (CONTEXT_DEVELOPER_SPLIT.equals(activityContext)) {
             Developer newDeveloper = null;
             for (Developer changedDeveloper : changedDevelopers) {
                 if (!(changedDeveloper.getId().equals(originalDevelopers.get(0).getId()))) {
@@ -181,20 +192,20 @@ public class DirectReviewUpdateEmailService {
                     originalDevelopers.get(0).getId(),
                     newDeveloper.getName(),
                     newDeveloper.getId());
-        }  else if (originalDevelopers.size() > 1 && changedDevelopers.size() == 1) {
+        }  else if (CONTEXT_DEVELOPER_JOIN.equals(activityContext)) {
             List<String> originalDeveloperNames = originalDevelopers.stream()
                     .map(dev -> dev.getName())
                     .collect(Collectors.toList());
             List<String> originalDeveloperIds = originalDevelopers.stream()
                     .map(dev -> dev.getId().toString())
                     .collect(Collectors.toList());
-            html = String.format("The developers %s (IDs: %s) were merged into a single new developer. "
-                    + "The newly created developer is %s (ID: %s).",
-                    String.join(",", originalDeveloperNames),
-                    String.join(",", originalDeveloperIds),
+            html = String.format("The developer%s %s (IDs: %s) joined the developer %s (ID: %s).",
+                    (originalDeveloperNames.size() > 1 ? "s" : ""),
+                    Util.joinListGrammatically(originalDeveloperNames),
+                    Util.joinListGrammatically(originalDeveloperIds),
                     changedDevelopers.get(0).getName(),
                     changedDevelopers.get(0).getId());
-        } else if (originalDevelopers.size() == 1 && changedDevelopers.size() == 1) {
+        } else if (CONTEXT_PRODUCT_OWNERSHIP.equals(activityContext)) {
             html = String.format("A product changed ownership from developer %s (IDs: %s) "
                     + "to developer %s (ID: %s).",
                     originalDevelopers.get(0).getName(),

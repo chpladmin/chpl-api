@@ -180,7 +180,8 @@ public class ProductManager extends SecuredManager {
         }
 
         drEmailService.sendEmail(Arrays.asList(currentProductOwner), Arrays.asList(updatedProductOwner),
-                preUpdateListingDetails, postUpdateListingDetails, LOGGER);
+                preUpdateListingDetails, postUpdateListingDetails, DirectReviewUpdateEmailService.CONTEXT_PRODUCT_OWNERSHIP,
+                LOGGER);
         return updatedProduct;
     }
 

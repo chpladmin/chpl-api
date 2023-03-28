@@ -111,7 +111,8 @@ public class TransactionalJoinDeveloperManager {
         logListingActivities(preJoinListingDetails, postJoinListingDetails);
 
         directReviewEmailService.sendEmail(developersJoining, Arrays.asList(developerToJoin),
-                preJoinListingDetails, postJoinListingDetails, LOGGER);
+                preJoinListingDetails, postJoinListingDetails,
+                DirectReviewUpdateEmailService.CONTEXT_DEVELOPER_JOIN, LOGGER);
 
         logDeveloperJoinActivities(developersJoining, developerToJoin);
     }
