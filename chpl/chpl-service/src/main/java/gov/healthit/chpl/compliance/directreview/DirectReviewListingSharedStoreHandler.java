@@ -39,7 +39,7 @@ public class DirectReviewListingSharedStoreHandler {
         this.developerDAO = developerDAO;
     }
 
-    public void handler(List<DirectReview> allDirectReviews, Logger logger) {
+    public void handle(List<DirectReview> allDirectReviews, Logger logger) {
         logger.info("Clearing shared store listings where direct review has been added or updated.");
         getUniqueDevelopers(allDirectReviews, logger).stream()
                 .forEach(dev -> getListingDataForDeveloper(dev, logger).stream()

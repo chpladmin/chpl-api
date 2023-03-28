@@ -115,7 +115,7 @@ public class DirectReviewCachingService {
             replaceAllDataInDirectReviewCache(allDirectReviews, calculatedHttpStatus, logger);
         }
 
-        directReviewListingSharedStoreHandler.handler(allDirectReviews, logger);
+        directReviewListingSharedStoreHandler.handle(allDirectReviews, logger);
     }
 
     public boolean doesCacheHaveAnyOkData() {
@@ -207,7 +207,7 @@ public class DirectReviewCachingService {
         } else {
             drContainer = getDirectReviewsForDeveloperFromCache(developerId, logger);
         }
-        directReviewListingSharedStoreHandler.handler(drContainer.getDirectReviews(), logger);
+        directReviewListingSharedStoreHandler.handle(drContainer.getDirectReviews(), logger);
         return drContainer;
     }
 
