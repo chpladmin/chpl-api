@@ -86,22 +86,12 @@ public class CheckInReportValidation {
 
     private Boolean isApiValidAndResponseIsNotApplicable(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
         return isApiValid(allActiveListingsForDeveloper)
-                && (doesFormResponseEqualResponse(attestationForm,
-                        AttestationFormMetaData.getApiConditionId(),
-                        AttestationFormMetaData.getNotAppicableResponseId())
-                        || doesFormResponseEqualResponse(attestationForm,
-                                AttestationFormMetaData.getApiConditionId(),
-                                AttestationFormMetaData.getNonCompliantResponseId()));
+                && doesFormResponseEqualResponse(attestationForm, AttestationFormMetaData.getApiConditionId(), AttestationFormMetaData.getNonCompliantResponseId());
     }
 
     private Boolean isNotApiValidAndResponseIsCompliant(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
         return !isApiValid(allActiveListingsForDeveloper)
-                && (doesFormResponseEqualResponse(attestationForm,
-                        AttestationFormMetaData.getApiConditionId(),
-                        AttestationFormMetaData.getNotAppicableResponseId())
-                        || doesFormResponseEqualResponse(attestationForm,
-                                AttestationFormMetaData.getApiConditionId(),
-                                AttestationFormMetaData.getCompliantResponseId()));
+                && doesFormResponseEqualResponse(attestationForm, AttestationFormMetaData.getApiConditionId(), AttestationFormMetaData.getCompliantResponseId());
     }
 
     public String getAssurancesWarningMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm, Long attestationPeriodId) {
@@ -117,23 +107,14 @@ public class CheckInReportValidation {
         return isAssurancesValid(allActiveListingsForDeveloper)
                 && (doesFormResponseEqualResponse(attestationForm,
                         AttestationFormMetaData.getAssurancesConditionId(attestationPeriodId),
-                        AttestationFormMetaData.getNotAppicableResponseId())
-                        || doesFormResponseEqualResponse(attestationForm,
-                                AttestationFormMetaData.getAssurancesConditionId(attestationPeriodId),
-                                AttestationFormMetaData.getNonCompliantResponseId()));
+                        AttestationFormMetaData.getAssurancesCompliantIsNotApplicableResponseId(attestationPeriodId)));
     }
 
     private Boolean isNotAssurancesValidAndResponseIsCompliant(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm, Long attestationPeriodId) {
         return !isAssurancesValid(allActiveListingsForDeveloper)
                 && (doesFormResponseEqualResponse(attestationForm,
                         AttestationFormMetaData.getAssurancesConditionId(attestationPeriodId),
-                        AttestationFormMetaData.getNotAppicableResponseId())
-                        || doesFormResponseEqualResponse(attestationForm,
-                                AttestationFormMetaData.getAssurancesConditionId(attestationPeriodId),
-                                AttestationFormMetaData.getAssurancesCompliantIsApplicableResponseId(attestationPeriodId))
-                        || doesFormResponseEqualResponse(attestationForm,
-                                AttestationFormMetaData.getAssurancesConditionId(attestationPeriodId),
-                                AttestationFormMetaData.getAssurancesCompliantIsNotApplicableResponseId(attestationPeriodId)));
+                        AttestationFormMetaData.getAssurancesCompliantIsApplicableResponseId(attestationPeriodId)));
     }
 
     public String getRealWordTestingWarningMessage(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
@@ -147,22 +128,12 @@ public class CheckInReportValidation {
 
     private Boolean isRwtValidAndResponseIsNotApplicable(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
         return isRealWorldTestingValid(allActiveListingsForDeveloper)
-                && (doesFormResponseEqualResponse(attestationForm,
-                        AttestationFormMetaData.getRwtConditionId(),
-                        AttestationFormMetaData.getNotAppicableResponseId())
-                        || doesFormResponseEqualResponse(attestationForm,
-                                AttestationFormMetaData.getRwtConditionId(),
-                                AttestationFormMetaData.getNonCompliantResponseId()));
+                && doesFormResponseEqualResponse(attestationForm, AttestationFormMetaData.getRwtConditionId(), AttestationFormMetaData.getNonCompliantResponseId());
     }
 
     private Boolean isNotRwtValidAndResponseIsCompliant(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
         return !isRealWorldTestingValid(allActiveListingsForDeveloper)
-                && (doesFormResponseEqualResponse(attestationForm,
-                        AttestationFormMetaData.getRwtConditionId(),
-                        AttestationFormMetaData.getNotAppicableResponseId())
-                        || doesFormResponseEqualResponse(attestationForm,
-                                AttestationFormMetaData.getRwtConditionId(),
-                                AttestationFormMetaData.getCompliantResponseId()));
+                && doesFormResponseEqualResponse(attestationForm, AttestationFormMetaData.getRwtConditionId(), AttestationFormMetaData.getCompliantResponseId());
     }
 
     private Boolean doesFormResponseEqualResponse(Form attestationForm, Long conditionIdToCheck, Long expectedResult) {
