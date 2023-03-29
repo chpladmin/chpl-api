@@ -766,6 +766,90 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "PUT /developers{developerId}/join - 200 status for ONC users",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var ReqBody= {\r",
+									"        userName:pm.environment.get(\"emailONC\"),password:pm.environment.get(\"passwordONC\")\r",
+									"    };\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"authurl\"),\r",
+									"    method: \"POST\",\r",
+									"    header: {\r",
+									"        \"Content-Type\": \"application/json\",\r",
+									"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+									"    },\r",
+									"    body: JSON.stringify(ReqBody)\r",
+									"}, function (err, response) {\r",
+									"   var jsonData = response.json();\r",
+									"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect ONC user to get status code 200 and response when accessing /developers/{developerId}/join end point\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.response).not.eq(null);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"developerIds\": [\r\n    570,\r\n    2021\r\n  ]\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/developers/2115/join",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"developers",
+								"2115",
+								"join"
+							]
+						},
+						"description": "ONC user should get status code 200 and response when accessing /developers/{developerId}/join end point"
+					},
+					"response": []
 				}
 			]
 		},
