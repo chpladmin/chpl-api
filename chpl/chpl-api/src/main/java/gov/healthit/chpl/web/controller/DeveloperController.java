@@ -194,18 +194,17 @@ public class DeveloperController {
             message = "Developer merge is deprecated and will be removed. "
                     + "Going forward, PUT to /developers/{developerId}/join .")
     @Operation(summary = "Merge developers.",
-            description = "Please use /developers/{developerId}/join ."
-                    + "Security Restrictions: ROLE_ADMIN or ROLE_ONC.",
+            description = "Please use /developers/{developerId}/join .",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/merge", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public ChplOneTimeTrigger merge(@RequestBody(required = true) MergeDevelopersRequest mergeRequest)
+    public ResponseEntity<Void> merge(@RequestBody(required = true) MergeDevelopersRequest mergeRequest)
             throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException, JsonProcessingException,
             ValidationException, SchedulerException {
-        return null;
+        return new ResponseEntity<>(HttpStatus.MOVED_PERMANENTLY);
     }
 
     @Operation(
