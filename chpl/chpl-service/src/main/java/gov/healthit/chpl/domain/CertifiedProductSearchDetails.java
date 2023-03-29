@@ -35,6 +35,7 @@ import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
+import gov.healthit.chpl.certifiedproduct.service.comparator.CertificationStatusEventComparator;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

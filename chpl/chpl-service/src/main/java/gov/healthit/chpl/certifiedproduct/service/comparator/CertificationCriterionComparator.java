@@ -1,4 +1,4 @@
-package gov.healthit.chpl.util;
+package gov.healthit.chpl.certifiedproduct.service.comparator;
 
 import java.util.Comparator;
 
@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @Component
 public class CertificationCriterionComparator implements Comparator<CertificationCriterion> {
     private CertificationCriterionService criterionService;
-    private boolean descending = false;
 
     @Autowired
     public CertificationCriterionComparator(CertificationCriterionService criterionService) {
@@ -26,7 +25,6 @@ public class CertificationCriterionComparator implements Comparator<Certificatio
         if (ObjectUtils.anyNull(criterion1, criterion2)) {
             return 0;
         }
-        int sortFactor = descending ? -1 : 1;
-        return (criterionService.sortCriteria(criterion1, criterion2)) * sortFactor;
+        return criterionService.sortCriteria(criterion1, criterion2);
     }
 }

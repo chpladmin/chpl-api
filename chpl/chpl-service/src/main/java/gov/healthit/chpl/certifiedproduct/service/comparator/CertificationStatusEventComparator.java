@@ -1,6 +1,8 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.certifiedproduct.service.comparator;
 
 import java.util.Comparator;
+
+import gov.healthit.chpl.domain.CertificationStatusEvent;
 
 public class CertificationStatusEventComparator implements Comparator<CertificationStatusEvent> {
 

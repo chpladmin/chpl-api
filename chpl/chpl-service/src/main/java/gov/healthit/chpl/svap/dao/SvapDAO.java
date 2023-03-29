@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import gov.healthit.chpl.certifiedproduct.service.comparator.CertificationCriterionComparator;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -24,10 +25,12 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class SvapDAO extends BaseDAOImpl {
     private CertifiedProductDAO certifiedProductDao;
+    private CertificationCriterionComparator criteriaComparator;
 
     @Autowired
-    public SvapDAO(CertifiedProductDAO certifiedProductDao) {
+    public SvapDAO(CertifiedProductDAO certifiedProductDao, CertificationCriterionComparator criteriaComparator) {
         this.certifiedProductDao = certifiedProductDao;
+        this.criteriaComparator = criteriaComparator;
     }
 
     public Svap getById(Long id) throws EntityRetrievalException {
@@ -39,9 +42,16 @@ public class SvapDAO extends BaseDAOImpl {
     }
 
     public List<SvapCriteriaMap> getAllSvapCriteriaMap() throws EntityRetrievalException {
-        return getAllSvapCriteriaMapEntities().stream()
+        List<SvapCriteriaMap> svapCriteriaMaps = getAllSvapCriteriaMapEntities().stream()
                 .map(e -> new SvapCriteriaMap(e))
                 .collect(Collectors.toList());
+
+        //sort criteria for each svap
+        svapCriteriaMaps.stream()
+            .map(mapping -> mapping.getSvap())
+            .forEach(svap -> svap.setCriteria(
+                    svap.getCriteria().stream().sorted(criteriaComparator).collect(Collectors.toList())));
+        return svapCriteriaMaps;
     }
 
     public List<Svap> getAll() {

@@ -1,14 +1,17 @@
 package gov.healthit.chpl.certifiedproduct.service;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.certifiedproduct.service.comparator.CertificationResultComparator;
+import gov.healthit.chpl.certifiedproduct.service.comparator.ConformanceMethodComparator;
+import gov.healthit.chpl.certifiedproduct.service.comparator.FunctionalityTestedComparator;
+import gov.healthit.chpl.certifiedproduct.service.comparator.OptionalStandardComparator;
+import gov.healthit.chpl.certifiedproduct.service.comparator.SvapComparator;
+import gov.healthit.chpl.certifiedproduct.service.comparator.TestToolComparator;
 import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
@@ -31,12 +34,10 @@ import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
-import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.svap.dao.SvapDAO;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
 import gov.healthit.chpl.util.CertificationResultRules;
-import lombok.NoArgsConstructor;
 
 @Component
 public class CertificationResultService {
@@ -48,15 +49,20 @@ public class CertificationResultService {
     private OptionalStandardDAO optionalStandardDAO;
     private ConformanceMethodDAO conformanceMethodDAO;
     private TestToolDAO testToolDAO;
-    private CertificationCriterionService criterionService;
 
     private CertificationResultComparator certResultComparator;
+    private ConformanceMethodComparator conformanceMethodComparator;
+    private OptionalStandardComparator optionalStandardComparator;
+    private SvapComparator svapComparator;
+    private FunctionalityTestedComparator funcTestedComparator;
+    private TestToolComparator testToolComparator;
 
     @Autowired
     public CertificationResultService(CertificationResultRules certRules, CertificationResultManager certResultManager,
             FunctionalityTestedManager functionalityTestedManager, CertificationResultDetailsDAO certificationResultDetailsDAO,
             SvapDAO svapDAO, OptionalStandardDAO optionalStandardDAO, TestToolDAO testToolDAO,
-            ConformanceMethodDAO conformanceMethodDAO, CertificationCriterionService criterionService) {
+            ConformanceMethodDAO conformanceMethodDAO,
+            CertificationResultComparator certResultComparator) {
         this.certRules = certRules;
         this.certResultManager = certResultManager;
         this.functionalityTestedManager = functionalityTestedManager;
@@ -65,9 +71,13 @@ public class CertificationResultService {
         this.optionalStandardDAO = optionalStandardDAO;
         this.conformanceMethodDAO = conformanceMethodDAO;
         this.testToolDAO = testToolDAO;
-        this.criterionService = criterionService;
+        this.certResultComparator = certResultComparator;
 
-        this.certResultComparator = new CertificationResultComparator();
+        this.conformanceMethodComparator = new ConformanceMethodComparator();
+        this.optionalStandardComparator = new OptionalStandardComparator();
+        this.svapComparator = new SvapComparator();
+        this.funcTestedComparator = new FunctionalityTestedComparator();
+        this.testToolComparator = new TestToolComparator();
     }
 
     public List<CertificationResult> getCertificationResults(CertifiedProductSearchDetails searchDetails) throws EntityRetrievalException {
@@ -158,6 +168,7 @@ public class CertificationResultService {
         return conformanceMethodCriteriaMap.stream()
                 .filter(cmcm -> cmcm.getCriterion().getId().equals(result.getCriterion().getId()))
                 .map(cmcm -> cmcm.getConformanceMethod())
+                .sorted(conformanceMethodComparator)
                 .collect(Collectors.toList());
     }
 
@@ -165,6 +176,7 @@ public class CertificationResultService {
         return optionalStandardCriteriaMap.stream()
                 .filter(osm -> osm.getCriterion().getId().equals(result.getCriterion().getId()))
                 .map(osm -> osm.getOptionalStandard())
+                .sorted(optionalStandardComparator)
                 .collect(Collectors.toList());
     }
 
@@ -172,6 +184,7 @@ public class CertificationResultService {
         return svapCriteriaMap.stream()
                 .filter(scm -> scm.getCriterion().getId().equals(result.getCriterion().getId()))
                 .map(scm -> scm.getSvap())
+                .sorted(svapComparator)
                 .collect(Collectors.toList());
     }
 
@@ -182,29 +195,16 @@ public class CertificationResultService {
                 practiceTypeId = Long.valueOf(cp.getPracticeType().get("id").toString());
             }
         }
-        return functionalityTestedManager.getFunctionalitiesTested(cr.getCriterion().getId(), practiceTypeId);
+        return functionalityTestedManager.getFunctionalitiesTested(cr.getCriterion().getId(), practiceTypeId).stream()
+                .sorted(funcTestedComparator)
+                .collect(Collectors.toList());
     }
 
     private List<TestTool> getAvailableTestToolForCriteria(CertificationResult result, List<TestToolCriteriaMap> testToolCriteriaMap) {
         return testToolCriteriaMap.stream()
                 .filter(ttcm -> ttcm.getCriterion().getId().equals(result.getCriterion().getId()))
                 .map(ttm -> ttm.getTestTool())
+                .sorted(testToolComparator)
                 .collect(Collectors.toList());
     }
-
-    @NoArgsConstructor
-    private class CertificationResultComparator implements Comparator<CertificationResult> {
-        private boolean descending = false;
-
-        @Override
-        public int compare(CertificationResult certResult1, CertificationResult certResult2) {
-            if (ObjectUtils.anyNull(certResult1.getCriterion(), certResult2.getCriterion())
-                    || StringUtils.isAnyEmpty(certResult1.getCriterion().getNumber(), certResult2.getCriterion().getNumber())) {
-                return 0;
-            }
-            int sortFactor = descending ? -1 : 1;
-            return (criterionService.sortCriteria(certResult1.getCriterion(), certResult2.getCriterion())) * sortFactor;
-        }
-    }
-
 }

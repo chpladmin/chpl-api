@@ -13,6 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.certifiedproduct.service.comparator.CertifiedProductAccessibilityStandardComparator;
+import gov.healthit.chpl.certifiedproduct.service.comparator.CertifiedProductComparator;
+import gov.healthit.chpl.certifiedproduct.service.comparator.CertifiedProductQmsStandardComparator;
+import gov.healthit.chpl.certifiedproduct.service.comparator.CertifiedProductTargetedUserComparator;
+import gov.healthit.chpl.certifiedproduct.service.comparator.CertifiedProductTestingLabComparator;
+import gov.healthit.chpl.certifiedproduct.service.comparator.ChplProductNumberHistoryComparator;
+import gov.healthit.chpl.certifiedproduct.service.comparator.DirectReviewComparator;
 import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductChplProductNumberHistoryDao;
@@ -67,6 +74,14 @@ public class ListingService {
     private CertifiedProductAccessibilityStandardDAO certifiedProductAsDao;
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
 
+    private CertifiedProductComparator cpComparator;
+    private CertifiedProductTestingLabComparator atlComparator;
+    private CertifiedProductQmsStandardComparator qmsComparator;
+    private CertifiedProductTargetedUserComparator tuComparator;
+    private CertifiedProductAccessibilityStandardComparator asComparator;
+    private ChplProductNumberHistoryComparator chplProductNumberHistoryComparator;
+    private DirectReviewComparator drComparator;
+
     @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
     public ListingService(
@@ -104,6 +119,14 @@ public class ListingService {
         this.certifiedProductTargetedUserDao = certifiedProductTargetedUserDao;
         this.certifiedProductAsDao = certifiedProductAsDao;
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
+
+        this.cpComparator = new CertifiedProductComparator();
+        this.atlComparator = new CertifiedProductTestingLabComparator();
+        this.qmsComparator = new CertifiedProductQmsStandardComparator();
+        this.tuComparator = new CertifiedProductTargetedUserComparator();
+        this.asComparator = new CertifiedProductAccessibilityStandardComparator();
+        this.chplProductNumberHistoryComparator = new ChplProductNumberHistoryComparator();
+        this.drComparator = new DirectReviewComparator();
     }
 
     public CertifiedProductSearchDetails createCertifiedSearchDetails(Long listingId) throws EntityRetrievalException {
@@ -157,7 +180,10 @@ public class ListingService {
                 .countClosedSurveillance(dto.getCountClosedSurveillance())
                 .countOpenNonconformities(dto.getCountOpenNonconformities())
                 .countClosedNonconformities(dto.getCountClosedNonconformities())
+
+                //TODO SORT SURVEILLANCE
                 .surveillance(survManager.getByCertifiedProduct(dto.getId()))
+
                 .chplProductNumberHistory(getCertifiedProductChplProductNumberHistory(dto.getId()))
                 .qmsStandards(getCertifiedProductQmsStandards(dto.getId()))
                 .measures(listingMeasureService.getCertifiedProductMeasures(dto.getId(), false))
@@ -186,6 +212,7 @@ public class ListingService {
     private List<CertifiedProductTestingLab> getTestingLabs(Long listingId) throws EntityRetrievalException {
         return certifiedProductTestingLabDao.getTestingLabsByCertifiedProductId(listingId).stream()
                 .map(dto -> new CertifiedProductTestingLab(dto))
+                .sorted(atlComparator)
                 .collect(Collectors.toList());
     }
 
@@ -197,7 +224,9 @@ public class ListingService {
                     MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY),
                     listing.getCertificationEvents(), LOGGER);
         }
-        listing.setDirectReviews(drs);
+        listing.setDirectReviews(drs.stream()
+                .sorted(drComparator)
+                .collect(Collectors.toList()));
         listing.setDirectReviewsAvailable(drService.doesCacheHaveAnyOkData());
     }
 
@@ -215,6 +244,7 @@ public class ListingService {
 
         return relatedCertifiedProductDTOs.stream()
                 .map(dto -> createCertifiedProductBasedOnDto(dto))
+                .sorted(cpComparator)
                 .collect(Collectors.toList());
     }
 
@@ -283,24 +313,28 @@ public class ListingService {
 
     private List<CertifiedProductChplProductNumberHistory> getCertifiedProductChplProductNumberHistory(Long id) throws EntityRetrievalException {
         return chplProductNumberHistoryDao.getHistoricalChplProductNumbers(id).stream()
+                .sorted(chplProductNumberHistoryComparator)
                 .toList();
     }
 
     private List<CertifiedProductQmsStandard> getCertifiedProductQmsStandards(Long id) throws EntityRetrievalException {
         return certifiedProductQmsStandardDao.getQmsStandardsByCertifiedProductId(id).stream()
                 .map(dto -> new CertifiedProductQmsStandard(dto))
+                .sorted(qmsComparator)
                 .collect(Collectors.toList());
     }
 
     private List<CertifiedProductTargetedUser> getCertifiedProductTargetedUsers(Long id) throws EntityRetrievalException {
         return certifiedProductTargetedUserDao.getTargetedUsersByCertifiedProductId(id).stream()
                 .map(dto -> new CertifiedProductTargetedUser(dto))
+                .sorted(tuComparator)
                 .collect(Collectors.toList());
     }
 
     private List<CertifiedProductAccessibilityStandard> getCertifiedProductAccessibilityStandards(Long id) throws EntityRetrievalException {
         return certifiedProductAsDao.getAccessibilityStandardsByCertifiedProductId(id).stream()
                 .map(dto -> new CertifiedProductAccessibilityStandard(dto))
+                .sorted(asComparator)
                 .collect(Collectors.toList());
     }
 }

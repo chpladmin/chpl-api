@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.certifiedproduct.service.comparator.CertificationStatusEventComparator;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -22,16 +23,20 @@ public class CertificationStatusEventsService {
     private CertificationStatusDAO certStatusDao;
     private ResourcePermissions resourcePermissions;
 
+    private CertificationStatusEventComparator certStatusEventComparator;
+
     @Autowired
     public CertificationStatusEventsService(CertificationStatusEventDAO certStatusEventDao, CertificationStatusDAO certStatusDao, ResourcePermissions resourcePermissions) {
         this.certStatusEventDao = certStatusEventDao;
         this.certStatusDao = certStatusDao;
         this.resourcePermissions = resourcePermissions;
+        this.certStatusEventComparator = new CertificationStatusEventComparator();
     }
 
     public List<CertificationStatusEvent> getCertificationStatusEvents(Long certifiedProductId) throws EntityRetrievalException {
         return certStatusEventDao.findByCertifiedProductId(certifiedProductId).stream()
                 .map(cse -> createSecureCertificationStatusEvent(cse))
+                .sorted(certStatusEventComparator)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
