@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dao.surveillance;
+package gov.healthit.chpl.compliance.surveillance;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.compliance.surveillance.entity.NonconformityTypeEntity;
+import gov.healthit.chpl.compliance.surveillance.entity.RequirementGroupTypeEntity;
+import gov.healthit.chpl.compliance.surveillance.entity.RequirementTypeEntity;
+import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceEntity;
+import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceNonconformityEntity;
+import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceRequirementEntity;
+import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceResultTypeEntity;
+import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceTypeEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
@@ -21,14 +29,6 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
-import gov.healthit.chpl.entity.surveillance.NonconformityTypeEntity;
-import gov.healthit.chpl.entity.surveillance.RequirementGroupTypeEntity;
-import gov.healthit.chpl.entity.surveillance.RequirementTypeEntity;
-import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
-import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
-import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
-import gov.healthit.chpl.entity.surveillance.SurveillanceResultTypeEntity;
-import gov.healthit.chpl.entity.surveillance.SurveillanceTypeEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;

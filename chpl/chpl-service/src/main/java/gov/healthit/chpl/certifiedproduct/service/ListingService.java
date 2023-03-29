@@ -21,6 +21,7 @@ import gov.healthit.chpl.certifiedproduct.service.comparator.CertifiedProductTes
 import gov.healthit.chpl.certifiedproduct.service.comparator.ChplProductNumberHistoryComparator;
 import gov.healthit.chpl.certifiedproduct.service.comparator.DirectReviewComparator;
 import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
+import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductChplProductNumberHistoryDao;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
@@ -46,7 +47,6 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
-import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
@@ -180,10 +180,7 @@ public class ListingService {
                 .countClosedSurveillance(dto.getCountClosedSurveillance())
                 .countOpenNonconformities(dto.getCountOpenNonconformities())
                 .countClosedNonconformities(dto.getCountClosedNonconformities())
-
-                //TODO SORT SURVEILLANCE
                 .surveillance(survManager.getByCertifiedProduct(dto.getId()))
-
                 .chplProductNumberHistory(getCertifiedProductChplProductNumberHistory(dto.getId()))
                 .qmsStandards(getCertifiedProductQmsStandards(dto.getId()))
                 .measures(listingMeasureService.getCertifiedProductMeasures(dto.getId(), false))

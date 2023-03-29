@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity.surveillance;
+package gov.healthit.chpl.compliance.surveillance.entity;
 
 import java.util.Collections;
 import java.util.Date;
@@ -19,6 +19,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.compliance.surveillance.SurveillanceNonconformityComparator;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
@@ -38,6 +39,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SurveillanceRequirementEntity {
+    private SurveillanceNonconformityComparator ncComparator = new SurveillanceNonconformityComparator();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -80,6 +82,7 @@ public class SurveillanceRequirementEntity {
                 .id(this.getId())
                 .nonconformities(Optional.ofNullable(this.getNonconformities()).orElse(Collections.emptySet()).stream()
                         .map(e -> e.toDomain(certificationCriterionService))
+                        .sorted(ncComparator)
                         .toList())
                 .requirementType(this.requirementType != null ? this.requirementType.toDomain() : null)
                 .requirementTypeOther(this.requirementTypeOther)

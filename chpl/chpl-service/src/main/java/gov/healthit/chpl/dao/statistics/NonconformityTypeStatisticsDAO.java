@@ -10,9 +10,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.compliance.surveillance.entity.NonconformityTypeStatisticsEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
-import gov.healthit.chpl.entity.surveillance.NonconformityTypeStatisticsEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("nonconformityTypeStatisticsDAO")

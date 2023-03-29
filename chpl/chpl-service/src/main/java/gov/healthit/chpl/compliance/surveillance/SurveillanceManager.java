@@ -1,4 +1,4 @@
-package gov.healthit.chpl.manager;
+package gov.healthit.chpl.compliance.surveillance;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +25,6 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
-import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
@@ -38,6 +37,8 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceReportingActivityJob;
@@ -68,6 +69,8 @@ public class SurveillanceManager extends SecuredManager {
     private CertificationCriterionService certificationCriterionService;
     private String schemaBasicSurveillanceName;
 
+    private SurveillanceComparator survComparator;
+
     @SuppressWarnings("checkstyle:parameterNumber")
     @Autowired
     public SurveillanceManager(SurveillanceDAO survDao, CertifiedProductDAO cpDao,
@@ -91,6 +94,8 @@ public class SurveillanceManager extends SecuredManager {
         this.userDAO = userDAO;
         this.certificationCriterionService = certificationCriterionService;
         this.schemaBasicSurveillanceName = schemaBasicSurveillanceName;
+
+        this.survComparator = new SurveillanceComparator();
     }
 
     @Transactional(readOnly = true)
@@ -104,6 +109,7 @@ public class SurveillanceManager extends SecuredManager {
     public List<Surveillance> getByCertifiedProduct(final Long cpId) {
         List<Surveillance> surveillances = survDao.getSurveillanceByCertifiedProductId(cpId).stream()
                 .map(survEntity -> survEntity.toDomain(cpDao, certificationCriterionService))
+                .sorted(survComparator)
                 .toList();
         surveillances.forEach(surv -> survReadValidator.validate(surv));
         return surveillances;

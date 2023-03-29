@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
@@ -19,7 +20,6 @@ import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.manager.SurveillanceManager;
 
 public class MissingIcsSurveillanceReviewerTest {
     private static final String ICS_REQUIREMENT_TITLE = "Inherited Certified Status";
