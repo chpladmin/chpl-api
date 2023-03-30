@@ -99,6 +99,8 @@ public class ListingSearchService {
             .collect(Collectors.toList());
         LOGGER.debug("Total matched listings: " + matchedListings.size());
 
+        clearMatchedListingsIfDirectReviewsUnavailableAndComplianceFiltering(searchRequest, matchedListings);
+
         ListingSearchResponse response = new ListingSearchResponse();
         response.setRecordCount(matchedListings.size());
         response.setPageNumber(searchRequest.getPageNumber());
@@ -110,6 +112,20 @@ public class ListingSearchService {
             = getPage(matchedListings, getBeginIndex(searchRequest), getEndIndex(searchRequest));
         response.setResults(pageOfListings);
         return response;
+    }
+
+    private void clearMatchedListingsIfDirectReviewsUnavailableAndComplianceFiltering(
+            SearchRequest searchRequest,
+            List<ListingSearchResult> matchedListings) {
+        if (hasAnyComplianceFilters(searchRequest.getComplianceActivity()) && !drService.doesCacheHaveAnyOkData()) {
+            matchedListings.clear();
+        }
+    }
+
+    private boolean hasAnyComplianceFilters(ComplianceSearchFilter complianceFilter) {
+        return complianceFilter != null
+                && (complianceFilter.getHasHadComplianceActivity() != null
+                    || CollectionUtils.isNotEmpty(complianceFilter.getNonConformityOptions()));
     }
 
     public List<ListingSearchResult> getAllPagesOfSearchResults(SearchRequest searchRequest) throws ValidationException {

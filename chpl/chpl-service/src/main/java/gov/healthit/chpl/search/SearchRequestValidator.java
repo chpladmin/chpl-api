@@ -307,19 +307,9 @@ public class SearchRequestValidator {
 
     private Set<String> getComplianceActivityErrors(ComplianceSearchFilter complianceFilter) {
         Set<String> errors = new LinkedHashSet<String>();
-        if (hasAnyComplianceFilters(complianceFilter) && !drService.doesCacheHaveAnyOkData()) {
-            errors.add(msgUtil.getMessage("search.complianceFilter.unavailable"));
-        }
         errors.addAll(getNonConformityOperatorErrors(complianceFilter));
         errors.addAll(getNonConformitySearchOptionsErrors(complianceFilter));
         return errors;
-    }
-
-    private boolean hasAnyComplianceFilters(ComplianceSearchFilter complianceFilter) {
-        return complianceFilter != null
-                && (complianceFilter.getHasHadComplianceActivity() != null
-                    || (complianceFilter.getNonConformityOptions() != null && complianceFilter.getNonConformityOptions().size() > 0)
-                    || complianceFilter.getNonConformityOptionsOperator() != null);
     }
 
     private Set<String> getNonConformityOperatorErrors(ComplianceSearchFilter complianceFilter) {
