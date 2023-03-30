@@ -113,9 +113,8 @@ public class DirectReviewCachingService {
                     + "currently has at least one record with 'OK' data. Not replacing the cache contents.");
         } else {
             replaceAllDataInDirectReviewCache(allDirectReviews, calculatedHttpStatus, logger);
+            directReviewListingSharedStoreHandler.handler(allDirectReviews, logger);
         }
-
-        directReviewListingSharedStoreHandler.handler(allDirectReviews, logger);
     }
 
     public boolean doesCacheHaveAnyOkData() {
