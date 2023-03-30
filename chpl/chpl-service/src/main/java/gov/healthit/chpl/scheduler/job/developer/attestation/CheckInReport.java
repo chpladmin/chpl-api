@@ -72,8 +72,8 @@ public class CheckInReport {
                 totalDirectReviewNonconformities != null ? totalDirectReviewNonconformities.toString() : "0",
                 openDirectReviewNonconformities != null ? openDirectReviewNonconformities.toString() : "0",
                 assurancesValidation != null ? assurancesValidation : "",
-                realWorldTestingValidation != null ? realWorldTestingValidation : "",
-                apiValidation != null ? apiValidation : "");
+                apiValidation != null ? apiValidation : "",
+                realWorldTestingValidation != null ? realWorldTestingValidation : "");
     }
 
     public static List<String> getHeaders() {
@@ -104,7 +104,7 @@ public class CheckInReport {
                 "Total Direct Review Non-conformities",
                 "Open Direct Review Non-conformities",
                 "Has listing(s) with Assurances criteria (b)(10)",
-                "Has listing(s) with RWT criteria",
-                "Has listing(s) with API criteria (g)(7)-(g)(10)");
+                "Has listing(s) with API criteria (g)(7)-(g)(10)",
+                "Has listing(s) with RWT criteria");
     }
 }
