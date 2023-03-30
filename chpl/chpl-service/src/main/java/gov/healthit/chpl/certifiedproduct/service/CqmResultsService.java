@@ -2,7 +2,6 @@ package gov.healthit.chpl.certifiedproduct.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -170,7 +169,7 @@ public class CqmResultsService {
                 .title(cqm.getTitle())
                 .description(cqm.getDescription())
                 .success(Boolean.FALSE)
-                .allVersions(new HashSet<String>(Arrays.asList(cqm.getCqmVersion())))
+                .allVersions(new LinkedHashSet<String>(Arrays.asList(cqm.getCqmVersion())))
                 .typeId(cqm.getCqmCriterionTypeId())
                 .build();
     }

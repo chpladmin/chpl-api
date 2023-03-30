@@ -2,10 +2,8 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -14,7 +12,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -108,7 +106,7 @@ public class CQMResultDetails implements Serializable {
     @XmlElementWrapper(name = "successVersions", nillable = true, required = false)
     @XmlElement(name = "version", required = false, nillable = true)
     @Builder.Default
-    private Set<String> successVersions = new LinkedHashSet<String>();
+    private LinkedHashSet<String> successVersions = new LinkedHashSet<String>();
 
     /**
      * All possible versions of the clinical quality measure. For a list of
@@ -118,7 +116,7 @@ public class CQMResultDetails implements Serializable {
     @XmlElementWrapper(name = "allVersions", nillable = true, required = false)
     @XmlElement(name = "version", required = false, nillable = true)
     @Builder.Default
-    private Set<String> allVersions = new LinkedHashSet<String>();
+    private LinkedHashSet<String> allVersions = new LinkedHashSet<String>();
 
     /**
      * The certification criteria to which a given clinical quality measure
@@ -132,8 +130,8 @@ public class CQMResultDetails implements Serializable {
     private List<CQMResultCertification> criteria = new ArrayList<CQMResultCertification>();
 
     public CQMResultDetails() {
-        this.successVersions = new HashSet<String>();
-        this.allVersions = new HashSet<String>();
+        this.successVersions = new LinkedHashSet<String>();
+        this.allVersions = new LinkedHashSet<String>();
         this.criteria = new ArrayList<CQMResultCertification>();
     }
 
@@ -156,8 +154,8 @@ public class CQMResultDetails implements Serializable {
 
         if (dto.getCriteria() != null && dto.getCriteria().size() > 0) {
             for (CQMResultCriteriaDTO criteriaDTO : dto.getCriteria()) {
-                CQMResultCertification criteria = new CQMResultCertification(criteriaDTO);
-                this.criteria.add(criteria);
+                CQMResultCertification cqmCriteria = new CQMResultCertification(criteriaDTO);
+                this.criteria.add(cqmCriteria);
             }
         }
     }
@@ -210,19 +208,19 @@ public class CQMResultDetails implements Serializable {
         this.domain = domain;
     }
 
-    public Set<String> getSuccessVersions() {
+    public LinkedHashSet<String> getSuccessVersions() {
         return successVersions;
     }
 
-    public void setSuccessVersions(Set<String> successVersions) {
+    public void setSuccessVersions(LinkedHashSet<String> successVersions) {
         this.successVersions = successVersions;
     }
 
-    public Set<String> getAllVersions() {
+    public LinkedHashSet<String> getAllVersions() {
         return allVersions;
     }
 
-    public void setAllVersions(Set<String> allVersions) {
+    public void setAllVersions(LinkedHashSet<String> allVersions) {
         this.allVersions = allVersions;
     }
 
