@@ -75,28 +75,10 @@ public class CheckInReportDataCollector {
     }
 
     public List<CheckInReport> collect(List<Long> acbIds) throws EntityRetrievalException {
-        // Based on the system property, this can be run in parallel or
-        // serially.
-        if (checkInReportParallel) {
-            return getCheckInReportsParallel(acbIds);
-        } else {
-            return getCheckInReportsSerial(acbIds);
-        }
+        return getCheckInReports(acbIds);
     }
 
-    private List<CheckInReport> getCheckInReportsParallel(List<Long> acbIds) {
-        AttestationPeriod mostRecentAttestationPeriod = attestationManager.getMostRecentPastAttestationPeriod();
-        return getDevelopersActiveListingsDuringMostRecentPastAttestationPeriod().parallelStream()
-                .filter(developer -> isDeveloperManagedBySelectedAcbs(developer, acbIds))
-                .map(developer -> getCheckInReport(developer))
-                .map(report -> {
-                    report.setAttestationPeriod(String.format("%s - %s", mostRecentAttestationPeriod.getPeriodStart().toString(), mostRecentAttestationPeriod.getPeriodEnd().toString()));
-                    return report;
-                })
-                .sorted((o1, o2) -> o1.getDeveloperName().compareTo(o2.getDeveloperName())).toList();
-    }
-
-    private List<CheckInReport> getCheckInReportsSerial(List<Long> acbIds) {
+    private List<CheckInReport> getCheckInReports(List<Long> acbIds) {
         AttestationPeriod mostRecentAttestationPeriod = attestationManager.getMostRecentPastAttestationPeriod();
         return getDevelopersActiveListingsDuringMostRecentPastAttestationPeriod().stream()
                 .filter(developer -> isDeveloperManagedBySelectedAcbs(developer, acbIds))

@@ -3,22 +3,18 @@ package gov.healthit.chpl.scheduler.job.developer.attestation;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmission;
 import gov.healthit.chpl.attestation.manager.AttestationSubmissionService;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchRequest;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchService;
-import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.dto.auth.UserDTO;
 
 @Component
 public class CheckInReportSourceService {
@@ -26,24 +22,15 @@ public class CheckInReportSourceService {
     private AttestationSubmissionService attestationManager;
     private ChangeRequestSearchService changeRequestSearchService;
     private ChangeRequestManager changeRequestManager;
-    private UserDAO userDAO;
 
     public CheckInReportSourceService(AttestationSubmissionService attestationManager, ChangeRequestSearchService changeRequestSearchService,
-            ChangeRequestManager changeRequestManager, UserDAO userDAO) {
+            ChangeRequestManager changeRequestManager) {
         this.attestationManager = attestationManager;
         this.changeRequestSearchService = changeRequestSearchService;
         this.changeRequestManager = changeRequestManager;
-        this.userDAO = userDAO;
     }
 
     public CheckInAttestation getCheckinReport(Developer developer, AttestationPeriod period, Logger logger) {
-        // try {
-        // setSecurityContext(userDAO.getById(User.ADMIN_USER_ID));
-        // } catch (UserRetrievalException e) {
-        // logger.error("Could not set security context: {}", e.getMessage(),
-        // e);
-        // return null;
-        // }
         return CheckInAttestation.builder()
                 .attestationSubmission(getMostRecentAttestationSubmission(developer, period))
                 .changeRequest(getMostRecentChangeRequest(developer, period, logger))
@@ -81,17 +68,4 @@ public class CheckInReportSourceService {
             return null;
         }
     }
-
-    private void setSecurityContext(UserDTO user) {
-        JWTAuthenticatedUser splitUser = new JWTAuthenticatedUser();
-        splitUser.setFullName(user.getFullName());
-        splitUser.setId(user.getId());
-        splitUser.setFriendlyName(user.getFriendlyName());
-        splitUser.setSubjectName(user.getUsername());
-        splitUser.getPermissions().add(user.getPermission().getGrantedPermission());
-
-        SecurityContextHolder.getContext().setAuthentication(splitUser);
-        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
-    }
-
 }
