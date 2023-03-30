@@ -201,9 +201,7 @@ public class DeveloperController {
             })
     @RequestMapping(value = "/merge", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public ResponseEntity<Void> merge(@RequestBody(required = true) MergeDevelopersRequest mergeRequest)
-            throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException, JsonProcessingException,
-            ValidationException, SchedulerException {
+    public ResponseEntity<Void> merge(@RequestBody(required = true) MergeDevelopersRequest mergeRequest) {
         return new ResponseEntity<>(HttpStatus.MOVED_PERMANENTLY);
     }
 
