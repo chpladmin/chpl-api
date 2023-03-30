@@ -3,8 +3,10 @@ package gov.healthit.chpl.compliance.surveillance;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -70,6 +72,8 @@ public class SurveillanceManager extends SecuredManager {
     private String schemaBasicSurveillanceName;
 
     private SurveillanceComparator survComparator;
+    private SurveillanceRequirementComparator reqComparator;
+    private SurveillanceNonconformityComparator ncComparator;
 
     @SuppressWarnings("checkstyle:parameterNumber")
     @Autowired
@@ -96,12 +100,22 @@ public class SurveillanceManager extends SecuredManager {
         this.schemaBasicSurveillanceName = schemaBasicSurveillanceName;
 
         this.survComparator = new SurveillanceComparator();
+        this.reqComparator = new SurveillanceRequirementComparator();
+        this.ncComparator = new SurveillanceNonconformityComparator();
     }
 
     @Transactional(readOnly = true)
     public Surveillance getById(final Long survId) throws EntityRetrievalException {
         Surveillance result = survDao.getSurveillanceById(survId).toDomain(cpDao, certificationCriterionService);
         survReadValidator.validate(result);
+        result.setRequirements(result.getRequirements().stream()
+                .sorted(reqComparator)
+                .collect(Collectors.toCollection(LinkedHashSet::new)));
+        result.getRequirements().stream()
+            .forEach(req -> req.setNonconformities(req.getNonconformities().stream()
+                    .sorted(ncComparator)
+                    .collect(Collectors.toList())));
+
         return result;
     }
 
@@ -112,6 +126,16 @@ public class SurveillanceManager extends SecuredManager {
                 .sorted(survComparator)
                 .toList();
         surveillances.forEach(surv -> survReadValidator.validate(surv));
+        surveillances.stream()
+            .forEach(surv -> surv.setRequirements(surv.getRequirements().stream()
+                    .sorted(reqComparator)
+                    .collect(Collectors.toCollection(LinkedHashSet::new))));
+        surveillances.stream()
+            .flatMap(surv -> surv.getRequirements().stream())
+            .forEach(req -> req.setNonconformities(req.getNonconformities().stream()
+                    .sorted(ncComparator)
+                    .collect(Collectors.toList())));
+
         return surveillances;
     }
 

@@ -21,7 +21,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
-import gov.healthit.chpl.compliance.surveillance.SurveillanceRequirementComparator;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
@@ -43,7 +42,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SurveillanceEntity {
-    private SurveillanceRequirementComparator reqComparator = new SurveillanceRequirementComparator();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -110,7 +108,6 @@ public class SurveillanceEntity {
                     .certifiedProduct(new CertifiedProduct(certifiedProductDAO.getDetailsById(this.getCertifiedProductId())))
                     .requirements(this.getSurveilledRequirements().stream()
                             .map(e -> e.toDomain(certificationCriterionService))
-                            .sorted(reqComparator)
                             .collect(Collectors.toCollection(LinkedHashSet::new)))
                     .build();
         } catch (EntityRetrievalException e) {
