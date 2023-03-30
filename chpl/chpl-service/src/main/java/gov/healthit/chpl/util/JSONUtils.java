@@ -7,7 +7,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.flipkart.zjsonpatch.JsonDiff;
 
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
 public final class JSONUtils {
 
     private static final ObjectMapper MAPPER = new ObjectMapper().findAndRegisterModules();
@@ -58,6 +62,12 @@ public final class JSONUtils {
             JsonNode node1 = getReader().readTree(json1);
             JsonNode node2 = getReader().readTree(json2);
             equals = node1.equals(node2);
+
+            JsonNode patch = JsonDiff.asJson(node1, node2);
+            if (patch != null && !patch.isEmpty()) {
+                LOGGER.info("DIFFERENCES FOUND");
+                LOGGER.info(patch.toString());
+            }
 
         } catch (final NullPointerException e) {
             equals = false;

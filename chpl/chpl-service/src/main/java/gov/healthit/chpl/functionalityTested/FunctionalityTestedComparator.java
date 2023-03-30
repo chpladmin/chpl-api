@@ -1,10 +1,9 @@
-package gov.healthit.chpl.certifiedproduct.service.comparator;
+package gov.healthit.chpl.functionalityTested;
 
 import java.util.Comparator;
 
 import org.apache.commons.lang3.StringUtils;
 
-import gov.healthit.chpl.functionalityTested.FunctionalityTested;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor

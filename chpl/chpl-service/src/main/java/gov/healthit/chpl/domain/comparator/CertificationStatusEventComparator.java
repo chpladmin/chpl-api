@@ -1,4 +1,4 @@
-package gov.healthit.chpl.certifiedproduct.service.comparator;
+package gov.healthit.chpl.domain.comparator;
 
 import java.util.Comparator;
 

@@ -8,11 +8,11 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.certifiedproduct.service.comparator.CertificationCriterionComparator;
-import gov.healthit.chpl.certifiedproduct.service.comparator.ListingMeasureComparator;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.ListingMeasure;
+import gov.healthit.chpl.domain.comparator.CertificationCriterionComparator;
+import gov.healthit.chpl.domain.comparator.ListingMeasureComparator;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 

@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.certifiedproduct.service.comparator.PromotingInteroperabilityComparator;
 import gov.healthit.chpl.dao.PromotingInteroperabilityUserDAO;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
+import gov.healthit.chpl.domain.comparator.PromotingInteroperabilityComparator;
 
 @Component
 public class PromotingInteroperabilityUserHistoryService {
