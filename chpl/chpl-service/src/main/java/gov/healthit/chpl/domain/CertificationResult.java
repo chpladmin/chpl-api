@@ -24,6 +24,11 @@ import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.conformanceMethod.CertificationResultConformanceMethodComparator;
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
+import gov.healthit.chpl.domain.comparator.CertificationResultAdditionalSoftwareComparator;
+import gov.healthit.chpl.domain.comparator.CertificationResultTestDataComparator;
+import gov.healthit.chpl.domain.comparator.CertificationResultTestProcedureComparator;
+import gov.healthit.chpl.domain.comparator.CertificationResultTestStandardComparator;
+import gov.healthit.chpl.domain.comparator.CertificationResultTestToolComparator;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTestedComparator;
@@ -295,6 +300,11 @@ public class CertificationResult implements Serializable {
     private CertificationResultOptionalStandardComparator osComparator;
     private CertificationResultConformanceMethodComparator cmComparator;
     private CertificationResultFunctionalityTestedComparator funcTestedComparator;
+    private CertificationResultTestProcedureComparator testProcComparator;
+    private CertificationResultTestDataComparator testDataComparator;
+    private CertificationResultTestToolComparator testToolComparator;
+    private CertificationResultTestStandardComparator testStandardComparator;
+    private CertificationResultAdditionalSoftwareComparator asComparator;
 
     public CertificationResult() {
         this.functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
@@ -312,6 +322,11 @@ public class CertificationResult implements Serializable {
         this.osComparator = new CertificationResultOptionalStandardComparator();
         this.cmComparator = new CertificationResultConformanceMethodComparator();
         this.funcTestedComparator = new CertificationResultFunctionalityTestedComparator();
+        this.testProcComparator = new CertificationResultTestProcedureComparator();
+        this.testDataComparator = new CertificationResultTestDataComparator();
+        this.testToolComparator = new CertificationResultTestToolComparator();
+        this.testStandardComparator = new CertificationResultTestStandardComparator();
+        this.asComparator = new CertificationResultAdditionalSoftwareComparator();
     }
 
     public CertificationResult(CertificationResultDetailsDTO certResult) {
@@ -482,6 +497,7 @@ public class CertificationResult implements Serializable {
         if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.TEST_PROCEDURE)) {
             return certResult.getTestProcedures().stream()
                     .map(item -> new CertificationResultTestProcedure(item))
+                    .sorted(testProcComparator)
                     .collect(Collectors.toList());
         } else {
             return null;
@@ -493,6 +509,7 @@ public class CertificationResult implements Serializable {
         if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.TEST_DATA)) {
             return certResult.getTestData().stream()
                     .map(item -> new CertificationResultTestData(item))
+                    .sorted(testDataComparator)
                     .collect(Collectors.toList());
         } else {
             return null;
@@ -503,6 +520,7 @@ public class CertificationResult implements Serializable {
         if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.TEST_TOOLS_USED)) {
             return certResult.getTestTools().stream()
                     .map(item -> new CertificationResultTestTool(item))
+                    .sorted(testToolComparator)
                     .collect(Collectors.toList());
         } else {
             return null;
@@ -513,6 +531,7 @@ public class CertificationResult implements Serializable {
         if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.STANDARDS_TESTED)) {
             return certResult.getTestStandards().stream()
                     .map(item -> new CertificationResultTestStandard(item))
+                    .sorted(testStandardComparator)
                     .collect(Collectors.toList());
         } else {
             return null;
@@ -523,6 +542,7 @@ public class CertificationResult implements Serializable {
         if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
             return certResult.getAdditionalSoftware().stream()
                     .map(item -> new CertificationResultAdditionalSoftware(item))
+                    .sorted(asComparator)
                     .collect(Collectors.toList());
         } else {
             return null;
