@@ -46,8 +46,6 @@ public class CheckInReportDataCollector {
     private CheckInReportSourceService checkInReportSourceService;
     private CheckInReportValidation checkInReportValidation;
 
-    private Boolean checkInReportParallel;
-
     private Map<Long, List<ListingSearchResult>> developerListings = new HashMap<Long, List<ListingSearchResult>>();
 
     private Set<String> activeStatuses = Stream.of(
@@ -61,8 +59,7 @@ public class CheckInReportDataCollector {
             DirectReviewSearchService directReviewSearchService, CertificationCriterionService certificationCriterionService, RealWorldTestingCriteriaService realWorldTestingCriteriaService,
             CheckInReportSourceService checkInReportSourceService, CheckInReportValidation checkInReportValidation,
             @Value("${assurancesCriteriaKeys}") String[] assurancesCriteriaKeys,
-            @Value("${apiCriteriaKeys}") String[] apiCriteriaKeys,
-            @Value("${checkInReportParallel}") Boolean checkInReportParallel) {
+            @Value("${apiCriteriaKeys}") String[] apiCriteriaKeys) {
 
         this.attestationManager = attestationManager;
         this.developerAttestationPeriodCalculator = developerAttestationPeriodCalculator;
@@ -71,7 +68,6 @@ public class CheckInReportDataCollector {
         this.directReviewSearchService = directReviewSearchService;
         this.checkInReportSourceService = checkInReportSourceService;
         this.checkInReportValidation = checkInReportValidation;
-        this.checkInReportParallel = checkInReportParallel;
     }
 
     public List<CheckInReport> collect(List<Long> acbIds) throws EntityRetrievalException {
