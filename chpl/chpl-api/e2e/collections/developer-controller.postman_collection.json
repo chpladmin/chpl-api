@@ -1,7 +1,8 @@
 {
 	"info": {
 		"name": "developer-controller",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8125082"
 	},
 	"item": [
 		{
@@ -36,7 +37,7 @@
 									"    var expectedcode= pm.iterationData.get(\"developerCode\");\r",
 									"    pm.expect(actualBody.developerCode).to.equal(expectedcode);\r",
 									"    var expectedid= pm.iterationData.get(\"developerId\");\r",
-									"    pm.expect(actualBody.developerId).to.equal(expectedid);\r",
+									"    pm.expect(actualBody.id).to.equal(expectedid);\r",
 									"});\r",
 									"const schema = {\r",
 									"  \"address\": {\r",
@@ -364,7 +365,7 @@
 									"    var expected= pm.iterationData.get(\"developerCode\");\r",
 									"    pm.expect(actualBody.developerCode).to.equal(expected);\r",
 									"    var expected= pm.iterationData.get(\"developerId\");\r",
-									"    pm.expect(actualBody.developerId).to.equal(expected);\r",
+									"    pm.expect(actualBody.id).to.equal(expected);\r",
 									"});"
 								],
 								"type": "text/javascript"
