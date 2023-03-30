@@ -114,7 +114,6 @@ public class DirectReviewCachingService {
         } else {
             replaceAllDataInDirectReviewCache(allDirectReviews, calculatedHttpStatus, logger);
         }
-
         directReviewListingSharedStoreHandler.handle(allDirectReviews, logger);
     }
 
