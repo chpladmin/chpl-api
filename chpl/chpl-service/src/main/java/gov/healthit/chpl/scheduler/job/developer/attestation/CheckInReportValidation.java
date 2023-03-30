@@ -86,7 +86,7 @@ public class CheckInReportValidation {
 
     private Boolean isApiValidAndResponseIsNotApplicable(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
         return isApiValid(allActiveListingsForDeveloper)
-                && doesFormResponseEqualResponse(attestationForm, AttestationFormMetaData.getApiConditionId(), AttestationFormMetaData.getNotAppicableResponseId());
+                && doesFormResponseEqualResponse(attestationForm, AttestationFormMetaData.getApiConditionId(), AttestationFormMetaData.getNotApplicableResponseId());
     }
 
     private Boolean isNotApiValidAndResponseIsCompliant(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
@@ -128,7 +128,7 @@ public class CheckInReportValidation {
 
     private Boolean isRwtValidAndResponseIsNotApplicable(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {
         return isRealWorldTestingValid(allActiveListingsForDeveloper)
-                && doesFormResponseEqualResponse(attestationForm, AttestationFormMetaData.getRwtConditionId(), AttestationFormMetaData.getNotAppicableResponseId());
+                && doesFormResponseEqualResponse(attestationForm, AttestationFormMetaData.getRwtConditionId(), AttestationFormMetaData.getNotApplicableResponseId());
     }
 
     private Boolean isNotRwtValidAndResponseIsCompliant(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm) {

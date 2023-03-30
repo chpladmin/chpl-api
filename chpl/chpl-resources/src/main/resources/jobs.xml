@@ -789,7 +789,7 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
-        
+
         <job>
             <name>updateParticipantsJob</name>
             <group>systemJobs</group>

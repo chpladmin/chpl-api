@@ -41,7 +41,7 @@ public class AttestationFormMetaData {
         return RWT_CONDITION;
     }
 
-    public static Long getNotAppicableResponseId() {
+    public static Long getNotApplicableResponseId() {
         return NOT_APPLICABLE_RESPONSE_ID;
     }
 

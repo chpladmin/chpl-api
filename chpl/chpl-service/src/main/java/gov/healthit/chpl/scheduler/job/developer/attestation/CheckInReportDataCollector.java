@@ -122,13 +122,13 @@ public class CheckInReportDataCollector {
         if (checkInAttestation.getChangeRequest() != null) {
             form = ((ChangeRequestAttestationSubmission) checkInAttestation.getChangeRequest().getDetails()).getForm();
             checkInReport = addChangeRequestInformation(checkInReport, checkInAttestation.getChangeRequest());
-            checkInReport = addRespsonses(checkInReport, form, ((ChangeRequestAttestationSubmission) checkInAttestation.getChangeRequest().getDetails()).getAttestationPeriod().getId());
+            checkInReport = addResponses(checkInReport, form, ((ChangeRequestAttestationSubmission) checkInAttestation.getChangeRequest().getDetails()).getAttestationPeriod().getId());
             checkInReport = addValidation(checkInReport, form, ((ChangeRequestAttestationSubmission) checkInAttestation.getChangeRequest().getDetails()).getAttestationPeriod(), allActiveListingsForDeveloper);
         }
         if (checkInAttestation.getAttestationSubmission() != null) {
             form = checkInAttestation.getAttestationSubmission().getForm();
             checkInReport = addPublishedAttestationInformation(checkInReport, developer, checkInAttestation.getAttestationSubmission());
-            checkInReport = addRespsonses(checkInReport, form, checkInAttestation.getAttestationSubmission().getAttestationPeriod().getId());
+            checkInReport = addResponses(checkInReport, form, checkInAttestation.getAttestationSubmission().getAttestationPeriod().getId());
             checkInReport = addValidation(checkInReport, form, checkInAttestation.getAttestationSubmission().getAttestationPeriod(), allActiveListingsForDeveloper);
         }
         checkInReport = addComplianceInformation(checkInReport, developer, allActiveListingsForDeveloper);
@@ -170,7 +170,7 @@ public class CheckInReportDataCollector {
         return checkInReport;
     }
 
-    private CheckInReport addRespsonses(CheckInReport checkInReport, Form form, Long attestationPeriodId) {
+    private CheckInReport addResponses(CheckInReport checkInReport, Form form, Long attestationPeriodId) {
         checkInReport.setInformationBlockingResponse(getAttestationResponse(form, AttestationFormMetaData.getInformationBlockingConditionId()));
         checkInReport.setInformationBlockingNoncompliantResponse(getAttestationOptionalResponse(form, AttestationFormMetaData.getInformationBlockingConditionId()));
         checkInReport.setAssurancesResponse(getAttestationResponse(form, AttestationFormMetaData.getAssurancesConditionId(attestationPeriodId)));
