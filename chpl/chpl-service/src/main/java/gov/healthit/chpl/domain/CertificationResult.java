@@ -12,25 +12,30 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
+import gov.healthit.chpl.conformanceMethod.CertificationResultConformanceMethodComparator;
+import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
-import gov.healthit.chpl.functionalityTested.FunctionalityTested;
+import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTestedComparator;
 import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionality;
+import gov.healthit.chpl.functionalityTested.FunctionalityTested;
+import gov.healthit.chpl.optionalStandard.CertificationResultOptionalStandardComparator;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
+import gov.healthit.chpl.svap.domain.CertificationResultSvapComparator;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.util.CertificationResultRules;
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;
@@ -286,6 +291,11 @@ public class CertificationResult implements Serializable {
     @XmlTransient
     private String number;
 
+    private CertificationResultSvapComparator svapComparator;
+    private CertificationResultOptionalStandardComparator osComparator;
+    private CertificationResultConformanceMethodComparator cmComparator;
+    private CertificationResultFunctionalityTestedComparator funcTestedComparator;
+
     public CertificationResult() {
         this.functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         this.testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
@@ -297,6 +307,11 @@ public class CertificationResult implements Serializable {
         this.conformanceMethods = new ArrayList<CertificationResultConformanceMethod>();
         this.testProcedures = new ArrayList<CertificationResultTestProcedure>();
         this.svaps = new ArrayList<CertificationResultSvap>();
+
+        this.svapComparator = new CertificationResultSvapComparator();
+        this.osComparator = new CertificationResultOptionalStandardComparator();
+        this.cmComparator = new CertificationResultConformanceMethodComparator();
+        this.funcTestedComparator = new CertificationResultFunctionalityTestedComparator();
     }
 
     public CertificationResult(CertificationResultDetailsDTO certResult) {
@@ -424,7 +439,9 @@ public class CertificationResult implements Serializable {
 
     private List<CertificationResultSvap> getSvaps(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
         if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.SVAP)) {
-            return certResult.getSvaps();
+            return certResult.getSvaps().stream()
+                    .sorted(svapComparator)
+                    .collect(Collectors.toList());
         } else {
             return null;
         }
@@ -433,6 +450,7 @@ public class CertificationResult implements Serializable {
     private List<CertificationResultOptionalStandard> getOptionalStandards(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
         if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.OPTIONAL_STANDARD)) {
             return certResult.getOptionalStandards().stream()
+                    .sorted(osComparator)
                     .collect(Collectors.toList());
         } else {
             return null;
@@ -441,7 +459,9 @@ public class CertificationResult implements Serializable {
 
     private List<CertificationResultFunctionalityTested> getFunctionalitiesTested(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
         if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
-            return certResult.getFunctionalitiesTested();
+            return certResult.getFunctionalitiesTested().stream()
+                    .sorted(funcTestedComparator)
+                    .collect(Collectors.toList());
         } else {
             return null;
         }
@@ -451,6 +471,7 @@ public class CertificationResult implements Serializable {
         if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.CONFORMANCE_METHOD)) {
             return certResult.getConformanceMethods().stream()
                     .map(item -> new CertificationResultConformanceMethod(item))
+                    .sorted(cmComparator)
                     .collect(Collectors.toList());
         } else {
             return null;

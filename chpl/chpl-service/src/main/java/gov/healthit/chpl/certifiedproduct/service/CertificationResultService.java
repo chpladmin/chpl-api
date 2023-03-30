@@ -7,11 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certifiedproduct.service.comparator.CertificationResultComparator;
-import gov.healthit.chpl.certifiedproduct.service.comparator.ConformanceMethodComparator;
 import gov.healthit.chpl.certifiedproduct.service.comparator.FunctionalityTestedComparator;
-import gov.healthit.chpl.certifiedproduct.service.comparator.OptionalStandardComparator;
-import gov.healthit.chpl.certifiedproduct.service.comparator.SvapComparator;
 import gov.healthit.chpl.certifiedproduct.service.comparator.TestToolComparator;
+import gov.healthit.chpl.conformanceMethod.ConformanceMethodComparator;
 import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
@@ -31,11 +29,13 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.functionalityTested.FunctionalityTested;
 import gov.healthit.chpl.functionalityTested.FunctionalityTestedManager;
 import gov.healthit.chpl.manager.CertificationResultManager;
+import gov.healthit.chpl.optionalStandard.OptionalStandardComparator;
 import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
 import gov.healthit.chpl.svap.dao.SvapDAO;
 import gov.healthit.chpl.svap.domain.Svap;
+import gov.healthit.chpl.svap.domain.SvapComparator;
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
 import gov.healthit.chpl.util.CertificationResultRules;
 
