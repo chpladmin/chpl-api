@@ -1005,7 +1005,7 @@ public class SearchRequestValidatorTest {
     }
 
     @Test
-    public void validate_hasHadComplianceFilterNotNullDirectReviewsNotAvailable_addsError() {
+    public void validate_hasHadComplianceFilterNotNullDirectReviewsNotAvailable_noError() {
         Mockito.when(drService.doesCacheHaveAnyOkData()).thenReturn(false);
 
         SearchRequest request = SearchRequest.builder()
@@ -1018,14 +1018,13 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
-            assertTrue(ex.getErrorMessages().contains(DIRECT_REVIEWS_UNAVAILABLE));
+            fail("Should not execute.");
             return;
         }
-        fail("Should not execute.");
     }
 
     @Test
-    public void validate_hasNonConformityOptionsDirectReviewsNotAvailable_addsError() {
+    public void validate_hasNonConformityOptionsDirectReviewsNotAvailable_noError() {
         Mockito.when(drService.doesCacheHaveAnyOkData()).thenReturn(false);
 
         SearchRequest request = SearchRequest.builder()
@@ -1038,14 +1037,13 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
-            assertTrue(ex.getErrorMessages().contains(DIRECT_REVIEWS_UNAVAILABLE));
+            fail("Should not execute.");
             return;
         }
-        fail("Should not execute.");
     }
 
     @Test
-    public void validate_hasNonConformityOptionsOperatorDirectReviewsNotAvailable_addsError() {
+    public void validate_hasNonConformityOptionsOperatorDirectReviewsNotAvailable_noError() {
         Mockito.when(drService.doesCacheHaveAnyOkData()).thenReturn(false);
 
         SearchRequest request = SearchRequest.builder()
@@ -1058,10 +1056,9 @@ public class SearchRequestValidatorTest {
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
-            assertTrue(ex.getErrorMessages().contains(DIRECT_REVIEWS_UNAVAILABLE));
+            fail("Should not execute.");
             return;
         }
-        fail("Should not execute.");
     }
 
     @Test

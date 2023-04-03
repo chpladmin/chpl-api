@@ -24,7 +24,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.ChangeRequestResults;
 import io.swagger.v3.oas.annotations.Operation;
@@ -69,23 +68,6 @@ public class ChangeRequestController {
     public @ResponseBody ChplOneTimeTrigger triggerChangeRequestsReport(@RequestBody ChangeRequestSearchRequest searchRequest)
                     throws EntityRetrievalException, ValidationException, SchedulerException {
         return changeRequestManager.triggerChangeRequestsReport(searchRequest);
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/change-requests",
-        removalDate = "2023-01-01",
-        message = "This endpoint is deprecated and will be removed in a future release. Please use /change-requests/search.")
-    @Operation(summary = "Get details about all change requests.",
-            description = "Security Restrictions: ROLE_ADMIN & ROLE_ONC can get all change requests.  ROLE_ACB can get change requests "
-                    + "for developers where they manage at least one certified product for the developer.  ROLE_DEVELOPER can get "
-                    + "change requests where they have administrative authority based on the developer.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<ChangeRequest> getAllChangeRequests() throws EntityRetrievalException {
-        return changeRequestManager.getAllChangeRequestsForUser();
     }
 
     @Operation(summary = "Create a new change request.",
