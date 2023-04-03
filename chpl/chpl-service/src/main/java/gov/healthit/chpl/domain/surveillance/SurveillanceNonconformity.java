@@ -443,11 +443,4 @@ public class SurveillanceNonconformity implements Serializable {
     public void setLastModifiedDate(Date lastModifiedDate) {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
-
-    @Deprecated //this field should be removed from Json responses but left in the API code
-    @DeprecatedResponseField(removalDate = "2023-01-01",
-        message = "This field is deprecated and will be removed from the response data in a future release.")
-    public String getNonconformityTypeName() {
-        return NullSafeEvaluator.eval(() -> type.getFormattedTitle(), "");
-    }
 }

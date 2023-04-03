@@ -429,6 +429,84 @@ public class ComplaintSearchRequestNormalizerTest {
     }
 
     @Test
+    public void normalize_listingIdStrings_trimsCorrectly() {
+        ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
+                .listingIdStrings(Stream.of("1 ", " 2 ", "", " ", null, "3", "notanumber").collect(Collectors.toSet()))
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(3, searchRequest.getListingIds().size());
+        assertTrue(searchRequest.getListingIds().contains(1L));
+        assertTrue(searchRequest.getListingIds().contains(2L));
+        assertTrue(searchRequest.getListingIds().contains(3L));
+    }
+
+    @Test
+    public void normalize_listingIdLongs_noChange() {
+        ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
+                .listingIds(Stream.of(1L, 2L, 3L).collect(Collectors.toSet()))
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(3, searchRequest.getListingIds().size());
+        assertTrue(searchRequest.getListingIds().contains(1L));
+        assertTrue(searchRequest.getListingIds().contains(2L));
+        assertTrue(searchRequest.getListingIds().contains(3L));
+    }
+
+    @Test
+    public void normalize_surveillanceIdStrings_trimsCorrectly() {
+        ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
+                .surveillanceIdStrings(Stream.of("1 ", " 2 ", "", " ", null, "3", "notanumber").collect(Collectors.toSet()))
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(3, searchRequest.getSurveillanceIds().size());
+        assertTrue(searchRequest.getSurveillanceIds().contains(1L));
+        assertTrue(searchRequest.getSurveillanceIds().contains(2L));
+        assertTrue(searchRequest.getSurveillanceIds().contains(3L));
+    }
+
+    @Test
+    public void normalize_surveillanceIdLongs_noChange() {
+        ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
+                .surveillanceIds(Stream.of(1L, 2L, 3L).collect(Collectors.toSet()))
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(3, searchRequest.getSurveillanceIds().size());
+        assertTrue(searchRequest.getSurveillanceIds().contains(1L));
+        assertTrue(searchRequest.getSurveillanceIds().contains(2L));
+        assertTrue(searchRequest.getSurveillanceIds().contains(3L));
+    }
+
+    @Test
+    public void normalize_certificationCriteriaIdStrings_trimsCorrectly() {
+        ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
+                .certificationCriteriaIdStrings(Stream.of("1 ", " 2 ", "", " ", null, "3", "notanumber").collect(Collectors.toSet()))
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(3, searchRequest.getCertificationCriteriaIds().size());
+        assertTrue(searchRequest.getCertificationCriteriaIds().contains(1L));
+        assertTrue(searchRequest.getCertificationCriteriaIds().contains(2L));
+        assertTrue(searchRequest.getCertificationCriteriaIds().contains(3L));
+    }
+
+    @Test
+    public void normalize_certificationCriteriaIdLongs_noChange() {
+        ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
+                .certificationCriteriaIds(Stream.of(1L, 2L, 3L).collect(Collectors.toSet()))
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(3, searchRequest.getCertificationCriteriaIds().size());
+        assertTrue(searchRequest.getCertificationCriteriaIds().contains(1L));
+        assertTrue(searchRequest.getCertificationCriteriaIds().contains(2L));
+        assertTrue(searchRequest.getCertificationCriteriaIds().contains(3L));
+    }
+
+    @Test
     public void normalize_closedDateStartNull_noEffect() {
         ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
                 .closedDateStart(null)

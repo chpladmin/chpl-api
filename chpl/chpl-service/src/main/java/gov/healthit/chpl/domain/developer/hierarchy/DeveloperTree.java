@@ -21,7 +21,6 @@ public class DeveloperTree extends Developer {
 
     public DeveloperTree(Developer developer) {
         this.setId(developer.getId());
-        this.setDeveloperId(developer.getId());
         this.setAddress(developer.getAddress());
         this.setAttestations(developer.getAttestations());
         this.setContact(developer.getContact());

@@ -39,11 +39,12 @@ public class ListingSearchServiceTest {
 
     private ListingSearchManager listingSearchManager;
     private ListingSearchService listingSearchService;
+    private DirectReviewSearchService drService;
 
     @Before
     public void setup() {
         SearchRequestValidator searchRequestValidator = Mockito.mock(SearchRequestValidator.class);
-        DirectReviewSearchService drService = Mockito.mock(DirectReviewSearchService.class);
+        drService = Mockito.mock(DirectReviewSearchService.class);
         Mockito.when(drService.doesCacheHaveAnyOkData()).thenReturn(true);
         listingSearchManager = Mockito.mock(ListingSearchManager.class);
 
@@ -1868,6 +1869,33 @@ public class ListingSearchServiceTest {
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
         assertEquals(1, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_listingComplianceTrueAndDrsNotAvailable_findsNoListings() throws ValidationException {
+        List<ListingSearchResult> allListings = createListingSearchResultCollection(3);
+        allListings.get(0).setSurveillanceCount(0L);
+        allListings.get(0).setDirectReviewCount(0);
+        allListings.get(1).setSurveillanceCount(2L);
+        allListings.get(1).setDirectReviewCount(0);
+        allListings.get(2).setSurveillanceCount(0L);
+        allListings.get(2).setDirectReviewCount(1);
+
+        Mockito.when(drService.doesCacheHaveAnyOkData()).thenReturn(false);
+        Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .complianceActivity(ComplianceSearchFilter.builder()
+                    .hasHadComplianceActivity(true)
+                    .build())
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
+        assertFalse(searchResponse.getDirectReviewsAvailable());
     }
 
     @Test

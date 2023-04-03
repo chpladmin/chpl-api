@@ -53,10 +53,14 @@ public class DeveloperAttestationPeriodCalculator {
         AttestationPeriod mostRecentPastPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
         logger.info("Most recent past attestation period: {} - {} ", mostRecentPastPeriod.getPeriodStart().toString(), mostRecentPastPeriod.getPeriodEnd().toString());
 
+        return getDevelopersWithActiveListingsDuringAttestationPeriod(mostRecentPastPeriod, logger);
+    }
+
+    public List<Developer> getDevelopersWithActiveListingsDuringAttestationPeriod(AttestationPeriod period, Logger logger) {
         return getAllDevelopers().stream()
                 .filter(dev -> {
                     List<ListingSearchResult> listingsForDeveloper = getListingDataForDeveloper(dev, logger);
-                    return doesActiveListingExistDuringAttestationPeriod(listingsForDeveloper, mostRecentPastPeriod)
+                    return doesActiveListingExistDuringAttestationPeriod(listingsForDeveloper, period)
                             && doesCurrentActiveListingExist(listingsForDeveloper);
                 })
                 .toList();
