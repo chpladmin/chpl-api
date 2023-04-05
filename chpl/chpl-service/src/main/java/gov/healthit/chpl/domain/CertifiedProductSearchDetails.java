@@ -3,7 +3,6 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,6 +20,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.collections.api.factory.Sets;
+import org.eclipse.collections.api.set.ImmutableSet;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -587,19 +588,19 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.warningMessages = warningMessages;
     }
 
-    public Set<String> getErrorMessages() {
+    public ImmutableSet<String> getErrorMessages() {
         // this forces use of addBusinessError(...) & addDataError(...)
-        return Collections.unmodifiableSet(errorMessages);
+        return Sets.immutable.withAll(errorMessages);
     }
 
-    public Set<String> getDataErrorMessages() {
+    public ImmutableSet<String> getDataErrorMessages() {
         // this forces use of addDataError(...)
-        return Collections.unmodifiableSet(dataErrorMessages);
+        return Sets.immutable.withAll(dataErrorMessages);
     }
 
-    public Set<String> getBusinessErrorMessages() {
+    public ImmutableSet<String> getBusinessErrorMessages() {
         // this forces use of addBusinessError(...)
-        return Collections.unmodifiableSet(businessErrorMessages);
+        return Sets.immutable.withAll(businessErrorMessages);
     }
 
     public void addDataErrorMessage(String errorMessage) {
@@ -607,9 +608,19 @@ public class CertifiedProductSearchDetails implements Serializable {
         dataErrorMessages.add(errorMessage);
     }
 
-    public void addBusinessErrorMessages(String errorMessage) {
+    public void addBusinessErrorMessage(String errorMessage) {
         errorMessages.add(errorMessage);
         businessErrorMessages.add(errorMessage);
+    }
+
+    public void addAllDataErrorMessages(List<String> errorMessages) {
+        errorMessages.addAll(errorMessages);
+        dataErrorMessages.addAll(errorMessages);
+    }
+
+    public void addAllBusinessErrorMessages(List<String> errorMessages) {
+        errorMessages.addAll(errorMessages);
+        businessErrorMessages.addAll(errorMessages);
     }
 
     public InheritedCertificationStatus getIcs() {
