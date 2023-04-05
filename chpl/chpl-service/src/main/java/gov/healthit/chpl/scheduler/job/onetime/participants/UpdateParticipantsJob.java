@@ -79,13 +79,13 @@ public class UpdateParticipantsJob implements Job {
                     .certificationCriteriaOperator(SearchSetOperator.AND)
                     .build()).stream()
                     .filter(listingSearchResult -> listingSearchResult.getId() >= FIRST_LISTING_ID_CONFIRMED_WITH_FLEXIBLE_UPLOAD
-                                                    && listingSearchResult.getId() <= LAST_LISTING_ID_CONFIRMED_WITH_SED_ISSUE)
+                            && listingSearchResult.getId() <= LAST_LISTING_ID_CONFIRMED_WITH_SED_ISSUE)
                     .toList();
 
             LOGGER.info("Found " + activeListingsWithG3ConfirmedWithFlexibleUpload.size() + " listing uploads attesting to 170.315 (g)(3).");
 
             activeListingsWithG3ConfirmedWithFlexibleUpload.stream()
-                .forEach(listing -> attemptToCorrectSed(listing));
+                    .forEach(listing -> attemptToCorrectSed(listing));
 
         } catch (Exception ex) {
             LOGGER.fatal("Unexpected exception was caught. All listings may not have been processed.", ex);
@@ -104,7 +104,7 @@ public class UpdateParticipantsJob implements Job {
                 printListingErrorsAndWarnings(listingUpdateResult.getUpdatedListing());
                 LOGGER.error(String.format(FAILURE_TO_UPDATE_MSG, listingUpdateResult.getOriginalListing().getId()));
             } else {
-                //this replacement should execute as a single transaction in case any part of it fails
+                // this replacement should execute as a single transaction in case any part of it fails
                 try {
                     participantReplacementDao.replaceParticipants(listingUpdateResult.getUpdatedListing());
                 } catch (Exception ex) {
@@ -121,7 +121,7 @@ public class UpdateParticipantsJob implements Job {
 
     private ListingUpdateResult applyStrategies(CertifiedProductSearchDetails listing) {
         ListingUpdateResult result = new ListingUpdateResult();
-        //get the details again for the "original" listing because the strategies will change the listing reference
+        // get the details again for the "original" listing because the strategies will change the listing reference
         result.setOriginalListing(getCertifiedProductSearchDetails(listing.getId()));
         Iterator<ParticipantUpdateStrategy> strategyIter = participantUpdateStrategies.iterator();
         while (strategyIter.hasNext() && result.getUpdatedListing() == null) {
@@ -131,9 +131,9 @@ public class UpdateParticipantsJob implements Job {
                 result.setUpdatedListing(listing);
                 LOGGER.info("Listing " + listing.getId() + " was updated with strategy " + strategy.getClass().getName());
             } else if (strategyIter.hasNext()) {
-                //If the current strategy updates SOME of the listing SED data but not all of it -
-                //then our "listing" reference may have some changed data
-                //but we want to start the next strategy with a fresh non-modified version listing
+                // If the current strategy updates SOME of the listing SED data but not all of it -
+                // then our "listing" reference may have some changed data
+                // but we want to start the next strategy with a fresh non-modified version listing
                 listing = getCertifiedProductSearchDetails(listing.getId());
             }
         }
@@ -141,28 +141,28 @@ public class UpdateParticipantsJob implements Job {
     }
 
     private boolean hasSedErrors(CertifiedProductSearchDetails listing) {
-        //there are probably errors and warnings that weren't here originally -
-        //some criteria have been removed, we changed measure parsing, etc
-        return !CollectionUtils.isEmpty(listing.getErrorMessages())
-                && isAnyMessageAboutSed(listing.getErrorMessages());
+        // there are probably errors and warnings that weren't here originally -
+        // some criteria have been removed, we changed measure parsing, etc
+        return !CollectionUtils.isEmpty(listing.getErrorMessages().castToSet())
+                && isAnyMessageAboutSed(listing.getErrorMessages().castToSet());
     }
 
     private boolean isAnyMessageAboutSed(Collection<String> messages) {
         return messages.stream()
-            .map(msg -> msg.toUpperCase())
-            .filter(upperCaseMsg -> upperCaseMsg.contains("SED")
-                    || upperCaseMsg.contains("TASK")
-                    || upperCaseMsg.contains("PARTICIPANT"))
-            .count() > 0;
+                .map(msg -> msg.toUpperCase())
+                .filter(upperCaseMsg -> upperCaseMsg.contains("SED")
+                        || upperCaseMsg.contains("TASK")
+                        || upperCaseMsg.contains("PARTICIPANT"))
+                .count() > 0;
     }
 
     private void printListingErrorsAndWarnings(CertifiedProductSearchDetails listing) {
         LOGGER.info("\tErrors for listing: " + listing.getId());
-        if (CollectionUtils.isEmpty(listing.getErrorMessages())) {
+        if (CollectionUtils.isEmpty(listing.getErrorMessages().castToSet())) {
             LOGGER.info("\t0 errors.");
         } else {
             listing.getErrorMessages().stream()
-                .forEach(msg -> LOGGER.info("\t" + msg));
+                    .forEach(msg -> LOGGER.info("\t" + msg));
         }
 
         LOGGER.info("\tWarnings for listing: " + listing.getId());
@@ -170,7 +170,7 @@ public class UpdateParticipantsJob implements Job {
             LOGGER.info("\t0 warnings.");
         } else {
             listing.getWarningMessages().stream()
-                .forEach(msg -> LOGGER.info("\t" + msg));
+                    .forEach(msg -> LOGGER.info("\t" + msg));
         }
     }
 

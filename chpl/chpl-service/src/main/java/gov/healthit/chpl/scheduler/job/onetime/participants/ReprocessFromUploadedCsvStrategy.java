@@ -40,15 +40,15 @@ public class ReprocessFromUploadedCsvStrategy implements ParticipantUpdateStrate
         this.processedListingUploadManager = processedListingUploadManager;
     }
 
+    @Override
     public boolean updateParticipants(CertifiedProductSearchDetails confirmedListing) {
-        CertifiedProductSearchDetails uploadedListing =
-                processedListingUploadManager.getUploadedDetailsByConfirmedCertifiedProductId(confirmedListing.getId());
+        CertifiedProductSearchDetails uploadedListing = processedListingUploadManager.getUploadedDetailsByConfirmedCertifiedProductId(confirmedListing.getId());
         if (hasSedErrors(uploadedListing)) {
             printListingErrorsAndWarnings(uploadedListing);
             return false;
         }
 
-        //there should be the same test tasks present in both listings
+        // there should be the same test tasks present in both listings
         List<TestTask> taskDiff1 = subtractTestTasks(confirmedListing.getSed().getTestTasks(), uploadedListing.getSed().getTestTasks());
         List<TestTask> taskDiff2 = subtractTestTasks(uploadedListing.getSed().getTestTasks(), confirmedListing.getSed().getTestTasks());
         if (!CollectionUtils.isEmpty(taskDiff1)) {
@@ -61,7 +61,7 @@ public class ReprocessFromUploadedCsvStrategy implements ParticipantUpdateStrate
             return false;
         }
 
-        //there should be the same test participants present in both listings
+        // there should be the same test participants present in both listings
         List<TestParticipant> confirmedTestParticipants = confirmedListing.getSed().getTestTasks().stream()
                 .flatMap(task -> task.getTestParticipants().stream())
                 .collect(Collectors.toList());
@@ -81,23 +81,23 @@ public class ReprocessFromUploadedCsvStrategy implements ParticipantUpdateStrate
             return false;
         }
 
-        //if we haven't returned yet, we think this listing is eligible for re-processing
+        // if we haven't returned yet, we think this listing is eligible for re-processing
         boolean allTestTasksCanBeUpdated = true;
         Iterator<TestTask> confirmedTaskIter = confirmedListing.getSed().getTestTasks().iterator();
         while (confirmedTaskIter.hasNext() && allTestTasksCanBeUpdated) {
             TestTask confirmedTestTask = confirmedTaskIter.next();
             Optional<TestTask> uploadedTestTask = findTestTask(confirmedTestTask, uploadedListing.getSed().getTestTasks());
             if (uploadedTestTask.isEmpty()) {
-                //we really shouldn't get here due to the checks above that compare lists of tasks
+                // we really shouldn't get here due to the checks above that compare lists of tasks
                 LOGGER.warn("Confirmed test task with ID " + confirmedTestTask.getId() + " cannot be re-processed. No matching uploaded test task was found.");
                 allTestTasksCanBeUpdated = false;
             } else {
-                //compare the participants for the uploaded task to the confirmed task to make sure
-                //they all have the exact same values
+                // compare the participants for the uploaded task to the confirmed task to make sure
+                // they all have the exact same values
                 List<TestParticipant> taskParticipantsDiff1 = subtractTestParticipants(confirmedTestTask.getTestParticipants(), uploadedTestTask.get().getTestParticipants());
                 if (!CollectionUtils.isEmpty(taskParticipantsDiff1)) {
                     LOGGER.warn("A test participant was found in the confirmed test task " + confirmedTestTask.getId()
-                        + " that is not in the uploaded task.");
+                            + " that is not in the uploaded task.");
                     LOGGER.warn(taskParticipantsDiff1.stream().map(participant -> participant.toString()).collect(Collectors.joining(System.lineSeparator())));
                     allTestTasksCanBeUpdated = false;
                 }
@@ -110,7 +110,7 @@ public class ReprocessFromUploadedCsvStrategy implements ParticipantUpdateStrate
                 }
 
                 if (CollectionUtils.isEmpty(taskParticipantsDiff1) && CollectionUtils.isEmpty(taskParticipantsDiff2)) {
-                    //if we are still processing, then this confirmed test task and this uploaded test task have participants with the same values
+                    // if we are still processing, then this confirmed test task and this uploaded test task have participants with the same values
                     confirmedTestTask.setTestParticipants(uploadedTestTask.get().getTestParticipants());
                 }
             }
@@ -119,29 +119,29 @@ public class ReprocessFromUploadedCsvStrategy implements ParticipantUpdateStrate
     }
 
     private boolean hasSedErrors(CertifiedProductSearchDetails listing) {
-        //there are probably errors and warnings that weren't here originally -
-        //some criteria have been removed, we changed measure parsing, etc
-        return !CollectionUtils.isEmpty(listing.getErrorMessages())
-             && isAnyMessageAboutSed(listing.getErrorMessages());
+        // there are probably errors and warnings that weren't here originally -
+        // some criteria have been removed, we changed measure parsing, etc
+        return !CollectionUtils.isEmpty(listing.getErrorMessages().castToSet())
+                && isAnyMessageAboutSed(listing.getErrorMessages().castToSet());
     }
 
     private boolean isAnyMessageAboutSed(Collection<String> messages) {
         return messages.stream()
-            .map(msg -> msg.toUpperCase())
-            .filter(upperCaseMsg -> upperCaseMsg.contains("SED")
-                    || upperCaseMsg.contains("TASK")
-                    || upperCaseMsg.contains("PARTICIPANT"))
-            .count() > 0;
+                .map(msg -> msg.toUpperCase())
+                .filter(upperCaseMsg -> upperCaseMsg.contains("SED")
+                        || upperCaseMsg.contains("TASK")
+                        || upperCaseMsg.contains("PARTICIPANT"))
+                .count() > 0;
     }
 
     private void printListingErrorsAndWarnings(CertifiedProductSearchDetails listing) {
         LOGGER.info("Errors for listing: " + listing.getChplProductNumber() + " (confirmed listing " + listing.getId() + ")");
-        //there might be errors due to measure parsing since all of these files had the old measure columns...
-        if (CollectionUtils.isEmpty(listing.getErrorMessages())) {
+        // there might be errors due to measure parsing since all of these files had the old measure columns...
+        if (CollectionUtils.isEmpty(listing.getErrorMessages().castToSet())) {
             LOGGER.info("\t0 errors.");
         } else {
             listing.getErrorMessages().stream()
-                .forEach(msg -> LOGGER.info("\t" + msg));
+                    .forEach(msg -> LOGGER.info("\t" + msg));
         }
 
         LOGGER.info("Warnings for listing: " + listing.getChplProductNumber() + " (confirmed listing " + listing.getId() + ")");
@@ -149,7 +149,7 @@ public class ReprocessFromUploadedCsvStrategy implements ParticipantUpdateStrate
             LOGGER.info("\t0 warnings.");
         } else {
             listing.getWarningMessages().stream()
-                .forEach(msg -> LOGGER.info("\t" + msg));
+                    .forEach(msg -> LOGGER.info("\t" + msg));
         }
     }
 
@@ -255,8 +255,8 @@ public class ReprocessFromUploadedCsvStrategy implements ParticipantUpdateStrate
         private ListingDetailsNormalizer listingNormalizer;
         private ListingUploadHandlerUtil uploadUtil;
         private ProcessedListingUploadDao processedListingUploadDao;
-        //use this validator instead of the ListingUploadValidator because
-        //otherwise we get an error about "existing listing with this CHPL Product Number"
+        // use this validator instead of the ListingUploadValidator because
+        // otherwise we get an error about "existing listing with this CHPL Product Number"
         private Edition2015ListingValidator listingValidator;
         private ListingDetailsUploadHandler listingDetailsHandler;
 
@@ -287,8 +287,7 @@ public class ReprocessFromUploadedCsvStrategy implements ParticipantUpdateStrate
             CSVRecord headingRecord = uploadUtil.getHeadingRecord(allCsvRecords);
             List<CSVRecord> allListingRecords = allCsvRecords.subList(headingRowIndex + 1, allCsvRecords.size());
             LOGGER.trace("Converting listing upload with ID " + id + " into CertifiedProductSearchDetails object");
-            CertifiedProductSearchDetails listing =
-                    listingDetailsHandler.parseAsListing(headingRecord, allListingRecords);
+            CertifiedProductSearchDetails listing = listingDetailsHandler.parseAsListing(headingRecord, allListingRecords);
             LOGGER.trace("Converted listing upload with ID " + id + " into CertifiedProductSearchDetails object");
             listingNormalizer.normalize(listing);
             listing.setId(id);
