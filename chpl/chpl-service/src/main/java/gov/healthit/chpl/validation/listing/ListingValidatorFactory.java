@@ -10,8 +10,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Service
 @Log4j2
-public class ListingValidatorFactory  {
-
+public class ListingValidatorFactory {
 
     private AllowedListingValidator allowedValidator;
     private Edition2015ListingValidator edition2015Validator;
@@ -30,7 +29,7 @@ public class ListingValidatorFactory  {
         if (StringUtils.isEmpty(listing.getChplProductNumber())
                 || StringUtils.isEmpty(edition)) {
             String errMsg = msgUtil.getMessage("listing.validator.editionOrChplNumberNotFound", listing.getId().toString());
-            listing.getErrorMessages().add(errMsg);
+            listing.addBusinessErrorMessage(errMsg);
             LOGGER.error(errMsg);
             return null;
         }
@@ -41,7 +40,7 @@ public class ListingValidatorFactory  {
             return edition2015Validator;
         } else {
             String errMsg = msgUtil.getMessage("listing.validator.certificationEditionNotFound", edition);
-            listing.getErrorMessages().add(errMsg);
+            listing.addBusinessErrorMessage(errMsg);
             LOGGER.error(errMsg);
         }
         return null;

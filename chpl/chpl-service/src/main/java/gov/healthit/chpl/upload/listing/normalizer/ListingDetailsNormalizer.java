@@ -25,18 +25,18 @@ public class ListingDetailsNormalizer {
     @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
     public ListingDetailsNormalizer(CertificationEditionNormalizer editionNormalizer,
-        CertificationBodyNormalizer acbNormalizer,
-        TestingLabNormalizer atlNormalizer,
-        DeveloperNormalizer developerNormalizer,
-        ProductAndVersionNormalizer productVersionNormalizer,
-        IcsNormalizer icsNormalizer,
-        AccessibilityStandardNormalizer accessibilityStandardNormalizer,
-        QmsStandardNormalizer qmsNormalizer,
-        TargetedUserNormalizer targetedUserNormalizer,
-        CertificationResultNormalizer certResultNormalizer,
-        CqmNormalizer cqmNormalizer,
-        MeasureNormalizer measureNormalizer,
-        SedNormalizer sedNormalizer) {
+            CertificationBodyNormalizer acbNormalizer,
+            TestingLabNormalizer atlNormalizer,
+            DeveloperNormalizer developerNormalizer,
+            ProductAndVersionNormalizer productVersionNormalizer,
+            IcsNormalizer icsNormalizer,
+            AccessibilityStandardNormalizer accessibilityStandardNormalizer,
+            QmsStandardNormalizer qmsNormalizer,
+            TargetedUserNormalizer targetedUserNormalizer,
+            CertificationResultNormalizer certResultNormalizer,
+            CqmNormalizer cqmNormalizer,
+            MeasureNormalizer measureNormalizer,
+            SedNormalizer sedNormalizer) {
         this.editionNormalizer = editionNormalizer;
         this.acbNormalizer = acbNormalizer;
         this.atlNormalizer = atlNormalizer;
@@ -53,8 +53,8 @@ public class ListingDetailsNormalizer {
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
-        if (CollectionUtils.isNotEmpty(listing.getErrorMessages())) {
-            listing.getErrorMessages().clear();
+        if (CollectionUtils.isNotEmpty(listing.getErrorMessages().castToSet())) {
+            listing.clearAllErrorMessages();
         }
         if (CollectionUtils.isNotEmpty(listing.getWarningMessages())) {
             listing.getWarningMessages().clear();

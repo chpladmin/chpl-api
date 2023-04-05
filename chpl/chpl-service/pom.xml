@@ -315,7 +315,22 @@
             <artifactId>commonmark</artifactId>
             <version>0.18.1</version>
         </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/org.eclipse.collections/eclipse-collections -->
+        <dependency>
+            <groupId>org.eclipse.collections</groupId>
+            <artifactId>eclipse-collections</artifactId>
+            <version>12.0.0.M1</version>
+        </dependency>
 
+        <!-- jars provided by the system and not included in the packaged jar -->
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-catalina</artifactId>
+            <version>8.5.86</version>
+            <scope>provided</scope>
+        </dependency>
+        
         <!--  needed for unit tests -->
         <dependency>
             <groupId>org.json</groupId>

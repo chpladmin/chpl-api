@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 import org.junit.Before;
@@ -142,7 +141,7 @@ public class PrivacyAndSecurityCriteriaReviewerPreErdPhase2Test {
                 .asList(getCertificationResult(1L, true), getCertificationResult(2L, true)));
         updatedListing.setCertificationResults(updatedListingCertificationResults);
 
-        updatedListing.setErrorMessages(new HashSet<String>());
+        // updatedListing.setErrorMessages(new HashSet<String>());
 
         PrivacyAndSecurityCriteriaReviewerPreErdPhase2 reviewer = new PrivacyAndSecurityCriteriaReviewerPreErdPhase2(certificationCriterionDao,
                 env, errorMessageUtil, validationUtils);

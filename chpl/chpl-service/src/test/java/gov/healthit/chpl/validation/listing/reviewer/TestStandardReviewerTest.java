@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -38,11 +37,11 @@ public class TestStandardReviewerTest {
         Mockito.when(testStandardDao.getByNumberAndEdition(
                 ArgumentMatchers.eq("mock"),
                 ArgumentMatchers.eq(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId())))
-        .thenReturn(ts);
+                .thenReturn(ts);
         Mockito.when(testStandardDao.getByIdAndEdition(
                 ArgumentMatchers.eq(1L),
                 ArgumentMatchers.eq(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId())))
-        .thenReturn(ts);
+                .thenReturn(ts);
 
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingTestStandardName"),
@@ -187,7 +186,7 @@ public class TestStandardReviewerTest {
                         .testStandards(testStandards)
                         .build())
                 .build();
-        listing.setErrorMessages(new HashSet<String>());
+        // listing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
@@ -224,7 +223,7 @@ public class TestStandardReviewerTest {
                         .testStandards(testStandards)
                         .build())
                 .build();
-        listing.setErrorMessages(new HashSet<String>());
+        // listing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
@@ -243,7 +242,7 @@ public class TestStandardReviewerTest {
                         .testStandards(testStandards)
                         .build())
                 .build();
-        listing.setErrorMessages(new HashSet<String>());
+        // listing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(listing);
         assertEquals(0, listing.getErrorMessages().size());
@@ -262,7 +261,7 @@ public class TestStandardReviewerTest {
                         .testStandards(testStandards)
                         .build())
                 .build();
-        listing.setErrorMessages(new HashSet<String>());
+        // listing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(listing);
         assertEquals(0, listing.getErrorMessages().size());

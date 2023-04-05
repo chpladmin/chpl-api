@@ -3,6 +3,8 @@ package gov.healthit.chpl.exception;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.collections.api.set.ImmutableSet;
+
 public class ValidationException extends Exception {
     protected Set<String> errorMessages;
     protected Set<String> warningMessages;
@@ -44,6 +46,12 @@ public class ValidationException extends Exception {
     public ValidationException(Set<String> errorMessages, Set<String> warningMessages) {
         super();
         this.errorMessages = errorMessages;
+        this.warningMessages = warningMessages;
+    }
+
+    public ValidationException(ImmutableSet<String> errorMessages, Set<String> warningMessages) {
+        super();
+        this.errorMessages = errorMessages.castToSet();
         this.warningMessages = warningMessages;
     }
 

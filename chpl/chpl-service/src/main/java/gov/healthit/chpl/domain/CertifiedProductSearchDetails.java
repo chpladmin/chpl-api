@@ -623,6 +623,12 @@ public class CertifiedProductSearchDetails implements Serializable {
         businessErrorMessages.addAll(errorMessages);
     }
 
+    public void clearAllErrorMessages() {
+        errorMessages.clear();
+        businessErrorMessages.clear();
+        dataErrorMessages.clear();
+    }
+
     public InheritedCertificationStatus getIcs() {
         return ics;
     }
