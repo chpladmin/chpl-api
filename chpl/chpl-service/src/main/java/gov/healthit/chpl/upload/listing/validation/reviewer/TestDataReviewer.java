@@ -38,10 +38,10 @@ public class TestDataReviewer {
 
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
-            .forEach(certResult -> review(listing, certResult));
+                .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
+                .forEach(certResult -> review(listing, certResult));
         listing.getCertificationResults().stream()
-            .forEach(certResult -> removeTestDataIfNotApplicable(certResult));
+                .forEach(certResult -> removeTestDataIfNotApplicable(certResult));
     }
 
     private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -50,7 +50,7 @@ public class TestDataReviewer {
         reviewTestDataRequiredForG1AndG2WhenCertResultIsNotGap(listing, certResult);
         if (certResult.getTestDataUsed() != null && certResult.getTestDataUsed().size() > 0) {
             certResult.getTestDataUsed().stream()
-                .forEach(testData -> reviewTestDataFields(listing, certResult, testData));
+                    .forEach(testData -> reviewTestDataFields(listing, certResult, testData));
         }
     }
 
@@ -58,7 +58,7 @@ public class TestDataReviewer {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.TEST_DATA)) {
             if (!CollectionUtils.isEmpty(certResult.getTestDataUsed())) {
                 listing.getWarningMessages().add(msgUtil.getMessage(
-                    "listing.criteria.testDataNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+                        "listing.criteria.testDataNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setTestDataUsed(null);
         }
@@ -94,8 +94,8 @@ public class TestDataReviewer {
         if (!isGapEligibileAndHasGap(certResult)
                 && (certResult.getCriterion().getId().equals(g1.getId()) || certResult.getCriterion().getId().equals(g2.getId()))
                 && (certResult.getTestDataUsed() == null || certResult.getTestDataUsed().size() == 0)) {
-                    listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.testDataRequired",
-                            Util.formatCriteriaNumber(certResult.getCriterion())));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.testDataRequired",
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 
@@ -118,7 +118,7 @@ public class TestDataReviewer {
             CertificationResult certResult, CertificationResultTestData testData) {
         if (testData.getTestData() != null && !StringUtils.isEmpty(testData.getVersion())
                 && StringUtils.isEmpty(testData.getTestData().getName())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingTestDataName",
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingTestDataName",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
@@ -127,7 +127,7 @@ public class TestDataReviewer {
             CertificationResult certResult, CertificationResultTestData testData) {
         if (testData.getTestData() != null && !StringUtils.isEmpty(testData.getTestData().getName())
                 && StringUtils.isEmpty(testData.getVersion())) {
-            listing.getErrorMessages().add(msgUtil.getMessage(
+            listing.addDataErrorMessage(msgUtil.getMessage(
                     "listing.criteria.missingTestDataVersion",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }

@@ -33,11 +33,12 @@ public class CqmResultReviewer implements Reviewer {
         this.msgUtil = msgUtil;
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         if (!CollectionUtils.isEmpty(listing.getCqmResults())) {
             listing.getCqmResults().stream()
-                .filter(cqmResult -> BooleanUtils.isTrue(cqmResult.isSuccess()))
-                .forEach(cqmResult -> reviewCqmResultRequiredFields(listing, cqmResult));
+                    .filter(cqmResult -> BooleanUtils.isTrue(cqmResult.isSuccess()))
+                    .forEach(cqmResult -> reviewCqmResultRequiredFields(listing, cqmResult));
 
             Predicate<CQMResultDetails> shouldRemove = cqm -> isMissingCmsIdButHasOtherData(cqm) || isMissingCqmCriterionId(cqm);
             listing.getCqmResults().removeIf(shouldRemove);
@@ -55,7 +56,7 @@ public class CqmResultReviewer implements Reviewer {
                 listing.getWarningMessages().add(msgUtil.getMessage("listing.cqm.invalidCmsId", cqmResult.getCmsId()));
             } else {
                 if (CollectionUtils.isEmpty(cqmResult.getSuccessVersions())) {
-                    listing.getErrorMessages().add(msgUtil.getMessage("listing.cqm.missingVersion", cqmResult.getCmsId()));
+                    listing.addDataErrorMessage(msgUtil.getMessage("listing.cqm.missingVersion", cqmResult.getCmsId()));
                 } else {
                     reviewSuccessVersions(listing, cqmResult);
                 }
@@ -74,9 +75,9 @@ public class CqmResultReviewer implements Reviewer {
 
     private void reviewSuccessVersions(CertifiedProductSearchDetails listing, CQMResultDetails cqmResult) {
         cqmResult.getSuccessVersions().stream()
-            .filter(successVersion -> !inCqmAllVersions(successVersion, cqmResult.getAllVersions()))
-            .forEach(invalidSuccessVersion -> listing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.cqm.invalidCqmVersion", cqmResult.getCmsId(), invalidSuccessVersion)));
+                .filter(successVersion -> !inCqmAllVersions(successVersion, cqmResult.getAllVersions()))
+                .forEach(invalidSuccessVersion -> listing.addDataErrorMessage(
+                        msgUtil.getMessage("listing.cqm.invalidCqmVersion", cqmResult.getCmsId(), invalidSuccessVersion)));
     }
 
     private boolean inCqmAllVersions(String version, Collection<String> allVersions) {

@@ -92,7 +92,7 @@ public class SvapReviewer {
     private void reviewRegulatoryTextCitationRequired(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultSvap svap) {
         if (StringUtils.isEmpty(svap.getRegulatoryTextCitation())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.svap.missingCitation",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }
@@ -103,7 +103,7 @@ public class SvapReviewer {
         if (svap.getSvapId() != null
                 && BooleanUtils.isTrue(svap.getReplaced())
                 && !doesListingHaveIcs(listing)) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.svap.replacedWithIcs",
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.svap.replacedWithIcs",
                     svap.getRegulatoryTextCitation(), certResult.getCriterion().getNumber()));
         }
     }

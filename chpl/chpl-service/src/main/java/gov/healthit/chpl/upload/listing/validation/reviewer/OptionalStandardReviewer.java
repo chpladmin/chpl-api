@@ -51,17 +51,17 @@ public class OptionalStandardReviewer implements Reviewer {
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
-            .forEach(certResult -> reviewCertificationResult(listing, certResult));
+                .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
+                .forEach(certResult -> reviewCertificationResult(listing, certResult));
         listing.getCertificationResults().stream()
-            .forEach(certResult -> removeOptionalStandardsIfNotApplicable(certResult));
+                .forEach(certResult -> removeOptionalStandardsIfNotApplicable(certResult));
     }
 
     private void reviewCertificationResult(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         reviewCriteriaCanHaveOptionalStandards(listing, certResult);
         if (!CollectionUtils.isEmpty(certResult.getOptionalStandards())) {
             certResult.getOptionalStandards().stream()
-                .forEach(optionalStandard -> reviewOptionalStandardFields(listing, certResult, optionalStandard));
+                    .forEach(optionalStandard -> reviewOptionalStandardFields(listing, certResult, optionalStandard));
         }
     }
 
@@ -69,7 +69,7 @@ public class OptionalStandardReviewer implements Reviewer {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.OPTIONAL_STANDARD)) {
             if (!CollectionUtils.isEmpty(certResult.getOptionalStandards())) {
                 listing.getWarningMessages().add(msgUtil.getMessage(
-                    "listing.criteria.optionalStandardsNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+                        "listing.criteria.optionalStandardsNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
                 certResult.setOptionalStandards(null);
             }
         }
@@ -92,19 +92,19 @@ public class OptionalStandardReviewer implements Reviewer {
             CertificationResult certResult, CertificationResultOptionalStandard optionalStandard) {
         if (optionalStandard.getOptionalStandardId() == null
                 && !StringUtils.isEmpty(optionalStandard.getCitation())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.optionalStandardNotFound",
-                    Util.formatCriteriaNumber(certResult.getCriterion()),
-                    optionalStandard.getCitation()));
+                            Util.formatCriteriaNumber(certResult.getCriterion()),
+                            optionalStandard.getCitation()));
         }
     }
 
     private void reviewCitationRequired(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultOptionalStandard optionalStandard) {
         if (StringUtils.isEmpty(optionalStandard.getCitation())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingOptionalStandardName",
-                    Util.formatCriteriaNumber(certResult.getCriterion())));
+                            Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 
@@ -112,8 +112,8 @@ public class OptionalStandardReviewer implements Reviewer {
             CertificationResult certResult, CertificationResultOptionalStandard optionalStandard) {
         if (optionalStandard.getOptionalStandardId() != null
                 && !isOptionalStandardValidForCriteria(optionalStandard.getOptionalStandardId(),
-                certResult.getCriterion().getId())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.optionalStandard.invalidCriteria",
+                        certResult.getCriterion().getId())) {
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.optionalStandard.invalidCriteria",
                     optionalStandard.getCitation(), Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }

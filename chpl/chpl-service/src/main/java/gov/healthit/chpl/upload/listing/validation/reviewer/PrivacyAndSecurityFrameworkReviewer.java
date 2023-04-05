@@ -29,10 +29,10 @@ public class PrivacyAndSecurityFrameworkReviewer {
 
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
-            .forEach(certResult -> review(listing, certResult));
+                .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
+                .forEach(certResult -> review(listing, certResult));
         listing.getCertificationResults().stream()
-            .forEach(certResult -> removePrivacyAndSecurityFrameworkIfNotApplicable(certResult));
+                .forEach(certResult -> removePrivacyAndSecurityFrameworkIfNotApplicable(certResult));
     }
 
     private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -45,7 +45,7 @@ public class PrivacyAndSecurityFrameworkReviewer {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.PRIVACY_SECURITY)) {
             if (!StringUtils.isEmpty(certResult.getPrivacySecurityFramework())) {
                 listing.getWarningMessages().add(msgUtil.getMessage(
-                    "listing.criteria.privacyAndSecurityFrameworkNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+                        "listing.criteria.privacyAndSecurityFrameworkNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setPrivacySecurityFramework(null);
         }
@@ -60,7 +60,7 @@ public class PrivacyAndSecurityFrameworkReviewer {
     private void reviewPrivacyAndSecurityRequired(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.PRIVACY_SECURITY)
                 && StringUtils.isEmpty(certResult.getPrivacySecurityFramework())) {
-            listing.getErrorMessages().add(msgUtil.getMessage(
+            listing.addDataErrorMessage(msgUtil.getMessage(
                     "listing.criteria.missingPrivacySecurityFramework",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }
@@ -73,7 +73,7 @@ public class PrivacyAndSecurityFrameworkReviewer {
             PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept
                     .getValue(formattedPrivacyAndSecurityFramework);
             if (foundPrivacyAndSecurityFramework == null) {
-                listing.getErrorMessages().add(msgUtil.getMessage(
+                listing.addDataErrorMessage(msgUtil.getMessage(
                         "listing.criteria.invalidPrivacySecurityFramework",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
                         formattedPrivacyAndSecurityFramework,

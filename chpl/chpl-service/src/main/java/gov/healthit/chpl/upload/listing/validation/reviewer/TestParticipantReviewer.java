@@ -5,6 +5,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
@@ -26,9 +27,9 @@ public class TestParticipantReviewer {
             return;
         }
         listing.getSed().getTestTasks().stream()
-            .filter(testTask -> doesTestTaskHaveNonRemovedCriteria(testTask) && !CollectionUtils.isEmpty(testTask.getTestParticipants()))
-            .flatMap(testTask -> testTask.getTestParticipants().stream())
-            .forEach(testParticipant -> reviewTestParticipantFields(listing, testParticipant));
+                .filter(testTask -> doesTestTaskHaveNonRemovedCriteria(testTask) && !CollectionUtils.isEmpty(testTask.getTestParticipants()))
+                .flatMap(testTask -> testTask.getTestParticipants().stream())
+                .forEach(testParticipant -> reviewTestParticipantFields(listing, testParticipant));
     }
 
     private boolean doesTestTaskHaveNonRemovedCriteria(TestTask testTask) {
@@ -55,57 +56,57 @@ public class TestParticipantReviewer {
 
     private void reviewParticipantUniqueId(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
         if (StringUtils.isEmpty(testParticipant.getUniqueId())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingTestParticipantUniqueId"));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingTestParticipantUniqueId"));
         }
     }
 
     private void reviewParticipantAgeRange(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
         if (testParticipant.getAgeRangeId() == null && !StringUtils.isEmpty(testParticipant.getAgeRange())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidParticipantAgeRange",
                             testParticipant.getAgeRange(), formatParticipantRef(testParticipant)));
         } else if (testParticipant.getAgeRangeId() == null && StringUtils.isEmpty(testParticipant.getAgeRange())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingParticipantAgeRange", formatParticipantRef(testParticipant)));
         }
     }
 
     private void reviewParticipantEducationLevel(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
         if (testParticipant.getEducationTypeId() == null && !StringUtils.isEmpty(testParticipant.getEducationTypeName())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidParticipantEducationLevel",
                             testParticipant.getEducationTypeName(), formatParticipantRef(testParticipant)));
         } else if (testParticipant.getEducationTypeId() == null && StringUtils.isEmpty(testParticipant.getEducationTypeName())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingParticipantEducationLevel", formatParticipantRef(testParticipant)));
         }
     }
 
     private void reviewParticipantGender(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
         if (StringUtils.isEmpty(testParticipant.getGender())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingParticipantGender", formatParticipantRef(testParticipant)));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingParticipantGender", formatParticipantRef(testParticipant)));
         }
     }
 
     private void reviewParticipantOccupation(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
         if (StringUtils.isEmpty(testParticipant.getOccupation())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingParticipantOccupation", formatParticipantRef(testParticipant)));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingParticipantOccupation", formatParticipantRef(testParticipant)));
         }
     }
 
     private void reviewParticipantAssistiveTechnologyNeeds(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
         if (StringUtils.isEmpty(testParticipant.getAssistiveTechnologyNeeds())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingParticipantAssistiveTechnologyNeeds", formatParticipantRef(testParticipant)));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingParticipantAssistiveTechnologyNeeds", formatParticipantRef(testParticipant)));
         }
     }
 
     private void reviewParticipantProfessionalExperienceMonths(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
         if (testParticipant.getProfessionalExperienceMonths() == null && !StringUtils.isEmpty(testParticipant.getProfessionalExperienceMonthsStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidParticipantProfessionalExperienceMonths",
                             testParticipant.getProfessionalExperienceMonthsStr(), formatParticipantRef(testParticipant)));
         } else if (testParticipant.getProfessionalExperienceMonths() == null && StringUtils.isEmpty(testParticipant.getProfessionalExperienceMonthsStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingParticipantProfessionalExperienceMonths", formatParticipantRef(testParticipant)));
         } else if (testParticipant.getProfessionalExperienceMonths() != null) {
             try {
@@ -125,11 +126,11 @@ public class TestParticipantReviewer {
 
     private void reviewParticipantProductExperienceMonths(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
         if (testParticipant.getProductExperienceMonths() == null && !StringUtils.isEmpty(testParticipant.getProductExperienceMonthsStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidParticipantProductExperienceMonths",
                             testParticipant.getProductExperienceMonthsStr(), formatParticipantRef(testParticipant)));
         } else if (testParticipant.getProductExperienceMonths() == null && StringUtils.isEmpty(testParticipant.getProductExperienceMonthsStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingParticipantProductExperienceMonths", formatParticipantRef(testParticipant)));
         } else if (testParticipant.getProductExperienceMonths() != null) {
             try {
@@ -149,11 +150,11 @@ public class TestParticipantReviewer {
 
     private void reviewParticipantComputerExperienceMonths(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
         if (testParticipant.getComputerExperienceMonths() == null && !StringUtils.isEmpty(testParticipant.getComputerExperienceMonthsStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidParticipantComputerExperienceMonths",
                             testParticipant.getComputerExperienceMonthsStr(), formatParticipantRef(testParticipant)));
         } else if (testParticipant.getComputerExperienceMonths() == null && StringUtils.isEmpty(testParticipant.getComputerExperienceMonthsStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingParticipantComputerExperienceMonths", formatParticipantRef(testParticipant)));
         } else if (testParticipant.getComputerExperienceMonths() != null) {
             try {

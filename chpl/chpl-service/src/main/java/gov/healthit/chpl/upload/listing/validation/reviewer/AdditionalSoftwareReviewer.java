@@ -29,11 +29,11 @@ public class AdditionalSoftwareReviewer {
 
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId() != null
-                && validationUtils.isEligibleForErrors(certResult))
-            .forEach(certResult -> review(listing, certResult));
+                .filter(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId() != null
+                        && validationUtils.isEligibleForErrors(certResult))
+                .forEach(certResult -> review(listing, certResult));
         listing.getCertificationResults().stream()
-            .forEach(certResult -> removeAdditionalSoftwareIfNotApplicable(certResult));
+                .forEach(certResult -> removeAdditionalSoftwareIfNotApplicable(certResult));
     }
 
     private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -47,7 +47,7 @@ public class AdditionalSoftwareReviewer {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
             if (!CollectionUtils.isEmpty(certResult.getAdditionalSoftware())) {
                 listing.getWarningMessages().add(msgUtil.getMessage(
-                    "listing.criteria.additionalSoftwareNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+                        "listing.criteria.additionalSoftwareNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setAdditionalSoftware(null);
         }
@@ -62,11 +62,11 @@ public class AdditionalSoftwareReviewer {
     private void reviewAdditionalSoftwareListMatchesAdditionalSoftwareBoolean(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResult.getHasAdditionalSoftware() != null && certResult.getHasAdditionalSoftware()
                 && CollectionUtils.isEmpty(certResult.getAdditionalSoftware())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.noAdditionalSoftwareMismatch",
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.noAdditionalSoftwareMismatch",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
-        } else  if (certResult.getHasAdditionalSoftware() != null && !certResult.getHasAdditionalSoftware()
+        } else if (certResult.getHasAdditionalSoftware() != null && !certResult.getHasAdditionalSoftware()
                 && !CollectionUtils.isEmpty(certResult.getAdditionalSoftware())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.hasAdditionalSoftwareMismatch",
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.hasAdditionalSoftwareMismatch",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
@@ -74,10 +74,10 @@ public class AdditionalSoftwareReviewer {
     private void reviewAdditionalSoftwareHasEitherNameOrListing(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!CollectionUtils.isEmpty(certResult.getAdditionalSoftware())) {
             certResult.getAdditionalSoftware().stream()
-                .filter(additionalSoftware -> areNameAndListingFilledIn(additionalSoftware))
-                .forEach(additionalSoftware -> listing.getErrorMessages().add(
-                        msgUtil.getMessage("listing.criteria.additionalSoftwareHasNameAndListingData",
-                                Util.formatCriteriaNumber(certResult.getCriterion()))));
+                    .filter(additionalSoftware -> areNameAndListingFilledIn(additionalSoftware))
+                    .forEach(additionalSoftware -> listing.addDataErrorMessage(
+                            msgUtil.getMessage("listing.criteria.additionalSoftwareHasNameAndListingData",
+                                    Util.formatCriteriaNumber(certResult.getCriterion()))));
         }
     }
 
@@ -89,11 +89,11 @@ public class AdditionalSoftwareReviewer {
     private void reviewAdditionalSoftwareListingsAreValid(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!CollectionUtils.isEmpty(certResult.getAdditionalSoftware())) {
             certResult.getAdditionalSoftware().stream()
-                .filter(additionalSoftware -> !StringUtils.isEmpty(additionalSoftware.getCertifiedProductNumber()) && additionalSoftware.getCertifiedProductId() == null)
-                .forEach(additionalSoftware -> listing.getErrorMessages().add(msgUtil.getMessage(
-                                                    "listing.criteria.invalidAdditionalSoftware",
-                                                    additionalSoftware.getCertifiedProductNumber(),
-                                                    Util.formatCriteriaNumber(certResult.getCriterion()))));
+                    .filter(additionalSoftware -> !StringUtils.isEmpty(additionalSoftware.getCertifiedProductNumber()) && additionalSoftware.getCertifiedProductId() == null)
+                    .forEach(additionalSoftware -> listing.addDataErrorMessage(msgUtil.getMessage(
+                            "listing.criteria.invalidAdditionalSoftware",
+                            additionalSoftware.getCertifiedProductNumber(),
+                            Util.formatCriteriaNumber(certResult.getCriterion()))));
         }
     }
 }

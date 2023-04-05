@@ -37,15 +37,16 @@ public class DeveloperReviewer implements Reviewer {
         this.urlValidator = new UrlValidator();
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         Developer developer = listing.getDeveloper();
         if (developer == null) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.missingDeveloper"));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.missingDeveloper"));
             return;
         }
 
         if (developer.getId() != null) {
-            //it's an existing developer - give the user warnings if any required developer data is
+            // it's an existing developer - give the user warnings if any required developer data is
             // 1) missing in the system, or 2) does not match the user-entered data
             reviewRequiredDeveloperData(listing, WARNING);
             reviewUserEnteredDataSystemDataMismatch(listing);
@@ -57,11 +58,11 @@ public class DeveloperReviewer implements Reviewer {
             } catch (Exception ex) {
             }
             if (devCode.equals(DeveloperManager.NEW_DEVELOPER_CODE)) {
-                //it's a new developer - give the user errors if any required data has not been entered
+                // it's a new developer - give the user errors if any required data has not been entered
                 reviewRequiredDeveloperData(listing, ERROR);
             } else {
-                //it's not a new developer by code so it must be an error that no developer was found
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.developer.notFound", listing.getDeveloper().getUserEnteredName()));
+                // it's not a new developer by code so it must be an error that no developer was found
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.developer.notFound", listing.getDeveloper().getUserEnteredName()));
             }
         }
     }
@@ -193,9 +194,9 @@ public class DeveloperReviewer implements Reviewer {
         if (developer.getId() != null) {
             DeveloperStatus mostRecentStatus = developer.getStatus();
             if (mostRecentStatus == null || StringUtils.isEmpty(mostRecentStatus.getStatus())) {
-                listing.getErrorMessages().add(msgUtil.getMessage("developer.status.noCurrent"));
+                listing.addDataErrorMessage(msgUtil.getMessage("developer.status.noCurrent"));
             } else if (!mostRecentStatus.getStatus().equals(DeveloperStatusType.Active.getName())) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.developer.notActive.noCreate",
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.developer.notActive.noCreate",
                         developer.getName() != null ? developer.getName() : "?",
                         mostRecentStatus.getStatus()));
             }
@@ -204,7 +205,7 @@ public class DeveloperReviewer implements Reviewer {
 
     private void addMessageToListing(CertifiedProductSearchDetails listing, String message, String msgLevel) {
         if (msgLevel.equals(ERROR)) {
-            listing.getErrorMessages().add(message);
+            listing.addDataErrorMessage(message);
         } else if (msgLevel.equals(WARNING)) {
             listing.getWarningMessages().add(message);
         }

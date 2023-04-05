@@ -48,31 +48,31 @@ public class CSVHeaderReviewer {
     private void reviewDuplicateHeadings(CertifiedProductSearchDetails listing, CSVRecord headingRecord) {
         List<String> allHeadingColumns = uploadUtil.convertToList(headingRecord);
         List<String> allCriteriaColumns = new ArrayList<String>();
-        //get each criteria heading start/end, check for duplicates
+        // get each criteria heading start/end, check for duplicates
         int nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(0, headingRecord);
         while (nextCertResultIndex >= 0) {
             List<CSVRecord> parsedCertResultRecords = uploadUtil.getCertificationResultRecordsFromIndex(
                     nextCertResultIndex, headingRecord, Collections.emptyList());
             CSVRecord certHeadingRecord = uploadUtil.getHeadingRecord(parsedCertResultRecords);
 
-            //add error messages for this set of cert result headings
-            listing.getErrorMessages().addAll(getDuplicateCriteriaLevelHeadingMessages(uploadUtil.convertToList(certHeadingRecord), certHeadingRecord.get(0)));
-            //remove these items from the set of all columns so we don't check them again
+            // add error messages for this set of cert result headings
+            listing.addAllDataErrorMessages(getDuplicateCriteriaLevelHeadingMessages(uploadUtil.convertToList(certHeadingRecord), certHeadingRecord.get(0)));
+            // remove these items from the set of all columns so we don't check them again
             allCriteriaColumns.add(allHeadingColumns.get(nextCertResultIndex));
             allHeadingColumns.subList(nextCertResultIndex, nextCertResultIndex + certHeadingRecord.size()).clear();
             headingRecord = uploadUtil.convertToCsvRecord(allHeadingColumns);
             nextCertResultIndex = uploadUtil.getNextIndexOfCertificationResult(0, headingRecord);
         }
-        //Note that if there were any listing-level headings (like VENDOR__C) that were duplicated
-        //at the certification result level (like if it was put in between A_1 and A_2) then
-        //it won't get counted as a duplicate. I'm not sure how to deal with this and the root cause
-        //of the difficulty is there are two headings TASK_ID and PARTICIPANT_ID that can be found
-        //at both the listing level and criteria level.
+        // Note that if there were any listing-level headings (like VENDOR__C) that were duplicated
+        // at the certification result level (like if it was put in between A_1 and A_2) then
+        // it won't get counted as a duplicate. I'm not sure how to deal with this and the root cause
+        // of the difficulty is there are two headings TASK_ID and PARTICIPANT_ID that can be found
+        // at both the listing level and criteria level.
 
-        //look for duplicates outside of criteria headings
-        listing.getErrorMessages().addAll(getDuplicateHeadingMessages(allHeadingColumns));
-        //look for duplicate criteria headings
-        listing.getErrorMessages().addAll(getDuplicateHeadingMessages(allCriteriaColumns));
+        // look for duplicates outside of criteria headings
+        listing.addAllDataErrorMessages(getDuplicateHeadingMessages(allHeadingColumns));
+        // look for duplicate criteria headings
+        listing.addAllDataErrorMessages(getDuplicateHeadingMessages(allCriteriaColumns));
     }
 
     private Set<String> getDuplicateHeadingMessages(List<String> headings) {
