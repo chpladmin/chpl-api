@@ -1,8 +1,10 @@
 package gov.healthit.chpl.validation.listing.reviewer.duplicate;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.BiPredicate;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -28,8 +30,7 @@ public class ConformanceMethodDuplicateReviewer {
 
     public void review(CertifiedProductSearchDetails listing, CertificationResult certificationResult) {
 
-        DuplicateReviewResult<CertificationResultConformanceMethod> conformanceMethodDuplicateResults =
-                new DuplicateReviewResult<CertificationResultConformanceMethod>(duplicatePredicate());
+        DuplicateReviewResult<CertificationResultConformanceMethod> conformanceMethodDuplicateResults = new DuplicateReviewResult<CertificationResultConformanceMethod>(duplicatePredicate());
         if (certificationResult.getConformanceMethods() != null) {
             for (CertificationResultConformanceMethod cm : certificationResult.getConformanceMethods()) {
                 conformanceMethodDuplicateResults.addObject(cm);
@@ -42,26 +43,25 @@ public class ConformanceMethodDuplicateReviewer {
             certificationResult.setConformanceMethods(conformanceMethodDuplicateResults.getUniqueList());
         }
 
-        DuplicateReviewResult<CertificationResultConformanceMethod> conformanceMethodDuplicateIdResults =
-                new DuplicateReviewResult<CertificationResultConformanceMethod>(duplicateIdPredicate());
+        DuplicateReviewResult<CertificationResultConformanceMethod> conformanceMethodDuplicateIdResults = new DuplicateReviewResult<CertificationResultConformanceMethod>(duplicateIdPredicate());
         if (certificationResult.getConformanceMethods() != null) {
             for (CertificationResultConformanceMethod cm : certificationResult.getConformanceMethods()) {
                 conformanceMethodDuplicateIdResults.addObject(cm);
             }
         }
         if (conformanceMethodDuplicateIdResults.duplicatesExist()) {
-            listing.getErrorMessages().addAll(
+            listing.addAllBusinessErrorMessages(
                     getErrors(conformanceMethodDuplicateIdResults.getDuplicateList(),
                             Util.formatCriteriaNumber(certificationResult.getCriterion())));
         }
     }
 
-    private List<String> getErrors(List<CertificationResultConformanceMethod> duplicates,
+    private Set<String> getErrors(List<CertificationResultConformanceMethod> duplicates,
             String criteria) {
-        List<String> errors = new ArrayList<String>();
+        Set<String> errors = new HashSet<String>();
         for (CertificationResultConformanceMethod duplicate : duplicates) {
             String error = errorMessageUtil.getMessage("listing.criteria.duplicateConformanceMethodName",
-                        criteria, duplicate.getConformanceMethod().getName());
+                    criteria, duplicate.getConformanceMethod().getName());
             errors.add(error);
         }
         return errors;
@@ -77,7 +77,7 @@ public class ConformanceMethodDuplicateReviewer {
                         criteria, duplicate.getConformanceMethod().getName(), "");
             } else {
                 warning = errorMessageUtil.getMessage("listing.criteria.duplicateConformanceMethodNameAndVersion",
-                    criteria, duplicate.getConformanceMethod().getName(), duplicate.getConformanceMethodVersion());
+                        criteria, duplicate.getConformanceMethod().getName(), duplicate.getConformanceMethodVersion());
             }
             warnings.add(warning);
         }

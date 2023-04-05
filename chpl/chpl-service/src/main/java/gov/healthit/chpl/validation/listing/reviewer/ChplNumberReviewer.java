@@ -46,22 +46,20 @@ public class ChplNumberReviewer implements Reviewer {
             if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                     ChplProductNumberUtil.PRODUCT_CODE_INDEX,
                     ChplProductNumberUtil.PRODUCT_CODE_REGEX)) {
-                listing.getErrorMessages()
-                        .add(msgUtil.getMessage("listing.badProductCodeChars", ChplProductNumberUtil.PRODUCT_CODE_LENGTH));
+                listing.addBusinessErrorMessage(msgUtil.getMessage("listing.badProductCodeChars", ChplProductNumberUtil.PRODUCT_CODE_LENGTH));
             }
 
             if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                     ChplProductNumberUtil.VERSION_CODE_INDEX,
                     ChplProductNumberUtil.VERSION_CODE_REGEX)) {
-                listing.getErrorMessages()
-                        .add(msgUtil.getMessage("listing.badVersionCodeChars", ChplProductNumberUtil.VERSION_CODE_LENGTH));
+                listing.addBusinessErrorMessage(msgUtil.getMessage("listing.badVersionCodeChars", ChplProductNumberUtil.VERSION_CODE_LENGTH));
             }
 
             if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                     ChplProductNumberUtil.ICS_CODE_INDEX,
                     ChplProductNumberUtil.ICS_CODE_REGEX)) {
-                listing.getErrorMessages()
-                        .add(msgUtil.getMessage("listing.badIcsCodeChars", ChplProductNumberUtil.ICS_CODE_LENGTH));
+                listing.addBusinessErrorMessage(
+                        msgUtil.getMessage("listing.badIcsCodeChars", ChplProductNumberUtil.ICS_CODE_LENGTH));
             } else {
                 Integer icsCodeInteger = Integer.valueOf(uniqueIdParts[ChplProductNumberUtil.ICS_CODE_INDEX]);
                 if (icsCodeInteger != null && icsCodeInteger.intValue() == 0) {
@@ -84,8 +82,8 @@ public class ChplNumberReviewer implements Reviewer {
             if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                     ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_INDEX,
                     ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_REGEX)) {
-                listing.getErrorMessages()
-                        .add(msgUtil.getMessage("listing.badAdditionalSoftwareCodeChars",
+                listing.addBusinessErrorMessage(
+                        msgUtil.getMessage("listing.badAdditionalSoftwareCodeChars",
                                 ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_LENGTH));
             } else {
                 boolean hasAS = certificationResultManager.getCertifiedProductHasAdditionalSoftware(listing.getId());
@@ -99,8 +97,8 @@ public class ChplNumberReviewer implements Reviewer {
             if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                     ChplProductNumberUtil.CERTIFIED_DATE_CODE_INDEX,
                     ChplProductNumberUtil.CERTIFIED_DATE_CODE_REGEX)) {
-                listing.getErrorMessages()
-                        .add(msgUtil.getMessage("listing.badCertifiedDateCodeChars", ChplProductNumberUtil.CERTIFIED_DATE_CODE_LENGTH));
+                listing.addBusinessErrorMessage(
+                        msgUtil.getMessage("listing.badCertifiedDateCodeChars", ChplProductNumberUtil.CERTIFIED_DATE_CODE_LENGTH));
             }
             SimpleDateFormat idDateFormat = new SimpleDateFormat("yyMMdd");
             idDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));

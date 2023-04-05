@@ -1,7 +1,9 @@
 package gov.healthit.chpl.validation.listing.reviewer.duplicate;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiPredicate;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -23,19 +25,17 @@ public class PromotingInteroperabilityUserCountReviewer {
     }
 
     public void review(CertifiedProductSearchDetails listing) {
-        DuplicateReviewResult<PromotingInteroperabilityUser> promotingInteroperabilityUserDuplicateDateResults =
-                new DuplicateReviewResult<PromotingInteroperabilityUser>(getDuplicateDatePredicate());
+        DuplicateReviewResult<PromotingInteroperabilityUser> promotingInteroperabilityUserDuplicateDateResults = new DuplicateReviewResult<PromotingInteroperabilityUser>(getDuplicateDatePredicate());
         if (listing.getPromotingInteroperabilityUserHistory() != null) {
             for (PromotingInteroperabilityUser piu : listing.getPromotingInteroperabilityUserHistory()) {
                 promotingInteroperabilityUserDuplicateDateResults.addObject(piu);
             }
         }
         if (promotingInteroperabilityUserDuplicateDateResults.duplicatesExist()) {
-            listing.getErrorMessages().addAll(getErrors(promotingInteroperabilityUserDuplicateDateResults.getDuplicateList()));
+            listing.addAllBusinessErrorMessages(getErrors(promotingInteroperabilityUserDuplicateDateResults.getDuplicateList()));
         }
 
-        DuplicateReviewResult<PromotingInteroperabilityUser> promotingInteroperabilityUserDuplicateResults =
-                new DuplicateReviewResult<PromotingInteroperabilityUser>(getDuplicateCountAndDatePredicate());
+        DuplicateReviewResult<PromotingInteroperabilityUser> promotingInteroperabilityUserDuplicateResults = new DuplicateReviewResult<PromotingInteroperabilityUser>(getDuplicateCountAndDatePredicate());
         if (listing.getPromotingInteroperabilityUserHistory() != null) {
             for (PromotingInteroperabilityUser piu : listing.getPromotingInteroperabilityUserHistory()) {
                 promotingInteroperabilityUserDuplicateResults.addObject(piu);
@@ -47,8 +47,8 @@ public class PromotingInteroperabilityUserCountReviewer {
         }
     }
 
-    private List<String> getErrors(List<PromotingInteroperabilityUser> duplicates) {
-        List<String> errors = new ArrayList<String>();
+    private Set<String> getErrors(List<PromotingInteroperabilityUser> duplicates) {
+        Set<String> errors = new HashSet<String>();
         for (PromotingInteroperabilityUser duplicate : duplicates) {
             String error = errorMessageUtil.getMessage("listing.duplicatePromotingInteroperabilityDate",
                     duplicate.getUserCountDate().toString());
@@ -67,8 +67,7 @@ public class PromotingInteroperabilityUserCountReviewer {
         return warnings;
     }
 
-    private BiPredicate<
-    PromotingInteroperabilityUser, PromotingInteroperabilityUser> getDuplicateDatePredicate() {
+    private BiPredicate<PromotingInteroperabilityUser, PromotingInteroperabilityUser> getDuplicateDatePredicate() {
         return new BiPredicate<PromotingInteroperabilityUser, PromotingInteroperabilityUser>() {
             @Override
             public boolean test(PromotingInteroperabilityUser piUser1,
@@ -80,8 +79,7 @@ public class PromotingInteroperabilityUserCountReviewer {
         };
     }
 
-    private BiPredicate<
-    PromotingInteroperabilityUser, PromotingInteroperabilityUser> getDuplicateCountAndDatePredicate() {
+    private BiPredicate<PromotingInteroperabilityUser, PromotingInteroperabilityUser> getDuplicateCountAndDatePredicate() {
         return new BiPredicate<PromotingInteroperabilityUser, PromotingInteroperabilityUser>() {
             @Override
             public boolean test(PromotingInteroperabilityUser piUser1,

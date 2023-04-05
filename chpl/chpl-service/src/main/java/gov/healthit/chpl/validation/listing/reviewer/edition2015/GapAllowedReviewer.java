@@ -51,7 +51,7 @@ public class GapAllowedReviewer implements Reviewer {
         if (isCertificationDateAfterCuresEffictiveRuleDate(listing)) {
             Optional<CertificationResult> f3Result = getF3Criterion(listing);
             if (f3Result.isPresent() && f3Result.get().isSuccess() && f3Result.get().isGap()) {
-                listing.getErrorMessages().add(errorMessageUtil.getMessage("listing.criteria.f3CannotHaveGap"));
+                listing.addBusinessErrorMessage(errorMessageUtil.getMessage("listing.criteria.f3CannotHaveGap"));
             }
         }
     }
@@ -62,8 +62,8 @@ public class GapAllowedReviewer implements Reviewer {
 
     private Optional<CertificationResult> getF3Criterion(CertifiedProductSearchDetails listing) {
         return listing.getCertificationResults().stream()
-        .filter(crit -> crit.getCriterion() != null && crit.getCriterion().getId() != null
-            && crit.getCriterion().getId().equals(certificationCriterionService.get(Criteria2015.F_3).getId()))
-        .findAny();
+                .filter(crit -> crit.getCriterion() != null && crit.getCriterion().getId() != null
+                        && crit.getCriterion().getId().equals(certificationCriterionService.get(Criteria2015.F_3).getId()))
+                .findAny();
     }
 }

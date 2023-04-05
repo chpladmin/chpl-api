@@ -37,7 +37,7 @@ public class MeasureValidityReviewer implements Reviewer {
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
-        //if they have attested to G1 or G2 criterion, require at least one measure of that type
+        // if they have attested to G1 or G2 criterion, require at least one measure of that type
         reviewG1RequiredMeasures(listing);
         reviewG2RequiredMeasures(listing);
 
@@ -63,11 +63,11 @@ public class MeasureValidityReviewer implements Reviewer {
         if (validationUtils.hasCert(G1_CRITERIA_NUMBER, attestedCriteria)) {
             // must have at least one measure of type G1
             long g1MeasureCount = listing.getMeasures().stream()
-                .filter(measure -> measure.getMeasureType() != null
-                        && measure.getMeasureType().getName().equals(MEASUREMENT_TYPE_G1))
-                .count();
+                    .filter(measure -> measure.getMeasureType() != null
+                            && measure.getMeasureType().getName().equals(MEASUREMENT_TYPE_G1))
+                    .count();
             if (g1MeasureCount == 0) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.missingG1Measures"));
+                listing.addBusinessErrorMessage(msgUtil.getMessage("listing.missingG1Measures"));
             }
         }
     }
@@ -80,11 +80,11 @@ public class MeasureValidityReviewer implements Reviewer {
         if (validationUtils.hasCert(G2_CRITERIA_NUMBER, attestedCriteria)) {
             // must have at least one measure of type G1
             long g1MeasureCount = listing.getMeasures().stream()
-                .filter(measure -> measure.getMeasureType() != null
-                        && measure.getMeasureType().getName().equals(MEASUREMENT_TYPE_G2))
-                .count();
+                    .filter(measure -> measure.getMeasureType() != null
+                            && measure.getMeasureType().getName().equals(MEASUREMENT_TYPE_G2))
+                    .count();
             if (g1MeasureCount == 0) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.missingG2Measures"));
+                listing.addBusinessErrorMessage(msgUtil.getMessage("listing.missingG2Measures"));
             }
         }
     }
@@ -98,17 +98,15 @@ public class MeasureValidityReviewer implements Reviewer {
             return;
         }
 
-        Predicate<CertificationCriterion> notInAllowedCriteria =
-                assocCriterion -> !measure.getMeasure().getAllowedCriteria().stream()
+        Predicate<CertificationCriterion> notInAllowedCriteria = assocCriterion -> !measure.getMeasure().getAllowedCriteria().stream()
                 .anyMatch(allowedCriterion -> allowedCriterion.getId().equals(assocCriterion.getId()));
 
-        List<CertificationCriterion> assocCriteriaNotAllowed =
-                measure.getAssociatedCriteria().stream()
+        List<CertificationCriterion> assocCriteriaNotAllowed = measure.getAssociatedCriteria().stream()
                 .filter(notInAllowedCriteria)
                 .collect(Collectors.toList());
 
         assocCriteriaNotAllowed.stream().forEach(assocCriterionNotAllowed -> {
-            listing.getErrorMessages().add(msgUtil.getMessage(
+            listing.addBusinessErrorMessage(msgUtil.getMessage(
                     "listing.measure.associatedCriterionNotAllowed",
                     measure.getMeasureType().getName(),
                     measure.getMeasure().getName(),
@@ -130,7 +128,7 @@ public class MeasureValidityReviewer implements Reviewer {
 
     private void reviewMeasureHasAssociatedCriteria(CertifiedProductSearchDetails listing, ListingMeasure measure) {
         if (measure.getAssociatedCriteria() == null || measure.getAssociatedCriteria().size() == 0) {
-            listing.getErrorMessages().add(msgUtil.getMessage(
+            listing.addBusinessErrorMessage(msgUtil.getMessage(
                     "listing.measure.missingAssociatedCriteria",
                     measure.getMeasureType().getName(),
                     measure.getMeasure().getName(),
@@ -144,28 +142,26 @@ public class MeasureValidityReviewer implements Reviewer {
         }
 
         measure.getAssociatedCriteria().stream()
-            .map(associatedCriterion -> criteriaService.getByNumber(associatedCriterion.getNumber()))
-            .filter(criteriaWithNumber -> criteriaWithNumber != null && criteriaWithNumber.size() > 1)
-            .forEach(criteriaWithNumber -> doesMeasureHaveAllExpectedCriteria(listing, measure,
-                    measure.getAssociatedCriteria().stream().collect(Collectors.toList()),
-                    criteriaWithNumber));
+                .map(associatedCriterion -> criteriaService.getByNumber(associatedCriterion.getNumber()))
+                .filter(criteriaWithNumber -> criteriaWithNumber != null && criteriaWithNumber.size() > 1)
+                .forEach(criteriaWithNumber -> doesMeasureHaveAllExpectedCriteria(listing, measure,
+                        measure.getAssociatedCriteria().stream().collect(Collectors.toList()),
+                        criteriaWithNumber));
     }
 
     private void doesMeasureHaveAllExpectedCriteria(CertifiedProductSearchDetails listing,
             ListingMeasure measure,
             List<CertificationCriterion> associatedCriteria,
             List<CertificationCriterion> expectedCriteria) {
-        Predicate<CertificationCriterion> notInAssociatedCriteria =
-                allowedCriterion -> !associatedCriteria.stream()
+        Predicate<CertificationCriterion> notInAssociatedCriteria = allowedCriterion -> !associatedCriteria.stream()
                 .anyMatch(assocCriterion -> allowedCriterion.getId().equals(assocCriterion.getId()));
 
-        List<CertificationCriterion> missingAllowedCriteria =
-                expectedCriteria.stream()
+        List<CertificationCriterion> missingAllowedCriteria = expectedCriteria.stream()
                 .filter(notInAssociatedCriteria)
                 .collect(Collectors.toList());
 
         missingAllowedCriteria.stream().forEach(missingAllowedCriterion -> {
-            listing.getErrorMessages().add(msgUtil.getMessage(
+            listing.addBusinessErrorMessage(msgUtil.getMessage(
                     "listing.measure.missingRequiredCriterion",
                     measure.getMeasureType().getName(),
                     measure.getMeasure().getName(),
@@ -182,20 +178,20 @@ public class MeasureValidityReviewer implements Reviewer {
         if (measure.getMeasure().getId() == null) {
             String nameForMsg = "";
             if (measure.getMeasure().getAbbreviation() != null) {
-                    nameForMsg = measure.getMeasure().getAbbreviation();
+                nameForMsg = measure.getMeasure().getAbbreviation();
             } else if (measure.getMeasure().getName() != null) {
                 nameForMsg = measure.getMeasure().getName();
             } else if (measure.getMeasure().getRequiredTest() != null) {
                 nameForMsg = measure.getMeasure().getRequiredTest();
             }
-            listing.getErrorMessages().add(
+            listing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.invalidMeasure", nameForMsg));
         }
 
         if (measure.getMeasureType() == null || measure.getMeasureType().getId() == null) {
             String nameForMsg = measure.getMeasureType() == null ? "null"
                     : measure.getMeasureType().getName();
-            listing.getErrorMessages().add(
+            listing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.invalidMeasureType", nameForMsg));
         }
     }

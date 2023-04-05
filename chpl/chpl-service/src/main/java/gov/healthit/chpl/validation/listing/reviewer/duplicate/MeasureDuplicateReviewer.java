@@ -1,7 +1,8 @@
 package gov.healthit.chpl.validation.listing.reviewer.duplicate;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiPredicate;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -24,8 +25,7 @@ public class MeasureDuplicateReviewer {
 
     public void review(CertifiedProductSearchDetails listing) {
 
-        DuplicateReviewResult<ListingMeasure> measureDuplicateResultsSameCriteria =
-                new DuplicateReviewResult<ListingMeasure>(getPredicateSameCriteria());
+        DuplicateReviewResult<ListingMeasure> measureDuplicateResultsSameCriteria = new DuplicateReviewResult<ListingMeasure>(getPredicateSameCriteria());
         if (listing.getMeasures() != null) {
             for (ListingMeasure measure : listing.getMeasures()) {
                 measureDuplicateResultsSameCriteria.addObject(measure);
@@ -36,15 +36,14 @@ public class MeasureDuplicateReviewer {
             listing.setMeasures(measureDuplicateResultsSameCriteria.getUniqueList());
         }
 
-        DuplicateReviewResult<ListingMeasure> measureDuplicateResultsDifferentCriteria =
-                new DuplicateReviewResult<ListingMeasure>(getPredicateDifferentCriteria());
+        DuplicateReviewResult<ListingMeasure> measureDuplicateResultsDifferentCriteria = new DuplicateReviewResult<ListingMeasure>(getPredicateDifferentCriteria());
         if (listing.getMeasures() != null) {
             for (ListingMeasure measure : listing.getMeasures()) {
                 measureDuplicateResultsDifferentCriteria.addObject(measure);
             }
         }
         if (measureDuplicateResultsDifferentCriteria.duplicatesExist()) {
-            listing.getErrorMessages().addAll(getMessages(measureDuplicateResultsDifferentCriteria.getDuplicateList(), "listing.duplicateMeasure.differentCriteria"));
+            listing.addAllBusinessErrorMessages(getMessages(measureDuplicateResultsDifferentCriteria.getDuplicateList(), "listing.duplicateMeasure.differentCriteria"));
         }
     }
 
@@ -52,7 +51,7 @@ public class MeasureDuplicateReviewer {
         return new BiPredicate<ListingMeasure, ListingMeasure>() {
             @Override
             public boolean test(ListingMeasure measure1, ListingMeasure measure2) {
-                if (!ObjectUtils.allNotNull(measure1, measure2, measure1.getMeasure(), measure2.getMeasure(), measure2.getMeasureType(), measure2.getMeasureType()) ) {
+                if (!ObjectUtils.allNotNull(measure1, measure2, measure1.getMeasure(), measure2.getMeasure(), measure2.getMeasureType(), measure2.getMeasureType())) {
                     return false;
                 }
                 if (!measure1.getMeasure().matches(measure2.getMeasure())) {
@@ -73,7 +72,7 @@ public class MeasureDuplicateReviewer {
         return new BiPredicate<ListingMeasure, ListingMeasure>() {
             @Override
             public boolean test(ListingMeasure measure1, ListingMeasure measure2) {
-                if (!ObjectUtils.allNotNull(measure1, measure2, measure1.getMeasure(), measure2.getMeasure(), measure2.getMeasureType(), measure2.getMeasureType()) ) {
+                if (!ObjectUtils.allNotNull(measure1, measure2, measure1.getMeasure(), measure2.getMeasure(), measure2.getMeasureType(), measure2.getMeasureType())) {
                     return false;
                 }
                 if (!measure1.getMeasure().matches(measure2.getMeasure())) {
@@ -90,8 +89,8 @@ public class MeasureDuplicateReviewer {
         };
     }
 
-    private List<String> getMessages(List<ListingMeasure> duplicates, String msgKey) {
-        List<String> messages = new ArrayList<String>();
+    private Set<String> getMessages(List<ListingMeasure> duplicates, String msgKey) {
+        Set<String> messages = new HashSet<String>();
         for (ListingMeasure duplicate : duplicates) {
             String message = errorMessageUtil.getMessage(msgKey,
                     duplicate.getMeasureType().getName(),

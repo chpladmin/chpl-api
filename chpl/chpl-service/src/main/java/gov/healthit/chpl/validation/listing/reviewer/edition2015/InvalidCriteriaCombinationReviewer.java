@@ -44,7 +44,7 @@ public class InvalidCriteriaCombinationReviewer implements Reviewer {
         if (certResultA.isPresent() && certResultB.isPresent()) {
             final CertificationCriterion critA = certResultA.get().getCriterion();
             final CertificationCriterion critB = certResultB.get().getCriterion();
-            listing.getErrorMessages().add(
+            listing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidCombination",
                             CertificationCriterionService.formatCriteriaNumber(critA),
                             CertificationCriterionService.formatCriteriaNumber(critB)));
@@ -55,8 +55,8 @@ public class InvalidCriteriaCombinationReviewer implements Reviewer {
             Integer criteriaId) {
         return listing.getCertificationResults().stream()
                 .filter(cr -> BooleanUtils.isTrue(cr.isSuccess())
-                                && cr.getCriterion() != null && cr.getCriterion().getId() != null
-                                && cr.getCriterion().getId().equals(Long.valueOf(criteriaId)))
+                        && cr.getCriterion() != null && cr.getCriterion().getId() != null
+                        && cr.getCriterion().getId().equals(Long.valueOf(criteriaId)))
                 .findFirst();
     }
 }
