@@ -7,20 +7,21 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 /**
- * This class is separated from the RequiredDataReviewer
- * to allow it to be applied separately to 2014 new vs legacy listings.
- * Testing labs are not required for legacy listings.
+ * This class is separated from the RequiredDataReviewer to allow it to be applied separately to 2014 new vs legacy listings. Testing labs are not required for
+ * legacy listings.
+ *
  * @author kekey
  *
  */
 @Component("edition20142015testingLabReviewer")
 public class TestingLabReviewer implements Reviewer {
-    @Autowired protected ErrorMessageUtil msgUtil;
+    @Autowired
+    protected ErrorMessageUtil msgUtil;
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         if (listing.getTestingLabs() == null || listing.getTestingLabs().size() == 0) {
-            listing.getErrorMessages().add(msgUtil.getMessage("atl.notFound"));
+            listing.addBusinessErrorMessage(msgUtil.getMessage("atl.notFound"));
         }
     }
 }

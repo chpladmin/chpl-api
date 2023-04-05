@@ -22,16 +22,17 @@ public class CertificationDateReviewer implements Reviewer {
         this.uploadHandlerUtil = uploadHandlerUtil;
         this.msgUtil = msgUtil;
     }
+
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         if (isCertificationDateMissing(listing)) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.certificationDateMissing"));
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.certificationDateMissing"));
         } else if (isSuppliedCertificationDateFormatInvalid(listing)) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.badCertificationDate", listing.getCertificationDateStr()));
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.badCertificationDate", listing.getCertificationDateStr()));
         }
 
         if (listing.getCertificationDate() != null && listing.getCertificationDate() > System.currentTimeMillis()) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.futureCertificationDate"));
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.futureCertificationDate"));
         }
     }
 

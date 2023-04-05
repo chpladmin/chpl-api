@@ -2,7 +2,6 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.HashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -75,11 +74,11 @@ public class MeasureComparisonReviewerTest {
                         .name("G1")
                         .build())
                 .measure(Measure.builder()
-                    .id(GAP_EP_ID)
-                    .abbreviation("GAP-EP")
-                    .name("Measure Name")
-                    .removed(true)
-                    .build())
+                        .id(GAP_EP_ID)
+                        .abbreviation("GAP-EP")
+                        .name("Measure Name")
+                        .removed(true)
+                        .build())
                 .build();
 
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
@@ -88,7 +87,7 @@ public class MeasureComparisonReviewerTest {
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .measures(Stream.of(measure).collect(Collectors.toList()))
                 .build();
-        updatedListing.setErrorMessages(new HashSet<String>());
+        // updatedListing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(existingListing, updatedListing);
 
@@ -107,11 +106,11 @@ public class MeasureComparisonReviewerTest {
                         .name("G1")
                         .build())
                 .measure(Measure.builder()
-                    .id(GAP_EP_ID)
-                    .abbreviation("GAP-EP")
-                    .name("Measure Name")
-                    .removed(true)
-                    .build())
+                        .id(GAP_EP_ID)
+                        .abbreviation("GAP-EP")
+                        .name("Measure Name")
+                        .removed(true)
+                        .build())
                 .build();
 
         ListingMeasure measure2 = ListingMeasure.builder()
@@ -121,11 +120,11 @@ public class MeasureComparisonReviewerTest {
                         .name("G1")
                         .build())
                 .measure(Measure.builder()
-                    .id(GAP_EH_CAH)
-                    .abbreviation("GAP-EH/CAH")
-                    .name("Measure Name 2")
-                    .removed(true)
-                    .build())
+                        .id(GAP_EH_CAH)
+                        .abbreviation("GAP-EH/CAH")
+                        .name("Measure Name 2")
+                        .removed(true)
+                        .build())
                 .build();
 
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
@@ -135,7 +134,7 @@ public class MeasureComparisonReviewerTest {
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .measures(Stream.of(measure1, measure2).collect(Collectors.toList()))
                 .build();
-        updatedListing.setErrorMessages(new HashSet<String>());
+        // updatedListing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(existingListing, updatedListing);
 
@@ -154,11 +153,11 @@ public class MeasureComparisonReviewerTest {
                         .name("G2")
                         .build())
                 .measure(Measure.builder()
-                    .id(GAP_EP_ID)
-                    .abbreviation("GAP-EP")
-                    .name("Measure Name")
-                    .removed(true)
-                    .build())
+                        .id(GAP_EP_ID)
+                        .abbreviation("GAP-EP")
+                        .name("Measure Name")
+                        .removed(true)
+                        .build())
                 .build();
 
         ListingMeasure measure2 = ListingMeasure.builder()
@@ -168,11 +167,11 @@ public class MeasureComparisonReviewerTest {
                         .name("G2")
                         .build())
                 .measure(Measure.builder()
-                    .id(GAP_EH_CAH)
-                    .abbreviation("GAP-EH/CAH")
-                    .name("Measure Name 2")
-                    .removed(true)
-                    .build())
+                        .id(GAP_EH_CAH)
+                        .abbreviation("GAP-EH/CAH")
+                        .name("Measure Name 2")
+                        .removed(true)
+                        .build())
                 .build();
 
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
@@ -182,7 +181,7 @@ public class MeasureComparisonReviewerTest {
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .measures(Stream.of(measure1, measure2).collect(Collectors.toList()))
                 .build();
-        updatedListing.setErrorMessages(new HashSet<String>());
+        // updatedListing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(existingListing, updatedListing);
 
@@ -201,11 +200,11 @@ public class MeasureComparisonReviewerTest {
                         .name("G1")
                         .build())
                 .measure(Measure.builder()
-                    .id(GAP_EP_ID)
-                    .abbreviation("GAP-EP")
-                    .name("Measure Name")
-                    .removed(true)
-                    .build())
+                        .id(GAP_EP_ID)
+                        .abbreviation("GAP-EP")
+                        .name("Measure Name")
+                        .removed(true)
+                        .build())
                 .build();
         ListingMeasure measure2 = ListingMeasure.builder()
                 .id(2L)
@@ -214,11 +213,11 @@ public class MeasureComparisonReviewerTest {
                         .name("G2")
                         .build())
                 .measure(Measure.builder()
-                    .id(GAP_EH_CAH)
-                    .abbreviation("GAP-EH/CAH")
-                    .name("Measure Name 2")
-                    .removed(true)
-                    .build())
+                        .id(GAP_EH_CAH)
+                        .abbreviation("GAP-EH/CAH")
+                        .name("Measure Name 2")
+                        .removed(true)
+                        .build())
                 .build();
 
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
@@ -227,7 +226,7 @@ public class MeasureComparisonReviewerTest {
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .measures(Stream.of(measure1, measure2).collect(Collectors.toList()))
                 .build();
-        updatedListing.setErrorMessages(new HashSet<String>());
+        // updatedListing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(existingListing, updatedListing);
 
@@ -246,11 +245,11 @@ public class MeasureComparisonReviewerTest {
                         .name("G1")
                         .build())
                 .measure(Measure.builder()
-                    .id(GAP_EP_ID)
-                    .abbreviation("GAP-EP")
-                    .name("Measure Name")
-                    .removed(false)
-                    .build())
+                        .id(GAP_EP_ID)
+                        .abbreviation("GAP-EP")
+                        .name("Measure Name")
+                        .removed(false)
+                        .build())
                 .build();
 
         ListingMeasure measure2 = ListingMeasure.builder()
@@ -260,11 +259,11 @@ public class MeasureComparisonReviewerTest {
                         .name("G2")
                         .build())
                 .measure(Measure.builder()
-                    .id(GAP_EH_CAH)
-                    .abbreviation("GAP-EH/CAH")
-                    .name("Measure Name 2")
-                    .removed(false)
-                    .build())
+                        .id(GAP_EH_CAH)
+                        .abbreviation("GAP-EH/CAH")
+                        .name("Measure Name 2")
+                        .removed(false)
+                        .build())
                 .build();
 
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
@@ -273,7 +272,7 @@ public class MeasureComparisonReviewerTest {
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .measures(Stream.of(measure1, measure2).collect(Collectors.toList()))
                 .build();
-        updatedListing.setErrorMessages(new HashSet<String>());
+        // updatedListing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(existingListing, updatedListing);
 

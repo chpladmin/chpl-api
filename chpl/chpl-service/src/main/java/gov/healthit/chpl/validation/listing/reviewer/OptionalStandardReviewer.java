@@ -45,7 +45,7 @@ public class OptionalStandardReviewer extends PermissionBasedReviewer implements
             optionalStandardCriteriaMap = optionalStandardDAO.getAllOptionalStandardCriteriaMap().stream()
                     .collect(Collectors.groupingBy(scm -> scm.getCriterion().getId()));
         } catch (EntityRetrievalException e) {
-            listing.getErrorMessages().add("Could not validate Optional Standard");
+            listing.addBusinessErrorMessage("Could not validate Optional Standard");
             return;
         }
         for (CertificationResult cr : certificationResultsWithOptionalStandards) {

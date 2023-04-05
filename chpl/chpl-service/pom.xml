@@ -316,20 +316,6 @@
             <version>0.18.1</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>31.1-jre</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.eclipse.collections/eclipse-collections -->
-<dependency>
-    <groupId>org.eclipse.collections</groupId>
-    <artifactId>eclipse-collections</artifactId>
-    <version>12.0.0.M1</version>
-</dependency>
-
         <!--  needed for unit tests -->
         <dependency>
             <groupId>org.json</groupId>

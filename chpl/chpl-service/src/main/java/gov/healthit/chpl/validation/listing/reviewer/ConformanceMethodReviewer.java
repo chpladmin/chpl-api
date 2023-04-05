@@ -73,7 +73,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
                 .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
                 .forEach(certResult -> reviewCertificationResult(listing, certResult));
         listing.getCertificationResults().stream()
-            .forEach(certResult -> removeConformanceMethodsIfNotApplicable(certResult));
+                .forEach(certResult -> removeConformanceMethodsIfNotApplicable(certResult));
     }
 
     private void reviewCertificationResult(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -83,11 +83,11 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
         reviewConformanceMethodsRequired(listing, certResult);
         if (!CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
             certResult.getConformanceMethods().stream()
-                .filter(conformanceMethod -> conformanceMethod.getConformanceMethod() != null)
-                .filter(conformanceMethod -> conformanceMethod.getConformanceMethod().getRemoved())
-                .forEach(removedConformanceMethod -> reviewRemovedConformanceMethodForIcsRequirement(listing, certResult, removedConformanceMethod));
+                    .filter(conformanceMethod -> conformanceMethod.getConformanceMethod() != null)
+                    .filter(conformanceMethod -> conformanceMethod.getConformanceMethod().getRemoved())
+                    .forEach(removedConformanceMethod -> reviewRemovedConformanceMethodForIcsRequirement(listing, certResult, removedConformanceMethod));
             certResult.getConformanceMethods().stream()
-                .forEach(conformanceMethod -> reviewConformanceMethodFields(listing, certResult, conformanceMethod));
+                    .forEach(conformanceMethod -> reviewConformanceMethodFields(listing, certResult, conformanceMethod));
             if (certResult.getCriterion().getId().equals(f3.getId())) {
                 reviewF3ConformanceMethodsForGapRequirement(listing, certResult);
             }
@@ -98,7 +98,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.CONFORMANCE_METHOD)) {
             if (!CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
                 listing.getWarningMessages().add(msgUtil.getMessage(
-                    "listing.criteria.conformanceMethodNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+                        "listing.criteria.conformanceMethodNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
         }
     }
@@ -108,18 +108,18 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
             certResult.setConformanceMethods(new ArrayList<CertificationResultConformanceMethod>());
         }
 
-        //The current upload template doesn't have a column for conformance method name for some criteria
-        //even though it is required for all criteria. So for any of the criteria that don't have a column
-        //for name, you might get into this "if" block - there could not be any conformance methods parsed
-        //inside of the Handler code in the absence of a column in the file.
+        // The current upload template doesn't have a column for conformance method name for some criteria
+        // even though it is required for all criteria. So for any of the criteria that don't have a column
+        // for name, you might get into this "if" block - there could not be any conformance methods parsed
+        // inside of the Handler code in the absence of a column in the file.
         if (CollectionUtils.isEmpty(certResult.getConformanceMethods())
                 && getDefaultConformanceMethodForCriteria(certResult.getCriterion()) != null) {
             certResult.getConformanceMethods().add(CertificationResultConformanceMethod.builder().build());
         }
 
         certResult.getConformanceMethods().stream()
-            .filter(conformanceMethod -> isConformanceMethodNameMissing(conformanceMethod))
-            .forEach(conformanceMethod -> fillInDefaultConformanceMethod(listing, certResult, conformanceMethod));
+                .filter(conformanceMethod -> isConformanceMethodNameMissing(conformanceMethod))
+                .forEach(conformanceMethod -> fillInDefaultConformanceMethod(listing, certResult, conformanceMethod));
     }
 
     private boolean isConformanceMethodNameMissing(CertificationResultConformanceMethod conformanceMethod) {
@@ -132,15 +132,15 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
         ConformanceMethod defaultConformanceMethod = getDefaultConformanceMethodForCriteria(certResult.getCriterion());
         if (defaultConformanceMethod != null) {
             conformanceMethod.setConformanceMethod(defaultConformanceMethod);
-            //The upload file doesn't have fields for conformance methods for all the criteria that need them.
-            //We will add a default CM for the cert result here if there is only one possible choice for
-            //conformance method but we have to tell the user that we did it.
-            //This code can't go in the reviewer otherwise during Test Procedure -> Conformance Method conversion
-            //a default CM gets added to the listing and may make the converter think that the listing already has a CM.
+            // The upload file doesn't have fields for conformance methods for all the criteria that need them.
+            // We will add a default CM for the cert result here if there is only one possible choice for
+            // conformance method but we have to tell the user that we did it.
+            // This code can't go in the reviewer otherwise during Test Procedure -> Conformance Method conversion
+            // a default CM gets added to the listing and may make the converter think that the listing already has a CM.
             if (BooleanUtils.isFalse(certResult.getCriterion().getRemoved())) {
                 listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.conformanceMethod.addedDefaultForCriterion",
-                    Util.formatCriteriaNumber(certResult.getCriterion()),
-                    defaultConformanceMethod.getName()));
+                        Util.formatCriteriaNumber(certResult.getCriterion()),
+                        defaultConformanceMethod.getName()));
             }
         }
     }
@@ -172,14 +172,14 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
         }
 
         conformanceMethodsToReplace.keySet().stream()
-            .forEach(replacedConformanceMethodName -> {
-                CertificationResultConformanceMethod cmToAdd = conformanceMethodsToReplace.get(replacedConformanceMethodName);
-                certResult.getConformanceMethods().add(cmToAdd);
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.conformanceMethod.invalidCriteriaReplaced",
-                        replacedConformanceMethodName,
-                        Util.formatCriteriaNumber(certResult.getCriterion()),
-                        cmToAdd.getConformanceMethod().getName()));
-            });
+                .forEach(replacedConformanceMethodName -> {
+                    CertificationResultConformanceMethod cmToAdd = conformanceMethodsToReplace.get(replacedConformanceMethodName);
+                    certResult.getConformanceMethods().add(cmToAdd);
+                    listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.conformanceMethod.invalidCriteriaReplaced",
+                            replacedConformanceMethodName,
+                            Util.formatCriteriaNumber(certResult.getCriterion()),
+                            cmToAdd.getConformanceMethod().getName()));
+                });
     }
 
     private ConformanceMethod getDefaultConformanceMethodForCriteria(CertificationCriterion criterion) {
@@ -193,8 +193,8 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
 
     private boolean isConformanceMethodAllowed(CertificationResult certResult, CertificationResultConformanceMethod conformanceMethod) {
         Optional<ConformanceMethod> allowedConformanceMethod = getConformanceMethodsForCriterion(certResult.getCriterion()).stream()
-            .filter(cm -> cm.getId().equals(conformanceMethod.getConformanceMethod().getId()))
-            .findAny();
+                .filter(cm -> cm.getId().equals(conformanceMethod.getConformanceMethod().getId()))
+                .findAny();
         return allowedConformanceMethod.isPresent();
     }
 
@@ -230,13 +230,13 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
     private void reviewConformanceMethodNotNullAndHasId(CertifiedProductSearchDetails listing, CertificationResult certResult,
             CertificationResultConformanceMethod conformanceMethod) {
         if (conformanceMethod.getConformanceMethod() == null || conformanceMethod.getConformanceMethod().getId() == null) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.conformanceMethod.missingConformanceMethod",
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.missingConformanceMethod",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 
     private void reviewConformanceMethodVersionRequirements(CertifiedProductSearchDetails listing, CertificationResult certResult,
-        CertificationResultConformanceMethod conformanceMethod) {
+            CertificationResultConformanceMethod conformanceMethod) {
         if (isMissingVersionDataWhenItIsRequired(conformanceMethod)) {
             addCriterionError(listing, certResult,
                     "listing.criteria.conformanceMethod.missingConformanceMethodVersion",
@@ -285,19 +285,19 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
             CertificationResultConformanceMethod conformanceMethod) {
         if (conformanceMethod.getConformanceMethod().getRemovalDate() != null
                 && conformanceMethod.getConformanceMethod().getRemovalDate().isBefore(DateUtil.toLocalDate(listing.getCertificationDate()))) {
-            //check listing for ICS
+            // check listing for ICS
             if (listing.getIcs() != null && !CollectionUtils.isEmpty(listing.getIcs().getParents())) {
                 Optional<CertifiedProduct> parentWithConformanceMethodOnCriterion = listing.getIcs().getParents().stream()
-                    .filter(icsParent -> doesParentHaveRemovedConformanceMethodForCriterion(icsParent.getId(), certResult.getCriterion(),
-                            conformanceMethod.getConformanceMethod()))
-                    .findAny();
+                        .filter(icsParent -> doesParentHaveRemovedConformanceMethodForCriterion(icsParent.getId(), certResult.getCriterion(),
+                                conformanceMethod.getConformanceMethod()))
+                        .findAny();
                 if (parentWithConformanceMethodOnCriterion.isEmpty()) {
-                    listing.getErrorMessages().add(msgUtil.getMessage("listing.conformanceMethod.criteria.conformanceMethodRemovedWithoutIcs",
+                    listing.addBusinessErrorMessage(msgUtil.getMessage("listing.conformanceMethod.criteria.conformanceMethodRemovedWithoutIcs",
                             Util.formatCriteriaNumber(certResult.getCriterion()),
                             conformanceMethod.getConformanceMethod().getName()));
                 }
             } else {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.conformanceMethod.criteria.conformanceMethodRemovedWithoutIcs",
+                listing.addBusinessErrorMessage(msgUtil.getMessage("listing.conformanceMethod.criteria.conformanceMethodRemovedWithoutIcs",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
                         conformanceMethod.getConformanceMethod().getName()));
             }
@@ -306,8 +306,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
 
     private boolean doesParentHaveRemovedConformanceMethodForCriterion(Long parentListingId,
             CertificationCriterion criterion, ConformanceMethod conformanceMethod) {
-        List<CertificationResultConformanceMethod> conformanceMethodsForParentCertResult
-            = certResultDao.getConformanceMethodsByListingAndCriterionId(parentListingId, criterion.getId());
+        List<CertificationResultConformanceMethod> conformanceMethodsForParentCertResult = certResultDao.getConformanceMethodsByListingAndCriterionId(parentListingId, criterion.getId());
         if (conformanceMethodsForParentCertResult == null) {
             return false;
         }
@@ -319,7 +318,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
     private void reviewF3ConformanceMethodsForGapRequirement(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
             certResult.getConformanceMethods().stream()
-                .forEach(conformanceMethod -> reviewF3(listing, certResult, conformanceMethod));
+                    .forEach(conformanceMethod -> reviewF3(listing, certResult, conformanceMethod));
         }
     }
 
@@ -333,13 +332,13 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
             CertificationResult certResult, CertificationResultConformanceMethod conformanceMethod) {
         if (BooleanUtils.isFalse(certResult.isGap()) && conformanceMethod.getConformanceMethod() != null
                 && StringUtils.equals(conformanceMethod.getConformanceMethod().getName(), CM_F3_MUST_HAVE_GAP)) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.conformanceMethod.f3GapMismatch",
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.f3GapMismatch",
                     Util.formatCriteriaNumber(certResult.getCriterion()),
                     conformanceMethod.getConformanceMethod().getName(),
                     "false"));
         } else if (BooleanUtils.isTrue(certResult.isGap()) && conformanceMethod.getConformanceMethod() != null
                 && StringUtils.equals(conformanceMethod.getConformanceMethod().getName(), CM_F3_CANNOT_HAVE_GAP)) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.conformanceMethod.f3GapMismatch",
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.f3GapMismatch",
                     Util.formatCriteriaNumber(certResult.getCriterion()),
                     conformanceMethod.getConformanceMethod().getName(),
                     "true"));

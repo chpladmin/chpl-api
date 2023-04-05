@@ -37,14 +37,14 @@ public class SvapReviewer implements ComparisonReviewer {
 
     @Override
     public void review(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
-        //Make sure there are no SVAPs for non-2015 listings
+        // Make sure there are no SVAPs for non-2015 listings
 
         if (!isListing2015Edition(existingListing)) {
             updatedListing.getCertificationResults().stream()
-            .filter(cr -> cr.getSvaps() != null && cr.getSvaps().size() > 0)
-            .forEach(cr -> updatedListing.getErrorMessages().add(
-                    errorMessageUtil.getMessage("listing.criteria.svap.invalidEdition",
-                            cr.getCriterion().getNumber(), getListingEdition(existingListing))));
+                    .filter(cr -> cr.getSvaps() != null && cr.getSvaps().size() > 0)
+                    .forEach(cr -> updatedListing.addBusinessErrorMessage(
+                            errorMessageUtil.getMessage("listing.criteria.svap.invalidEdition",
+                                    cr.getCriterion().getNumber(), getListingEdition(existingListing))));
         } else {
             validateSvapNoticeUrl(updatedListing);
 
@@ -55,9 +55,9 @@ public class SvapReviewer implements ComparisonReviewer {
             Map<Long, List<SvapCriteriaMap>> svapCriteriaMap = null;
             try {
                 svapCriteriaMap = svapDao.getAllSvapCriteriaMap().stream()
-                    .collect(Collectors.groupingBy(scm -> scm.getCriterion().getId()));
+                        .collect(Collectors.groupingBy(scm -> scm.getCriterion().getId()));
             } catch (EntityRetrievalException e) {
-                updatedListing.getErrorMessages().add("Could not validate SVAP");
+                updatedListing.addBusinessErrorMessage("Could not validate SVAP");
                 return;
             }
 
@@ -65,7 +65,7 @@ public class SvapReviewer implements ComparisonReviewer {
                 for (CertificationResultSvap crs : cr.getSvaps()) {
                     populateSvapFields(crs, svapCriteriaMap);
                     if (!isSvapValidForCriteria(crs.getSvapId(), cr.getCriterion().getId(), svapCriteriaMap)) {
-                        updatedListing.getErrorMessages().add(errorMessageUtil.getMessage("listing.criteria.svap.invalidCriteria",
+                        updatedListing.addBusinessErrorMessage(errorMessageUtil.getMessage("listing.criteria.svap.invalidCriteria",
                                 crs.getRegulatoryTextCitation(), cr.getCriterion().getNumber()));
                     }
                     if (isSvapAddedAndMarkedAsReplaced(crs, svapCriteriaMap)) {
@@ -103,7 +103,7 @@ public class SvapReviewer implements ComparisonReviewer {
     private void validateSvapNoticeUrl(CertifiedProductSearchDetails listing) {
         if (!StringUtils.isBlank(listing.getSvapNoticeUrl())
                 && !validationUtils.isWellFormedUrl(listing.getSvapNoticeUrl())) {
-            listing.getErrorMessages().add(
+            listing.addBusinessErrorMessage(
                     errorMessageUtil.getMessage("listing.svap.url.invalid"));
         }
     }
@@ -115,7 +115,7 @@ public class SvapReviewer implements ComparisonReviewer {
     private String getListingEdition(CertifiedProductSearchDetails listing) {
         return listing.getCertificationEdition().containsKey(CertifiedProductSearchDetails.EDITION_NAME_KEY)
                 ? listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString()
-                        : "";
+                : "";
     }
 
     private boolean isSvapValidForCriteria(Long svapId, Long criteriaId, Map<Long, List<SvapCriteriaMap>> svapCriteriaMap) {

@@ -20,7 +20,6 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
     private ValidationUtils validationUtils;
     private ErrorMessageUtil errorMessageUtil;
 
-
     @Autowired
     public RealWorldTestingReviewer(ValidationUtils validationUtils, ErrorMessageUtil errorMessageUtil) {
         this.validationUtils = validationUtils;
@@ -41,7 +40,7 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
                 validateRwtResultsCheckDate(updatedListing);
             }
         } else if (isRwtPlansDataSubmitted(updatedListing) || isRwtResultsDataSubmitted(updatedListing)) {
-            updatedListing.getErrorMessages().add(errorMessageUtil.getMessage("listing.realWorldTesting.notEligible"));
+            updatedListing.addBusinessErrorMessage(errorMessageUtil.getMessage("listing.realWorldTesting.notEligible"));
         }
     }
 
@@ -59,34 +58,34 @@ public class RealWorldTestingReviewer implements ComparisonReviewer {
 
     private void validateRwtPlansUrl(CertifiedProductSearchDetails listing) {
         if (StringUtils.isBlank(listing.getRwtPlansUrl())) {
-            listing.getErrorMessages().add(
+            listing.addBusinessErrorMessage(
                     errorMessageUtil.getMessage("listing.realWorldTesting.plans.url.required"));
         } else if (!validationUtils.isWellFormedUrl(listing.getRwtPlansUrl())) {
-            listing.getErrorMessages().add(
+            listing.addBusinessErrorMessage(
                     errorMessageUtil.getMessage("listing.realWorldTesting.plans.url.invalid"));
         }
     }
 
     private void validateRwtPlansCheckDate(CertifiedProductSearchDetails listing) {
         if (Objects.isNull(listing.getRwtPlansCheckDate())) {
-            listing.getErrorMessages().add(
+            listing.addBusinessErrorMessage(
                     errorMessageUtil.getMessage("listing.realWorldTesting.plans.checkDate.required"));
         }
     }
 
     private void validateRwtResultsUrl(CertifiedProductSearchDetails listing) {
         if (StringUtils.isBlank(listing.getRwtResultsUrl())) {
-            listing.getErrorMessages().add(
+            listing.addBusinessErrorMessage(
                     errorMessageUtil.getMessage("listing.realWorldTesting.results.url.required"));
         } else if (!validationUtils.isWellFormedUrl(listing.getRwtResultsUrl())) {
-            listing.getErrorMessages().add(
+            listing.addBusinessErrorMessage(
                     errorMessageUtil.getMessage("listing.realWorldTesting.results.url.invalid"));
         }
     }
 
     private void validateRwtResultsCheckDate(CertifiedProductSearchDetails listing) {
         if (Objects.isNull(listing.getRwtResultsCheckDate())) {
-            listing.getErrorMessages().add(
+            listing.addBusinessErrorMessage(
                     errorMessageUtil.getMessage("listing.realWorldTesting.results.checkDate.required"));
         }
     }

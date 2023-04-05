@@ -14,7 +14,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 @Component("pendingPermissionBasedReviewer")
 public abstract class PermissionBasedReviewer implements Reviewer {
     protected ErrorMessageUtil msgUtil;
-    protected  ResourcePermissions resourcePermissions;
+    protected ResourcePermissions resourcePermissions;
 
     @Autowired
     public PermissionBasedReviewer(ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
@@ -36,8 +36,8 @@ public abstract class PermissionBasedReviewer implements Reviewer {
 
     public void addListingWarningByPermission(CertifiedProductSearchDetails listing, String message) {
         if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
-                listing.getWarningMessages().add(message);
-                //ACBs do not get any error or warning about removed criteria validation issues
+            listing.getWarningMessages().add(message);
+            // ACBs do not get any error or warning about removed criteria validation issues
         }
     }
 
@@ -53,7 +53,7 @@ public abstract class PermissionBasedReviewer implements Reviewer {
             String message) {
         if (certResult.getCriterion() != null && (certResult.getCriterion().getRemoved() == null
                 || certResult.getCriterion().getRemoved().equals(Boolean.FALSE))) {
-            listing.getErrorMessages().add(message);
+            listing.addBusinessErrorMessage(message);
         }
     }
 

@@ -31,6 +31,7 @@ public class DeveloperStatusReviewer implements Reviewer {
         this.msgUtil = msgUtil;
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         try {
             if (listing.getDeveloper() != null && listing.getDeveloper().getId() != null) {
@@ -38,29 +39,29 @@ public class DeveloperStatusReviewer implements Reviewer {
                 if (developer != null) {
                     DeveloperStatus mostRecentStatus = developer.getStatus();
                     if (mostRecentStatus == null || mostRecentStatus.getStatus() == null) {
-                        listing.getErrorMessages().add(msgUtil.getMessage(
+                        listing.addBusinessErrorMessage(msgUtil.getMessage(
                                 "listing.developer.noStatusFound.noUpdate", developer.getName()));
                     } else {
                         if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
                             if (!checkAdminOrOncAllowedToEdit(developer)) {
-                                listing.getErrorMessages().add(msgUtil.getMessage(
-                                    "listing.developer.notActiveOrBanned.noUpdate",
-                                    developer.getName(), mostRecentStatus.getStatus(),
-                                    DeveloperStatusType.Active.getName(),
-                                    DeveloperStatusType.UnderCertificationBanByOnc.getName()));
+                                listing.addBusinessErrorMessage(msgUtil.getMessage(
+                                        "listing.developer.notActiveOrBanned.noUpdate",
+                                        developer.getName(), mostRecentStatus.getStatus(),
+                                        DeveloperStatusType.Active.getName(),
+                                        DeveloperStatusType.UnderCertificationBanByOnc.getName()));
                             }
                         } else if (!checkAcbAllowedToEdit(developer)) {
-                            listing.getErrorMessages().add(msgUtil.getMessage(
+                            listing.addBusinessErrorMessage(msgUtil.getMessage(
                                     "listing.developer.notActive.noUpdate",
                                     developer.getName(), mostRecentStatus.getStatus()));
                         }
                     }
                 } else {
-                    listing.getErrorMessages().add(msgUtil.getMessage("developer.notFound"));
+                    listing.addBusinessErrorMessage(msgUtil.getMessage("developer.notFound"));
                 }
             }
         } catch (final EntityRetrievalException ex) {
-            listing.getErrorMessages().add(msgUtil.getMessage("developer.notFound"));
+            listing.addBusinessErrorMessage(msgUtil.getMessage("developer.notFound"));
             LOGGER.error(ex.getMessage(), ex);
         }
     }

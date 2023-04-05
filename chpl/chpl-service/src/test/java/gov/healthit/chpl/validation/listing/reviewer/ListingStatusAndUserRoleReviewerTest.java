@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.HashSet;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -83,7 +82,7 @@ public class ListingStatusAndUserRoleReviewerTest {
                                 .build())
                         .build())
                 .build();
-        updatedListing.setErrorMessages(new HashSet<String>());
+        // updatedListing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(origListing, updatedListing);
 
@@ -110,7 +109,7 @@ public class ListingStatusAndUserRoleReviewerTest {
                 .id(1L)
                 .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
                 .build();
-        updatedListing.setErrorMessages(new HashSet<String>());
+        // updatedListing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(origListing, updatedListing);
 
@@ -137,7 +136,7 @@ public class ListingStatusAndUserRoleReviewerTest {
                                 .build())
                         .build())
                 .build();
-        updatedListing.setErrorMessages(new HashSet<String>());
+        // updatedListing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(origListing, updatedListing);
 
@@ -164,7 +163,7 @@ public class ListingStatusAndUserRoleReviewerTest {
                 .id(1L)
                 .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.SUSPENDED_BY_ACB))
                 .build();
-        updatedListing.setErrorMessages(new HashSet<String>());
+        // updatedListing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(origListing, updatedListing);
 
@@ -191,7 +190,7 @@ public class ListingStatusAndUserRoleReviewerTest {
                                 .build())
                         .build())
                 .build();
-        updatedListing.setErrorMessages(new HashSet<String>());
+        // updatedListing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(origListing, updatedListing);
 
@@ -218,7 +217,7 @@ public class ListingStatusAndUserRoleReviewerTest {
                 .id(1L)
                 .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.RETIRED))
                 .build();
-        updatedListing.setErrorMessages(new HashSet<String>());
+        // updatedListing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(origListing, updatedListing);
 
@@ -247,7 +246,7 @@ public class ListingStatusAndUserRoleReviewerTest {
                                 .build())
                         .build())
                 .build();
-        updatedListing.setErrorMessages(new HashSet<String>());
+        // updatedListing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(origListing, updatedListing);
 
@@ -276,7 +275,7 @@ public class ListingStatusAndUserRoleReviewerTest {
                 .certificationEvent(
                         getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.WITHDRAWN_BY_DEVELOPER))
                 .build();
-        updatedListing.setErrorMessages(new HashSet<String>());
+        // updatedListing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(origListing, updatedListing);
 
@@ -304,7 +303,7 @@ public class ListingStatusAndUserRoleReviewerTest {
                                 .build())
                         .build())
                 .build();
-        updatedListing.setErrorMessages(new HashSet<String>());
+        // updatedListing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(origListing, updatedListing);
 
@@ -332,7 +331,7 @@ public class ListingStatusAndUserRoleReviewerTest {
                 .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
                 .certificationEvent(getCertificationStatusEvent(1L, "02/01/2020", CertificationStatusProvider.RETIRED))
                 .build();
-        updatedListing.setErrorMessages(new HashSet<String>());
+        // updatedListing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(origListing, updatedListing);
 
@@ -363,7 +362,7 @@ public class ListingStatusAndUserRoleReviewerTest {
                                 .build())
                         .build())
                 .build();
-        updatedListing.setErrorMessages(new HashSet<String>());
+        // updatedListing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(origListing, updatedListing);
 
@@ -394,7 +393,7 @@ public class ListingStatusAndUserRoleReviewerTest {
                 .certificationEvent(getCertificationStatusEvent(1L, "02/01/2020", CertificationStatusProvider.RETIRED))
                 .certificationEvent(getCertificationStatusEvent(1L, "03/01/2020", CertificationStatusProvider.ACTIVE))
                 .build();
-        updatedListing.setErrorMessages(new HashSet<String>());
+        // updatedListing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(origListing, updatedListing);
 
@@ -429,7 +428,7 @@ public class ListingStatusAndUserRoleReviewerTest {
                                 .build())
                         .build())
                 .build();
-        updatedListing.setErrorMessages(new HashSet<String>());
+        // updatedListing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(origListing, updatedListing);
 

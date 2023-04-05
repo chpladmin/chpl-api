@@ -27,9 +27,9 @@ public class TestStandardReviewer implements Reviewer {
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(cert -> (cert.getTestStandards() != null && cert.getTestStandards().size() > 0))
-            .forEach(certResult -> certResult.getTestStandards().stream()
-                    .forEach(testStandard -> reviewTestStandard(listing, certResult, testStandard)));
+                .filter(cert -> (cert.getTestStandards() != null && cert.getTestStandards().size() > 0))
+                .forEach(certResult -> certResult.getTestStandards().stream()
+                        .forEach(testStandard -> reviewTestStandard(listing, certResult, testStandard)));
     }
 
     private void reviewTestStandard(CertifiedProductSearchDetails listing, CertificationResult certResult,
@@ -40,25 +40,25 @@ public class TestStandardReviewer implements Reviewer {
         if (testStandard.getTestStandardId() != null) {
             TestStandardDTO foundTestStandard = testStandardDao.getByIdAndEdition(testStandard.getTestStandardId(), editionId);
             if (foundTestStandard == null) {
-                listing.getErrorMessages().add(
+                listing.addBusinessErrorMessage(
                         msgUtil.getMessage("listing.criteria.testStandardIdNotFound",
-                        Util.formatCriteriaNumber(certResult.getCriterion()),
-                        testStandard.getTestStandardId(),
-                        MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY)));
+                                Util.formatCriteriaNumber(certResult.getCriterion()),
+                                testStandard.getTestStandardId(),
+                                MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY)));
             }
         } else if (!StringUtils.isEmpty(testStandardName)) {
             TestStandardDTO foundTestStandard = testStandardDao.getByNumberAndEdition(testStandardName, editionId);
             if (foundTestStandard == null) {
-                listing.getErrorMessages().add(
+                listing.addBusinessErrorMessage(
                         msgUtil.getMessage("listing.criteria.testStandardNotFound",
-                        Util.formatCriteriaNumber(certResult.getCriterion()),
-                        testStandardName,
-                        MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY)));
+                                Util.formatCriteriaNumber(certResult.getCriterion()),
+                                testStandardName,
+                                MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY)));
             }
         } else {
-            listing.getErrorMessages().add(
+            listing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingTestStandardName",
-                    Util.formatCriteriaNumber(certResult.getCriterion())));
+                            Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 }

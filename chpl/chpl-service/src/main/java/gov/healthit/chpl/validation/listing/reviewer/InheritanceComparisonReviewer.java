@@ -16,6 +16,7 @@ public class InheritanceComparisonReviewer implements ComparisonReviewer {
         this.msgUtil = msgUtil;
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
         reviewNoIcsChildrenRemoved(existingListing, updatedListing);
     }
@@ -23,21 +24,21 @@ public class InheritanceComparisonReviewer implements ComparisonReviewer {
     private void reviewNoIcsChildrenRemoved(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
         if (existingListing.getIcs() != null && existingListing.getIcs().getChildren() != null) {
             existingListing.getIcs().getChildren().stream()
-                .forEach(icsChild -> reviewIcsChildIsInUpdatedListing(icsChild, updatedListing));
+                    .forEach(icsChild -> reviewIcsChildIsInUpdatedListing(icsChild, updatedListing));
         }
     }
 
     private void reviewIcsChildIsInUpdatedListing(CertifiedProduct icsChild, CertifiedProductSearchDetails updatedListing) {
         if (updatedListing.getIcs() != null && updatedListing.getIcs().getChildren() != null) {
             boolean isChildPresent = updatedListing.getIcs().getChildren().stream()
-                .filter(updatedIcsChild -> updatedIcsChild.getId().equals(icsChild.getId()))
-                .findAny().isPresent();
+                    .filter(updatedIcsChild -> updatedIcsChild.getId().equals(icsChild.getId()))
+                    .findAny().isPresent();
             if (!isChildPresent) {
-                updatedListing.getErrorMessages().add(
+                updatedListing.addBusinessErrorMessage(
                         msgUtil.getMessage("listing.icsChildRemoved", icsChild.getChplProductNumber()));
             }
         } else {
-            updatedListing.getErrorMessages().add(
+            updatedListing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.icsChildRemoved", icsChild.getChplProductNumber()));
         }
     }
