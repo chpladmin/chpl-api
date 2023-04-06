@@ -374,7 +374,7 @@ public class CertifiedProductManager extends SecuredManager {
             listingNormalizer.normalize(updatedListing);
 
             // validate - throws ValidationException if the listing cannot be updated
-            validateListingForUpdate(existingListing, updatedListing, updateRequest.isAcknowledgeWarnings());
+            validateListingForUpdate(existingListing, updatedListing, updateRequest.isAcknowledgeWarnings(), updateRequest.isAcknowledgeBusinessErrors());
 
             // if listing status has changed that may trigger other changes to developer status
             performSecondaryActionsBasedOnStatusChanges(existingListing, updatedListing, updateRequest.getReason());
@@ -517,15 +517,13 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     private void validateListingForUpdate(CertifiedProductSearchDetails existingListing,
-            CertifiedProductSearchDetails updatedListing, boolean acknowledgeWarnings) throws ValidationException {
+            CertifiedProductSearchDetails updatedListing, boolean acknowledgeWarnings, boolean acknowledgeBusinessErrors) throws ValidationException {
         Validator validator = validatorFactory.getValidator(updatedListing);
         if (validator != null) {
             validator.validate(existingListing, updatedListing);
         }
 
-        if ((updatedListing.getErrorMessages() != null && updatedListing.getErrorMessages().size() > 0)
-                || (!acknowledgeWarnings && updatedListing.getWarningMessages() != null
-                        && updatedListing.getWarningMessages().size() > 0)) {
+        if (shouldValidationExpcetionBeThrown(updatedListing, acknowledgeBusinessErrors, acknowledgeWarnings)) {
             for (String err : updatedListing.getErrorMessages()) {
                 LOGGER.error("Error updating listing " + updatedListing.getChplProductNumber() + ": " + err);
             }
@@ -1634,6 +1632,31 @@ public class CertifiedProductManager extends SecuredManager {
             possibleDeveloperBanTrigger = schedulerManager.createBackgroundJobTrigger(possibleDeveloperBanTrigger);
         } catch (Exception ex) {
             LOGGER.error("Unable to schedule Trigger Developer Ban Job.", ex);
+        }
+    }
+
+    private boolean doErrorMessagesExist(CertifiedProductSearchDetails listing) {
+        return !CollectionUtils.isEmpty(listing.getErrorMessages().castToCollection());
+    }
+
+    private boolean doBusinessErrorMessagesExist(CertifiedProductSearchDetails listing) {
+        return !CollectionUtils.isEmpty(listing.getBusinessErrorMessages().castToCollection());
+    }
+
+    private boolean doWarningMessagesExist(CertifiedProductSearchDetails listing) {
+        return !CollectionUtils.isEmpty(listing.getWarningMessages());
+    }
+
+    private boolean shouldValidationExpcetionBeThrown(CertifiedProductSearchDetails listing, boolean acknowledgeBusinessErrors, boolean acknowledgeWarnings) {
+        // return true when we want to throw ValidationException
+        if (doErrorMessagesExist(listing)) {
+            if (resourcePermissions.isUserRoleAdmin()) {
+                return doBusinessErrorMessagesExist(listing) && !acknowledgeBusinessErrors;
+            } else {
+                return true;
+            }
+        } else {
+            return doWarningMessagesExist(listing) && !acknowledgeWarnings;
         }
     }
 
