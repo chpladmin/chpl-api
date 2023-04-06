@@ -134,13 +134,17 @@ public class ApiExceptionControllerAdvice {
     public ResponseEntity<ValidationErrorResponse> exception(ValidationException e) {
         ValidationErrorResponse error = new ValidationErrorResponse();
         error.setErrorMessages(e.getErrorMessages());
+        error.setBusinessErrorMessages(e.getBusinessErrorMessages());
+        error.setDataErrorMessages(e.getDataErrorMessages());
         error.setWarningMessages(e.getWarningMessages());
         return new ResponseEntity<ValidationErrorResponse>(error, HttpStatus.BAD_REQUEST);
     }
 
     /**
      * Return bad request for thrown ObjectsMissingValidationException including contact information.
-     * @param e the thrown exception
+     *
+     * @param e
+     *            the thrown exception
      * @return an http response with appropriate error code.
      */
     @ExceptionHandler(ObjectsMissingValidationException.class)
@@ -218,7 +222,7 @@ public class ApiExceptionControllerAdvice {
     public ResponseEntity<ErrorResponse> exceptionHandler(IOException e, HttpServletRequest request) {
         if (StringUtils.containsIgnoreCase(ExceptionUtils.getRootCauseMessage(e), "Broken pipe")) {
             LOGGER.warn("Broke Pipe IOException occurred: " + request.getMethod() + " " + request.getRequestURL());
-            return null; //socket is closed, cannot return any response
+            return null; // socket is closed, cannot return any response
         } else {
             return new ResponseEntity<ErrorResponse>(
                     new ErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);

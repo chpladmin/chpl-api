@@ -156,7 +156,9 @@ public class CertifiedProductManager extends SecuredManager {
     public CertifiedProductManager() {
     }
 
-    @SuppressWarnings({"checkstyle:parameternumber"})
+    @SuppressWarnings({
+            "checkstyle:parameternumber"
+    })
     @Autowired
     public CertifiedProductManager(ErrorMessageUtil msgUtil,
             CertifiedProductDAO cpDao, CertifiedProductSearchDAO searchDao,
@@ -377,8 +379,8 @@ public class CertifiedProductManager extends SecuredManager {
             // if listing status has changed that may trigger other changes to developer status
             performSecondaryActionsBasedOnStatusChanges(existingListing, updatedListing, updateRequest.getReason());
 
-            //clear all ICS family from the shared store so that ICS relationships
-            //are cleared for ICS additions and ICS removals
+            // clear all ICS family from the shared store so that ICS relationships
+            // are cleared for ICS additions and ICS removals
             icsSharedStoreHandler.handle(updateRequest.getListing().getId());
 
             // Update the listing
@@ -402,15 +404,16 @@ public class CertifiedProductManager extends SecuredManager {
     private void logCertifiedProductUpdateActivity(CertifiedProductSearchDetails existingListing,
             String reason) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
 
-        CertifiedProductSearchDetails changedProduct
-                = certifiedProductDetailsManager.getCertifiedProductDetailsNoCache(existingListing.getId());
+        CertifiedProductSearchDetails changedProduct = certifiedProductDetailsManager.getCertifiedProductDetailsNoCache(existingListing.getId());
 
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
                 "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing,
                 changedProduct, reason);
     }
 
-    @SuppressWarnings({"checkstyle:linelength"})
+    @SuppressWarnings({
+            "checkstyle:linelength"
+    })
     private void updateListingsChildData(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing)
             throws EntityCreationException, EntityRetrievalException, IOException {
 
@@ -522,14 +525,15 @@ public class CertifiedProductManager extends SecuredManager {
 
         if ((updatedListing.getErrorMessages() != null && updatedListing.getErrorMessages().size() > 0)
                 || (!acknowledgeWarnings && updatedListing.getWarningMessages() != null
-                && updatedListing.getWarningMessages().size() > 0)) {
+                        && updatedListing.getWarningMessages().size() > 0)) {
             for (String err : updatedListing.getErrorMessages()) {
                 LOGGER.error("Error updating listing " + updatedListing.getChplProductNumber() + ": " + err);
             }
             for (String warning : updatedListing.getWarningMessages()) {
                 LOGGER.error("Warning updating listing " + updatedListing.getChplProductNumber() + ": " + warning);
             }
-            throw new ValidationException(updatedListing.getErrorMessages(), updatedListing.getWarningMessages());
+            throw new ValidationException(updatedListing.getErrorMessages(), updatedListing.getBusinessErrorMessages(),
+                    updatedListing.getDataErrorMessages(), updatedListing.getWarningMessages());
         }
     }
 
@@ -901,7 +905,8 @@ public class CertifiedProductManager extends SecuredManager {
                     boolean inUpdatedListing = false;
                     for (ListingMeasure updatedItem : updatedMeasures) {
                         inUpdatedListing = !inUpdatedListing
-                                ? existingItem.getId().equals(updatedItem.getId()) : inUpdatedListing;
+                                ? existingItem.getId().equals(updatedItem.getId())
+                                : inUpdatedListing;
                     }
                     if (!inUpdatedListing) {
                         idsToRemove.add(existingItem.getId());
@@ -1005,7 +1010,7 @@ public class CertifiedProductManager extends SecuredManager {
     private int updateAccessibilityStandards(Long listingId,
             List<CertifiedProductAccessibilityStandard> existingAccessibilityStandards,
             List<CertifiedProductAccessibilityStandard> updatedAccessibilityStandards)
-             throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
 
         int numChanges = 0;
         List<CertifiedProductAccessibilityStandard> accStdsToAdd = new ArrayList<CertifiedProductAccessibilityStandard>();
