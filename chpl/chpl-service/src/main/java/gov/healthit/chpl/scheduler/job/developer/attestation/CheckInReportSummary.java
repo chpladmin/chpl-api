@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class DeveloperAttestationCheckInReportSummary {
+public class CheckInReportSummary {
     private Long developerCount;
     private Long attestationsApprovedCount;
     private Long pendingAcbActionCount;
