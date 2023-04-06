@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -73,9 +73,7 @@ public class CertificationResultConformanceMethod implements Serializable {
         if (this.getConformanceMethod() != null && anotherMethod.getConformanceMethod() != null
                 && this.getConformanceMethod().getId() != null && anotherMethod.getConformanceMethod().getId() != null
                 && this.getConformanceMethod().getId().longValue() == anotherMethod.getConformanceMethod().getId().longValue()
-                && !StringUtils.isEmpty(this.getConformanceMethodVersion())
-                && !StringUtils.isEmpty(anotherMethod.getConformanceMethodVersion())
-                && this.getConformanceMethodVersion().equalsIgnoreCase(anotherMethod.getConformanceMethodVersion())) {
+                && StringUtils.equals(this.getConformanceMethodVersion(), anotherMethod.getConformanceMethodVersion())) {
             result = true;
         }
         return result;

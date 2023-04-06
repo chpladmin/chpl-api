@@ -2,11 +2,13 @@ package gov.healthit.chpl.certifiedproduct.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,12 +38,16 @@ import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
+import gov.healthit.chpl.domain.comparator.CertificationCriterionComparator;
 import gov.healthit.chpl.domain.comparator.CertifiedProductAccessibilityStandardComparator;
 import gov.healthit.chpl.domain.comparator.CertifiedProductComparator;
 import gov.healthit.chpl.domain.comparator.CertifiedProductQmsStandardComparator;
 import gov.healthit.chpl.domain.comparator.CertifiedProductTargetedUserComparator;
 import gov.healthit.chpl.domain.comparator.CertifiedProductTestingLabComparator;
+import gov.healthit.chpl.domain.comparator.CertifiedProductUcdProcessComparator;
 import gov.healthit.chpl.domain.comparator.ChplProductNumberHistoryComparator;
+import gov.healthit.chpl.domain.comparator.TestParticipantComparator;
+import gov.healthit.chpl.domain.comparator.TestTaskComparator;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -73,6 +79,7 @@ public class ListingService {
     private CertifiedProductTargetedUserDAO certifiedProductTargetedUserDao;
     private CertifiedProductAccessibilityStandardDAO certifiedProductAsDao;
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
+    private CertificationCriterionComparator criteriaComparator;
 
     private CertifiedProductComparator cpComparator;
     private CertifiedProductTestingLabComparator atlComparator;
@@ -81,6 +88,9 @@ public class ListingService {
     private CertifiedProductAccessibilityStandardComparator asComparator;
     private ChplProductNumberHistoryComparator chplProductNumberHistoryComparator;
     private DirectReviewComparator drComparator;
+    private CertifiedProductUcdProcessComparator ucdComparator;
+    private TestTaskComparator ttComparator;
+    private TestParticipantComparator tpComparator;
 
     @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
@@ -101,7 +111,8 @@ public class ListingService {
             CertifiedProductQmsStandardDAO certifiedProductQmsStandardDao,
             CertifiedProductTargetedUserDAO certifiedProductTargetedUserDao,
             CertifiedProductAccessibilityStandardDAO certifiedProductAsDao,
-            CertifiedProductSearchResultDAO certifiedProductSearchResultDAO) {
+            CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
+            CertificationCriterionComparator criteriaComparator) {
 
         this.certificationResultService = certificationResultService;
         this.listingMeasureService = listingMeasureService;
@@ -119,6 +130,7 @@ public class ListingService {
         this.certifiedProductTargetedUserDao = certifiedProductTargetedUserDao;
         this.certifiedProductAsDao = certifiedProductAsDao;
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
+        this.criteriaComparator = criteriaComparator;
 
         this.cpComparator = new CertifiedProductComparator();
         this.atlComparator = new CertifiedProductTestingLabComparator();
@@ -127,6 +139,9 @@ public class ListingService {
         this.asComparator = new CertifiedProductAccessibilityStandardComparator();
         this.chplProductNumberHistoryComparator = new ChplProductNumberHistoryComparator();
         this.drComparator = new DirectReviewComparator();
+        this.ucdComparator = new CertifiedProductUcdProcessComparator();
+        this.ttComparator = new TestTaskComparator();
+        this.tpComparator = new TestParticipantComparator();
     }
 
     public CertifiedProductSearchDetails createCertifiedSearchDetails(Long listingId) throws EntityRetrievalException {
@@ -136,6 +151,7 @@ public class ListingService {
 
         searchDetails.setCertificationResults(certificationResultService.getCertificationResults(searchDetails));
         searchDetails.setCqmResults(cqmResultsService.getCqmResultDetails(dto.getId(), dto.getYear()));
+        sortSed(searchDetails);
 
         // get first-level parents and children
         searchDetails.getIcs().setParents(populateRelatedCertifiedProducts(getCertifiedProductParents(dto.getId())));
@@ -204,6 +220,32 @@ public class ListingService {
         listing.setCertificationEvents(certificationStatusEventsService.getCertificationStatusEvents(dto.getId()));
         populateDirectReviews(listing);
         return listing;
+    }
+
+    private void sortSed(CertifiedProductSearchDetails searchDetails) {
+        if (searchDetails.getSed() != null && !CollectionUtils.isEmpty(searchDetails.getSed().getUcdProcesses())) {
+            searchDetails.getSed().setUcdProcesses(searchDetails.getSed().getUcdProcesses().stream()
+                .sorted(ucdComparator)
+                .collect(Collectors.toList()));
+            searchDetails.getSed().getUcdProcesses().stream()
+                .forEach(ucd -> ucd.setCriteria(ucd.getCriteria().stream()
+                    .sorted(criteriaComparator)
+                    .collect(Collectors.toCollection(LinkedHashSet::new))));
+        }
+
+        if (searchDetails.getSed() != null && !CollectionUtils.isEmpty(searchDetails.getSed().getTestTasks())) {
+            searchDetails.getSed().setTestTasks(searchDetails.getSed().getTestTasks().stream()
+                    .sorted(ttComparator)
+                    .collect(Collectors.toList()));
+                searchDetails.getSed().getTestTasks().stream()
+                    .forEach(tt -> tt.setCriteria(tt.getCriteria().stream()
+                        .sorted(criteriaComparator)
+                        .collect(Collectors.toCollection(LinkedHashSet::new))));
+                searchDetails.getSed().getTestTasks().stream()
+                    .forEach(tt -> tt.setTestParticipants(tt.getTestParticipants().stream()
+                        .sorted(tpComparator)
+                        .collect(Collectors.toCollection(LinkedHashSet::new))));
+        }
     }
 
     private List<CertifiedProductTestingLab> getTestingLabs(Long listingId) throws EntityRetrievalException {

@@ -369,23 +369,23 @@ public class CertifiedProductManager extends SecuredManager {
             existingListing = certifiedProductDetailsManager
                     .getCertifiedProductDetails(updatedListing.getId());
 
-//            listingNormalizer.normalize(updatedListing);
-//
-//            // validate - throws ValidationException if the listing cannot be updated
-//            validateListingForUpdate(existingListing, updatedListing, updateRequest.isAcknowledgeWarnings());
-//
-//            // if listing status has changed that may trigger other changes to developer status
-//            performSecondaryActionsBasedOnStatusChanges(existingListing, updatedListing, updateRequest.getReason());
-//
-//            //clear all ICS family from the shared store so that ICS relationships
-//            //are cleared for ICS additions and ICS removals
-//            icsSharedStoreHandler.handle(updateRequest.getListing().getId());
-//
-//            // Update the listing
+            listingNormalizer.normalize(updatedListing);
+
+            // validate - throws ValidationException if the listing cannot be updated
+            validateListingForUpdate(existingListing, updatedListing, updateRequest.isAcknowledgeWarnings());
+
+            // if listing status has changed that may trigger other changes to developer status
+            performSecondaryActionsBasedOnStatusChanges(existingListing, updatedListing, updateRequest.getReason());
+
+            //clear all ICS family from the shared store so that ICS relationships
+            //are cleared for ICS additions and ICS removals
+            icsSharedStoreHandler.handle(updateRequest.getListing().getId());
+
+            // Update the listing
             CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
             CertifiedProductDTO result = cpDao.update(dtoToUpdate);
-//            updateListingsChildData(existingListing, updatedListing);
-//            updateRwtEligibilityForListingAndChildren(result);
+            updateListingsChildData(existingListing, updatedListing);
+            updateRwtEligibilityForListingAndChildren(result);
 
             // Log the activity
             logCertifiedProductUpdateActivity(existingListing, updateRequest.getReason());
