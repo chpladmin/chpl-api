@@ -12,6 +12,15 @@
             <name>mergeDeveloperJob</name>
             <group>chplBackgroundJobs</group>
         </delete-job>
+        <delete-job>
+            <name>Developer Attestations Report Email</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <!-- Need to delete the existing job, so the new ACB Specific attribute gets picked up -->
+        <delete-job>
+            <name>Developer Attestations Check-in Report Email</name>
+            <group>chplJobs</group>
+        </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
@@ -758,10 +767,10 @@
         </job>
 
         <job>
-            <name>Developer Attestations Report Email</name>
+            <name>Developer Attestations Check-in Report</name>
             <group>chplJobs</group>
-            <description>Sends the Developer Attestations Report</description>
-            <job-class>gov.healthit.chpl.scheduler.job.developer.attestation.DeveloperAttestationReportJob</job-class>
+            <description>Sends the Developer Attestations Check-in Report</description>
+            <job-class>gov.healthit.chpl.scheduler.job.developer.attestation.DeveloperAttestationCheckInReportJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>
@@ -772,21 +781,6 @@
                 <entry>
                     <key>acbSpecific</key>
                     <value>true</value>
-                </entry>
-            </job-data-map>
-        </job>
-
-        <job>
-            <name>Developer Attestations Check-in Report Email</name>
-            <group>chplJobs</group>
-            <description>Sends the Developer Attestations Check-in Report</description>
-            <job-class>gov.healthit.chpl.scheduler.job.developer.attestation.DeveloperAttestationCheckInReportJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ONC_STAFF</value>
                 </entry>
             </job-data-map>
         </job>

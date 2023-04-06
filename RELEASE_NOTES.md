@@ -1,5 +1,23 @@
 # Release Notes
 
+## Version 40.0.0
+_3 April 2023_
+
+### Breaking change
+* Remove eligible deprecated endpoints and response fields
+
+### Features
+* Add complaint search filters for Listing ID, Surveillance ID, and Certification Criterion ID
+* Remove Developer Attestation report
+* Merge information from Developer Attestation report into the Developer Check-in Attestation Report
+** Adds informational messages about Developers' Listings and their Attestation Responses
+
+### Bug Fixes
+* Handle "Jira Unavailable" better in Listing Search Service
+* Update Shared Store to handle concurrency issues better
+
+---
+
 ## Version 39.6.0
 _20 March 2023_
 
