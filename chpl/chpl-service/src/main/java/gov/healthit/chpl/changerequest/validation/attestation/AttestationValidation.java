@@ -1,4 +1,4 @@
-package gov.healthit.chpl.changerequest.validation;
+package gov.healthit.chpl.changerequest.validation.attestation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
+import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.form.FormItem;

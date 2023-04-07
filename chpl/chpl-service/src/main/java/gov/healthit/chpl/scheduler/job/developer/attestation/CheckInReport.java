@@ -3,12 +3,16 @@ package gov.healthit.chpl.scheduler.job.developer.attestation;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-public class DeveloperAttestationCheckInReport {
+@NoArgsConstructor
+@AllArgsConstructor
+public class CheckInReport {
     private String developerName;
     private String developerCode;
     private Long developerId;
@@ -17,6 +21,7 @@ public class DeveloperAttestationCheckInReport {
     private String currentStatusName;
     private LocalDateTime lastStatusChangeDate;
     private String relevantAcbs;
+    private String attestationPeriod;
     private String informationBlockingResponse;
     private String informationBlockingNoncompliantResponse;
     private String assurancesResponse;
@@ -29,6 +34,15 @@ public class DeveloperAttestationCheckInReport {
     private String apiNoncompliantResponse;
     private String signature;
     private String signatureEmail;
+    private Long totalSurveillances;
+    private Long totalSurveillanceNonconformities;
+    private Long openSurveillanceNonconformities;
+    private Long totalDirectReviewNonconformities;
+    private Long openDirectReviewNonconformities;
+    private String assurancesValidation;
+    private String realWorldTestingValidation;
+    private String apiValidation;
+    private String warnings;
 
     public List<String> toListOfStrings() {
         return List.of(developerName,
@@ -39,6 +53,7 @@ public class DeveloperAttestationCheckInReport {
                 currentStatusName != null ? currentStatusName : "",
                 lastStatusChangeDate != null ? lastStatusChangeDate.toString() : "",
                 relevantAcbs != null ? relevantAcbs : "",
+                attestationPeriod != null ? attestationPeriod : "",
                 informationBlockingResponse != null ? informationBlockingResponse : "",
                 informationBlockingNoncompliantResponse != null ? informationBlockingNoncompliantResponse : "",
                 assurancesResponse != null ? assurancesResponse : "",
@@ -50,7 +65,15 @@ public class DeveloperAttestationCheckInReport {
                 rwtResponse != null ? rwtResponse : "",
                 rwtNoncompliantResponse != null ? rwtNoncompliantResponse : "",
                 signature != null ? signature : "",
-                signatureEmail != null ? signatureEmail : "");
+                signatureEmail != null ? signatureEmail : "",
+                totalSurveillances != null ? totalSurveillances.toString() : "0",
+                totalSurveillanceNonconformities != null ? totalSurveillanceNonconformities.toString() : "0",
+                openSurveillanceNonconformities != null ? openSurveillanceNonconformities.toString() : "0",
+                totalDirectReviewNonconformities != null ? totalDirectReviewNonconformities.toString() : "0",
+                openDirectReviewNonconformities != null ? openDirectReviewNonconformities.toString() : "0",
+                assurancesValidation != null ? assurancesValidation : "",
+                apiValidation != null ? apiValidation : "",
+                realWorldTestingValidation != null ? realWorldTestingValidation : "");
     }
 
     public static List<String> getHeaders() {
@@ -62,6 +85,7 @@ public class DeveloperAttestationCheckInReport {
                 "Change Request Current Status",
                 "Change Request Last Status Change Date",
                 "ONC-ACBs",
+                "Attestations Period",
                 "Information Blocking Response",
                 "Information Blocking Optional Response",
                 "Assurances Response",
@@ -73,6 +97,14 @@ public class DeveloperAttestationCheckInReport {
                 "Real World Testing Response",
                 "Real World Testing Optional Response",
                 "Submitted by Name",
-                "Submitted by Email");
+                "Submitted by Email",
+                "Total Surveillance",
+                "Total Surveillance Non-conformities",
+                "Open Surveillance Non-conformities",
+                "Total Direct Review Non-conformities",
+                "Open Direct Review Non-conformities",
+                "Has listing(s) with Assurances criteria (b)(10)",
+                "Has listing(s) with API criteria (g)(7)-(g)(10)",
+                "Has listing(s) with RWT criteria");
     }
 }

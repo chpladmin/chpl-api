@@ -11,23 +11,23 @@ import java.util.List;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "developerAttestationReportJobLogger")
 @Component
-public class DeveloperAttestationReportCsvWriter {
-    private Environment env;
+@Log4j2
+public class CheckInReportCsvWriter {
+    private String reportFileName;
 
     @Autowired
-    public DeveloperAttestationReportCsvWriter(Environment env) {
-        this.env = env;
+    public CheckInReportCsvWriter(@Value("${developer.attestation.checkin.report.filename}") String reportFileName) {
+        this.reportFileName = reportFileName;
     }
 
-    public File generateFile(List<DeveloperAttestationReport> rows) {
-        File outputFile = getOutputFile(env.getProperty("developer.attestation.report.filename") + LocalDate.now().toString());
+    public File generateFile(List<CheckInReport> rows) {
+        File outputFile = getOutputFile();
         if (rows == null || rows.size() == 0) {
             return outputFile;
         }
@@ -36,7 +36,7 @@ public class DeveloperAttestationReportCsvWriter {
                 Charset.forName("UTF-8").newEncoder());
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
             writer.write('\ufeff');
-            csvPrinter.printRecord(rows.get(0).getHeaders());
+            csvPrinter.printRecord(CheckInReport.getHeaders());
             rows.stream()
                     .forEach(row -> {
                         try {
@@ -44,7 +44,6 @@ public class DeveloperAttestationReportCsvWriter {
                         } catch (Exception e) {
                             LOGGER.error(e);
                         }
-
                     });
         } catch (Exception e) {
             LOGGER.error(e);
@@ -52,10 +51,10 @@ public class DeveloperAttestationReportCsvWriter {
         return outputFile;
     }
 
-    private File getOutputFile(String reportFilename) {
+    private File getOutputFile() {
         File temp = null;
         try {
-            temp = File.createTempFile(reportFilename, ".csv");
+            temp = File.createTempFile(reportFileName + " " + LocalDate.now().toString() + " ", ".csv");
             temp.deleteOnExit();
         } catch (IOException ex) {
             LOGGER.error("Could not create temporary file " + ex.getMessage(), ex);

@@ -111,7 +111,7 @@
         <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>itextpdf</artifactId>
-            <version>5.5.13.2</version>
+            <version>5.5.13.3</version>
             <exclusions>
                 <exclusion>
                     <artifactId>bcmail-jdk14</artifactId>
