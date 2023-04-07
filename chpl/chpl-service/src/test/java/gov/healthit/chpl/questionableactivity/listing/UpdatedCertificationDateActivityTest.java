@@ -185,6 +185,7 @@ public class UpdatedCertificationDateActivityTest {
         CertificationStatusEvent updatedActiveStatusEvent = CertificationStatusEvent.builder()
                 .eventDate(1558592000000L)
                 .id(25324L)
+                .reason("test1")
                 .status(CertificationStatus.builder()
                         .name(CertificationStatusType.Active.getName())
                         .build())
@@ -211,5 +212,6 @@ public class UpdatedCertificationDateActivityTest {
         assertEquals(1, activities.size());
         assertEquals("2019-09-15", activities.get(0).getBefore());
         assertEquals("2019-05-23", activities.get(0).getAfter());
+        assertEquals("test1", activities.get(0).getCertificationStatusChangeReason());
     }
 }
