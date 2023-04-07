@@ -2,7 +2,6 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 import java.util.LinkedHashSet;
-import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -47,7 +46,7 @@ public class ListingMeasure implements Serializable {
     @XmlElementWrapper(name = "associatedCriteria", nillable = true, required = false)
     @XmlElement(required = true, name = "criteria")
     @Builder.Default
-    private Set<CertificationCriterion> associatedCriteria = new LinkedHashSet<CertificationCriterion>();
+    private LinkedHashSet<CertificationCriterion> associatedCriteria = new LinkedHashSet<CertificationCriterion>();
 
     public ListingMeasure() {
         super();
@@ -157,11 +156,11 @@ public class ListingMeasure implements Serializable {
         this.measureType = measureType;
     }
 
-    public Set<CertificationCriterion> getAssociatedCriteria() {
+    public LinkedHashSet<CertificationCriterion> getAssociatedCriteria() {
         return associatedCriteria;
     }
 
-    public void setAssociatedCriteria(Set<CertificationCriterion> associatedCriteria) {
+    public void setAssociatedCriteria(LinkedHashSet<CertificationCriterion> associatedCriteria) {
         this.associatedCriteria = associatedCriteria;
     }
 }

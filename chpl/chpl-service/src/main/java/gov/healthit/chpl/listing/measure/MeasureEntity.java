@@ -72,7 +72,7 @@ public class MeasureEntity {
     private Long lastModifiedUser;
 
     public Measure convert() {
-        Set<CertificationCriterion> convertedAllowedCriteria = new LinkedHashSet<CertificationCriterion>();
+        LinkedHashSet<CertificationCriterion> convertedAllowedCriteria = new LinkedHashSet<CertificationCriterion>();
         if (getAllowedCriteria() != null) {
             getAllowedCriteria().stream()
                 .filter(allowedCriterion -> allowedCriterion != null)

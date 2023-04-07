@@ -2,7 +2,6 @@ package gov.healthit.chpl.certifiedproduct.service;
 
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,14 +49,14 @@ public class ListingMeasuresService {
     }
 
     private void sortAssociatedCriteria(ListingMeasure listingMeasure) {
-        Set<CertificationCriterion> sortedAssociatedCriteria = listingMeasure.getAssociatedCriteria().stream()
+        LinkedHashSet<CertificationCriterion> sortedAssociatedCriteria = listingMeasure.getAssociatedCriteria().stream()
                 .sorted(criterionComparator)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         listingMeasure.setAssociatedCriteria(sortedAssociatedCriteria);
     }
 
     private void sortAllowedCriteria(ListingMeasure listingMeasure) {
-        Set<CertificationCriterion> sortedAllowedCriteria = listingMeasure.getMeasure().getAllowedCriteria().stream()
+        LinkedHashSet<CertificationCriterion> sortedAllowedCriteria = listingMeasure.getMeasure().getAllowedCriteria().stream()
                 .sorted(criterionComparator)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         listingMeasure.getMeasure().setAllowedCriteria(sortedAllowedCriteria);

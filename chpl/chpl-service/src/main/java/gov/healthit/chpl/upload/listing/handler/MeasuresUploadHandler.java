@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -106,7 +105,7 @@ public class MeasuresUploadHandler {
             return null;
         }
 
-        Set<CertificationCriterion> associatedCriteria = new LinkedHashSet<CertificationCriterion>();
+        LinkedHashSet<CertificationCriterion> associatedCriteria = new LinkedHashSet<CertificationCriterion>();
         if (!StringUtils.isEmpty(measureAssociatedCriteriaDelimited) && !"0".equals(measureAssociatedCriteriaDelimited)) {
             String[] splitCriteriaNumbers = measureAssociatedCriteriaDelimited.split(";");
             if (splitCriteriaNumbers.length == 1) {

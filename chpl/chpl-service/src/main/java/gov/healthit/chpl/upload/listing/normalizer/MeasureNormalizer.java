@@ -1,6 +1,7 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -135,7 +136,8 @@ public class MeasureNormalizer {
 
     private void associateCuresAndOriginalCriteria(ListingMeasure listingMeasure) {
         if (!CollectionUtils.isEmpty(listingMeasure.getAssociatedCriteria())) {
-            Set<CertificationCriterion> associatedCriteriaCopy = listingMeasure.getAssociatedCriteria().stream().collect(Collectors.toSet());
+            LinkedHashSet<CertificationCriterion> associatedCriteriaCopy = listingMeasure.getAssociatedCriteria().stream()
+                .collect(Collectors.toCollection(LinkedHashSet::new));
 
             listingMeasure.getAssociatedCriteria().stream()
                 .forEach(associatedCriterion -> {
