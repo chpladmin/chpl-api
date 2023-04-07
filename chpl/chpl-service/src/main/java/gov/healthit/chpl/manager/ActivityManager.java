@@ -62,8 +62,10 @@ public class ActivityManager extends SecuredManager {
         }
 
         Date activityDate = new Date();
-        addActivity(concept, objectId, activityDescription, originalData, newData, activityDate, asUser);
-        questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, activityDate, originalData, newData);
+        boolean wasActivityAdded = addActivity(concept, objectId, activityDescription, originalData, newData, activityDate, asUser);
+        if (wasActivityAdded) {
+            questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, activityDate, originalData, newData);
+        }
         chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
     }
 
@@ -77,8 +79,10 @@ public class ActivityManager extends SecuredManager {
         }
 
         Date activityDate = new Date();
-        addActivity(concept, objectId, activityDescription, originalData, newData, activityDate, asUser);
-        questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, activityDate, originalData, newData, reason);
+        boolean wasActivityAdded = addActivity(concept, objectId, activityDescription, originalData, newData, activityDate, asUser);
+        if (wasActivityAdded) {
+            questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, activityDate, originalData, newData, reason);
+        }
         chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
     }
 
@@ -87,12 +91,14 @@ public class ActivityManager extends SecuredManager {
             Object newData, Long asUser) throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         Date activityDate = new Date();
-        addActivity(concept, objectId, activityDescription, originalData, newData, activityDate, asUser);
-        questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, activityDate, originalData, newData);
+        boolean wasActivityAdded = addActivity(concept, objectId, activityDescription, originalData, newData, activityDate, asUser);
+        if (wasActivityAdded) {
+            questionableActivityListener.checkQuestionableActivity(concept, objectId, activityDescription, activityDate, originalData, newData);
+        }
         chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
     }
 
-    private void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
+    private boolean addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
             Object newData, Date timestamp, Long asUser)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
@@ -104,7 +110,7 @@ public class ActivityManager extends SecuredManager {
             originalMatchesNew = JSONUtils.jsonEquals(originalDataStr, newDataStr);
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
-            return;
+            return false;
         }
 
         // Do not add the activity if nothing has changed.
@@ -122,7 +128,9 @@ public class ActivityManager extends SecuredManager {
             dto.setLastModifiedUser(asUser);
             dto.setDeleted(false);
             activityDAO.create(dto);
+            return true;
         }
+        return false;
     }
 
     @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
