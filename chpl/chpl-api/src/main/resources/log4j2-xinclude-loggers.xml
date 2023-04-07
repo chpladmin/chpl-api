@@ -92,9 +92,9 @@
         <AppenderRef ref="splitDeveloperJob" />
         <AppenderRef ref="splitDeveloperJobJson" />
     </Logger>
-    <Logger name="mergeDeveloperJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="mergeDeveloperJob" />
-        <AppenderRef ref="mergeDeveloperJobJson" />
+    <Logger name="joinDeveloperJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="joinDeveloperJob" />
+        <AppenderRef ref="joinDeveloperJobJson" />
     </Logger>
     <Logger name="apiKeyWarningEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="apiKeyWarningEmailJob" />

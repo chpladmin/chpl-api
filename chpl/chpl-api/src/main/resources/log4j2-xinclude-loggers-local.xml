@@ -72,8 +72,8 @@
     <Logger name="splitDeveloperJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="splitDeveloperJob" />
     </Logger>
-    <Logger name="mergeDeveloperJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="mergeDeveloperJob" />
+    <Logger name="joinDeveloperJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="joinDeveloperJob" />
     </Logger>
     <Logger name="apiKeyWarningEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="apiKeyWarningEmailJob" />

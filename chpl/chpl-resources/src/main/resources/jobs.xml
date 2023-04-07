@@ -9,6 +9,10 @@
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
         <delete-job>
+            <name>mergeDeveloperJob</name>
+            <group>chplBackgroundJobs</group>
+        </delete-job>
+        <delete-job>
             <name>Developer Attestations Report Email</name>
             <group>chplJobs</group>
         </delete-job>
@@ -398,12 +402,12 @@
             </job-data-map>
         </job>
 
-        <!-- Job fired when developers are merged -->
+        <!-- Job fired when developers join another developer -->
         <job>
-            <name>mergeDeveloperJob</name>
+            <name>joinDeveloperJob</name>
             <group>chplBackgroundJobs</group>
-            <description>Complete the work of merging developers and send an email notification to indicate if the operation was successful.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.developer.MergeDeveloperJob</job-class>
+            <description>Complete the work of joining developers and send an email notification to indicate if the operation was successful.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.developer.JoinDeveloperJob</job-class>
             <durability>true</durability>
             <recover>true</recover>
             <job-data-map>
