@@ -31,6 +31,8 @@ import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
 import gov.healthit.chpl.attestation.entity.AttestationSubmissionEntity;
 import gov.healthit.chpl.changerequest.entity.DeveloperCertificationBodyMapEntity;
+import gov.healthit.chpl.developer.DeveloperStatusEventComparator;
+import gov.healthit.chpl.developer.PublicAttestationComparator;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.PublicAttestation;
@@ -56,6 +58,11 @@ import lombok.ToString;
 public class DeveloperEntity implements Serializable {
     private static final long serialVersionUID = -1396979009499564864L;
     private static final int WEBSITE_MAX_LENGTH = 300;
+
+    @Transient
+    private final DeveloperStatusEventComparator developerStatusEventComparator = new DeveloperStatusEventComparator();
+    @Transient
+    private final PublicAttestationComparator publicAttestationComparator = new PublicAttestationComparator();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -158,6 +165,7 @@ public class DeveloperEntity implements Serializable {
         }
         return this.statusEvents.stream()
                 .map(statusEvent -> statusEvent.toDomain())
+                .sorted(developerStatusEventComparator)
                 .collect(Collectors.toList());
     }
 
@@ -176,6 +184,7 @@ public class DeveloperEntity implements Serializable {
                             .build();
 
                 })
+                .sorted(publicAttestationComparator)
                 .toList();
     }
 

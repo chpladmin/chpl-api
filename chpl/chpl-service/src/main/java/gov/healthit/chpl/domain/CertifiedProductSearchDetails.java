@@ -5,10 +5,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -28,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.comparator.CertificationStatusEventComparator;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
@@ -35,7 +35,6 @@ import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -435,11 +434,11 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     @Builder.Default
     @XmlTransient
-    private Set<String> warningMessages = new HashSet<String>();
+    private LinkedHashSet<String> warningMessages = new LinkedHashSet<String>();
 
     @Builder.Default
     @XmlTransient
-    private Set<String> errorMessages = new HashSet<String>();
+    private LinkedHashSet<String> errorMessages = new LinkedHashSet<String>();
 
     public Long getId() {
         return id;
@@ -585,19 +584,19 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.lastModifiedDate = lastModifiedDate;
     }
 
-    public Set<String> getWarningMessages() {
+    public LinkedHashSet<String> getWarningMessages() {
         return warningMessages;
     }
 
-    public void setWarningMessages(Set<String> warningMessages) {
+    public void setWarningMessages(LinkedHashSet<String> warningMessages) {
         this.warningMessages = warningMessages;
     }
 
-    public Set<String> getErrorMessages() {
+    public LinkedHashSet<String> getErrorMessages() {
         return errorMessages;
     }
 
-    public void setErrorMessages(Set<String> errorMessages) {
+    public void setErrorMessages(LinkedHashSet<String> errorMessages) {
         this.errorMessages = errorMessages;
     }
 

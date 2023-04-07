@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -178,7 +178,7 @@ public class CertifiedProductManagerTest {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 CertifiedProductSearchDetails listing = (CertifiedProductSearchDetails) invocation.getArgument(1);
-                listing.setWarningMessages(new HashSet<String>());
+                listing.setWarningMessages(new LinkedHashSet<String>());
                 listing.getWarningMessages().add("This is a test warning");
                 return null;
             }
@@ -211,7 +211,7 @@ public class CertifiedProductManagerTest {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 CertifiedProductSearchDetails listing = (CertifiedProductSearchDetails) invocation.getArgument(1);
-                listing.setWarningMessages(new HashSet<String>());
+                listing.setWarningMessages(new LinkedHashSet<String>());
                 listing.getWarningMessages().add("This is a test warning");
                 return null;
             }
