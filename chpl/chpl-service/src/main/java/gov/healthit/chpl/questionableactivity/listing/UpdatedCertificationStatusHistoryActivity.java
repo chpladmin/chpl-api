@@ -39,8 +39,8 @@ public class UpdatedCertificationStatusHistoryActivity implements ListingActivit
         List<QuestionableActivityListingDTO> activities = new ArrayList<QuestionableActivityListingDTO>();
 
         //sort events oldest first
-        List<CertificationStatusEvent> origEvents = origListing.getCertificationEvents();
-        List<CertificationStatusEvent> updatedEvents = newListing.getCertificationEvents();
+        List<CertificationStatusEvent> origEvents = new ArrayList<CertificationStatusEvent>(origListing.getCertificationEvents());
+        List<CertificationStatusEvent> updatedEvents = new ArrayList<CertificationStatusEvent>(newListing.getCertificationEvents());
         Collections.sort(origEvents, certStatusEventComparator);
         Collections.sort(updatedEvents, certStatusEventComparator);
 
