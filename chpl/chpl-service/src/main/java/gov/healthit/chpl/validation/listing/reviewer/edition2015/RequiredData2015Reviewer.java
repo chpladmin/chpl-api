@@ -65,7 +65,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         if (cert.isSed()) {
                             if (listing.getSed() == null || listing.getSed().getTestTasks() == null
                                     || listing.getSed().getTestTasks().size() == 0) {
-                                addCriterionError(listing, cert, "listing.criteria.missingTestTask",
+                                addDataCriterionError(listing, cert, "listing.criteria.missingTestTask",
                                         Util.formatCriteriaNumber(cert.getCriterion()));
                             } else {
 
@@ -78,7 +78,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     }
                                 }
                                 if (!foundCriteria) {
-                                    addCriterionError(listing, cert, "listing.criteria.missingTestTask",
+                                    addDataCriterionError(listing, cert, "listing.criteria.missingTestTask",
                                             Util.formatCriteriaNumber(cert.getCriterion()));
                                 }
                             }
@@ -89,95 +89,95 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                 String description = StringUtils.isEmpty(task.getDescription()) ? "unknown"
                                         : task.getDescription();
                                 if (task.getTestParticipants() == null || task.getTestParticipants().size() < MINIMUM_TEST_PARTICIPANT_COUNT) {
-                                    listing.addBusinessErrorMessage(
+                                    listing.addDataErrorMessage(
                                             msgUtil.getMessage("listing.sed.badTestTaskParticipantsSize", description));
                                 }
                                 if (StringUtils.isEmpty(task.getDescription())) {
-                                    listing.addBusinessErrorMessage(msgUtil.getMessage("listing.sed.badTestDescription", description));
+                                    listing.addDataErrorMessage(msgUtil.getMessage("listing.sed.badTestDescription", description));
                                 }
                                 if (task.getTaskSuccessAverage() == null) {
-                                    listing.addBusinessErrorMessage(
+                                    listing.addDataErrorMessage(
                                             msgUtil.getMessage("listing.sed.badTestTaskSuccessAverage", description));
                                 }
                                 if (task.getTaskSuccessStddev() == null) {
-                                    listing.addBusinessErrorMessage(
+                                    listing.addDataErrorMessage(
                                             msgUtil.getMessage("listing.sed.badTestTaskSuccessStddev", description));
                                 }
                                 if (task.getTaskPathDeviationObserved() == null) {
-                                    listing.addBusinessErrorMessage(msgUtil
+                                    listing.addDataErrorMessage(msgUtil
                                             .getMessage("listing.sed.badTestTaskPathDeviationObserved", description));
                                 }
                                 if (task.getTaskPathDeviationOptimal() == null) {
-                                    listing.addBusinessErrorMessage(msgUtil
+                                    listing.addDataErrorMessage(msgUtil
                                             .getMessage("listing.sed.badTestTaskPathDeviationOptimal", description));
                                 }
                                 if (task.getTaskTimeAvg() == null) {
-                                    listing.addBusinessErrorMessage(
+                                    listing.addDataErrorMessage(
                                             msgUtil.getMessage("listing.sed.badTestTaskTimeAvg", description));
                                 }
                                 if (task.getTaskTimeStddev() == null) {
-                                    listing.addBusinessErrorMessage(
+                                    listing.addDataErrorMessage(
                                             msgUtil.getMessage("listing.sed.badTestTaskTimeStddev", description));
                                 }
                                 if (task.getTaskTimeDeviationObservedAvg() == null) {
-                                    listing.addBusinessErrorMessage(msgUtil.getMessage(
+                                    listing.addDataErrorMessage(msgUtil.getMessage(
                                             "listing.sed.badTestTaskTimeDeviationObservedAvg", description));
                                 }
                                 if (task.getTaskTimeDeviationOptimalAvg() == null) {
-                                    listing.addBusinessErrorMessage(msgUtil
+                                    listing.addDataErrorMessage(msgUtil
                                             .getMessage("listing.sed.badTestTaskTimeDeviationOptimalAvg", description));
                                 }
                                 if (task.getTaskErrors() == null) {
-                                    listing.addBusinessErrorMessage(
+                                    listing.addDataErrorMessage(
                                             msgUtil.getMessage("listing.sed.badTestTaskErrors", description));
                                 }
                                 if (task.getTaskErrorsStddev() == null) {
-                                    listing.addBusinessErrorMessage(
+                                    listing.addDataErrorMessage(
                                             msgUtil.getMessage("listing.sed.badTestTaskErrorsStddev", description));
                                 }
                                 if (StringUtils.isEmpty(task.getTaskRatingScale())) {
-                                    listing.addBusinessErrorMessage(
+                                    listing.addDataErrorMessage(
                                             msgUtil.getMessage("listing.sed.badTestTaskRatingScale", description));
                                 }
                                 if (task.getTaskRating() == null) {
-                                    listing.addBusinessErrorMessage(
+                                    listing.addDataErrorMessage(
                                             msgUtil.getMessage("listing.sed.badTestTaskRating", description));
                                 }
                                 if (task.getTaskRatingStddev() == null) {
-                                    listing.addBusinessErrorMessage(
+                                    listing.addDataErrorMessage(
                                             msgUtil.getMessage("listing.sed.badTestTaskRatingStddev", description));
                                 }
                                 for (TestParticipant part : task.getTestParticipants()) {
                                     if (part.getEducationTypeId() == null) {
-                                        listing.addBusinessErrorMessage(msgUtil
+                                        listing.addDataErrorMessage(msgUtil
                                                 .getMessage("listing.sed.badParticipantEducationLevel", description));
                                     }
                                     if (part.getAgeRangeId() == null) {
-                                        listing.addBusinessErrorMessage(
+                                        listing.addDataErrorMessage(
                                                 msgUtil.getMessage("listing.sed.badParticipantAgeRange", description));
                                     }
                                     if (StringUtils.isEmpty(part.getGender())) {
-                                        listing.addBusinessErrorMessage(
+                                        listing.addDataErrorMessage(
                                                 msgUtil.getMessage("listing.sed.badParticipantGender", description));
                                     }
                                     if (StringUtils.isEmpty(part.getOccupation())) {
-                                        listing.addBusinessErrorMessage(msgUtil
+                                        listing.addDataErrorMessage(msgUtil
                                                 .getMessage("listing.sed.badParticipantOccupation", description));
                                     }
                                     if (StringUtils.isEmpty(part.getAssistiveTechnologyNeeds())) {
-                                        listing.addBusinessErrorMessage(msgUtil.getMessage(
+                                        listing.addDataErrorMessage(msgUtil.getMessage(
                                                 "listing.sed.badParticipantAssistiveTechnologyNeeds", description));
                                     }
                                     if (part.getProfessionalExperienceMonths() == null) {
-                                        listing.addBusinessErrorMessage(msgUtil.getMessage(
+                                        listing.addDataErrorMessage(msgUtil.getMessage(
                                                 "listing.sed.badParticipantProfessionalExperienceMonths", description));
                                     }
                                     if (part.getProductExperienceMonths() == null) {
-                                        listing.addBusinessErrorMessage(msgUtil.getMessage(
+                                        listing.addDataErrorMessage(msgUtil.getMessage(
                                                 "listing.sed.badParticipantProductExperienceMonths", description));
                                     }
                                     if (part.getComputerExperienceMonths() == null) {
-                                        listing.addBusinessErrorMessage(msgUtil.getMessage(
+                                        listing.addDataErrorMessage(msgUtil.getMessage(
                                                 "listing.sed.badParticipantComputerExperienceMonths", description));
                                     }
                                 }
@@ -198,30 +198,30 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
                 if (certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.ATTESTATION_ANSWER)
                         && cert.getAttestationAnswer() == null) {
-                    addCriterionError(listing, cert,
+                    addBusinessCriterionError(listing, cert,
                             "listing.criteria.missingAttestationAnswer", Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
                 if (certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.PRIVACY_SECURITY)
                         && StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
-                    addCriterionError(listing, cert,
+                    addBusinessCriterionError(listing, cert,
                             "listing.criteria.missingPrivacySecurityFramework", Util.formatCriteriaNumber(cert.getCriterion()));
                 }
                 if (certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.API_DOCUMENTATION)
                         && StringUtils.isEmpty(cert.getApiDocumentation())) {
-                    addCriterionError(listing, cert, "listing.criteria.missingApiDocumentation",
+                    addBusinessCriterionError(listing, cert, "listing.criteria.missingApiDocumentation",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
                 if (certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.EXPORT_DOCUMENTATION)
                         && StringUtils.isEmpty(cert.getExportDocumentation())) {
-                    addCriterionError(listing, cert, "listing.criteria.missingExportDocumentation",
+                    addBusinessCriterionError(listing, cert, "listing.criteria.missingExportDocumentation",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
                 if (certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.USE_CASES)
                         && StringUtils.isEmpty(cert.getUseCases())
                         && cert.getAttestationAnswer() != null && cert.getAttestationAnswer().equals(Boolean.TRUE)) {
-                    addCriterionError(listing, cert, "listing.criteria.missingUseCases",
+                    addBusinessCriterionError(listing, cert, "listing.criteria.missingUseCases",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 } else if (certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.USE_CASES)
                         && !StringUtils.isEmpty(cert.getUseCases())
@@ -233,7 +233,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
                 if (certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.SERVICE_BASE_URL_LIST)
                         && StringUtils.isEmpty(cert.getServiceBaseUrlList())) {
-                    addCriterionError(listing, cert, "listing.criteria.missingServiceBaseUrlList",
+                    addBusinessCriterionError(listing, cert, "listing.criteria.missingServiceBaseUrlList",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
@@ -243,13 +243,13 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         && (certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.TEST_PROCEDURE)
                                 && !certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.CONFORMANCE_METHOD))
                         && (cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
-                    addCriterionError(listing, cert, "listing.criteria.missingTestProcedure",
+                    addBusinessCriterionError(listing, cert, "listing.criteria.missingTestProcedure",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
                 if (certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.CONFORMANCE_METHOD)
                         && (cert.getConformanceMethods() == null || cert.getConformanceMethods().size() == 0)) {
-                    addCriterionError(listing, cert, "listing.criteria.conformanceMethod.missingConformanceMethod",
+                    addBusinessCriterionError(listing, cert, "listing.criteria.conformanceMethod.missingConformanceMethod",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
@@ -287,13 +287,13 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     .findAny().isPresent();
                             if (!hasMatchingTestDatum) {
                                 String testDataName = crTestData.getTestData().getName();
-                                listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.invalidTestDataId", crTestData.getTestData().getId(), Util.formatCriteriaNumber(cert.getCriterion())));
+                                listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.invalidTestDataId", crTestData.getTestData().getId(), Util.formatCriteriaNumber(cert.getCriterion())));
                             }
                         }
 
                         if (crTestData.getTestData() != null && !StringUtils.isEmpty(crTestData.getTestData().getName())
                                 && StringUtils.isEmpty(crTestData.getVersion())) {
-                            addCriterionError(listing, cert,
+                            addDataCriterionError(listing, cert,
                                     "listing.criteria.missingTestDataVersion", Util.formatCriteriaNumber(cert.getCriterion()));
                         }
                     }

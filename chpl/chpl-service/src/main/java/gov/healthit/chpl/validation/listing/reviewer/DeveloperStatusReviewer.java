@@ -61,7 +61,7 @@ public class DeveloperStatusReviewer implements Reviewer {
                 }
             }
         } catch (final EntityRetrievalException ex) {
-            listing.addBusinessErrorMessage(msgUtil.getMessage("developer.notFound"));
+            listing.addDataErrorMessage(msgUtil.getMessage("developer.notFound"));
             LOGGER.error(ex.getMessage(), ex);
         }
     }

@@ -25,9 +25,9 @@ public class TestStandardRemovalReviewer extends PermissionBasedReviewer {
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-        .filter(cert -> (cert.getTestStandards() != null && cert.getTestStandards().size() > 0))
-        .forEach(certResult -> certResult.getTestStandards().stream()
-                .forEach(testStandard -> reviewTestStandard(listing, certResult, testStandard)));
+                .filter(cert -> (cert.getTestStandards() != null && cert.getTestStandards().size() > 0))
+                .forEach(certResult -> certResult.getTestStandards().stream()
+                        .forEach(testStandard -> reviewTestStandard(listing, certResult, testStandard)));
     }
 
     private void reviewTestStandard(CertifiedProductSearchDetails listing, CertificationResult certResult,
@@ -37,7 +37,7 @@ public class TestStandardRemovalReviewer extends PermissionBasedReviewer {
                 Util.formatCriteriaNumber(certResult.getCriterion()),
                 testStandardName);
         if ((certResult.getOptionalStandards() != null && certResult.getOptionalStandards().size() > 0) || isListing2015Edition(listing)) {
-            addCriterionError(listing, certResult, message);
+            addBusinessCriterionError(listing, certResult, message);
         } else {
             listing.getWarningMessages().add(message);
         }
@@ -50,6 +50,6 @@ public class TestStandardRemovalReviewer extends PermissionBasedReviewer {
     private String getListingEdition(CertifiedProductSearchDetails listing) {
         return listing.getCertificationEdition().containsKey(CertifiedProductSearchDetails.EDITION_NAME_KEY)
                 ? listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString()
-                        : "";
+                : "";
     }
 }

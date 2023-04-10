@@ -57,7 +57,7 @@ public class SvapReviewer implements ComparisonReviewer {
                 svapCriteriaMap = svapDao.getAllSvapCriteriaMap().stream()
                         .collect(Collectors.groupingBy(scm -> scm.getCriterion().getId()));
             } catch (EntityRetrievalException e) {
-                updatedListing.addBusinessErrorMessage("Could not validate SVAP");
+                updatedListing.addDataErrorMessage("Could not validate SVAP");
                 return;
             }
 

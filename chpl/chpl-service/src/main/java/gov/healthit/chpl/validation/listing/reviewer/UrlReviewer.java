@@ -61,7 +61,7 @@ public class UrlReviewer extends PermissionBasedReviewer {
     private void addCriteriaErrorIfNotValid(CertifiedProductSearchDetails listing, CertificationResult cert, String input, String fieldName) {
         if (!StringUtils.isEmpty(input)) {
             if (validationUtils.hasNewline(input) || !validationUtils.isWellFormedUrl(input)) {
-                addCriterionError(listing, cert,
+                addBusinessCriterionError(listing, cert,
                         "listing.criteria.invalidUrlFound", fieldName,
                         Util.formatCriteriaNumber(cert.getCriterion()));
             }

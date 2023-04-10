@@ -27,7 +27,7 @@ public class ChplNumberComparisonReviewer implements ComparisonReviewer {
             try {
                 boolean isDup = certifiedProductUtil.chplIdExists(updatedListing.getChplProductNumber());
                 if (isDup) {
-                    updatedListing.addBusinessErrorMessage(msgUtil.getMessage("listing.chplProductNumber.changedNotUnique",
+                    updatedListing.addDataErrorMessage(msgUtil.getMessage("listing.chplProductNumber.changedNotUnique",
                             updatedListing.getChplProductNumber()));
                 }
             } catch (final EntityRetrievalException ex) {

@@ -41,14 +41,30 @@ public abstract class PermissionBasedReviewer implements Reviewer {
         }
     }
 
-    public void addCriterionError(
+    public void addBusinessCriterionError(
             CertifiedProductSearchDetails listing, CertificationResult certResult,
             String errorMessageName, Object... errorMessageArgs) {
         String message = msgUtil.getMessage(errorMessageName, errorMessageArgs);
-        addCriterionError(listing, certResult, message);
+        addBusinessCriterionError(listing, certResult, message);
     }
 
-    public void addCriterionError(
+    public void addBusinessCriterionError(
+            CertifiedProductSearchDetails listing, CertificationResult certResult,
+            String message) {
+        if (certResult.getCriterion() != null && (certResult.getCriterion().getRemoved() == null
+                || certResult.getCriterion().getRemoved().equals(Boolean.FALSE))) {
+            listing.addBusinessErrorMessage(message);
+        }
+    }
+
+    public void addDataCriterionError(
+            CertifiedProductSearchDetails listing, CertificationResult certResult,
+            String errorMessageName, Object... errorMessageArgs) {
+        String message = msgUtil.getMessage(errorMessageName, errorMessageArgs);
+        addDataCriterionError(listing, certResult, message);
+    }
+
+    public void addDataCriterionError(
             CertifiedProductSearchDetails listing, CertificationResult certResult,
             String message) {
         if (certResult.getCriterion() != null && (certResult.getCriterion().getRemoved() == null

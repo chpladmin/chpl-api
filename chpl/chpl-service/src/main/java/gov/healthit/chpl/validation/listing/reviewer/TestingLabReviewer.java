@@ -21,7 +21,7 @@ public class TestingLabReviewer implements Reviewer {
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         if (listing.getTestingLabs() == null || listing.getTestingLabs().size() == 0) {
-            listing.addBusinessErrorMessage(msgUtil.getMessage("atl.notFound"));
+            listing.addDataErrorMessage(msgUtil.getMessage("atl.notFound"));
         }
     }
 }

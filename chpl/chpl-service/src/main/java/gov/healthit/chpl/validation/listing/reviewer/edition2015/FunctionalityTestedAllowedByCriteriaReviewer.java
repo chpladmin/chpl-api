@@ -55,7 +55,7 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
                     for (CertificationResultFunctionalityTested crft : cr.getFunctionalitiesTested()) {
                         Set<String> messages = getFunctionalitiesTestedErrorMessages(crft, cr, listing);
                         for (String message : messages) {
-                            addCriterionError(listing, cr, message);
+                            addBusinessCriterionError(listing, cr, message);
                         }
                     }
                 }
@@ -82,13 +82,12 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
     }
 
     private Boolean isFunctionalityTestedCritierionValid(Long criteriaId, FunctionalityTested functionalityTested) {
-        List<FunctionalityTested> validFunctionalityTestedForCriteria =
-                functionalityTestedManager.getFunctionalitiesTested(criteriaId, null);
+        List<FunctionalityTested> validFunctionalityTestedForCriteria = functionalityTestedManager.getFunctionalitiesTested(criteriaId, null);
 
         if (validFunctionalityTestedForCriteria == null) {
             return false;
         } else {
-            //Is the functionality tested in the valid list (relies on the FunctionalityTested.equals()
+            // Is the functionality tested in the valid list (relies on the FunctionalityTested.equals()
             return validFunctionalityTestedForCriteria.contains(functionalityTested);
         }
     }
@@ -121,8 +120,8 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
         }
         List<FunctionalityTested> functionalityTestedForCriterion = funcTestedMappings.get(criterionId);
         Optional<FunctionalityTested> funcTestedOpt = functionalityTestedForCriterion.stream()
-            .filter(funcTested -> funcTested.getId().equals(functionalityTestedId))
-            .findAny();
+                .filter(funcTested -> funcTested.getId().equals(functionalityTestedId))
+                .findAny();
         return funcTestedOpt.isPresent() ? funcTestedOpt.get() : null;
     }
 
@@ -133,15 +132,15 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
         }
         List<FunctionalityTested> functionalityTestedForCriterion = funcTestedMappings.get(criterionId);
         Optional<FunctionalityTested> funcTestedOpt = functionalityTestedForCriterion.stream()
-            .filter(funcTested -> funcTested.getName().equalsIgnoreCase(functionalityTestedNumber))
-            .findAny();
+                .filter(funcTested -> funcTested.getName().equalsIgnoreCase(functionalityTestedNumber))
+                .findAny();
         return funcTestedOpt.isPresent() ? funcTestedOpt.get() : null;
     }
 
     private String getDelimitedListOfValidCriteriaNumbers(FunctionalityTested functionalityTested) {
         List<String> criteriaNumbers = functionalityTested.getCriteria().stream()
-            .map(criterion -> Util.formatCriteriaNumber(criterion))
-            .collect(Collectors.toList());
+                .map(criterion -> Util.formatCriteriaNumber(criterion))
+                .collect(Collectors.toList());
         return Util.joinListGrammatically(criteriaNumbers);
     }
 }

@@ -45,7 +45,7 @@ public class OptionalStandardReviewer extends PermissionBasedReviewer implements
             optionalStandardCriteriaMap = optionalStandardDAO.getAllOptionalStandardCriteriaMap().stream()
                     .collect(Collectors.groupingBy(scm -> scm.getCriterion().getId()));
         } catch (EntityRetrievalException e) {
-            listing.addBusinessErrorMessage("Could not validate Optional Standard");
+            listing.addDataErrorMessage("Could not validate Optional Standard");
             return;
         }
         for (CertificationResult cr : certificationResultsWithOptionalStandards) {
@@ -54,7 +54,7 @@ public class OptionalStandardReviewer extends PermissionBasedReviewer implements
                 if (!isOptionalStandardValidForCriteria(cros.getOptionalStandardId(), cr.getCriterion().getId(), optionalStandardCriteriaMap)) {
                     String error = errorMessageUtil.getMessage("listing.criteria.optionalStandard.invalidCriteria",
                             cros.getCitation(), CertificationCriterionService.formatCriteriaNumber(cr.getCriterion()));
-                    addCriterionError(listing, cr, error);
+                    addBusinessCriterionError(listing, cr, error);
                 }
             }
         }

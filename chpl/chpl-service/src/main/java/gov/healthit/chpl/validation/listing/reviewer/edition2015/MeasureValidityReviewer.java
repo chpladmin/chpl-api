@@ -184,14 +184,14 @@ public class MeasureValidityReviewer implements Reviewer {
             } else if (measure.getMeasure().getRequiredTest() != null) {
                 nameForMsg = measure.getMeasure().getRequiredTest();
             }
-            listing.addBusinessErrorMessage(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.invalidMeasure", nameForMsg));
         }
 
         if (measure.getMeasureType() == null || measure.getMeasureType().getId() == null) {
             String nameForMsg = measure.getMeasureType() == null ? "null"
                     : measure.getMeasureType().getName();
-            listing.addBusinessErrorMessage(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.invalidMeasureType", nameForMsg));
         }
     }

@@ -1,9 +1,9 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -40,7 +40,7 @@ public class TestStandardReviewer implements Reviewer {
         if (testStandard.getTestStandardId() != null) {
             TestStandardDTO foundTestStandard = testStandardDao.getByIdAndEdition(testStandard.getTestStandardId(), editionId);
             if (foundTestStandard == null) {
-                listing.addBusinessErrorMessage(
+                listing.addDataErrorMessage(
                         msgUtil.getMessage("listing.criteria.testStandardIdNotFound",
                                 Util.formatCriteriaNumber(certResult.getCriterion()),
                                 testStandard.getTestStandardId(),
@@ -49,14 +49,14 @@ public class TestStandardReviewer implements Reviewer {
         } else if (!StringUtils.isEmpty(testStandardName)) {
             TestStandardDTO foundTestStandard = testStandardDao.getByNumberAndEdition(testStandardName, editionId);
             if (foundTestStandard == null) {
-                listing.addBusinessErrorMessage(
+                listing.addDataErrorMessage(
                         msgUtil.getMessage("listing.criteria.testStandardNotFound",
                                 Util.formatCriteriaNumber(certResult.getCriterion()),
                                 testStandardName,
                                 MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY)));
             }
         } else {
-            listing.addBusinessErrorMessage(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingTestStandardName",
                             Util.formatCriteriaNumber(certResult.getCriterion())));
         }

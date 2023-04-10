@@ -26,7 +26,7 @@ public class CertificationDateReviewer implements Reviewer {
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         if (isCertificationDateMissing(listing)) {
-            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.certificationDateMissing"));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.certificationDateMissing"));
         } else if (isSuppliedCertificationDateFormatInvalid(listing)) {
             listing.addBusinessErrorMessage(msgUtil.getMessage("listing.badCertificationDate", listing.getCertificationDateStr()));
         }
