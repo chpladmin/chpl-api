@@ -184,12 +184,12 @@ public class ApiExceptionControllerAdvice {
     }
 
     @ExceptionHandler(MissingReasonException.class)
-    public ResponseEntity<ErrorResponse> exception(MissingReasonException e) {
+    public ResponseEntity<ValidationErrorResponse> exception(MissingReasonException e) {
         LOGGER.error("Caught missing reason exception.", e);
-        return new ResponseEntity<ErrorResponse>(
-                new ErrorResponse(e.getMessage() != null ? e.getMessage()
-                        : "A reason is required to perform this action."),
-                HttpStatus.BAD_REQUEST);
+        ValidationErrorResponse error = new ValidationErrorResponse();
+        error.getErrorMessages().add(e.getMessage() != null ? e.getMessage() : "A reason is required to perform this action.");
+        error.getBusinessErrorMessages().add(e.getMessage() != null ? e.getMessage() : "A reason is required to perform this action.");
+        return new ResponseEntity<ValidationErrorResponse>(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ChplAccountEmailNotConfirmedException.class)
