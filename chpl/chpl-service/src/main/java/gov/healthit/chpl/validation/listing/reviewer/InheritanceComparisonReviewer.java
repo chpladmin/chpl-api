@@ -34,11 +34,11 @@ public class InheritanceComparisonReviewer implements ComparisonReviewer {
                     .filter(updatedIcsChild -> updatedIcsChild.getId().equals(icsChild.getId()))
                     .findAny().isPresent();
             if (!isChildPresent) {
-                updatedListing.addBusinessErrorMessage(
+                updatedListing.addDataErrorMessage(
                         msgUtil.getMessage("listing.icsChildRemoved", icsChild.getChplProductNumber()));
             }
         } else {
-            updatedListing.addBusinessErrorMessage(
+            updatedListing.addDataErrorMessage(
                     msgUtil.getMessage("listing.icsChildRemoved", icsChild.getChplProductNumber()));
         }
     }

@@ -56,9 +56,9 @@ public class InheritanceReviewer implements Reviewer {
 
                 // if the ID is still null after trying to look it up, that's a problem
                 if (icsParent.getId() == null) {
-                    listing.addBusinessErrorMessage(msgUtil.getMessage("listing.icsUniqueIdNotFound", icsParent.getChplProductNumber()));
+                    listing.addDataErrorMessage(msgUtil.getMessage("listing.icsUniqueIdNotFound", icsParent.getChplProductNumber()));
                 } else if (icsParent.getId().equals(listing.getId())) {
-                    listing.addBusinessErrorMessage(msgUtil.getMessage("listing.icsSelfInheritance"));
+                    listing.addDataErrorMessage(msgUtil.getMessage("listing.icsSelfInheritance"));
                 } else {
                     parentListingIds.add(icsParent.getId());
                 }

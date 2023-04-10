@@ -38,8 +38,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
-    public RequiredData2015Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil,
-            TestDataDAO testDataDao,
+    public RequiredData2015Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil, TestDataDAO testDataDao,
             ValidationUtils validationUtils, ResourcePermissions resourcePermissions) {
         super(certRules, msgUtil, resourcePermissions);
         this.testDataDao = testDataDao;
@@ -51,7 +50,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         super.review(listing);
 
         if (listing.getIcs() == null || listing.getIcs().getInherits() == null) {
-            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.missingIcs"));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.missingIcs"));
         }
 
         List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
@@ -65,7 +64,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         if (cert.isSed()) {
                             if (listing.getSed() == null || listing.getSed().getTestTasks() == null
                                     || listing.getSed().getTestTasks().size() == 0) {
-                                addDataCriterionError(listing, cert, "listing.criteria.missingTestTask",
+                                addBusinessCriterionError(listing, cert, "listing.criteria.missingTestTask",
                                         Util.formatCriteriaNumber(cert.getCriterion()));
                             } else {
 
@@ -78,7 +77,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                                     }
                                 }
                                 if (!foundCriteria) {
-                                    addDataCriterionError(listing, cert, "listing.criteria.missingTestTask",
+                                    addBusinessCriterionError(listing, cert, "listing.criteria.missingTestTask",
                                             Util.formatCriteriaNumber(cert.getCriterion()));
                                 }
                             }
@@ -88,8 +87,12 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             for (TestTask task : listing.getSed().getTestTasks()) {
                                 String description = StringUtils.isEmpty(task.getDescription()) ? "unknown"
                                         : task.getDescription();
-                                if (task.getTestParticipants() == null || task.getTestParticipants().size() < MINIMUM_TEST_PARTICIPANT_COUNT) {
+                                if (task.getTestParticipants() == null) {
                                     listing.addDataErrorMessage(
+                                            msgUtil.getMessage("listing.sed.badTestTaskParticipantsSize", description));
+                                }
+                                if (task.getTestParticipants().size() < MINIMUM_TEST_PARTICIPANT_COUNT) {
+                                    listing.addBusinessErrorMessage(
                                             msgUtil.getMessage("listing.sed.badTestTaskParticipantsSize", description));
                                 }
                                 if (StringUtils.isEmpty(task.getDescription())) {
