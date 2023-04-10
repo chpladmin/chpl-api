@@ -266,10 +266,8 @@ public class CertifiedProductSearchDetails implements Serializable {
     @XmlElement(required = false, nillable = true)
     private String mandatoryDisclosures;
 
-    /**
-     * The last time this listing was modified in any way given in milliseconds since epoch.
-     */
-    @XmlElement(required = true)
+    @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed.", removalDate = "2023-10-31")
     private Long lastModifiedDate;
 
     /**
@@ -576,10 +574,12 @@ public class CertifiedProductSearchDetails implements Serializable {
         return curesUpdate;
     }
 
+    @Deprecated
     public Long getLastModifiedDate() {
         return lastModifiedDate;
     }
 
+    @Deprecated
     public void setLastModifiedDate(Long lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
