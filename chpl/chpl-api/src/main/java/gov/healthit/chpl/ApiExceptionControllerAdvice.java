@@ -1,6 +1,7 @@
 package gov.healthit.chpl;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -137,7 +138,12 @@ public class ApiExceptionControllerAdvice {
         error.setBusinessErrorMessages(e.getBusinessErrorMessages());
         error.setDataErrorMessages(e.getDataErrorMessages());
         error.setWarningMessages(e.getWarningMessages());
-        return new ResponseEntity<ValidationErrorResponse>(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<ValidationErrorResponse>(ValidationErrorResponse.builder()
+                .errorMessages(e.getErrorMessages())
+                .businessErrorMessages(e.getBusinessErrorMessages())
+                .dataErrorMessages(e.getDataErrorMessages())
+                .warningMessages(e.getWarningMessages())
+                .build(), HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -186,10 +192,10 @@ public class ApiExceptionControllerAdvice {
     @ExceptionHandler(MissingReasonException.class)
     public ResponseEntity<ValidationErrorResponse> exception(MissingReasonException e) {
         LOGGER.error("Caught missing reason exception.", e);
-        ValidationErrorResponse error = new ValidationErrorResponse();
-        error.getErrorMessages().add(e.getMessage() != null ? e.getMessage() : "A reason is required to perform this action.");
-        error.getBusinessErrorMessages().add(e.getMessage() != null ? e.getMessage() : "A reason is required to perform this action.");
-        return new ResponseEntity<ValidationErrorResponse>(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<ValidationErrorResponse>(ValidationErrorResponse.builder()
+                .errorMessages(List.of(e.getMessage() != null ? e.getMessage() : "A reason is required to perform this action."))
+                .businessErrorMessages(List.of(e.getMessage() != null ? e.getMessage() : "A reason is required to perform this action."))
+                .build(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ChplAccountEmailNotConfirmedException.class)

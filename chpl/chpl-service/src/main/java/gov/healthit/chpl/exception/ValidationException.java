@@ -3,7 +3,7 @@ package gov.healthit.chpl.exception;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.collections.api.set.ImmutableSet;
+import org.eclipse.collections.api.set.sorted.ImmutableSortedSet;
 
 public class ValidationException extends Exception {
     protected Set<String> errorMessages;
@@ -63,11 +63,11 @@ public class ValidationException extends Exception {
         this.warningMessages = warningMessages;
     }
 
-    public ValidationException(ImmutableSet<String> errorMessages, ImmutableSet<String> businessErrorMessages, ImmutableSet<String> dataErrorMessages, Set<String> warningMessages) {
+    public ValidationException(ImmutableSortedSet<String> errorMessages, ImmutableSortedSet<String> businessErrorMessages, ImmutableSortedSet<String> dataErrorMessages, Set<String> warningMessages) {
         super();
-        this.errorMessages = errorMessages.castToSet();
-        this.businessErrorMessages = businessErrorMessages.castToSet();
-        this.dataErrorMessages = dataErrorMessages.castToSet();
+        this.errorMessages = errorMessages.castToSortedSet();
+        this.businessErrorMessages = businessErrorMessages.castToSortedSet();
+        this.dataErrorMessages = dataErrorMessages.castToSortedSet();
         this.warningMessages = warningMessages;
     }
 
