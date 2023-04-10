@@ -1,10 +1,8 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -53,32 +51,27 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
             for (CertificationResult cr : listing.getCertificationResults()) {
                 if (BooleanUtils.isTrue(cr.isSuccess()) && cr.getFunctionalitiesTested() != null) {
                     for (CertificationResultFunctionalityTested crft : cr.getFunctionalitiesTested()) {
-                        Set<String> messages = getFunctionalitiesTestedErrorMessages(crft, cr, listing);
-                        for (String message : messages) {
-                            addBusinessCriterionError(listing, cr, message);
-                        }
+                        addFunctionalitiesTestedErrorMessages(crft, cr, listing);
                     }
                 }
             }
         }
     }
 
-    private Set<String> getFunctionalitiesTestedErrorMessages(CertificationResultFunctionalityTested crft,
+    private void addFunctionalitiesTestedErrorMessages(CertificationResultFunctionalityTested crft,
             CertificationResult cr, CertifiedProductSearchDetails listing) {
-        Set<String> errors = new HashSet<String>();
         FunctionalityTested functionalityTested = null;
         if (crft.getFunctionalityTestedId() != null) {
             functionalityTested = getFunctionalityTested(crft.getFunctionalityTestedId(), cr.getCriterion().getId());
             if (functionalityTested == null) {
-                errors.add(msgUtil.getMessage("listing.criteria.invalidFunctionalityTestedId", Util.formatCriteriaNumber(cr.getCriterion()), crft.getFunctionalityTestedId()));
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.invalidFunctionalityTestedId", Util.formatCriteriaNumber(cr.getCriterion()), crft.getFunctionalityTestedId()));
             }
         } else if (!StringUtils.isEmpty(crft.getName())) {
             functionalityTested = getFunctionalityTested(crft.getName(), cr.getCriterion().getId());
             if (!isFunctionalityTestedCritierionValid(cr.getCriterion().getId(), functionalityTested)) {
-                errors.add(getFunctionalitiesTestedCriterionErrorMessage(crft, cr, listing));
+                addFunctionalitiesTestedCriterionErrorMessage(crft, cr, listing);
             }
         }
-        return errors;
     }
 
     private Boolean isFunctionalityTestedCritierionValid(Long criteriaId, FunctionalityTested functionalityTested) {
@@ -92,18 +85,20 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
         }
     }
 
-    private String getFunctionalitiesTestedCriterionErrorMessage(CertificationResultFunctionalityTested crft,
+    private void addFunctionalitiesTestedCriterionErrorMessage(CertificationResultFunctionalityTested crft,
             CertificationResult cr, CertifiedProductSearchDetails cp) {
 
         FunctionalityTested functionalityTested = getFunctionalityTested(crft.getFunctionalityTestedId(), cr.getCriterion().getId());
         if (functionalityTested == null || functionalityTested.getId() == null) {
-            return msgUtil.getMessage("listing.criteria.invalidFunctionalityTested", Util.formatCriteriaNumber(cr.getCriterion()), crft.getName());
+            cp.addDataErrorMessage(msgUtil.getMessage("listing.criteria.invalidFunctionalityTested", Util.formatCriteriaNumber(cr.getCriterion()), crft.getName()));
+
+        } else {
+            cp.addBusinessErrorMessage(getFunctionalityTestedCriterionErrorMessage(
+                    Util.formatCriteriaNumber(cr.getCriterion()),
+                    crft.getName(),
+                    getDelimitedListOfValidCriteriaNumbers(functionalityTested),
+                    Util.formatCriteriaNumber(cr.getCriterion())));
         }
-        return getFunctionalityTestedCriterionErrorMessage(
-                Util.formatCriteriaNumber(cr.getCriterion()),
-                crft.getName(),
-                getDelimitedListOfValidCriteriaNumbers(functionalityTested),
-                Util.formatCriteriaNumber(cr.getCriterion()));
     }
 
     private String getFunctionalityTestedCriterionErrorMessage(String criteriaNumber,
