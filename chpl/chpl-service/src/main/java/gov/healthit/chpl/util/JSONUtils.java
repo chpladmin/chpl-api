@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.flipkart.zjsonpatch.JsonDiff;
 
 import lombok.extern.log4j.Log4j2;
@@ -18,8 +20,18 @@ public final class JSONUtils {
     private static final ObjectReader READER = MAPPER.reader();
     private static final ObjectWriter WRITER = MAPPER.writer();
 
-    private JSONUtils() {
+    private static final ObjectMapper MAPPER_WITHOUT_DEPRECATED_FIELDS = new ObjectMapper().findAndRegisterModules()
+            .setAnnotationIntrospector(new JacksonAnnotationIntrospector() {
+                private static final long serialVersionUID = -1856550954546461022L;
 
+                @Override
+                public boolean hasIgnoreMarker(final AnnotatedMember m) {
+                    return super.hasIgnoreMarker(m) || m.hasAnnotation(Deprecated.class);
+                }
+            });
+    private static final ObjectWriter WRITER_WITHOUT_DEPRECATED_FIELDS = MAPPER_WITHOUT_DEPRECATED_FIELDS.writer();
+
+    private JSONUtils() {
     }
 
     public static ObjectReader getReader() {
@@ -35,6 +47,14 @@ public final class JSONUtils {
         String json = null;
         if (obj != null) {
             json = getWriter().writeValueAsString(obj);
+        }
+        return json;
+    }
+
+    public static String toJSONIgnoringDeprecatedFields(final Object obj) throws JsonProcessingException {
+        String json = null;
+        if (obj != null) {
+            json = WRITER_WITHOUT_DEPRECATED_FIELDS.writeValueAsString(obj);
         }
         return json;
     }
