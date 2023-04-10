@@ -399,12 +399,12 @@
             </Delete>
         </DefaultRolloverStrategy>
     </RollingFile>
-    <RollingFile name="mergeDeveloperJobJson"
-        fileName="${logDir}/scheduler/mergeDeveloperJob.json"
-        filePattern="${logDir}/scheduler/history/mergeDeveloperJob-%d{yyyy-MM-dd}.json"
+    <RollingFile name="joinDeveloperJobJson"
+        fileName="${logDir}/scheduler/joinDeveloperJob.json"
+        filePattern="${logDir}/scheduler/history/joinDeveloperJob-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
-            <KeyValuePair key="service" value="mergeDeveloperJob" />
+            <KeyValuePair key="service" value="joinDeveloperJob" />
             <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
             <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
         </JsonLayout>
@@ -414,7 +414,7 @@
         </Policies>
         <DefaultRolloverStrategy>
             <Delete basePath="${logDir}/scheduler/history" >
-                <IfFileName glob="mergeDeveloperJob-*.json" />
+                <IfFileName glob="joinDeveloperJob-*.json" />
                 <IfLastModified age="1d" />
             </Delete>
         </DefaultRolloverStrategy>
