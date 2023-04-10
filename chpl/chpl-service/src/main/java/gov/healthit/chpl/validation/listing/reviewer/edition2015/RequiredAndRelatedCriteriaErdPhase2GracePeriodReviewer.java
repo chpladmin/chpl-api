@@ -369,11 +369,9 @@ public class RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewer extends Perm
                     .filter(b1Criterion -> validationUtils.hasCriterion(b1Criterion, attestedCriteria))
                     .findFirst().isPresent();
             if (!hasAttestedB1Criterion) {
-                listing.addBusinessErrorMessage("Certification criterion "
-                        + Util.formatCriteriaNumber(h1)
-                        + " was found so "
-                        + b1Criteria.stream().map(criterion -> Util.formatCriteriaNumber(criterion)).collect(Collectors.joining(" or "))
-                        + " is required but was not found.");
+                listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.complementaryCriteriaRequired",
+                        Util.formatCriteriaNumber(h1),
+                        b1Criteria.stream().map(criterion -> Util.formatCriteriaNumber(criterion)).collect(Collectors.joining(" or "))));
             }
         }
     }
