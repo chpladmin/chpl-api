@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -36,8 +37,8 @@ public class ActivityMetadataManager extends SecuredManager {
     private ActivityMetadataBuilderFactory metadataBuilderFactory;
 
     @Autowired
-    public ActivityMetadataManager(final ActivityDAO activityDAO, final CertificationBodyDAO acbDao,
-            final TestingLabDAO atlDao, final ActivityMetadataBuilderFactory metadataBuilderFactory) {
+    public ActivityMetadataManager(@Qualifier("activityDAO") ActivityDAO activityDAO, CertificationBodyDAO acbDao,
+            TestingLabDAO atlDao, ActivityMetadataBuilderFactory metadataBuilderFactory) {
         this.activityDAO = activityDAO;
         this.acbDao = acbDao;
         this.atlDao = atlDao;
