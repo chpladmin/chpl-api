@@ -154,7 +154,7 @@ public class UcdProcessReviewer implements Reviewer {
                     Util.formatCriteriaNumber(criterion)));
         }
     }
-
+    
     private boolean doesUcdProcessListContainCriterion(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
         return listing.getSed().getUcdProcesses().stream()
                 .flatMap(ucdProcess -> ucdProcess.getCriteria().stream())

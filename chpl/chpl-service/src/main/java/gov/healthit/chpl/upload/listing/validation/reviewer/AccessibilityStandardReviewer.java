@@ -60,16 +60,36 @@ public class AccessibilityStandardReviewer implements Reviewer {
     private void doesAccessibilityCertifiedBooleanMatchPresenceOfStandards(CertifiedProductSearchDetails listing) {
         if (listing.getAccessibilityCertified() != null && listing.getAccessibilityCertified()
                 && (listing.getAccessibilityStandards() == null || listing.getAccessibilityStandards().size() == 0)) {
-            listing.addDataErrorMessage(msgUtil.getMessage("listing.accessibilityCertified.standardsMismatch", "true", "0"));
+            addAccesisibilityStandardMismatchErrorMessage(listing, true, 0);
         } else if (listing.getAccessibilityCertified() != null && !listing.getAccessibilityCertified()
                 && listing.getAccessibilityStandards() != null && listing.getAccessibilityStandards().size() > 0) {
-            listing.addDataErrorMessage(msgUtil.getMessage("listing.accessibilityCertified.standardsMismatch", "false", listing.getAccessibilityStandards().size()));
+            addAccesisibilityStandardMismatchErrorMessage(listing, false, listing.getAccessibilityStandards().size());
         }
+    }
+
+    private void addAccesisibilityStandardMismatchErrorMessage(CertifiedProductSearchDetails listing, Boolean accessibilityStandardValue, Integer accessibilityStandardsCount) {
+        if (isListingNew(listing)) {
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.accessibilityCertified.standardsMismatch",
+                    accessibilityStandardValue.toString(),
+                    accessibilityStandardsCount.toString()));
+        } else {
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.accessibilityCertified.standardsMismatch",
+                    accessibilityStandardValue.toString(),
+                    accessibilityStandardsCount.toString()));
+        }
+    }
+
+    private boolean isListingNew(CertifiedProductSearchDetails listing) {
+        return listing.getId() == null;
     }
 
     private void doAccessibilityStandardsExist(CertifiedProductSearchDetails listing) {
         if (listing.getAccessibilityStandards() == null || listing.getAccessibilityStandards().size() == 0) {
-            listing.addDataErrorMessage(msgUtil.getMessage("listing.accessibilityStandardsNotFound"));
+            if (isListingNew(listing)) {
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.accessibilityStandardsNotFound"));
+            } else {
+                listing.addBusinessErrorMessage(msgUtil.getMessage("listing.accessibilityStandardsNotFound"));
+            }
         }
     }
 
