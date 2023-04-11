@@ -92,9 +92,8 @@ public class ListingQuestionableActivityService {
 
         // get the confirm date of the listing to check against the threshold
         Date confirmDate = certifiedProductDAO.getConfirmDate(origListing.getId());
-        if (confirmDate != null && newListing.getLastModifiedDate() != null
-                && (newListing.getLastModifiedDate().longValue()
-                        - confirmDate.getTime() > getListingActivityThresholdInMillis())) {
+        if (confirmDate != null && activityDate != null
+                && (activityDate.getTime() - confirmDate.getTime() > getListingActivityThresholdInMillis())) {
 
             processListingActivity(UpdateCurrentCertificationStatusActivity.class.getName(), origListing, newListing, activityDate, activityReason);
             processListingActivity(UpdatedCertificationStatusDate.class.getName(), origListing, newListing, activityDate, activityReason);
