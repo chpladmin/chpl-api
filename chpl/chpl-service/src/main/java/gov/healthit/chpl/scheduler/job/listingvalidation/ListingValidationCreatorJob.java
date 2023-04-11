@@ -163,7 +163,6 @@ public class ListingValidationCreatorJob implements Job {
                     .developer(listing.getDeveloper().getName())
                     .certificationBody(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString())
                     .certificationStatusName(listing.getCurrentStatus().getStatus().getName())
-                    .listingModifiedDate(new Date(listing.getLastModifiedDate()))
                     .errorMessage(error)
                     .reportDate(ZonedDateTime.now(Clock.systemUTC()))
                     .lastModifiedUser(User.SYSTEM_USER_ID)
