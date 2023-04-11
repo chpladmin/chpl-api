@@ -85,8 +85,8 @@ public final class JSONUtils {
 
             JsonNode patch = JsonDiff.asJson(node1, node2);
             if (patch != null && !patch.isEmpty()) {
-                LOGGER.info("DIFFERENCES FOUND");
-                LOGGER.info(patch.toString());
+                LOGGER.debug("Data was updated. Differences found in the JSON.");
+                LOGGER.debug(patch.toString());
             }
 
         } catch (final NullPointerException e) {
