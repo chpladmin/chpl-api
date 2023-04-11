@@ -266,6 +266,7 @@ public class CertifiedProductSearchDetails implements Serializable {
     @XmlElement(required = false, nillable = true)
     private String mandatoryDisclosures;
 
+    @XmlTransient
     @Deprecated
     @DeprecatedResponseField(message = "This field is deprecated and will be removed.", removalDate = "2023-10-31")
     private Long lastModifiedDate;
