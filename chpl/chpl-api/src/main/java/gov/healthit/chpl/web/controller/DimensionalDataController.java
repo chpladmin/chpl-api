@@ -2,7 +2,6 @@ package gov.healthit.chpl.web.controller;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -315,7 +314,7 @@ public class DimensionalDataController {
         List<FunctionalityTested> data = functionalityTestedManager.getFunctionalitiesTested();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
-        result.setData(data.stream().collect(Collectors.toCollection(LinkedHashSet::new)));
+        result.setData(data.stream().collect(Collectors.toSet()));
         return result;
     }
 
