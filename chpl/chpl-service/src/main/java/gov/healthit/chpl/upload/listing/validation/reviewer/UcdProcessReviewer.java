@@ -88,8 +88,22 @@ public class UcdProcessReviewer implements Reviewer {
                     .flatMap(ucdProcess -> ucdProcess.getCriteria().stream())
                     .filter(ucdCriterion -> !certResultRules.hasCertOption(ucdCriterion.getId(), CertificationResultRules.UCD_FIELDS))
                     .filter(ucdCriterion -> BooleanUtils.isFalse(ucdCriterion.getRemoved()))
-                    .forEach(notAllowedUcdCriterion -> listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.ucdProcessNotApplicable", Util.formatCriteriaNumber(notAllowedUcdCriterion))));
+                    .forEach(notAllowedUcdCriterion -> addUcdProcessNotApplicableErrorMessage(listing, notAllowedUcdCriterion));
         }
+    }
+
+    private void addUcdProcessNotApplicableErrorMessage(CertifiedProductSearchDetails listing, CertificationCriterion notAllowedUcdCriterion) {
+        if (isListingNew(listing)) {
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.ucdProcessNotApplicable",
+                    Util.formatCriteriaNumber(notAllowedUcdCriterion)));
+        } else {
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.ucdProcessNotApplicable",
+                    Util.formatCriteriaNumber(notAllowedUcdCriterion)));
+        }
+    }
+
+    private boolean isListingNew(CertifiedProductSearchDetails listing) {
+        return listing.getId() == null;
     }
 
     private boolean doesUcdProcessHaveAnyNonRemovedCriteria(CertifiedProductUcdProcess ucdProcess) {
@@ -124,12 +138,20 @@ public class UcdProcessReviewer implements Reviewer {
     private void reviewCertResultHasUcdProcessIfRequired(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResult.isSed()) {
             if (listing.getSed() == null || CollectionUtils.isEmpty(listing.getSed().getUcdProcesses())) {
-                listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingUcdProcess",
-                        Util.formatCriteriaNumber(certResult.getCriterion())));
+                addCriterionRequiresUcdProcessErrorProcess(listing, certResult.getCriterion());
             } else if (!doesUcdProcessListContainCriterion(listing, certResult.getCriterion())) {
-                listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingUcdProcess",
-                        Util.formatCriteriaNumber(certResult.getCriterion())));
+                addCriterionRequiresUcdProcessErrorProcess(listing, certResult.getCriterion());
             }
+        }
+    }
+
+    private void addCriterionRequiresUcdProcessErrorProcess(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
+        if (isListingNew(listing)) {
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingUcdProcess",
+                    Util.formatCriteriaNumber(criterion)));
+        } else {
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.missingUcdProcess",
+                    Util.formatCriteriaNumber(criterion)));
         }
     }
 
@@ -159,4 +181,5 @@ public class UcdProcessReviewer implements Reviewer {
                 ucdProcess.getUserEnteredName(), ucdProcess.getName());
         listing.getWarningMessages().add(warningMsg);
     }
+
 }
