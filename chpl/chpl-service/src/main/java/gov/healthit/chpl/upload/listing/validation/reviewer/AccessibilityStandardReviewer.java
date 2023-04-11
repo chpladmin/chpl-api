@@ -101,7 +101,7 @@ public class AccessibilityStandardReviewer implements Reviewer {
     }
 
     private void checkAccessibilityStandardNameRequired(CertifiedProductSearchDetails listing, CertifiedProductAccessibilityStandard accessibilityStandard) {
-        if (StringUtils.isEmpty(accessibilityStandard.getAccessibilityStandardName())) {
+        if (isListingNew(listing) && StringUtils.isEmpty(accessibilityStandard.getAccessibilityStandardName())) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.accessibilityStandardMissingName"));
         }
     }

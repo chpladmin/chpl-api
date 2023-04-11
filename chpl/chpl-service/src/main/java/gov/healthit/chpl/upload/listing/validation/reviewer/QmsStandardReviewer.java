@@ -78,7 +78,7 @@ public class QmsStandardReviewer implements Reviewer {
     }
 
     private void checkQmsStandardNameRequired(CertifiedProductSearchDetails listing, CertifiedProductQmsStandard qmsStandard) {
-        if (StringUtils.isEmpty(qmsStandard.getQmsStandardName())) {
+        if (isListingNew(listing) && StringUtils.isEmpty(qmsStandard.getQmsStandardName())) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.qmsStandardMissingName"));
         }
     }
