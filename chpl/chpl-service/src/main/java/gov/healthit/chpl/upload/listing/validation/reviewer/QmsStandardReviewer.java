@@ -51,8 +51,20 @@ public class QmsStandardReviewer implements Reviewer {
 
     private void doQmsStandardsExist(CertifiedProductSearchDetails listing) {
         if (listing.getQmsStandards() == null || listing.getQmsStandards().size() == 0) {
-            listing.addDataErrorMessage(msgUtil.getMessage("listing.qmsStandardsNotFound"));
+            addQmsStandardsAreRequiredErrorMessage(listing);
         }
+    }
+
+    private void addQmsStandardsAreRequiredErrorMessage(CertifiedProductSearchDetails listing) {
+        if (isListingNew(listing)) {
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.qmsStandardsNotFound"));
+        } else {
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.qmsStandardsNotFound"));
+        }
+    }
+
+    private boolean isListingNew(CertifiedProductSearchDetails listing) {
+        return listing.getId() == null;
     }
 
     private void areQmsStandardsValid(CertifiedProductSearchDetails listing) {
@@ -73,7 +85,15 @@ public class QmsStandardReviewer implements Reviewer {
 
     private void checkApplicableCriteriaRequired(CertifiedProductSearchDetails listing, CertifiedProductQmsStandard qmsStandard) {
         if (StringUtils.isEmpty(qmsStandard.getApplicableCriteria())) {
+            addNotAppicableCriteriaErrorMessage(listing);
+        }
+    }
+
+    private void addNotAppicableCriteriaErrorMessage(CertifiedProductSearchDetails listing) {
+        if (isListingNew(listing)) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.qmsStandardMissingApplicableCriteria"));
+        } else {
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.qmsStandardMissingApplicableCriteria"));
         }
     }
 
