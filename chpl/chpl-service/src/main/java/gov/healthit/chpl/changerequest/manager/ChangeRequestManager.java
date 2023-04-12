@@ -193,7 +193,7 @@ public class ChangeRequestManager {
 
         ChangeRequestValidationContext crValidationContext = getNewValidationContext(cr, crFromDb);
         ValidationException validationException = new ValidationException();
-        validationException.getErrorMessages().addAll(crValidationService.validate(crValidationContext));
+        validationException.setErrorMessages(Set.copyOf(crValidationService.validate(crValidationContext)));
         if (validationException.getErrorMessages().size() > 0) {
             throw validationException;
         }
