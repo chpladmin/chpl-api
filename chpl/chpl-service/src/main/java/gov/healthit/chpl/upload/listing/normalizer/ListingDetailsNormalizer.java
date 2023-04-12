@@ -53,7 +53,7 @@ public class ListingDetailsNormalizer {
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
-        if (CollectionUtils.isNotEmpty(listing.getErrorMessages().castToSet())) {
+        if (!listing.getErrorMessages().isEmpty()) {
             listing.clearAllErrorMessages();
         }
         if (CollectionUtils.isNotEmpty(listing.getWarningMessages())) {

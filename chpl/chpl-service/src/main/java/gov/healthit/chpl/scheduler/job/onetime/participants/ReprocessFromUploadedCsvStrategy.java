@@ -121,8 +121,8 @@ public class ReprocessFromUploadedCsvStrategy implements ParticipantUpdateStrate
     private boolean hasSedErrors(CertifiedProductSearchDetails listing) {
         // there are probably errors and warnings that weren't here originally -
         // some criteria have been removed, we changed measure parsing, etc
-        return !CollectionUtils.isEmpty(listing.getErrorMessages().castToSet())
-                && isAnyMessageAboutSed(listing.getErrorMessages().castToSet());
+        return !listing.getErrorMessages().isEmpty()
+                && isAnyMessageAboutSed(listing.getErrorMessages().castToCollection());
     }
 
     private boolean isAnyMessageAboutSed(Collection<String> messages) {
@@ -137,7 +137,7 @@ public class ReprocessFromUploadedCsvStrategy implements ParticipantUpdateStrate
     private void printListingErrorsAndWarnings(CertifiedProductSearchDetails listing) {
         LOGGER.info("Errors for listing: " + listing.getChplProductNumber() + " (confirmed listing " + listing.getId() + ")");
         // there might be errors due to measure parsing since all of these files had the old measure columns...
-        if (CollectionUtils.isEmpty(listing.getErrorMessages().castToSet())) {
+        if (listing.getErrorMessages().isEmpty()) {
             LOGGER.info("\t0 errors.");
         } else {
             listing.getErrorMessages().stream()

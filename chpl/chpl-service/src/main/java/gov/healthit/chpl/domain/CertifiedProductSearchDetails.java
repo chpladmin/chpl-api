@@ -20,8 +20,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.collections.api.factory.Sets;
-import org.eclipse.collections.api.set.ImmutableSet;
+import org.eclipse.collections.api.set.sorted.ImmutableSortedSet;
+import org.eclipse.collections.impl.factory.SortedSets;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -588,19 +588,19 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.warningMessages = warningMessages;
     }
 
-    public ImmutableSet<String> getErrorMessages() {
+    public ImmutableSortedSet<String> getErrorMessages() {
         // this forces use of addBusinessError(...) & addDataError(...)
-        return Sets.immutable.withAll(errorMessages);
+        return SortedSets.immutable.withAll(errorMessages);
     }
 
-    public ImmutableSet<String> getDataErrorMessages() {
+    public ImmutableSortedSet<String> getDataErrorMessages() {
         // this forces use of addDataError(...)
-        return Sets.immutable.withAll(dataErrorMessages);
+        return SortedSets.immutable.withAll(dataErrorMessages);
     }
 
-    public ImmutableSet<String> getBusinessErrorMessages() {
+    public ImmutableSortedSet<String> getBusinessErrorMessages() {
         // this forces use of addBusinessError(...)
-        return Sets.immutable.withAll(businessErrorMessages);
+        return SortedSets.immutable.withAll(businessErrorMessages);
     }
 
     public void addDataErrorMessage(String errorMessage) {

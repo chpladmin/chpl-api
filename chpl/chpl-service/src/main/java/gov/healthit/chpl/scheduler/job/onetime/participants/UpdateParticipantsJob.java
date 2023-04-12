@@ -143,8 +143,8 @@ public class UpdateParticipantsJob implements Job {
     private boolean hasSedErrors(CertifiedProductSearchDetails listing) {
         // there are probably errors and warnings that weren't here originally -
         // some criteria have been removed, we changed measure parsing, etc
-        return !CollectionUtils.isEmpty(listing.getErrorMessages().castToSet())
-                && isAnyMessageAboutSed(listing.getErrorMessages().castToSet());
+        return !listing.getErrorMessages().isEmpty()
+                && isAnyMessageAboutSed(listing.getErrorMessages().castToCollection());
     }
 
     private boolean isAnyMessageAboutSed(Collection<String> messages) {
@@ -158,7 +158,7 @@ public class UpdateParticipantsJob implements Job {
 
     private void printListingErrorsAndWarnings(CertifiedProductSearchDetails listing) {
         LOGGER.info("\tErrors for listing: " + listing.getId());
-        if (CollectionUtils.isEmpty(listing.getErrorMessages().castToSet())) {
+        if (listing.getErrorMessages().isEmpty()) {
             LOGGER.info("\t0 errors.");
         } else {
             listing.getErrorMessages().stream()
