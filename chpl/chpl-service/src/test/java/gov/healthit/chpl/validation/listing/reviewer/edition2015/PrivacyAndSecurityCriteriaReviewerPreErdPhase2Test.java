@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
@@ -45,6 +46,8 @@ public class PrivacyAndSecurityCriteriaReviewerPreErdPhase2Test {
         Mockito.when(env.getProperty("privacyAndSecurityRequiredCriteria")).thenReturn("166,167");
 
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.dependentCriteriaRequired"), ArgumentMatchers.any()))
+                .thenReturn("Test error message!");
 
         validationUtils = new ValidationUtils(Mockito.mock(CertificationCriterionService.class));
     }
