@@ -296,14 +296,23 @@ public class CertificationResult implements Serializable {
     @XmlTransient
     private String number;
 
+    @XmlTransient
     private CertificationResultSvapComparator svapComparator;
+    @XmlTransient
     private CertificationResultOptionalStandardComparator osComparator;
+    @XmlTransient
     private CertificationResultConformanceMethodComparator cmComparator;
+    @XmlTransient
     private CertificationResultFunctionalityTestedComparator funcTestedComparator;
+    @XmlTransient
     private CertificationResultTestProcedureComparator testProcComparator;
+    @XmlTransient
     private CertificationResultTestDataComparator testDataComparator;
+    @XmlTransient
     private CertificationResultTestToolComparator testToolComparator;
+    @XmlTransient
     private CertificationResultTestStandardComparator testStandardComparator;
+    @XmlTransient
     private CertificationResultAdditionalSoftwareComparator asComparator;
 
     public CertificationResult() {
