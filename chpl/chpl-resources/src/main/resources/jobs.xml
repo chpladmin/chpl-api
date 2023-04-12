@@ -13,13 +13,8 @@
             <group>chplBackgroundJobs</group>
         </delete-job>
         <delete-job>
-            <name>Developer Attestations Report Email</name>
-            <group>chplJobs</group>
-        </delete-job>
-        <!-- Need to delete the existing job, so the new ACB Specific attribute gets picked up -->
-        <delete-job>
-            <name>Developer Attestations Check-in Report Email</name>
-            <group>chplJobs</group>
+            <name>updateParticipantsJob</name>
+            <group>systemJobs</group>
         </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
