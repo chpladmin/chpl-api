@@ -44,15 +44,12 @@ public class TestStandardReviewerTest {
                 .thenReturn(ts);
 
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingTestStandardName"),
-                ArgumentMatchers.anyString()))
-                .thenAnswer(i -> String.format("There was no test standard name found for certification criteria %s.",
-                        i.getArgument(1), ""));
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria."),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-                .thenAnswer(i -> String.format("Criteria %s contains a test standard '%s' which does not "
-                        + "currently exist for edition %s.",
-                        i.getArgument(1), i.getArgument(2), i.getArgument(3)));
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testStandardIdNotFound"), ArgumentMatchers.any()))
+                .thenReturn("Test error message 1!");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingTestStandardName"), ArgumentMatchers.any()))
+                .thenAnswer(i -> String.format("There was no test standard name found for certification criteria %s.", i.getArgument(1), ""));
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testStandardNotFound"), ArgumentMatchers.any()))
+                .thenReturn("Test error message 3!");
 
         reviewer = new TestStandardReviewer(testStandardDao, errorMessageUtil);
     }
