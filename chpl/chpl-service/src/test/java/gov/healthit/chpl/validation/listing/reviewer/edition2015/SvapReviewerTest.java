@@ -30,6 +30,7 @@ public class SvapReviewerTest {
     private static final String INVALID_EDITION_ERROR_KEY = "listing.criteria.svap.invalidEdition";
     private static final String INVALID_SVAP_CRITERIA_ERROR_KEY = "listing.criteria.svap.invalidCriteria";
     private static final String REMOVED_SVAP_WARNING_KEY = "listing.criteria.svap.removed";
+    private static final String INVALID_URL_KEY = "listing.svap.url.invalid";
 
     private SvapDAO svapDao;
     private ValidationUtils validationUtils;
@@ -44,10 +45,12 @@ public class SvapReviewerTest {
 
         validationUtils = Mockito.mock(ValidationUtils.class);
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(errorMessageUtil.getMessage(INVALID_EDITION_ERROR_KEY))
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq(INVALID_EDITION_ERROR_KEY), ArgumentMatchers.any()))
                 .thenReturn("Test Error Message 1");
-        Mockito.when(errorMessageUtil.getMessage(INVALID_SVAP_CRITERIA_ERROR_KEY))
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq(INVALID_SVAP_CRITERIA_ERROR_KEY), ArgumentMatchers.any()))
                 .thenReturn("Test Error Message 2");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq(INVALID_URL_KEY), ArgumentMatchers.any()))
+                .thenReturn("Test Error Message 3");
 
         svapReviewer = new SvapReviewer(svapDao, validationUtils, errorMessageUtil);
     }
@@ -58,7 +61,7 @@ public class SvapReviewerTest {
         certEdition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 3L);
         certEdition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         Mockito.when(validationUtils.isWellFormedUrl(ArgumentMatchers.anyString()))
-        .thenReturn(true);
+                .thenReturn(true);
 
         CertifiedProductSearchDetails origlisting = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -100,8 +103,7 @@ public class SvapReviewerTest {
         certEdition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 3L);
         certEdition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         Mockito.when(validationUtils.isWellFormedUrl(ArgumentMatchers.anyString()))
-        .thenReturn(false);
-
+                .thenReturn(false);
 
         CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -134,7 +136,6 @@ public class SvapReviewerTest {
                 .svapNoticeUrl("bad")
                 .build();
 
-
         svapReviewer.review(origListing, updatedListing);
 
         assertEquals(1, updatedListing.getErrorMessages().size());
@@ -146,7 +147,7 @@ public class SvapReviewerTest {
         certEdition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 3L);
         certEdition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         Mockito.when(validationUtils.isWellFormedUrl(ArgumentMatchers.anyString()))
-        .thenReturn(true);
+                .thenReturn(true);
 
         CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -188,7 +189,7 @@ public class SvapReviewerTest {
         certEdition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 2L);
         certEdition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2014");
         Mockito.when(validationUtils.isWellFormedUrl(ArgumentMatchers.anyString()))
-        .thenReturn(true);
+                .thenReturn(true);
 
         CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -230,7 +231,7 @@ public class SvapReviewerTest {
         certEdition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 3L);
         certEdition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         Mockito.when(validationUtils.isWellFormedUrl(ArgumentMatchers.anyString()))
-        .thenReturn(true);
+                .thenReturn(true);
 
         CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
