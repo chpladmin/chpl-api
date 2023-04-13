@@ -97,6 +97,8 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
+import gov.healthit.chpl.notifier.BusinessRulesOverrideNotifierMessage;
+import gov.healthit.chpl.notifier.ChplTeamNotifier;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.qmsStandard.QmsStandard;
 import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
@@ -152,6 +154,7 @@ public class CertifiedProductManager extends SecuredManager {
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
     private ListingIcsSharedStoreHandler icsSharedStoreHandler;
+    private ChplTeamNotifier chplTeamNotifier;
 
     public CertifiedProductManager() {
     }
@@ -183,7 +186,8 @@ public class CertifiedProductManager extends SecuredManager {
             ActivityManager activityManager, ListingDetailsNormalizer listingNormalizer,
             ListingValidatorFactory validatorFactory,
             CuresUpdateService curesUpdateService,
-            @Lazy ListingIcsSharedStoreHandler icsSharedStoreHandler) {
+            @Lazy ListingIcsSharedStoreHandler icsSharedStoreHandler,
+            ChplTeamNotifier chplteamNotifier) {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
@@ -220,6 +224,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.validatorFactory = validatorFactory;
         this.curesUpdateService = curesUpdateService;
         this.icsSharedStoreHandler = icsSharedStoreHandler;
+        this.chplTeamNotifier = chplteamNotifier;
     }
 
     @Transactional(readOnly = true)
@@ -392,6 +397,14 @@ public class CertifiedProductManager extends SecuredManager {
             // Log the activity
             logCertifiedProductUpdateActivity(existingListing, updateRequest.getReason());
 
+            //Send notification to Team
+            if (wereBusinessRulesOvewrriddenDuringUpdate(updateRequest)) {
+                chplTeamNotifier.sendNotification(new BusinessRulesOverrideNotifierMessage(
+                        updateRequest.getListing().getChplProductNumber(),
+                        AuthUtil.getCurrentUser(),
+                        updateRequest.getListing().getBusinessErrorMessages()));
+            }
+
             return result;
         } catch (EntityRetrievalException | EntityCreationException ex) {
             String msg = msgUtil.getMessage("listing.badListingData", existingListing.getChplProductNumber());
@@ -399,6 +412,12 @@ public class CertifiedProductManager extends SecuredManager {
             LOGGER.error(msg, ex);
             throw exception;
         }
+    }
+
+
+    private boolean wereBusinessRulesOvewrriddenDuringUpdate(ListingUpdateRequest request) {
+        return !request.getListing().getBusinessErrorMessages().isEmpty()
+                && request.isAcknowledgeBusinessErrors();
     }
 
     private void logCertifiedProductUpdateActivity(CertifiedProductSearchDetails existingListing,
