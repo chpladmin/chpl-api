@@ -41,7 +41,6 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2(topic = "g3Sed2015DownloadableResourceCreatorJobLogger")
 @DisallowConcurrentExecution
 public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
-    private static final int MILLIS_PER_SECOND = 1000;
 
     @Autowired
     private CertificationCriterionService criterionService;
@@ -191,74 +190,6 @@ public class G3Sed2015DownloadableResourceCreatorJob extends DownloadableResourc
     private String getFileName(String path, String timeStamp, String extension) {
         return path + File.separator + sedDownloadFilename + "-" + timeStamp + "." + extension;
     }
-//
-//    private Optional<CertifiedProductSearchDetails> getListingFromFuture(
-//            CompletableFuture<Optional<CertifiedProductSearchDetails>> future) {
-//
-//        try {
-//            Optional<CertifiedProductSearchDetails> optionalListing = future.get();
-//            LOGGER.info("Completed retrieving listing: " + optionalListing.get().getId());
-//            return optionalListing;
-//        } catch (InterruptedException | ExecutionException e) {
-//            LOGGER.info(e.getMessage(), e);
-//            return Optional.empty();
-//        }
-//    }
-//
-//    private List<CompletableFuture<Optional<CertifiedProductSearchDetails>>> getCertifiedProductSearchDetails(
-//            List<Long> listingIds) {
-//
-//        List<CompletableFuture<Optional<CertifiedProductSearchDetails>>> futures =
-//                new ArrayList<CompletableFuture<Optional<CertifiedProductSearchDetails>>>();
-//
-//        for (Long currListingId : listingIds) {
-//            futures.add(
-//                    CompletableFuture.supplyAsync(() -> getCertifiedProductDetails(currListingId), executorService));
-//        }
-//        return futures;
-//    }
-//
-//    private Optional<CertifiedProductSearchDetails> getCertifiedProductDetails(Long id) {
-//        try {
-//            return Optional.of(certifiedProductDetailsManager.getCertifiedProductDetails(id));
-//        } catch (EntityRetrievalException e) {
-//            LOGGER.error("Could not retrieve certified product details for id: " + id, e);
-//            return Optional.empty();
-//        }
-//    }
-//
-//    private List<Long> getRelevantListingIds() throws EntityRetrievalException {
-//        LOGGER.info("Finding all listings attesting to " + CRITERIA_NAME + ".");
-//        CertificationCriterionDTO certCrit = getCriteriaDao().getByNumberAndTitle(CRITERIA_NAME, TITLE);
-//        List<Long> listingIds = getCertificationResultDao().getCpIdsByCriterionId(certCrit.getId());
-//        LOGGER.info("Found " + listingIds.size() + " listings attesting to " + CRITERIA_NAME + ".");
-//        return listingIds;
-//    }
-//
-//    private void writeToFile(File downloadFolder, List<CertifiedProductSearchDetails> results) throws IOException {
-//        String csvFilename = downloadFolder.getAbsolutePath()
-//                + File.separator
-//                + env.getProperty("SEDDownloadName")
-//                + "-" + getFilenameTimestampFormat().format(new Date())
-//                + ".csv";
-//        File csvFile = getFile(csvFilename);
-//        Sed2015CsvPresenter csvPresenter = new Sed2015CsvPresenter();
-//        csvPresenter.presentAsFile(csvFile, results, criterionService);
-//        LOGGER.info("Wrote G3 SED 2015 CSV file.");
-//    }
-
-//    private File getFile(String fileName) throws IOException {
-//        File file = new File(fileName);
-//        if (file.exists()) {
-//            if (!file.delete()) {
-//                throw new IOException("File exists; cannot delete");
-//            }
-//        }
-//        if (!file.createNewFile()) {
-//            throw new IOException("File can not be created");
-//        }
-//        return file;
-//    }
 
     private Integer getThreadCountForJob() throws NumberFormatException {
         return Integer.parseInt(env.getProperty("executorThreadCountForQuartzJobs"));
