@@ -18,6 +18,7 @@ import org.quartz.JobDataMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -87,6 +88,7 @@ import gov.healthit.chpl.dto.CuresUpdateEventDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.CertifiedProductUpdateException;
@@ -155,6 +157,8 @@ public class CertifiedProductManager extends SecuredManager {
     private CuresUpdateService curesUpdateService;
     private ListingIcsSharedStoreHandler icsSharedStoreHandler;
     private ChplTeamNotifier chplTeamNotifier;
+    private Environment env;
+    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
     public CertifiedProductManager() {
     }
@@ -187,7 +191,7 @@ public class CertifiedProductManager extends SecuredManager {
             ListingValidatorFactory validatorFactory,
             CuresUpdateService curesUpdateService,
             @Lazy ListingIcsSharedStoreHandler icsSharedStoreHandler,
-            ChplTeamNotifier chplteamNotifier) {
+            ChplTeamNotifier chplteamNotifier, Environment env, ChplHtmlEmailBuilder chplHtmlEmailBuilder) {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
@@ -225,6 +229,8 @@ public class CertifiedProductManager extends SecuredManager {
         this.curesUpdateService = curesUpdateService;
         this.icsSharedStoreHandler = icsSharedStoreHandler;
         this.chplTeamNotifier = chplteamNotifier;
+        this.env = env;
+        this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
     }
 
     @Transactional(readOnly = true)
@@ -402,7 +408,9 @@ public class CertifiedProductManager extends SecuredManager {
                 chplTeamNotifier.sendNotification(new BusinessRulesOverrideNotifierMessage(
                         updateRequest.getListing().getChplProductNumber(),
                         AuthUtil.getCurrentUser(),
-                        updateRequest.getListing().getBusinessErrorMessages()));
+                        updateRequest.getListing().getBusinessErrorMessages(),
+                        env,
+                        chplHtmlEmailBuilder));
             }
 
             return result;
@@ -430,9 +438,7 @@ public class CertifiedProductManager extends SecuredManager {
                 changedProduct, reason);
     }
 
-    @SuppressWarnings({
-            "checkstyle:linelength"
-    })
+    @SuppressWarnings({ "checkstyle:linelength" })
     private void updateListingsChildData(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing)
             throws EntityCreationException, EntityRetrievalException, IOException {
 
