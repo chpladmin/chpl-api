@@ -1,5 +1,6 @@
 package gov.healthit.chpl.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -7,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Service
@@ -22,6 +25,11 @@ public class UserAccountUpdateEmailer {
     private String chplEmailGreeting;
     private String chplEmailValediction;
 
+    private String passwordChangedEmailSubject;
+    private String passwordChangedEmailHeading;
+    private String passwordChangedEmailParagraph1;
+    private String passwordChangedEmailParagraph2;
+
     private String passwordResetEmailSubject;
     private String passwordResetEmailBody;
     private String passwordResetEmailLink;
@@ -31,6 +39,10 @@ public class UserAccountUpdateEmailer {
 
     @Autowired
     public UserAccountUpdateEmailer(ChplHtmlEmailBuilder htmlEmailBuilder, ChplEmailFactory chplEmailFactory,
+            @Value("${user.updatedPassword.subject}") String passwordChangedEmailSubject,
+            @Value("${user.updatedPassword.heading}") String passwordChangedEmailHeading,
+            @Value("${user.updatedPassword.paragraph1}") String passwordChangedEmailParagraph1,
+            @Value("${user.updatedPassword.paragraph2}") String passwordChangedEmailParagraph2,
             @Value("${user.resetPassword.subject}") String passwordResetEmailSubject,
             @Value("${user.resetPassword.body}") String passwordResetEmailBody,
             @Value("${user.resetPassword.resetLink}") String passwordResetEmailLink,
@@ -43,6 +55,11 @@ public class UserAccountUpdateEmailer {
         this.htmlEmailBuilder = htmlEmailBuilder;
         this.chplEmailFactory = chplEmailFactory;
 
+        this.passwordChangedEmailSubject = passwordChangedEmailSubject;
+        this.passwordChangedEmailHeading = passwordChangedEmailHeading;
+        this.passwordChangedEmailParagraph1 = passwordChangedEmailParagraph1;
+        this.passwordChangedEmailParagraph2 = passwordChangedEmailParagraph2;
+
         this.passwordResetEmailSubject = passwordResetEmailSubject;
         this.passwordResetEmailBody = passwordResetEmailBody;
         this.passwordResetEmailLink = passwordResetEmailLink;
@@ -53,6 +70,31 @@ public class UserAccountUpdateEmailer {
         this.chplUrlBegin = chplUrlBegin;
         this.chplEmailGreeting = chplEmailGreeting;
         this.chplEmailValediction = String.format(chplEmailValediction, publicFeedbackUrl);
+    }
+
+    public void sendPasswordChangedEmail(UserDTO user) {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        String htmlMessage = htmlEmailBuilder.initialize()
+                .heading(passwordChangedEmailHeading)
+                .paragraph(String.format(chplEmailGreeting, user.getFullName()),
+                        String.format(passwordChangedEmailParagraph1,
+                                DateUtil.formatInEasternTime(currentDateTime, "MMM d, yyyy 'at' h:mm a")))
+                .paragraph(null, String.format(passwordChangedEmailParagraph2, chplUrlBegin, "NEED LINK TBD"))
+                .footer(false)
+                .build();
+        String[] toEmails = {
+                user.getEmail()
+        };
+        LOGGER.info("Created HTML Message about a changed password for " + user.getEmail());
+        try {
+            chplEmailFactory.emailBuilder().recipients(new ArrayList<String>(Arrays.asList(toEmails)))
+                .subject(passwordChangedEmailSubject)
+                .htmlMessage(htmlMessage)
+                .sendEmail();
+            LOGGER.info("Sent email to " + user.getEmail());
+        } catch (EmailNotSentException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+        }
     }
 
     public void sendPasswordResetEmail(String token, String userEmail) {

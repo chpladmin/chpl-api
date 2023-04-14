@@ -213,16 +213,17 @@ public class UserManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE_PASSWORD, #user)")
     public void updateUserPassword(UserDTO user, String password) throws UserRetrievalException, MultipleUserAccountsException {
-        updateUserPasswordUnsecured(user.getEmail(), password);
+        updateUserPasswordUnsecured(user, password);
     }
 
     @Transactional
-    public void updateUserPasswordUnsecured(String email, String password)
+    public void updateUserPasswordUnsecured(UserDTO user, String password)
             throws UserRetrievalException, MultipleUserAccountsException {
         String encodedPassword = encodePassword(password);
-        userDAO.updatePassword(email, encodedPassword);
-        userDAO.updateFailedLoginCount(email, 0);
-        userDAO.updateAccountLockedStatus(email, false);
+        userDAO.updatePassword(user.getEmail(), encodedPassword);
+        userDAO.updateFailedLoginCount(user.getEmail(), 0);
+        userDAO.updateAccountLockedStatus(user.getEmail(), false);
+        userAccountUpdateEmailer.sendPasswordChangedEmail(user);
     }
 
     // no auth needed. create a random string and create a new reset token row
@@ -267,7 +268,7 @@ public class UserManager extends SecuredManager {
                     strength.getScore(), strength.getCrackTimesDisplay().getOfflineFastHashing1e10PerSecond());
             response.setStrength(strength);
         }
-        updateUserPasswordUnsecured(userDto.getEmail(), resetRequest.getNewPassword());
+        updateUserPasswordUnsecured(userDto, resetRequest.getNewPassword());
         deletePreviousTokens(resetRequest.getToken());
         response.setPasswordUpdated(true);
         return response;

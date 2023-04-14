@@ -192,7 +192,7 @@ public class AuthenticationController {
             String jwt = authenticationManager.getJWT(currUser);
             User authenticatedUser = userConverter.getAuthenticatedUser(jwt);
             SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
-            userManager.updateUserPasswordUnsecured(currUser.getEmail(), request.getNewPassword());
+            userManager.updateUserPasswordUnsecured(currUser, request.getNewPassword());
             SecurityContextHolder.getContext().setAuthentication(null);
         }
         response.setPasswordUpdated(true);
