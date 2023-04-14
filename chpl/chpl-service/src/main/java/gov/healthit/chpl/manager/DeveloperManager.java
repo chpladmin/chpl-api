@@ -62,14 +62,13 @@ import gov.healthit.chpl.manager.rules.developer.DeveloperValidationContext;
 import gov.healthit.chpl.manager.rules.developer.DeveloperValidationFactory;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
-import gov.healthit.chpl.scheduler.job.developer.MergeDeveloperJob;
+import gov.healthit.chpl.scheduler.job.developer.JoinDeveloperJob;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.util.ValidationUtils;
 import lombok.extern.log4j.Log4j2;
 
 @Lazy
@@ -89,7 +88,6 @@ public class DeveloperManager extends SecuredManager {
     private ErrorMessageUtil msgUtil;
     private ResourcePermissions resourcePermissions;
     private DeveloperValidationFactory developerValidationFactory;
-    private ValidationUtils validationUtils;
     private SchedulerManager schedulerManager;
 
     @Autowired
@@ -98,7 +96,7 @@ public class DeveloperManager extends SecuredManager {
             UserManager userManager, CertificationBodyManager acbManager,
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
-            DeveloperValidationFactory developerValidationFactory, ValidationUtils validationUtils,
+            DeveloperValidationFactory developerValidationFactory,
             SchedulerManager schedulerManager) {
         this.developerDao = developerDao;
         this.productManager = productManager;
@@ -111,7 +109,6 @@ public class DeveloperManager extends SecuredManager {
         this.msgUtil = msgUtil;
         this.resourcePermissions = resourcePermissions;
         this.developerValidationFactory = developerValidationFactory;
-        this.validationUtils = validationUtils;
         this.schedulerManager = schedulerManager;
     }
 
@@ -350,31 +347,26 @@ public class DeveloperManager extends SecuredManager {
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
-            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).MERGE, #developerIdsToMerge)")
+            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).JOIN)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS
+            CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.DEVELOPER_NAMES,
+            CacheNames.COLLECTIONS_LISTINGS
     }, allEntries = true)
-    @ListingSearchCacheRefresh
-    public ChplOneTimeTrigger merge(List<Long> developerIdsToMerge, Developer developerToCreate)
+    public ChplOneTimeTrigger join(Long owningDeveloperId, List<Long> joiningDeveloperIds)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
             SchedulerException, ValidationException {
         List<Developer> beforeDevelopers = new ArrayList<Developer>();
-        for (Long developerId : developerIdsToMerge) {
+        for (Long developerId : joiningDeveloperIds) {
             beforeDevelopers.add(developerDao.getById(developerId));
         }
 
-        normalizeSpaces(developerToCreate);
-        Set<String> errors = runCreateValidations(developerToCreate, beforeDevelopers);
-        if (errors != null && errors.size() > 0) {
-            throw new ValidationException(errors);
-        }
-
-        // Check to see if the merge will create any duplicate chplProductNumbers
-        List<DuplicateChplProdNumber> duplicateChplProdNumbers = getDuplicateChplProductNumbersBasedOnDevMerge(
-                developerIdsToMerge, developerToCreate.getDeveloperCode());
+        // Check to see if the join will create any duplicate chplProductNumbers
+        Developer owningDeveloper = developerDao.getById(owningDeveloperId);
+        List<DuplicateChplProdNumber> duplicateChplProdNumbers = getDuplicateChplProductNumbersBasedOnDevJoin(
+                joiningDeveloperIds, owningDeveloper.getDeveloperCode());
         if (duplicateChplProdNumbers.size() != 0) {
             throw new ValidationException(getDuplicateChplProductNumberErrorMessages(duplicateChplProdNumbers), null);
         }
@@ -386,20 +378,19 @@ public class DeveloperManager extends SecuredManager {
             LOGGER.error("Could not find user to execute job.");
         }
 
-        ChplOneTimeTrigger mergeDeveloperTrigger = new ChplOneTimeTrigger();
-        ChplJob mergeDeveloperJob = new ChplJob();
-        mergeDeveloperJob.setName(MergeDeveloperJob.JOB_NAME);
-        mergeDeveloperJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
+        ChplOneTimeTrigger joinDevelopersTrigger = new ChplOneTimeTrigger();
+        ChplJob joinDevelopersJob = new ChplJob();
+        joinDevelopersJob.setName(JoinDeveloperJob.JOB_NAME);
+        joinDevelopersJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put(MergeDeveloperJob.OLD_DEVELOPERS_KEY, beforeDevelopers);
-        jobDataMap.put(MergeDeveloperJob.NEW_DEVELOPER_KEY, developerToCreate);
-        jobDataMap.put(MergeDeveloperJob.USER_KEY, jobUser);
-        mergeDeveloperJob.setJobDataMap(jobDataMap);
-        mergeDeveloperTrigger.setJob(mergeDeveloperJob);
-        mergeDeveloperTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
-        mergeDeveloperTrigger = schedulerManager.createBackgroundJobTrigger(mergeDeveloperTrigger);
-        return mergeDeveloperTrigger;
-
+        jobDataMap.put(JoinDeveloperJob.JOINING_DEVELOPERS, beforeDevelopers);
+        jobDataMap.put(JoinDeveloperJob.DEVELOPER_TO_JOIN, owningDeveloper);
+        jobDataMap.put(JoinDeveloperJob.USER_KEY, jobUser);
+        joinDevelopersJob.setJobDataMap(jobDataMap);
+        joinDevelopersTrigger.setJob(joinDevelopersJob);
+        joinDevelopersTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
+        joinDevelopersTrigger = schedulerManager.createBackgroundJobTrigger(joinDevelopersTrigger);
+        return joinDevelopersTrigger;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
@@ -444,13 +435,13 @@ public class DeveloperManager extends SecuredManager {
     private Set<String> getDuplicateChplProductNumberErrorMessages(List<DuplicateChplProdNumber> duplicateChplProdNumbers) {
         Set<String> messages = new HashSet<String>();
         for (DuplicateChplProdNumber dup : duplicateChplProdNumbers) {
-            messages.add(msgUtil.getMessage("developer.merge.dupChplProdNbrs", dup.getOrigChplProductNumberA(),
+            messages.add(msgUtil.getMessage("developer.join.duplicateChplProductNumbers", dup.getOrigChplProductNumberA(),
                     dup.getOrigChplProductNumberB()));
         }
         return messages;
     }
 
-    private List<DuplicateChplProdNumber> getDuplicateChplProductNumbersBasedOnDevMerge(List<Long> developerIds,
+    private List<DuplicateChplProdNumber> getDuplicateChplProductNumbersBasedOnDevJoin(List<Long> developerIds,
             String newDeveloperCode) {
 
         // key = new chpl prod nbr, value = orig chpl prod nbr
@@ -537,10 +528,6 @@ public class DeveloperManager extends SecuredManager {
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.ADDRESS));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.ACTIVE_STATUS));
         return runValidations(rules, developer, beforeDevelopers);
-    }
-
-    private Set<String> runValidations(List<ValidationRule<DeveloperValidationContext>> rules, Developer developer) {
-        return runChangeValidations(rules, developer, null);
     }
 
     private Set<String> runChangeValidations(List<ValidationRule<DeveloperValidationContext>> rules,

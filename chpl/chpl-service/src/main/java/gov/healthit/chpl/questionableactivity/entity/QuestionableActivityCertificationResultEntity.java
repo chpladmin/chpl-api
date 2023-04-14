@@ -14,9 +14,13 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-@Data
+@Getter
+@Setter
+@ToString
 @Entity
 @Table(name = "questionable_activity_certification_result")
 public class QuestionableActivityCertificationResultEntity implements QuestionableActivityEntity {
@@ -28,6 +32,9 @@ public class QuestionableActivityCertificationResultEntity implements Questionab
 
     @Column(name = "questionable_activity_trigger_id")
     private Long triggerId;
+
+    @Column(name = "activity_id")
+    private Long activityId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "questionable_activity_trigger_id", insertable = false, updatable = false)

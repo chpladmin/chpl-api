@@ -42,7 +42,7 @@ public class ProductOwnerHistoryValidation extends ValidationRule<ProductValidat
                 return false;
             }
 
-            if (!context.isMergingOwner()) {
+            if (!context.isOwnerJoiningAnotherDeveloper()) {
                 if (mostRecentPastOwnerHasNoOtherProducts(context.getProduct().getOwnerHistory(), context.getProduct())) {
                     ProductOwner mostRecentPastOwner = getMostRecentPastOwner(context.getProduct().getOwnerHistory());
                     if (!mostRecentPastOwner.getDeveloper().getDeleted()) {
