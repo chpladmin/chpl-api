@@ -1,14 +1,13 @@
 package gov.healthit.chpl.search;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.caching.ListingSearchCacheable;
 import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -33,15 +32,26 @@ public class ListingSearchManager {
         this.drService = drService;
     }
 
-    @Cacheable(value = CacheNames.COLLECTIONS_SEARCH, sync = true)
+    //@Cacheable(value = CacheNames.COLLECTIONS_SEARCH, sync = true)
+    @ListingSearchCacheable
     public List<ListingSearchResult> getAllListings() {
+        //List<ListingSearchResult> results = searchDao.getListingSearchResults();
+        //LOGGER.info("Populating Direct Review fields for search");
+        //Date start = new Date();
+        //results.parallelStream()
+        //    .forEach(searchResult -> populateDirectReviews(searchResult));
+        //Date end = new Date();
+        //LOGGER.info("Completed Populating Direct Review fields  for search [ " + (end.getTime() - start.getTime()) + " ms ]");
+        //return results;
+        return getAllListingsNoCache();
+    }
+
+    public  List<ListingSearchResult> getAllListingsNoCache() {
+        LOGGER.info("Populating {}", CacheNames.COLLECTIONS_SEARCH);
         List<ListingSearchResult> results = searchDao.getListingSearchResults();
-        LOGGER.info("Populating Direct Review fields for search");
-        Date start = new Date();
         results.parallelStream()
             .forEach(searchResult -> populateDirectReviews(searchResult));
-        Date end = new Date();
-        LOGGER.info("Completed Populating Direct Review fields  for search [ " + (end.getTime() - start.getTime()) + " ms ]");
+        LOGGER.info("Completed Populating {}", CacheNames.COLLECTIONS_SEARCH);
         return results;
     }
 
