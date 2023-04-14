@@ -26,11 +26,16 @@ public class UserAccountUpdateEmailer {
     private String passwordResetEmailBody;
     private String passwordResetEmailLink;
 
+    private String accountLockedEmailSubject;
+    private String accountLockedEmailBody;
+
     @Autowired
     public UserAccountUpdateEmailer(ChplHtmlEmailBuilder htmlEmailBuilder, ChplEmailFactory chplEmailFactory,
             @Value("${user.resetPassword.subject}") String passwordResetEmailSubject,
             @Value("${user.resetPassword.body}") String passwordResetEmailBody,
             @Value("${user.resetPassword.resetLink}") String passwordResetEmailLink,
+            @Value("${user.accountLocked.subject}") String accountLockedEmailSubject,
+            @Value("${user.accountLocked.body}") String accountLockedEmailBody,
             @Value("${chplUrlBegin}") String chplUrlBegin,
             @Value("${footer.publicUrl}") String publicFeedbackUrl,
             @Value("${chpl.email.greeting}") String chplEmailGreeting,
@@ -41,6 +46,9 @@ public class UserAccountUpdateEmailer {
         this.passwordResetEmailSubject = passwordResetEmailSubject;
         this.passwordResetEmailBody = passwordResetEmailBody;
         this.passwordResetEmailLink = passwordResetEmailLink;
+
+        this.accountLockedEmailSubject = accountLockedEmailSubject;
+        this.accountLockedEmailBody = accountLockedEmailBody;
 
         this.chplUrlBegin = chplUrlBegin;
         this.chplEmailGreeting = chplEmailGreeting;
@@ -62,6 +70,28 @@ public class UserAccountUpdateEmailer {
         try {
             chplEmailFactory.emailBuilder().recipients(new ArrayList<String>(Arrays.asList(toEmails)))
                 .subject(passwordResetEmailSubject)
+                .htmlMessage(htmlMessage)
+                .sendEmail();
+            LOGGER.info("Sent email to " + userEmail);
+        } catch (EmailNotSentException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+        }
+    }
+
+    public void sendAccountLockedEmail(String userEmail) {
+        String htmlMessage = htmlEmailBuilder.initialize()
+                .heading(accountLockedEmailSubject)
+                .paragraph(null, String.format(accountLockedEmailBody, userEmail))
+                .paragraph(null, chplEmailValediction)
+                .footer(true)
+                .build();
+        String[] toEmails = {
+                userEmail
+        };
+        LOGGER.info("Created HTML Message about locked account for " + userEmail);
+        try {
+            chplEmailFactory.emailBuilder().recipients(new ArrayList<String>(Arrays.asList(toEmails)))
+                .subject(accountLockedEmailSubject)
                 .htmlMessage(htmlMessage)
                 .sendEmail();
             LOGGER.info("Sent email to " + userEmail);
