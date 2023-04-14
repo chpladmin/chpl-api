@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
@@ -249,6 +250,7 @@ public class DeveloperManager extends SecuredManager {
             CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#updatedDev.id")
+    @ListingSearchCacheRefresh
     public Developer update(Developer updatedDev, boolean doUpdateValidations)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
         Developer beforeDev = getById(updatedDev.getId());
@@ -353,8 +355,9 @@ public class DeveloperManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
+            CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS
     }, allEntries = true)
+    @ListingSearchCacheRefresh
     public ChplOneTimeTrigger merge(List<Long> developerIdsToMerge, Developer developerToCreate)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
             SchedulerException, ValidationException {
@@ -402,8 +405,9 @@ public class DeveloperManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).SPLIT, #oldDeveloper)")
     @CacheEvict(value = {
-            CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
+            CacheNames.DEVELOPER_NAMES, CacheNames.COLLECTIONS_LISTINGS
     }, allEntries = true)
+    @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#oldDeveloper.id")
     public ChplOneTimeTrigger split(Developer oldDeveloper, Developer developerToCreate,
             List<Long> productIdsToMove) throws ValidationException, SchedulerException {
