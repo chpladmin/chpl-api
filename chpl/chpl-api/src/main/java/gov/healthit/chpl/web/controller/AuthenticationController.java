@@ -1,10 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,7 +26,6 @@ import gov.healthit.chpl.domain.auth.UpdatePasswordResponse;
 import gov.healthit.chpl.domain.auth.UserResetPasswordRequest;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserResetTokenDTO;
-import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.JWTCreationException;
 import gov.healthit.chpl.exception.JWTValidationException;
@@ -39,9 +34,11 @@ import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
+import gov.healthit.chpl.service.UserAccountUpdateEmailer;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -55,24 +52,23 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class AuthenticationController {
     private AuthenticationManager authenticationManager;
+    private UserAccountUpdateEmailer userAccountUpdateEmailer;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private UserManager userManager;
     private JWTUserConverter userConverter;
-    private Environment env;
     private ErrorMessageUtil msgUtil;
-    private ChplEmailFactory chplEmailFactory;
 
     @Autowired
-    public AuthenticationController(AuthenticationManager authenticationManager, BCryptPasswordEncoder bCryptPasswordEncoder,
-            UserManager userManager, JWTUserConverter userConverter, ErrorMessageUtil msgUtil,
-            Environment env, ChplEmailFactory chplEmailFactory) {
+    public AuthenticationController(AuthenticationManager authenticationManager,
+            UserAccountUpdateEmailer userAccountUpdateEmailer,
+            BCryptPasswordEncoder bCryptPasswordEncoder,
+            UserManager userManager, JWTUserConverter userConverter, ErrorMessageUtil msgUtil) {
         this.authenticationManager = authenticationManager;
+        this.userAccountUpdateEmailer = userAccountUpdateEmailer;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userManager = userManager;
         this.userConverter = userConverter;
         this.msgUtil = msgUtil;
-        this.env = env;
-        this.chplEmailFactory = chplEmailFactory;
     }
 
     @Operation(summary = "Log in.",
@@ -214,28 +210,35 @@ public class AuthenticationController {
         return userManager.authorizePasswordReset(request);
     }
 
+    @Operation(summary = "Emails the user a token and link that can be used to reset their password..",
+            description = "",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/email-reset-password", method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public void resetPassword(@RequestBody UserResetPasswordRequest request)
+            throws UserRetrievalException, EmailNotSentException {
+
+        UserResetTokenDTO userResetTokenDTO = userManager.createResetUserPasswordToken(request.getEmail());
+        userAccountUpdateEmailer.sendPasswordResetEmail(userResetTokenDTO.getUserResetToken(), request.getEmail());
+    }
+
     @Operation(summary = "Reset a user's password.", description = "",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/email_reset_password", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public String resetPassword(@RequestBody UserResetPasswordRequest userInfo)
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/auth/email_reset_password",
+        message = "This endpoint is deprecated and will be removed. Please use /auth/email-reset-password.",
+        removalDate = "2023-10-31")
+    public String resetPasswordDeprecated(@RequestBody UserResetPasswordRequest userInfo)
             throws UserRetrievalException, EmailNotSentException {
 
         UserResetTokenDTO userResetTokenDTO = userManager.createResetUserPasswordToken(userInfo.getEmail());
-        String htmlMessage = String.format(env.getProperty("user.resetPassword.body"),
-                env.getProperty("chplUrlBegin"), userResetTokenDTO.getUserResetToken());
-        String[] toEmails = {
-                userInfo.getEmail()
-        };
-
-        chplEmailFactory.emailBuilder().recipients(new ArrayList<String>(Arrays.asList(toEmails)))
-                .subject(env.getProperty("user.resetPassword.subject"))
-                .htmlMessage(htmlMessage)
-                .publicHtmlFooter()
-                .sendEmail();
-
+        userAccountUpdateEmailer.sendPasswordResetEmail(userResetTokenDTO.getUserResetToken(), userInfo.getEmail());
         return "{\"passwordResetEmailSent\" : true }";
     }
 
