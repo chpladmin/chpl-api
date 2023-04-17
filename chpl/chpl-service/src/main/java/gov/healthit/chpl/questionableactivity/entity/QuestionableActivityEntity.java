@@ -10,6 +10,8 @@ public interface QuestionableActivityEntity {
     void setId(Long id);
     Long getTriggerId();
     void setTriggerId(Long triggerId);
+    Long getActivityId();
+    void setActivityId(Long activityId);
     QuestionableActivityTriggerEntity getTrigger();
     void setTrigger(QuestionableActivityTriggerEntity trigger);
     String getBefore();

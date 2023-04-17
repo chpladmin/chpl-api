@@ -10,6 +10,7 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import gov.healthit.chpl.activity.history.ListingActivityUtil;
@@ -34,7 +35,8 @@ public class CertificationResultContainsSvapActivityExplorer extends ListingActi
     private ListingActivityUtil activityUtil;
 
     @Autowired
-    public CertificationResultContainsSvapActivityExplorer(ActivityDAO activityDao, ListingActivityUtil activityUtil) {
+    public CertificationResultContainsSvapActivityExplorer(@Qualifier("activityDAO") ActivityDAO activityDao,
+            ListingActivityUtil activityUtil) {
         this.activityDao = activityDao;
         this.activityUtil = activityUtil;
     }

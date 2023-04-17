@@ -2,17 +2,32 @@ package gov.healthit.chpl.questionableactivity.listing;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.util.Util;
 
 @Component
 public class DeletedCertificationsActivity implements ListingActivity {
+
+    private CertificationCriterionService criteriaService;
+    private Map<CertificationCriterion, CertificationCriterion> originalToCuresCriteriaMap;
+
+    @Autowired
+    public DeletedCertificationsActivity(CertificationCriterionService criteriaService) {
+        this.criteriaService = criteriaService;
+
+        originalToCuresCriteriaMap = criteriaService.getOriginalToCuresCriteriaMap();
+    }
 
     @Override
      public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
@@ -24,7 +39,8 @@ public class DeletedCertificationsActivity implements ListingActivity {
             for (CertificationResult origCertResult : origListing.getCertificationResults()) {
                 for (CertificationResult newCertResult : newListing.getCertificationResults()) {
                     if (origCertResult.getCriterion().getId().equals(newCertResult.getCriterion().getId())) {
-                        if (origCertResult.isSuccess() && !newCertResult.isSuccess()) {
+                        if (origCertResult.isSuccess() && !newCertResult.isSuccess()
+                                && !wasCuresCriteriaSwappedForOriginal(newCertResult.getCriterion(), origListing, newListing)) {
                             // orig did have this cert result but new does not so it was removed
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                             activity.setBefore(CertificationCriterionService.formatCriteriaNumber(origCertResult.getCriterion()));
@@ -37,6 +53,29 @@ public class DeletedCertificationsActivity implements ListingActivity {
             }
         }
         return certRemovedActivities;
+    }
+
+    private boolean wasCuresCriteriaSwappedForOriginal(CertificationCriterion removedCriterion,
+            CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+        removedCriterion = criteriaService.get(removedCriterion.getId());
+        return !Util.isCures(removedCriterion)
+                && wasCuresCounterpartAdded(removedCriterion, origListing, newListing);
+    }
+
+    private boolean wasCuresCounterpartAdded(CertificationCriterion nonCuresCriterion,
+            CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+        CertificationCriterion curesCounterpart = originalToCuresCriteriaMap.get(nonCuresCriterion);
+        if (curesCounterpart == null) {
+            return false;
+        }
+        Optional<CertificationResult> origCertResultOpt = origListing.getCertificationResults().stream()
+            .filter(certResult -> certResult.getCriterion().getId().equals(curesCounterpart.getId()))
+            .findAny();
+        Optional<CertificationResult> newCertResultOpt = newListing.getCertificationResults().stream()
+                .filter(certResult -> certResult.getCriterion().getId().equals(curesCounterpart.getId()))
+                .findAny();
+        return origCertResultOpt.isPresent() && newCertResultOpt.isPresent()
+                && !origCertResultOpt.get().isSuccess() && newCertResultOpt.get().isSuccess();
     }
 
     @Override

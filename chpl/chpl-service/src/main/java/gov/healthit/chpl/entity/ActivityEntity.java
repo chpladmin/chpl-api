@@ -20,6 +20,8 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -101,6 +103,9 @@ public class ActivityEntity {
     @JoinColumn(name = "activity_object_concept_id", unique = true, nullable = true, insertable = false, updatable = false)
     private ActivityConceptEntity concept;
 
+    @Column(name = "reason")
+    private String reason;
+
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
     private Date creationDate;
 
@@ -117,4 +122,21 @@ public class ActivityEntity {
     @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "last_modified_user", unique = true, nullable = true, insertable = false, updatable = false)
     private UserEntity user;
+
+    public ActivityDTO toDomain() {
+        return ActivityDTO.builder()
+                .id(this.getId())
+                .description(this.getDescription())
+                .originalData(this.getOriginalData())
+                .newData(this.getNewData())
+                .activityDate(this.getActivityDate())
+                .activityObjectId(this.getActivityObjectId())
+                .concept(ActivityConcept.valueOf(this.getConcept().getConcept()))
+                .reason(this.getReason())
+                .creationDate(this.getCreationDate())
+                .lastModifiedDate(this.getLastModifiedDate())
+                .lastModifiedUser(this.getLastModifiedUser())
+                .deleted(this.getDeleted())
+                .build();
+    }
 }

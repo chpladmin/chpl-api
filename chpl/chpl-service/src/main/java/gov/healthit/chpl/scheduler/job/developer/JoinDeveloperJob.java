@@ -14,7 +14,6 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -32,26 +31,19 @@ import lombok.extern.log4j.Log4j2;
 import net.sf.ehcache.CacheManager;
 
 @DisallowConcurrentExecution
-@Log4j2(topic = "mergeDeveloperJobLogger")
-public class MergeDeveloperJob implements Job {
-    public static final String JOB_NAME = "mergeDeveloperJob";
-    public static final String OLD_DEVELOPERS_KEY = "oldDevelopers";
-    public static final String NEW_DEVELOPER_KEY = "newDeveloper";
-    public static final String PRODUCT_IDS_TO_MOVE_KEY = "productIdsToMove";
+@Log4j2(topic = "joinDeveloperJobLogger")
+public class JoinDeveloperJob implements Job {
+    public static final String JOB_NAME = "joinDeveloperJob";
+    public static final String DEVELOPER_TO_JOIN = "toJoinDeveloper";
+    public static final String JOINING_DEVELOPERS = "joiningDevelopers";
     public static final String USER_KEY = "user";
 
     @Autowired
-    private Environment env;
-
-    @Autowired
-    @Qualifier("transactionalDeveloperMergeManager")
-    private TransactionalDeveloperMergeManager mergeManager;
+    @Qualifier("transactionalJoinDeveloperManager")
+    private TransactionalJoinDeveloperManager joinManager;
 
     @Autowired
     private DeveloperDAO devDao;
-
-    @Value("${internalErrorEmailRecipients}")
-    private String internalErrorEmailRecipients;
 
     @Autowired
     private ChplEmailFactory chplEmailFactory;
@@ -59,14 +51,25 @@ public class MergeDeveloperJob implements Job {
     @Autowired
     private ChplHtmlEmailBuilder emailBuilder;
 
-    private List<Developer> preMergeDevelopers;
-    private Developer postMergeDeveloper;
+    @Value("${internalErrorEmailRecipients}")
+    private String internalErrorEmailRecipients;
+
+    @Value("${joinDeveloper.success.emailSubject}")
+    private String emailSubjectSuccess;
+
+    @Value("${joinDeveloper.failed.emailSubject}")
+    private String emailSubjectFailed;
+
+    @Value("${chplUrlBegin}")
+    private String chplUrlBegin;
+
+    private List<Developer> preJoinDevelopers;
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
-        LOGGER.info("********* Starting the Merge Developer job. *********");
+        LOGGER.info("********* Starting the Join Developer job. *********");
 
         JobDataMap jobDataMap = jobContext.getMergedJobDataMap();
         UserDTO user = (UserDTO) jobDataMap.get(USER_KEY);
@@ -75,25 +78,22 @@ public class MergeDeveloperJob implements Job {
         } else {
             setSecurityContext(user);
 
-            preMergeDevelopers = (List<Developer>) jobDataMap.get(OLD_DEVELOPERS_KEY);
-            Developer newDeveloper = (Developer) jobDataMap.get(NEW_DEVELOPER_KEY);
-            Exception mergeException = null;
+            preJoinDevelopers = (List<Developer>) jobDataMap.get(JOINING_DEVELOPERS);
+            Developer developerToJoin = (Developer) jobDataMap.get(DEVELOPER_TO_JOIN);
+            Exception joinException = null;
             try {
-                confirmDevelopersExistBeforeMerge();
-                //merge within transaction so changes will be rolled back
-                postMergeDeveloper = mergeManager.merge(preMergeDevelopers, newDeveloper);
+                confirmDevelopersExistBeforeJoin();
+                //join within transaction so changes will be rolled back
+                joinManager.join(preJoinDevelopers, developerToJoin);
+                clearCachesRelatedToDevelopers();
             } catch  (Exception e) {
-                LOGGER.error("Error completing merge of developers '"
-                        + StringUtils.join(preMergeDevelopers.stream()
+                LOGGER.error("Error joining developers '"
+                        + StringUtils.join(preJoinDevelopers.stream()
                             .map(Developer::getName)
                             .collect(Collectors.toList()), ",")
-                        + "' to new developer '"
-                        + newDeveloper.getName() + "'.", e);
-                mergeException = e;
-            }
-
-            if (postMergeDeveloper != null) {
-                clearCachesRelatedToDevelopers();
+                        + "' to developer '"
+                        + developerToJoin.getName() + "'.", e);
+                joinException = e;
             }
 
             //send email about success/failure of job
@@ -101,8 +101,7 @@ public class MergeDeveloperJob implements Job {
                 List<String> recipients = new ArrayList<String>();
                 recipients.add(user.getEmail());
                 try {
-                    sendJobCompletionEmails(postMergeDeveloper != null ? postMergeDeveloper : newDeveloper,
-                            preMergeDevelopers, mergeException, recipients);
+                    sendJobCompletionEmails(developerToJoin, preJoinDevelopers, joinException, recipients);
                 } catch (IOException e) {
                     LOGGER.error(e);
                 }
@@ -111,24 +110,24 @@ public class MergeDeveloperJob implements Job {
                     + " does not have a configured email address so no email will be sent.");
             }
         }
-        LOGGER.info("********* Completed the Merge Developer job. *********");
+        LOGGER.info("********* Completed the Join Developer job. *********");
     }
 
     private void setSecurityContext(UserDTO user) {
-        JWTAuthenticatedUser mergeUser = new JWTAuthenticatedUser();
-        mergeUser.setFullName(user.getFullName());
-        mergeUser.setId(user.getId());
-        mergeUser.setFriendlyName(user.getFriendlyName());
-        mergeUser.setSubjectName(user.getUsername());
-        mergeUser.getPermissions().add(user.getPermission().getGrantedPermission());
+        JWTAuthenticatedUser joinUser = new JWTAuthenticatedUser();
+        joinUser.setFullName(user.getFullName());
+        joinUser.setId(user.getId());
+        joinUser.setFriendlyName(user.getFriendlyName());
+        joinUser.setSubjectName(user.getUsername());
+        joinUser.getPermissions().add(user.getPermission().getGrantedPermission());
 
-        SecurityContextHolder.getContext().setAuthentication(mergeUser);
+        SecurityContextHolder.getContext().setAuthentication(joinUser);
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
-    private void confirmDevelopersExistBeforeMerge() throws EntityRetrievalException {
-        List<Long> preMergeDeveloperIds = preMergeDevelopers.stream().map(dev -> dev.getId()).collect(Collectors.toList());
-        for (Long developerId : preMergeDeveloperIds) {
+    private void confirmDevelopersExistBeforeJoin() throws EntityRetrievalException {
+        List<Long> preJoinDeveloperIds = preJoinDevelopers.stream().map(dev -> dev.getId()).collect(Collectors.toList());
+        for (Long developerId : preJoinDeveloperIds) {
             devDao.getById(developerId);
         }
     }
@@ -143,19 +142,19 @@ public class MergeDeveloperJob implements Job {
         CacheManager.getInstance().getCache(CacheNames.GET_DECERTIFIED_DEVELOPERS).removeAll();
     }
 
-    private void sendJobCompletionEmails(Developer newDeveloper, List<Developer> oldDevelopers,
-            Exception mergeException, List<String> recipients) throws IOException {
+    private void sendJobCompletionEmails(Developer developerJoined, List<Developer> developersJoining,
+            Exception joinException, List<String> recipients) throws IOException {
 
-        String subject = getSubject(mergeException == null);
+        String subject = getSubject(joinException == null);
         String htmlMessage = "";
-        if (mergeException == null) {
-            htmlMessage = createHtmlEmailBodySuccess(subject, newDeveloper, oldDevelopers);
+        if (joinException == null) {
+            htmlMessage = createHtmlEmailBodySuccess(subject, developerJoined, developersJoining);
         } else {
             String[] errorEmailRecipients = internalErrorEmailRecipients.split(",");
             for (int i = 0; i < errorEmailRecipients.length; i++) {
                 recipients.add(errorEmailRecipients[i].trim());
             }
-            htmlMessage = createHtmlEmailBodyFailure(subject, oldDevelopers, mergeException);
+            htmlMessage = createHtmlEmailBodyFailure(subject, developerJoined, developersJoining, joinException);
         }
 
         for (String emailAddress : recipients) {
@@ -180,40 +179,43 @@ public class MergeDeveloperJob implements Job {
 
     private String getSubject(boolean success) {
         if (success) {
-            return env.getProperty("mergeDeveloper.success.emailSubject");
+            return emailSubjectSuccess;
         } else {
-            return env.getProperty("mergeDeveloper.failed.emailSubject");
+            return emailSubjectFailed;
         }
     }
 
-    private String createHtmlEmailBodySuccess(String title, Developer createdDeveloper, List<Developer> developers) {
-        String summaryText = String
-                .format("The Developer <a href=\"%s/#/organizations/developers/%d\">%s</a> has been "
-                        + "created. It was merged from the following developers: ",
-                env.getProperty("chplUrlBegin"), // root of URL
-                createdDeveloper.getId(),
-                createdDeveloper.getName());
-
-        String developerList = "<ul>";
-        for (Developer dev : developers) {
-            developerList += String.format("<li>%s</li>", dev.getName());
+    private String createHtmlEmailBodySuccess(String title, Developer developerJoined, List<Developer> developersJoining) {
+        String summaryText = "The Developers <ul>";
+        for (Developer dev : developersJoining) {
+            summaryText += String.format("<li>%s</li>", dev.getName());
         }
-        developerList += "</ul>";
+        summaryText += "</ul> have joined ";
+        summaryText += String.format("<a href=\"%s/#/organizations/developers/%d\">%s</a>",
+                chplUrlBegin, // root of URL
+                developerJoined.getId(),
+                developerJoined.getName());
 
         String htmlMessage = emailBuilder.initialize()
                 .heading(title)
                 .paragraph(null, summaryText)
-                .paragraph(null, developerList)
                 .footer(false)
                 .build();
         return htmlMessage;
     }
 
-    private String createHtmlEmailBodyFailure(String title, List<Developer> developers, Exception ex) {
+    private String createHtmlEmailBodyFailure(String title, Developer developerJoined,
+            List<Developer> developersJoining, Exception ex) {
+        String summaryText = String.format("The below developers could not join developer "
+                + "<a href=\"%s/#/organizations/developers/%d\">%s</a>",
+                chplUrlBegin, // root of URL
+                developerJoined.getId(),
+                developerJoined.getName());
+
         String developerList = "<ul>";
-        for (Developer dev : developers) {
+        for (Developer dev : developersJoining) {
             developerList += String.format("<li><a href=\"%s/#/organizations/developers/%d\">%s</a></li>",
-                    env.getProperty("chplUrlBegin"),
+                    chplUrlBegin,
                     dev.getId(),
                     dev.getName());
         }
@@ -230,9 +232,9 @@ public class MergeDeveloperJob implements Job {
 
         String htmlMessage = emailBuilder.initialize()
                 .heading(title)
-                .paragraph(null, "The below developers could not be merged into a new developer: ")
+                .paragraph(null, summaryText)
                 .paragraph(null, developerList)
-                .paragraph(null, String.format("The error was: %s", exceptionMessage))
+                .paragraph(null, String.format("Reason for failure: %s", exceptionMessage))
                 .footer(false)
                 .build();
 

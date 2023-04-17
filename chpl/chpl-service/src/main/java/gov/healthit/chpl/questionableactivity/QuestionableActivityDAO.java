@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.questionableactivity.QuestionableActivityDAO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResultDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloperDTO;
@@ -77,6 +76,7 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
             return null;
         }
 
+        toCreate.setActivityId(dto.getActivityId());
         toCreate.setActivityDate(dto.getActivityDate());
         toCreate.setBefore(dto.getBefore());
         toCreate.setAfter(dto.getAfter());
