@@ -97,7 +97,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
     private void reviewCriteriaCanHaveConformanceMethods(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.CONFORMANCE_METHOD)) {
             if (!CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
-                listing.getWarningMessages().add(msgUtil.getMessage(
+                listing.addWarningMessage(msgUtil.getMessage(
                         "listing.criteria.conformanceMethodNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
         }
@@ -138,7 +138,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
             // This code can't go in the reviewer otherwise during Test Procedure -> Conformance Method conversion
             // a default CM gets added to the listing and may make the converter think that the listing already has a CM.
             if (BooleanUtils.isFalse(certResult.getCriterion().getRemoved())) {
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.conformanceMethod.addedDefaultForCriterion",
+                listing.addWarningMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.addedDefaultForCriterion",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
                         defaultConformanceMethod.getName()));
             }
@@ -164,7 +164,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
                     conformanceMethodIter.remove();
                 } else {
                     conformanceMethodIter.remove();
-                    listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.conformanceMethod.invalidCriteriaRemoved",
+                    listing.addWarningMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.invalidCriteriaRemoved",
                             conformanceMethod.getConformanceMethod().getName(),
                             Util.formatCriteriaNumber(certResult.getCriterion())));
                 }
@@ -175,7 +175,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
                 .forEach(replacedConformanceMethodName -> {
                     CertificationResultConformanceMethod cmToAdd = conformanceMethodsToReplace.get(replacedConformanceMethodName);
                     certResult.getConformanceMethods().add(cmToAdd);
-                    listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.conformanceMethod.invalidCriteriaReplaced",
+                    listing.addWarningMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.invalidCriteriaReplaced",
                             replacedConformanceMethodName,
                             Util.formatCriteriaNumber(certResult.getCriterion()),
                             cmToAdd.getConformanceMethod().getName()));
@@ -245,7 +245,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
         }
         if (hasVersionDataWhenItIsNotAllowed(conformanceMethod)) {
             if (mayOnlyHaveConformanceMethodWithoutVersion(certResult, conformanceMethod)) {
-                listing.getWarningMessages().add(msgUtil.getMessage(
+                listing.addWarningMessage(msgUtil.getMessage(
                         "listing.criteria.conformanceMethod.unallowedConformanceMethodVersionRemoved",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
                         conformanceMethod.getConformanceMethod().getName(),
@@ -351,14 +351,14 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
                 && StringUtils.equals(conformanceMethod.getConformanceMethod().getName(), CM_F3_MUST_HAVE_GAP)) {
             if (!CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
                 certResult.getTestToolsUsed().clear();
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.conformanceMethod.f3RemovedTestTools",
+                listing.addWarningMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.f3RemovedTestTools",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
                         conformanceMethod.getConformanceMethod().getName()));
             }
 
             if (!CollectionUtils.isEmpty(certResult.getTestDataUsed())) {
                 certResult.getTestDataUsed().clear();
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.conformanceMethod.f3RemovedTestData",
+                listing.addWarningMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.f3RemovedTestData",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
                         conformanceMethod.getConformanceMethod().getName()));
             }

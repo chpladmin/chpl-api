@@ -190,7 +190,7 @@ public class MeasureReviewer implements Reviewer {
             CertifiedProductSearchDetails listing, ListingMeasure measure) {
         measure.getAssociatedCriteria().stream()
                 .filter(assocCriterion -> assocCriterion.getId() == null)
-                .forEach(assocCriterion -> listing.getWarningMessages().add(msgUtil.getMessage(
+                .forEach(assocCriterion -> listing.addWarningMessage(msgUtil.getMessage(
                         "listing.measure.invalidAssociatedCriterion",
                         measure.getMeasureType().getName(),
                         measure.getMeasure().getName(),
@@ -238,7 +238,7 @@ public class MeasureReviewer implements Reviewer {
                 if (StringUtils.isEmpty(assocCriteria)) {
                     assocCriteria = "";
                 }
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.measureNotFoundAndRemoved",
+                listing.addWarningMessage(msgUtil.getMessage("listing.measureNotFoundAndRemoved",
                         typeName, measureName, assocCriteria));
             }
         }

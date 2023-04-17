@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,9 @@ public class MeasureDuplicateReviewer {
             }
         }
         if (measureDuplicateResultsSameCriteria.duplicatesExist()) {
-            listing.getWarningMessages().addAll(getMessages(measureDuplicateResultsSameCriteria.getDuplicateList(), "listing.duplicateMeasure.sameCriteria"));
+            listing.addAllWarningMessages(getMessages(measureDuplicateResultsSameCriteria.getDuplicateList(), "listing.duplicateMeasure.sameCriteria")
+                    .stream()
+                    .collect(Collectors.toSet()));
             listing.setMeasures(measureDuplicateResultsSameCriteria.getUniqueList());
         }
 

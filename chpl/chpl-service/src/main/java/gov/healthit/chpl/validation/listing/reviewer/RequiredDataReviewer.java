@@ -30,7 +30,7 @@ public class RequiredDataReviewer extends PermissionBasedReviewer {
             listing.addBusinessErrorMessage("Certification edition is required but was not found.");
         }
         if (StringUtils.isEmpty(listing.getAcbCertificationId())) {
-            listing.getWarningMessages().add("CHPL certification ID was not found.");
+            listing.addWarningMessage("CHPL certification ID was not found.");
         }
         if (listing.getCertificationDate() == null) {
             listing.addBusinessErrorMessage("Certification date was not found.");

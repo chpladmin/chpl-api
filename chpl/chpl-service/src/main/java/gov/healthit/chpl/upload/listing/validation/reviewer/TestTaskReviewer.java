@@ -173,7 +173,7 @@ public class TestTaskReviewer {
 
     private void reviewTaskCriteria(CertifiedProductSearchDetails listing, TestTask testTask) {
         if (CollectionUtils.isEmpty(testTask.getCriteria())) {
-            listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingTestTaskCriteria", formatTaskRef(testTask)));
+            listing.addWarningMessage(msgUtil.getMessage("listing.criteria.missingTestTaskCriteria", formatTaskRef(testTask)));
         }
     }
 
@@ -229,7 +229,7 @@ public class TestTaskReviewer {
             } catch (NumberFormatException ex) {
                 try {
                     int val = Math.round(Float.valueOf(testTask.getTaskPathDeviationObservedStr()));
-                    listing.getWarningMessages().add(
+                    listing.addWarningMessage(
                             msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
                                     formatTaskRef(testTask), "Task Path Deviation Observed",
                                     testTask.getTaskPathDeviationObservedStr(), String.valueOf(val)));
@@ -254,7 +254,7 @@ public class TestTaskReviewer {
             } catch (NumberFormatException ex) {
                 try {
                     int val = Math.round(Float.valueOf(testTask.getTaskPathDeviationOptimalStr()));
-                    listing.getWarningMessages().add(
+                    listing.addWarningMessage(
                             msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
                                     formatTaskRef(testTask), "Task Path Deviation Optimal",
                                     testTask.getTaskPathDeviationOptimalStr(), String.valueOf(val)));
@@ -278,7 +278,7 @@ public class TestTaskReviewer {
             } catch (NumberFormatException ex) {
                 try {
                     int val = Math.round(Float.valueOf(testTask.getTaskTimeAvgStr()));
-                    listing.getWarningMessages().add(
+                    listing.addWarningMessage(
                             msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
                                     formatTaskRef(testTask), "Task Time Average",
                                     testTask.getTaskTimeAvgStr(), String.valueOf(val)));
@@ -302,7 +302,7 @@ public class TestTaskReviewer {
             } catch (NumberFormatException ex) {
                 try {
                     int val = Math.round(Float.valueOf(testTask.getTaskTimeStddevStr()));
-                    listing.getWarningMessages().add(
+                    listing.addWarningMessage(
                             msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
                                     formatTaskRef(testTask), "Task Time Standard Deviation",
                                     testTask.getTaskTimeStddevStr(), String.valueOf(val)));
@@ -326,7 +326,7 @@ public class TestTaskReviewer {
             } catch (NumberFormatException ex) {
                 try {
                     int val = Math.round(Float.valueOf(testTask.getTaskTimeDeviationObservedAvgStr()));
-                    listing.getWarningMessages().add(
+                    listing.addWarningMessage(
                             msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
                                     formatTaskRef(testTask), "Task Time Deviation Observed Average",
                                     testTask.getTaskTimeDeviationObservedAvgStr(), String.valueOf(val)));
@@ -350,7 +350,7 @@ public class TestTaskReviewer {
             } catch (NumberFormatException ex) {
                 try {
                     int val = Math.round(Float.valueOf(testTask.getTaskTimeDeviationOptimalAvgStr()));
-                    listing.getWarningMessages().add(
+                    listing.addWarningMessage(
                             msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
                                     formatTaskRef(testTask), "Task Time Deviation Optimal Average",
                                     testTask.getTaskTimeDeviationOptimalAvgStr(), String.valueOf(val)));

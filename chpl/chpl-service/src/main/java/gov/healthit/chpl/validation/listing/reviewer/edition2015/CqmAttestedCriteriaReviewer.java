@@ -58,7 +58,7 @@ public class CqmAttestedCriteriaReviewer implements Reviewer {
     private void removeAssociatedCriterion(CQMResultDetails cqm, CQMResultCertification cqmCriterionToRemove,
             CertifiedProductSearchDetails listing) {
         cqm.getCriteria().remove(cqmCriterionToRemove);
-        listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.removedCriteriaForCqm",
+        listing.addWarningMessage(msgUtil.getMessage("listing.criteria.removedCriteriaForCqm",
                 cqmCriterionToRemove.getCertificationNumber(),
                 cqm.getCmsId()));
     }

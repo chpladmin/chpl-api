@@ -163,7 +163,7 @@ public class CertificationResultReviewer {
             }
         } else if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.GAP)) {
             if (certResult.isGap() != null | !ObjectUtils.isEmpty(certResult.getGapStr())) {
-                listing.getWarningMessages().add(
+                listing.addWarningMessage(
                         msgUtil.getMessage("listing.criteria.gapNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setGap(null);
@@ -194,7 +194,7 @@ public class CertificationResultReviewer {
         } else if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.ATTESTATION_ANSWER)) {
             if (!ObjectUtils.isEmpty(certResult.getAttestationAnswer())
                     || !ObjectUtils.isEmpty(certResult.getAttestationAnswerStr())) {
-                listing.getWarningMessages().add(
+                listing.addWarningMessage(
                         msgUtil.getMessage("listing.criteria.attestationAnswerNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setAttestationAnswer(null);
@@ -208,7 +208,7 @@ public class CertificationResultReviewer {
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         } else if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.API_DOCUMENTATION)) {
             if (!ObjectUtils.isEmpty(certResult.getApiDocumentation())) {
-                listing.getWarningMessages().add(
+                listing.addWarningMessage(
                         msgUtil.getMessage("listing.criteria.apiDocumentationNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setApiDocumentation(null);
@@ -222,7 +222,7 @@ public class CertificationResultReviewer {
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         } else if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.EXPORT_DOCUMENTATION)) {
             if (!ObjectUtils.isEmpty(certResult.getExportDocumentation())) {
-                listing.getWarningMessages().add(
+                listing.addWarningMessage(
                         msgUtil.getMessage("listing.criteria.exportDocumentationNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setExportDocumentation(null);
@@ -238,12 +238,12 @@ public class CertificationResultReviewer {
         } else if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.USE_CASES)
                 && !ObjectUtils.isEmpty(certResult.getUseCases())
                 && (certResult.getAttestationAnswer() == null || certResult.getAttestationAnswer().equals(Boolean.FALSE))) {
-            listing.getWarningMessages().add(
+            listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.useCasesWithoutAttestation",
                             Util.formatCriteriaNumber(certResult.getCriterion())));
         } else if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.USE_CASES)) {
             if (!ObjectUtils.isEmpty(certResult.getUseCases())) {
-                listing.getWarningMessages().add(
+                listing.addWarningMessage(
                         msgUtil.getMessage("listing.criteria.useCasesNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setUseCases(null);
@@ -257,7 +257,7 @@ public class CertificationResultReviewer {
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         } else if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.SERVICE_BASE_URL_LIST)) {
             if (!ObjectUtils.isEmpty(certResult.getServiceBaseUrlList())) {
-                listing.getWarningMessages().add(
+                listing.addWarningMessage(
                         msgUtil.getMessage("listing.criteria.serviceBaseUrlListNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setServiceBaseUrlList(null);

@@ -192,8 +192,7 @@ public class ChangeRequestManager {
         ChangeRequest crFromDb = getChangeRequest(cr.getId());
 
         ChangeRequestValidationContext crValidationContext = getNewValidationContext(cr, crFromDb);
-        ValidationException validationException = new ValidationException();
-        validationException.setErrorMessages(Set.copyOf(crValidationService.validate(crValidationContext)));
+        ValidationException validationException = new ValidationException(crValidationService.validate(crValidationContext));
         if (validationException.getErrorMessages().size() > 0) {
             throw validationException;
         }
@@ -279,8 +278,7 @@ public class ChangeRequestManager {
 
 
         ChangeRequestValidationContext crValidationContext = getNewValidationContext(cr, null);
-        ValidationException validationException = new ValidationException();
-        validationException.getErrorMessages().addAll(crValidationService.validate(crValidationContext));
+        ValidationException validationException = new ValidationException(crValidationService.validate(crValidationContext));
         if (validationException.getErrorMessages().size() > 0) {
             throw validationException;
         }

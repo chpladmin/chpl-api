@@ -69,7 +69,7 @@ public class SvapReviewer implements ComparisonReviewer {
                                 crs.getRegulatoryTextCitation(), cr.getCriterion().getNumber()));
                     }
                     if (isSvapAddedAndMarkedAsReplaced(crs, svapCriteriaMap)) {
-                        updatedListing.getWarningMessages().add(errorMessageUtil.getMessage("listing.criteria.svap.replaced",
+                        updatedListing.addWarningMessage(errorMessageUtil.getMessage("listing.criteria.svap.replaced",
                                 crs.getRegulatoryTextCitation(), cr.getCriterion().getNumber()));
                     }
                 }

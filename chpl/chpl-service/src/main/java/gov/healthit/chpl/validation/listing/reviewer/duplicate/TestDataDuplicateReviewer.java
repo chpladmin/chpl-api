@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +37,10 @@ public class TestDataDuplicateReviewer {
             }
         }
         if (testDataDuplicateResults.duplicatesExist()) {
-            listing.getWarningMessages().addAll(
+            listing.addAllWarningMessages(
                     getWarnings(testDataDuplicateResults.getDuplicateList(),
-                            Util.formatCriteriaNumber(certificationResult.getCriterion())));
+                            Util.formatCriteriaNumber(certificationResult.getCriterion())).stream()
+                    .collect(Collectors.toSet()));
             certificationResult.setTestDataUsed(testDataDuplicateResults.getUniqueList());
         }
 

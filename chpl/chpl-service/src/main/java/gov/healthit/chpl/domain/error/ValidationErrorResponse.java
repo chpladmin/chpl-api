@@ -1,8 +1,8 @@
 package gov.healthit.chpl.domain.error;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
+
+import org.eclipse.collections.api.set.sorted.ImmutableSortedSet;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,15 +16,8 @@ import lombok.NoArgsConstructor;
 public class ValidationErrorResponse implements Serializable {
     private static final long serialVersionUID = -2186304674032903240L;
 
-    @Builder.Default
-    private Collection<String> errorMessages = new ArrayList<String>();
-
-    @Builder.Default
-    private Collection<String> businessErrorMessages = new ArrayList<String>();
-
-    @Builder.Default
-    private Collection<String> dataErrorMessages = new ArrayList<String>();
-
-    @Builder.Default
-    private Collection<String> warningMessages = new ArrayList<String>();
+    private ImmutableSortedSet<String> errorMessages;
+    private ImmutableSortedSet<String> businessErrorMessages;
+    private ImmutableSortedSet<String> dataErrorMessages;
+    private ImmutableSortedSet<String> warningMessages;
 }

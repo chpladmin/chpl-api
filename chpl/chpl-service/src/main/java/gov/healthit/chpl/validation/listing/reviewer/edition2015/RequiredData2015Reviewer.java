@@ -229,7 +229,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 } else if (certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.USE_CASES)
                         && !StringUtils.isEmpty(cert.getUseCases())
                         && (cert.getAttestationAnswer() == null || cert.getAttestationAnswer().equals(Boolean.FALSE))) {
-                    listing.getWarningMessages().add(
+                    listing.addWarningMessage(
                             msgUtil.getMessage("listing.criteria.useCasesWithoutAttestation",
                                     Util.formatCriteriaNumber(cert.getCriterion())));
                 }
@@ -262,7 +262,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                         if (crTestData.getTestData() == null
                                 || (crTestData.getTestData() != null && crTestData.getTestData().getId() == null
                                         && StringUtils.isEmpty(crTestData.getTestData().getName()))) {
-                            listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingTestDataNameReplaced",
+                            listing.addWarningMessage(msgUtil.getMessage("listing.criteria.missingTestDataNameReplaced",
                                     Util.formatCriteriaNumber(cert.getCriterion()), TestDataDTO.DEFAULT_TEST_DATA));
                             TestDataDTO foundTestData = testDataDao.getByCriterionAndValue(cert.getCriterion().getId(),
                                     TestDataDTO.DEFAULT_TEST_DATA);
@@ -273,8 +273,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             TestDataDTO foundTestData = testDataDao.getByCriterionAndValue(cert.getCriterion().getId(),
                                     crTestData.getTestData().getName());
                             if (foundTestData == null || foundTestData.getId() == null) {
-                                listing.getWarningMessages()
-                                        .add(msgUtil.getMessage("listing.criteria.badTestDataName",
+                                listing.addWarningMessage(msgUtil.getMessage("listing.criteria.badTestDataName",
                                                 crTestData.getTestData().getName(), Util.formatCriteriaNumber(cert.getCriterion()),
                                                 TestDataDTO.DEFAULT_TEST_DATA));
                                 foundTestData = testDataDao.getByCriterionAndValue(cert.getCriterion().getId(),

@@ -71,7 +71,7 @@ public class UcdProcessReviewer implements Reviewer {
 
                 ucdProcessesWithoutFuzzyMatchesOrIds.stream()
                         .filter(ucdProc -> doesUcdProcessHaveAnyNonRemovedCriteria(ucdProc))
-                        .forEach(ucdProcWithoutId -> listing.getWarningMessages().add(
+                        .forEach(ucdProcWithoutId -> listing.addWarningMessage(
                                 msgUtil.getMessage("listing.criteria.ucdProcessNotFoundAndRemoved",
                                         ucdProcWithoutId.getName(),
                                         ucdProcWithoutId.getCriteria().stream()
@@ -154,7 +154,7 @@ public class UcdProcessReviewer implements Reviewer {
                     Util.formatCriteriaNumber(criterion)));
         }
     }
-    
+
     private boolean doesUcdProcessListContainCriterion(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
         return listing.getSed().getUcdProcesses().stream()
                 .flatMap(ucdProcess -> ucdProcess.getCriteria().stream())
@@ -179,7 +179,7 @@ public class UcdProcessReviewer implements Reviewer {
     private void addFuzzyMatchWarning(CertifiedProductSearchDetails listing, CertifiedProductUcdProcess ucdProcess) {
         String warningMsg = msgUtil.getMessage("listing.fuzzyMatch", FuzzyType.UCD_PROCESS.fuzzyType(),
                 ucdProcess.getUserEnteredName(), ucdProcess.getName());
-        listing.getWarningMessages().add(warningMsg);
+        listing.addWarningMessage(warningMsg);
     }
 
 }

@@ -56,8 +56,8 @@ public class ListingDetailsNormalizer {
         if (!listing.getErrorMessages().isEmpty()) {
             listing.clearAllErrorMessages();
         }
-        if (CollectionUtils.isNotEmpty(listing.getWarningMessages())) {
-            listing.getWarningMessages().clear();
+        if (CollectionUtils.isNotEmpty(listing.getWarningMessages().castToCollection())) {
+            listing.clearAllWarningMessages();;
         }
 
         this.editionNormalizer.normalize(listing);

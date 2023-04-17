@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,9 @@ public class PromotingInteroperabilityUserCountReviewer {
             }
         }
         if (promotingInteroperabilityUserDuplicateResults.duplicatesExist()) {
-            listing.getWarningMessages().addAll(getWarnings(promotingInteroperabilityUserDuplicateResults.getDuplicateList()));
+            listing.addAllWarningMessages(
+                    getWarnings(promotingInteroperabilityUserDuplicateResults.getDuplicateList()).stream()
+                    .collect(Collectors.toSet()));
             listing.setPromotingInteroperabilityUserHistory(promotingInteroperabilityUserDuplicateResults.getUniqueList());
         }
     }

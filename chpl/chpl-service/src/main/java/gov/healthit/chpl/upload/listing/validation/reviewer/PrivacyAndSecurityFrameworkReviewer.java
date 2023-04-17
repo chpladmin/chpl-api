@@ -44,7 +44,7 @@ public class PrivacyAndSecurityFrameworkReviewer {
     private void reviewCriteriaCanHavePrivacyAndSecurity(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.PRIVACY_SECURITY)) {
             if (!StringUtils.isEmpty(certResult.getPrivacySecurityFramework())) {
-                listing.getWarningMessages().add(msgUtil.getMessage(
+                listing.addWarningMessage(msgUtil.getMessage(
                         "listing.criteria.privacyAndSecurityFrameworkNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setPrivacySecurityFramework(null);

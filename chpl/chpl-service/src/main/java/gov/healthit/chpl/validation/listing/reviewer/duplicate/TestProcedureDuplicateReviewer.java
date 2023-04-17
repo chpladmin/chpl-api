@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,9 +38,10 @@ public class TestProcedureDuplicateReviewer {
             }
         }
         if (testProcedureDuplicateResults.duplicatesExist()) {
-            listing.getWarningMessages().addAll(
+            listing.addAllWarningMessages(
                     getWarnings(testProcedureDuplicateResults.getDuplicateList(),
-                            Util.formatCriteriaNumber(certificationResult.getCriterion())));
+                            Util.formatCriteriaNumber(certificationResult.getCriterion())).stream()
+                    .collect(Collectors.toSet()));
             certificationResult.setTestProcedures(testProcedureDuplicateResults.getUniqueList());
         }
 

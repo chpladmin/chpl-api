@@ -39,7 +39,7 @@ public class TestStandardRemovalReviewer extends PermissionBasedReviewer {
         if ((certResult.getOptionalStandards() != null && certResult.getOptionalStandards().size() > 0) || isListing2015Edition(listing)) {
             addBusinessCriterionError(listing, certResult, message);
         } else {
-            listing.getWarningMessages().add(message);
+            listing.addWarningMessage(message);
         }
     }
 

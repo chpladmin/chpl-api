@@ -62,7 +62,7 @@ public class TestToolReviewer {
     private void reviewCriteriaCanHaveTestToolData(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.TEST_TOOLS_USED)) {
             if (!CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
-                listing.getWarningMessages().add(msgUtil.getMessage(
+                listing.addWarningMessage(msgUtil.getMessage(
                         "listing.criteria.testToolsNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setTestToolsUsed(null);
@@ -84,7 +84,7 @@ public class TestToolReviewer {
             CertificationResultTestTool testTool = testToolIter.next();
             if (testTool.getTestToolId() == null) {
                 testToolIter.remove();
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.testToolNotFoundAndRemoved",
+                listing.addWarningMessage(msgUtil.getMessage("listing.criteria.testToolNotFoundAndRemoved",
                         Util.formatCriteriaNumber(certResult.getCriterion()), testTool.getTestToolName()));
             }
         }

@@ -1669,7 +1669,7 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     private boolean doWarningMessagesExist(CertifiedProductSearchDetails listing) {
-        return !CollectionUtils.isEmpty(listing.getWarningMessages());
+        return !CollectionUtils.isEmpty(listing.getWarningMessages().castToCollection());
     }
 
     private boolean shouldValidationExpcetionBeThrown(CertifiedProductSearchDetails listing, boolean acknowledgeBusinessErrors, boolean acknowledgeWarnings) {

@@ -42,7 +42,7 @@ public class QmsStandardReviewer implements Reviewer {
                 qmsStandards.removeAll(qmsStandardsWithoutIds);
 
                 qmsStandardsWithoutIds.stream()
-                        .forEach(qmsStdWithoutId -> listing.getWarningMessages().add(
+                        .forEach(qmsStdWithoutId -> listing.addWarningMessage(
                                 msgUtil.getMessage("listing.qmsStandardNotFoundAndRemoved",
                                         qmsStdWithoutId.getQmsStandardName() == null ? "" : qmsStdWithoutId.getQmsStandardName())));
             }
@@ -113,6 +113,6 @@ public class QmsStandardReviewer implements Reviewer {
     private void addFuzzyMatchWarning(CertifiedProductSearchDetails listing, CertifiedProductQmsStandard qmsStandard) {
         String warningMsg = msgUtil.getMessage("listing.fuzzyMatch", FuzzyType.QMS_STANDARD.fuzzyType(),
                 qmsStandard.getUserEnteredQmsStandardName(), qmsStandard.getQmsStandardName());
-        listing.getWarningMessages().add(warningMsg);
+        listing.addWarningMessage(warningMsg);
     }
 }

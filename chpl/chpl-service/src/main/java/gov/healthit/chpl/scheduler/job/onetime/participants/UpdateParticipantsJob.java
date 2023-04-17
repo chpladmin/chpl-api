@@ -166,7 +166,7 @@ public class UpdateParticipantsJob implements Job {
         }
 
         LOGGER.info("\tWarnings for listing: " + listing.getId());
-        if (CollectionUtils.isEmpty(listing.getWarningMessages())) {
+        if (CollectionUtils.isEmpty(listing.getWarningMessages().castToCollection())) {
             LOGGER.info("\t0 warnings.");
         } else {
             listing.getWarningMessages().stream()

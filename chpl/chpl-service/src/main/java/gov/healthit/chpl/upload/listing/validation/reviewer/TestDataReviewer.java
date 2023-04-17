@@ -57,7 +57,7 @@ public class TestDataReviewer {
     private void reviewCriteriaCanHaveTestData(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.TEST_DATA)) {
             if (!CollectionUtils.isEmpty(certResult.getTestDataUsed())) {
-                listing.getWarningMessages().add(msgUtil.getMessage(
+                listing.addWarningMessage(msgUtil.getMessage(
                         "listing.criteria.testDataNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setTestDataUsed(null);
@@ -80,7 +80,7 @@ public class TestDataReviewer {
             if (testData.getTestData() != null && testData.getTestData().getId() == null
                     && !StringUtils.isEmpty(testData.getTestData().getName())) {
                 testDataIter.remove();
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.invalidTestDataRemoved",
+                listing.addWarningMessage(msgUtil.getMessage("listing.criteria.invalidTestDataRemoved",
                         testData.getTestData().getName(),
                         Util.formatCriteriaNumber(certResult.getCriterion())));
             }

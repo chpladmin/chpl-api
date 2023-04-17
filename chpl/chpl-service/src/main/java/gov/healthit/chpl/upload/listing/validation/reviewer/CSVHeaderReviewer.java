@@ -40,7 +40,7 @@ public class CSVHeaderReviewer {
     private void reviewUnrecognizedHeadings(CertifiedProductSearchDetails listing, CSVRecord heading) {
         heading.forEach(headingVal -> {
             if (!StringUtils.isEmpty(headingVal) && Headings.getHeading(headingVal) == null) {
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.upload.unrecognizedHeading", headingVal));
+                listing.addWarningMessage(msgUtil.getMessage("listing.upload.unrecognizedHeading", headingVal));
             }
         });
     }

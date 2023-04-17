@@ -114,7 +114,7 @@ public class TestParticipantReviewer {
             } catch (NumberFormatException ex) {
                 try {
                     int val = Math.round(Float.valueOf(testParticipant.getProfessionalExperienceMonthsStr()));
-                    listing.getWarningMessages().add(
+                    listing.addWarningMessage(
                             msgUtil.getMessage("listing.criteria.roundedParticipantNumber",
                                     formatParticipantRef(testParticipant), "Professional Experience Months",
                                     testParticipant.getProfessionalExperienceMonthsStr(), String.valueOf(val)));
@@ -138,7 +138,7 @@ public class TestParticipantReviewer {
             } catch (NumberFormatException ex) {
                 try {
                     int val = Math.round(Float.valueOf(testParticipant.getProductExperienceMonthsStr()));
-                    listing.getWarningMessages().add(
+                    listing.addWarningMessage(
                             msgUtil.getMessage("listing.criteria.roundedParticipantNumber",
                                     formatParticipantRef(testParticipant), "Product Experience Months",
                                     testParticipant.getProductExperienceMonthsStr(), String.valueOf(val)));
@@ -162,7 +162,7 @@ public class TestParticipantReviewer {
             } catch (NumberFormatException ex) {
                 try {
                     int val = Math.round(Float.valueOf(testParticipant.getComputerExperienceMonthsStr()));
-                    listing.getWarningMessages().add(
+                    listing.addWarningMessage(
                             msgUtil.getMessage("listing.criteria.roundedParticipantNumber",
                                     formatParticipantRef(testParticipant), "Computer Experience Months",
                                     testParticipant.getComputerExperienceMonthsStr(), String.valueOf(val)));

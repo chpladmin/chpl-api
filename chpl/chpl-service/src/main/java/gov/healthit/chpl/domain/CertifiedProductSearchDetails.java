@@ -580,12 +580,8 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.lastModifiedDate = lastModifiedDate;
     }
 
-    public Set<String> getWarningMessages() {
-        return warningMessages;
-    }
-
-    public void setWarningMessages(Set<String> warningMessages) {
-        this.warningMessages = warningMessages;
+    public ImmutableSortedSet<String> getWarningMessages() {
+        return SortedSets.immutable.withAll(warningMessages);
     }
 
     public ImmutableSortedSet<String> getErrorMessages() {
@@ -613,6 +609,10 @@ public class CertifiedProductSearchDetails implements Serializable {
         businessErrorMessages.add(errorMessage);
     }
 
+    public void addWarningMessage(String warningMessage) {
+        warningMessages.add(warningMessage);
+    }
+
     public void addAllDataErrorMessages(Set<String> errorMessages) {
         this.errorMessages.addAll(errorMessages);
         dataErrorMessages.addAll(errorMessages);
@@ -623,10 +623,18 @@ public class CertifiedProductSearchDetails implements Serializable {
         businessErrorMessages.addAll(errorMessages);
     }
 
+    public void addAllWarningMessages(Set<String> warningMessages) {
+        this.warningMessages.addAll(errorMessages);
+    }
+
     public void clearAllErrorMessages() {
         errorMessages.clear();
         businessErrorMessages.clear();
         dataErrorMessages.clear();
+    }
+
+    public void clearAllWarningMessages() {
+        warningMessages.clear();
     }
 
     public InheritedCertificationStatus getIcs() {

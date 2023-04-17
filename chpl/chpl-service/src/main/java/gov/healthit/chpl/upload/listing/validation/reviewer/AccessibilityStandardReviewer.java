@@ -44,7 +44,7 @@ public class AccessibilityStandardReviewer implements Reviewer {
                 accessibilityStandards.removeAll(accessibilityStandardsWithoutIds);
 
                 accessibilityStandardsWithoutIds.stream()
-                        .forEach(accStdWithoutId -> listing.getWarningMessages().add(
+                        .forEach(accStdWithoutId -> listing.addWarningMessage(
                                 msgUtil.getMessage("listing.accessibilityStandardNotFoundAndRemoved",
                                         accStdWithoutId.getAccessibilityStandardName() == null ? "" : accStdWithoutId.getAccessibilityStandardName())));
             }
@@ -122,6 +122,6 @@ public class AccessibilityStandardReviewer implements Reviewer {
     private void addFuzzyMatchWarning(CertifiedProductSearchDetails listing, CertifiedProductAccessibilityStandard accStd) {
         String warningMsg = msgUtil.getMessage("listing.fuzzyMatch", FuzzyType.ACCESSIBILITY_STANDARD.fuzzyType(),
                 accStd.getUserEnteredAccessibilityStandardName(), accStd.getAccessibilityStandardName());
-        listing.getWarningMessages().add(warningMsg);
+        listing.addWarningMessage(warningMsg);
     }
 }

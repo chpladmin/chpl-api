@@ -342,10 +342,11 @@ public class ListingUploadManager {
         if (entity.getStatus().equals(ListingUploadStatus.CONFIRMED)
                 || entity.getStatus().equals(ListingUploadStatus.REJECTED)
                 || BooleanUtils.isTrue(entity.getDeleted())) {
-            ObjectMissingValidationException alreadyHandledEx = new ObjectMissingValidationException();
-            alreadyHandledEx.getErrorMessages()
-                    .add("This pending certified product has already been confirmed or rejected by another user.");
-            alreadyHandledEx.setObjectId(entity.getChplProductNumber());
+            ObjectMissingValidationException alreadyHandledEx =
+                    new ObjectMissingValidationException(
+                            "This pending certified product has already been confirmed or rejected by another user.",
+                            null,
+                            entity.getChplProductNumber());
             try {
                 UserDTO lastModifiedUserDto = userDao.getById(entity.getLastModifiedUser());
                 if (lastModifiedUserDto != null) {

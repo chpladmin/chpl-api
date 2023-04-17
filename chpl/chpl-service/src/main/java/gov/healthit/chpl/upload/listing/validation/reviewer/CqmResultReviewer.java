@@ -50,10 +50,10 @@ public class CqmResultReviewer implements Reviewer {
 
     private void reviewCqmResultRequiredFields(CertifiedProductSearchDetails listing, CQMResultDetails cqmResult) {
         if (isMissingCmsIdButHasOtherData(cqmResult)) {
-            listing.getWarningMessages().add(msgUtil.getMessage("listing.cqm.missingCmsId"));
+            listing.addWarningMessage(msgUtil.getMessage("listing.cqm.missingCmsId"));
         } else if (!StringUtils.isEmpty(cqmResult.getCmsId())) {
             if (isMissingCqmCriterionId(cqmResult)) {
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.cqm.invalidCmsId", cqmResult.getCmsId()));
+                listing.addWarningMessage(msgUtil.getMessage("listing.cqm.invalidCmsId", cqmResult.getCmsId()));
             } else {
                 if (CollectionUtils.isEmpty(cqmResult.getSuccessVersions())) {
                     listing.addDataErrorMessage(msgUtil.getMessage("listing.cqm.missingVersion", cqmResult.getCmsId()));

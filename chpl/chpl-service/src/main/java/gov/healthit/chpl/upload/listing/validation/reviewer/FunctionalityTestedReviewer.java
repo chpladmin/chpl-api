@@ -58,7 +58,7 @@ public class FunctionalityTestedReviewer {
     private void reviewCriteriaCanHaveFunctionalitiesTested(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
             if (!CollectionUtils.isEmpty(certResult.getFunctionalitiesTested())) {
-                listing.getWarningMessages().add(msgUtil.getMessage(
+                listing.addWarningMessage(msgUtil.getMessage(
                         "listing.criteria.functionalityTestedNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setFunctionalitiesTested(null);
@@ -82,7 +82,7 @@ public class FunctionalityTestedReviewer {
             CertificationResultFunctionalityTested functionalityTested = functionalitiesTestedIter.next();
             if (functionalityTested.getFunctionalityTestedId() == null) {
                 functionalitiesTestedIter.remove();
-                listing.getWarningMessages().add(msgUtil.getMessage(
+                listing.addWarningMessage(msgUtil.getMessage(
                         "listing.criteria.functionalityTestedNotFoundAndRemoved",
                         Util.formatCriteriaNumber(certResult.getCriterion()), functionalityTested.getName()));
             }
@@ -99,7 +99,7 @@ public class FunctionalityTestedReviewer {
             if (!isFunctionalityTestedCritierionValid(certResult.getCriterion().getId(),
                     functionalityTested.getFunctionalityTestedId())) {
                 functionalitiesTestedIter.remove();
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.functionalityTestedCriterionMismatch",
+                listing.addWarningMessage(msgUtil.getMessage("listing.criteria.functionalityTestedCriterionMismatch",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
                         functionalityTested.getName(),
                         getDelimitedListOfValidCriteriaNumbers(functionalityTested),

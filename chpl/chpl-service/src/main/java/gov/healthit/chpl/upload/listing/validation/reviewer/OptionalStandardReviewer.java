@@ -68,7 +68,7 @@ public class OptionalStandardReviewer implements Reviewer {
     private void reviewCriteriaCanHaveOptionalStandards(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.OPTIONAL_STANDARD)) {
             if (!CollectionUtils.isEmpty(certResult.getOptionalStandards())) {
-                listing.getWarningMessages().add(msgUtil.getMessage(
+                listing.addWarningMessage(msgUtil.getMessage(
                         "listing.criteria.optionalStandardsNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
                 certResult.setOptionalStandards(null);
             }

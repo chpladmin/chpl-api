@@ -76,7 +76,7 @@ public class TestToolReviewer extends PermissionBasedReviewer {
             }
 
             if (isTestToolRetired(tt.get())) {
-                listing.getWarningMessages().add(msgUtil.getMessage(
+                listing.addWarningMessage(msgUtil.getMessage(
                         "listing.criteria.retiredTestToolNotAllowed",
                         testTool.getTestToolName(),
                         Util.formatCriteriaNumber(cert.getCriterion())));

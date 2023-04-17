@@ -36,7 +36,7 @@ public abstract class PermissionBasedReviewer implements Reviewer {
 
     public void addListingWarningByPermission(CertifiedProductSearchDetails listing, String message) {
         if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
-            listing.getWarningMessages().add(message);
+            listing.addWarningMessage(message);
             // ACBs do not get any error or warning about removed criteria validation issues
         }
     }

@@ -46,7 +46,7 @@ public class AdditionalSoftwareReviewer {
     private void reviewCriteriaCanHaveAdditionalSoftware(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
             if (!CollectionUtils.isEmpty(certResult.getAdditionalSoftware())) {
-                listing.getWarningMessages().add(msgUtil.getMessage(
+                listing.addWarningMessage(msgUtil.getMessage(
                         "listing.criteria.additionalSoftwareNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setAdditionalSoftware(null);

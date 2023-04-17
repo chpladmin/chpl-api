@@ -145,7 +145,7 @@ public class ReprocessFromUploadedCsvStrategy implements ParticipantUpdateStrate
         }
 
         LOGGER.info("Warnings for listing: " + listing.getChplProductNumber() + " (confirmed listing " + listing.getId() + ")");
-        if (CollectionUtils.isEmpty(listing.getWarningMessages())) {
+        if (CollectionUtils.isEmpty(listing.getWarningMessages().castToCollection())) {
             LOGGER.info("\t0 warnings.");
         } else {
             listing.getWarningMessages().stream()
