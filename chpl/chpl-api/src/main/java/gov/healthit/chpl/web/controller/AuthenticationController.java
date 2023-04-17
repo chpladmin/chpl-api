@@ -18,6 +18,7 @@ import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.domain.auth.ImpersonationResponse;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.ResetPasswordRequest;
 import gov.healthit.chpl.domain.auth.UpdateExpiredPasswordRequest;
@@ -247,6 +248,27 @@ public class AuthenticationController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
+    @RequestMapping(value = "/impersonate", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public ImpersonationResponse impersonateUser(@RequestHeader(value = "Authorization", required = true) String userJwt,
+            @RequestParam(value = "id", required = true) Long id)
+            throws UserRetrievalException, JWTCreationException, UserManagementException,
+            JWTValidationException, MultipleUserAccountsException {
+
+        String jwt = authenticationManager.impersonateUser(id);
+        return ImpersonationResponse.builder()
+                .token(jwt)
+                .build();
+    }
+
+    @Operation(summary = "Impersonate another user.", description = "",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/auth/beta/impersonate",
+        message = "This endpoint is deprecated and will be removed. Please use /auth/impersonate.",
+        removalDate = "2023-10-31")
     @RequestMapping(value = "/beta/impersonate", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public String impersonateUserById(@RequestHeader(value = "Authorization", required = true) String userJwt,
             @RequestParam(value = "id", required = true) Long id)
@@ -264,11 +286,13 @@ public class AuthenticationController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/unimpersonate", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public String unimpersonateUser(@RequestHeader(value = "Authorization", required = true) String userJwt)
+    public ImpersonationResponse unimpersonateUser(@RequestHeader(value = "Authorization", required = true) String userJwt)
             throws JWTValidationException, JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
         User user = userConverter.getImpersonatingUser(userJwt.split(" ")[1]);
         String jwt = authenticationManager.unimpersonateUser(user);
-        String jwtJSON = "{\"token\": \"" + jwt + "\"}";
-        return jwtJSON;
+
+        return ImpersonationResponse.builder()
+                .token(jwt)
+                .build();
     }
 }
