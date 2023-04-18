@@ -221,63 +221,13 @@ public class AuthenticationController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/change-expired-password", method = RequestMethod.POST,
-            produces = "application/json; charset=utf-8")
-    public UpdatePasswordResponse changeExpiredPassword(@RequestBody UpdateExpiredPasswordRequest request)
-            throws UserRetrievalException, JWTCreationException, JWTValidationException,
-            MultipleUserAccountsException, AccountStatusException, ChplAccountEmailNotConfirmedException {
-        UpdatePasswordResponse response = new UpdatePasswordResponse();
-
-        // get the user trying to change their password
-        UserDTO currUser = authenticationManager.getUser(request.getLoginCredentials());
-        if (currUser == null) {
-            throw new UserRetrievalException("Cannot update password; bad username or password");
-        }
-
-        // check the strength of the new password
-        Strength strength = userManager.getPasswordStrength(currUser, request.getNewPassword());
-        if (strength.getScore() < UserManager.MIN_PASSWORD_STRENGTH
-                || request.getNewPassword().equals(request.getOldPassword())) {
-            LOGGER.info("Strength results: [warning: {}] [suggestions: {}] [score: {}] [worst case crack time: {}]",
-                    strength.getFeedback().getWarning(),
-                    strength.getFeedback().getSuggestions().toString(),
-                    strength.getScore(),
-                    strength.getCrackTimesDisplay().getOfflineFastHashing1e10PerSecond());
-            response.setStrength(strength);
-            response.setPasswordUpdated(false);
-            response.getSuggestions().add("New password cannot match old password");
-            return response;
-        }
-
-        // encode the old password passed in to compare
-        String currEncodedPassword = userManager.getEncodedPassword(currUser);
-        boolean oldPasswordMatches = bCryptPasswordEncoder.matches(request.getOldPassword(), currEncodedPassword);
-        if (!oldPasswordMatches) {
-            throw new UserRetrievalException("The provided old password does not match the database.");
-        } else {
-            String jwt = authenticationManager.getJWT(currUser);
-            User authenticatedUser = userConverter.getAuthenticatedUser(jwt);
-            SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
-            userManager.updateUserPasswordUnsecured(currUser, request.getNewPassword());
-            SecurityContextHolder.getContext().setAuthentication(null);
-        }
-        response.setPasswordUpdated(true);
-        return response;
-    }
-
-    @Operation(summary = "Change expired password.",
-            description = "Change a user's expired password as long as the old password "
-                    + "passed in matches what is stored in the database.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
     @Deprecated
     @DeprecatedApi(friendlyUrl = "auth/change_expired_password",
-        message = "This endpoint is deprecated and will be removed. Please use /auth/change-expired-password.",
+        message = "This endpoint is deprecated and will be removed.",
         removalDate = "2023-10-31")
     @RequestMapping(value = "/change_expired_password", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
-    public UpdatePasswordResponse changeExpiredPasswordDeprecated(@RequestBody UpdateExpiredPasswordRequest request)
+    public UpdatePasswordResponse changeExpiredPassword(@RequestBody UpdateExpiredPasswordRequest request)
             throws UserRetrievalException, JWTCreationException, JWTValidationException,
             MultipleUserAccountsException, AccountStatusException, ChplAccountEmailNotConfirmedException {
         UpdatePasswordResponse response = new UpdatePasswordResponse();
