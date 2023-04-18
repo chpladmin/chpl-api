@@ -13,7 +13,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public final class DateUtil {
     private static final String UTC_ZONE_ID = "UTC";
-    private static final String ET_ZONE_ID = "America/New_York";
+    public static final String ET_ZONE_ID = "America/New_York";
     private static final String ET_SUFFIX = " ET";
     private static final int HOUR_MAX = 23;
     private static final int MINUTE_MAX = 59;
@@ -36,11 +36,6 @@ public final class DateUtil {
     public static String formatInEasternTime(LocalDateTime date) {
         ZonedDateTime dateWithCorrectZone = date.atZone(ZoneId.of(ET_ZONE_ID));
         return DateTimeFormatter.ofPattern("MMM d, yyyy, h:mm:ss a").format(dateWithCorrectZone) + ET_SUFFIX;
-    }
-
-    public static String formatInEasternTime(LocalDateTime date, String formatPattern) {
-        ZonedDateTime dateWithCorrectZone = date.atZone(ZoneId.of(ET_ZONE_ID));
-        return DateTimeFormatter.ofPattern(formatPattern).format(dateWithCorrectZone) + ET_SUFFIX;
     }
 
     public static String formatInEasternTime(Date date) {

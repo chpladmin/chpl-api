@@ -1,6 +1,8 @@
 package gov.healthit.chpl.service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -73,7 +75,7 @@ public class UserAccountUpdateEmailer {
     }
 
     public void sendPasswordChangedEmail(UserDTO user) {
-        LocalDateTime currentDateTime = LocalDateTime.now();
+        ZonedDateTime currentDateTime = LocalDateTime.now().atZone(ZoneId.of(DateUtil.ET_ZONE_ID));
         String htmlMessage = htmlEmailBuilder.initialize()
                 .heading(passwordChangedEmailHeading)
                 .paragraph(String.format(chplEmailGreeting, user.getFullName()),
