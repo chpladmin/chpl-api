@@ -624,7 +624,7 @@ public class CertifiedProductSearchDetails implements Serializable {
     }
 
     public void addAllWarningMessages(Set<String> warningMessages) {
-        this.warningMessages.addAll(errorMessages);
+        this.warningMessages.addAll(warningMessages);
     }
 
     public void clearAllErrorMessages() {

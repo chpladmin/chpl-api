@@ -31,6 +31,7 @@ public class SvapReviewerTest {
     private static final String INVALID_SVAP_CRITERIA_ERROR_KEY = "listing.criteria.svap.invalidCriteria";
     private static final String REMOVED_SVAP_WARNING_KEY = "listing.criteria.svap.removed";
     private static final String INVALID_URL_KEY = "listing.svap.url.invalid";
+    private static final String SVAP_REPLACED = "listing.criteria.svap.replaced";
 
     private SvapDAO svapDao;
     private ValidationUtils validationUtils;
@@ -51,6 +52,8 @@ public class SvapReviewerTest {
                 .thenReturn("Test Error Message 2");
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq(INVALID_URL_KEY), ArgumentMatchers.any()))
                 .thenReturn("Test Error Message 3");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq(SVAP_REPLACED), ArgumentMatchers.any()))
+        .thenReturn("Test Error Message 4");
 
         svapReviewer = new SvapReviewer(svapDao, validationUtils, errorMessageUtil);
     }
