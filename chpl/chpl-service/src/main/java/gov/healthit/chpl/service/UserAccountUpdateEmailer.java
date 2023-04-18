@@ -1,10 +1,8 @@
 package gov.healthit.chpl.service;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,12 +73,11 @@ public class UserAccountUpdateEmailer {
     }
 
     public void sendPasswordChangedEmail(UserDTO user) {
-        ZonedDateTime currentDateTime = LocalDateTime.now().atZone(ZoneId.of(DateUtil.ET_ZONE_ID));
         String htmlMessage = htmlEmailBuilder.initialize()
                 .heading(passwordChangedEmailHeading)
                 .paragraph(String.format(chplEmailGreeting, user.getFullName()),
                         String.format(passwordChangedEmailParagraph1,
-                                DateUtil.formatInEasternTime(currentDateTime, "MMM d, yyyy 'at' h:mm a")))
+                                DateUtil.formatInEasternTime(new Date(), "MMM d, yyyy 'at' h:mm a")))
                 .paragraph(null, String.format(passwordChangedEmailParagraph2, chplUrlBegin, "NEED LINK TBD"))
                 .footer(false)
                 .build();
