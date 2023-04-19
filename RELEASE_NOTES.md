@@ -1,5 +1,21 @@
 # Release Notes
 
+## Version 40.1.0
+_19 April 2023_
+
+### Features
+* Improve g3Sed download file creation job
+* Allow developers to acquire other developers and retain their code
+* Use newer HTML email format for split developer results
+* Remove updateParticpantsJob; Add fixupQuestionableActivityJob
+* Cures Update report only includes b10 criteria
+* Adjust questionable activity for criteria added/removed
+
+### Bug Fixes
+* Make copy of cert status events to check questionable activity
+
+---
+
 ## Version 40.0.0
 _3 April 2023_
 

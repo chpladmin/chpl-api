@@ -14,9 +14,14 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
-import gov.healthit.chpl.util.Util;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
+@Getter
+@Setter
+@ToString
 @Table(name = "questionable_activity_developer")
 public class QuestionableActivityDeveloperEntity implements QuestionableActivityEntity {
 
@@ -27,6 +32,9 @@ public class QuestionableActivityDeveloperEntity implements QuestionableActivity
 
     @Column(name = "questionable_activity_trigger_id")
     private Long triggerId;
+
+    @Column(name = "activity_id")
+    private Long activityId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "questionable_activity_trigger_id", insertable = false, updatable = false)
@@ -69,134 +77,5 @@ public class QuestionableActivityDeveloperEntity implements QuestionableActivity
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Long getTriggerId() {
-        return triggerId;
-    }
-
-    public void setTriggerId(Long triggerId) {
-        this.triggerId = triggerId;
-    }
-
-    public QuestionableActivityTriggerEntity getTrigger() {
-        return trigger;
-    }
-
-    public void setTrigger(QuestionableActivityTriggerEntity trigger) {
-        this.trigger = trigger;
-    }
-
-    public String getBefore() {
-        return before;
-    }
-
-    public void setBefore(String before) {
-        this.before = before;
-    }
-
-    public String getAfter() {
-        return after;
-    }
-
-    public void setAfter(String after) {
-        this.after = after;
-    }
-
-    public Date getActivityDate() {
-        return Util.getNewDate(activityDate);
-    }
-
-    public void setActivityDate(Date activityDate) {
-        this.activityDate = Util.getNewDate(activityDate);
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public UserEntity getUser() {
-        return user;
-    }
-
-    public void setUser(UserEntity user) {
-        this.user = user;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getDeveloperId() {
-        return developerId;
-    }
-
-    public void setDeveloperId(Long developerId) {
-        this.developerId = developerId;
-    }
-
-    public DeveloperEntity getDeveloper() {
-        return developer;
-    }
-
-    public void setDeveloper(DeveloperEntity developer) {
-        this.developer = developer;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-
-    @Override
-    public String toString() {
-        return "QuestionableActivityDeveloperEntity [id=" + id + ", triggerId=" + triggerId + ", trigger=" + trigger
-                + ", developerId=" + developerId + ", developer=" + developer + ", before=" + before + ", after="
-                + after + ", reason=" + reason + ", activityDate=" + activityDate + ", userId=" + userId + ", user="
-                + user + ", deleted=" + deleted + ", lastModifiedUser=" + lastModifiedUser + ", creationDate="
-                + creationDate + ", lastModifiedDate=" + lastModifiedDate + "]";
-    }
 }
 

@@ -35,7 +35,7 @@ public class ActivityDAO extends BaseDAOImpl {
         this.userMapper = userMapper;
     }
 
-    public void create(ActivityDTO dto) throws EntityCreationException, EntityRetrievalException {
+    public Long create(ActivityDTO dto) throws EntityCreationException, EntityRetrievalException {
 
         // find the activity concept id for this concept
         Query conceptIdQuery = entityManager.createQuery("SELECT ac "
@@ -57,12 +57,14 @@ public class ActivityDAO extends BaseDAOImpl {
         entity.setActivityDate(dto.getActivityDate());
         entity.setActivityObjectConceptId(conceptId);
         entity.setActivityObjectId(dto.getActivityObjectId());
+        entity.setReason(dto.getReason());
         entity.setCreationDate(new Date());
         entity.setLastModifiedDate(new Date());
         // user may be null because when they get an API Key they do not
         // have to be logged in
         entity.setLastModifiedUser(dto.getLastModifiedUser());
         create(entity);
+        return entity.getId();
     }
 
     public ActivityDTO getById(Long id) throws EntityRetrievalException {
@@ -385,7 +387,7 @@ public class ActivityDAO extends BaseDAOImpl {
     }
 
     private ActivityDTO mapEntityToDto(ActivityEntity entity) {
-        ActivityDTO activity = new ActivityDTO(entity);
+        ActivityDTO activity = entity.toDomain();
         if (entity.getUser() != null) {
             activity.setUser(userMapper.from(entity.getUser()));
         }

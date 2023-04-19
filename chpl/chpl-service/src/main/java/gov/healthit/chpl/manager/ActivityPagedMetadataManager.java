@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
     private Integer defaultActivityPageSize;
 
     @Autowired
-    public ActivityPagedMetadataManager(ActivityDAO activityDao, AnnouncementDAO announcementDao,
+    public ActivityPagedMetadataManager(@Qualifier("activityDAO") ActivityDAO activityDao, AnnouncementDAO announcementDao,
             ActivityMetadataBuilderFactory metadataBuilderFactory, ErrorMessageUtil msgUtil,
             ResourcePermissions resourcePermissions) {
         this.activityDao = activityDao;

@@ -72,7 +72,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
 
     public Logger getLogger() {
         if (logger == null) {
-            logger = LogManager.getLogger(CertifiedProductXmlPresenter.class);
+            logger = LogManager.getLogger(CertifiedProductCsvPresenter.class);
         }
         return logger;
     }

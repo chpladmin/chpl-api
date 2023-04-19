@@ -1,4 +1,4 @@
-package gov.healthit.chpl.permissions.domain.developer;
+package gov.healthit.chpl.permissions.domains.developer;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -12,15 +12,14 @@ import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
-import gov.healthit.chpl.permissions.domains.developer.GetAllWithDeletedActionPermissions;
 
-public class GetAllWithDeletedActionPermissionsTest extends ActionPermissionsBaseTest {
+public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Mock
     private ResourcePermissions resourcePermissions;
 
     @InjectMocks
-    private GetAllWithDeletedActionPermissions permissions;
+    private CreateActionPermissions permissions;
 
     @Before
     public void setup() {

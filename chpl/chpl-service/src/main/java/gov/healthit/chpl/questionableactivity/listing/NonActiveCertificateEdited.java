@@ -13,7 +13,7 @@ public class NonActiveCertificateEdited implements ListingActivity {
 
     @Override
     public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
-        if (!newListing.isCertificateActive()) {
+        if (!origListing.isCertificateActive()) {
             return List.of(QuestionableActivityListingDTO.builder().build());
         } else {
             return null;

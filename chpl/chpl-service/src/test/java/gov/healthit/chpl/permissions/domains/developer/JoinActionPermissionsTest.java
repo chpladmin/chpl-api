@@ -1,4 +1,4 @@
-package gov.healthit.chpl.permissions.domain.developer;
+package gov.healthit.chpl.permissions.domains.developer;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -12,15 +12,14 @@ import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
-import gov.healthit.chpl.permissions.domains.developer.CreateActionPermissions;
 
-public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
+public class JoinActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Mock
     private ResourcePermissions resourcePermissions;
 
     @InjectMocks
-    private CreateActionPermissions permissions;
+    private JoinActionPermissions permissions;
 
     @Before
     public void setup() {
@@ -37,7 +36,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertTrue(permissions.hasAccess());
 
         // Not used
-        assertFalse(permissions.hasAccess(new Object()));
+        assertTrue(permissions.hasAccess(new Object()));
     }
 
     @Override
@@ -48,7 +47,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertTrue(permissions.hasAccess());
 
         // Not used
-        assertFalse(permissions.hasAccess(new Object()));
+        assertTrue(permissions.hasAccess(new Object()));
     }
 
     @Override
@@ -65,7 +64,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 
-        assertTrue(permissions.hasAccess());
+        assertFalse(permissions.hasAccess());
 
         // Not used
         assertFalse(permissions.hasAccess(new Object()));
