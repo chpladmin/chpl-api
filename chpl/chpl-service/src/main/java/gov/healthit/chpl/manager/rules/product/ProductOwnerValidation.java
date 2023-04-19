@@ -61,7 +61,7 @@ public class ProductOwnerValidation extends ValidationRule<ProductValidationCont
             return false;
         }
 
-        if (!context.isMergingOwner()) {
+        if (!context.isOwnerJoiningAnotherDeveloper()) {
             //the owner could be changing without an entry in the history
             Product existingProduct = getExistingProduct(context.getProduct().getId());
             if (ownerIsChanging(existingProduct, context.getProduct())

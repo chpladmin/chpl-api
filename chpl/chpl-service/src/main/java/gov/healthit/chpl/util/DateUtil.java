@@ -89,6 +89,13 @@ public final class DateUtil {
         return Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
     }
 
+    public static Date toDate(LocalDateTime localDateTime) {
+        if (localDateTime == null) {
+            return null;
+        }
+        return new Date(toEpochMillis(localDateTime));
+    }
+
     public static LocalDate toLocalDate(long epochMillis) {
         return Instant.ofEpochMilli(epochMillis).atZone(ZoneId.systemDefault()).toLocalDate();
     }

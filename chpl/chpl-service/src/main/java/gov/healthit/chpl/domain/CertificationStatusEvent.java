@@ -57,7 +57,7 @@ public class CertificationStatusEvent implements Serializable {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -65,7 +65,7 @@ public class CertificationStatusEvent implements Serializable {
         return eventDate;
     }
 
-    public void setEventDate(final Long eventDate) {
+    public void setEventDate(Long eventDate) {
         this.eventDate = eventDate;
     }
 
@@ -73,7 +73,7 @@ public class CertificationStatusEvent implements Serializable {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(final Long lastModifiedUser) {
+    public void setLastModifiedUser(Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -81,7 +81,7 @@ public class CertificationStatusEvent implements Serializable {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(final Long lastModifiedDate) {
+    public void setLastModifiedDate(Long lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -89,18 +89,26 @@ public class CertificationStatusEvent implements Serializable {
         return status;
     }
 
-    public void setStatus(final CertificationStatus status) {
+    public void setStatus(CertificationStatus status) {
         this.status = status;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 
     /**
      * Check to see if this CSE matches another one.
-     * 
+     *
      * @param other
      *            CSE to check against
      * @return true if the IDs match
      */
-    public boolean matches(final CertificationStatusEvent other) {
+    public boolean matches(CertificationStatusEvent other) {
         boolean result = false;
 
         if (this.getId() != null && other.getId() != null
@@ -110,11 +118,4 @@ public class CertificationStatusEvent implements Serializable {
         return result;
     }
 
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(final String reason) {
-        this.reason = reason;
-    }
 }

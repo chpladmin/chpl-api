@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ProductValidationContext {
     private Product product;
-    private boolean isMergingOwner;
+    private boolean isOwnerJoiningAnotherDeveloper;
     private ErrorMessageUtil errorMessageUtil;
 }

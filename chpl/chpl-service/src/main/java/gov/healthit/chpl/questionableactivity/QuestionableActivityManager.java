@@ -1,6 +1,5 @@
 package gov.healthit.chpl.questionableactivity;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResultDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloperDTO;
@@ -57,129 +57,119 @@ public class QuestionableActivityManager {
         triggerTypes = questionableActivityDao.getAllTriggers();
     }
 
-    public void checkDeveloperQuestionableActivity(Developer origDeveloper, Developer newDeveloper,
-            Date activityDate, Long activityUser) {
+    public void checkDeveloperQuestionableActivity(Developer origDeveloper, Developer newDeveloper, ActivityDTO activity) {
         QuestionableActivityDeveloperDTO devActivity = null;
         List<QuestionableActivityDeveloperDTO> devActivities = null;
 
         devActivity = developerQuestionableActivityProvider.checkNameUpdated(origDeveloper, newDeveloper);
         if (devActivity != null) {
-            createDeveloperActivity(devActivity, newDeveloper.getId(), activityDate,
-                    activityUser, QuestionableActivityTriggerConcept.DEVELOPER_NAME_EDITED);
+            createDeveloperActivity(devActivity, newDeveloper.getId(), activity, QuestionableActivityTriggerConcept.DEVELOPER_NAME_EDITED);
         }
 
         devActivity = developerQuestionableActivityProvider.checkCurrentStatusChanged(origDeveloper, newDeveloper);
         if (devActivity != null) {
-            createDeveloperActivity(devActivity, newDeveloper.getId(), activityDate,
-                    activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_EDITED);
+            createDeveloperActivity(devActivity, newDeveloper.getId(), activity, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_EDITED);
         }
 
         devActivities = developerQuestionableActivityProvider.checkStatusHistoryAdded(
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
         for (QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
-            createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate,
-                    activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_ADDED,
+            createDeveloperActivity(currDevActivity, newDeveloper.getId(), activity,
+                    QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_ADDED,
                     currDevActivity.getReason());
         }
 
         devActivities = developerQuestionableActivityProvider.checkStatusHistoryRemoved(
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
         for (QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
-            createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate,
-                    activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_REMOVED,
+            createDeveloperActivity(currDevActivity, newDeveloper.getId(), activity,
+                    QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_REMOVED,
                     currDevActivity.getReason());
         }
 
         devActivities = developerQuestionableActivityProvider.checkStatusHistoryItemEdited(
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
         for (QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
-            createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate,
-                    activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_EDITED,
+            createDeveloperActivity(currDevActivity, newDeveloper.getId(), activity,
+                    QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_EDITED,
                     currDevActivity.getReason());
         }
     }
 
-    public void checkProductQuestionableActivity(Product origProduct, Product newProduct,
-            Date activityDate, Long activityUser) {
+    public void checkProductQuestionableActivity(Product origProduct, Product newProduct, ActivityDTO activity) {
         QuestionableActivityProductDTO productActivity = null;
         List<QuestionableActivityProductDTO> productActivities = null;
 
         productActivity = productQuestionableActivityProvider.checkNameUpdated(origProduct, newProduct);
         if (productActivity != null) {
-            createProductActivity(productActivity, newProduct.getId(), activityDate,
-                    activityUser, QuestionableActivityTriggerConcept.PRODUCT_NAME_EDITED);
+            createProductActivity(productActivity, newProduct.getId(), activity, QuestionableActivityTriggerConcept.PRODUCT_NAME_EDITED);
         }
 
         productActivity = productQuestionableActivityProvider.checkCurrentOwnerChanged(origProduct, newProduct);
         if (productActivity != null) {
-            createProductActivity(productActivity, newProduct.getId(), activityDate,
-                    activityUser, QuestionableActivityTriggerConcept.PRODUCT_OWNER_EDITED);
+            createProductActivity(productActivity, newProduct.getId(), activity, QuestionableActivityTriggerConcept.PRODUCT_OWNER_EDITED);
         }
 
         productActivities = productQuestionableActivityProvider.checkOwnerHistoryAdded(origProduct.getOwnerHistory(),
                 newProduct.getOwnerHistory());
         for (QuestionableActivityProductDTO currProductActivity : productActivities) {
-            createProductActivity(currProductActivity, newProduct.getId(), activityDate,
-                    activityUser, QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_ADDED);
+            createProductActivity(currProductActivity, newProduct.getId(), activity, QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_ADDED);
         }
 
         productActivities = productQuestionableActivityProvider.checkOwnerHistoryRemoved(origProduct.getOwnerHistory(),
                 newProduct.getOwnerHistory());
         for (QuestionableActivityProductDTO currProductActivity : productActivities) {
-            createProductActivity(currProductActivity, newProduct.getId(), activityDate,
-                    activityUser, QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_REMOVED);
+            createProductActivity(currProductActivity, newProduct.getId(), activity, QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_REMOVED);
         }
 
         productActivities = productQuestionableActivityProvider.checkOwnerHistoryItemEdited(
                 origProduct.getOwnerHistory(), newProduct.getOwnerHistory());
         for (QuestionableActivityProductDTO currProductActivity : productActivities) {
-            createProductActivity(currProductActivity, newProduct.getId(), activityDate,
-                    activityUser, QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_EDITED);
+            createProductActivity(currProductActivity, newProduct.getId(), activity, QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_EDITED);
         }
     }
 
     public void checkVersionQuestionableActivity(ProductVersionDTO origVersion, ProductVersionDTO newVersion,
-            Date activityDate, Long activityUser) {
-        QuestionableActivityVersionDTO activity = versionQuestionableActivityProvider.checkNameUpdated(origVersion, newVersion);
-        if (activity != null) {
-            createVersionActivity(activity, origVersion.getId(), activityDate,
-                    activityUser, QuestionableActivityTriggerConcept.VERSION_NAME_EDITED);
+            ActivityDTO activity) {
+        QuestionableActivityVersionDTO versionActivity = versionQuestionableActivityProvider.checkNameUpdated(origVersion, newVersion);
+        if (versionActivity != null) {
+            createVersionActivity(versionActivity, origVersion.getId(), activity, QuestionableActivityTriggerConcept.VERSION_NAME_EDITED);
         }
     }
 
     public void checkListingQuestionableActivityOnEdit(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing,
-            Date activityDate, Long activityUser, String activityReason) {
-        listingQuestionableActivityService.processQuestionableActivity(origListing, newListing, activityDate, activityReason);
+            ActivityDTO activity, String activityReason) {
+        listingQuestionableActivityService.processQuestionableActivity(origListing, newListing, activity, activityReason);
     }
 
     public void checkCertificationResultQuestionableActivity(CertificationResult origCertResult,
-            CertificationResult newCertResult, Date activityDate, Long activityUser, String activityReason) {
+            CertificationResult newCertResult, ActivityDTO activity, String activityReason) {
         QuestionableActivityCertificationResultDTO certActivity = null;
 
         if (certResultRules.hasCertOption(origCertResult.getCriterion().getId(), CertificationResultRules.G1_SUCCESS)) {
             certActivity = certResultQuestionableActivityProvider.checkG1SuccessUpdated(origCertResult, newCertResult);
             if (certActivity != null) {
-                createCertificationActivity(certActivity, origCertResult.getId(), activityDate,
-                        activityUser, QuestionableActivityTriggerConcept.G1_SUCCESS_EDITED, activityReason);
+                createCertificationActivity(certActivity, origCertResult.getId(), activity,
+                        QuestionableActivityTriggerConcept.G1_SUCCESS_EDITED, activityReason);
             }
         }
         if (certResultRules.hasCertOption(origCertResult.getCriterion().getId(), CertificationResultRules.G2_SUCCESS)) {
             certActivity = certResultQuestionableActivityProvider.checkG2SuccessUpdated(origCertResult, newCertResult);
             if (certActivity != null) {
-                createCertificationActivity(certActivity, origCertResult.getId(), activityDate,
-                        activityUser, QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED, activityReason);
+                createCertificationActivity(certActivity, origCertResult.getId(), activity,
+                        QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED, activityReason);
             }
         }
         if (certResultRules.hasCertOption(origCertResult.getCriterion().getId(), CertificationResultRules.GAP)) {
             certActivity = certResultQuestionableActivityProvider.checkGapUpdated(origCertResult, newCertResult);
             if (certActivity != null) {
-                createCertificationActivity(certActivity, origCertResult.getId(), activityDate,
-                        activityUser, QuestionableActivityTriggerConcept.GAP_EDITED, activityReason);
+                createCertificationActivity(certActivity, origCertResult.getId(), activity,
+                        QuestionableActivityTriggerConcept.GAP_EDITED, activityReason);
             }
         }
         if (isSvapAllowedForCriteria(origCertResult)) {
             certResultQuestionableActivityProvider.checkReplacedSvapAdded(origCertResult, newCertResult).stream()
-                    .forEach(dto -> createCertificationActivity(dto, origCertResult.getId(), activityDate, activityUser,
+                    .forEach(dto -> createCertificationActivity(dto, origCertResult.getId(), activity,
                             QuestionableActivityTriggerConcept.REPLACED_SVAP_ADDED, activityReason));
         }
 
@@ -189,53 +179,56 @@ public class QuestionableActivityManager {
         return certResult.getAllowedSvaps() != null && certResult.getAllowedSvaps().size() > 0;
     }
 
-    private void createCertificationActivity(QuestionableActivityCertificationResultDTO activity,
-            Long certResultId, Date activityDate, Long activityUser, QuestionableActivityTriggerConcept trigger,
+    private void createCertificationActivity(QuestionableActivityCertificationResultDTO questionableActivity,
+            Long certResultId, ActivityDTO activity, QuestionableActivityTriggerConcept trigger,
             String activityReason) {
-        activity.setCertResultId(certResultId);
-        activity.setActivityDate(activityDate);
-        activity.setUserId(activityUser);
-        activity.setReason(activityReason);
+        questionableActivity.setActivityId(activity.getId());
+        questionableActivity.setCertResultId(certResultId);
+        questionableActivity.setActivityDate(activity.getActivityDate());
+        questionableActivity.setUserId(activity.getUser().getId());
+        questionableActivity.setReason(activityReason);
         QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
-        activity.setTriggerId(triggerDto.getId());
-        questionableActivityDao.create(activity);
+        questionableActivity.setTriggerId(triggerDto.getId());
+        questionableActivityDao.create(questionableActivity);
     }
 
-    private void createDeveloperActivity(QuestionableActivityDeveloperDTO activity, Long developerId,
-            Date activityDate, Long activityUser, QuestionableActivityTriggerConcept trigger,
-            String reason) {
-        activity.setDeveloperId(developerId);
-        activity.setActivityDate(activityDate);
-        activity.setUserId(activityUser);
-        activity.setReason(reason);
+    private void createDeveloperActivity(QuestionableActivityDeveloperDTO questionableActivity, Long developerId,
+            ActivityDTO activity, QuestionableActivityTriggerConcept trigger, String reason) {
+        questionableActivity.setActivityId(activity.getId());
+        questionableActivity.setDeveloperId(developerId);
+        questionableActivity.setActivityDate(activity.getActivityDate());
+        questionableActivity.setUserId(activity.getUser().getId());
+        questionableActivity.setReason(reason);
         QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
-        activity.setTriggerId(triggerDto.getId());
-        questionableActivityDao.create(activity);
+        questionableActivity.setTriggerId(triggerDto.getId());
+        questionableActivityDao.create(questionableActivity);
     }
 
-    private void createDeveloperActivity(QuestionableActivityDeveloperDTO activity, Long developerId,
-            Date activityDate, Long activityUser, QuestionableActivityTriggerConcept trigger) {
-        createDeveloperActivity(activity, developerId, activityDate, activityUser, trigger, null);
+    private void createDeveloperActivity(QuestionableActivityDeveloperDTO questionableActivity, Long developerId,
+            ActivityDTO activity, QuestionableActivityTriggerConcept trigger) {
+        createDeveloperActivity(questionableActivity, developerId, activity, trigger, null);
     }
 
-    private void createProductActivity(QuestionableActivityProductDTO activity, Long productId,
-            Date activityDate, Long activityUser, QuestionableActivityTriggerConcept trigger) {
-        activity.setProductId(productId);
-        activity.setActivityDate(activityDate);
-        activity.setUserId(activityUser);
+    private void createProductActivity(QuestionableActivityProductDTO questionableActivity, Long productId,
+            ActivityDTO activity, QuestionableActivityTriggerConcept trigger) {
+        questionableActivity.setActivityId(activity.getId());
+        questionableActivity.setProductId(productId);
+        questionableActivity.setActivityDate(activity.getActivityDate());
+        questionableActivity.setUserId(activity.getUser().getId());
         QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
-        activity.setTriggerId(triggerDto.getId());
-        questionableActivityDao.create(activity);
+        questionableActivity.setTriggerId(triggerDto.getId());
+        questionableActivityDao.create(questionableActivity);
     }
 
-    private void createVersionActivity(QuestionableActivityVersionDTO activity, Long versionId,
-            Date activityDate, Long activityUser, QuestionableActivityTriggerConcept trigger) {
-        activity.setVersionId(versionId);
-        activity.setActivityDate(activityDate);
-        activity.setUserId(activityUser);
+    private void createVersionActivity(QuestionableActivityVersionDTO questionableActivity, Long versionId,
+            ActivityDTO activity, QuestionableActivityTriggerConcept trigger) {
+        questionableActivity.setActivityId(activity.getId());
+        questionableActivity.setVersionId(versionId);
+        questionableActivity.setActivityDate(activity.getActivityDate());
+        questionableActivity.setUserId(activity.getUser().getId());
         QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
-        activity.setTriggerId(triggerDto.getId());
-        questionableActivityDao.create(activity);
+        questionableActivity.setTriggerId(triggerDto.getId());
+        questionableActivityDao.create(questionableActivity);
     }
 
     private QuestionableActivityTriggerDTO getTrigger(QuestionableActivityTriggerConcept trigger) {

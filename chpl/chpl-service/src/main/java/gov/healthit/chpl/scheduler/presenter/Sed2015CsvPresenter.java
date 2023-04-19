@@ -19,32 +19,49 @@ import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.service.CertificationCriterionService;
 
-public class Sed2015CsvPresenter {
-    private static final Logger LOGGER = LogManager.getLogger(Sed2015CsvPresenter.class);
+public class Sed2015CsvPresenter implements CertifiedProductPresenter, AutoCloseable {
+    private Logger logger;
+    private OutputStreamWriter writer = null;
+    private CSVPrinter csvPrinter = null;
 
-    /**
-     * Returns number of rows printed (minus the header)
-     */
-    public int presentAsFile(File file, List<CertifiedProductSearchDetails> cpList,
-            CertificationCriterionService criterionService) {
-        int numRows = 0;
-        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
-                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
-            writer.write('\ufeff');
-            csvPrinter.printRecord(generateHeaderValues());
-            for (CertifiedProductSearchDetails currListing : cpList) {
-                List<List<String>> rows = generateRows(currListing, criterionService);
-                if (rows != null) { // can return null to skip a row
-                    for (List<String> row : rows) {
-                        csvPrinter.printRecord(row);
-                        numRows++;
-                    }
-                }
+    @Override
+    public void open(File file) throws IOException {
+        getLogger().info("Opening file, initializing CSV doc.");
+        writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
+        writer.write('\ufeff');
+        csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
+        csvPrinter.printRecord(generateHeaderValues());
+        csvPrinter.flush();
+    }
+
+    @Override
+    public synchronized void add(CertifiedProductSearchDetails data) throws IOException {
+        getLogger().info("Adding CP to CSV file: " + data.getId());
+        List<List<String>> rows = generateRows(data);
+        if (rows != null) { // can return null to skip a row
+            for (List<String> row : rows) {
+                csvPrinter.printRecord(row);
             }
-        } catch (final IOException ex) {
-            LOGGER.error("Could not write file " + file.getName(), ex);
+            csvPrinter.flush();
         }
-        return numRows;
+    }
+
+    @Override
+    public void close() throws IOException {
+        getLogger().info("Closing the CSV file.");
+        csvPrinter.close();
+        writer.close();
+    }
+
+    public void setLogger(Logger logger) {
+        this.logger = logger;
+    }
+
+    public Logger getLogger() {
+        if (logger == null) {
+            logger = LogManager.getLogger(Sed2015CsvPresenter.class);
+        }
+        return logger;
     }
 
     protected List<String> generateHeaderValues() {
@@ -79,8 +96,7 @@ public class Sed2015CsvPresenter {
         return result;
     }
 
-    protected List<List<String>> generateRows(final CertifiedProductSearchDetails listing,
-            CertificationCriterionService criterionService) {
+    protected List<List<String>> generateRows(CertifiedProductSearchDetails listing) {
         if (!hasTestTasks(listing)) {
             return null;
         }
@@ -90,7 +106,7 @@ public class Sed2015CsvPresenter {
         List<List<String>> result = new ArrayList<List<String>>();
         for (TestTask testTask : listing.getSed().getTestTasks()) {
             if (testTask.getTestParticipants() == null || testTask.getTestParticipants().size() == 0) {
-                LOGGER.warn("No participants were found for listing " + listing.getChplProductNumber()
+                getLogger().warn("No participants were found for listing " + listing.getChplProductNumber()
                 + " test task ID " + testTask.getId());
             } else {
                 for (TestParticipant participant : testTask.getTestParticipants()) {
@@ -136,7 +152,7 @@ public class Sed2015CsvPresenter {
         return result;
     }
 
-    private boolean hasTestTasks(final CertifiedProductSearchDetails listing) {
+    private boolean hasTestTasks(CertifiedProductSearchDetails listing) {
         boolean result = false;
         if (listing.getSed() != null && listing.getSed().getTestTasks() != null
                 && listing.getSed().getTestTasks().size() > 0) {

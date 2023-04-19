@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import gov.healthit.chpl.activity.history.ListingActivityUtil;
@@ -23,7 +24,7 @@ public class CertificationResultActivityHistoryHelper {
     private ListingActivityUtil activityUtil;
 
     @Autowired
-    public CertificationResultActivityHistoryHelper(ActivityDAO activityDao, ListingActivityUtil activityUtil) {
+    public CertificationResultActivityHistoryHelper(@Qualifier("activityDAO") ActivityDAO activityDao, ListingActivityUtil activityUtil) {
         this.activityDao = activityDao;
         this.activityUtil = activityUtil;
     }
