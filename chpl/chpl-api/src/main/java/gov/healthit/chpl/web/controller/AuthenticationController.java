@@ -109,7 +109,7 @@ public class AuthenticationController {
     @Hidden
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/auth/keep_alive",
-            message = "This endpoint is deprecated and will be removed. Please use /auth/keep_alive.",
+            message = "This endpoint is deprecated and will be removed. Please use /auth/keep-alive.",
             removalDate = "2023-10-31")
     @RequestMapping(value = "/keep_alive", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
