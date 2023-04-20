@@ -24,12 +24,12 @@ public class UserAccountUpdateEmailer {
     private String chplUrlBegin;
     private String chplEmailGreeting;
     private String chplEmailValediction;
+    private String publicFeedbackUrl;
 
     private String passwordChangedEmailSubject;
     private String passwordChangedEmailHeading;
     private String passwordChangedEmailParagraph1;
     private String passwordChangedEmailParagraph2;
-    private String acbAtlContactUrl;
 
     private String passwordResetEmailSubject;
     private String passwordResetEmailBody;
@@ -50,7 +50,7 @@ public class UserAccountUpdateEmailer {
             @Value("${user.accountLocked.subject}") String accountLockedEmailSubject,
             @Value("${user.accountLocked.body}") String accountLockedEmailBody,
             @Value("${chplUrlBegin}") String chplUrlBegin,
-            @Value("${contact.acbatlUrl}") String acbAtlContactUrl,
+            @Value("${contact.publicUrl}") String publicFeedbackUrl,
             @Value("${chpl.email.greeting}") String chplEmailGreeting,
             @Value("${chpl.email.valediction}") String chplEmailValediction) {
         this.htmlEmailBuilder = htmlEmailBuilder;
@@ -60,7 +60,7 @@ public class UserAccountUpdateEmailer {
         this.passwordChangedEmailHeading = passwordChangedEmailHeading;
         this.passwordChangedEmailParagraph1 = passwordChangedEmailParagraph1;
         this.passwordChangedEmailParagraph2 = passwordChangedEmailParagraph2;
-        this.acbAtlContactUrl = acbAtlContactUrl;
+        this.publicFeedbackUrl = publicFeedbackUrl;
 
         this.passwordResetEmailSubject = passwordResetEmailSubject;
         this.passwordResetEmailBody = passwordResetEmailBody;
@@ -71,7 +71,7 @@ public class UserAccountUpdateEmailer {
 
         this.chplUrlBegin = chplUrlBegin;
         this.chplEmailGreeting = chplEmailGreeting;
-        this.chplEmailValediction = String.format(chplEmailValediction, acbAtlContactUrl);
+        this.chplEmailValediction = String.format(chplEmailValediction, publicFeedbackUrl);
     }
 
     public void sendPasswordChangedEmail(UserDTO user) {
@@ -80,9 +80,8 @@ public class UserAccountUpdateEmailer {
                 .paragraph(String.format(chplEmailGreeting, user.getFullName()),
                         String.format(passwordChangedEmailParagraph1,
                                 DateUtil.formatInEasternTime(new Date(), "MMM d, yyyy 'at' h:mm a")))
-                .paragraph(null, String.format(passwordChangedEmailParagraph2, chplUrlBegin,
-                        acbAtlContactUrl, acbAtlContactUrl))
-                .footer(false)
+                .paragraph(null, String.format(passwordChangedEmailParagraph2, chplUrlBegin, publicFeedbackUrl))
+                .footer(true)
                 .build();
         String[] toEmails = {
                 user.getEmail()
