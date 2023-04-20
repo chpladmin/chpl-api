@@ -17,12 +17,11 @@ import net.sf.ehcache.Element;
 
 @Component
 @Aspect
-@Log4j2
+@Log4j2(topic = "listingSearchCacheRefreshLogger")
 public class ListingSearchCacheRefreshAspect {
     private static final String REFRESHING = "refreshing";
     private static final String NEEDS_REFRESHED = "needs refreshed";
     private static final String IDLE = "idle";
-    private static final String NOT_INITIALIZED = "not initialized";
 
     private CacheManager cacheManager;
     private ListingSearchManager listingSearchManager;
