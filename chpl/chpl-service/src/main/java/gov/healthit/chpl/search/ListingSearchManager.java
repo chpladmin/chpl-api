@@ -32,17 +32,8 @@ public class ListingSearchManager {
         this.drService = drService;
     }
 
-    //@Cacheable(value = CacheNames.COLLECTIONS_SEARCH, sync = true)
     @ListingSearchCacheable
     public List<ListingSearchResult> getAllListings() {
-        //List<ListingSearchResult> results = searchDao.getListingSearchResults();
-        //LOGGER.info("Populating Direct Review fields for search");
-        //Date start = new Date();
-        //results.parallelStream()
-        //    .forEach(searchResult -> populateDirectReviews(searchResult));
-        //Date end = new Date();
-        //LOGGER.info("Completed Populating Direct Review fields  for search [ " + (end.getTime() - start.getTime()) + " ms ]");
-        //return results;
         return getAllListingsNoCache();
     }
 
