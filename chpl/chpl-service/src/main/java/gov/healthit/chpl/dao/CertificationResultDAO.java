@@ -229,18 +229,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         return entity;
     }
 
-    public List<Long> getCpIdsByCriterionId(Long criterionId) throws EntityRetrievalException {
-
-        CertificationResultEntity entity = null;
-
-        Query query = entityManager.createQuery(
-                "select certifiedProductId from CertificationResultEntity where (NOT deleted = true) AND (certification_criterion_id = :entityid) AND (success = true)");
-        query.setParameter("entityid", criterionId);
-        List<Long> result = query.getResultList();
-
-        return result;
-    }
-
     public List<CertificationResultDTO> findByCertifiedProductId(Long certifiedProductId) {
         List<CertificationResultEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
         List<CertificationResultDTO> cqmResults = new ArrayList<>();
@@ -256,16 +244,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
 
         Query query = entityManager.createQuery(
                 "from CertificationResultEntity where (NOT deleted = true) AND (certified_product_id = :entityid) ",
-                CertificationResultEntity.class);
-        query.setParameter("entityid", certifiedProductId);
-        List<CertificationResultEntity> result = query.getResultList();
-        return result;
-    }
-
-    private List<CertificationResultEntity> getEntitiesByCertifiedProductIdSED(Long certifiedProductId) {
-
-        Query query = entityManager.createQuery("from CertificationResultEntity "
-                + "where (NOT deleted = true) AND (certified_product_id = :entityid) AND sed = true and success = true ",
                 CertificationResultEntity.class);
         query.setParameter("entityid", certifiedProductId);
         List<CertificationResultEntity> result = query.getResultList();
