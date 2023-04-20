@@ -106,7 +106,7 @@ public class Surveillance implements Serializable {
     @XmlElementWrapper(name = "surveilledRequirements", nillable = true, required = false)
     @XmlElement(name = "requirement")
     @Builder.Default
-    private Set<SurveillanceRequirement> requirements = new LinkedHashSet<SurveillanceRequirement>();
+    private LinkedHashSet<SurveillanceRequirement> requirements = new LinkedHashSet<SurveillanceRequirement>();
 
     @XmlTransient
     @Builder.Default
@@ -298,11 +298,11 @@ public class Surveillance implements Serializable {
         this.randomizedSitesUsed = randomizedSitesUsed;
     }
 
-    public Set<SurveillanceRequirement> getRequirements() {
+    public LinkedHashSet<SurveillanceRequirement> getRequirements() {
         return requirements;
     }
 
-    public void setRequirements(Set<SurveillanceRequirement> requirements) {
+    public void setRequirements(LinkedHashSet<SurveillanceRequirement> requirements) {
         this.requirements = requirements;
     }
 
