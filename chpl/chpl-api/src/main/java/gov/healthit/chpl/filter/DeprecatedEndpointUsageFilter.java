@@ -94,7 +94,7 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
         Set<String> matchingUrlPatterns = requestMapping.getPatternsCondition().getPatterns();
         if (matchingUrlPatterns != null && matchingUrlPatterns.size() > 0) {
             String matchingUrlPattern = matchingUrlPatterns.iterator().next();
-            //LOGGER.warn(request.getRequestURI() + " maps to deprecated endpoint " + matchingUrlPattern + ", handler: " + handlerMethod);
+            LOGGER.warn(request.getRequestURI() + " maps to deprecated endpoint " + matchingUrlPattern + ", handler: " + handlerMethod);
             ApiKey apiKey = getApiKey(request);
             if (apiKey != null) {
                 DeprecatedApi deprecatedApiAnnotation = handlerMethod.getMethodAnnotation(DeprecatedApi.class);
@@ -118,7 +118,7 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
         Set<String> matchingUrlPatterns = requestMapping.getPatternsCondition().getPatterns();
         if (matchingUrlPatterns != null && matchingUrlPatterns.size() > 0) {
             String matchingUrlPattern = matchingUrlPatterns.iterator().next();
-            //LOGGER.debug(request.getRequestURI() + " maps to endpoint with deprecated response fields " + matchingUrlPattern + ", handler: " + handlerMethod);
+            LOGGER.debug(request.getRequestURI() + " maps to endpoint with deprecated response fields " + matchingUrlPattern + ", handler: " + handlerMethod);
             ApiKey apiKey = getApiKey(request);
             if (apiKey != null) {
                 DeprecatedApiResponseFields deprecatedApiResponseFieldsAnnotation = handlerMethod.getMethodAnnotation(DeprecatedApiResponseFields.class);
