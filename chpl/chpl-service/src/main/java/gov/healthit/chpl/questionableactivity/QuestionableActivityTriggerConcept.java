@@ -3,7 +3,6 @@ package gov.healthit.chpl.questionableactivity;
 import java.io.Serializable;
 
 public enum QuestionableActivityTriggerConcept implements Serializable {
-    CRITERIA_ADDED("Certification Criteria Added"),
     CRITERIA_REMOVED("Certification Criteria Removed"),
     CQM_ADDED("CQM Added"),
     CQM_REMOVED("CQM Removed"),
@@ -42,6 +41,7 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
 
     //These are no longer being detected but there may be existing older questionable activities
     //that reference them so I don't think they can be deleted without more discussion.
+    CRITERIA_ADDED("Certification Criteria Added"),
     G1_MEASURE_ADDED("Measures Successfully Tested for 170.315 (g)(1) Added"),
     G1_MEASURE_REMOVED("Measures Successfully Tested for 170.315 (g)(1) Removed"),
     G2_MEASURE_ADDED("Measures Successfully Tested for 170.315 (g)(2) Added"),

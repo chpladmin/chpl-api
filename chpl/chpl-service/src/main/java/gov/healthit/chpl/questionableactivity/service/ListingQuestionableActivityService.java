@@ -15,7 +15,6 @@ import gov.healthit.chpl.questionableactivity.QuestionableActivityDAO;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTriggerDTO;
-import gov.healthit.chpl.questionableactivity.listing.AddedCertificationsActivity;
 import gov.healthit.chpl.questionableactivity.listing.AddedCqmsActivity;
 import gov.healthit.chpl.questionableactivity.listing.AddedMeasureActivity;
 import gov.healthit.chpl.questionableactivity.listing.AddedRwtPlanNonEligibleListingActivity;
@@ -101,7 +100,6 @@ public class ListingQuestionableActivityService {
             processListingActivity(DeletedSurveillanceActivity.class.getName(), origListing, newListing, activity, activityReason);
             processListingActivity(AddedCqmsActivity.class.getName(), origListing, newListing, activity, activityReason);
             processListingActivity(DeletedCqmsActivity.class.getName(), origListing, newListing, activity, activityReason);
-            processListingActivity(AddedCertificationsActivity.class.getName(), origListing, newListing, activity, activityReason);
             processListingActivity(DeletedCertificationsActivity.class.getName(), origListing, newListing, activity, activityReason);
         }
     }
