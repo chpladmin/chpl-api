@@ -88,17 +88,9 @@ public class ValidationException extends Exception {
         return errorMessages;
     }
 
-    //public void setErrorMessages(ImmutableSortedSet<String> errorMessages) {
-    //    this.errorMessages = errorMessages;
-    //}
-
     public ImmutableSortedSet<String> getWarningMessages() {
         return warningMessages;
     }
-
-    //public void setWarningMessages(Set<String> warningMessages) {
-    //    this.warningMessages = warningMessages;
-    //}
 
     public ImmutableSortedSet<String> getBusinessErrorMessages() {
         return businessErrorMessages;

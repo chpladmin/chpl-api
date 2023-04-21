@@ -144,8 +144,6 @@ public class PrivacyAndSecurityCriteriaReviewerPreErdPhase2Test {
                 .asList(getCertificationResult(1L, true), getCertificationResult(2L, true)));
         updatedListing.setCertificationResults(updatedListingCertificationResults);
 
-        // updatedListing.setErrorMessages(new HashSet<String>());
-
         PrivacyAndSecurityCriteriaReviewerPreErdPhase2 reviewer = new PrivacyAndSecurityCriteriaReviewerPreErdPhase2(certificationCriterionDao,
                 env, errorMessageUtil, validationUtils);
         reviewer.postConstruct();

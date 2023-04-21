@@ -183,7 +183,6 @@ public class TestStandardReviewerTest {
                         .testStandards(testStandards)
                         .build())
                 .build();
-        // listing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
@@ -220,7 +219,6 @@ public class TestStandardReviewerTest {
                         .testStandards(testStandards)
                         .build())
                 .build();
-        // listing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
@@ -239,7 +237,6 @@ public class TestStandardReviewerTest {
                         .testStandards(testStandards)
                         .build())
                 .build();
-        // listing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(listing);
         assertEquals(0, listing.getErrorMessages().size());
@@ -258,7 +255,6 @@ public class TestStandardReviewerTest {
                         .testStandards(testStandards)
                         .build())
                 .build();
-        // listing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(listing);
         assertEquals(0, listing.getErrorMessages().size());

@@ -87,7 +87,6 @@ public class MeasureComparisonReviewerTest {
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .measures(Stream.of(measure).collect(Collectors.toList()))
                 .build();
-        // updatedListing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(existingListing, updatedListing);
 
@@ -134,7 +133,6 @@ public class MeasureComparisonReviewerTest {
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .measures(Stream.of(measure1, measure2).collect(Collectors.toList()))
                 .build();
-        // updatedListing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(existingListing, updatedListing);
 
@@ -181,7 +179,6 @@ public class MeasureComparisonReviewerTest {
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .measures(Stream.of(measure1, measure2).collect(Collectors.toList()))
                 .build();
-        // updatedListing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(existingListing, updatedListing);
 
@@ -226,7 +223,6 @@ public class MeasureComparisonReviewerTest {
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .measures(Stream.of(measure1, measure2).collect(Collectors.toList()))
                 .build();
-        // updatedListing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(existingListing, updatedListing);
 
@@ -272,7 +268,6 @@ public class MeasureComparisonReviewerTest {
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .measures(Stream.of(measure1, measure2).collect(Collectors.toList()))
                 .build();
-        // updatedListing.setErrorMessages(new HashSet<String>());
 
         reviewer.review(existingListing, updatedListing);
 

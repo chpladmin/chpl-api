@@ -133,26 +133,14 @@ public class ApiExceptionControllerAdvice {
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ValidationErrorResponse> exception(ValidationException e) {
-        //ValidationErrorResponse error = new ValidationErrorResponse();
-        //error.setErrorMessages(e.getErrorMessages());
-        //error.setBusinessErrorMessages(e.getBusinessErrorMessages());
-        //error.setDataErrorMessages(e.getDataErrorMessages());
-        //error.setWarningMessages(e.getWarningMessages());
         return new ResponseEntity<ValidationErrorResponse>(ValidationErrorResponse.builder()
                 .errorMessages(e.getErrorMessages())
                 .businessErrorMessages(e.getBusinessErrorMessages())
                 .dataErrorMessages(e.getDataErrorMessages())
-                .warningMessages(SortedSets.immutable.ofAll(e.getWarningMessages()))
+                .warningMessages(e.getWarningMessages())
                 .build(), HttpStatus.BAD_REQUEST);
     }
 
-    /**
-     * Return bad request for thrown ObjectsMissingValidationException including contact information.
-     *
-     * @param e
-     *            the thrown exception
-     * @return an http response with appropriate error code.
-     */
     @ExceptionHandler(ObjectsMissingValidationException.class)
     public ResponseEntity<ObjectsMissingValidationErrorResponse> exception(
             ObjectsMissingValidationException e) {

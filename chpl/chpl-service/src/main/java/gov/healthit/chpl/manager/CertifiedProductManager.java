@@ -548,7 +548,7 @@ public class CertifiedProductManager extends SecuredManager {
             validator.validate(existingListing, updatedListing);
         }
 
-        if (shouldValidationExpcetionBeThrown(updatedListing, acknowledgeBusinessErrors, acknowledgeWarnings)) {
+        if (shouldValidationExceptionBeThrown(updatedListing, acknowledgeBusinessErrors, acknowledgeWarnings)) {
             for (String err : updatedListing.getErrorMessages()) {
                 LOGGER.error("Error updating listing " + updatedListing.getChplProductNumber() + ": " + err);
             }
@@ -1672,7 +1672,7 @@ public class CertifiedProductManager extends SecuredManager {
         return !CollectionUtils.isEmpty(listing.getWarningMessages().castToCollection());
     }
 
-    private boolean shouldValidationExpcetionBeThrown(CertifiedProductSearchDetails listing, boolean acknowledgeBusinessErrors, boolean acknowledgeWarnings) {
+    private boolean shouldValidationExceptionBeThrown(CertifiedProductSearchDetails listing, boolean acknowledgeBusinessErrors, boolean acknowledgeWarnings) {
         // return true when we want to throw ValidationException
         if (doErrorMessagesExist(listing)) {
             if (resourcePermissions.isUserRoleAdmin()) {
