@@ -73,7 +73,8 @@ public class CertificationResultConformanceMethod implements Serializable {
         if (this.getConformanceMethod() != null && anotherMethod.getConformanceMethod() != null
                 && this.getConformanceMethod().getId() != null && anotherMethod.getConformanceMethod().getId() != null
                 && this.getConformanceMethod().getId().longValue() == anotherMethod.getConformanceMethod().getId().longValue()
-                && StringUtils.equals(this.getConformanceMethodVersion(), anotherMethod.getConformanceMethodVersion())) {
+                && (StringUtils.isAllBlank(this.getConformanceMethodVersion(), anotherMethod.getConformanceMethodVersion())
+                        || StringUtils.equals(this.getConformanceMethodVersion(), anotherMethod.getConformanceMethodVersion()))) {
             result = true;
         }
         return result;
