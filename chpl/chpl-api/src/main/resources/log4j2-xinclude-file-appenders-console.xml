@@ -371,7 +371,7 @@
             <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
         </JsonLayout>
     </Console>
-    
+
     <Console name="listingSearchCacheRefreshJson" target="SYSTEM_OUT">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="listingSearchCacheRefresh" />

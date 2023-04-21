@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheable;
 import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.domain.CertificationStatus;
@@ -38,11 +37,9 @@ public class ListingSearchManager {
     }
 
     public  List<ListingSearchResult> getAllListingsNoCache() {
-        LOGGER.info("Populating {}", CacheNames.COLLECTIONS_SEARCH);
         List<ListingSearchResult> results = searchDao.getListingSearchResults();
         results.parallelStream()
             .forEach(searchResult -> populateDirectReviews(searchResult));
-        LOGGER.info("Completed Populating {}", CacheNames.COLLECTIONS_SEARCH);
         return results;
     }
 

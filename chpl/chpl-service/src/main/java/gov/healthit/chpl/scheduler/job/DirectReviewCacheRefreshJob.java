@@ -40,11 +40,6 @@ public class DirectReviewCacheRefreshJob extends QuartzJob {
             LOGGER.error(e.getMessage(), e);
         }
 
-        //LOGGER.info("Refreshing searchable listing data");
-        //CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).removeAll();
-        //listingSearchManager.getAllListings();
-        //LOGGER.info("Completed refreshing searchable listing data");
-
         LOGGER.info("Refreshing searchable listing collection (deprecated)");
         CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_LISTINGS).removeAll();
         certifiedProductSearchManager.getFlatListingCollection();

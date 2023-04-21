@@ -45,15 +45,16 @@ public class ListingSearchCacheRefreshAspect {
 
             Thread thread = new Thread(() -> {
                     while (!getCacheRefreshingStatus().equals(IDLE)) {
-                    LOGGER.info("REFRESHING LISTING COLLECTION IN NEW THREAD");
-                    List<ListingSearchResult> results = listingSearchManager.getAllListingsNoCache();
-                    cacheManager.getCache(CacheNames.COLLECTIONS_SEARCH).put(new Element(key, results));
-                    if (getCacheRefreshingStatus().equals(NEEDS_REFRESHED)) {
-                        setCacheRefreshingStatus(REFRESHING);
-                    } else
-                        setCacheRefreshingStatus(IDLE);
+                        LOGGER.info("REFRESHING LISTING COLLECTION IN NEW THREAD");
+                        List<ListingSearchResult> results = listingSearchManager.getAllListingsNoCache();
+                        cacheManager.getCache(CacheNames.COLLECTIONS_SEARCH).put(new Element(key, results));
+                        if (getCacheRefreshingStatus().equals(NEEDS_REFRESHED)) {
+                            setCacheRefreshingStatus(REFRESHING);
+                        } else {
+                            setCacheRefreshingStatus(IDLE);
+                        }
+                        LOGGER.info("COMPLETED REFRESHING LISTING COLLECTION IN NEW THREAD");
                     }
-                    LOGGER.info("COMPLETED REFRESHING LISTING COLLECTION IN NEW THREAD");
             });
             thread.start();
         }

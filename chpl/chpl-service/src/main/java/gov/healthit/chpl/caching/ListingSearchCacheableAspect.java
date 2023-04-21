@@ -14,6 +14,7 @@ import net.sf.ehcache.Element;
 @Aspect
 @Log4j2
 public class ListingSearchCacheableAspect {
+    private static final String COLLECTIONS_SEARCH_KEY = "collections search";
 
     private CacheManager cacheManager;
 
@@ -24,14 +25,12 @@ public class ListingSearchCacheableAspect {
 
     @Around("@annotation(ListingSearchCacheable)")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
-        Element cacheItem = cacheManager.getCache(CacheNames.COLLECTIONS_SEARCH).get("ALL_LISTINGS");
+        Element cacheItem = cacheManager.getCache(CacheNames.COLLECTIONS_SEARCH).get(COLLECTIONS_SEARCH_KEY);
         if (cacheItem == null) {
-            LOGGER.info("Getting {} from method", CacheNames.COLLECTIONS_SEARCH);
-            Element newItem = new Element("ALL_LISTINGS", joinPoint.proceed());
+            Element newItem = new Element(COLLECTIONS_SEARCH_KEY, joinPoint.proceed());
             cacheManager.getCache(CacheNames.COLLECTIONS_SEARCH).put(newItem);
             return newItem.getObjectValue();
         } else {
-            //LOGGER.info("Getting {} from cache", CacheNames.COLLECTIONS_SEARCH);
             return cacheItem.getObjectValue();
         }
     }

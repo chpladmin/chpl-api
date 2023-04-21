@@ -642,7 +642,7 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
-    
+
     <RollingFile name="listingSearchCacheRefresh"
         fileName="${logDir}/cache/listingSearchCacheRefresh.log"
         filePattern="${logDir}/cache/history/listingSearchCacheRefresh-%d{yyyy-MM-dd}.log"
