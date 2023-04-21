@@ -108,8 +108,8 @@ public class ActivityManager extends SecuredManager {
         String newDataStr = null;
 
         if (concept.equals(ActivityConcept.CERTIFIED_PRODUCT)) {
-            originalDataStr = JSONUtils.toJSONIgnoringDeprecatedFields(originalData);
-            newDataStr = JSONUtils.toJSONIgnoringDeprecatedFields(newData);
+            originalDataStr = JSONUtils.toJSONExcludingIgnoredFields(originalData);
+            newDataStr = JSONUtils.toJSONExcludingIgnoredFields(newData);
         } else {
             originalDataStr = JSONUtils.toJSON(originalData);
             newDataStr = JSONUtils.toJSON(newData);

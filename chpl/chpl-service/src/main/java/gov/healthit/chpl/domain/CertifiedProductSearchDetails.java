@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.activity.ActivityExclude;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.comparator.CertificationStatusEventComparator;
 import gov.healthit.chpl.domain.compliance.DirectReview;
@@ -433,11 +435,13 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     @Builder.Default
     @XmlTransient
-    private LinkedHashSet<String> warningMessages = new LinkedHashSet<String>();
+    @ActivityExclude
+    private Set<String> warningMessages = new LinkedHashSet<String>();
 
     @Builder.Default
     @XmlTransient
-    private LinkedHashSet<String> errorMessages = new LinkedHashSet<String>();
+    @ActivityExclude
+    private Set<String> errorMessages = new LinkedHashSet<String>();
 
     public Long getId() {
         return id;
@@ -585,19 +589,19 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.lastModifiedDate = lastModifiedDate;
     }
 
-    public LinkedHashSet<String> getWarningMessages() {
+    public Set<String> getWarningMessages() {
         return warningMessages;
     }
 
-    public void setWarningMessages(LinkedHashSet<String> warningMessages) {
+    public void setWarningMessages(Set<String> warningMessages) {
         this.warningMessages = warningMessages;
     }
 
-    public LinkedHashSet<String> getErrorMessages() {
+    public Set<String> getErrorMessages() {
         return errorMessages;
     }
 
-    public void setErrorMessages(LinkedHashSet<String> errorMessages) {
+    public void setErrorMessages(Set<String> errorMessages) {
         this.errorMessages = errorMessages;
     }
 

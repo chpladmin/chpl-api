@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.flipkart.zjsonpatch.JsonDiff;
 
+import gov.healthit.chpl.activity.ActivityExclude;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -20,16 +21,17 @@ public final class JSONUtils {
     private static final ObjectReader READER = MAPPER.reader();
     private static final ObjectWriter WRITER = MAPPER.writer();
 
-    private static final ObjectMapper MAPPER_WITHOUT_DEPRECATED_FIELDS = new ObjectMapper().findAndRegisterModules()
+    private static final ObjectMapper MAPPER_EXCLUDING_IGNORED_FIELDS = new ObjectMapper().findAndRegisterModules()
             .setAnnotationIntrospector(new JacksonAnnotationIntrospector() {
                 private static final long serialVersionUID = -1856550954546461022L;
 
                 @Override
                 public boolean hasIgnoreMarker(final AnnotatedMember m) {
-                    return super.hasIgnoreMarker(m) || m.hasAnnotation(Deprecated.class);
+                    return super.hasIgnoreMarker(m) || m.hasAnnotation(Deprecated.class)
+                            || m.hasAnnotation(ActivityExclude.class);
                 }
             });
-    private static final ObjectWriter WRITER_WITHOUT_DEPRECATED_FIELDS = MAPPER_WITHOUT_DEPRECATED_FIELDS.writer();
+    private static final ObjectWriter WRITER_EXCLUDING_IGNORED_FIELDS = MAPPER_EXCLUDING_IGNORED_FIELDS.writer();
 
     private JSONUtils() {
     }
@@ -51,10 +53,10 @@ public final class JSONUtils {
         return json;
     }
 
-    public static String toJSONIgnoringDeprecatedFields(final Object obj) throws JsonProcessingException {
+    public static String toJSONExcludingIgnoredFields(final Object obj) throws JsonProcessingException {
         String json = null;
         if (obj != null) {
-            json = WRITER_WITHOUT_DEPRECATED_FIELDS.writeValueAsString(obj);
+            json = WRITER_EXCLUDING_IGNORED_FIELDS.writeValueAsString(obj);
         }
         return json;
     }

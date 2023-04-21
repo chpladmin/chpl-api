@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.activity.ActivityExclude;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
@@ -110,10 +111,12 @@ public class Surveillance implements Serializable {
 
     @XmlTransient
     @Builder.Default
+    @ActivityExclude
     private Set<String> errorMessages = new HashSet<String>();
 
     @XmlTransient
     @Builder.Default
+    @ActivityExclude
     private Set<String> warningMessages = new HashSet<String>();
 
     /**
