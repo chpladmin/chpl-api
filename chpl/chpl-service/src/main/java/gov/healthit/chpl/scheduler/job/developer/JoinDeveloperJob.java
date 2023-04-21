@@ -19,6 +19,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.auth.UserDTO;
@@ -132,13 +133,13 @@ public class JoinDeveloperJob implements Job {
         }
     }
 
+    @ListingSearchCacheRefresh
     private void clearCachesRelatedToDevelopers() {
         CacheManager.getInstance().getCache(CacheNames.DEVELOPER_NAMES).removeAll();
         CacheManager.getInstance().getCache(CacheNames.ALL_DEVELOPERS).removeAll();
         CacheManager.getInstance().getCache(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED).removeAll();
         CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_DEVELOPERS).removeAll();
         CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_LISTINGS).removeAll();
-        CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).removeAll();
         CacheManager.getInstance().getCache(CacheNames.GET_DECERTIFIED_DEVELOPERS).removeAll();
     }
 
