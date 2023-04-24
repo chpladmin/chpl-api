@@ -3,6 +3,7 @@ package gov.healthit.chpl.manager;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.AccessDeniedException;
@@ -332,9 +333,11 @@ public class ProductVersionManager extends SecuredManager {
             // do the update and add activity
             cpDao.update(affectedListing);
             CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetailsNoCache(affectedListingId);
-            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeListing.getId(),
+            if (!StringUtils.equals(beforeListing.getChplProductNumber(), afterListing.getChplProductNumber())) {
+                activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeListing.getId(),
                     "Updated certified product " + afterListing.getChplProductNumber() + ".", beforeListing,
                     afterListing);
+            }
         }
 
         //the split is complete - log split activity
