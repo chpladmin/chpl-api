@@ -1045,7 +1045,7 @@
     </RollingFile>
     <RollingFile name="listingSearchCacheRefreshJson"
         fileName="${logDir}/cache/listingSearchCacheRefreshJson.json"
-        filePattern="${logDir}/scheduler/history/fixupQuestionableActivityJob-%d{yyyy-MM-dd}.json"
+        filePattern="${logDir}/cache/history/listingSearchCacheRefresh-%d{yyyy-MM-dd}.json"
         filePermissions="rw-rw-r--">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
             <KeyValuePair key="service" value="listingSearchCacheRefreshJson" />
