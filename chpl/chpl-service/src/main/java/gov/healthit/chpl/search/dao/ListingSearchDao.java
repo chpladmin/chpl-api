@@ -23,6 +23,7 @@ import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CQMSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResultWithLongField;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResultWithStringField;
 import gov.healthit.chpl.search.domain.ListingSearchResult.DateRangeSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.DeveloperSearchResult;
@@ -125,6 +126,7 @@ public class ListingSearchDao extends BaseDAOImpl {
                 .closedSurveillanceNonConformityCount(entity.getClosedSurveillanceNonConformityCount())
                 .rwtPlansUrl(entity.getRwtPlansUrl())
                 .rwtResultsUrl(entity.getRwtResultsUrl())
+                .svapNoticeUrl(entity.getSvapNoticeUrl())
                 .surveillanceDateRanges(convertToSetOfDateRangesWithDelimiter(entity.getSurveillanceDates(), STANDARD_VALUE_SPLIT_CHAR))
                 .statusEvents(convertToSetOfStatusEvents(entity.getStatusEvents(), STANDARD_VALUE_SPLIT_CHAR))
                 .criteriaMet(convertToSetOfCriteria(entity.getCertificationCriteriaMet(), STANDARD_VALUE_SPLIT_CHAR))
@@ -133,6 +135,7 @@ public class ListingSearchDao extends BaseDAOImpl {
                 .previousDevelopers(convertToSetOfProductOwners(entity.getPreviousDevelopers(), ListingSearchEntity.SMILEY_SPLIT_CHAR))
                 .apiDocumentation(convertToSetOfCriteriaWithStringFields(entity.getCriteriaWithApiDocumentation(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
                 .serviceBaseUrlList(convertToCriterionWithStringField(entity.getCriteriaWithServiceBaseUrlList()))
+                .svaps(convertToSetOfCriteriaWithLongFields(entity.getCriteriaWithSvap(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
                 .build();
     }
 
@@ -288,6 +291,44 @@ public class ListingSearchDao extends BaseDAOImpl {
                 .criterion(convertToCriterion(aggregatedCriterionFields))
                 .value(fieldValue)
                 .build();
+    }
+
+    private Set<CertificationCriterionSearchResultWithLongField> convertToSetOfCriteriaWithLongFields(String delimitedCriteriaWithValueLong, String delimeter)
+            throws EntityRetrievalException, NumberFormatException {
+            if (ObjectUtils.isEmpty(delimitedCriteriaWithValueLong)) {
+                return new LinkedHashSet<CertificationCriterionSearchResultWithLongField>();
+            }
+
+            String[] criteriaWithLongFields = delimitedCriteriaWithValueLong.split(delimeter);
+            return Stream.of(criteriaWithLongFields)
+                    .map(rethrowFunction(criterionWithValue -> convertToCriterionWithLongField(criterionWithValue)))
+                    .collect(Collectors.toSet());
+    }
+
+    private CertificationCriterionSearchResultWithLongField convertToCriterionWithLongField(String value)
+            throws EntityRetrievalException, NumberFormatException {
+            if (StringUtils.isEmpty(value)) {
+                return null;
+            }
+
+            String[] criteriaSplitFromData = value.split(CertifiedProductSearchResult.FROWNEY_SPLIT_CHAR);
+            if (criteriaSplitFromData == null || criteriaSplitFromData.length != 2) {
+                throw new EntityRetrievalException("Unable to parse criteria with long value from '" + value + "'.");
+            }
+            String aggregatedCriterionFields = criteriaSplitFromData[0];
+            String fieldValueStr = criteriaSplitFromData[1];
+            Long fieldValue = null;
+            try {
+                fieldValue = Long.parseLong(fieldValueStr);
+            } catch (NumberFormatException ex) {
+                LOGGER.error("Cannot parse " + fieldValueStr + " as a Long.", ex);
+                fieldValue = null;
+            }
+
+            return CertificationCriterionSearchResultWithLongField.builder()
+                    .criterion(convertToCriterion(aggregatedCriterionFields))
+                    .value(fieldValue)
+                    .build();
     }
 
     private Set<IdNamePair> convertToSetOfProductOwners(String delimitedProductOwnerString, String delimeter)
