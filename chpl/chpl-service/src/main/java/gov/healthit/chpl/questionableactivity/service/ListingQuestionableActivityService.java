@@ -16,7 +16,6 @@ import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTriggerDTO;
 import gov.healthit.chpl.questionableactivity.listing.AddedCqmsActivity;
-import gov.healthit.chpl.questionableactivity.listing.AddedMeasureActivity;
 import gov.healthit.chpl.questionableactivity.listing.AddedRwtPlanNonEligibleListingActivity;
 import gov.healthit.chpl.questionableactivity.listing.AddedRwtResultsNonEligibleListingActivity;
 import gov.healthit.chpl.questionableactivity.listing.CuresUpdateDesignationRemoved;
@@ -36,7 +35,6 @@ import gov.healthit.chpl.questionableactivity.listing.Updated2014EditionListingA
 import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationDateActivity;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationStatusHistoryActivity;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationStatusWithdrawnByDeveloperUnderReviewActivity;
-import gov.healthit.chpl.questionableactivity.listing.UpdatedCriteriaB3AndListingHasIcsActivity;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedPromotingInteroperabilityActivity;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedTestingLabActivity;
 import lombok.extern.log4j.Log4j2;
@@ -73,13 +71,11 @@ public class ListingQuestionableActivityService {
         processListingActivity(UpdatedCertificationStatusWithdrawnByDeveloperUnderReviewActivity.class.getName(), origListing, newListing, activity, activityReason);
         processListingActivity(UpdatedCertificationStatusHistoryActivity.class.getName(), origListing, newListing, activity, activityReason);
         processListingActivity(UpdatedTestingLabActivity.class.getName(), origListing, newListing, activity, activityReason);
-        processListingActivity(UpdatedCriteriaB3AndListingHasIcsActivity.class.getName(), origListing, newListing, activity, activityReason);
         processListingActivity(DeletedRwtPlanActivity.class.getName(), origListing, newListing, activity, activityReason);
         processListingActivity(DeletedRwtResultsActivity.class.getName(), origListing, newListing, activity, activityReason);
         processListingActivity(AddedRwtPlanNonEligibleListingActivity.class.getName(), origListing, newListing, activity, activityReason);
         processListingActivity(AddedRwtResultsNonEligibleListingActivity.class.getName(), origListing, newListing, activity, activityReason);
         processListingActivity(UpdatedPromotingInteroperabilityActivity.class.getName(), origListing, newListing, activity, activityReason);
-        processListingActivity(AddedMeasureActivity.class.getName(), origListing, newListing, activity, activityReason);
         processListingActivity(DeletedMeasuresActivity.class.getName(), origListing, newListing, activity, activityReason);
         processListingActivity(RwtResultsUpdatedOutsideNormalPeriod.class.getName(), origListing, newListing, activity, activityReason);
         processListingActivity(RwtPlansUpdatedOutsideNormalPeriod.class.getName(), origListing, newListing, activity, activityReason);

@@ -23,18 +23,6 @@ import lombok.extern.log4j.Log4j2;
 public class UpdatableQuestionableActivityDao extends BaseDAOImpl {
 
     @Transactional
-    public void deleteQuestionableActivityForTrigger(QuestionableActivityTriggerDTO trigger) {
-        LOGGER.info("Deleting all " + trigger.getName() + " questionable activities.");
-        String hql = "UPDATE QuestionableActivityListingEntity "
-                + "SET deleted = true "
-                + "WHERE triggerId = :triggerId ";
-        Query query = entityManager.createQuery(hql);
-        query.setParameter("triggerId", trigger.getId());
-        int numItemsUpdated = query.executeUpdate();
-        LOGGER.info("Marked " + numItemsUpdated + " questionable activities as deleted.");
-    }
-
-    @Transactional
     public void deleteQuestionableActivityForTriggerBetweenDates(QuestionableActivityTriggerDTO trigger, Date startDate, Date endDate) {
         LOGGER.info("Deleting " + trigger.getName() + " questionable activities since " + startDate);
         String hql = "UPDATE QuestionableActivityListingEntity "
