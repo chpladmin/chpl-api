@@ -397,6 +397,13 @@ public class SearchController {
                 + "Indicates whether a listing must have met all rwtOptions specified or may have met any one or more of the rwtOptions",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "rwtOperator")
         @RequestParam(value = "rwtOperator", required = false, defaultValue = "OR") String rwtOperator,
+        @Parameter(description = "A comma-separated list of SVAP IDs to be queried together (ex: \"1,2\" finds listings associated with those SVAPs).",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "svapIds")
+        @RequestParam(value = "svapIds", required = false, defaultValue = "") String svapIdsDelimited,
+        @Parameter(description = "Either AND or OR. Defaults to OR. "
+                + "Indicates whether a listing must have all svapIds or may have any one or more of the svapIds.",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "svapOperator")
+        @RequestParam(value = "svapOperator", required = false, defaultValue = "OR") String svapOperatorStr,
         @Parameter(description = "The full name of a developer.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "developer")
         @RequestParam(value = "developer", required = false, defaultValue = "") String developer,
@@ -455,6 +462,8 @@ public class SearchController {
                         .build())
                 .rwtOptionsStrings(convertToSetWithDelimeter(rwtOptionsDelimited, ","))
                 .rwtOperatorString(rwtOperator)
+                .svapIdStrings(convertToSetWithDelimeter(svapIdsDelimited, ","))
+                .svapOperatorString(svapOperatorStr)
                 .developer(developer)
                 .product(product)
                 .version(version)

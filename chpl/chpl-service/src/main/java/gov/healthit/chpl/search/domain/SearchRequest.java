@@ -79,6 +79,20 @@ public class SearchRequest implements Serializable {
     private String rwtOperatorString;
     private SearchSetOperator rwtOperator;
 
+    @Builder.Default
+    private Boolean hasSvapNoticeUrl = null;
+
+    @Builder.Default
+    @JsonIgnore
+    @XmlTransient
+    private Set<String> svapIdStrings = new HashSet<String>();
+    @Builder.Default
+    private Set<Long> svapIds = new HashSet<Long>();
+    @JsonIgnore
+    @XmlTransient
+    private String svapOperatorString;
+    private SearchSetOperator svapOperator;
+
     @JsonIgnore
     @XmlTransient
     private String orderByString;

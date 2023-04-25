@@ -27,6 +27,7 @@ import gov.healthit.chpl.search.domain.ListingSearchResponse;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CQMSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResultWithLongField;
 import gov.healthit.chpl.search.domain.ListingSearchResult.DeveloperSearchResult;
 import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
@@ -2391,6 +2392,141 @@ public class ListingSearchServiceTest {
         assertEquals(0, searchResponse.getResults().size());
     }
 
+    @Test
+    public void search_singleSvapIdWithAndOperatorProvided_findsMatchingListings() throws ValidationException {
+        List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
+        allListings.get(0).setSvaps(Stream.of(svap(1L), svap(2L), svap(3L)).collect(Collectors.toSet()));
+        allListings.get(1).setSvaps(Stream.of(svap(1L), svap(2L), svap(4L)).collect(Collectors.toSet()));
+        allListings.get(2).setSvaps(Stream.of(svap(5L), svap(2L), svap(3L)).collect(Collectors.toSet()));
+
+        Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
+        Set<Long> svapIds = new LinkedHashSet<Long>();
+        svapIds.add(1L);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .svapIds(svapIds)
+            .svapOperator(SearchSetOperator.AND)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_singleSvapIdWithOrOperatorProvided_findsMatchingListings() throws ValidationException {
+        List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
+        allListings.get(0).setSvaps(Stream.of(svap(1L), svap(2L), svap(3L)).collect(Collectors.toSet()));
+        allListings.get(1).setSvaps(Stream.of(svap(1L), svap(2L), svap(4L)).collect(Collectors.toSet()));
+        allListings.get(2).setSvaps(Stream.of(svap(5L), svap(2L), svap(3L)).collect(Collectors.toSet()));
+
+        Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
+        Set<Long> svapIds = new LinkedHashSet<Long>();
+        svapIds.add(1L);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .svapIds(svapIds)
+            .svapOperator(SearchSetOperator.OR)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_multipleSvapIdsWithAndOperatorProvided_findsMatchingListings() throws ValidationException {
+        List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
+        allListings.get(0).setSvaps(Stream.of(svap(1L), svap(2L), svap(3L)).collect(Collectors.toSet()));
+        allListings.get(1).setSvaps(Stream.of(svap(1L), svap(2L), svap(4L)).collect(Collectors.toSet()));
+        allListings.get(2).setSvaps(Stream.of(svap(5L), svap(2L), svap(3L)).collect(Collectors.toSet()));
+
+        Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
+        Set<Long> svapIds = new LinkedHashSet<Long>();
+        svapIds.add(1L);
+        svapIds.add(2L);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .svapIds(svapIds)
+            .svapOperator(SearchSetOperator.AND)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_multipleSvapIdsWithOrOperatorProvided_findsMatchingListings() throws ValidationException {
+        List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
+        allListings.get(0).setSvaps(Stream.of(svap(1L), svap(2L), svap(3L)).collect(Collectors.toSet()));
+        allListings.get(1).setSvaps(Stream.of(svap(1L), svap(2L), svap(4L)).collect(Collectors.toSet()));
+        allListings.get(2).setSvaps(Stream.of(svap(5L), svap(2L), svap(3L)).collect(Collectors.toSet()));
+        allListings.get(3).setSvaps(Stream.of(svap(5L)).collect(Collectors.toSet()));
+
+        Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
+        Set<Long> svapIds = new LinkedHashSet<Long>();
+        svapIds.add(1L);
+        svapIds.add(2L);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .svapIds(svapIds)
+            .svapOperator(SearchSetOperator.OR)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(3, searchResponse.getRecordCount());
+        assertEquals(3, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_hasSvapNoticeUrl_findsMatchingListings() throws ValidationException {
+        List<ListingSearchResult> allListings = createListingSearchResultCollection(3);
+        allListings.get(0).setSvapNoticeUrl("someurl");
+        allListings.get(1).setSvapNoticeUrl("someurl");
+
+        Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .hasSvapNoticeUrl(true)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
+        searchResponse.getResults().forEach(result -> assertTrue(!StringUtils.isBlank(result.getSvapNoticeUrl())));
+    }
+
+    @Test
+    public void search_hasNoSvapNoticeUrl_findsMatchingListings() throws ValidationException {
+        List<ListingSearchResult> allListings = createListingSearchResultCollection(3);
+        allListings.get(0).setSvapNoticeUrl(null);
+        allListings.get(1).setSvapNoticeUrl("");
+
+        Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .hasSvapNoticeUrl(false)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(3, searchResponse.getRecordCount());
+        assertEquals(3, searchResponse.getResults().size());
+        searchResponse.getResults().forEach(result -> assertTrue(StringUtils.isBlank(result.getSvapNoticeUrl())));
+    }
+
     private List<ListingSearchResult> createListingSearchResultCollection(int collectionSize) {
         List<ListingSearchResult> listings = new ArrayList<ListingSearchResult>();
         for (int i = 0; i < collectionSize; i++) {
@@ -2462,6 +2598,12 @@ public class ListingSearchServiceTest {
     private CQMSearchResult cqm(String cqmNumber) {
         return CQMSearchResult.builder()
                 .number(cqmNumber)
+                .build();
+    }
+
+    private CertificationCriterionSearchResultWithLongField svap(Long svapId) {
+        return CertificationCriterionSearchResultWithLongField.builder()
+                .value(svapId)
                 .build();
     }
 }
