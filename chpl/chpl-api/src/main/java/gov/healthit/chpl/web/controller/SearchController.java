@@ -404,6 +404,9 @@ public class SearchController {
                 + "Indicates whether a listing must have all svapIds or may have any one or more of the svapIds.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "svapOperator")
         @RequestParam(value = "svapOperator", required = false, defaultValue = "OR") String svapOperatorStr,
+        @Parameter(description = "Specifies whether to match listings with an empty or non-empty SVAP Notice Url.",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasSvapNoticeUrl")
+        @RequestParam(value = "hasSvapNoticeUrl", required = false, defaultValue = "") Boolean hasSvapNoticeUrl,
         @Parameter(description = "The full name of a developer.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "developer")
         @RequestParam(value = "developer", required = false, defaultValue = "") String developer,
@@ -464,6 +467,7 @@ public class SearchController {
                 .rwtOperatorString(rwtOperator)
                 .svapIdStrings(convertToSetWithDelimeter(svapIdsDelimited, ","))
                 .svapOperatorString(svapOperatorStr)
+                .hasSvapNoticeUrl(hasSvapNoticeUrl)
                 .developer(developer)
                 .product(product)
                 .version(version)
