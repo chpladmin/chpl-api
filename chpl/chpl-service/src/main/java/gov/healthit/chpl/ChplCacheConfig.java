@@ -73,6 +73,7 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.FUNCTIONALITY_TESTED_MAPS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.COMPLAINTS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.UPLOADED_LISTING_DETAILS));
+        backingManager.addCacheIfAbsent(createEternalCache(CacheNames.LISTING_SEARCH_CACHE_REFRESH_STATUS));
 
         return cacheManager;
     }
