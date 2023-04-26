@@ -7,15 +7,33 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.flipkart.zjsonpatch.JsonDiff;
 
+import gov.healthit.chpl.activity.ActivityExclude;
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
 public final class JSONUtils {
 
     private static final ObjectMapper MAPPER = new ObjectMapper().findAndRegisterModules();
     private static final ObjectReader READER = MAPPER.reader();
     private static final ObjectWriter WRITER = MAPPER.writer();
 
-    private JSONUtils() {
+    private static final ObjectMapper MAPPER_EXCLUDING_IGNORED_FIELDS = new ObjectMapper().findAndRegisterModules()
+            .setAnnotationIntrospector(new JacksonAnnotationIntrospector() {
+                private static final long serialVersionUID = -1856550954546461022L;
 
+                @Override
+                public boolean hasIgnoreMarker(final AnnotatedMember m) {
+                    return super.hasIgnoreMarker(m) || m.hasAnnotation(Deprecated.class)
+                            || m.hasAnnotation(ActivityExclude.class);
+                }
+            });
+    private static final ObjectWriter WRITER_EXCLUDING_IGNORED_FIELDS = MAPPER_EXCLUDING_IGNORED_FIELDS.writer();
+
+    private JSONUtils() {
     }
 
     public static ObjectReader getReader() {
@@ -31,6 +49,14 @@ public final class JSONUtils {
         String json = null;
         if (obj != null) {
             json = getWriter().writeValueAsString(obj);
+        }
+        return json;
+    }
+
+    public static String toJSONExcludingIgnoredFields(final Object obj) throws JsonProcessingException {
+        String json = null;
+        if (obj != null) {
+            json = WRITER_EXCLUDING_IGNORED_FIELDS.writeValueAsString(obj);
         }
         return json;
     }
@@ -58,6 +84,12 @@ public final class JSONUtils {
             JsonNode node1 = getReader().readTree(json1);
             JsonNode node2 = getReader().readTree(json2);
             equals = node1.equals(node2);
+
+            JsonNode patch = JsonDiff.asJson(node1, node2);
+            if (patch != null && !patch.isEmpty()) {
+                LOGGER.debug("Data was updated. Differences found in the JSON.");
+                LOGGER.debug(patch.toString());
+            }
 
         } catch (final NullPointerException e) {
             equals = false;

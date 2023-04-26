@@ -68,6 +68,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private Integer countClosedSurveillance;
     private Integer countOpenNonconformities;
     private Integer countClosedNonconformities;
+    @Deprecated
     private Date lastModifiedDate;
     private Boolean ics;
     private Boolean sedTesting;

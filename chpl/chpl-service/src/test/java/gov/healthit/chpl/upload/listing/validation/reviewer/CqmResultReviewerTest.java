@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -144,7 +145,7 @@ public class CqmResultReviewerTest {
         CQMResultDetails cqmResult = CQMResultDetails.builder()
                 .success(true)
                 .cmsId(null)
-                .successVersions(Stream.of("v1").collect(Collectors.toSet()))
+                .successVersions(Stream.of("v1").collect(Collectors.toCollection(LinkedHashSet::new)))
                 .build();
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -163,7 +164,7 @@ public class CqmResultReviewerTest {
         CQMResultDetails cqmResult = CQMResultDetails.builder()
                 .success(true)
                 .cmsId("")
-                .successVersions(Stream.of("v1", "v6").collect(Collectors.toSet()))
+                .successVersions(Stream.of("v1", "v6").collect(Collectors.toCollection(LinkedHashSet::new)))
                 .build();
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -183,7 +184,7 @@ public class CqmResultReviewerTest {
                 .success(false)
                 .cmsId("CMS1")
                 .cqmCriterionId(null)
-                .successVersions(Stream.of("v1", "v6").collect(Collectors.toSet()))
+                .successVersions(Stream.of("v1", "v6").collect(Collectors.toCollection(LinkedHashSet::new)))
                 .build();
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -203,7 +204,7 @@ public class CqmResultReviewerTest {
                 .success(true)
                 .cmsId("CMS1")
                 .cqmCriterionId(null)
-                .successVersions(Stream.of("v1", "v6").collect(Collectors.toSet()))
+                .successVersions(Stream.of("v1", "v6").collect(Collectors.toCollection(LinkedHashSet::new)))
                 .build();
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -223,7 +224,7 @@ public class CqmResultReviewerTest {
                 .success(true)
                 .cmsId("CMS1")
                 .cqmCriterionId(1L)
-                .allVersions(Stream.of("v1", "v6").collect(Collectors.toSet()))
+                .allVersions(Stream.of("v1", "v6").collect(Collectors.toCollection(LinkedHashSet::new)))
                 .build();
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -242,8 +243,8 @@ public class CqmResultReviewerTest {
                 .success(true)
                 .cmsId("CMS1")
                 .cqmCriterionId(1L)
-                .successVersions(Stream.of("v1", "v6").collect(Collectors.toSet()))
-                .allVersions(Stream.of("v1", "v2").collect(Collectors.toSet()))
+                .successVersions(Stream.of("v1", "v6").collect(Collectors.toCollection(LinkedHashSet::new)))
+                .allVersions(Stream.of("v1", "v2").collect(Collectors.toCollection(LinkedHashSet::new)))
                 .build();
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -262,8 +263,8 @@ public class CqmResultReviewerTest {
                 .success(false)
                 .cmsId("CMS1")
                 .cqmCriterionId(1L)
-                .successVersions(Stream.of("v1", "v6", "v12").collect(Collectors.toSet()))
-                .allVersions(Stream.of("v1", "v2").collect(Collectors.toSet()))
+                .successVersions(Stream.of("v1", "v6", "v12").collect(Collectors.toCollection(LinkedHashSet::new)))
+                .allVersions(Stream.of("v1", "v2").collect(Collectors.toCollection(LinkedHashSet::new)))
                 .build();
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -282,8 +283,8 @@ public class CqmResultReviewerTest {
                 .success(true)
                 .cmsId("CMS1")
                 .cqmCriterionId(1L)
-                .successVersions(Stream.of("v1", "v6", "v12").collect(Collectors.toSet()))
-                .allVersions(Stream.of("v1", "v2").collect(Collectors.toSet()))
+                .successVersions(Stream.of("v1", "v6", "v12").collect(Collectors.toCollection(LinkedHashSet::new)))
+                .allVersions(Stream.of("v1", "v2").collect(Collectors.toCollection(LinkedHashSet::new)))
                 .build();
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -303,8 +304,8 @@ public class CqmResultReviewerTest {
                 .success(true)
                 .cmsId("CMS1")
                 .cqmCriterionId(1L)
-                .successVersions(Stream.of("v1", "v6").collect(Collectors.toSet()))
-                .allVersions(Stream.of("v1", "V2", "v3", "v4", "v5", "v6").collect(Collectors.toSet()))
+                .successVersions(Stream.of("v1", "v6").collect(Collectors.toCollection(LinkedHashSet::new)))
+                .allVersions(Stream.of("v1", "V2", "v3", "v4", "v5", "v6").collect(Collectors.toCollection(LinkedHashSet::new)))
                 .build();
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()

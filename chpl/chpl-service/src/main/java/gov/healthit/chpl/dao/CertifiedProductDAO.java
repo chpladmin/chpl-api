@@ -87,7 +87,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
     }
 
     @Transactional(readOnly = false)
-    public CertifiedProductDTO update(final CertifiedProductDTO dto) throws EntityRetrievalException {
+    public CertifiedProductDTO update(CertifiedProductDTO dto) throws EntityRetrievalException {
         CertifiedProductEntity entity = getEntityById(dto.getId());
         entity.setAcbCertificationId(dto.getAcbCertificationId());
         entity.setProductCode(dto.getProductCode());
@@ -116,8 +116,6 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         entity.setRwtResultsUrl(dto.getRwtResultsUrl());
         entity.setRwtResultsCheckDate(dto.getRwtResultsCheckDate());
         entity.setSvapNoticeUrl(dto.getSvapNoticeUrl());
-
-        entity.setLastModifiedDate(new Date());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         try {
             update(entity);

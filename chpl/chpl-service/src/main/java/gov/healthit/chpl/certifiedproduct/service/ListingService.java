@@ -2,18 +2,22 @@ package gov.healthit.chpl.certifiedproduct.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.compliance.directreview.DirectReviewComparator;
 import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
+import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductChplProductNumberHistoryDao;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
@@ -34,12 +38,21 @@ import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
+import gov.healthit.chpl.domain.comparator.CertificationCriterionComparator;
+import gov.healthit.chpl.domain.comparator.CertifiedProductAccessibilityStandardComparator;
+import gov.healthit.chpl.domain.comparator.CertifiedProductComparator;
+import gov.healthit.chpl.domain.comparator.CertifiedProductQmsStandardComparator;
+import gov.healthit.chpl.domain.comparator.CertifiedProductTargetedUserComparator;
+import gov.healthit.chpl.domain.comparator.CertifiedProductTestingLabComparator;
+import gov.healthit.chpl.domain.comparator.CertifiedProductUcdProcessComparator;
+import gov.healthit.chpl.domain.comparator.ChplProductNumberHistoryComparator;
+import gov.healthit.chpl.domain.comparator.TestParticipantComparator;
+import gov.healthit.chpl.domain.comparator.TestTaskComparator;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
-import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
@@ -66,6 +79,18 @@ public class ListingService {
     private CertifiedProductTargetedUserDAO certifiedProductTargetedUserDao;
     private CertifiedProductAccessibilityStandardDAO certifiedProductAsDao;
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
+    private CertificationCriterionComparator criteriaComparator;
+
+    private CertifiedProductComparator cpComparator;
+    private CertifiedProductTestingLabComparator atlComparator;
+    private CertifiedProductQmsStandardComparator qmsComparator;
+    private CertifiedProductTargetedUserComparator tuComparator;
+    private CertifiedProductAccessibilityStandardComparator asComparator;
+    private ChplProductNumberHistoryComparator chplProductNumberHistoryComparator;
+    private DirectReviewComparator drComparator;
+    private CertifiedProductUcdProcessComparator ucdComparator;
+    private TestTaskComparator ttComparator;
+    private TestParticipantComparator tpComparator;
 
     @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
@@ -86,7 +111,8 @@ public class ListingService {
             CertifiedProductQmsStandardDAO certifiedProductQmsStandardDao,
             CertifiedProductTargetedUserDAO certifiedProductTargetedUserDao,
             CertifiedProductAccessibilityStandardDAO certifiedProductAsDao,
-            CertifiedProductSearchResultDAO certifiedProductSearchResultDAO) {
+            CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
+            CertificationCriterionComparator criteriaComparator) {
 
         this.certificationResultService = certificationResultService;
         this.listingMeasureService = listingMeasureService;
@@ -104,6 +130,18 @@ public class ListingService {
         this.certifiedProductTargetedUserDao = certifiedProductTargetedUserDao;
         this.certifiedProductAsDao = certifiedProductAsDao;
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
+        this.criteriaComparator = criteriaComparator;
+
+        this.cpComparator = new CertifiedProductComparator();
+        this.atlComparator = new CertifiedProductTestingLabComparator();
+        this.qmsComparator = new CertifiedProductQmsStandardComparator();
+        this.tuComparator = new CertifiedProductTargetedUserComparator();
+        this.asComparator = new CertifiedProductAccessibilityStandardComparator();
+        this.chplProductNumberHistoryComparator = new ChplProductNumberHistoryComparator();
+        this.drComparator = new DirectReviewComparator();
+        this.ucdComparator = new CertifiedProductUcdProcessComparator();
+        this.ttComparator = new TestTaskComparator();
+        this.tpComparator = new TestParticipantComparator();
     }
 
     public CertifiedProductSearchDetails createCertifiedSearchDetails(Long listingId) throws EntityRetrievalException {
@@ -113,6 +151,7 @@ public class ListingService {
 
         searchDetails.setCertificationResults(certificationResultService.getCertificationResults(searchDetails));
         searchDetails.setCqmResults(cqmResultsService.getCqmResultDetails(dto.getId(), dto.getYear()));
+        sortSed(searchDetails);
 
         // get first-level parents and children
         searchDetails.getIcs().setParents(populateRelatedCertifiedProducts(getCertifiedProductParents(dto.getId())));
@@ -183,9 +222,36 @@ public class ListingService {
         return listing;
     }
 
+    private void sortSed(CertifiedProductSearchDetails searchDetails) {
+        if (searchDetails.getSed() != null && !CollectionUtils.isEmpty(searchDetails.getSed().getUcdProcesses())) {
+            searchDetails.getSed().setUcdProcesses(searchDetails.getSed().getUcdProcesses().stream()
+                .sorted(ucdComparator)
+                .collect(Collectors.toList()));
+            searchDetails.getSed().getUcdProcesses().stream()
+                .forEach(ucd -> ucd.setCriteria(ucd.getCriteria().stream()
+                    .sorted(criteriaComparator)
+                    .collect(Collectors.toCollection(LinkedHashSet::new))));
+        }
+
+        if (searchDetails.getSed() != null && !CollectionUtils.isEmpty(searchDetails.getSed().getTestTasks())) {
+            searchDetails.getSed().setTestTasks(searchDetails.getSed().getTestTasks().stream()
+                    .sorted(ttComparator)
+                    .collect(Collectors.toList()));
+                searchDetails.getSed().getTestTasks().stream()
+                    .forEach(tt -> tt.setCriteria(tt.getCriteria().stream()
+                        .sorted(criteriaComparator)
+                        .collect(Collectors.toCollection(LinkedHashSet::new))));
+                searchDetails.getSed().getTestTasks().stream()
+                    .forEach(tt -> tt.setTestParticipants(tt.getTestParticipants().stream()
+                        .sorted(tpComparator)
+                        .collect(Collectors.toCollection(LinkedHashSet::new))));
+        }
+    }
+
     private List<CertifiedProductTestingLab> getTestingLabs(Long listingId) throws EntityRetrievalException {
         return certifiedProductTestingLabDao.getTestingLabsByCertifiedProductId(listingId).stream()
                 .map(dto -> new CertifiedProductTestingLab(dto))
+                .sorted(atlComparator)
                 .collect(Collectors.toList());
     }
 
@@ -197,7 +263,9 @@ public class ListingService {
                     MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY),
                     listing.getCertificationEvents(), LOGGER);
         }
-        listing.setDirectReviews(drs);
+        listing.setDirectReviews(drs.stream()
+                .sorted(drComparator)
+                .collect(Collectors.toList()));
         listing.setDirectReviewsAvailable(drService.doesCacheHaveAnyOkData());
     }
 
@@ -215,6 +283,7 @@ public class ListingService {
 
         return relatedCertifiedProductDTOs.stream()
                 .map(dto -> createCertifiedProductBasedOnDto(dto))
+                .sorted(cpComparator)
                 .collect(Collectors.toList());
     }
 
@@ -283,24 +352,28 @@ public class ListingService {
 
     private List<CertifiedProductChplProductNumberHistory> getCertifiedProductChplProductNumberHistory(Long id) throws EntityRetrievalException {
         return chplProductNumberHistoryDao.getHistoricalChplProductNumbers(id).stream()
+                .sorted(chplProductNumberHistoryComparator)
                 .toList();
     }
 
     private List<CertifiedProductQmsStandard> getCertifiedProductQmsStandards(Long id) throws EntityRetrievalException {
         return certifiedProductQmsStandardDao.getQmsStandardsByCertifiedProductId(id).stream()
                 .map(dto -> new CertifiedProductQmsStandard(dto))
+                .sorted(qmsComparator)
                 .collect(Collectors.toList());
     }
 
     private List<CertifiedProductTargetedUser> getCertifiedProductTargetedUsers(Long id) throws EntityRetrievalException {
         return certifiedProductTargetedUserDao.getTargetedUsersByCertifiedProductId(id).stream()
                 .map(dto -> new CertifiedProductTargetedUser(dto))
+                .sorted(tuComparator)
                 .collect(Collectors.toList());
     }
 
     private List<CertifiedProductAccessibilityStandard> getCertifiedProductAccessibilityStandards(Long id) throws EntityRetrievalException {
         return certifiedProductAsDao.getAccessibilityStandardsByCertifiedProductId(id).stream()
                 .map(dto -> new CertifiedProductAccessibilityStandard(dto))
+                .sorted(asComparator)
                 .collect(Collectors.toList());
     }
 }

@@ -212,9 +212,12 @@ public class SplitDeveloperJob implements Job {
         for (Long id : postSplitListingDetails.keySet()) {
             CertifiedProductSearchDetails preSplitListing = preSplitListingDetails.get(id);
             CertifiedProductSearchDetails postSplitListing = postSplitListingDetails.get(id);
-            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, preSplitListing.getId(),
+            if (!StringUtils.equals(preSplitListing.getChplProductNumber(), postSplitListing.getChplProductNumber())) {
+                //listing activity should only be recorded if the CHPL product number of the listing changed
+                activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, preSplitListing.getId(),
                     "Updated certified product " + postSplitListing.getChplProductNumber() + ".", preSplitListing,
                     postSplitListing);
+            }
         }
 
         LOGGER.info("Logging developer split activity.");

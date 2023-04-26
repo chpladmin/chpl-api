@@ -1,8 +1,7 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedHashSet;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -19,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Singular;
 
 /**
  * The user-centered design (UCD) process applied for the corresponding
@@ -65,12 +63,12 @@ public class CertifiedProductUcdProcess implements Serializable {
      */
     @XmlElementWrapper(name = "criteriaList", nillable = true, required = false)
     @XmlElement(required = false, nillable = true)
-    @Singular("criterion")
-    private Set<CertificationCriterion> criteria;
+    @Builder.Default
+    private LinkedHashSet<CertificationCriterion> criteria = new LinkedHashSet<CertificationCriterion>();
 
     public CertifiedProductUcdProcess() {
         super();
-        this.criteria = new HashSet<CertificationCriterion>();
+        this.criteria = new LinkedHashSet<CertificationCriterion>();
     }
 
     public CertifiedProductUcdProcess(CertificationResultUcdProcessDTO dto) {
@@ -121,11 +119,11 @@ public class CertifiedProductUcdProcess implements Serializable {
         this.details = ucdProcessDetails;
     }
 
-    public Set<CertificationCriterion> getCriteria() {
+    public LinkedHashSet<CertificationCriterion> getCriteria() {
         return criteria;
     }
 
-    public void setCriteria(Set<CertificationCriterion> criteria) {
+    public void setCriteria(LinkedHashSet<CertificationCriterion> criteria) {
         this.criteria = criteria;
     }
 }

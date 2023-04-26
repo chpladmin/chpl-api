@@ -22,7 +22,6 @@ public class ListingValidationReportDAO extends BaseDAOImpl {
                 .developer(lvr.getDeveloper())
                 .certificationBody(lvr.getCertificationBody())
                 .certificationStatusName(lvr.getCertificationStatusName())
-                .listingModifiedDate(lvr.getListingModifiedDate())
                 .errorMessage(lvr.getErrorMessage())
                 .reportDate(lvr.getReportDate())
                 .creationDate(new Date())

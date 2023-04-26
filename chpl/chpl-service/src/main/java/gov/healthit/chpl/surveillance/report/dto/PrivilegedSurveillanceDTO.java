@@ -1,7 +1,7 @@
 package gov.healthit.chpl.surveillance.report.dto;
 
+import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceBasicEntity;
 import gov.healthit.chpl.dto.surveillance.SurveillanceBasicDTO;
-import gov.healthit.chpl.entity.surveillance.SurveillanceBasicEntity;
 import gov.healthit.chpl.surveillance.report.entity.PrivilegedSurveillanceEntity;
 import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportSurveillanceMapEntity;
 import lombok.Data;

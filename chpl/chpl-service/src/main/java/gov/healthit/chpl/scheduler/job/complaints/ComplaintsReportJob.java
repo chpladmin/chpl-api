@@ -14,11 +14,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.complaint.ComplaintDAO;
+import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
-import gov.healthit.chpl.manager.SurveillanceManager;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "complaintsReportJobLogger")

@@ -100,6 +100,7 @@ public class CertifiedProductController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @DeprecatedApiResponseFields(friendlyUrl = "/certified_products", httpMethod = "GET", responseClass = CertifiedProduct.class)
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersion(
             @RequestParam(required = true) Long versionId,

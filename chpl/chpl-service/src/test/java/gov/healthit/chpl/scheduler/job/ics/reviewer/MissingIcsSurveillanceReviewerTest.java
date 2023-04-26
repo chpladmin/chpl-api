@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -12,6 +13,7 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
@@ -19,7 +21,6 @@ import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.manager.SurveillanceManager;
 
 public class MissingIcsSurveillanceReviewerTest {
     private static final String ICS_REQUIREMENT_TITLE = "Inherited Certified Status";
@@ -394,7 +395,7 @@ public class MissingIcsSurveillanceReviewerTest {
                             .id(1L)
                             .requirementTypeOther("Annual Real World Testing Plan")
                             .build())
-                            .collect(Collectors.toSet()))
+                            .collect(Collectors.toCollection(LinkedHashSet::new)))
                     .build())
                     .toList());
         Mockito.when(survManager.getByCertifiedProduct(ArgumentMatchers.eq(greatGrandparent.getId())))
@@ -453,7 +454,7 @@ public class MissingIcsSurveillanceReviewerTest {
                                 .title(ICS_REQUIREMENT_TITLE)
                                 .build())
                         .build())
-                        .collect(Collectors.toSet()))
+                        .collect(Collectors.toCollection(LinkedHashSet::new)))
                 .build())
                 .toList());
         Mockito.when(survManager.getByCertifiedProduct(ArgumentMatchers.eq(parent.getId())))
@@ -517,7 +518,7 @@ public class MissingIcsSurveillanceReviewerTest {
                                 .title(ICS_REQUIREMENT_TITLE)
                                 .build())
                         .build())
-                        .collect(Collectors.toSet()))
+                        .collect(Collectors.toCollection(LinkedHashSet::new)))
                 .build())
                 .toList());
         Mockito.when(survManager.getByCertifiedProduct(ArgumentMatchers.eq(grandparent.getId())))
@@ -581,7 +582,7 @@ public class MissingIcsSurveillanceReviewerTest {
                                     .title(ICS_REQUIREMENT_TITLE)
                                     .build())
                             .build())
-                            .collect(Collectors.toSet()))
+                            .collect(Collectors.toCollection(LinkedHashSet::new)))
                     .build())
                     .toList());
         Mockito.when(survManager.getByCertifiedProduct(ArgumentMatchers.eq(greatGrandparent.getId())))
@@ -645,7 +646,7 @@ public class MissingIcsSurveillanceReviewerTest {
                             .title(ICS_REQUIREMENT_TITLE)
                             .build())
                     .build())
-                    .collect(Collectors.toSet()))
+                    .collect(Collectors.toCollection(LinkedHashSet::new)))
             .build())
             .toList());
         Mockito.when(survManager.getByCertifiedProduct(ArgumentMatchers.eq(greatGreatGrandparent.getId())))
@@ -709,7 +710,7 @@ public class MissingIcsSurveillanceReviewerTest {
                             .title(ICS_REQUIREMENT_TITLE)
                             .build())
                     .build())
-                    .collect(Collectors.toSet()))
+                    .collect(Collectors.toCollection(LinkedHashSet::new)))
             .build())
             .toList());
 
@@ -774,7 +775,7 @@ public class MissingIcsSurveillanceReviewerTest {
                                     .title(ICS_REQUIREMENT_TITLE)
                                     .build())
                             .build())
-                            .collect(Collectors.toSet()))
+                            .collect(Collectors.toCollection(LinkedHashSet::new)))
                     .build())
                     .toList());
         Mockito.when(survManager.getByCertifiedProduct(ArgumentMatchers.eq(greatGrandparent.getId())))

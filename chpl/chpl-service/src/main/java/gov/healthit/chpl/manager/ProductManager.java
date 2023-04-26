@@ -177,9 +177,11 @@ public class ProductManager extends SecuredManager {
         }
 
         for (Long id : preUpdateListingDetails.keySet()) {
-            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, id,
+            if (!StringUtils.equals(preUpdateListingDetails.get(id).getChplProductNumber(), postUpdateListingDetails.get(id).getChplProductNumber())) {
+                activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, id,
                     "Updated certified product " + postUpdateListingDetails.get(id).getChplProductNumber()
                     + ".", preUpdateListingDetails.get(id), postUpdateListingDetails.get(id));
+            }
         }
 
         drEmailService.sendEmail(Arrays.asList(currentProductOwner), Arrays.asList(updatedProductOwner),
@@ -321,9 +323,11 @@ public class ProductManager extends SecuredManager {
             // do the update and add activity
             cpDao.update(affectedCp);
             CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetailsNoCache(affectedCp.getId());
-            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeListing.getId(),
+            if (!StringUtils.equals(beforeListing.getChplProductNumber(), afterListing.getChplProductNumber())) {
+                activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeListing.getId(),
                     "Updated certified product " + afterListing.getChplProductNumber() + ".", beforeListing,
                     afterListing);
+            }
         }
 
         Product afterProduct = null;

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -138,7 +139,7 @@ public class MeasureNormalizerTest {
                                     CertificationCriterion.builder()
                                     .id(1L)
                                     .number("170.315 (a)(1)")
-                                    .build()).collect(Collectors.toSet()))
+                                    .build()).collect(Collectors.toCollection(LinkedHashSet::new)))
                             .measure(Measure.builder()
                                     .abbreviation("12345")
                                     .id(1L)
@@ -161,7 +162,7 @@ public class MeasureNormalizerTest {
                                 CertificationCriterion.builder()
                                 .id(2L)
                                 .number("170.315 (a)(2)")
-                                .build()).collect(Collectors.toSet()))
+                                .build()).collect(Collectors.toCollection(LinkedHashSet::new)))
                         .measure(Measure.builder()
                                 .abbreviation("12345")
                                 .id(1L)

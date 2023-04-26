@@ -6,9 +6,9 @@ import java.util.Date;
 
 import org.springframework.beans.BeanUtils;
 
+import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceBasicEntity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
 import gov.healthit.chpl.dto.SurveillanceTypeDTO;
-import gov.healthit.chpl.entity.surveillance.SurveillanceBasicEntity;
 import gov.healthit.chpl.surveillance.report.entity.PrivilegedSurveillanceEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

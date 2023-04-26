@@ -120,7 +120,7 @@ public class CertifiedProductDTO implements Serializable {
         this.setSedTestingEnd(from.getSedTestingEndDay());
         this.setAcbCertificationId(from.getAcbCertificationId());
         this.setOtherAcb(from.getOtherAcb());
-        this.setIcs(from.getIcs() == null || from.getIcs().getInherits() == null ? Boolean.FALSE : from.getIcs().getInherits());
+        this.setIcs(from.getIcs() == null ? null : from.getIcs().getInherits());
         this.setAccessibilityCertified(from.getAccessibilityCertified());
         this.setProductAdditionalSoftware(from.getProductAdditionalSoftware());
         this.setMandatoryDisclosures(from.getMandatoryDisclosures());

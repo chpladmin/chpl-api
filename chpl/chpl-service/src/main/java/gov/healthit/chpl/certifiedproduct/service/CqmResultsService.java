@@ -2,19 +2,21 @@ package gov.healthit.chpl.certifiedproduct.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.comparator.CQMCriteriaComparator;
+import gov.healthit.chpl.domain.comparator.CQMResultComparator;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
@@ -27,16 +29,22 @@ public class CqmResultsService {
     private CQMResultDAO cqmResultDao;
     private DimensionalDataManager dimensionalDataManager;
 
+    private CQMCriteriaComparator cqmCriteriaComparator;
+    private CQMResultComparator cqmResultComparator;
+
     @Autowired
-    public CqmResultsService(CQMResultDetailsDAO cqmResultDetailsDAO, CQMResultDAO cqmResultDao, DimensionalDataManager dimensionalDataManager) {
+    public CqmResultsService(CQMResultDetailsDAO cqmResultDetailsDAO, CQMResultDAO cqmResultDao,
+            DimensionalDataManager dimensionalDataManager,
+            CQMCriteriaComparator cqmCriteriaComparator) {
         this.cqmResultDetailsDAO = cqmResultDetailsDAO;
         this.cqmResultDao = cqmResultDao;
         this.dimensionalDataManager = dimensionalDataManager;
+        this.cqmCriteriaComparator = cqmCriteriaComparator;
+        this.cqmResultComparator = new CQMResultComparator();
     }
 
     public List<CQMResultDetails> getCqmResultDetails(Long id, String year) {
         List<CQMResultDetailsDTO> cqmResultDTOs = getCqmResultDetailsDTOs(id);
-
 
         List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
         for (CQMResultDetailsDTO cqmResultDTO : cqmResultDTOs) {
@@ -92,7 +100,39 @@ public class CqmResultsService {
         for (CQMResultDetails cqmResult : cqmResults) {
             cqmResult.setCriteria(getCqmCriteriaMapping(cqmResult));
         }
-        return cqmResults;
+
+        //sort everything
+        cqmResults.stream()
+            .forEach(cqmResult -> {
+                sortCqmCriteriaMapping(cqmResult);
+                sortSuccessVersions(cqmResult);
+                sortAllVersions(cqmResult);
+            });
+
+        return cqmResults.stream()
+            .sorted(cqmResultComparator)
+            .collect(Collectors.toList());
+    }
+
+    private void sortCqmCriteriaMapping(CQMResultDetails cqmResult) {
+        List<CQMResultCertification> sortedCqmCriteria = cqmResult.getCriteria().stream()
+            .sorted(cqmCriteriaComparator)
+            .collect(Collectors.toList());
+        cqmResult.setCriteria(sortedCqmCriteria);
+    }
+
+    private void sortSuccessVersions(CQMResultDetails cqmResult) {
+        LinkedHashSet<String> sortedSuccessVersions = cqmResult.getSuccessVersions().stream()
+            .sorted()
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+        cqmResult.setSuccessVersions(sortedSuccessVersions);
+    }
+
+    private void sortAllVersions(CQMResultDetails cqmResult) {
+        LinkedHashSet<String> sortedAllVersions = cqmResult.getAllVersions().stream()
+            .sorted()
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+        cqmResult.setAllVersions(sortedAllVersions);
     }
 
     private List<CQMResultDetailsDTO> getCqmResultDetailsDTOs(Long id) {
@@ -129,7 +169,7 @@ public class CqmResultsService {
                 .title(cqm.getTitle())
                 .description(cqm.getDescription())
                 .success(Boolean.FALSE)
-                .allVersions(new HashSet<String>(Arrays.asList(cqm.getCqmVersion())))
+                .allVersions(new LinkedHashSet<String>(Arrays.asList(cqm.getCqmVersion())))
                 .typeId(cqm.getCqmCriterionTypeId())
                 .build();
     }
