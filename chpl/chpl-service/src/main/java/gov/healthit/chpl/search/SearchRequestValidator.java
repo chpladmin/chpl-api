@@ -414,12 +414,12 @@ public class SearchRequestValidator {
 
     private Set<String> getSvapErrors(SearchRequest request) {
         Set<String> svapErrors = new LinkedHashSet<String>();
-        svapErrors.addAll(getSvapExistenceErrors(request.getSvapIds()));
+        svapErrors.addAll(getSvapIdExistenceErrors(request.getSvapIds()));
         svapErrors.addAll(getSvapIdFormatErrors(request.getSvapIdStrings()));
         return svapErrors;
     }
 
-    private Set<String> getSvapExistenceErrors(Set<Long> svapIds) {
+    private Set<String> getSvapIdExistenceErrors(Set<Long> svapIds) {
         if (svapIds == null || svapIds.size() == 0) {
             return Collections.emptySet();
         }

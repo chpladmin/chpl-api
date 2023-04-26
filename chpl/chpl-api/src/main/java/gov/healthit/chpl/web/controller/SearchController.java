@@ -407,6 +407,10 @@ public class SearchController {
         @Parameter(description = "Specifies whether to match listings with an empty or non-empty SVAP Notice Url.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasSvapNoticeUrl")
         @RequestParam(value = "hasSvapNoticeUrl", required = false, defaultValue = "") Boolean hasSvapNoticeUrl,
+        @Parameter(description = "Specifies whether to match listings with SVAP data associated to any criteria or "
+                + "a non-empty SVAP Notice URL.",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasAnySvap")
+        @RequestParam(value = "hasAnySvap", required = false, defaultValue = "") Boolean hasAnySvap,
         @Parameter(description = "The full name of a developer.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "developer")
         @RequestParam(value = "developer", required = false, defaultValue = "") String developer,
@@ -468,6 +472,7 @@ public class SearchController {
                 .svapIdStrings(convertToSetWithDelimeter(svapIdsDelimited, ","))
                 .svapOperatorString(svapOperatorStr)
                 .hasSvapNoticeUrl(hasSvapNoticeUrl)
+                .hasAnySvap(hasAnySvap)
                 .developer(developer)
                 .product(product)
                 .version(version)

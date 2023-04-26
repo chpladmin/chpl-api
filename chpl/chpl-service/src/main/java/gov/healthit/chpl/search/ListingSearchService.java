@@ -97,6 +97,7 @@ public class ListingSearchService {
             .filter(listing -> matchesDecertificationDateRange(listing, searchRequest.getDecertificationDateStart(), searchRequest.getDecertificationDateEnd()))
             .filter(listing -> matchesComplianceFilter(listing, searchRequest.getComplianceActivity()))
             .filter(listing -> matchesRwtFilter(listing, searchRequest.getRwtOptions(), searchRequest.getRwtOperator()))
+            .filter(listing -> matchesHasAnySvapFilter(listing, searchRequest.getHasAnySvap()))
             .filter(listing -> matchesSvapNoticeUrlFilter(listing, searchRequest.getHasSvapNoticeUrl()))
             .filter(listing -> matchesSvaps(listing, searchRequest.getSvapIds(), searchRequest.getSvapOperator()))
             .collect(Collectors.toList());
@@ -450,6 +451,20 @@ public class ListingSearchService {
                 matchesHasPlansFilter, matchesNoPlansFilter, matchesResultsFilter,
                 matchesNoResultsFilter);
         return matchesRwtFilter;
+    }
+
+    private boolean matchesHasAnySvapFilter(ListingSearchResult listing, Boolean hasAnySvapFilter) {
+        if (hasAnySvapFilter == null) {
+            return true;
+        }
+        boolean listingHasAnySvapData = !StringUtils.isEmpty(listing.getSvapNoticeUrl())
+                || !CollectionUtils.isEmpty(listing.getSvaps());
+
+        if ((BooleanUtils.isTrue(hasAnySvapFilter) && listingHasAnySvapData)
+                || (BooleanUtils.isFalse(hasAnySvapFilter) && !listingHasAnySvapData)) {
+            return true;
+        }
+        return false;
     }
 
     private boolean matchesSvapNoticeUrlFilter(ListingSearchResult listing, Boolean hasSvapNoticeUrlFilter) {

@@ -81,6 +81,8 @@ public class SearchRequest implements Serializable {
 
     @Builder.Default
     private Boolean hasSvapNoticeUrl = null;
+    @Builder.Default
+    private Boolean hasAnySvap = null;
 
     @Builder.Default
     @JsonIgnore

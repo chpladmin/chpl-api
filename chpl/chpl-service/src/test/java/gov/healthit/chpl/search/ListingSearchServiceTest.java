@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -2525,6 +2526,48 @@ public class ListingSearchServiceTest {
         assertEquals(3, searchResponse.getRecordCount());
         assertEquals(3, searchResponse.getResults().size());
         searchResponse.getResults().forEach(result -> assertTrue(StringUtils.isBlank(result.getSvapNoticeUrl())));
+    }
+
+    @Test
+    public void search_hasAnySvap_findsMatchingListings() throws ValidationException {
+        List<ListingSearchResult> allListings = createListingSearchResultCollection(3);
+        allListings.get(0).setSvapNoticeUrl("someurl");
+        allListings.get(1).setSvaps(Stream.of(svap(1L), svap(2L), svap(4L)).collect(Collectors.toSet()));
+
+        Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .hasAnySvap(true)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
+        searchResponse.getResults().forEach(result -> assertTrue(!StringUtils.isBlank(result.getSvapNoticeUrl())
+                || !CollectionUtils.isEmpty(result.getSvaps())));
+    }
+
+    @Test
+    public void search_hasNoSvap_findsMatchingListings() throws ValidationException {
+        List<ListingSearchResult> allListings = createListingSearchResultCollection(3);
+        allListings.get(0).setSvapNoticeUrl("someurl");
+        allListings.get(1).setSvaps(Stream.of(svap(1L), svap(2L), svap(4L)).collect(Collectors.toSet()));
+
+        Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
+        SearchRequest searchRequest = SearchRequest.builder()
+            .hasAnySvap(false)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        ListingSearchResponse searchResponse = listingSearchService.findListings(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(1, searchResponse.getRecordCount());
+        assertEquals(1, searchResponse.getResults().size());
+        searchResponse.getResults().forEach(result -> assertTrue(StringUtils.isBlank(result.getSvapNoticeUrl())));
+        searchResponse.getResults().forEach(result -> assertTrue(CollectionUtils.isEmpty(result.getSvaps())));
     }
 
     private List<ListingSearchResult> createListingSearchResultCollection(int collectionSize) {
