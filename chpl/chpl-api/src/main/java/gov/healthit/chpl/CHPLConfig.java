@@ -91,7 +91,7 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
         this.apiLicenseUrl = e.getProperty("api.licenseUrl");
         this.apiVersion = e.getProperty("api.version");
         this.apiDescriptionHtml = e.getProperty("api.description");
-        this.feedbackFormUrl = e.getProperty("footer.publicUrl");
+        this.feedbackFormUrl = e.getProperty("contact.publicUrl");
         this.tryItOutEnabled = BooleanUtils.toBooleanObject(e.getProperty("api.tryItOutEnabled"));
     }
 

@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import gov.healthit.chpl.DirectReviewDeserializingObjectMapper;
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.compliance.DirectReview;
@@ -77,12 +78,14 @@ public class DirectReviewCachingService {
         this.directReviewListingSharedStoreHandler = directReviewListingSharedStoreHandler;
     }
 
-    @CacheEvict(value = { CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH }, allEntries = true)
+    @CacheEvict(value = { CacheNames.COLLECTIONS_LISTINGS }, allEntries = true)
+    @ListingSearchCacheRefresh
     public void populateDirectReviewsCache() {
         populateDirectReviewsCache(LOGGER);
     }
 
-    @CacheEvict(value = { CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH }, allEntries = true)
+    @CacheEvict(value = { CacheNames.COLLECTIONS_LISTINGS }, allEntries = true)
+    @ListingSearchCacheRefresh
     public void populateDirectReviewsCache(Logger logger) {
         logger.info("Fetching all direct review data.");
         HttpStatus calculatedHttpStatus = null;

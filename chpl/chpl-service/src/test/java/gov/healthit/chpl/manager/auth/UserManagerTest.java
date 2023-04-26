@@ -36,6 +36,7 @@ import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.service.UserAccountUpdateEmailer;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.UserMapper;
 
@@ -304,7 +305,7 @@ public class UserManagerTest {
                     .build());
         UserManager userManager = new UserManager(env, Mockito.mock(UserDAO.class),
                 userResetTokenDAO, Mockito.mock(BCryptPasswordEncoder.class),
-                null, null, null, userMapper);
+                null, null, Mockito.mock(UserAccountUpdateEmailer.class), userMapper);
 
         Mockito.when(userResetTokenDAO.findByAuthToken(ArgumentMatchers.anyString()))
         .thenReturn(UserResetTokenDTO.builder()
