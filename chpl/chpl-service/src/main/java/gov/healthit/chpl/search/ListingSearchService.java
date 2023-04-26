@@ -30,7 +30,7 @@ import gov.healthit.chpl.search.domain.ListingSearchResponse;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CQMSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResult;
-import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResultWithLongField;
+import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResultWithLongFields;
 import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.RwtSearchOptions;
@@ -492,9 +492,9 @@ public class ListingSearchService {
         return false;
     }
 
-    private Set<Long> getSvapIds(Set<CertificationCriterionSearchResultWithLongField> certResultWithSvapIds) {
+    private Set<Long> getSvapIds(Set<CertificationCriterionSearchResultWithLongFields> certResultWithSvapIds) {
         return certResultWithSvapIds.stream()
-                .map(certResultWithSvapId -> certResultWithSvapId.getValue())
+                .flatMap(result -> result.getValues().stream())
                 .collect(Collectors.toSet());
     }
 

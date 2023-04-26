@@ -74,7 +74,7 @@ public class ListingSearchResult implements Serializable {
     private Set<StatusEventSearchResult> statusEvents;
     private Set<CertificationCriterionSearchResultWithStringField> apiDocumentation;
     private CertificationCriterionSearchResultWithStringField serviceBaseUrlList;
-    private Set<CertificationCriterionSearchResultWithLongField> svaps;
+    private Set<CertificationCriterionSearchResultWithLongFields> svaps;
     private String rwtPlansUrl;
     private String rwtResultsUrl;
     private String svapNoticeUrl;
@@ -95,7 +95,7 @@ public class ListingSearchResult implements Serializable {
         surveillanceDateRanges = new HashSet<DateRangeSearchResult>();
         statusEvents = new HashSet<StatusEventSearchResult>();
         apiDocumentation = new HashSet<CertificationCriterionSearchResultWithStringField>();
-        svaps = new HashSet<CertificationCriterionSearchResultWithLongField>();
+        svaps = new HashSet<CertificationCriterionSearchResultWithLongFields>();
     }
 
     @Override
@@ -174,10 +174,12 @@ public class ListingSearchResult implements Serializable {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CertificationCriterionSearchResultWithLongField implements Serializable  {
+    public static class CertificationCriterionSearchResultWithLongFields implements Serializable  {
         private static final long serialVersionUID = 2216242866328063730L;
         private CertificationCriterionSearchResult criterion;
-        private Long value;
+
+        @Builder.Default
+        private Set<Long> values = new HashSet<Long>();
     }
 
     @Getter

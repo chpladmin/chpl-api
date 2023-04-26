@@ -6,6 +6,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,7 +24,7 @@ import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CQMSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResult;
-import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResultWithLongField;
+import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResultWithLongFields;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResultWithStringField;
 import gov.healthit.chpl.search.domain.ListingSearchResult.DateRangeSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.DeveloperSearchResult;
@@ -293,19 +294,21 @@ public class ListingSearchDao extends BaseDAOImpl {
                 .build();
     }
 
-    private Set<CertificationCriterionSearchResultWithLongField> convertToSetOfCriteriaWithLongFields(String delimitedCriteriaWithValueLong, String delimeter)
+    private Set<CertificationCriterionSearchResultWithLongFields> convertToSetOfCriteriaWithLongFields(String delimitedCriteriaWithLongValue, String delimeter)
             throws EntityRetrievalException, NumberFormatException {
-            if (ObjectUtils.isEmpty(delimitedCriteriaWithValueLong)) {
-                return new LinkedHashSet<CertificationCriterionSearchResultWithLongField>();
+            if (ObjectUtils.isEmpty(delimitedCriteriaWithLongValue)) {
+                return new LinkedHashSet<CertificationCriterionSearchResultWithLongFields>();
             }
+            Set<CertificationCriterionSearchResultWithLongFields> result = new LinkedHashSet<CertificationCriterionSearchResultWithLongFields>();
 
-            String[] criteriaWithLongFields = delimitedCriteriaWithValueLong.split(delimeter);
-            return Stream.of(criteriaWithLongFields)
+            String[] criteriaWithLongFields = delimitedCriteriaWithLongValue.split(delimeter);
+            Stream.of(criteriaWithLongFields)
                     .map(rethrowFunction(criterionWithValue -> convertToCriterionWithLongField(criterionWithValue)))
-                    .collect(Collectors.toSet());
+                    .forEach(criterionWithLongField -> addToResult(criterionWithLongField, result));
+            return result;
     }
 
-    private CertificationCriterionSearchResultWithLongField convertToCriterionWithLongField(String value)
+    private CertificationCriterionSearchResultWithLongFields convertToCriterionWithLongField(String value)
             throws EntityRetrievalException, NumberFormatException {
             if (StringUtils.isEmpty(value)) {
                 return null;
@@ -325,10 +328,33 @@ public class ListingSearchDao extends BaseDAOImpl {
                 fieldValue = null;
             }
 
-            return CertificationCriterionSearchResultWithLongField.builder()
+            Set<Long> values = new LinkedHashSet<Long>();
+            values.add(fieldValue);
+
+            return CertificationCriterionSearchResultWithLongFields.builder()
                     .criterion(convertToCriterion(aggregatedCriterionFields))
-                    .value(fieldValue)
+                    .values(values)
                     .build();
+    }
+
+    private void addToResult(CertificationCriterionSearchResultWithLongFields item, Set<CertificationCriterionSearchResultWithLongFields> results) {
+        CertificationCriterionSearchResultWithLongFields resultWithCriterion = getResultWithCriterion(item.getCriterion(), results);
+        if (resultWithCriterion != null) {
+            resultWithCriterion.getValues().addAll(item.getValues());
+        } else {
+            results.add(item);
+        }
+    }
+
+    private CertificationCriterionSearchResultWithLongFields getResultWithCriterion(CertificationCriterionSearchResult criterion, Set<CertificationCriterionSearchResultWithLongFields> results) {
+        CertificationCriterionSearchResultWithLongFields resultWithCriterion = null;
+        Optional<CertificationCriterionSearchResultWithLongFields> resultWithCriterionOpt = results.stream()
+            .filter(result -> result.getCriterion().getId().equals(criterion.getId()))
+            .findAny();
+        if (resultWithCriterionOpt.isPresent()) {
+            resultWithCriterion = resultWithCriterionOpt.get();
+        }
+        return resultWithCriterion;
     }
 
     private Set<IdNamePair> convertToSetOfProductOwners(String delimitedProductOwnerString, String delimeter)

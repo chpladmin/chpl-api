@@ -28,7 +28,7 @@ import gov.healthit.chpl.search.domain.ListingSearchResponse;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CQMSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResult;
-import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResultWithLongField;
+import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResultWithLongFields;
 import gov.healthit.chpl.search.domain.ListingSearchResult.DeveloperSearchResult;
 import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
@@ -2396,9 +2396,9 @@ public class ListingSearchServiceTest {
     @Test
     public void search_singleSvapIdWithAndOperatorProvided_findsMatchingListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
-        allListings.get(0).setSvaps(Stream.of(svap(1L), svap(2L), svap(3L)).collect(Collectors.toSet()));
-        allListings.get(1).setSvaps(Stream.of(svap(1L), svap(2L), svap(4L)).collect(Collectors.toSet()));
-        allListings.get(2).setSvaps(Stream.of(svap(5L), svap(2L), svap(3L)).collect(Collectors.toSet()));
+        allListings.get(0).setSvaps(Stream.of(svap(1L, 2L, 3L)).collect(Collectors.toSet()));
+        allListings.get(1).setSvaps(Stream.of(svap(1L, 2L, 4L)).collect(Collectors.toSet()));
+        allListings.get(2).setSvaps(Stream.of(svap(5L, 2L, 3L)).collect(Collectors.toSet()));
 
         Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
         Set<Long> svapIds = new LinkedHashSet<Long>();
@@ -2419,9 +2419,9 @@ public class ListingSearchServiceTest {
     @Test
     public void search_singleSvapIdWithOrOperatorProvided_findsMatchingListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
-        allListings.get(0).setSvaps(Stream.of(svap(1L), svap(2L), svap(3L)).collect(Collectors.toSet()));
-        allListings.get(1).setSvaps(Stream.of(svap(1L), svap(2L), svap(4L)).collect(Collectors.toSet()));
-        allListings.get(2).setSvaps(Stream.of(svap(5L), svap(2L), svap(3L)).collect(Collectors.toSet()));
+        allListings.get(0).setSvaps(Stream.of(svap(1L, 2L, 3L)).collect(Collectors.toSet()));
+        allListings.get(1).setSvaps(Stream.of(svap(1L, 2L, 4L)).collect(Collectors.toSet()));
+        allListings.get(2).setSvaps(Stream.of(svap(5L, 2L, 3L)).collect(Collectors.toSet()));
 
         Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
         Set<Long> svapIds = new LinkedHashSet<Long>();
@@ -2442,9 +2442,9 @@ public class ListingSearchServiceTest {
     @Test
     public void search_multipleSvapIdsWithAndOperatorProvided_findsMatchingListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
-        allListings.get(0).setSvaps(Stream.of(svap(1L), svap(2L), svap(3L)).collect(Collectors.toSet()));
-        allListings.get(1).setSvaps(Stream.of(svap(1L), svap(2L), svap(4L)).collect(Collectors.toSet()));
-        allListings.get(2).setSvaps(Stream.of(svap(5L), svap(2L), svap(3L)).collect(Collectors.toSet()));
+        allListings.get(0).setSvaps(Stream.of(svap(1L, 2L, 3L)).collect(Collectors.toSet()));
+        allListings.get(1).setSvaps(Stream.of(svap(1L, 2L, 4L)).collect(Collectors.toSet()));
+        allListings.get(2).setSvaps(Stream.of(svap(5L, 2L, 3L)).collect(Collectors.toSet()));
 
         Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
         Set<Long> svapIds = new LinkedHashSet<Long>();
@@ -2466,9 +2466,9 @@ public class ListingSearchServiceTest {
     @Test
     public void search_multipleSvapIdsWithOrOperatorProvided_findsMatchingListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(50);
-        allListings.get(0).setSvaps(Stream.of(svap(1L), svap(2L), svap(3L)).collect(Collectors.toSet()));
-        allListings.get(1).setSvaps(Stream.of(svap(1L), svap(2L), svap(4L)).collect(Collectors.toSet()));
-        allListings.get(2).setSvaps(Stream.of(svap(5L), svap(2L), svap(3L)).collect(Collectors.toSet()));
+        allListings.get(0).setSvaps(Stream.of(svap(1L, 2L, 3L)).collect(Collectors.toSet()));
+        allListings.get(1).setSvaps(Stream.of(svap(1L, 2L, 4L)).collect(Collectors.toSet()));
+        allListings.get(2).setSvaps(Stream.of(svap(5L, 2L, 3L)).collect(Collectors.toSet()));
         allListings.get(3).setSvaps(Stream.of(svap(5L)).collect(Collectors.toSet()));
 
         Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
@@ -2532,7 +2532,7 @@ public class ListingSearchServiceTest {
     public void search_hasAnySvap_findsMatchingListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(3);
         allListings.get(0).setSvapNoticeUrl("someurl");
-        allListings.get(1).setSvaps(Stream.of(svap(1L), svap(2L), svap(4L)).collect(Collectors.toSet()));
+        allListings.get(1).setSvaps(Stream.of(svap(1L, 2L, 4L)).collect(Collectors.toSet()));
 
         Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
@@ -2553,7 +2553,7 @@ public class ListingSearchServiceTest {
     public void search_hasNoSvap_findsMatchingListings() throws ValidationException {
         List<ListingSearchResult> allListings = createListingSearchResultCollection(3);
         allListings.get(0).setSvapNoticeUrl("someurl");
-        allListings.get(1).setSvaps(Stream.of(svap(1L), svap(2L), svap(4L)).collect(Collectors.toSet()));
+        allListings.get(1).setSvaps(Stream.of(svap(1L, 2L, 4L)).collect(Collectors.toSet()));
 
         Mockito.when(listingSearchManager.getAllListings()).thenReturn(allListings);
         SearchRequest searchRequest = SearchRequest.builder()
@@ -2644,9 +2644,9 @@ public class ListingSearchServiceTest {
                 .build();
     }
 
-    private CertificationCriterionSearchResultWithLongField svap(Long svapId) {
-        return CertificationCriterionSearchResultWithLongField.builder()
-                .value(svapId)
+    private CertificationCriterionSearchResultWithLongFields svap(Long... svapIds) {
+        return CertificationCriterionSearchResultWithLongFields.builder()
+                .values(Stream.of(svapIds).collect(Collectors.toSet()))
                 .build();
     }
 }
