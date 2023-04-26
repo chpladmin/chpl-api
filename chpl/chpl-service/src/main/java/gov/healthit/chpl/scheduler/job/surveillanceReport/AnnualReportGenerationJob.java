@@ -56,7 +56,7 @@ public class AnnualReportGenerationJob implements Job {
     @Value("${chpl.email.valediction}")
     private String chplEmailValediction;
 
-    @Value("${footer.acbatlUrl}")
+    @Value("${contact.acbatlUrl}")
     private String acbatlFeedbackUrl;
 
     @Autowired

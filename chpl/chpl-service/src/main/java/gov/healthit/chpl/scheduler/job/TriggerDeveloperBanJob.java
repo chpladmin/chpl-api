@@ -66,7 +66,7 @@ public class TriggerDeveloperBanJob implements Job {
     @Value("${chpl.email.valediction}")
     private String chplEmailValediction;
 
-    @Value("${footer.publicUrl}")
+    @Value("${contact.publicUrl}")
     private String publicFeedbackUrl;
 
     private CertifiedProductSearchDetails updatedListing;
