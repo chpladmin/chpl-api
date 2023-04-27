@@ -63,10 +63,6 @@ public class ListingValidationReportEntity {
     private String certificationStatusName;
 
     @Basic(optional = false)
-    @Column(name = "listing_modified_date", nullable = false)
-    private Date listingModifiedDate;
-
-    @Basic(optional = false)
     @Column(name = "error_message", nullable = false)
     private String errorMessage;
 

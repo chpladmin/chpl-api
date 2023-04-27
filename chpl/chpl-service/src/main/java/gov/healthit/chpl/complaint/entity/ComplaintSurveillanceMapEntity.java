@@ -14,8 +14,8 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceBasicEntity;
 import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
-import gov.healthit.chpl.entity.surveillance.SurveillanceBasicEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

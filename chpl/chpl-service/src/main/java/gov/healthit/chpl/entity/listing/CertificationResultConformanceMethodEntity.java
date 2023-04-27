@@ -13,8 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.entity.ConformanceMethodEntity;
-import gov.healthit.chpl.domain.CertificationResultConformanceMethod;
 import lombok.Data;
 
 @Entity

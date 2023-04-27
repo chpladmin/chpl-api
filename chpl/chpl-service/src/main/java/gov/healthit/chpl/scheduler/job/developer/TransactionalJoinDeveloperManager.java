@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
@@ -125,9 +126,11 @@ public class TransactionalJoinDeveloperManager {
                 CertifiedProductSearchDetails preJoinListing = preJoinListingDetails.get(postJoinListingId);
                 CertifiedProductSearchDetails postJoinListing = postJoinListingDetails.get(postJoinListingId);
                 try {
-                    activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, preJoinListing.getId(),
-                        "Updated certified product " + postJoinListing.getChplProductNumber() + ".", preJoinListing,
-                        postJoinListing);
+                    if (!StringUtils.equals(preJoinListing.getChplProductNumber(), postJoinListing.getChplProductNumber())) {
+                        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, preJoinListing.getId(),
+                            "Updated certified product " + postJoinListing.getChplProductNumber() + ".", preJoinListing,
+                            postJoinListing);
+                    }
                 } catch (JsonProcessingException | EntityRetrievalException | EntityCreationException ex) {
                     LOGGER.warn("Unable to log listing activity for listing " + postJoinListingId + " during developer join.", ex);
                 }  catch (Exception ex) {

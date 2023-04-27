@@ -20,7 +20,6 @@ public class ListingValidationReport {
     private String developer;
     private String certificationBody;
     private String certificationStatusName;
-    private Date listingModifiedDate;
     private String errorMessage;
     private ZonedDateTime reportDate;
     private Date creationDate;
@@ -38,7 +37,6 @@ public class ListingValidationReport {
         this.developer = entity.getDeveloper();
         this.certificationBody = entity.getCertificationBody();
         this.certificationStatusName = entity.getCertificationStatusName();
-        this.listingModifiedDate = entity.getListingModifiedDate();
         this.errorMessage = entity.getErrorMessage();
         this.reportDate = entity.getReportDate();
         this.creationDate = entity.getCreationDate();

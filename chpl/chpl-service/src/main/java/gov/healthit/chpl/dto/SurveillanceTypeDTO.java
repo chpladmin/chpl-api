@@ -5,8 +5,8 @@ import java.util.Date;
 
 import org.springframework.beans.BeanUtils;
 
+import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceTypeEntity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
-import gov.healthit.chpl.entity.surveillance.SurveillanceTypeEntity;
 import gov.healthit.chpl.util.Util;
 
 public class SurveillanceTypeDTO implements Serializable {

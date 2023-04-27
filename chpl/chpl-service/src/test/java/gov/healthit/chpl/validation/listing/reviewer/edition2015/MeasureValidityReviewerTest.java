@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.ParseException;
 import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -251,7 +250,7 @@ public class MeasureValidityReviewerTest {
                         i.getArgument(1), i.getArgument(2), i.getArgument(3), i.getArgument(4)));
 
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        Set<CertificationCriterion> allowedCriterion = new LinkedHashSet<CertificationCriterion>();
+        LinkedHashSet<CertificationCriterion> allowedCriterion = new LinkedHashSet<CertificationCriterion>();
         allowedCriterion.add(CertificationCriterion.builder()
                 .id(1L)
                 .number("170.315 (a)(1)")
@@ -291,7 +290,7 @@ public class MeasureValidityReviewerTest {
                         i.getArgument(1), i.getArgument(2), i.getArgument(3), i.getArgument(4)));
 
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        Set<CertificationCriterion> associatedCriterion = new LinkedHashSet<CertificationCriterion>();
+        LinkedHashSet<CertificationCriterion> associatedCriterion = new LinkedHashSet<CertificationCriterion>();
         associatedCriterion.add(CertificationCriterion.builder()
                 .id(1L)
                 .number("170.315 (a)(1)")
@@ -374,13 +373,16 @@ public class MeasureValidityReviewerTest {
                         .id(1L)
                         .name("Test")
                         .abbreviation("T")
-                        .allowedCriteria(Stream.of(buildCriterion(1L, "170.315 (g)(1)"), buildCuresCriterion(2L, "170.315 (g)(1)")).collect(Collectors.toSet()))
+                        .allowedCriteria(Stream.of(buildCriterion(1L, "170.315 (g)(1)"),
+                                buildCuresCriterion(2L, "170.315 (g)(1)"))
+                                .collect(Collectors.toCollection(LinkedHashSet::new)))
                         .build())
                 .measureType(MeasureType.builder()
                         .id(1L)
                         .name("G1")
                         .build())
-                .associatedCriteria(Stream.of(buildCriterion(1L, "170.315 (g)(1)")).collect(Collectors.toSet()))
+                .associatedCriteria(Stream.of(buildCriterion(1L, "170.315 (g)(1)"))
+                        .collect(Collectors.toCollection(LinkedHashSet::new)))
                 .build());
         reviewer.review(listing);
 
@@ -412,13 +414,16 @@ public class MeasureValidityReviewerTest {
                         .id(1L)
                         .name("Test")
                         .abbreviation("T")
-                        .allowedCriteria(Stream.of(buildCriterion(1L, "170.315 (g)(1)"), buildCuresCriterion(2L, "170.315 (g)(1)")).collect(Collectors.toSet()))
+                        .allowedCriteria(Stream.of(buildCriterion(1L, "170.315 (g)(1)"),
+                                buildCuresCriterion(2L, "170.315 (g)(1)"))
+                                .collect(Collectors.toCollection(LinkedHashSet::new)))
                         .build())
                 .measureType(MeasureType.builder()
                         .id(1L)
                         .name("G1")
                         .build())
-                .associatedCriteria(Stream.of(buildCuresCriterion(2L, "170.315 (g)(1)")).collect(Collectors.toSet()))
+                .associatedCriteria(Stream.of(buildCuresCriterion(2L, "170.315 (g)(1)"))
+                        .collect(Collectors.toCollection(LinkedHashSet::new)))
                 .build());
         reviewer.review(listing);
 
@@ -444,21 +449,25 @@ public class MeasureValidityReviewerTest {
                         .id(1L)
                         .name("Test")
                         .abbreviation("T")
-                        .allowedCriteria(Stream.of(buildCriterion(1L, "170.315 (g)(1)"), buildCuresCriterion(2L, "170.315 (g)(1)")).collect(Collectors.toSet()))
+                        .allowedCriteria(Stream.of(buildCriterion(1L, "170.315 (g)(1)"),
+                                buildCuresCriterion(2L, "170.315 (g)(1)"))
+                                .collect(Collectors.toCollection(LinkedHashSet::new)))
                         .build())
                 .measureType(MeasureType.builder()
                         .id(1L)
                         .name("G1")
                         .build())
-                .associatedCriteria(Stream.of(buildCriterion(1L, "170.315 (g)(1)"), buildCuresCriterion(2L, "170.315 (g)(1)")).collect(Collectors.toSet()))
+                .associatedCriteria(Stream.of(buildCriterion(1L, "170.315 (g)(1)"),
+                        buildCuresCriterion(2L, "170.315 (g)(1)"))
+                        .collect(Collectors.toCollection(LinkedHashSet::new)))
                 .build());
         reviewer.review(listing);
 
         assertEquals(0, listing.getErrorMessages().size());
     }
 
-    private Set<CertificationCriterion> buildCriterionSet(Long id, String number) {
-        Set<CertificationCriterion> critSet = new LinkedHashSet<CertificationCriterion>();
+    private LinkedHashSet<CertificationCriterion> buildCriterionSet(Long id, String number) {
+        LinkedHashSet<CertificationCriterion> critSet = new LinkedHashSet<CertificationCriterion>();
         critSet.add(buildCriterion(id, number));
         return critSet;
     }

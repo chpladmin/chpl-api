@@ -1,7 +1,6 @@
 package gov.healthit.chpl.svap.domain;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.svap.entity.SvapCriteriaMapEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +22,7 @@ public class SvapCriteriaMap {
             this.svap = new Svap(entity.getSvap());
         }
         if (entity.getCriteria() != null) {
-            this.criterion = new CertificationCriterion(new CertificationCriterionDTO(entity.getCriteria()));
+            this.criterion = entity.getCriteria().toDomain();
         }
     }
 }
