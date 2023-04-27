@@ -621,17 +621,17 @@ public class CertifiedProductSearchDetails implements Serializable {
         warningMessages.add(warningMessage);
     }
 
-    public void addAllDataErrorMessages(Set<String> messages) {
-        this.errorMessages.addAll(errorMessages);
-        dataErrorMessages.addAll(errorMessages);
+    public void addAllDataErrorMessages(Set<String> dataMessages) {
+        this.errorMessages.addAll(dataMessages);
+        dataErrorMessages.addAll(dataMessages);
     }
 
-    public void addAllBusinessErrorMessages(Set<String> messages) {
-        this.errorMessages.addAll(errorMessages);
-        businessErrorMessages.addAll(errorMessages);
+    public void addAllBusinessErrorMessages(Set<String> businessMessages) {
+        this.errorMessages.addAll(businessMessages);
+        businessErrorMessages.addAll(businessMessages);
     }
 
-    public void addAllWarningMessages(Set<String> messages) {
+    public void addAllWarningMessages(Set<String> warningMessages) {
         this.warningMessages.addAll(warningMessages);
     }
 
