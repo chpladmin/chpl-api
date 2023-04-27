@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,7 +31,9 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.activity.ActivityExclude;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
+import gov.healthit.chpl.domain.comparator.CertificationStatusEventComparator;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.entity.CertificationStatusType;
@@ -264,10 +267,9 @@ public class CertifiedProductSearchDetails implements Serializable {
     @XmlElement(required = false, nillable = true)
     private String mandatoryDisclosures;
 
-    /**
-     * The last time this listing was modified in any way given in milliseconds since epoch.
-     */
-    @XmlElement(required = true)
+    @XmlTransient
+    @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed.", removalDate = "2023-10-31")
     private Long lastModifiedDate;
 
     /**
@@ -422,11 +424,13 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     @Builder.Default
     @XmlTransient
-    private Set<String> warningMessages = new HashSet<String>();
+    @ActivityExclude
+    private Set<String> warningMessages = new LinkedHashSet<String>();
 
     @Builder.Default
     @XmlTransient
-    private Set<String> errorMessages = new HashSet<String>();
+    @ActivityExclude
+    private Set<String> errorMessages = new LinkedHashSet<String>();
 
     @Builder.Default
     @XmlTransient
@@ -572,10 +576,12 @@ public class CertifiedProductSearchDetails implements Serializable {
         return curesUpdate;
     }
 
+    @Deprecated
     public Long getLastModifiedDate() {
         return lastModifiedDate;
     }
 
+    @Deprecated
     public void setLastModifiedDate(Long lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }

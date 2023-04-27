@@ -55,7 +55,7 @@ public class QuarterlyReportGenerationJob implements Job {
     @Value("${chpl.email.valediction}")
     private String chplEmailValediction;
 
-    @Value("${footer.acbatlUrl}")
+    @Value("${contact.acbatlUrl}")
     private String acbatlFeedbackUrl;
 
     @Value("${surveillance.quarterlyReport.success.subject}")

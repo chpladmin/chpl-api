@@ -47,7 +47,7 @@ public class InvitationEmailer {
             @Value("${account.confirmation.body}") String accountConfirmationBody,
             @Value("${account.confirmation.confirmationLink}") String accountConfirmationLink,
             @Value("${chplUrlBegin}") String chplUrlBegin,
-            @Value("${footer.publicUrl}") String publicFeedbackUrl,
+            @Value("${contact.publicUrl}") String publicFeedbackUrl,
             @Value("${chpl.email.greeting}") String chplEmailGreeting,
             @Value("${chpl.email.valediction}") String chplEmailValediction) {
         this.htmlEmailBuilder = htmlEmailBuilder;

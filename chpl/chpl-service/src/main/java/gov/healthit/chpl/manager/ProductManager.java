@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.compliance.directreview.DirectReviewUpdateEmailService;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -125,8 +126,9 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).CREATE)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
+    @ListingSearchCacheRefresh
     public Long create(Long developerId, Product product)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         product.setOwner(Developer.builder().id(developerId).build());
@@ -146,8 +148,9 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE_OWNERSHIP, #product)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
+            CacheNames.COLLECTIONS_LISTINGS
     }, allEntries = true)
+    @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#product.id")
     public Product updateProductOwnership(Product product)
             throws EntityRetrievalException, EntityCreationException, ValidationException, JsonProcessingException {
@@ -174,9 +177,11 @@ public class ProductManager extends SecuredManager {
         }
 
         for (Long id : preUpdateListingDetails.keySet()) {
-            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, id,
+            if (!StringUtils.equals(preUpdateListingDetails.get(id).getChplProductNumber(), postUpdateListingDetails.get(id).getChplProductNumber())) {
+                activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, id,
                     "Updated certified product " + postUpdateListingDetails.get(id).getChplProductNumber()
                     + ".", preUpdateListingDetails.get(id), postUpdateListingDetails.get(id));
+            }
         }
 
         drEmailService.sendEmail(Arrays.asList(currentProductOwner), Arrays.asList(updatedProductOwner),
@@ -189,8 +194,9 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE, #product)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
+    @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#product.id")
     public Product update(Product product)
             throws EntityRetrievalException, EntityCreationException, ValidationException, JsonProcessingException {
@@ -201,8 +207,9 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE, #product)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
+    @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#product.id")
     public Product updateProductForOwnerJoin(Product product)
             throws EntityRetrievalException, EntityCreationException, ValidationException, JsonProcessingException {
@@ -213,8 +220,9 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).MERGE, #productIdsToMerge)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
+    @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#toCreate.id")
     public Product merge(List<Long> productIdsToMerge, Product toCreate)
             throws EntityRetrievalException, ValidationException, EntityCreationException, JsonProcessingException {
@@ -256,8 +264,9 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).SPLIT, #oldProduct)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.PRODUCT_NAMES
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
+    @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#productToCreate.id")
     public Product split(Product oldProduct, Product productToCreate, String newProductCode,
             List<ProductVersionDTO> newProductVersions)
@@ -314,9 +323,11 @@ public class ProductManager extends SecuredManager {
             // do the update and add activity
             cpDao.update(affectedCp);
             CertifiedProductSearchDetails afterListing = cpdManager.getCertifiedProductDetailsNoCache(affectedCp.getId());
-            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeListing.getId(),
+            if (!StringUtils.equals(beforeListing.getChplProductNumber(), afterListing.getChplProductNumber())) {
+                activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, beforeListing.getId(),
                     "Updated certified product " + afterListing.getChplProductNumber() + ".", beforeListing,
                     afterListing);
+            }
         }
 
         Product afterProduct = null;

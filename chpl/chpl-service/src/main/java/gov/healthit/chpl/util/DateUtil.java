@@ -13,7 +13,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public final class DateUtil {
     private static final String UTC_ZONE_ID = "UTC";
-    private static final String ET_ZONE_ID = "America/New_York";
+    public static final String ET_ZONE_ID = "America/New_York";
     private static final String ET_SUFFIX = " ET";
     private static final int HOUR_MAX = 23;
     private static final int MINUTE_MAX = 59;

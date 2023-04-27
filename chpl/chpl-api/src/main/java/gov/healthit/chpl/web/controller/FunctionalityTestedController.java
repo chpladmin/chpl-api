@@ -1,6 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
-import java.util.Set;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +33,7 @@ public class FunctionalityTestedController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody Set<FunctionalityTested> getAllFunctionalitiesTested() {
+    public @ResponseBody List<FunctionalityTested> getAllFunctionalitiesTested() {
         return functionalityTestedManager.getFunctionalitiesTested();
     }
 }

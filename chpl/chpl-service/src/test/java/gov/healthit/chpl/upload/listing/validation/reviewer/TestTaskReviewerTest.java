@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -1779,7 +1780,7 @@ public class TestTaskReviewerTest {
     private TestTask buildTestTask(String uniqueId, List<CertificationCriterion> criteria, int tpCount) {
         TestTask tt = TestTask.builder()
                 .uniqueId(uniqueId)
-                .criteria(criteria)
+                .criteria(criteria.stream().collect(Collectors.toCollection(LinkedHashSet::new)))
                 .description("desc")
                 .taskErrors(1.5F)
                 .taskErrorsStr("1.5")

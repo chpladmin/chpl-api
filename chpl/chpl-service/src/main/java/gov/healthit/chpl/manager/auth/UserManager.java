@@ -3,7 +3,6 @@ package gov.healthit.chpl.manager.auth;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -34,7 +33,6 @@ import gov.healthit.chpl.domain.auth.UpdatePasswordResponse;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserResetTokenDTO;
-import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -47,6 +45,7 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
+import gov.healthit.chpl.service.UserAccountUpdateEmailer;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.UserMapper;
 import lombok.extern.log4j.Log4j2;
@@ -62,13 +61,14 @@ public class UserManager extends SecuredManager {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private ErrorMessageUtil errorMessageUtil;
     private ActivityManager activityManager;
-    private ChplEmailFactory chplEmailFactory;
+    private UserAccountUpdateEmailer userAccountUpdateEmailer;
     private UserMapper userMapper;
 
     @Autowired
     public UserManager(Environment env, UserDAO userDAO,
             UserResetTokenDAO userResetTokenDAO, BCryptPasswordEncoder bCryptPasswordEncoder,
-            ErrorMessageUtil errorMessageUtil, ActivityManager activityManager, ChplEmailFactory chplEmailFactory,
+            ErrorMessageUtil errorMessageUtil, ActivityManager activityManager,
+            UserAccountUpdateEmailer userAccountUpdateEmailer,
             UserMapper userMapper) {
         this.env = env;
         this.userDAO = userDAO;
@@ -76,7 +76,7 @@ public class UserManager extends SecuredManager {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.errorMessageUtil = errorMessageUtil;
         this.activityManager = activityManager;
-        this.chplEmailFactory = chplEmailFactory;
+        this.userAccountUpdateEmailer = userAccountUpdateEmailer;
         this.userMapper = userMapper;
     }
 
@@ -204,7 +204,7 @@ public class UserManager extends SecuredManager {
                 LOGGER.error("Unable to set account " + userToUpdate.getUsername() + " as locked.", ex);
             }
             if (userToUpdate.getFailedLoginCount() == maxLogins) {
-                sendAccountLockedEmail(userToUpdate);
+                userAccountUpdateEmailer.sendAccountLockedEmail(userToUpdate.getEmail());
             }
         }
     }
@@ -213,16 +213,17 @@ public class UserManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE_PASSWORD, #user)")
     public void updateUserPassword(UserDTO user, String password) throws UserRetrievalException, MultipleUserAccountsException {
-        updateUserPasswordUnsecured(user.getEmail(), password);
+        updateUserPasswordUnsecured(user, password);
     }
 
     @Transactional
-    public void updateUserPasswordUnsecured(String email, String password)
+    public void updateUserPasswordUnsecured(UserDTO user, String password)
             throws UserRetrievalException, MultipleUserAccountsException {
         String encodedPassword = encodePassword(password);
-        userDAO.updatePassword(email, encodedPassword);
-        userDAO.updateFailedLoginCount(email, 0);
-        userDAO.updateAccountLockedStatus(email, false);
+        userDAO.updatePassword(user.getEmail(), encodedPassword);
+        userDAO.updateFailedLoginCount(user.getEmail(), 0);
+        userDAO.updateAccountLockedStatus(user.getEmail(), false);
+        userAccountUpdateEmailer.sendPasswordChangedEmail(user);
     }
 
     // no auth needed. create a random string and create a new reset token row
@@ -267,7 +268,7 @@ public class UserManager extends SecuredManager {
                     strength.getScore(), strength.getCrackTimesDisplay().getOfflineFastHashing1e10PerSecond());
             response.setStrength(strength);
         }
-        updateUserPasswordUnsecured(userDto.getEmail(), resetRequest.getNewPassword());
+        updateUserPasswordUnsecured(userDto, resetRequest.getNewPassword());
         deletePreviousTokens(resetRequest.getToken());
         response.setPasswordUpdated(true);
         return response;
@@ -324,24 +325,6 @@ public class UserManager extends SecuredManager {
     public void updateLastLoggedInDate(UserDTO user) throws UserRetrievalException, MultipleUserAccountsException {
         user.setLastLoggedInDate(new Date());
         userDAO.update(user);
-    }
-
-    private void sendAccountLockedEmail(UserDTO user) throws EmailNotSentException {
-        String subject = "CHPL Account Locked";
-        String htmlMessage = "<p>The account associated with " + user.getUsername()
-                + " has exceeded the maximum number of failed login attempts and is locked. "
-                + "You will need to reset your account by selecting the \"Forgot Password\" option "
-                + "during Log In, or by contacting your local administrator.</p>";
-        String[] toEmails = {
-                user.getEmail()
-        };
-
-        chplEmailFactory.emailBuilder()
-            .recipients(new ArrayList<String>(Arrays.asList(toEmails)))
-            .subject(subject)
-            .htmlMessage(htmlMessage)
-            .publicHtmlFooter()
-            .sendEmail();
     }
 
     private Optional<ValidationException> validateUser(UserDTO user) {

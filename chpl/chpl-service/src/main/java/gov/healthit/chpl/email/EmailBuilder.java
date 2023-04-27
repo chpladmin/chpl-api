@@ -98,7 +98,7 @@ public class EmailBuilder {
                 + "</p>"
                 + "<p>Thank you!</p>"
                 + "ONC CHPL Team",
-                env.getProperty("footer.acbatlUrl"));
+                env.getProperty("contact.acbatlUrl"));
         return this;
     }
 
@@ -110,7 +110,7 @@ public class EmailBuilder {
                 + "</p>"
                 + "<p>Thank you!</p>"
                 + "ONC CHPL Team",
-                env.getProperty("footer.publicUrl"));
+                env.getProperty("contact.publicUrl"));
         return this;
     }
 

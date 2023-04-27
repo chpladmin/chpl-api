@@ -108,7 +108,6 @@ public class ListingStatusAndUserRoleReviewerTest {
                 .id(1L)
                 .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
                 .build();
-
         reviewer.review(origListing, updatedListing);
 
         assertEquals(0, updatedListing.getErrorMessages().size());
