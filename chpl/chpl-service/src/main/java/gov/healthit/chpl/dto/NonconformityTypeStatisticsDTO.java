@@ -2,7 +2,7 @@ package gov.healthit.chpl.dto;
 
 import java.util.Date;
 
-import gov.healthit.chpl.entity.surveillance.NonconformityTypeStatisticsEntity;
+import gov.healthit.chpl.compliance.surveillance.entity.NonconformityTypeStatisticsEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

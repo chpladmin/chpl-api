@@ -12,11 +12,11 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceEntity;
+import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
-import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Component

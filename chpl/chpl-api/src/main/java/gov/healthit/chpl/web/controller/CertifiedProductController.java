@@ -26,7 +26,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.CertifiedProductUpdateException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -81,8 +80,8 @@ public class CertifiedProductController {
     public CertifiedProductController(CertifiedProductDetailsManager cpdManager, CertifiedProductManager cpManager,
             IcsManager icsManager, ResourcePermissions resourcePermissions,
             ActivityManager activityManager, ListingValidatorFactory validatorFactory,
-            ErrorMessageUtil msgUtil, ChplProductNumberUtil chplProductNumberUtil, DeveloperManager developerManager,
-            ChplEmailFactory chplEmailFactory) {
+            ErrorMessageUtil msgUtil, ChplProductNumberUtil chplProductNumberUtil,
+            DeveloperManager developerManager) {
         this.cpdManager = cpdManager;
         this.cpManager = cpManager;
         this.icsManager = icsManager;
@@ -101,6 +100,7 @@ public class CertifiedProductController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @DeprecatedApiResponseFields(friendlyUrl = "/certified_products", httpMethod = "GET", responseClass = CertifiedProduct.class)
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersion(
             @RequestParam(required = true) Long versionId,

@@ -47,8 +47,8 @@ public class ChplHtmlEmailBuilder {
             @Value("classpath:email/chpl-email-table.html") Resource htmlTableResource,
             @Value("classpath:email/chpl-email-button-bar.html") Resource htmlButtonBarResource,
             @Value("classpath:email/chpl-email-footer.html") Resource htmlFooterResource,
-            @Value("${footer.acbatlUrl}") String adminAcbAndAtlFeedbackUrl,
-            @Value("${footer.publicUrl}") String publicFeedbackUrl) throws IOException {
+            @Value("${contact.acbatlUrl}") String adminAcbAndAtlFeedbackUrl,
+            @Value("${contact.publicUrl}") String publicFeedbackUrl) throws IOException {
         htmlSkeleton = StreamUtils.copyToString(htmlSkeletonResource.getInputStream(), StandardCharsets.UTF_8);
         htmlHeading = StreamUtils.copyToString(htmlHeadingResource.getInputStream(), StandardCharsets.UTF_8);
         htmlParagraph = StreamUtils.copyToString(htmlParagraphResource.getInputStream(), StandardCharsets.UTF_8);

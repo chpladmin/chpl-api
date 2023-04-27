@@ -161,4 +161,7 @@
     <Logger name="fixupQuestionableActivityJobLogger" level="DEBUG" additivity="false">
         <AppenderRef ref="fixupQuestionableActivityJob" />
     </Logger>
+    <Logger name="listingSearchCacheRefreshLogger" level="DEBUG" additivity="false">
+        <AppenderRef ref="listingSearchCacheRefresh" />
+    </Logger>
 </Loggers>

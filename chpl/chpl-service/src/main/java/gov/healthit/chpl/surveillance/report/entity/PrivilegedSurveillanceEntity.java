@@ -19,7 +19,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Where;
 
-import gov.healthit.chpl.entity.surveillance.SurveillanceTypeEntity;
+import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceTypeEntity;
 import lombok.Data;
 
 @Entity

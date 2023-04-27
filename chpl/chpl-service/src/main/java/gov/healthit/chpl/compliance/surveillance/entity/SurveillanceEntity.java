@@ -1,8 +1,9 @@
-package gov.healthit.chpl.entity.surveillance;
+package gov.healthit.chpl.compliance.surveillance.entity;
 
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -107,7 +108,7 @@ public class SurveillanceEntity {
                     .certifiedProduct(new CertifiedProduct(certifiedProductDAO.getDetailsById(this.getCertifiedProductId())))
                     .requirements(this.getSurveilledRequirements().stream()
                             .map(e -> e.toDomain(certificationCriterionService))
-                            .collect(Collectors.toSet()))
+                            .collect(Collectors.toCollection(LinkedHashSet::new)))
                     .build();
         } catch (EntityRetrievalException e) {
             return null;

@@ -1,10 +1,12 @@
-package gov.healthit.chpl.manager;
+package gov.healthit.chpl.compliance.surveillance;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,10 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
-import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
@@ -38,6 +40,8 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceReportingActivityJob;
@@ -68,6 +72,10 @@ public class SurveillanceManager extends SecuredManager {
     private CertificationCriterionService certificationCriterionService;
     private String schemaBasicSurveillanceName;
 
+    private SurveillanceComparator survComparator;
+    private SurveillanceRequirementComparator reqComparator;
+    private SurveillanceNonconformityComparator ncComparator;
+
     @SuppressWarnings("checkstyle:parameterNumber")
     @Autowired
     public SurveillanceManager(SurveillanceDAO survDao, CertifiedProductDAO cpDao,
@@ -91,12 +99,24 @@ public class SurveillanceManager extends SecuredManager {
         this.userDAO = userDAO;
         this.certificationCriterionService = certificationCriterionService;
         this.schemaBasicSurveillanceName = schemaBasicSurveillanceName;
+
+        this.survComparator = new SurveillanceComparator();
+        this.reqComparator = new SurveillanceRequirementComparator();
+        this.ncComparator = new SurveillanceNonconformityComparator();
     }
 
     @Transactional(readOnly = true)
     public Surveillance getById(final Long survId) throws EntityRetrievalException {
         Surveillance result = survDao.getSurveillanceById(survId).toDomain(cpDao, certificationCriterionService);
         survReadValidator.validate(result);
+        result.setRequirements(result.getRequirements().stream()
+                .sorted(reqComparator)
+                .collect(Collectors.toCollection(LinkedHashSet::new)));
+        result.getRequirements().stream()
+            .forEach(req -> req.setNonconformities(req.getNonconformities().stream()
+                    .sorted(ncComparator)
+                    .collect(Collectors.toList())));
+
         return result;
     }
 
@@ -104,8 +124,19 @@ public class SurveillanceManager extends SecuredManager {
     public List<Surveillance> getByCertifiedProduct(final Long cpId) {
         List<Surveillance> surveillances = survDao.getSurveillanceByCertifiedProductId(cpId).stream()
                 .map(survEntity -> survEntity.toDomain(cpDao, certificationCriterionService))
+                .sorted(survComparator)
                 .toList();
         surveillances.forEach(surv -> survReadValidator.validate(surv));
+        surveillances.stream()
+            .forEach(surv -> surv.setRequirements(surv.getRequirements().stream()
+                    .sorted(reqComparator)
+                    .collect(Collectors.toCollection(LinkedHashSet::new))));
+        surveillances.stream()
+            .flatMap(surv -> surv.getRequirements().stream())
+            .forEach(req -> req.setNonconformities(req.getNonconformities().stream()
+                    .sorted(ncComparator)
+                    .collect(Collectors.toList())));
+
         return surveillances;
     }
 
@@ -113,8 +144,9 @@ public class SurveillanceManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).CREATE, #survToInsert)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH
+            CacheNames.COLLECTIONS_LISTINGS
     }, allEntries = true)
+    @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#survToInsert.certifiedProduct.id")
     public Long createSurveillance(Surveillance survToInsert)
             throws UserPermissionRetrievalException, EntityRetrievalException, JsonProcessingException, EntityCreationException,
@@ -142,9 +174,10 @@ public class SurveillanceManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).UPDATE, #survToUpdate)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH,
+            CacheNames.COLLECTIONS_LISTINGS,
             CacheNames.COMPLAINTS
     }, allEntries = true)
+    @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#survToUpdate.certifiedProduct.id")
     public void updateSurveillance(final Surveillance survToUpdate) throws EntityRetrievalException,
             EntityCreationException, JsonProcessingException, ValidationException {
@@ -169,8 +202,9 @@ public class SurveillanceManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).DELETE, #survToDelete)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COLLECTIONS_SEARCH, CacheNames.COMPLAINTS
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COMPLAINTS
     }, allEntries = true)
+    @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#survToDelete.certifiedProduct.id")
     public void deleteSurveillance(Surveillance survToDelete, String reason)
             throws InvalidArgumentsException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
