@@ -434,10 +434,12 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     @Builder.Default
     @XmlTransient
+    @ActivityExclude
     private Set<String> dataErrorMessages = new HashSet<String>();
 
     @Builder.Default
     @XmlTransient
+    @ActivityExclude
     private Set<String> businessErrorMessages = new HashSet<String>();
 
     public Long getId() {
