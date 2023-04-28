@@ -1,4 +1,4 @@
-package gov.healthit.chpl.service;
+package gov.healthit.chpl.service.realworldtesting;
 
 import java.io.Serializable;
 import lombok.AllArgsConstructor;
