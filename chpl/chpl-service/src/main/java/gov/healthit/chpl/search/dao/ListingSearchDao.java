@@ -332,9 +332,9 @@ public class ListingSearchDao extends BaseDAOImpl {
             values.add(fieldValue);
 
             return CertificationCriterionSearchResultWithLongFields.builder()
-                    .criterion(convertToCriterion(aggregatedCriterionFields))
-                    .values(values)
-                    .build();
+                .criterion(convertToCriterion(aggregatedCriterionFields))
+                .values(values)
+                .build();
     }
 
     private void addToResult(CertificationCriterionSearchResultWithLongFields item, Set<CertificationCriterionSearchResultWithLongFields> results) {
