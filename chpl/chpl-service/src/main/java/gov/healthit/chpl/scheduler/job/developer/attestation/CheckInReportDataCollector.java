@@ -1,8 +1,6 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,8 +42,6 @@ public class CheckInReportDataCollector {
     private DirectReviewSearchService directReviewSearchService;
     private CheckInReportSourceService checkInReportSourceService;
     private CheckInReportValidation checkInReportValidation;
-
-    private Map<Long, List<ListingSearchResult>> developerListings = new HashMap<Long, List<ListingSearchResult>>();
 
     private Set<String> activeStatuses = Stream.of(
             CertificationStatusType.Active.getName(),
@@ -241,21 +237,16 @@ public class CheckInReportDataCollector {
     }
 
     private List<ListingSearchResult> getActiveListingDataForDeveloper(Developer developer, Logger logger) {
-        if (developerListings.get(developer.getId()) != null) {
-            return developerListings.get(developer.getId());
-        } else {
-            try {
-                SearchRequest searchRequest = SearchRequest.builder()
-                        .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
-                        .developerId(developer.getId())
-                        .certificationStatuses(activeStatuses).pageSize(MAX_PAGE_SIZE).pageNumber(0).build();
-                List<ListingSearchResult> searchResults = listingSearchService.getAllPagesOfSearchResults(searchRequest);
-                developerListings.put(developer.getId(), searchResults);
-                return searchResults;
-            } catch (ValidationException ex) {
-                logger.error("Could not retrieve listings from search request.", ex);
-                return null;
-            }
+        try {
+            SearchRequest searchRequest = SearchRequest.builder()
+                    .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
+                    .developerId(developer.getId())
+                    .certificationStatuses(activeStatuses).pageSize(MAX_PAGE_SIZE).pageNumber(0).build();
+            List<ListingSearchResult> searchResults = listingSearchService.getAllPagesOfSearchResults(searchRequest);
+            return searchResults;
+        } catch (ValidationException ex) {
+            logger.error("Could not retrieve listings from search request.", ex);
+            return null;
         }
     }
 
