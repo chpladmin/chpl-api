@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmission;
-import gov.healthit.chpl.attestation.manager.AttestationSubmissionService;
+import gov.healthit.chpl.attestation.service.AttestationSubmissionService;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;

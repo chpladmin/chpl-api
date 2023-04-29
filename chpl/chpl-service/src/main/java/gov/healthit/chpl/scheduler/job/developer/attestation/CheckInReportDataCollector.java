@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
@@ -54,12 +53,15 @@ public class CheckInReportDataCollector {
             CertificationStatusType.SuspendedByOnc.getName())
             .collect(Collectors.toSet());
 
-    public CheckInReportDataCollector(AttestationManager attestationManager, DeveloperAttestationPeriodCalculator developerAttestationPeriodCalculator,
-            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO, ListingSearchService listingSearchService,
-            DirectReviewSearchService directReviewSearchService, CertificationCriterionService certificationCriterionService, RealWorldTestingCriteriaService realWorldTestingCriteriaService,
-            CheckInReportSourceService checkInReportSourceService, CheckInReportValidation checkInReportValidation,
-            @Value("${assurancesCriteriaKeys}") String[] assurancesCriteriaKeys,
-            @Value("${apiCriteriaKeys}") String[] apiCriteriaKeys) {
+    public CheckInReportDataCollector(AttestationManager attestationManager,
+            DeveloperAttestationPeriodCalculator developerAttestationPeriodCalculator,
+            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO,
+            ListingSearchService listingSearchService,
+            DirectReviewSearchService directReviewSearchService,
+            CertificationCriterionService certificationCriterionService,
+            RealWorldTestingCriteriaService realWorldTestingCriteriaService,
+            CheckInReportSourceService checkInReportSourceService,
+            CheckInReportValidation checkInReportValidation) {
 
         this.attestationManager = attestationManager;
         this.developerAttestationPeriodCalculator = developerAttestationPeriodCalculator;

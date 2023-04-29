@@ -15,6 +15,7 @@ import gov.healthit.chpl.attestation.dao.AttestationDAO;
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmission;
 import gov.healthit.chpl.attestation.entity.AttestationSubmissionResponseEntity;
+import gov.healthit.chpl.attestation.service.AttestationSubmissionService;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.form.AllowedResponse;
 import gov.healthit.chpl.form.Form;
