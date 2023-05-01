@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.ff4j.FF4j;
@@ -21,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
+import gov.healthit.chpl.attestation.service.AttestationResponseValidationService;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
@@ -97,6 +99,7 @@ public class ChangeRequestManager {
     private DeveloperManager devManager;
     private ActivityManager activityManager;
     private AttestationManager attestationManager;
+    private AttestationResponseValidationService attestationResponseValidationService;
     private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
     private ValidationUtils validationUtils;
@@ -117,9 +120,11 @@ public class ChangeRequestManager {
             DeveloperDAO developerDAO,
             ChangeRequestStatusService crStatusHelper,
             ChangeRequestValidationService crValidationService,
-            ChangeRequestDetailsFactory crDetailsFactory, DeveloperManager devManager,
+            ChangeRequestDetailsFactory crDetailsFactory,
+            DeveloperManager devManager,
             ActivityManager activityManager,
             AttestationManager attestationManager,
+            AttestationResponseValidationService attestationResponseValidationService,
             ResourcePermissions resourcePermissions,
             ErrorMessageUtil msgUtil,
             ValidationUtils validationUtils,
@@ -137,6 +142,7 @@ public class ChangeRequestManager {
         this.devManager = devManager;
         this.activityManager = activityManager;
         this.attestationManager = attestationManager;
+        this.attestationResponseValidationService = attestationResponseValidationService;
         this.resourcePermissions = resourcePermissions;
         this.msgUtil = msgUtil;
         this.validationUtils = validationUtils;
@@ -193,8 +199,10 @@ public class ChangeRequestManager {
 
         ChangeRequestValidationContext crValidationContext = getNewValidationContext(cr, crFromDb);
         ValidationException validationException = new ValidationException();
-        validationException.getErrorMessages().addAll(crValidationService.validate(crValidationContext));
-        if (validationException.getErrorMessages().size() > 0) {
+        validationException.getErrorMessages().addAll(crValidationService.getErrorMessages(crValidationContext));
+        validationException.getWarningMessages().addAll(crValidationService.getWarningMessages(crValidationContext));
+        if (!CollectionUtils.isEmpty(validationException.getErrorMessages())
+                || !CollectionUtils.isEmpty(validationException.getWarningMessages())) {
             throw validationException;
         }
 
@@ -264,8 +272,8 @@ public class ChangeRequestManager {
 
     private boolean isDeveloperDemogrpahicChangeRequest(ChangeRequest cr) {
         HashMap<String, Object> crMap = (HashMap) cr.getDetails();
-        return crMap.containsKey("developerId") ||
-                (ObjectUtils.allNotNull(cr, cr.getChangeRequestType())
+        return crMap.containsKey("developerId")
+                || (ObjectUtils.allNotNull(cr, cr.getChangeRequestType())
                 && cr.getChangeRequestType().isDemographics());
     }
 
@@ -280,7 +288,7 @@ public class ChangeRequestManager {
 
         ChangeRequestValidationContext crValidationContext = getNewValidationContext(cr, null);
         ValidationException validationException = new ValidationException();
-        validationException.getErrorMessages().addAll(crValidationService.validate(crValidationContext));
+        validationException.getErrorMessages().addAll(crValidationService.getErrorMessages(crValidationContext));
         if (validationException.getErrorMessages().size() > 0) {
             throw validationException;
         }
@@ -319,6 +327,7 @@ public class ChangeRequestManager {
                 newChangeRequest,
                 originalChangeRequest,
                 formValidator,
+                attestationResponseValidationService,
                 resourcePermissions,
                 validationUtils,
                 developerDAO,

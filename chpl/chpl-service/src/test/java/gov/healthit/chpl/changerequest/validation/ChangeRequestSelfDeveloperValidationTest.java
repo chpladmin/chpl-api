@@ -98,6 +98,7 @@ public class ChangeRequestSelfDeveloperValidationTest {
                         getChangeRequestSelfDeveloper(selfDeveloperValue),
                         null,
                         null,
+                        null,
                         resourcePermissions,
                         null,
                         null,

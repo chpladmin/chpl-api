@@ -1,6 +1,7 @@
 package gov.healthit.chpl.changerequest.validation;
 
 import gov.healthit.chpl.attestation.manager.AttestationManager;
+import gov.healthit.chpl.attestation.service.AttestationResponseValidationService;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
@@ -26,6 +27,7 @@ public class ChangeRequestValidationContext {
     private ValidationDAOs validationDAOs;
     private DomainManagers domainManagers;
     private FormValidator formValidator;
+    private AttestationResponseValidationService attestationResponseValidationService;
     private ResourcePermissions resourcePermissions;
     private ValidationUtils validationUtils;
     private ChangeRequestTypeIds changeRequestTypeIds;
@@ -35,6 +37,7 @@ public class ChangeRequestValidationContext {
             ChangeRequest newChangeRequest,
             ChangeRequest origChangeRequest,
             FormValidator formValidator,
+            AttestationResponseValidationService attestationResponseValidationService,
             ResourcePermissions resourcePermissions,
             ValidationUtils validationUtils,
             DeveloperDAO developerDAO,
@@ -54,6 +57,7 @@ public class ChangeRequestValidationContext {
         this.newChangeRequest = newChangeRequest;
         this.origChangeRequest = origChangeRequest;
         this.formValidator = formValidator;
+        this.attestationResponseValidationService = attestationResponseValidationService;
         this.resourcePermissions = resourcePermissions;
         this.validationUtils = validationUtils;
         this.validationDAOs = new ValidationDAOs(developerDAO, changeRequestDAO, changeRequestStatusTypeDAO, changeRequestTypeDAO);

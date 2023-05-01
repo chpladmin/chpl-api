@@ -61,7 +61,7 @@ public class ChangeRequestManagerTest {
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, null, changeRequestDAO,
                 null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, ff4j);
+                null, null, null, null, ff4j);
 
         // Run
         ChangeRequest cr = changeRequestManager.getChangeRequest(1L);
@@ -81,7 +81,7 @@ public class ChangeRequestManagerTest {
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, null, changeRequestDAO,
                 null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, ff4j);
+                null, null, null, null, null, ff4j);
 
         // Run
         changeRequestManager.getChangeRequest(11L);
@@ -99,7 +99,7 @@ public class ChangeRequestManagerTest {
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong())).thenReturn(getBasicChangeRequest());
 
         ChangeRequestValidationService crValidationService = Mockito.mock(ChangeRequestValidationService.class);
-        Mockito.when(crValidationService.validate(ArgumentMatchers.any())).thenReturn(new ArrayList<String>());
+        Mockito.when(crValidationService.getErrorMessages(ArgumentMatchers.any())).thenReturn(new ArrayList<String>());
 
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
@@ -123,6 +123,7 @@ public class ChangeRequestManagerTest {
                 crStatusService,
                 crValidationService,
                 crDetailsFactory,
+                null,
                 null,
                 null,
                 null,
@@ -149,7 +150,7 @@ public class ChangeRequestManagerTest {
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong())).thenReturn(getBasicChangeRequest());
 
         ChangeRequestValidationService crValidationService = Mockito.mock(ChangeRequestValidationService.class);
-                Mockito.when(crValidationService.validate(ArgumentMatchers.any())).thenReturn(new ArrayList<String>(
+                Mockito.when(crValidationService.getErrorMessages(ArgumentMatchers.any())).thenReturn(new ArrayList<String>(
                         Arrays.asList("This is an error.")));
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, null, changeRequestDAO,
@@ -160,6 +161,7 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 crValidationService,
+                null,
                 null,
                 null,
                 null,
@@ -186,7 +188,7 @@ public class ChangeRequestManagerTest {
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong())).thenReturn(getBasicChangeRequest());
 
         ChangeRequestValidationService crValidationService = Mockito.mock(ChangeRequestValidationService.class);
-        Mockito.when(crValidationService.validate(ArgumentMatchers.any())).thenReturn(new ArrayList<String>());
+        Mockito.when(crValidationService.getErrorMessages(ArgumentMatchers.any())).thenReturn(new ArrayList<String>());
 
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(false);
@@ -213,6 +215,7 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
+                null,
                 resourcePermissions,
                 null,
                 null,
@@ -236,7 +239,7 @@ public class ChangeRequestManagerTest {
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong())).thenReturn(getBasicChangeRequest());
 
         ChangeRequestValidationService crValidationService = Mockito.mock(ChangeRequestValidationService.class);
-        Mockito.when(crValidationService.validate(ArgumentMatchers.any())).thenReturn(new ArrayList<String>());
+        Mockito.when(crValidationService.getErrorMessages(ArgumentMatchers.any())).thenReturn(new ArrayList<String>());
 
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
@@ -261,6 +264,7 @@ public class ChangeRequestManagerTest {
                 crStatusService,
                 crValidationService,
                 crDetailsFactory,
+                null,
                 null,
                 null,
                 null,

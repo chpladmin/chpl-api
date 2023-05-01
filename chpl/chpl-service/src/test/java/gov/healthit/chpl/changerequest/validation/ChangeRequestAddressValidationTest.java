@@ -278,6 +278,7 @@ public class ChangeRequestAddressValidationTest {
         return new ChangeRequestValidationContext(null, getChangeRequestAddress(address),
                         null,
                         null,
+                        null,
                         resourcePermissions,
                         null,
                         null,

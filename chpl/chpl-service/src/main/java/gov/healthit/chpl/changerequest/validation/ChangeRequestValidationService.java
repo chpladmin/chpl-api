@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.changerequest.validation.attestation.AttestationResponseValidation;
 import gov.healthit.chpl.changerequest.validation.attestation.AttestationValidation;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
@@ -25,11 +26,15 @@ public class ChangeRequestValidationService {
         this.attestationChangeRequestTypeId = attestationChangeRequestTypeId;
     }
 
-    public List<String> validate(ChangeRequestValidationContext context) {
-        return runValidations(gatherValidations(context), context);
+    public List<String> getErrorMessages(ChangeRequestValidationContext context) {
+        return runValidations(gatherErrorValidations(context), context);
     }
 
-    private List<ValidationRule<ChangeRequestValidationContext>> gatherValidations(ChangeRequestValidationContext context) {
+    public List<String> getWarningMessages(ChangeRequestValidationContext context) {
+        return runValidations(gatherWarningValidations(context), context);
+    }
+
+    private List<ValidationRule<ChangeRequestValidationContext>> gatherErrorValidations(ChangeRequestValidationContext context) {
         List<ValidationRule<ChangeRequestValidationContext>> rules = new ArrayList<ValidationRule<ChangeRequestValidationContext>>();
 
         if (isNewChangeRequest(context)) {
@@ -42,6 +47,17 @@ public class ChangeRequestValidationService {
             rules.addAll(getDeveloperDetailsValidations());
         } else if (context.getNewChangeRequest().getChangeRequestType().getId().equals(attestationChangeRequestTypeId)) {
             rules.addAll(getAttestationValidations());
+        }
+
+        return rules;
+    }
+
+    private List<ValidationRule<ChangeRequestValidationContext>> gatherWarningValidations(ChangeRequestValidationContext context) {
+        List<ValidationRule<ChangeRequestValidationContext>> rules = new ArrayList<ValidationRule<ChangeRequestValidationContext>>();
+
+        if (!isNewChangeRequest(context)
+            && context.getNewChangeRequest().getChangeRequestType().getId().equals(attestationChangeRequestTypeId)) {
+                rules.addAll(getAttestationUpdateValidations());
         }
 
         return rules;
@@ -62,7 +78,7 @@ public class ChangeRequestValidationService {
 
     private List<ValidationRule<ChangeRequestValidationContext>> getAttestationUpdateValidations() {
         return new ArrayList<ValidationRule<ChangeRequestValidationContext>>(List.of(
-                new AttestationValidation()));
+                new AttestationResponseValidation()));
     }
 
     private Boolean isNewChangeRequest(ChangeRequestValidationContext context) {
@@ -89,13 +105,13 @@ public class ChangeRequestValidationService {
 
     private List<String> runValidations(List<ValidationRule<ChangeRequestValidationContext>> rules, ChangeRequestValidationContext context) {
         try {
-            List<String> errorMessages = new ArrayList<String>();
+            List<String> validationMessages = new ArrayList<String>();
             for (ValidationRule<ChangeRequestValidationContext> rule : rules) {
                 if (rule != null && !rule.isValid(context)) {
-                    errorMessages.addAll(rule.getMessages());
+                    validationMessages.addAll(rule.getMessages());
                 }
             }
-            return errorMessages;
+            return validationMessages;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
