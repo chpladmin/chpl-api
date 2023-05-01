@@ -214,4 +214,8 @@
         <AppenderRef ref="fixupQuestionableActivityJob" />
         <AppenderRef ref="fixupQuestionableActivityJobJson" />
     </Logger>
+    <Logger name="listingSearchCacheRefreshLogger" level="INFO" additivity="false">
+        <AppenderRef ref="listingSearchCacheRefresh" />
+        <AppenderRef ref="listingSearchCacheRefreshJson" />
+    </Logger>
 </Loggers>

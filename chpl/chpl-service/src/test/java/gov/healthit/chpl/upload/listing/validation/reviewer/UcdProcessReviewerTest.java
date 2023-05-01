@@ -3,6 +3,7 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -111,7 +112,7 @@ public class UcdProcessReviewerTest {
                 .build();
         listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                 .id(1L)
-                .criterion(a3)
+                .criteria(Stream.of(a3).collect(Collectors.toCollection(LinkedHashSet::new)))
                 .name("UCD Name")
                 .details("some details")
                 .build());
@@ -134,7 +135,7 @@ public class UcdProcessReviewerTest {
                 .build();
         listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                                 .id(1L)
-                                .criterion(a3)
+                                .criteria(Stream.of(a3).collect(Collectors.toCollection(LinkedHashSet::new)))
                                 .name("UCD Name")
                                 .details("some details")
                                 .build());
@@ -157,7 +158,7 @@ public class UcdProcessReviewerTest {
                 .build();
         listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                                 .id(1L)
-                                .criterion(a3)
+                                .criteria(Stream.of(a3).collect(Collectors.toCollection(LinkedHashSet::new)))
                                 .name("UCD Name")
                                 .details("some details")
                                 .build());
@@ -180,7 +181,7 @@ public class UcdProcessReviewerTest {
                 .build();
         listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                 .id(1L)
-                .criterion(a6)
+                .criteria(Stream.of(a6).collect(Collectors.toCollection(LinkedHashSet::new)))
                 .name("UCD Name")
                 .details("some details")
                 .build());
@@ -202,7 +203,7 @@ public class UcdProcessReviewerTest {
                 .build();
         listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                                 .id(1L)
-                                .criterion(a6)
+                                .criteria(Stream.of(a6).collect(Collectors.toCollection(LinkedHashSet::new)))
                                 .name("UCD Name")
                                 .details("some details")
                                 .build());
@@ -224,7 +225,7 @@ public class UcdProcessReviewerTest {
                 .build();
         listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                                 .id(1L)
-                                .criterion(a6)
+                                .criteria(Stream.of(a6).collect(Collectors.toCollection(LinkedHashSet::new)))
                                 .name("UCD Name")
                                 .details("some details")
                                 .build());
@@ -246,7 +247,7 @@ public class UcdProcessReviewerTest {
                         .build())
                 .build();
         CertifiedProductUcdProcess ucdNotFound = CertifiedProductUcdProcess.builder()
-                .criterion(a1)
+                .criteria(Stream.of(a1).collect(Collectors.toCollection(LinkedHashSet::new)))
                 .name("UCD Name")
                 .details("some details")
                 .build();
@@ -272,7 +273,7 @@ public class UcdProcessReviewerTest {
                         .build())
                 .build();
         CertifiedProductUcdProcess ucdNotFound = CertifiedProductUcdProcess.builder()
-                .criterion(a1)
+                .criteria(Stream.of(a1).collect(Collectors.toCollection(LinkedHashSet::new)))
                 .name("UCD Name")
                 .details("some details")
                 .build();
@@ -302,8 +303,7 @@ public class UcdProcessReviewerTest {
                         .build())
                 .build();
         CertifiedProductUcdProcess ucdNotFound = CertifiedProductUcdProcess.builder()
-                .criterion(a1)
-                .criterion(a2)
+                .criteria(Stream.of(a1, a2).collect(Collectors.toCollection(LinkedHashSet::new)))
                 .name("UCD Name")
                 .details("some details")
                 .build();
@@ -330,7 +330,7 @@ public class UcdProcessReviewerTest {
                         .build())
                 .build();
         CertifiedProductUcdProcess ucdNotFound = CertifiedProductUcdProcess.builder()
-                .criterion(a3)
+                .criteria(Stream.of(a3).collect(Collectors.toCollection(LinkedHashSet::new)))
                 .name("UCD Name")
                 .details("some details")
                 .build();
@@ -355,7 +355,7 @@ public class UcdProcessReviewerTest {
                         .build())
                 .build();
         CertifiedProductUcdProcess ucdNotFound = CertifiedProductUcdProcess.builder()
-                .criterion(a6)
+                .criteria(Stream.of(a6).collect(Collectors.toCollection(LinkedHashSet::new)))
                 .name("UCD Name")
                 .details("some details")
                 .build();
@@ -406,7 +406,7 @@ public class UcdProcessReviewerTest {
                 .build();
         listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                             .id(1L)
-                            .criterion(a1)
+                            .criteria(Stream.of(a1).collect(Collectors.toCollection(LinkedHashSet::new)))
                             .name("UCD Name")
                             .details("some details")
                             .build());
@@ -438,14 +438,13 @@ public class UcdProcessReviewerTest {
                 .build();
         listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                                 .id(1L)
-                                .criterion(a1)
-                                .criterion(a2)
+                                .criteria(Stream.of(a1, a2).collect(Collectors.toCollection(LinkedHashSet::new)))
                                 .name("UCD Name 1")
                                 .details("some details")
                                 .build());
         listing.getSed().getUcdProcesses().add(CertifiedProductUcdProcess.builder()
                                 .id(2L)
-                                .criterion(a2)
+                                .criteria(Stream.of(a2).collect(Collectors.toCollection(LinkedHashSet::new)))
                                 .name("UCD Name 2")
                                 .details("some details")
                                 .build());

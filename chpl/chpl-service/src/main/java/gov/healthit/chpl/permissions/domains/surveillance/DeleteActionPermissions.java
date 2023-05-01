@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
+import gov.healthit.chpl.compliance.surveillance.SurveillanceDAO;
+import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceEntity;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
-import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;

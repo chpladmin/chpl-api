@@ -2,10 +2,9 @@ package gov.healthit.chpl.upload.listing.handler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -68,7 +67,7 @@ public class CqmUploadHandler {
             return null;
         }
 
-        Set<String> versions = new HashSet<String>();
+        LinkedHashSet<String> versions = new LinkedHashSet<String>();
         if (!StringUtils.isEmpty(cqmVersionDelimited) && !"0".equals(cqmVersionDelimited)) {
             String[] splitVersions = cqmVersionDelimited.split(";");
             if (splitVersions.length == 1) {

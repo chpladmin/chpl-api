@@ -92,7 +92,7 @@ public class SedUploadHandler {
             if (listingContainsUcdProcess(allUcdProcessesOnListing, certResultUcdProcess)) {
                 addCriteriaToExistingUcdProcess(allUcdProcessesOnListing, certResultUcdProcess, criterion);
             } else {
-                Set<CertificationCriterion> criteriaSet = new LinkedHashSet<CertificationCriterion>();
+                LinkedHashSet<CertificationCriterion> criteriaSet = new LinkedHashSet<CertificationCriterion>();
                 criteriaSet.add(criterion);
                 certResultUcdProcess.setCriteria(criteriaSet);
                 allUcdProcessesOnListing.add(certResultUcdProcess);
@@ -123,7 +123,7 @@ public class SedUploadHandler {
             if (listingContainsTask(tasks, certResultTask)) {
                 addCriteriaToExistingTestTask(tasks, certResultTask, criterion);
             } else {
-                Set<CertificationCriterion> criteriaSet = new LinkedHashSet<CertificationCriterion>();
+                LinkedHashSet<CertificationCriterion> criteriaSet = new LinkedHashSet<CertificationCriterion>();
                 criteriaSet.add(criterion);
                 TestTask task = buildTestTaskFromAvailable(certResultTask, availableTestTasks, availableTestParticipants);
                 task.setCriteria(criteriaSet);
@@ -165,9 +165,9 @@ public class SedUploadHandler {
             result = certResultTask.toBuilder().build();
         }
 
-        Set<TestParticipant> builtParticipants = certResultTask.getTestParticipants().stream()
+        LinkedHashSet<TestParticipant> builtParticipants = certResultTask.getTestParticipants().stream()
             .map(testParticipant -> buildTestParticipantFromAvailable(testParticipant, availableTestParticipants))
-            .collect(Collectors.toSet());
+            .collect(Collectors.toCollection(LinkedHashSet::new));
         result.setTestParticipants(builtParticipants);
         return result;
     }
@@ -241,7 +241,7 @@ public class SedUploadHandler {
                 .uniqueId(testTaskId)
                 .testParticipants(participantIds.stream()
                         .map(participantId -> TestParticipant.builder().uniqueId(participantId).build())
-                        .collect(Collectors.toSet()))
+                        .collect(Collectors.toCollection(LinkedHashSet::new)))
                 .build();
         certResultTasks.add(certResultTask);
     }

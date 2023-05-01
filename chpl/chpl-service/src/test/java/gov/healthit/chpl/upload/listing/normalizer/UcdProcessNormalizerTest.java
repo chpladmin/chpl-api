@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -145,7 +146,7 @@ public class UcdProcessNormalizerTest {
                                 .criteria(Stream.of(CertificationCriterion.builder()
                                         .id(1L)
                                         .number("170.315 (a)(1)")
-                                        .build()).toList())
+                                        .build()).collect(Collectors.toCollection(LinkedHashSet::new)))
                                 .build()).collect(Collectors.toList()))
                         .build())
                 .build();

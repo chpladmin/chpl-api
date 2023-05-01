@@ -30,6 +30,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.compliance.directreview.DirectReviewUpdateEmailService;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -211,9 +212,12 @@ public class SplitDeveloperJob implements Job {
         for (Long id : postSplitListingDetails.keySet()) {
             CertifiedProductSearchDetails preSplitListing = preSplitListingDetails.get(id);
             CertifiedProductSearchDetails postSplitListing = postSplitListingDetails.get(id);
-            activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, preSplitListing.getId(),
+            if (!StringUtils.equals(preSplitListing.getChplProductNumber(), postSplitListing.getChplProductNumber())) {
+                //listing activity should only be recorded if the CHPL product number of the listing changed
+                activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, preSplitListing.getId(),
                     "Updated certified product " + postSplitListing.getChplProductNumber() + ".", preSplitListing,
                     postSplitListing);
+            }
         }
 
         LOGGER.info("Logging developer split activity.");
@@ -253,13 +257,13 @@ public class SplitDeveloperJob implements Job {
         }
     }
 
+    @ListingSearchCacheRefresh
     private void clearCachesRelatedToDevelopers() {
         CacheManager.getInstance().getCache(CacheNames.DEVELOPER_NAMES).removeAll();
         CacheManager.getInstance().getCache(CacheNames.ALL_DEVELOPERS).removeAll();
         CacheManager.getInstance().getCache(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED).removeAll();
         CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_DEVELOPERS).removeAll();
         CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_LISTINGS).removeAll();
-        CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_SEARCH).removeAll();
         CacheManager.getInstance().getCache(CacheNames.GET_DECERTIFIED_DEVELOPERS).removeAll();
     }
 

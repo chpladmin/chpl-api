@@ -87,7 +87,7 @@ public class ListingMeasureEntity {
             listingMeasure.setAssociatedCriteria(
                     getAssociatedCriteria().stream()
                     .map(assocCriterion -> assocCriterion.convert())
-                    .collect(Collectors.toSet()));
+                    .collect(Collectors.toCollection(LinkedHashSet::new)));
         }
         return listingMeasure;
     }

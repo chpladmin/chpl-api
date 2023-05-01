@@ -70,7 +70,6 @@ public class ListingValidationReportCsvCreator {
                 "Developer",
                 "ONC-ACB",
                 "Certification Status",
-                "Last Modified Date",
                 "Error Message");
     }
 
@@ -83,7 +82,6 @@ public class ListingValidationReportCsvCreator {
                 report.getDeveloper(),
                 report.getCertificationBody(),
                 report.getCertificationStatusName(),
-                formatDate(report.getListingModifiedDate()),
                 report.getErrorMessage());
     }
 

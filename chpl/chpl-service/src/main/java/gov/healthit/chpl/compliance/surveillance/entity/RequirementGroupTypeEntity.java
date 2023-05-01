@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity.surveillance;
+package gov.healthit.chpl.compliance.surveillance.entity;
 
 import java.util.Date;
 
@@ -9,13 +9,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import lombok.Data;
 
 @Entity
+@Table(name = "requirement_group_type")
 @Data
-@Table(name = "surveillance_type")
-public class SurveillanceTypeEntity {
+public class RequirementGroupTypeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,11 +35,4 @@ public class SurveillanceTypeEntity {
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
-
-    public SurveillanceType buildSurveillanceType() {
-        SurveillanceType st = new SurveillanceType();
-        st.setId(this.getId());
-        st.setName(this.getName());
-        return st;
-    }
 }

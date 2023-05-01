@@ -1,7 +1,5 @@
 package gov.healthit.chpl.domain;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.util.LocalDateDeserializer;
@@ -201,6 +200,8 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
     /**
      * The last time this listing was modified in any way given in milliseconds since epoch.
      */
+    @Deprecated
+    @DeprecatedResponseField(message = "This field has been deprecated and will be removed.", removalDate = "2023-10-31")
     private Long lastModifiedDate;
 
     /**

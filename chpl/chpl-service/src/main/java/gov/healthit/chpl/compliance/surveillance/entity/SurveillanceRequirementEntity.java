@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity.surveillance;
+package gov.healthit.chpl.compliance.surveillance.entity;
 
 import java.util.Collections;
 import java.util.Date;
@@ -38,7 +38,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SurveillanceRequirementEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

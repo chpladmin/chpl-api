@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.activity.ActivityExclude;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
@@ -106,14 +107,16 @@ public class Surveillance implements Serializable {
     @XmlElementWrapper(name = "surveilledRequirements", nillable = true, required = false)
     @XmlElement(name = "requirement")
     @Builder.Default
-    private Set<SurveillanceRequirement> requirements = new LinkedHashSet<SurveillanceRequirement>();
+    private LinkedHashSet<SurveillanceRequirement> requirements = new LinkedHashSet<SurveillanceRequirement>();
 
     @XmlTransient
     @Builder.Default
+    @ActivityExclude
     private Set<String> errorMessages = new HashSet<String>();
 
     @XmlTransient
     @Builder.Default
+    @ActivityExclude
     private Set<String> warningMessages = new HashSet<String>();
 
     /**
@@ -298,11 +301,11 @@ public class Surveillance implements Serializable {
         this.randomizedSitesUsed = randomizedSitesUsed;
     }
 
-    public Set<SurveillanceRequirement> getRequirements() {
+    public LinkedHashSet<SurveillanceRequirement> getRequirements() {
         return requirements;
     }
 
-    public void setRequirements(Set<SurveillanceRequirement> requirements) {
+    public void setRequirements(LinkedHashSet<SurveillanceRequirement> requirements) {
         this.requirements = requirements;
     }
 

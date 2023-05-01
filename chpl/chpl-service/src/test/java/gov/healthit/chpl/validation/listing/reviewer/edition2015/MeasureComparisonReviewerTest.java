@@ -2,7 +2,7 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -88,7 +88,7 @@ public class MeasureComparisonReviewerTest {
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .measures(Stream.of(measure).collect(Collectors.toList()))
                 .build();
-        updatedListing.setErrorMessages(new HashSet<String>());
+        updatedListing.setErrorMessages(new LinkedHashSet<String>());
 
         reviewer.review(existingListing, updatedListing);
 
@@ -135,7 +135,7 @@ public class MeasureComparisonReviewerTest {
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .measures(Stream.of(measure1, measure2).collect(Collectors.toList()))
                 .build();
-        updatedListing.setErrorMessages(new HashSet<String>());
+        updatedListing.setErrorMessages(new LinkedHashSet<String>());
 
         reviewer.review(existingListing, updatedListing);
 
@@ -182,7 +182,7 @@ public class MeasureComparisonReviewerTest {
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .measures(Stream.of(measure1, measure2).collect(Collectors.toList()))
                 .build();
-        updatedListing.setErrorMessages(new HashSet<String>());
+        updatedListing.setErrorMessages(new LinkedHashSet<String>());
 
         reviewer.review(existingListing, updatedListing);
 
@@ -227,7 +227,7 @@ public class MeasureComparisonReviewerTest {
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .measures(Stream.of(measure1, measure2).collect(Collectors.toList()))
                 .build();
-        updatedListing.setErrorMessages(new HashSet<String>());
+        updatedListing.setErrorMessages(new LinkedHashSet<String>());
 
         reviewer.review(existingListing, updatedListing);
 
@@ -273,7 +273,7 @@ public class MeasureComparisonReviewerTest {
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .measures(Stream.of(measure1, measure2).collect(Collectors.toList()))
                 .build();
-        updatedListing.setErrorMessages(new HashSet<String>());
+        updatedListing.setErrorMessages(new LinkedHashSet<String>());
 
         reviewer.review(existingListing, updatedListing);
 
