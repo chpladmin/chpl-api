@@ -104,8 +104,16 @@ public class ActivityManager extends SecuredManager {
             Object newData, String reason, Date timestamp, Long asUser)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
-        String originalDataStr = JSONUtils.toJSON(originalData);
-        String newDataStr = JSONUtils.toJSON(newData);
+        String originalDataStr = null;
+        String newDataStr = null;
+
+        if (concept.equals(ActivityConcept.CERTIFIED_PRODUCT)) {
+            originalDataStr = JSONUtils.toJSONExcludingIgnoredFields(originalData);
+            newDataStr = JSONUtils.toJSONExcludingIgnoredFields(newData);
+        } else {
+            originalDataStr = JSONUtils.toJSON(originalData);
+            newDataStr = JSONUtils.toJSON(newData);
+        }
         Boolean originalMatchesNew = false;
 
         try {
@@ -121,8 +129,8 @@ public class ActivityManager extends SecuredManager {
             dto.setConcept(concept);
             dto.setId(null);
             dto.setDescription(activityDescription);
-            dto.setOriginalData(JSONUtils.toJSON(originalData));
-            dto.setNewData(JSONUtils.toJSON(newData));
+            dto.setOriginalData(originalDataStr);
+            dto.setNewData(newDataStr);
             dto.setActivityDate(timestamp);
             dto.setActivityObjectId(objectId);
             dto.setReason(reason);

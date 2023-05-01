@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.conformanceMethod.domain;
 
 import java.io.Serializable;
 
@@ -7,11 +7,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -74,9 +73,8 @@ public class CertificationResultConformanceMethod implements Serializable {
         if (this.getConformanceMethod() != null && anotherMethod.getConformanceMethod() != null
                 && this.getConformanceMethod().getId() != null && anotherMethod.getConformanceMethod().getId() != null
                 && this.getConformanceMethod().getId().longValue() == anotherMethod.getConformanceMethod().getId().longValue()
-                && !StringUtils.isEmpty(this.getConformanceMethodVersion())
-                && !StringUtils.isEmpty(anotherMethod.getConformanceMethodVersion())
-                && this.getConformanceMethodVersion().equalsIgnoreCase(anotherMethod.getConformanceMethodVersion())) {
+                && (StringUtils.isAllBlank(this.getConformanceMethodVersion(), anotherMethod.getConformanceMethodVersion())
+                        || StringUtils.equals(this.getConformanceMethodVersion(), anotherMethod.getConformanceMethodVersion()))) {
             result = true;
         }
         return result;

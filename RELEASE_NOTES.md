@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version 40.2.0
+_1 May 2023_
+
+### Features
+* Deprecate a number of /auth endpoints
+* Email users whenever their password is changed
+* Update Account Locked email to newer HTML format
+* Update reset password email to newer HTML format
+* Deprecate lastModifiedDate field of basic listing object
+* Deprecate lastModifiedDate field of listing details
+
+---
+
 ## Version 40.1.0
 _19 April 2023_
 

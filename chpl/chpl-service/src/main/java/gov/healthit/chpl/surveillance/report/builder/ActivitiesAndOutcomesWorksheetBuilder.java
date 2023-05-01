@@ -32,6 +32,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -42,7 +43,6 @@ import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.surveillance.report.PrivilegedSurveillanceDAO;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.surveillance.report.dto.PrivilegedSurveillanceDTO;

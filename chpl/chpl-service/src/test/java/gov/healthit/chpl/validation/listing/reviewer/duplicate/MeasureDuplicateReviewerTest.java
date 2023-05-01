@@ -3,7 +3,6 @@ package gov.healthit.chpl.validation.listing.reviewer.duplicate;
 import static org.junit.Assert.assertEquals;
 
 import java.util.LinkedHashSet;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -186,7 +185,7 @@ public class MeasureDuplicateReviewerTest {
 
     private ListingMeasure getMeasure(Long id, Long measureId, String measureName,
             String rtAbbrev, Long typeId, String typeName, CertificationCriterion criterion) {
-        Set<CertificationCriterion> criteria = new LinkedHashSet<CertificationCriterion>();
+        LinkedHashSet<CertificationCriterion> criteria = new LinkedHashSet<CertificationCriterion>();
         criteria.add(criterion);
 
         return ListingMeasure.builder()

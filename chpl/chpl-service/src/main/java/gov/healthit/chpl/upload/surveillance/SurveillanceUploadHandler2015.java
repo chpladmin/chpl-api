@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.compliance.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.NonconformityType;

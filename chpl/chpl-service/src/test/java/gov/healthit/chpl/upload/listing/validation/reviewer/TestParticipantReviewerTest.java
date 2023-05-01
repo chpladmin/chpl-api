@@ -3,6 +3,7 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -95,7 +96,8 @@ public class TestParticipantReviewerTest {
                 .sed(CertifiedProductSed.builder().build())
                 .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(buildValidTestParticipant(null)).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(buildValidTestParticipant(null)).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -113,7 +115,8 @@ public class TestParticipantReviewerTest {
                         .build())
                 .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(buildValidTestParticipant("")).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(buildValidTestParticipant("")).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -137,7 +140,8 @@ public class TestParticipantReviewerTest {
                     .ageRangeId(null)
                 .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -160,7 +164,8 @@ public class TestParticipantReviewerTest {
                     .ageRangeId(null)
                 .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -183,7 +188,8 @@ public class TestParticipantReviewerTest {
                     .ageRangeId(null)
                 .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -206,7 +212,8 @@ public class TestParticipantReviewerTest {
                     .educationTypeId(null)
                 .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -229,7 +236,8 @@ public class TestParticipantReviewerTest {
                     .educationTypeId(null)
                 .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -252,7 +260,8 @@ public class TestParticipantReviewerTest {
                 .educationTypeId(null)
             .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -273,7 +282,8 @@ public class TestParticipantReviewerTest {
                 .gender(null)
             .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -295,7 +305,8 @@ public class TestParticipantReviewerTest {
                 .gender("")
             .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -316,7 +327,8 @@ public class TestParticipantReviewerTest {
                 .occupation(null)
             .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -337,7 +349,8 @@ public class TestParticipantReviewerTest {
                 .occupation("")
             .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -358,7 +371,8 @@ public class TestParticipantReviewerTest {
                 .assistiveTechnologyNeeds(null)
             .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -379,7 +393,8 @@ public class TestParticipantReviewerTest {
                 .assistiveTechnologyNeeds("")
             .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -402,7 +417,8 @@ public class TestParticipantReviewerTest {
                 .professionalExperienceMonthsStr(null)
             .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -425,7 +441,8 @@ public class TestParticipantReviewerTest {
                 .professionalExperienceMonthsStr("")
             .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -448,7 +465,8 @@ public class TestParticipantReviewerTest {
                 .professionalExperienceMonthsStr("K")
             .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -466,7 +484,8 @@ public class TestParticipantReviewerTest {
                 .professionalExperienceMonthsStr("1.2")
             .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(1, listing.getWarningMessages().size());
@@ -489,7 +508,8 @@ public class TestParticipantReviewerTest {
                 .productExperienceMonthsStr(null)
             .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -512,7 +532,8 @@ public class TestParticipantReviewerTest {
                 .productExperienceMonthsStr("")
             .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -535,7 +556,8 @@ public class TestParticipantReviewerTest {
                 .productExperienceMonthsStr("K")
             .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -553,7 +575,8 @@ public class TestParticipantReviewerTest {
                 .productExperienceMonthsStr("1.2")
             .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(1, listing.getWarningMessages().size());
@@ -576,7 +599,8 @@ public class TestParticipantReviewerTest {
                 .computerExperienceMonthsStr(null)
             .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -599,7 +623,8 @@ public class TestParticipantReviewerTest {
                 .computerExperienceMonthsStr("")
             .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -622,7 +647,8 @@ public class TestParticipantReviewerTest {
                 .computerExperienceMonthsStr("K")
             .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -640,7 +666,8 @@ public class TestParticipantReviewerTest {
                 .computerExperienceMonthsStr("1.2")
             .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
-        listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(testParticipant).collect(Collectors.toSet()));
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(testParticipant).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(1, listing.getWarningMessages().size());
@@ -655,7 +682,8 @@ public class TestParticipantReviewerTest {
                 .build();
         listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(
-                Stream.of(buildValidTestParticipant("TP1"), buildValidTestParticipant("TP2")).collect(Collectors.toSet()));
+                Stream.of(buildValidTestParticipant("TP1"), buildValidTestParticipant("TP2"))
+                .collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -688,7 +716,7 @@ public class TestParticipantReviewerTest {
     private TestTask buildTestTask(String uniqueId, List<CertificationCriterion> criteria) {
         TestTask tt = TestTask.builder()
                 .uniqueId(uniqueId)
-                .criteria(criteria)
+                .criteria(criteria.stream().collect(Collectors.toCollection(LinkedHashSet::new)))
                 .description("desc")
                 .taskErrors(1.5F)
                 .taskErrorsStr("1.5")

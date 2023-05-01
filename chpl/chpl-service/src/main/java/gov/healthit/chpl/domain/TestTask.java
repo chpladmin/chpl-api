@@ -28,7 +28,6 @@ import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Singular;
 import lombok.ToString;
 
 /**
@@ -223,10 +222,10 @@ public class TestTask implements Serializable {
     /**
      * The set of criteria within a listing to which this task is applied.
      */
-    @Singular("criterion")
     @XmlElementWrapper(name = "criteriaList", nillable = true, required = false)
     @XmlElement(name = "criteria")
-    private Set<CertificationCriterion> criteria;
+    @Builder.Default
+    private LinkedHashSet<CertificationCriterion> criteria = new LinkedHashSet<CertificationCriterion>();
 
     /**
      * Participants in the test task.
@@ -234,7 +233,7 @@ public class TestTask implements Serializable {
     @XmlElementWrapper(name = "participants", required = true)
     @XmlElement(name = "participant")
     @Builder.Default
-    private Set<TestParticipant> testParticipants = new LinkedHashSet<TestParticipant>();
+    private LinkedHashSet<TestParticipant> testParticipants = new LinkedHashSet<TestParticipant>();
 
     public TestTask() {
         super();
@@ -242,7 +241,7 @@ public class TestTask implements Serializable {
         criteria = new LinkedHashSet<CertificationCriterion>();
     }
 
-    public TestTask(final TestTaskDTO dto) {
+    public TestTask(TestTaskDTO dto) {
         this();
         this.id = dto.getId();
         this.description = dto.getDescription();
@@ -266,13 +265,13 @@ public class TestTask implements Serializable {
         }
     }
 
-    public TestTask(final CertificationResultTestTaskDTO dto) {
+    public TestTask(CertificationResultTestTaskDTO dto) {
         this(dto.getTestTask());
         this.id = dto.getTestTaskId();
     }
 
     @Override
-    public boolean equals(final Object other) {
+    public boolean equals(Object other) {
         if (other == null || !(other instanceof TestTask)) {
             return false;
         }
@@ -387,7 +386,7 @@ public class TestTask implements Serializable {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -395,7 +394,7 @@ public class TestTask implements Serializable {
         return description;
     }
 
-    public void setDescription(final String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
@@ -403,11 +402,11 @@ public class TestTask implements Serializable {
         return taskSuccessAverage;
     }
 
-    public void setTaskSuccessAverage(final String value) {
+    public void setTaskSuccessAverage(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
                 taskSuccessAverage = Float.valueOf(value);
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
@@ -417,11 +416,11 @@ public class TestTask implements Serializable {
         return taskSuccessStddev;
     }
 
-    public void setTaskSuccessStddev(final String value) {
+    public void setTaskSuccessStddev(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
                 taskSuccessStddev = Float.valueOf(value);
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
@@ -431,11 +430,11 @@ public class TestTask implements Serializable {
         return taskPathDeviationObserved;
     }
 
-    public void setTaskPathDeviationObserved(final String value) {
+    public void setTaskPathDeviationObserved(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
                 taskPathDeviationObserved = Math.round(Float.valueOf(value));
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
@@ -445,11 +444,11 @@ public class TestTask implements Serializable {
         return taskPathDeviationOptimal;
     }
 
-    public void setTaskPathDeviationOptimal(final String value) {
+    public void setTaskPathDeviationOptimal(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
                 taskPathDeviationOptimal = Math.round(Float.valueOf(value));
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
@@ -459,11 +458,11 @@ public class TestTask implements Serializable {
         return taskTimeAvg;
     }
 
-    public void setTaskTimeAvg(final String value) {
+    public void setTaskTimeAvg(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
                 taskTimeAvg = (long) Math.round(Float.valueOf(value));
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
@@ -473,11 +472,11 @@ public class TestTask implements Serializable {
         return taskTimeStddev;
     }
 
-    public void setTaskTimeStddev(final String value) {
+    public void setTaskTimeStddev(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
                 taskTimeStddev = Math.round(Float.valueOf(value));
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
@@ -487,11 +486,11 @@ public class TestTask implements Serializable {
         return taskTimeDeviationObservedAvg;
     }
 
-    public void setTaskTimeDeviationObservedAvg(final String value) {
+    public void setTaskTimeDeviationObservedAvg(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
                 taskTimeDeviationObservedAvg = Math.round(Float.valueOf(value));
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
@@ -501,11 +500,11 @@ public class TestTask implements Serializable {
         return taskTimeDeviationOptimalAvg;
     }
 
-    public void setTaskTimeDeviationOptimalAvg(final String value) {
+    public void setTaskTimeDeviationOptimalAvg(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
                 taskTimeDeviationOptimalAvg = Math.round(Float.valueOf(value));
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
@@ -515,11 +514,11 @@ public class TestTask implements Serializable {
         return taskErrors;
     }
 
-    public void setTaskErrors(final String value) {
+    public void setTaskErrors(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
                 taskErrors = Float.valueOf(value);
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
@@ -529,11 +528,11 @@ public class TestTask implements Serializable {
         return taskErrorsStddev;
     }
 
-    public void setTaskErrorsStddev(final String value) {
+    public void setTaskErrorsStddev(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
                 taskErrorsStddev = Float.valueOf(value);
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
@@ -543,7 +542,7 @@ public class TestTask implements Serializable {
         return taskRatingScale;
     }
 
-    public void setTaskRatingScale(final String taskRatingScale) {
+    public void setTaskRatingScale(String taskRatingScale) {
         this.taskRatingScale = taskRatingScale;
     }
 
@@ -551,21 +550,21 @@ public class TestTask implements Serializable {
         return taskRating;
     }
 
-    public void setTaskRating(final String value) {
+    public void setTaskRating(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
                 taskRating = Float.valueOf(value);
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
     }
 
-    public Set<TestParticipant> getTestParticipants() {
+    public LinkedHashSet<TestParticipant> getTestParticipants() {
         return testParticipants;
     }
 
-    public void setTestParticipants(final Set<TestParticipant> testParticipants) {
+    public void setTestParticipants(LinkedHashSet<TestParticipant> testParticipants) {
         this.testParticipants = testParticipants;
     }
 
@@ -573,7 +572,7 @@ public class TestTask implements Serializable {
         return uniqueId;
     }
 
-    public void setUniqueId(final String uniqueId) {
+    public void setUniqueId(String uniqueId) {
         this.uniqueId = uniqueId;
     }
 
@@ -581,21 +580,21 @@ public class TestTask implements Serializable {
         return taskRatingStddev;
     }
 
-    public void setTaskRatingStddev(final String value) {
+    public void setTaskRatingStddev(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
                 taskRatingStddev = Float.valueOf(value);
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 LOGGER.debug("can't parse " + value + " as a float or integer.");
             }
         }
     }
 
-    public Set<CertificationCriterion> getCriteria() {
+    public LinkedHashSet<CertificationCriterion> getCriteria() {
         return criteria;
     }
 
-    public void setCriteria(final Set<CertificationCriterion> criteria) {
+    public void setCriteria(LinkedHashSet<CertificationCriterion> criteria) {
         this.criteria = criteria;
     }
 
