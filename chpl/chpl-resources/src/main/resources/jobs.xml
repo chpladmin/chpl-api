@@ -797,5 +797,14 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
+
+        <job>
+            <name>urlUptimeCreatorJob</name>
+            <group>systemJobs</group>
+            <description>Retrieve uptime information from Datadog got (g)(10) Service Based URLs.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.urluptime.UrlUptimeCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
     </schedule>
 </job-scheduling-data>
