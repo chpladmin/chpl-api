@@ -92,7 +92,6 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             DirectReviewXmlGenerator.add(cp.getDirectReviews(), "directReviews", sw);
             InheritedCertificationStatusXmlGenerator.add(cp.getIcs(), "ics", sw);
             createSimpleElement(cp.getId(), "id", sw);
-            createSimpleElement(cp.getLastModifiedDate(), "lastModifiedDate", sw);
             createSimpleElement(cp.getMandatoryDisclosures(), "mandatoryDisclosures", sw);
             ListingMeasureXmlGenerator.add(cp.getMeasures(), "measures", sw);
             createSimpleElement(cp.getOtherAcb(), "otherAcb", sw);

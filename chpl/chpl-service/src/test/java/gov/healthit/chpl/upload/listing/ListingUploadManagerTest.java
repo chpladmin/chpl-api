@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -340,7 +340,7 @@ public class ListingUploadManagerTest {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 CertifiedProductSearchDetails listing = (CertifiedProductSearchDetails) invocation.getArgument(0);
-                listing.setWarningMessages(new HashSet<String>());
+                listing.setWarningMessages(new LinkedHashSet<String>());
                 return null;
             }
         }).when(listingUploadValidator).review(Mockito.eq(listing));
@@ -365,7 +365,7 @@ public class ListingUploadManagerTest {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 CertifiedProductSearchDetails listing = (CertifiedProductSearchDetails) invocation.getArgument(0);
-                listing.setWarningMessages(new HashSet<String>());
+                listing.setWarningMessages(new LinkedHashSet<String>());
                 return null;
             }
         }).when(listingUploadValidator).review(Mockito.eq(listing));
@@ -390,7 +390,7 @@ public class ListingUploadManagerTest {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 CertifiedProductSearchDetails listing = (CertifiedProductSearchDetails) invocation.getArgument(0);
-                listing.setWarningMessages(new HashSet<String>());
+                listing.setWarningMessages(new LinkedHashSet<String>());
                 listing.getWarningMessages().add("This is a test warning");
                 return null;
             }
@@ -414,7 +414,7 @@ public class ListingUploadManagerTest {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 CertifiedProductSearchDetails listing = (CertifiedProductSearchDetails) invocation.getArgument(0);
-                listing.setWarningMessages(new HashSet<String>());
+                listing.setWarningMessages(new LinkedHashSet<String>());
                 listing.getWarningMessages().add("This is a test warning");
                 return null;
             }

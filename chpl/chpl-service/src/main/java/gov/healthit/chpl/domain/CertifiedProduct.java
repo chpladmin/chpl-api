@@ -5,12 +5,14 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,11 +40,9 @@ public class CertifiedProduct implements Serializable {
     @XmlElement(required = true)
     private String chplProductNumber;
 
-    /**
-     * The last time this listing was modified in any way given in milliseconds
-     * since epoch.
-     */
-    @XmlElement(required = false, nillable = true)
+    @XmlTransient
+    @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed.", removalDate = "2023-10-31")
     private Long lastModifiedDate;
 
     /**

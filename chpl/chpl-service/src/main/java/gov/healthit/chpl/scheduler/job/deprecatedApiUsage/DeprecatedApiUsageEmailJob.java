@@ -60,7 +60,7 @@ public class DeprecatedApiUsageEmailJob implements Job {
     @Value("${chpl.email.valediction}")
     private String chplEmailValediction;
 
-    @Value("${footer.publicUrl}")
+    @Value("${contact.publicUrl}")
     private String publicFeedbackUrl;
 
     @SuppressWarnings("checkstyle:linelength")

@@ -20,6 +20,7 @@ import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -28,6 +29,7 @@ import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductOwner;
+import gov.healthit.chpl.domain.comparator.ProductOwnerComparator;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,6 +49,9 @@ import lombok.ToString;
 @Table(name = "product")
 public class ProductEntity implements Serializable {
     private static final long serialVersionUID = -5332080900089062551L;
+
+    @Transient
+    private final ProductOwnerComparator productOwnerComparator = new ProductOwnerComparator();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -130,6 +135,7 @@ public class ProductEntity implements Serializable {
         }
         return this.getOwnerHistory().stream()
             .map(ownerHistoryItem -> ownerHistoryItem.toDomain())
+            .sorted(productOwnerComparator)
             .collect(Collectors.toList());
     }
 }

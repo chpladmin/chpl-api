@@ -107,6 +107,7 @@ public class ProductController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @DeprecatedApiResponseFields(friendlyUrl = "/products/{productId}/listings", httpMethod = "GET", responseClass = CertifiedProduct.class)
     @RequestMapping(value = "/{productId}/listings", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertifiedProduct> getListingsForProduct(@PathVariable("productId") final Long productId)

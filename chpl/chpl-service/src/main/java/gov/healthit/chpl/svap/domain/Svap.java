@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.svap.entity.SvapEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +17,7 @@ import lombok.Singular;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class Svap implements Serializable {
+    private static final long serialVersionUID = -346593579303353915L;
 
     private Long svapId;
     private String regulatoryTextCitation;
@@ -33,7 +33,7 @@ public class Svap implements Serializable {
         this.approvedStandardVersion = entity.getApprovedStandardVersion();
         this.replaced = entity.getReplaced();
         this.criteria = entity.getCriteria().stream()
-                .map(crit -> new CertificationCriterion(new CertificationCriterionDTO(crit)))
+                .map(crit -> crit.toDomain())
                 .collect(Collectors.toList());
     }
 }

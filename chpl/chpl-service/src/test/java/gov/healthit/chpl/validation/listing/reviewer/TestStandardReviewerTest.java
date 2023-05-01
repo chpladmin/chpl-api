@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -187,7 +187,7 @@ public class TestStandardReviewerTest {
                         .testStandards(testStandards)
                         .build())
                 .build();
-        listing.setErrorMessages(new HashSet<String>());
+        listing.setErrorMessages(new LinkedHashSet<String>());
 
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
@@ -224,7 +224,7 @@ public class TestStandardReviewerTest {
                         .testStandards(testStandards)
                         .build())
                 .build();
-        listing.setErrorMessages(new HashSet<String>());
+        listing.setErrorMessages(new LinkedHashSet<String>());
 
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
@@ -243,7 +243,7 @@ public class TestStandardReviewerTest {
                         .testStandards(testStandards)
                         .build())
                 .build();
-        listing.setErrorMessages(new HashSet<String>());
+        listing.setErrorMessages(new LinkedHashSet<String>());
 
         reviewer.review(listing);
         assertEquals(0, listing.getErrorMessages().size());
@@ -262,7 +262,7 @@ public class TestStandardReviewerTest {
                         .testStandards(testStandards)
                         .build())
                 .build();
-        listing.setErrorMessages(new HashSet<String>());
+        listing.setErrorMessages(new LinkedHashSet<String>());
 
         reviewer.review(listing);
         assertEquals(0, listing.getErrorMessages().size());
