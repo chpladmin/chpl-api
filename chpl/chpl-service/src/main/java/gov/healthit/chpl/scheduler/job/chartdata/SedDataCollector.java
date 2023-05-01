@@ -1,13 +1,7 @@
 package gov.healthit.chpl.scheduler.job.chartdata;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -15,22 +9,12 @@ import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
-import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResult;
+import lombok.extern.log4j.Log4j2;
 
-/**
- * Retrieves all of the 2015 SED Products and their details. Details are
- * retrieved asynchronously according to the chartDataExecutor defined in
- * AppConfig.
- *
- * @author TYoung
- *
- */
+@Log4j2(topic = "chartDataCreatorJobLogger")
 public class SedDataCollector {
-    private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
     private static final String CRITERION_G_3 = "170.315 (g)(3)";
 
     @Autowired
@@ -39,21 +23,16 @@ public class SedDataCollector {
     @Autowired
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
-    @Autowired
-    private SchedulerCertifiedProductSearchDetailsAsync cpsdAsync;
+    List<Long> g3CriteriaIds;
 
     public SedDataCollector() {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+
+        g3CriteriaIds = criteriaDao.getAllByNumber(CRITERION_G_3).stream()
+                .map(g3 -> g3.getId())
+                .toList();
     }
 
-    /**
-     * This method runs the data retrieval process for the 2015 SED products and
-     * their details.
-     *
-     * @param listings
-     *            initial set of Listings
-     * @return List of CertifiedProductSearchDetails
-     */
     public List<CertifiedProductSearchDetails> retreiveData(List<ListingSearchResult> listings) {
 
         List<ListingSearchResult> certifiedProducts = filterData(listings);
@@ -64,57 +43,31 @@ public class SedDataCollector {
     }
 
     private List<ListingSearchResult> filterData(List<ListingSearchResult> certifiedProducts) {
-        List<CertificationCriterionDTO> g3Criteria = criteriaDao.getAllByNumber(CRITERION_G_3);
-        List<ListingSearchResult> results = new ArrayList<ListingSearchResult>();
-        for (ListingSearchResult result : certifiedProducts) {
-            if (result.getEdition().getName().equalsIgnoreCase(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())
-                    && containsAnyCriterion(result, g3Criteria)) {
-                results.add(result);
-            }
-        }
-        return results;
+        return certifiedProducts.stream()
+                .filter(listing -> listing.getEdition().getName().equalsIgnoreCase(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())
+                        && hasMetAtLeastOneG3Crteria(listing))
+                .toList();
     }
 
-    private boolean containsAnyCriterion(ListingSearchResult listing, List<CertificationCriterionDTO> criteria) {
-        boolean result = false;
-        CertificationCriterionSearchResult[] certs = listing.getCriteriaMet().toArray(new CertificationCriterionSearchResult[0]);
-        for (CertificationCriterionDTO criterion : criteria) {
-            for (int i = 0; i < certs.length && !result; i++) {
-                Long certId = certs[i].getId();
-                if (criterion.getId().equals(certId)) {
-                    result = true;
-                }
-            }
-        }
-        return result;
+    private boolean hasMetAtLeastOneG3Crteria(ListingSearchResult listing) {
+        return listing.getCriteriaMet().stream()
+                .map(metCriteria -> metCriteria.getId())
+                .filter(i -> g3CriteriaIds.contains(i))
+                .findAny()
+                .isPresent();
     }
 
     private List<CertifiedProductSearchDetails> getCertifiedProductDetailsForAll(List<ListingSearchResult> certifiedProducts) {
-
-        List<CertifiedProductSearchDetails> details = new ArrayList<CertifiedProductSearchDetails>();
-        List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
-
-        for (ListingSearchResult certifiedProduct : certifiedProducts) {
-            try {
-                    futures.add(cpsdAsync.getCertifiedProductDetail(certifiedProduct.getId(),
-                            certifiedProductDetailsManager));
-            } catch (EntityRetrievalException e) {
-                LOGGER.error("Could not retrieve certified product details for id: " + certifiedProduct.getId(), e);
-            }
-        }
-
-        Date startTime = new Date();
-        for (Future<CertifiedProductSearchDetails> future : futures) {
-            try {
-                details.add(future.get());
-            } catch (InterruptedException | ExecutionException e) {
-                LOGGER.error("Could not retrieve certified product details for unknown id.", e);
-            }
-        }
-
-        Date endTime = new Date();
-        LOGGER.info("Time to retrieve details: " + (endTime.getTime() - startTime.getTime()));
-
-        return details;
+        return certifiedProducts.stream()
+                .map(cp -> {
+                    try {
+                        return certifiedProductDetailsManager.getCertifiedProductDetails(cp.getId());
+                    } catch (EntityRetrievalException e) {
+                        LOGGER.error("Could not retrieve listing detail for listing: {}", cp.getId(), e);
+                        LOGGER.error("SED Chart statistics may not be correct");
+                        return null;
+                    }
+                })
+                .toList();
     }
 }
