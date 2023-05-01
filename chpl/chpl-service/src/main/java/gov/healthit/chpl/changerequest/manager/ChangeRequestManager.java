@@ -30,6 +30,7 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestUpdateRequest;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchRequest;
@@ -188,12 +189,12 @@ public class ChangeRequestManager {
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
-            + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).UPDATE, #cr)")
-    public ChangeRequest updateChangeRequest(ChangeRequest cr)
+            + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).UPDATE, #crUpdateRequest)")
+    public ChangeRequest updateChangeRequest(ChangeRequestUpdateRequest crUpdateRequest)
             throws EntityRetrievalException, ValidationException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
 
-        cr = updateChangeRequestWithCastedDetails(cr);
+        ChangeRequest cr = updateChangeRequestWithCastedDetails(crUpdateRequest.getChangeRequest());
 
         ChangeRequest crFromDb = getChangeRequest(cr.getId());
 
@@ -202,7 +203,7 @@ public class ChangeRequestManager {
         validationException.getErrorMessages().addAll(crValidationService.getErrorMessages(crValidationContext));
         validationException.getWarningMessages().addAll(crValidationService.getWarningMessages(crValidationContext));
         if (!CollectionUtils.isEmpty(validationException.getErrorMessages())
-                || !CollectionUtils.isEmpty(validationException.getWarningMessages())) {
+                || (!crUpdateRequest.isAcknowledgeWarnings() && !CollectionUtils.isEmpty(validationException.getWarningMessages()))) {
             throw validationException;
         }
 
