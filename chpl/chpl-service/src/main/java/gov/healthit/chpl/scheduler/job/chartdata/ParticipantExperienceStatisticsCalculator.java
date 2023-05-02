@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -16,6 +14,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.ParticipantExperienceStatisticsDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestParticipant;
@@ -24,19 +23,17 @@ import gov.healthit.chpl.dto.ParticipantExperienceStatisticsDTO;
 import gov.healthit.chpl.entity.statistics.ParticipantExperienceStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.search.domain.ListingSearchResult;
+import lombok.extern.log4j.Log4j2;
 
-/**
- * Populates the participant_experience_statistics table with summarized count
- * information.
- *
- * @author TYoung
- *
- */
+@Log4j2(topic = "chartDataCreatorJobLogger")
 public class ParticipantExperienceStatisticsCalculator {
-    private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
 
     @Autowired
     private ParticipantExperienceStatisticsDAO participantExperienceStatisticsDAO;
+
+    @Autowired
+    private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
     @Autowired
     private JpaTransactionManager txManager;
@@ -47,26 +44,10 @@ public class ParticipantExperienceStatisticsCalculator {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
     }
 
-    /**
-     * This method calculates the participant experience counts and saves them
-     * to the participant_experience_statistics table.
-     *
-     * @param certifiedProductSearchDetails
-     *            List of CertifiedProductSearchDetails objects
-     * @param experienceTypeId
-     *            1 - Professional Experience, 2 - Product Experience, 3 -
-     *            Computer Experience. These values have constants defined in
-     *            ExperienceTypes.
-     */
-    public void run(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails,
-            final Long experienceTypeId) {
-
+    public void run(List<ListingSearchResult> listingSearchResults, Long experienceTypeId) {
         this.experienceTypeId = experienceTypeId;
-
-        Map<Integer, Long> experienceCounts = getCounts(certifiedProductSearchDetails);
-
+        Map<Integer, Long> experienceCounts = getCounts(listingSearchResults);
         logCounts(experienceCounts);
-
         save(convertExperienceCountMapToListOfParticipantExperienceStatistics(experienceCounts));
     }
 
@@ -76,12 +57,12 @@ public class ParticipantExperienceStatisticsCalculator {
         }
     }
 
-    private Map<Integer, Long> getCounts(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
+    private Map<Integer, Long> getCounts(List<ListingSearchResult> listingSearchResults) {
         // The key = Months of experience
         // The value = count of participants that fall into the associated
         // months of experience
         Map<Integer, Long> experienceMap = new HashMap<Integer, Long>();
-        List<TestParticipant> uniqueParticipants = getUniqueParticipants(certifiedProductSearchDetails);
+        List<TestParticipant> uniqueParticipants = getUniqueParticipants(listingSearchResults);
         for (TestParticipant participant : uniqueParticipants) {
             Long updatedCount = 1L;
             Integer experienceMonths = getExperienceMonthBasedOnExperienceType(participant);
@@ -106,14 +87,16 @@ public class ParticipantExperienceStatisticsCalculator {
         }
     }
 
-    private List<TestParticipant> getUniqueParticipants(
-            final List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
+    private List<TestParticipant> getUniqueParticipants(List<ListingSearchResult> listingSearchResults) {
         Map<Long, TestParticipant> participants = new HashMap<Long, TestParticipant>();
-        for (CertifiedProductSearchDetails detail : certifiedProductSearchDetails) {
-            for (TestTask task : detail.getSed().getTestTasks()) {
-                for (TestParticipant participant : task.getTestParticipants()) {
-                    if (!participants.containsKey(participant.getId())) {
-                        participants.put(participant.getId(), participant);
+        for (ListingSearchResult listingSearchResult : listingSearchResults) {
+            CertifiedProductSearchDetails listing = getListingDetails(listingSearchResult.getId());
+            if (listing != null) {
+                for (TestTask task : listing.getSed().getTestTasks()) {
+                    for (TestParticipant participant : task.getTestParticipants()) {
+                        if (!participants.containsKey(participant.getId())) {
+                            participants.put(participant.getId(), participant);
+                        }
                     }
                 }
             }
@@ -178,6 +161,16 @@ public class ParticipantExperienceStatisticsCalculator {
         for (ParticipantExperienceStatisticsDTO dto : dtos) {
             participantExperienceStatisticsDAO.delete(dto.getId());
             LOGGER.info("Deleted: " + dto.getId());
+        }
+    }
+
+    private CertifiedProductSearchDetails getListingDetails(Long id) {
+        try {
+            return certifiedProductDetailsManager.getCertifiedProductDetails(id);
+        } catch (EntityRetrievalException e) {
+            LOGGER.error("Could not retrieve listing detail for listing: {}", id, e);
+            LOGGER.error("SED Chart statistics may not be correct");
+            return null;
         }
     }
 

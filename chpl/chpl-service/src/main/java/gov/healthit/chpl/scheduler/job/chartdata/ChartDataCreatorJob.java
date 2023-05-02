@@ -11,7 +11,6 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
 import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
@@ -113,7 +112,7 @@ public final class ChartDataCreatorJob extends QuartzJob {
     private void analyzeSed(List<ListingSearchResult> listings) {
         // Get Certified Products
         SedDataCollector sedDataCollector = new SedDataCollector();
-        List<CertifiedProductSearchDetails> seds = sedDataCollector.retreiveData(listings);
+        List<ListingSearchResult> seds = sedDataCollector.retreiveData(listings);
 
         LOGGER.info("Collected SED Data");
 

@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -16,6 +14,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.ParticipantAgeStatisticsDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestParticipant;
@@ -24,19 +23,17 @@ import gov.healthit.chpl.dto.ParticipantAgeStatisticsDTO;
 import gov.healthit.chpl.entity.statistics.ParticipantAgeStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.search.domain.ListingSearchResult;
+import lombok.extern.log4j.Log4j2;
 
-/**
- * Populates the participant_age_statistics table with summarized count
- * information.
- *
- * @author TYoung
- *
- */
+@Log4j2(topic = "chartDataCreatorJobLogger")
 public class ParticipantAgeStatisticsCalculator {
-    private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
 
     @Autowired
     private ParticipantAgeStatisticsDAO participantAgeStatisticsDAO;
+
+    @Autowired
+    private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
     @Autowired
     private JpaTransactionManager txManager;
@@ -45,35 +42,25 @@ public class ParticipantAgeStatisticsCalculator {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
     }
 
-    /**
-     * This method calculates the participant counts and saves them to the
-     * participant_age_statistics table.
-     *
-     * @param certifiedProductSearchDetails
-     *            List of CertifiedProductSearchDetails objects
-     */
-    public void run(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
-
-        Map<Long, Long> ageCounts = getCounts(certifiedProductSearchDetails);
-
+    public void run(List<ListingSearchResult> listingSearchResults) {
+        Map<Long, Long> ageCounts = getCounts(listingSearchResults);
         logCounts(ageCounts);
-
         save(convertAgeCountMapToListOfParticipantAgeStatistics(ageCounts));
     }
 
-    private void logCounts(final Map<Long, Long> ageCounts) {
+    private void logCounts(Map<Long, Long> ageCounts) {
         for (Entry<Long, Long> entry : ageCounts.entrySet()) {
             LOGGER.info("Age Count: [" + entry.getKey() + " : " + entry.getValue() + "]");
         }
     }
 
-    private Map<Long, Long> getCounts(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
+    private Map<Long, Long> getCounts(List<ListingSearchResult> listingSearchResults) {
         // The key = testParticpantAgeId
         // The value = count of participants that fall into the associated
         // testParticipantAgeId
         Map<Long, Long> ageMap = new HashMap<Long, Long>();
 
-        List<TestParticipant> uniqueParticipants = getUniqueParticipants(certifiedProductSearchDetails);
+        List<TestParticipant> uniqueParticipants = getUniqueParticipants(listingSearchResults);
 
         for (TestParticipant participant : uniqueParticipants) {
             Long updatedCount = 1L;
@@ -86,14 +73,16 @@ public class ParticipantAgeStatisticsCalculator {
         return ageMap;
     }
 
-    private List<TestParticipant> getUniqueParticipants(
-            final List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
+    private List<TestParticipant> getUniqueParticipants(List<ListingSearchResult> listingSearchResults) {
         Map<Long, TestParticipant> participants = new HashMap<Long, TestParticipant>();
-        for (CertifiedProductSearchDetails detail : certifiedProductSearchDetails) {
-            for (TestTask task : detail.getSed().getTestTasks()) {
-                for (TestParticipant participant : task.getTestParticipants()) {
-                    if (!participants.containsKey(participant.getId())) {
-                        participants.put(participant.getId(), participant);
+        for (ListingSearchResult listingSearchResult : listingSearchResults) {
+            CertifiedProductSearchDetails listing = getListingDetails(listingSearchResult.getId());
+            if (listing != null) {
+                for (TestTask task : listing.getSed().getTestTasks()) {
+                    for (TestParticipant participant : task.getTestParticipants()) {
+                        if (!participants.containsKey(participant.getId())) {
+                            participants.put(participant.getId(), participant);
+                        }
                     }
                 }
             }
@@ -101,7 +90,7 @@ public class ParticipantAgeStatisticsCalculator {
         return new ArrayList<TestParticipant>(participants.values());
     }
 
-    private void save(final List<ParticipantAgeStatisticsEntity> entities) {
+    private void save(List<ParticipantAgeStatisticsEntity> entities) {
         // We need to manually create a transaction in this case because of how AOP works. When a method is
         // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
         // The object's proxy is not called when the method is called from within this class. The object's proxy
@@ -127,8 +116,7 @@ public class ParticipantAgeStatisticsCalculator {
         });
     }
 
-    private List<ParticipantAgeStatisticsEntity> convertAgeCountMapToListOfParticipantAgeStatistics(
-            final Map<Long, Long> ageCounts) {
+    private List<ParticipantAgeStatisticsEntity> convertAgeCountMapToListOfParticipantAgeStatistics(Map<Long, Long> ageCounts) {
         List<ParticipantAgeStatisticsEntity> entities = new ArrayList<ParticipantAgeStatisticsEntity>();
         for (Entry<Long, Long> entry : ageCounts.entrySet()) {
             ParticipantAgeStatisticsEntity entity = new ParticipantAgeStatisticsEntity();
@@ -139,7 +127,7 @@ public class ParticipantAgeStatisticsCalculator {
         return entities;
     }
 
-    private void saveParticipantAgeStatistic(final ParticipantAgeStatisticsEntity entity) {
+    private void saveParticipantAgeStatistic(ParticipantAgeStatisticsEntity entity) {
         try {
             ParticipantAgeStatisticsDTO dto = new ParticipantAgeStatisticsDTO(entity);
             participantAgeStatisticsDAO.create(dto);
@@ -156,6 +144,16 @@ public class ParticipantAgeStatisticsCalculator {
         for (ParticipantAgeStatisticsDTO dto : dtos) {
             participantAgeStatisticsDAO.delete(dto.getId());
             LOGGER.info("Deleted: " + dto.getId());
+        }
+    }
+
+    private CertifiedProductSearchDetails getListingDetails(Long id) {
+        try {
+            return certifiedProductDetailsManager.getCertifiedProductDetails(id);
+        } catch (EntityRetrievalException e) {
+            LOGGER.error("Could not retrieve listing detail for listing: {}", id, e);
+            LOGGER.error("SED Chart statistics may not be correct");
+            return null;
         }
     }
 }

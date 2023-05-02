@@ -5,11 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import lombok.extern.log4j.Log4j2;
 
@@ -20,8 +17,8 @@ public class SedDataCollector {
     @Autowired
     private CertificationCriterionDAO criteriaDao;
 
-    @Autowired
-    private CertifiedProductDetailsManager certifiedProductDetailsManager;
+    //@Autowired
+    //private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
     List<Long> g3CriteriaIds;
 
@@ -33,13 +30,10 @@ public class SedDataCollector {
                 .toList();
     }
 
-    public List<CertifiedProductSearchDetails> retreiveData(List<ListingSearchResult> listings) {
-
+    public List<ListingSearchResult> retreiveData(List<ListingSearchResult> listings) {
         List<ListingSearchResult> certifiedProducts = filterData(listings);
         LOGGER.info("2015/SED Certified Product Count: " + certifiedProducts.size());
-
-        List<CertifiedProductSearchDetails> certifiedProductsWithDetails = getCertifiedProductDetailsForAll(certifiedProducts);
-        return certifiedProductsWithDetails;
+        return certifiedProducts;
     }
 
     private List<ListingSearchResult> filterData(List<ListingSearchResult> certifiedProducts) {
@@ -55,19 +49,5 @@ public class SedDataCollector {
                 .filter(i -> g3CriteriaIds.contains(i))
                 .findAny()
                 .isPresent();
-    }
-
-    private List<CertifiedProductSearchDetails> getCertifiedProductDetailsForAll(List<ListingSearchResult> certifiedProducts) {
-        return certifiedProducts.stream()
-                .map(cp -> {
-                    try {
-                        return certifiedProductDetailsManager.getCertifiedProductDetails(cp.getId());
-                    } catch (EntityRetrievalException e) {
-                        LOGGER.error("Could not retrieve listing detail for listing: {}", cp.getId(), e);
-                        LOGGER.error("SED Chart statistics may not be correct");
-                        return null;
-                    }
-                })
-                .toList();
     }
 }
