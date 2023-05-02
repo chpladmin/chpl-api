@@ -5,8 +5,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.ff4j.FF4j;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.ValidationException;
@@ -25,6 +27,7 @@ public class AttestationResponseValidationService {
 
     private ListingApplicabilityService listingApplicabilityService;
     private ListingSearchService listingSearchService;
+    private FF4j ff4j;
 
     private Set<String> activeStatuses = Stream.of(
             CertificationStatusType.Active.getName(),
@@ -33,9 +36,11 @@ public class AttestationResponseValidationService {
             .collect(Collectors.toSet());
 
     public AttestationResponseValidationService(ListingApplicabilityService listingApplicabilityService,
-            ListingSearchService listingSearchService) {
+            ListingSearchService listingSearchService,
+            FF4j ff4j) {
         this.listingApplicabilityService = listingApplicabilityService;
         this.listingSearchService = listingSearchService;
+        this.ff4j = ff4j;
     }
 
     public Boolean isApiApplicableAndResponseIsNotApplicable(Long developerId, Form attestationForm) {
@@ -80,6 +85,9 @@ public class AttestationResponseValidationService {
     }
 
     public Boolean isAssurancesNotApplicableAndResponseIsCompliant(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm, Long attestationPeriodId) {
+        if (!ff4j.check(FeatureList.ERD_PHASE_3)) {
+            return false;
+        }
         return !listingApplicabilityService.isAssurancesApplicable(allActiveListingsForDeveloper)
                 && doesFormResponseEqualResponse(attestationForm,
                         AttestationFormMetaData.getAssurancesConditionId(attestationPeriodId),
