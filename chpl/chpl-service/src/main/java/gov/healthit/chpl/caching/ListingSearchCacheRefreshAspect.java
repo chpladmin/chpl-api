@@ -7,6 +7,8 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import gov.healthit.chpl.search.ListingSearchManager;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
@@ -34,20 +36,22 @@ public class ListingSearchCacheRefreshAspect {
 
     @AfterReturning("@annotation(ListingSearchCacheRefresh)")
     public void listingSearchCacheRefresh(JoinPoint joinPoint) {
-
+        //then run the code to update our cache
         if (!getCacheRefreshingStatus().equals(IDLE)) {
             LOGGER.info("LISTING COLLECTION - ALREADY IN PROCESS - SKIPPING");
             setCacheRefreshingStatus(NEEDS_REFRESHED);
         } else {
             setCacheRefreshingStatus(REFRESHING);
             LOGGER.info("REFRESHING LISTING COLLECTION - START");
-            Object key = cacheManager.getCache(CacheNames.COLLECTIONS_SEARCH).getKeys().get(0);
+            Cache searchCache = cacheManager.getCache(CacheNames.COLLECTIONS_SEARCH);
+            Object key = searchCache.getKeys().get(0);
 
             Thread thread = new Thread(() -> {
                     while (!getCacheRefreshingStatus().equals(IDLE)) {
                         LOGGER.info("REFRESHING LISTING COLLECTION IN NEW THREAD");
                         List<ListingSearchResult> results = listingSearchManager.getAllListingsNoCache();
-                        cacheManager.getCache(CacheNames.COLLECTIONS_SEARCH).put(new Element(key, results));
+                        Cache searchCacheLater = cacheManager.getCache(CacheNames.COLLECTIONS_SEARCH);
+                        searchCacheLater.put(new Element(key, results));
                         if (getCacheRefreshingStatus().equals(NEEDS_REFRESHED)) {
                             setCacheRefreshingStatus(REFRESHING);
                         } else {
@@ -56,9 +60,21 @@ public class ListingSearchCacheRefreshAspect {
                         LOGGER.info("COMPLETED REFRESHING LISTING COLLECTION IN NEW THREAD");
                     }
             });
-            thread.start();
+
+            if (TransactionSynchronizationManager.isActualTransactionActive()) {
+                TransactionSynchronizationManager.registerSynchronization(
+                        new TransactionSynchronization() {
+                            @Override
+                            public void afterCompletion(int status) {
+                                thread.start();
+                            }
+                        });
+            } else {
+                thread.start();
+            }
         }
     }
+
 
     private String getCacheRefreshingStatus() {
         Cache cache = cacheManager.getCache(CacheNames.LISTING_SEARCH_CACHE_REFRESH_STATUS);
