@@ -21,6 +21,7 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestUpdateRequest;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsService;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
@@ -134,7 +135,10 @@ public class ChangeRequestManagerTest {
                 ff4j);
 
         // Run
-        changeRequestManager.updateChangeRequest(getBasicChangeRequest());
+        changeRequestManager.updateChangeRequest(ChangeRequestUpdateRequest.builder()
+                .changeRequest(getBasicChangeRequest())
+                .acknowledgeWarnings(true)
+                .build());
 
         // Check
         Mockito.verify(detailsService, Mockito.times(1)).update(ArgumentMatchers.any());
@@ -173,8 +177,10 @@ public class ChangeRequestManagerTest {
                 ff4j);
 
         // Run
-        changeRequestManager.updateChangeRequest(getBasicChangeRequest());
-
+        changeRequestManager.updateChangeRequest(ChangeRequestUpdateRequest.builder()
+                .changeRequest(getBasicChangeRequest())
+                .acknowledgeWarnings(true)
+                .build());
         // Check
         fail("Exception was not thrown");
     }
@@ -223,7 +229,10 @@ public class ChangeRequestManagerTest {
                 ff4j);
 
         // Run
-        changeRequestManager.updateChangeRequest(getBasicChangeRequest());
+        changeRequestManager.updateChangeRequest(ChangeRequestUpdateRequest.builder()
+                .changeRequest(getBasicChangeRequest())
+                .acknowledgeWarnings(true)
+                .build());
 
         // Check
         Mockito.verify(detailsService, Mockito.times(0)).update(ArgumentMatchers.any());
@@ -277,8 +286,10 @@ public class ChangeRequestManagerTest {
         // Run
         ChangeRequest cr = getBasicChangeRequest();
         cr.setCurrentStatus(null);
-        changeRequestManager.updateChangeRequest(cr);
-
+        changeRequestManager.updateChangeRequest(ChangeRequestUpdateRequest.builder()
+                .changeRequest(cr)
+                .acknowledgeWarnings(true)
+                .build());
         // Check
     }
 
