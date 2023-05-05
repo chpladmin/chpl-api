@@ -4,7 +4,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -14,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationEdition;
@@ -29,22 +30,23 @@ import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.RwtSearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
+import gov.healthit.chpl.svap.domain.Svap;
+import gov.healthit.chpl.svap.manager.SvapManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class SearchRequestValidator {
     private DimensionalDataManager dimensionalDataManager;
-    private DirectReviewSearchService drService;
+    private SvapManager svapManager;
     private ErrorMessageUtil msgUtil;
     private DateTimeFormatter dateFormatter;
     private Set<String> allowedDerivedCertificationEditions;
 
     @Autowired
     public SearchRequestValidator(DimensionalDataManager dimensionalDataManager,
-            DirectReviewSearchService drService,
-            ErrorMessageUtil msgUtil) {
+            SvapManager svapManager, ErrorMessageUtil msgUtil) {
         this.dimensionalDataManager = dimensionalDataManager;
-        this.drService = drService;
+        this.svapManager = svapManager;
         this.msgUtil = msgUtil;
         dateFormatter = DateTimeFormatter.ofPattern(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
         allowedDerivedCertificationEditions = Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2011.getYear(),
@@ -71,6 +73,8 @@ public class SearchRequestValidator {
         errors.addAll(getComplianceActivityErrors(request.getComplianceActivity()));
         errors.addAll(getRwtOptionsErrors(request));
         errors.addAll(getRwtOperatorErrors(request));
+        errors.addAll(getSvapErrors(request));
+        errors.addAll(getSvapOperatorErrors(request));
         errors.addAll(getPageSizeErrors(request.getPageSize()));
         errors.addAll(getOrderByErrors(request));
         if (errors != null && errors.size() > 0) {
@@ -165,7 +169,7 @@ public class SearchRequestValidator {
 
         Set<CertificationCriterion> allCriteria = dimensionalDataManager.getCertificationCriterion();
         return certificationCriteriaIds.stream()
-            .filter(certificationCriteriaId -> !isInSet(certificationCriteriaId, allCriteria))
+            .filter(certificationCriteriaId -> !isInSetOfCriteria(certificationCriteriaId, allCriteria))
             .map(certificationCriteriaId -> msgUtil.getMessage("search.certificationCriteria.invalid", certificationCriteriaId.toString()))
             .collect(Collectors.toSet());
     }
@@ -408,6 +412,60 @@ public class SearchRequestValidator {
         return result;
     }
 
+    private Set<String> getSvapErrors(SearchRequest request) {
+        Set<String> svapErrors = new LinkedHashSet<String>();
+        svapErrors.addAll(getSvapIdExistenceErrors(request.getSvapIds()));
+        svapErrors.addAll(getSvapIdFormatErrors(request.getSvapIdStrings()));
+        return svapErrors;
+    }
+
+    private Set<String> getSvapIdExistenceErrors(Set<Long> svapIds) {
+        if (svapIds == null || svapIds.size() == 0) {
+            return Collections.emptySet();
+        }
+
+        List<Svap> allSvaps = svapManager.getAll();
+        Set<Long> allSvapIds = allSvaps != null
+                ? allSvaps.stream().map(svap -> svap.getSvapId()).collect(Collectors.toSet())
+                : new HashSet<Long>();
+        return svapIds.stream()
+            .filter(svapId -> !isInSet(svapId, allSvapIds))
+            .map(svapId -> msgUtil.getMessage("search.svap.invalid", svapId.toString()))
+            .collect(Collectors.toSet());
+    }
+
+    private Set<String> getSvapIdFormatErrors(Set<String> svapIdStrings) {
+        if (svapIdStrings != null && svapIdStrings.size() > 0) {
+            return svapIdStrings.stream()
+                .filter(svapId -> !StringUtils.isBlank(svapId))
+                .filter(svapId -> !isParseableLong(svapId.trim()))
+                .map(svapId -> msgUtil.getMessage("search.svapId.invalid", svapId))
+                .collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
+    }
+
+    private Set<String> getSvapOperatorErrors(SearchRequest searchRequest) {
+        if (searchRequest.getSvapOperator() == null
+                && !StringUtils.isBlank(searchRequest.getSvapOperatorString())) {
+            return Stream.of(msgUtil.getMessage("search.searchOperator.invalid",
+                    searchRequest.getSvapOperatorString(),
+                    Stream.of(SearchSetOperator.values())
+                        .map(value -> value.name())
+                        .collect(Collectors.joining(","))))
+                    .collect(Collectors.toSet());
+        } else if (searchRequest.getSvapOperator() == null
+                && StringUtils.isBlank(searchRequest.getSvapOperatorString())
+                && hasMultipleSvapsToSearch(searchRequest)) {
+            return Stream.of(msgUtil.getMessage("search.svap.missingSearchOperator")).collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
+    }
+
+    private boolean hasMultipleSvapsToSearch(SearchRequest searchRequest) {
+        return searchRequest.getSvapIds() != null && searchRequest.getSvapIds().size() > 1;
+    }
+
     private Set<String> getPageSizeErrors(Integer pageSize) {
         if (pageSize != null && pageSize > SearchRequest.MAX_PAGE_SIZE) {
             return Stream.of(msgUtil.getMessage("search.pageSize.invalid", SearchRequest.MAX_PAGE_SIZE))
@@ -438,7 +496,7 @@ public class SearchRequestValidator {
             .count() > 0;
     }
 
-    private boolean isInSet(Long value, Set<CertificationCriterion> setToSearch) {
+    private boolean isInSetOfCriteria(Long value, Set<CertificationCriterion> setToSearch) {
         if (setToSearch == null) {
             return false;
         }
@@ -448,6 +506,15 @@ public class SearchRequestValidator {
     }
 
     private boolean isInSet(String value, Set<String> setToSearch) {
+        if (setToSearch == null) {
+            return false;
+        }
+        return setToSearch.stream()
+            .filter(item -> item.equals(value))
+            .count() > 0;
+    }
+
+    private boolean isInSet(Long value, Set<Long> setToSearch) {
         if (setToSearch == null) {
             return false;
         }

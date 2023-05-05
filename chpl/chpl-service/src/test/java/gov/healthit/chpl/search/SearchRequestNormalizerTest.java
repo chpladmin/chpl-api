@@ -586,6 +586,72 @@ public class SearchRequestNormalizerTest {
     }
 
     @Test
+    public void normalize_svapIdStrings_trimsCorrectly() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .svapIdStrings(Stream.of("1 ", " 2 ", "", " ", null, "3", "notanumber").collect(Collectors.toSet()))
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(3, searchRequest.getSvapIds().size());
+        assertTrue(searchRequest.getSvapIds().contains(1L));
+        assertTrue(searchRequest.getSvapIds().contains(2L));
+        assertTrue(searchRequest.getSvapIds().contains(3L));
+    }
+
+    @Test
+    public void normalize_svapIdLongs_noChange() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .svapIds(Stream.of(1L, 2L, 3L).collect(Collectors.toSet()))
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(3, searchRequest.getSvapIds().size());
+        assertTrue(searchRequest.getSvapIds().contains(1L));
+        assertTrue(searchRequest.getSvapIds().contains(2L));
+        assertTrue(searchRequest.getSvapIds().contains(3L));
+    }
+
+    @Test
+    public void normalize_svapOperatorStringValid_resolvesCorrectly() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .svapOperatorString("AND")
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(SearchSetOperator.AND, searchRequest.getSvapOperator());
+    }
+
+    @Test
+    public void normalize_svapOperatorStringLowercase_resolvesCorrectly() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .svapOperatorString("and")
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(SearchSetOperator.AND, searchRequest.getSvapOperator());
+    }
+
+    @Test
+    public void normalize_svapOperator_noChanges() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .svapOperator(SearchSetOperator.AND)
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(SearchSetOperator.AND, searchRequest.getSvapOperator());
+    }
+
+    @Test
+    public void normalize_svapOperatorStringInvalid_setsFieldNull() {
+        SearchRequest searchRequest = SearchRequest.builder()
+                .svapOperatorString("XOR")
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertNull(searchRequest.getSvapOperator());
+    }
+
+    @Test
     public void normalize_orderByStringValid_resolvesCorrectly() {
         SearchRequest searchRequest = SearchRequest.builder()
                 .orderByString("PRODUCT")
