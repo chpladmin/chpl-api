@@ -26,6 +26,8 @@ import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.RwtSearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
+import gov.healthit.chpl.svap.domain.Svap;
+import gov.healthit.chpl.svap.manager.SvapManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class SearchRequestValidatorTest {
@@ -48,9 +50,13 @@ public class SearchRequestValidatorTest {
     private static final String DIRECT_REVIEWS_UNAVAILABLE = "Compliance and non-conformity filtering is unavailable at this time.";
     private static final String RWT_OPERATOR_MISSING = "Multiple RWT search options were found without a search operator (AND/OR). A search operator is required.";
     private static final String RWT_OPTION_INVALID = "No RWT search option matches '%s'. Values must be one of %s.";
+    private static final String INVALID_SVAP = "Could not find SVAP with value '%s'.";
+    private static final String INVALID_SVAP_ID_FORMAT = "SVAP ID %s is invalid. It must be a positive whole number.";
+    private static final String MISSING_SVAP_OPERATOR = "Multiple SVAPs were found without a search operator (AND/OR). A search operator is required.";
     private static final String INVALID_ORDER_BY = "Order by parameter '%s' is invalid. Value must be one of %s.";
 
     private DimensionalDataManager dimensionalDataManager;
+    private SvapManager svapManager;
     private DirectReviewSearchService drService;
     private ErrorMessageUtil msgUtil;
     private SearchRequestValidator validator;
@@ -58,6 +64,7 @@ public class SearchRequestValidatorTest {
     @Before
     public void setup() {
         dimensionalDataManager = Mockito.mock(DimensionalDataManager.class);
+        svapManager = Mockito.mock(SvapManager.class);
         drService = Mockito.mock(DirectReviewSearchService.class);
         Mockito.when(drService.doesCacheHaveAnyOkData()).thenReturn(true);
 
@@ -100,10 +107,16 @@ public class SearchRequestValidatorTest {
             .thenAnswer(i -> RWT_OPERATOR_MISSING);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.rwtOption.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(RWT_OPTION_INVALID, i.getArgument(1), i.getArgument(2)));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.svap.invalid"), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(INVALID_SVAP, i.getArgument(1), ""));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.svapId.invalid"), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(INVALID_SVAP_ID_FORMAT, i.getArgument(1), ""));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.svap.missingSearchOperator")))
+            .thenAnswer(i -> MISSING_SVAP_OPERATOR);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.orderBy.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_ORDER_BY, i.getArgument(1), i.getArgument(2)));
 
-        validator = new SearchRequestValidator(dimensionalDataManager, drService, msgUtil);
+        validator = new SearchRequestValidator(dimensionalDataManager, svapManager, msgUtil);
     }
 
     @Test
@@ -1137,6 +1150,142 @@ public class SearchRequestValidatorTest {
                     Stream.of(RwtSearchOptions.values())
                     .map(value -> value.name())
                     .collect(Collectors.joining(",")))));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_invalidSvapNullAllSvaps_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .svapIds(Stream.of(1L).collect(Collectors.toSet()))
+            .build();
+        Mockito.when(svapManager.getAll())
+            .thenReturn(null);
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_SVAP, "1", "")));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_invalidSvapButSvapDataExists_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .svapIds(Stream.of(3L).collect(Collectors.toSet()))
+            .build();
+        Mockito.when(svapManager.getAll())
+            .thenReturn(Stream.of(Svap.builder().svapId(1L).build(),
+                    Svap.builder().svapId(2L).build())
+                    .collect(Collectors.toList()));
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_SVAP, "3", "")));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_validSvapId_noErrors() {
+        SearchRequest request = SearchRequest.builder()
+            .svapIds(Stream.of(1L).collect(Collectors.toSet()))
+            .build();
+        Mockito.when(svapManager.getAll())
+            .thenReturn(Stream.of(Svap.builder().svapId(1L).build(),
+                Svap.builder().svapId(2L).build())
+                .collect(Collectors.toList()));
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_invalidSvapIdFormat_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .svapIdStrings(Stream.of("3 ", " 4 ", " 01", " ", "", null, "BAD").collect(Collectors.toSet()))
+            .build();
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_SVAP_ID_FORMAT, "BAD", "")));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_invalidSvapOperator_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .svapOperator(null)
+            .svapOperatorString("XOR")
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_OPERATOR, "XOR",
+                    Stream.of(SearchSetOperator.values())
+                    .map(value -> value.name())
+                    .collect(Collectors.joining(",")))));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_validSvapOperatorParsedFromString_noErrors() {
+        SearchRequest request = SearchRequest.builder()
+            .svapOperator(SearchSetOperator.OR)
+            .svapOperatorString("OR")
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_validSvapOperatorWithoutString_noErrors() {
+        SearchRequest request = SearchRequest.builder()
+            .svapOperator(SearchSetOperator.OR)
+            .svapOperatorString(null)
+            .build();
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_hasMultipleSvapIdsAndMissingSvapOperator_addsError() {
+        SearchRequest request = SearchRequest.builder()
+            .svapIds(Stream.of(1L, 2L).collect(Collectors.toSet()))
+            .build();
+        Mockito.when(svapManager.getAll())
+            .thenReturn(Stream.of(
+                    Svap.builder().svapId(1L).build(),
+                    Svap.builder().svapId(2L).build())
+                .collect(Collectors.toList()));
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
+            assertTrue(ex.getErrorMessages().contains(MISSING_SVAP_OPERATOR));
             return;
         }
         fail("Should not execute.");

@@ -30,6 +30,7 @@ import gov.healthit.chpl.search.domain.ListingSearchResponse;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CQMSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResultWithLongFields;
 import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.RwtSearchOptions;
@@ -96,6 +97,9 @@ public class ListingSearchService {
             .filter(listing -> matchesDecertificationDateRange(listing, searchRequest.getDecertificationDateStart(), searchRequest.getDecertificationDateEnd()))
             .filter(listing -> matchesComplianceFilter(listing, searchRequest.getComplianceActivity()))
             .filter(listing -> matchesRwtFilter(listing, searchRequest.getRwtOptions(), searchRequest.getRwtOperator()))
+            .filter(listing -> matchesHasAnySvapFilter(listing, searchRequest.getHasAnySvap()))
+            .filter(listing -> matchesSvapNoticeUrlFilter(listing, searchRequest.getHasSvapNoticeUrl()))
+            .filter(listing -> matchesSvaps(listing, searchRequest.getSvapIds(), searchRequest.getSvapOperator()))
             .collect(Collectors.toList());
         LOGGER.debug("Total matched listings: " + matchedListings.size());
 
@@ -447,6 +451,51 @@ public class ListingSearchService {
                 matchesHasPlansFilter, matchesNoPlansFilter, matchesResultsFilter,
                 matchesNoResultsFilter);
         return matchesRwtFilter;
+    }
+
+    private boolean matchesHasAnySvapFilter(ListingSearchResult listing, Boolean hasAnySvapFilter) {
+        if (hasAnySvapFilter == null) {
+            return true;
+        }
+        boolean listingHasAnySvapData = !StringUtils.isEmpty(listing.getSvapNoticeUrl())
+                || !CollectionUtils.isEmpty(listing.getSvaps());
+
+        if ((BooleanUtils.isTrue(hasAnySvapFilter) && listingHasAnySvapData)
+                || (BooleanUtils.isFalse(hasAnySvapFilter) && !listingHasAnySvapData)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean matchesSvapNoticeUrlFilter(ListingSearchResult listing, Boolean hasSvapNoticeUrlFilter) {
+        if (hasSvapNoticeUrlFilter == null) {
+            return true;
+        }
+        if ((BooleanUtils.isTrue(hasSvapNoticeUrlFilter) && !StringUtils.isEmpty(listing.getSvapNoticeUrl()))
+         || (BooleanUtils.isFalse(hasSvapNoticeUrlFilter) && StringUtils.isEmpty(listing.getSvapNoticeUrl()))) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean matchesSvaps(ListingSearchResult listing, Set<Long> svapIds, SearchSetOperator searchOperator) {
+        if (CollectionUtils.isEmpty(svapIds)) {
+            return true;
+        }
+        if (searchOperator.equals(SearchSetOperator.AND)) {
+            return svapIds.stream()
+                    .allMatch(svapId -> getSvapIds(listing.getSvaps()).contains(svapId));
+        } else if (searchOperator.equals(SearchSetOperator.OR)) {
+            return svapIds.stream()
+                    .anyMatch(svapId -> getSvapIds(listing.getSvaps()).contains(svapId));
+        }
+        return false;
+    }
+
+    private Set<Long> getSvapIds(Set<CertificationCriterionSearchResultWithLongFields> certResultWithSvapIds) {
+        return certResultWithSvapIds.stream()
+                .flatMap(result -> result.getValues().stream())
+                .collect(Collectors.toSet());
     }
 
     private boolean applyOperation(SearchSetOperator operation, Boolean... filters) {
