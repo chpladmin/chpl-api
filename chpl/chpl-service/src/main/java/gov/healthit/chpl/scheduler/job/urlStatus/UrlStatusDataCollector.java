@@ -181,7 +181,7 @@ public class UrlStatusDataCollector extends QuartzJob {
                            urlCallerAsync.getUrlResponseCodeFuture(systemUrl, httpClient, executorService, LOGGER);
                    urlResponseCodeFuturesMap.put(systemUrl, responseCodeFuture);
                 } catch (final Exception ex) {
-                    LOGGER.error("Could not check URL " + systemUrl.getUrl()
+                    LOGGER.info("Could not check URL " + systemUrl.getUrl()
                         + " due to exception " + ex.getMessage(), ex);
                 }
             } else {
@@ -202,7 +202,7 @@ public class UrlStatusDataCollector extends QuartzJob {
                 activeRequest.setResponseMessage(null);
                 urlCheckerDao.updateUrlResult(activeRequest);
             } catch (Exception ex) {
-                LOGGER.error("Error checking URL " +  activeRequest.getUrl() + " " + ex.getMessage(), ex);
+                LOGGER.info("Error checking URL " +  activeRequest.getUrl() + " " + ex.getMessage(), ex);
                 //We could not complete the request for some reason... timeout, no host, some other error
                 //Save the exception message as the response_message field so at least we have something for the report.
                 activeRequest.setLastChecked(new Date());

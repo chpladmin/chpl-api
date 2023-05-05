@@ -28,7 +28,7 @@ public class UrlCallerAsync {
             response = httpClient.execute(new HttpGet(url));
             statusCode = response.getStatusLine().getStatusCode();
         } catch (Exception ex) {
-            logger.error("Error making request to " + url, ex);
+            logger.info("Error making request to " + url, ex);
             throw new CompletionException(ex);
         } finally {
             try {
