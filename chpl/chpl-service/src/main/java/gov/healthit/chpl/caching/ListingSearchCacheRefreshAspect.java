@@ -36,7 +36,6 @@ public class ListingSearchCacheRefreshAspect {
 
     @AfterReturning("@annotation(ListingSearchCacheRefresh)")
     public void listingSearchCacheRefresh(JoinPoint joinPoint) {
-        //then run the code to update our cache
         if (!getCacheRefreshingStatus().equals(IDLE)) {
             LOGGER.info("LISTING COLLECTION - ALREADY IN PROCESS - SKIPPING");
             setCacheRefreshingStatus(NEEDS_REFRESHED);
