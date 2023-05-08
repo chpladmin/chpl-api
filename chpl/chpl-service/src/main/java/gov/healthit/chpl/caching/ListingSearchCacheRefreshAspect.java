@@ -74,7 +74,6 @@ public class ListingSearchCacheRefreshAspect {
         }
     }
 
-
     private String getCacheRefreshingStatus() {
         Cache cache = cacheManager.getCache(CacheNames.LISTING_SEARCH_CACHE_REFRESH_STATUS);
         if (cache == null) {
