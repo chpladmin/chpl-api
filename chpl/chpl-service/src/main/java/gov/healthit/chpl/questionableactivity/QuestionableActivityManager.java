@@ -188,7 +188,7 @@ public class QuestionableActivityManager {
         questionableActivity.setUserId(activity.getUser().getId());
         questionableActivity.setReason(activityReason);
         QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
-        questionableActivity.setTriggerId(triggerDto.getId());
+        questionableActivity.setTrigger(triggerDto);
         questionableActivityDao.create(questionableActivity);
     }
 
@@ -200,7 +200,7 @@ public class QuestionableActivityManager {
         questionableActivity.setUserId(activity.getUser().getId());
         questionableActivity.setReason(reason);
         QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
-        questionableActivity.setTriggerId(triggerDto.getId());
+        questionableActivity.setTrigger(triggerDto);
         questionableActivityDao.create(questionableActivity);
     }
 
@@ -216,7 +216,7 @@ public class QuestionableActivityManager {
         questionableActivity.setActivityDate(activity.getActivityDate());
         questionableActivity.setUserId(activity.getUser().getId());
         QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
-        questionableActivity.setTriggerId(triggerDto.getId());
+        questionableActivity.setTrigger(triggerDto);
         questionableActivityDao.create(questionableActivity);
     }
 
@@ -227,7 +227,7 @@ public class QuestionableActivityManager {
         questionableActivity.setActivityDate(activity.getActivityDate());
         questionableActivity.setUserId(activity.getUser().getId());
         QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
-        questionableActivity.setTriggerId(triggerDto.getId());
+        questionableActivity.setTrigger(triggerDto);
         questionableActivityDao.create(questionableActivity);
     }
 

@@ -15,7 +15,6 @@ import lombok.experimental.SuperBuilder;
 @Data
 public abstract class QuestionableActivityDTO {
     private Long id;
-    private Long triggerId;
     private Long activityId;
     private QuestionableActivityTriggerDTO trigger;
     private String before;
@@ -28,7 +27,6 @@ public abstract class QuestionableActivityDTO {
 
     public QuestionableActivityDTO(QuestionableActivityEntity entity) {
         this.id = entity.getId();
-        this.triggerId = entity.getTriggerId();
         this.activityId = entity.getActivityId();
         if (entity.getTrigger() != null) {
             this.trigger = new QuestionableActivityTriggerDTO(entity.getTrigger());

@@ -127,7 +127,7 @@ public class ListingQuestionableActivityService {
         questionableActivity.setActivityId(activity.getId());
         questionableActivity.setReason(activityReason);
         QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
-        questionableActivity.setTriggerId(triggerDto.getId());
+        questionableActivity.setTrigger(triggerDto);
 
         questionableActivityDao.create(questionableActivity);
     }

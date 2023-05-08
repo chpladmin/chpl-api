@@ -122,7 +122,7 @@ public class QuestionableActivityReprocessor {
                         questionableActivity.setUserId(activity.getUser().getId());
                         questionableActivity.setActivityDate(activity.getActivityDate());
                         questionableActivity.setActivityId(activity.getId());
-                        questionableActivity.setTriggerId(trigger.getId());
+                        questionableActivity.setTrigger(trigger);
 
                         String reason = getReasonIfAvailable(questionableActivity, previouslyExistingQuestionableActivity);
                         questionableActivity.setReason(reason);

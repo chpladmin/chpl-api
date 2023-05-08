@@ -80,7 +80,7 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
         toCreate.setActivityDate(dto.getActivityDate());
         toCreate.setBefore(dto.getBefore());
         toCreate.setAfter(dto.getAfter());
-        toCreate.setTriggerId(dto.getTriggerId());
+        toCreate.setTriggerId(dto.getTrigger().getId());
         toCreate.setUserId(dto.getUserId());
         toCreate.setDeleted(false);
         toCreate.setLastModifiedUser(AuthUtil.getAuditId());

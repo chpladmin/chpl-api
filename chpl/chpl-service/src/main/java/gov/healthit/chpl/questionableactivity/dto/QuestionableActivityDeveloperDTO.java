@@ -2,15 +2,21 @@ package gov.healthit.chpl.questionableactivity.dto;
 
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityDeveloperEntity;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@SuperBuilder
+@AllArgsConstructor
 public class QuestionableActivityDeveloperDTO extends QuestionableActivityDTO {
     private Long developerId;
     private Developer developer;
     private String reason;
-
-    public QuestionableActivityDeveloperDTO() {
-        super();
-    }
 
     public QuestionableActivityDeveloperDTO(QuestionableActivityDeveloperEntity entity) {
         super(entity);
@@ -47,13 +53,5 @@ public class QuestionableActivityDeveloperDTO extends QuestionableActivityDTO {
 
     public void setReason(String reason) {
         this.reason = reason;
-    }
-
-    @Override
-    public String toString() {
-        return "QuestionableActivityDeveloperDTO [developerId=" + developerId + ", developer=" + developer + ", reason="
-                + reason + ", getId()=" + getId() + ", getTriggerId()=" + getTriggerId() + ", getActivityDate()="
-                + getActivityDate() + ", getBefore()=" + getBefore() + ", getAfter()=" + getAfter() + ", getUserId()="
-                + getUserId() + "]";
     }
 }
