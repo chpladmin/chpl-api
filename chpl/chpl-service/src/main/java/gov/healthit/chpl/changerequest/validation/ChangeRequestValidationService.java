@@ -91,6 +91,7 @@ public class ChangeRequestValidationService {
                 new ChangeRequestTypeInProcessValidation(),
                 new DeveloperExistenceValidation(),
                 new DeveloperActiveValidation(),
+                //TODO: make sure the passed-in attestationPeriod for the CR is the same as the currently submittable attestation period for that developer
                 new ChangeRequestCreateValidation()));
     }
 
@@ -100,6 +101,7 @@ public class ChangeRequestValidationService {
                 new DeveloperActiveValidation(),
                 new CurrentStatusValidation(),
                 new ChangeRequestNotUpdatableDueToStatusValidation(),
+                //TODO: make sure the passed-in attestationPeriod for the CR is the same as the currently submittable attestation period for that developer
                 new CommentRequiredValidation()));
     }
 
