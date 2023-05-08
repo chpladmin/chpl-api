@@ -11,7 +11,6 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
 import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
@@ -33,6 +32,21 @@ public final class ChartDataCreatorJob extends QuartzJob {
 
     @Autowired
     private ListingSearchManager listingSearchManager;
+
+    @Autowired
+    private SedParticipantsStatisticCountCalculator sedParticipantsStatisticCountCalculator;
+
+    @Autowired
+    private ParticipantGenderStatisticsCalculator participantGenderStatisticsCalculator;
+
+    @Autowired
+    private ParticipantAgeStatisticsCalculator participantAgeStatisticsCalculator;
+
+    @Autowired
+    private ParticipantEducationStatisticsCalculator participantEducationStatisticsCalculator;
+
+    @Autowired
+    private ParticipantExperienceStatisticsCalculator participantProfExperienceStatisticsCalculator;
 
     public ChartDataCreatorJob() throws Exception {
         super();
@@ -110,31 +124,15 @@ public final class ChartDataCreatorJob extends QuartzJob {
         criterionProductStatisticsCalculator.save(productCounts);
     }
 
-    private void analyzeSed(List<ListingSearchResult> listings) {
-        // Get Certified Products
-        SedDataCollector sedDataCollector = new SedDataCollector();
-        List<CertifiedProductSearchDetails> seds = sedDataCollector.retreiveData(listings);
-
-        LOGGER.info("Collected SED Data");
-
+    private void analyzeSed(List<ListingSearchResult> allListings) {
         // Extract SED Statistics
-        SedParticipantsStatisticCountCalculator sedParticipantsStatisticCountCalculator = new SedParticipantsStatisticCountCalculator();
-        sedParticipantsStatisticCountCalculator.run(seds);
-
-        ParticipantGenderStatisticsCalculator participantGenderStatisticsCalculator = new ParticipantGenderStatisticsCalculator();
-        participantGenderStatisticsCalculator.run(seds);
-
-        ParticipantAgeStatisticsCalculator participantAgeStatisticsCalculator = new ParticipantAgeStatisticsCalculator();
-        participantAgeStatisticsCalculator.run(seds);
-
-        ParticipantEducationStatisticsCalculator participantEducationStatisticsCalculator = new ParticipantEducationStatisticsCalculator();
-        participantEducationStatisticsCalculator.run(seds);
-
-        ParticipantExperienceStatisticsCalculator participantProfExperienceStatisticsCalculator = new ParticipantExperienceStatisticsCalculator();
-
-        participantProfExperienceStatisticsCalculator.run(seds, ExperienceType.COMPUTER_EXPERIENCE);
-        participantProfExperienceStatisticsCalculator.run(seds, ExperienceType.PRODUCT_EXPERIENCE);
-        participantProfExperienceStatisticsCalculator.run(seds, ExperienceType.PROFESSIONAL_EXPERIENCE);
+        sedParticipantsStatisticCountCalculator.run(allListings);
+        participantGenderStatisticsCalculator.run(allListings);
+        participantAgeStatisticsCalculator.run(allListings);
+        participantEducationStatisticsCalculator.run(allListings);
+        participantProfExperienceStatisticsCalculator.run(allListings, ExperienceType.COMPUTER_EXPERIENCE);
+        participantProfExperienceStatisticsCalculator.run(allListings, ExperienceType.PRODUCT_EXPERIENCE);
+        participantProfExperienceStatisticsCalculator.run(allListings, ExperienceType.PROFESSIONAL_EXPERIENCE);
     }
 
 }

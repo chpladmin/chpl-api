@@ -6,16 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import javax.transaction.Transactional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.ParticipantExperienceStatisticsDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestParticipant;
@@ -24,49 +21,29 @@ import gov.healthit.chpl.dto.ParticipantExperienceStatisticsDTO;
 import gov.healthit.chpl.entity.statistics.ParticipantExperienceStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.search.domain.ListingSearchResult;
+import lombok.extern.log4j.Log4j2;
 
-/**
- * Populates the participant_experience_statistics table with summarized count
- * information.
- *
- * @author TYoung
- *
- */
-public class ParticipantExperienceStatisticsCalculator {
-    private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
+@Component
+@Log4j2(topic = "chartDataCreatorJobLogger")
+public class ParticipantExperienceStatisticsCalculator extends SedDataCollector {
 
-    @Autowired
     private ParticipantExperienceStatisticsDAO participantExperienceStatisticsDAO;
-
-    @Autowired
-    private JpaTransactionManager txManager;
 
     private Long experienceTypeId;
 
-    public ParticipantExperienceStatisticsCalculator() {
-        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+    @Autowired
+    public ParticipantExperienceStatisticsCalculator(ParticipantExperienceStatisticsDAO participantExperienceStatisticsDAO,
+            CertifiedProductDetailsManager certifiedProductDetailsManager, CertificationCriterionDAO criteriaDao) {
+        super(certifiedProductDetailsManager, criteriaDao);
+        this.participantExperienceStatisticsDAO = participantExperienceStatisticsDAO;
     }
 
-    /**
-     * This method calculates the participant experience counts and saves them
-     * to the participant_experience_statistics table.
-     *
-     * @param certifiedProductSearchDetails
-     *            List of CertifiedProductSearchDetails objects
-     * @param experienceTypeId
-     *            1 - Professional Experience, 2 - Product Experience, 3 -
-     *            Computer Experience. These values have constants defined in
-     *            ExperienceTypes.
-     */
-    public void run(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails,
-            final Long experienceTypeId) {
-
+    public void run(List<ListingSearchResult> listingSearchResults, Long experienceTypeId) {
         this.experienceTypeId = experienceTypeId;
 
-        Map<Integer, Long> experienceCounts = getCounts(certifiedProductSearchDetails);
-
+        Map<Integer, Long> experienceCounts = getCounts(getSedListings(listingSearchResults));
         logCounts(experienceCounts);
-
         save(convertExperienceCountMapToListOfParticipantExperienceStatistics(experienceCounts));
     }
 
@@ -76,12 +53,12 @@ public class ParticipantExperienceStatisticsCalculator {
         }
     }
 
-    private Map<Integer, Long> getCounts(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
+    private Map<Integer, Long> getCounts(List<ListingSearchResult> listingSearchResults) {
         // The key = Months of experience
         // The value = count of participants that fall into the associated
         // months of experience
         Map<Integer, Long> experienceMap = new HashMap<Integer, Long>();
-        List<TestParticipant> uniqueParticipants = getUniqueParticipants(certifiedProductSearchDetails);
+        List<TestParticipant> uniqueParticipants = getUniqueParticipants(listingSearchResults);
         for (TestParticipant participant : uniqueParticipants) {
             Long updatedCount = 1L;
             Integer experienceMonths = getExperienceMonthBasedOnExperienceType(participant);
@@ -106,14 +83,16 @@ public class ParticipantExperienceStatisticsCalculator {
         }
     }
 
-    private List<TestParticipant> getUniqueParticipants(
-            final List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
+    private List<TestParticipant> getUniqueParticipants(List<ListingSearchResult> listingSearchResults) {
         Map<Long, TestParticipant> participants = new HashMap<Long, TestParticipant>();
-        for (CertifiedProductSearchDetails detail : certifiedProductSearchDetails) {
-            for (TestTask task : detail.getSed().getTestTasks()) {
-                for (TestParticipant participant : task.getTestParticipants()) {
-                    if (!participants.containsKey(participant.getId())) {
-                        participants.put(participant.getId(), participant);
+        for (ListingSearchResult listingSearchResult : listingSearchResults) {
+            CertifiedProductSearchDetails listing = getListingDetails(listingSearchResult.getId());
+            if (listing != null) {
+                for (TestTask task : listing.getSed().getTestTasks()) {
+                    for (TestParticipant participant : task.getTestParticipants()) {
+                        if (!participants.containsKey(participant.getId())) {
+                            participants.put(participant.getId(), participant);
+                        }
                     }
                 }
             }
@@ -121,31 +100,17 @@ public class ParticipantExperienceStatisticsCalculator {
         return new ArrayList<TestParticipant>(participants.values());
     }
 
+    @Transactional
     private void save(final List<ParticipantExperienceStatisticsEntity> entities) {
-        // We need to manually create a transaction in this case because of how AOP works. When a method is
-        // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
-        // The object's proxy is not called when the method is called from within this class. The object's proxy
-        // is called when the method is public and is called from a different object.
-        // https://stackoverflow.com/questions/3037006/starting-new-transaction-in-spring-bean
-        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
-        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        txTemplate.execute(new TransactionCallbackWithoutResult() {
+        try {
+            deleteExistingPartcipantExperienceStatistics();
 
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                try {
-                    deleteExistingPartcipantExperienceStatistics();
-
-                    for (ParticipantExperienceStatisticsEntity entity : entities) {
-                        saveParticipantExperienceStatistic(entity);
-                    }
-                } catch (Exception e) {
-                    LOGGER.error("Error saving ParticipantExperienceStatistics.", e);
-                    status.setRollbackOnly();
-                }
-
+            for (ParticipantExperienceStatisticsEntity entity : entities) {
+                saveParticipantExperienceStatistic(entity);
             }
-        });
+        } catch (Exception e) {
+            LOGGER.error("Error saving ParticipantExperienceStatistics.", e);
+        }
     }
 
     private List<ParticipantExperienceStatisticsEntity> convertExperienceCountMapToListOfParticipantExperienceStatistics(
@@ -180,5 +145,4 @@ public class ParticipantExperienceStatisticsCalculator {
             LOGGER.info("Deleted: " + dto.getId());
         }
     }
-
 }
