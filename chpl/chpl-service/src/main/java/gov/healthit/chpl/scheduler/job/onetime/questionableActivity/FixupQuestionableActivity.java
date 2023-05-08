@@ -23,7 +23,6 @@ import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloperD
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProductDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersionDTO;
-import gov.healthit.chpl.questionableactivity.listing.AddedCertificationsActivity;
 import gov.healthit.chpl.questionableactivity.listing.DeletedCertificationsActivity;
 import gov.healthit.chpl.questionableactivity.listing.NonActiveCertificateEdited;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationDateActivity;
@@ -51,16 +50,10 @@ public class FixupQuestionableActivity  implements Job {
     private QuestionableActivityReprocessor reprocessor;
 
     @Autowired
-    private AddedCertificationsActivity addedCertificationsActivity;
-
-    @Autowired
     private DeletedCertificationsActivity deletedCertificationsActivity;
 
     @Autowired
     private NonActiveCertificateEdited nonActiveCertificateEditedActivity;
-
-    @Autowired
-    private UpdatedCertificationStatusDate updateCurrentCertificationStatusDateActivity;
 
     @Autowired
     private UpdatedCertificationDateActivity updateCertificationDateActivity;
@@ -75,11 +68,8 @@ public class FixupQuestionableActivity  implements Job {
         LocalDateTime startDt = LocalDateTime.parse(START_DATE_STR);
         LocalDateTime endDt = LocalDateTime.now();
 
-        reprocessor.reprocess(QuestionableActivityTriggerConcept.CRITERIA_ADDED, addedCertificationsActivity, startDt, endDt, true);
         reprocessor.reprocess(QuestionableActivityTriggerConcept.CRITERIA_REMOVED, deletedCertificationsActivity, startDt, endDt, true);
         reprocessor.reprocess(QuestionableActivityTriggerConcept.NON_ACTIVE_CERTIFIFCATE_EDITED, nonActiveCertificateEditedActivity, startDt, endDt, false);
-        reprocessor.reprocess(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_DATE_EDITED_CURRENT, updateCurrentCertificationStatusDateActivity,
-                startDt, endDt, false);
         reprocessor.reprocess(QuestionableActivityTriggerConcept.CERTIFICATION_DATE_EDITED, updateCertificationDateActivity,
                 startDt, endDt, true);
         reprocessor.reprocess(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_HISTORY, updatedCertificationStatusHistoryActivity,
