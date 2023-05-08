@@ -1,6 +1,10 @@
 package gov.healthit.chpl.scheduler.job.urluptime;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,6 +31,8 @@ public class UrlUptimeCreatorJob extends QuartzJob {
     @Value("${datadog.apiKey}")
     private String datadogApiKey;
 
+    @Value("${datadog.appKey}")
+    private String datadogAppKey;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -48,17 +54,27 @@ public class UrlUptimeCreatorJob extends QuartzJob {
         LocalDate yesterday = LocalDate.now().minusDays(1);
 
         getAllTests().getTests().stream()
+                .peek(result -> LOGGER.info(result.getConfig().getRequest().getUrl()))
                 .map(test -> getResultForTest(test.getPublicId(), yesterday))
                 .filter(result -> result != null)
-                .peek(result -> LOGGER.info(result.toString()))
+                .flatMap(result -> result.getResults().stream())
+                .peek(result -> LOGGER.info("Test id {} at {} with result {}",
+                        result.getResultId(),
+                        Instant.ofEpochMilli(result.getCheckTime().longValue()).atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                        result.getResult().getPassed().toString()))
                 .toList();
     }
 
     private SyntheticsGetAPITestLatestResultsResponse getResultForTest(String publicTestKey, LocalDate forDate) {
 
         GetAPITestLatestResultsOptionalParameters x = new GetAPITestLatestResultsOptionalParameters();
-        //x.fromTs(weekAgo.toInstant(ZoneOffset.UTC).toEpochMilli());
-        //x.toTs(weekAgo.toInstant(ZoneOffset.UTC).toEpochMilli() + 43200000);
+
+        LocalDateTime morning = LocalDateTime.now().withHour(8).withMinute(0).minusDays(1L);
+        LocalDateTime evening = LocalDateTime.now().withHour(20).withMinute(0).minusDays(-1);
+
+
+        x.fromTs(morning.toInstant(ZoneOffset.UTC).toEpochMilli());
+        x.toTs(evening.toInstant(ZoneOffset.UTC).toEpochMilli());
         x.probeDc(List.of("azure:eastus"));
 
         SyntheticsGetAPITestLatestResultsResponse response;
@@ -76,10 +92,9 @@ public class UrlUptimeCreatorJob extends QuartzJob {
     }
 
     private HashMap<String, String> getDatadogSecrets() {
-        LOGGER.info("apiKey = {}", datadogApiKey);
         HashMap<String, String> secrets = new HashMap<>();
         secrets.put("apiKeyAuth", datadogApiKey);
-        //secrets.put("appKeyAuth", "");
+        secrets.put("appKeyAuth", datadogAppKey);
         return secrets;
     }
 }
