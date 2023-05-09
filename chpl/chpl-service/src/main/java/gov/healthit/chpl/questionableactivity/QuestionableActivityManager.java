@@ -11,7 +11,7 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResultDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResult;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloper;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProduct;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTrigger;
@@ -144,7 +144,7 @@ public class QuestionableActivityManager {
 
     public void checkCertificationResultQuestionableActivity(CertificationResult origCertResult,
             CertificationResult newCertResult, ActivityDTO activity, String activityReason) {
-        QuestionableActivityCertificationResultDTO certActivity = null;
+        QuestionableActivityCertificationResult certActivity = null;
 
         if (certResultRules.hasCertOption(origCertResult.getCriterion().getId(), CertificationResultRules.G1_SUCCESS)) {
             certActivity = certResultQuestionableActivityProvider.checkG1SuccessUpdated(origCertResult, newCertResult);
@@ -179,7 +179,7 @@ public class QuestionableActivityManager {
         return certResult.getAllowedSvaps() != null && certResult.getAllowedSvaps().size() > 0;
     }
 
-    private void createCertificationActivity(QuestionableActivityCertificationResultDTO questionableActivity,
+    private void createCertificationActivity(QuestionableActivityCertificationResult questionableActivity,
             Long certResultId, ActivityDTO activity, QuestionableActivityTriggerConcept triggerConcept,
             String activityReason) {
         questionableActivity.setActivityId(activity.getId());

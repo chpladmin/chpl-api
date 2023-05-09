@@ -2,7 +2,6 @@ package gov.healthit.chpl.questionableactivity.dto;
 
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityCertificationResultEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,24 +13,11 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 @AllArgsConstructor
-public class QuestionableActivityCertificationResultDTO extends QuestionableActivity {
+public class QuestionableActivityCertificationResult extends QuestionableActivity {
     private Long certResultId;
     private String reason;
     private CertificationResultDetailsDTO certResult;
     private CertifiedProductDetailsDTO listing;
-
-    public QuestionableActivityCertificationResultDTO(QuestionableActivityCertificationResultEntity entity) {
-        super(entity);
-        this.certResultId = entity.getCertResultId();
-        this.reason = entity.getReason();
-        if (entity.getCertResult() != null) {
-            this.certResult = new CertificationResultDetailsDTO(entity.getCertResult());
-
-            if (entity.getCertResult().getListing() != null) {
-                this.listing = new CertifiedProductDetailsDTO(entity.getCertResult().getListing());
-            }
-        }
-    }
 
     @Override
     public Class<?> getActivityObjectClass() {

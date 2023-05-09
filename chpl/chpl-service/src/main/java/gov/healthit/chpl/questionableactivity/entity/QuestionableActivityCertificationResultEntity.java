@@ -12,8 +12,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResult;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -77,5 +80,21 @@ public class QuestionableActivityCertificationResultEntity implements Questionab
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
+
+    public QuestionableActivityCertificationResult toDomain() {
+        return QuestionableActivityCertificationResult.builder()
+                .id(this.getId())
+                .activityId(this.getActivityId())
+                .trigger(this.getTrigger().toDomain())
+                .before(this.getBefore())
+                .after(this.getAfter())
+                .activityDate(this.getActivityDate())
+                .userId(this.getUserId())
+                .listing(new CertifiedProductDetailsDTO(this.getCertResult().getListing()))
+                .certResultId(this.getCertResultId())
+                .certResult(new CertificationResultDetailsDTO(this.getCertResult()))
+                .reason(this.getReason())
+                .build();
+    }
 }
 

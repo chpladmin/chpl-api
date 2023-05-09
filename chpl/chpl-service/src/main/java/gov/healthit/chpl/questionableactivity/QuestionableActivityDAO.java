@@ -1,14 +1,11 @@
 package gov.healthit.chpl.questionableactivity;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
@@ -16,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivity;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResultDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResult;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloper;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListing;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProduct;
@@ -31,11 +28,11 @@ import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityTrigger
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityVersionEntity;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.UserMapper;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Repository("questionableActivityDao")
 public class QuestionableActivityDAO extends BaseDAOImpl {
-    private static final Logger LOGGER = LogManager.getLogger(QuestionableActivityDAO.class);
-
     private UserMapper userMapper;
 
     @Autowired
@@ -67,11 +64,11 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
             listingActivity.setCertificationStatusChangeReason(
                     ((QuestionableActivityListing) qa).getCertificationStatusChangeReason());
             listingActivity.setReason(((QuestionableActivityListing) qa).getReason());
-        } else if (qa instanceof QuestionableActivityCertificationResultDTO) {
+        } else if (qa instanceof QuestionableActivityCertificationResult) {
             toCreate = new QuestionableActivityCertificationResultEntity();
             QuestionableActivityCertificationResultEntity certResultActivity = (QuestionableActivityCertificationResultEntity) toCreate;
-            certResultActivity.setCertResultId(((QuestionableActivityCertificationResultDTO) qa).getCertResultId());
-            certResultActivity.setReason(((QuestionableActivityCertificationResultDTO) qa).getReason());
+            certResultActivity.setCertResultId(((QuestionableActivityCertificationResult) qa).getCertResultId());
+            certResultActivity.setReason(((QuestionableActivityCertificationResult) qa).getReason());
         } else {
             LOGGER.error("Unknown class of questionable activity passed in: " + qa.getClass().getName());
             return null;
@@ -98,7 +95,7 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
         } else if (toCreate instanceof QuestionableActivityListingEntity) {
             created = mapEntityToDomain((QuestionableActivityListingEntity) toCreate);
         } else if (toCreate instanceof QuestionableActivityCertificationResultEntity) {
-            created = mapEntityToDto((QuestionableActivityCertificationResultEntity) toCreate);
+            created = mapEntityToDomain((QuestionableActivityCertificationResultEntity) toCreate);
         }
         return created;
     }
@@ -196,7 +193,7 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
     }
 
     @Transactional
-    public List<QuestionableActivityCertificationResultDTO> findCertificationResultActivityBetweenDates(
+    public List<QuestionableActivityCertificationResult> findCertificationResultActivityBetweenDates(
             Date start, Date end) {
         Query query = entityManager.createQuery("SELECT activity "
                 + "FROM QuestionableActivityCertificationResultEntity activity "
@@ -212,12 +209,9 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
         query.setParameter("startDate", start);
         query.setParameter("endDate", end);
         List<QuestionableActivityCertificationResultEntity> queryResults = query.getResultList();
-        List<QuestionableActivityCertificationResultDTO> results = new ArrayList<QuestionableActivityCertificationResultDTO>(
-                queryResults.size());
-        for (QuestionableActivityCertificationResultEntity queryResult : queryResults) {
-            results.add(mapEntityToDto(queryResult));
-        }
-        return results;
+        return queryResults.stream()
+                .map(entity -> mapEntityToDomain(entity))
+                .collect(Collectors.toList());
     }
 
     private QuestionableActivityVersion mapEntityToDomain(QuestionableActivityVersionEntity entity) {
@@ -244,11 +238,10 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
         return qa;
     }
 
-    private QuestionableActivityCertificationResultDTO mapEntityToDto(
-            QuestionableActivityCertificationResultEntity entity) {
-        QuestionableActivityCertificationResultDTO dto = new QuestionableActivityCertificationResultDTO(entity);
-        dto.setUser(userMapper.from(entity.getUser()));
-        return dto;
+    private QuestionableActivityCertificationResult mapEntityToDomain(QuestionableActivityCertificationResultEntity entity) {
+        QuestionableActivityCertificationResult qa = entity.toDomain();
+        qa.setUser(userMapper.from(entity.getUser()));
+        return qa;
     }
 
 }
