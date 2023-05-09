@@ -29,6 +29,8 @@ public class SearchRequestNormalizer {
         normalizeComplianceFilter(request);
         normalizeRwtOptions(request);
         normalizeRwtOptionsOperator(request);
+        normalizeSvapIds(request);
+        normalizeSvapOperator(request);
         normalizeOrderBy(request);
     }
 
@@ -229,6 +231,29 @@ public class SearchRequestNormalizer {
             try {
                 request.setRwtOperator(
                         SearchSetOperator.valueOf(request.getRwtOperatorString().toUpperCase().trim()));
+            } catch (Exception ignore) {
+            }
+        }
+    }
+
+    private void normalizeSvapIds(SearchRequest request) {
+        if (request.getSvapIdStrings() != null && request.getSvapIdStrings().size() > 0
+                && (request.getSvapIds() == null || request.getSvapIds().size() == 0)) {
+            request.setSvapIds(request.getSvapIdStrings().stream()
+                    .filter(svapIdString -> !StringUtils.isBlank(svapIdString))
+                    .map(svapIdString -> svapIdString.trim())
+                    .filter(svapIdString -> isParseableLong(svapIdString))
+                    .map(svapIdString -> Long.parseLong(svapIdString))
+                    .collect(Collectors.toSet()));
+        }
+    }
+
+    private void normalizeSvapOperator(SearchRequest request) {
+        if (!StringUtils.isBlank(request.getSvapOperatorString())
+                && request.getSvapOperator() == null) {
+            try {
+                request.setSvapOperator(
+                        SearchSetOperator.valueOf(request.getSvapOperatorString().toUpperCase().trim()));
             } catch (Exception ignore) {
             }
         }
