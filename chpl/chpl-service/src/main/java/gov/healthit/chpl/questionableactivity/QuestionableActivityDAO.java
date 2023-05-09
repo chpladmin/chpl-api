@@ -3,6 +3,7 @@ package gov.healthit.chpl.questionableactivity;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
@@ -19,7 +20,7 @@ import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloperDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProductDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTriggerDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTrigger;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersionDTO;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityCertificationResultEntity;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityDeveloperEntity;
@@ -103,18 +104,15 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
     }
 
     @Transactional
-    public List<QuestionableActivityTriggerDTO> getAllTriggers() {
+    public List<QuestionableActivityTrigger> getAllTriggers() {
         Query query = entityManager.createQuery("SELECT trigger "
                 + "FROM QuestionableActivityTriggerEntity trigger "
                 + "WHERE trigger.deleted <> true",
                 QuestionableActivityTriggerEntity.class);
         List<QuestionableActivityTriggerEntity> queryResults = query.getResultList();
-        List<QuestionableActivityTriggerDTO> results = new ArrayList<QuestionableActivityTriggerDTO>(
-                queryResults.size());
-        for (QuestionableActivityTriggerEntity queryResult : queryResults) {
-            results.add(new QuestionableActivityTriggerDTO(queryResult));
-        }
-        return results;
+        return queryResults.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
     @Transactional

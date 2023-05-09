@@ -21,7 +21,7 @@ import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityDAO;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTriggerDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTrigger;
 import gov.healthit.chpl.questionableactivity.listing.ListingActivity;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.JSONUtils;
@@ -37,7 +37,7 @@ public class QuestionableActivityReprocessor {
     private UpdatableQuestionableActivityDao updatableQuestionableActivityDao;
     private CertifiedProductDAO certifiedProductDao;
     private Long questionableActivityThresholdDays;
-    private List<QuestionableActivityTriggerDTO> triggerTypes;
+    private List<QuestionableActivityTrigger> triggerTypes;
 
     @Autowired
     public QuestionableActivityReprocessor(@Qualifier("transactionalActivityDao") TransactionalActivityDao activityDao,
@@ -56,7 +56,7 @@ public class QuestionableActivityReprocessor {
     public void reprocess(QuestionableActivityTriggerConcept trigger, ListingActivity activityChecker,
             LocalDateTime since, LocalDateTime until, boolean requiresThreshold) {
         LOGGER.info("Reprocessing all activity for " + trigger.getName() + " between " + since + " and " + until);
-        QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
+        QuestionableActivityTrigger triggerDto = getTrigger(trigger);
         List<QuestionableActivityListingDTO> allQuestionableActivity = questionableActivityDao.findListingActivityBetweenDates(
                 DateUtil.toDate(since), DateUtil.toDate(until));
 
@@ -94,7 +94,7 @@ public class QuestionableActivityReprocessor {
     }
 
     private void reprocessListingActivityForTrigger(ActivityDTO activity,
-            List<QuestionableActivityListingDTO> previouslyExistingQuestionableActivity, QuestionableActivityTriggerDTO trigger,
+            List<QuestionableActivityListingDTO> previouslyExistingQuestionableActivity, QuestionableActivityTrigger trigger,
             ListingActivity activityChecker, boolean requiresThreshold)
             throws IOException {
         LOGGER.info("Reprocessing " + activity.getConcept().name() + " activity for object ID " + activity.getActivityObjectId()
@@ -176,9 +176,9 @@ public class QuestionableActivityReprocessor {
         return matchingPreviousQuestionableActivity.get(0).getReason();
     }
 
-    private QuestionableActivityTriggerDTO getTrigger(QuestionableActivityTriggerConcept trigger) {
-        QuestionableActivityTriggerDTO result = null;
-        for (QuestionableActivityTriggerDTO currTrigger : triggerTypes) {
+    private QuestionableActivityTrigger getTrigger(QuestionableActivityTriggerConcept trigger) {
+        QuestionableActivityTrigger result = null;
+        for (QuestionableActivityTrigger currTrigger : triggerTypes) {
             if (trigger.getName().equalsIgnoreCase(currTrigger.getName())) {
                 result = currTrigger;
             }

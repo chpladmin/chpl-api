@@ -14,7 +14,7 @@ import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResultDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloperDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProductDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTriggerDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTrigger;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersionDTO;
 import gov.healthit.chpl.questionableactivity.service.CertificationResultQuestionableActivityProvider;
 import gov.healthit.chpl.questionableactivity.service.DeveloperQuestionableActivityProvider;
@@ -27,7 +27,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Service("questionableActivityManager")
 public class QuestionableActivityManager {
-    private List<QuestionableActivityTriggerDTO> triggerTypes;
+    private List<QuestionableActivityTrigger> triggerTypes;
     private DeveloperQuestionableActivityProvider developerQuestionableActivityProvider;
     private ProductQuestionableActivityProvider productQuestionableActivityProvider;
     private VersionQuestionableActivityProvider versionQuestionableActivityProvider;
@@ -180,61 +180,61 @@ public class QuestionableActivityManager {
     }
 
     private void createCertificationActivity(QuestionableActivityCertificationResultDTO questionableActivity,
-            Long certResultId, ActivityDTO activity, QuestionableActivityTriggerConcept trigger,
+            Long certResultId, ActivityDTO activity, QuestionableActivityTriggerConcept triggerConcept,
             String activityReason) {
         questionableActivity.setActivityId(activity.getId());
         questionableActivity.setCertResultId(certResultId);
         questionableActivity.setActivityDate(activity.getActivityDate());
         questionableActivity.setUserId(activity.getUser().getId());
         questionableActivity.setReason(activityReason);
-        QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
-        questionableActivity.setTrigger(triggerDto);
+        QuestionableActivityTrigger trigger = getTrigger(triggerConcept);
+        questionableActivity.setTrigger(trigger);
         questionableActivityDao.create(questionableActivity);
     }
 
     private void createDeveloperActivity(QuestionableActivityDeveloperDTO questionableActivity, Long developerId,
-            ActivityDTO activity, QuestionableActivityTriggerConcept trigger, String reason) {
+            ActivityDTO activity, QuestionableActivityTriggerConcept triggerConcept, String reason) {
         questionableActivity.setActivityId(activity.getId());
         questionableActivity.setDeveloperId(developerId);
         questionableActivity.setActivityDate(activity.getActivityDate());
         questionableActivity.setUserId(activity.getUser().getId());
         questionableActivity.setReason(reason);
-        QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
-        questionableActivity.setTrigger(triggerDto);
+        QuestionableActivityTrigger trigger = getTrigger(triggerConcept);
+        questionableActivity.setTrigger(trigger);
         questionableActivityDao.create(questionableActivity);
     }
 
     private void createDeveloperActivity(QuestionableActivityDeveloperDTO questionableActivity, Long developerId,
-            ActivityDTO activity, QuestionableActivityTriggerConcept trigger) {
-        createDeveloperActivity(questionableActivity, developerId, activity, trigger, null);
+            ActivityDTO activity, QuestionableActivityTriggerConcept triggerConcept) {
+        createDeveloperActivity(questionableActivity, developerId, activity, triggerConcept, null);
     }
 
     private void createProductActivity(QuestionableActivityProductDTO questionableActivity, Long productId,
-            ActivityDTO activity, QuestionableActivityTriggerConcept trigger) {
+            ActivityDTO activity, QuestionableActivityTriggerConcept triggerConcept) {
         questionableActivity.setActivityId(activity.getId());
         questionableActivity.setProductId(productId);
         questionableActivity.setActivityDate(activity.getActivityDate());
         questionableActivity.setUserId(activity.getUser().getId());
-        QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
-        questionableActivity.setTrigger(triggerDto);
+        QuestionableActivityTrigger trigger = getTrigger(triggerConcept);
+        questionableActivity.setTrigger(trigger);
         questionableActivityDao.create(questionableActivity);
     }
 
     private void createVersionActivity(QuestionableActivityVersionDTO questionableActivity, Long versionId,
-            ActivityDTO activity, QuestionableActivityTriggerConcept trigger) {
+            ActivityDTO activity, QuestionableActivityTriggerConcept triggerConcept) {
         questionableActivity.setActivityId(activity.getId());
         questionableActivity.setVersionId(versionId);
         questionableActivity.setActivityDate(activity.getActivityDate());
         questionableActivity.setUserId(activity.getUser().getId());
-        QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
-        questionableActivity.setTrigger(triggerDto);
+        QuestionableActivityTrigger trigger = getTrigger(triggerConcept);
+        questionableActivity.setTrigger(trigger);
         questionableActivityDao.create(questionableActivity);
     }
 
-    private QuestionableActivityTriggerDTO getTrigger(QuestionableActivityTriggerConcept trigger) {
-        QuestionableActivityTriggerDTO result = null;
-        for (QuestionableActivityTriggerDTO currTrigger : triggerTypes) {
-            if (trigger.getName().equalsIgnoreCase(currTrigger.getName())) {
+    private QuestionableActivityTrigger getTrigger(QuestionableActivityTriggerConcept triggerConcept) {
+        QuestionableActivityTrigger result = null;
+        for (QuestionableActivityTrigger currTrigger : triggerTypes) {
+            if (triggerConcept.getName().equalsIgnoreCase(currTrigger.getName())) {
                 result = currTrigger;
             }
         }

@@ -40,7 +40,7 @@ import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificat
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloperDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProductDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTriggerDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTrigger;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersionDTO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.Util;
@@ -716,9 +716,9 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
     private static class ActivityDateTriggerGroup {
         private Date activityDate;
-        private QuestionableActivityTriggerDTO trigger;
+        private QuestionableActivityTrigger trigger;
 
-        ActivityDateTriggerGroup(Date activityDate, QuestionableActivityTriggerDTO trigger) {
+        ActivityDateTriggerGroup(Date activityDate, QuestionableActivityTrigger trigger) {
             this.activityDate = activityDate;
             this.trigger = trigger;
         }
@@ -756,7 +756,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             return activityDate;
         }
 
-        public QuestionableActivityTriggerDTO getTrigger() {
+        public QuestionableActivityTrigger getTrigger() {
             return trigger;
         }
     }
