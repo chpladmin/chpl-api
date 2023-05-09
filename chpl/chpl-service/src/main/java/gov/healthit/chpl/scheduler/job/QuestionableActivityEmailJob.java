@@ -41,7 +41,7 @@ import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloperD
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProductDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTrigger;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersionDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersion;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.Util;
 
@@ -408,24 +408,24 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
     private List<List<String>> createVersionActivityRows(Date startDate, Date endDate) {
         LOGGER.debug("Getting version activity between " + startDate + " and " + endDate);
-        List<QuestionableActivityVersionDTO> versionActivities = questionableActivityDao
+        List<QuestionableActivityVersion> versionActivities = questionableActivityDao
                 .findVersionActivityBetweenDates(startDate, endDate);
         LOGGER.debug("Found " + versionActivities.size() + " questionable developer activities");
 
         // create a bucket for each activity timestamp+trigger type
-        Map<ActivityDateTriggerGroup, List<QuestionableActivityVersionDTO>> activityByGroup =
-                new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityVersionDTO>>();
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityVersion>> activityByGroup =
+                new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityVersion>>();
 
-        for (QuestionableActivityVersionDTO activity : versionActivities) {
+        for (QuestionableActivityVersion activity : versionActivities) {
             ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(),
                     activity.getTrigger());
 
             if (activityByGroup.get(groupKey) == null) {
-                List<QuestionableActivityVersionDTO> activitiesForDate = new ArrayList<QuestionableActivityVersionDTO>();
+                List<QuestionableActivityVersion> activitiesForDate = new ArrayList<QuestionableActivityVersion>();
                 activitiesForDate.add(activity);
                 activityByGroup.put(groupKey, activitiesForDate);
             } else {
-                List<QuestionableActivityVersionDTO> existingActivitiesForDate = activityByGroup.get(groupKey);
+                List<QuestionableActivityVersion> existingActivitiesForDate = activityByGroup.get(groupKey);
                 existingActivitiesForDate.add(activity);
             }
         }
@@ -438,8 +438,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             currRow.set(ACTIVITY_LEVEL_COL, activityGroup.getTrigger().getLevel());
             currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
-            List<QuestionableActivityVersionDTO> activitiesForGroup = activityByGroup.get(activityGroup);
-            for (QuestionableActivityVersionDTO activity : activitiesForGroup) {
+            List<QuestionableActivityVersion> activitiesForGroup = activityByGroup.get(activityGroup);
+            for (QuestionableActivityVersion activity : activitiesForGroup) {
                 putVersionActivityInRow(activity, currRow);
             }
 
@@ -661,7 +661,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         }
     }
 
-    private void putVersionActivityInRow(QuestionableActivityVersionDTO activity, List<String> activityRow) {
+    private void putVersionActivityInRow(QuestionableActivityVersion activity, List<String> activityRow) {
         activityRow.set(DEVELOPER_COL, activity.getVersion().getDeveloperName());
         activityRow.set(PRODUCT_COL, activity.getVersion().getProductName());
         activityRow.set(VERSION_COL, activity.getVersion().getVersion());

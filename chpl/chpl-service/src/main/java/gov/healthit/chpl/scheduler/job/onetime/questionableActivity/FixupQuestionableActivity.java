@@ -22,7 +22,7 @@ import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificat
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloperDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProductDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersionDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersion;
 import gov.healthit.chpl.questionableactivity.listing.DeletedCertificationsActivity;
 import gov.healthit.chpl.questionableactivity.listing.NonActiveCertificateEdited;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationDateActivity;
@@ -118,7 +118,7 @@ public class FixupQuestionableActivity  implements Job {
             .forEach(pqa -> addActivityId(pqa));
 
         LOGGER.info("Linking Activity to Version Questionable Activity");
-        List<QuestionableActivityVersionDTO> versionQuestionableActivity
+        List<QuestionableActivityVersion> versionQuestionableActivity
             = questionableActivityDao.findVersionActivityBetweenDates(DateUtil.toDate(startDt), DateUtil.toDate(endDt));
         versionQuestionableActivity.stream()
             .filter(vqa -> vqa.getActivityId() == null)
@@ -163,7 +163,7 @@ public class FixupQuestionableActivity  implements Job {
         }
     }
 
-    private void addActivityId(QuestionableActivityVersionDTO questionableActivity) {
+    private void addActivityId(QuestionableActivityVersion questionableActivity) {
         ActivityConcept concept = ActivityConcept.VERSION;
         ActivityDTO activity = getActivity(concept, questionableActivity.getActivityDate(), questionableActivity.getVersionId());
         if (activity != null) {

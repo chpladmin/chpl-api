@@ -15,7 +15,7 @@ import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificat
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloperDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProductDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTrigger;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersionDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersion;
 import gov.healthit.chpl.questionableactivity.service.CertificationResultQuestionableActivityProvider;
 import gov.healthit.chpl.questionableactivity.service.DeveloperQuestionableActivityProvider;
 import gov.healthit.chpl.questionableactivity.service.ListingQuestionableActivityService;
@@ -131,7 +131,7 @@ public class QuestionableActivityManager {
 
     public void checkVersionQuestionableActivity(ProductVersionDTO origVersion, ProductVersionDTO newVersion,
             ActivityDTO activity) {
-        QuestionableActivityVersionDTO versionActivity = versionQuestionableActivityProvider.checkNameUpdated(origVersion, newVersion);
+        QuestionableActivityVersion versionActivity = versionQuestionableActivityProvider.checkNameUpdated(origVersion, newVersion);
         if (versionActivity != null) {
             createVersionActivity(versionActivity, origVersion.getId(), activity, QuestionableActivityTriggerConcept.VERSION_NAME_EDITED);
         }
@@ -220,7 +220,7 @@ public class QuestionableActivityManager {
         questionableActivityDao.create(questionableActivity);
     }
 
-    private void createVersionActivity(QuestionableActivityVersionDTO questionableActivity, Long versionId,
+    private void createVersionActivity(QuestionableActivityVersion questionableActivity, Long versionId,
             ActivityDTO activity, QuestionableActivityTriggerConcept triggerConcept) {
         questionableActivity.setActivityId(activity.getId());
         questionableActivity.setVersionId(versionId);
