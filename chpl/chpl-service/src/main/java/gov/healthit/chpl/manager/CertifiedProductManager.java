@@ -1677,7 +1677,7 @@ public class CertifiedProductManager extends SecuredManager {
     private boolean shouldValidationExceptionBeThrown(CertifiedProductSearchDetails listing, boolean acknowledgeBusinessErrors, boolean acknowledgeWarnings) {
         // return true when we want to throw ValidationException
         if (doErrorMessagesExist(listing)) {
-            if (resourcePermissions.isUserRoleAdmin()) {
+            if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
                 return doBusinessErrorMessagesExist(listing) && !acknowledgeBusinessErrors;
             } else {
                 return true;
