@@ -17,7 +17,7 @@ import org.hibernate.annotations.Where;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListing;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

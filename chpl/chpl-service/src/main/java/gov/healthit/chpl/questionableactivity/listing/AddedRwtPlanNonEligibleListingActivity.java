@@ -9,7 +9,7 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListing;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityServiceFactory;
 import lombok.extern.log4j.Log4j2;
 

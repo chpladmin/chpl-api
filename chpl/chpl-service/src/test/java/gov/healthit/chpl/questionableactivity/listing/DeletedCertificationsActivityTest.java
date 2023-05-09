@@ -15,7 +15,7 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListing;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.Util;
 

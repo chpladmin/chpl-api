@@ -14,7 +14,7 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.ProductEntity;
 import gov.healthit.chpl.entity.auth.UserEntity;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProduct;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityProduct;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

@@ -9,7 +9,7 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListing;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
 
 @Component
 public class DeletedCqmsActivity implements ListingActivity {

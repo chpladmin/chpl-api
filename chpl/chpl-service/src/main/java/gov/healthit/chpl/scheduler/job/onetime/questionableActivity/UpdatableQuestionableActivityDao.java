@@ -8,7 +8,7 @@ import javax.transaction.Transactional;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTrigger;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityCertificationResultEntity;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityDeveloperEntity;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityListingEntity;

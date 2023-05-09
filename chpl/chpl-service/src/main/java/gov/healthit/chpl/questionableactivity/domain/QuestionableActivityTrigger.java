@@ -1,4 +1,4 @@
-package gov.healthit.chpl.questionableactivity.dto;
+package gov.healthit.chpl.questionableactivity.domain;
 
 import java.io.Serializable;
 

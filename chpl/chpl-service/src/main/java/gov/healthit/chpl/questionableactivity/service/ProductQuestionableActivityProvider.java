@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductOwner;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProduct;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityProduct;
 
 /**
  * Checks for Product questionable activities.

@@ -36,12 +36,12 @@ import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityDAO;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResult;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloper;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListing;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProduct;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTrigger;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersion;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityCertificationResult;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityDeveloper;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityProduct;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityVersion;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.Util;
 

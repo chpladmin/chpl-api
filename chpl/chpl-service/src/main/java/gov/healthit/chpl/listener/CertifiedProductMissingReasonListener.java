@@ -18,7 +18,7 @@ import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MissingReasonException;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListing;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
 import gov.healthit.chpl.questionableactivity.listing.DeletedCertificationsActivity;
 import gov.healthit.chpl.questionableactivity.listing.DeletedCqmsActivity;
 import gov.healthit.chpl.questionableactivity.listing.UpdateCurrentCertificationStatusActivity;

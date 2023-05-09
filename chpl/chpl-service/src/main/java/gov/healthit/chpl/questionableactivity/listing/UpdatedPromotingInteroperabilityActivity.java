@@ -14,7 +14,7 @@ import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListing;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2

@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResult;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityCertificationResult;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 
 /**

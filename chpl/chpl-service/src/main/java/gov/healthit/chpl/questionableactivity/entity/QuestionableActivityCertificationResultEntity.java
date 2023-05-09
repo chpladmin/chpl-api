@@ -16,7 +16,7 @@ import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResult;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityCertificationResult;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

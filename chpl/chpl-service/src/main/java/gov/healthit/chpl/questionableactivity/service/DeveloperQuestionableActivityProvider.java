@@ -9,7 +9,7 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.dto.DeveloperStatusEventPair;
 import gov.healthit.chpl.manager.impl.DeveloperStatusEventsHelper;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloper;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityDeveloper;
 import gov.healthit.chpl.util.Util;
 
 @Component

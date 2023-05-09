@@ -3,7 +3,7 @@ package gov.healthit.chpl.questionableactivity.service;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dto.ProductVersionDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersion;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityVersion;
 
 /**
  * Tools for checking for Questionable Activity related to Versions.
