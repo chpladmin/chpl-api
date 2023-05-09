@@ -212,7 +212,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 }
                 if (certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.API_DOCUMENTATION)
                         && StringUtils.isEmpty(cert.getApiDocumentation())) {
-                    addBusinessCriterionError(listing, cert, "listing.criteria.missingApiDocumentation",
+                    addDataCriterionError(listing, cert, "listing.criteria.missingApiDocumentation",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
                 if (certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.EXPORT_DOCUMENTATION)
@@ -236,7 +236,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
                 if (certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.SERVICE_BASE_URL_LIST)
                         && StringUtils.isEmpty(cert.getServiceBaseUrlList())) {
-                    addBusinessCriterionError(listing, cert, "listing.criteria.missingServiceBaseUrlList",
+                    addDataCriterionError(listing, cert, "listing.criteria.missingServiceBaseUrlList",
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
