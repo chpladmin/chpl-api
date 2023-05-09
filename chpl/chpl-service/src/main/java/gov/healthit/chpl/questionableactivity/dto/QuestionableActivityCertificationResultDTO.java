@@ -14,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 @AllArgsConstructor
-public class QuestionableActivityCertificationResultDTO extends QuestionableActivityDTO {
+public class QuestionableActivityCertificationResultDTO extends QuestionableActivity {
     private Long certResultId;
     private String reason;
     private CertificationResultDetailsDTO certResult;

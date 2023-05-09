@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 @AllArgsConstructor
-public class QuestionableActivityProductDTO extends QuestionableActivityDTO {
+public class QuestionableActivityProductDTO extends QuestionableActivity {
     private Long productId;
     private Product product;
 

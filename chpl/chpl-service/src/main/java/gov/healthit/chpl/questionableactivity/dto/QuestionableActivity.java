@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public abstract class QuestionableActivityDTO {
+public abstract class QuestionableActivity {
     private Long id;
     private Long activityId;
     private QuestionableActivityTrigger trigger;
@@ -25,7 +25,7 @@ public abstract class QuestionableActivityDTO {
 
     public abstract Class<?> getActivityObjectClass();
 
-    public QuestionableActivityDTO(QuestionableActivityEntity entity) {
+    public QuestionableActivity(QuestionableActivityEntity entity) {
         this.id = entity.getId();
         this.activityId = entity.getActivityId();
         if (entity.getTrigger() != null) {

@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResultDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivity;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloperDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProductDTO;
@@ -44,45 +44,45 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
     }
 
     @Transactional
-    public QuestionableActivityDTO create(QuestionableActivityDTO dto) {
-        QuestionableActivityDTO created = null;
+    public QuestionableActivity create(QuestionableActivity qa) {
+        QuestionableActivity created = null;
         QuestionableActivityEntity toCreate = null;
-        if (dto instanceof QuestionableActivityVersionDTO) {
+        if (qa instanceof QuestionableActivityVersionDTO) {
             toCreate = new QuestionableActivityVersionEntity();
             QuestionableActivityVersionEntity versionActivity = (QuestionableActivityVersionEntity) toCreate;
-            versionActivity.setVersionId(((QuestionableActivityVersionDTO) dto).getVersionId());
-        } else if (dto instanceof QuestionableActivityProductDTO) {
+            versionActivity.setVersionId(((QuestionableActivityVersionDTO) qa).getVersionId());
+        } else if (qa instanceof QuestionableActivityProductDTO) {
             toCreate = new QuestionableActivityProductEntity();
             QuestionableActivityProductEntity productActivity = (QuestionableActivityProductEntity) toCreate;
-            productActivity.setProductId(((QuestionableActivityProductDTO) dto).getProductId());
-        } else if (dto instanceof QuestionableActivityDeveloperDTO) {
+            productActivity.setProductId(((QuestionableActivityProductDTO) qa).getProductId());
+        } else if (qa instanceof QuestionableActivityDeveloperDTO) {
             toCreate = new QuestionableActivityDeveloperEntity();
             QuestionableActivityDeveloperEntity developerActivity = (QuestionableActivityDeveloperEntity) toCreate;
-            developerActivity.setDeveloperId(((QuestionableActivityDeveloperDTO) dto).getDeveloperId());
-            developerActivity.setReason(((QuestionableActivityDeveloperDTO) dto).getReason());
-        } else if (dto instanceof QuestionableActivityListingDTO) {
+            developerActivity.setDeveloperId(((QuestionableActivityDeveloperDTO) qa).getDeveloperId());
+            developerActivity.setReason(((QuestionableActivityDeveloperDTO) qa).getReason());
+        } else if (qa instanceof QuestionableActivityListingDTO) {
             toCreate = new QuestionableActivityListingEntity();
             QuestionableActivityListingEntity listingActivity = (QuestionableActivityListingEntity) toCreate;
-            listingActivity.setListingId(((QuestionableActivityListingDTO) dto).getListingId());
+            listingActivity.setListingId(((QuestionableActivityListingDTO) qa).getListingId());
             listingActivity.setCertificationStatusChangeReason(
-                    ((QuestionableActivityListingDTO) dto).getCertificationStatusChangeReason());
-            listingActivity.setReason(((QuestionableActivityListingDTO) dto).getReason());
-        } else if (dto instanceof QuestionableActivityCertificationResultDTO) {
+                    ((QuestionableActivityListingDTO) qa).getCertificationStatusChangeReason());
+            listingActivity.setReason(((QuestionableActivityListingDTO) qa).getReason());
+        } else if (qa instanceof QuestionableActivityCertificationResultDTO) {
             toCreate = new QuestionableActivityCertificationResultEntity();
             QuestionableActivityCertificationResultEntity certResultActivity = (QuestionableActivityCertificationResultEntity) toCreate;
-            certResultActivity.setCertResultId(((QuestionableActivityCertificationResultDTO) dto).getCertResultId());
-            certResultActivity.setReason(((QuestionableActivityCertificationResultDTO) dto).getReason());
+            certResultActivity.setCertResultId(((QuestionableActivityCertificationResultDTO) qa).getCertResultId());
+            certResultActivity.setReason(((QuestionableActivityCertificationResultDTO) qa).getReason());
         } else {
-            LOGGER.error("Unknown class of questionable activity passed in: " + dto.getClass().getName());
+            LOGGER.error("Unknown class of questionable activity passed in: " + qa.getClass().getName());
             return null;
         }
 
-        toCreate.setActivityId(dto.getActivityId());
-        toCreate.setActivityDate(dto.getActivityDate());
-        toCreate.setBefore(dto.getBefore());
-        toCreate.setAfter(dto.getAfter());
-        toCreate.setTriggerId(dto.getTrigger().getId());
-        toCreate.setUserId(dto.getUserId());
+        toCreate.setActivityId(qa.getActivityId());
+        toCreate.setActivityDate(qa.getActivityDate());
+        toCreate.setBefore(qa.getBefore());
+        toCreate.setAfter(qa.getAfter());
+        toCreate.setTriggerId(qa.getTrigger().getId());
+        toCreate.setUserId(qa.getUserId());
         toCreate.setDeleted(false);
         toCreate.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.persist(toCreate);
