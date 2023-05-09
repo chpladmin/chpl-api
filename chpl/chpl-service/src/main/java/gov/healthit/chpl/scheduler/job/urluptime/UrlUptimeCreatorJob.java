@@ -1,10 +1,11 @@
 package gov.healthit.chpl.scheduler.job.urluptime;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import com.datadog.api.client.ApiClient;
 import com.datadog.api.client.ApiException;
 import com.datadog.api.client.v1.api.SyntheticsApi;
 import com.datadog.api.client.v1.api.SyntheticsApi.GetAPITestLatestResultsOptionalParameters;
+import com.datadog.api.client.v1.model.SyntheticsAPITestResultShort;
 import com.datadog.api.client.v1.model.SyntheticsGetAPITestLatestResultsResponse;
 import com.datadog.api.client.v1.model.SyntheticsListTestsResponse;
 
@@ -27,6 +29,8 @@ import lombok.extern.log4j.Log4j2;
 public class UrlUptimeCreatorJob extends QuartzJob {
 
     private SyntheticsApi apiInstance = null;
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     @Value("${datadog.apiKey}")
     private String datadogApiKey;
@@ -51,40 +55,52 @@ public class UrlUptimeCreatorJob extends QuartzJob {
     }
 
     private void gatherResultsForAllTests() throws ApiException {
-        LocalDate yesterday = LocalDate.now().minusDays(1);
-
         getAllTests().getTests().stream()
                 .peek(result -> LOGGER.info(result.getConfig().getRequest().getUrl()))
-                .map(test -> getResultForTest(test.getPublicId(), yesterday))
-                .filter(result -> result != null)
-                .flatMap(result -> result.getResults().stream())
+                .flatMap(test -> getResultsForTest(test.getPublicId()).stream())
                 .peek(result -> LOGGER.info("Test id {} at {} with result {}",
                         result.getResultId(),
-                        Instant.ofEpochMilli(result.getCheckTime().longValue()).atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                        Instant.ofEpochMilli(result.getCheckTime().longValue()).atZone(ZoneId.of("US/Eastern")).format(formatter),
                         result.getResult().getPassed().toString()))
                 .toList();
     }
 
-    private SyntheticsGetAPITestLatestResultsResponse getResultForTest(String publicTestKey, LocalDate forDate) {
+    private List<SyntheticsAPITestResultShort> getResultsForTest(String publicTestKey) {
 
-        GetAPITestLatestResultsOptionalParameters x = new GetAPITestLatestResultsOptionalParameters();
+        GetAPITestLatestResultsOptionalParameters params = new GetAPITestLatestResultsOptionalParameters();
+        ZonedDateTime morning = ZonedDateTime.now(ZoneId.of("US/Eastern")).withHour(4).withMinute(0).minusDays(1);
+        ZonedDateTime evening = ZonedDateTime.now(ZoneId.of("US/Eastern")).withHour(16).withMinute(0).minusDays(1);
 
-        LocalDateTime morning = LocalDateTime.now().withHour(8).withMinute(0).minusDays(1L);
-        LocalDateTime evening = LocalDateTime.now().withHour(20).withMinute(0).minusDays(-1);
 
-
-        x.fromTs(morning.toInstant(ZoneOffset.UTC).toEpochMilli());
-        x.toTs(evening.toInstant(ZoneOffset.UTC).toEpochMilli());
-        x.probeDc(List.of("azure:eastus"));
+        params.fromTs(morning.toInstant().toEpochMilli());
+        params.toTs(evening.toInstant().toEpochMilli());
+        params.probeDc(List.of("azure:eastus"));
 
         SyntheticsGetAPITestLatestResultsResponse response;
+        List<SyntheticsAPITestResultShort> testResults = new ArrayList<SyntheticsAPITestResultShort>();
         try {
-            response = apiInstance.getAPITestLatestResults(publicTestKey, x);
+
+            response = apiInstance.getAPITestLatestResults(publicTestKey, params);
+
+            while (response.getResults().size() > 1) {
+                testResults.addAll(response.getResults());
+                Long ts = getMostRecentTimestamp(response.getResults());
+                LOGGER.info(LocalDateTime.ofInstant(Instant.ofEpochMilli(ts), ZoneId.of("US/Eastern")).format(formatter));
+                params.fromTs(ts);
+                response = apiInstance.getAPITestLatestResults(publicTestKey, params);
+            }
         } catch (ApiException e) {
             response = null;
             LOGGER.error("Could not retrieve results for test key: {}", publicTestKey, e);
         }
-        return response;
+        return testResults;
+    }
+
+    private Long getMostRecentTimestamp(List<SyntheticsAPITestResultShort> testResults) {
+        return testResults.stream()
+                .mapToLong(result -> Math.round(result.getCheckTime()))
+                .max()
+                .getAsLong();
     }
 
     private SyntheticsListTestsResponse getAllTests() throws ApiException {
