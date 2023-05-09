@@ -39,7 +39,7 @@ import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResultDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloperDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProductDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProduct;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTrigger;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersion;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -366,24 +366,24 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
     private List<List<String>> createProductActivityRows(Date startDate, Date endDate) {
         LOGGER.debug("Getting product activity between " + startDate + " and " + endDate);
-        List<QuestionableActivityProductDTO> productActivities = questionableActivityDao
+        List<QuestionableActivityProduct> productActivities = questionableActivityDao
                 .findProductActivityBetweenDates(startDate, endDate);
         LOGGER.debug("Found " + productActivities.size() + " questionable developer activities");
 
         // create a bucket for each activity timestamp+trigger type
-        Map<ActivityDateTriggerGroup, List<QuestionableActivityProductDTO>> activityByGroup =
-                new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityProductDTO>>();
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityProduct>> activityByGroup =
+                new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityProduct>>();
 
-        for (QuestionableActivityProductDTO activity : productActivities) {
+        for (QuestionableActivityProduct activity : productActivities) {
             ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(),
                     activity.getTrigger());
 
             if (activityByGroup.get(groupKey) == null) {
-                List<QuestionableActivityProductDTO> activitiesForDate = new ArrayList<QuestionableActivityProductDTO>();
+                List<QuestionableActivityProduct> activitiesForDate = new ArrayList<QuestionableActivityProduct>();
                 activitiesForDate.add(activity);
                 activityByGroup.put(groupKey, activitiesForDate);
             } else {
-                List<QuestionableActivityProductDTO> existingActivitiesForDate = activityByGroup.get(groupKey);
+                List<QuestionableActivityProduct> existingActivitiesForDate = activityByGroup.get(groupKey);
                 existingActivitiesForDate.add(activity);
             }
         }
@@ -396,8 +396,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             currRow.set(ACTIVITY_LEVEL_COL, activityGroup.getTrigger().getLevel());
             currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
-            List<QuestionableActivityProductDTO> activitiesForGroup = activityByGroup.get(activityGroup);
-            for (QuestionableActivityProductDTO activity : activitiesForGroup) {
+            List<QuestionableActivityProduct> activitiesForGroup = activityByGroup.get(activityGroup);
+            for (QuestionableActivityProduct activity : activitiesForGroup) {
                 putProductActivityInRow(activity, currRow);
             }
 
@@ -619,7 +619,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         }
     }
 
-    private void putProductActivityInRow(QuestionableActivityProductDTO activity, List<String> activityRow) {
+    private void putProductActivityInRow(QuestionableActivityProduct activity, List<String> activityRow) {
         activityRow.set(DEVELOPER_COL, activity.getProduct().getOwner().getName());
         activityRow.set(PRODUCT_COL, activity.getProduct().getName());
         activityRow.set(ACTIVITY_USER_COL, activity.getUser().getUsername());

@@ -13,7 +13,7 @@ import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResultDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloperDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProductDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProduct;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTrigger;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersion;
 import gov.healthit.chpl.questionableactivity.service.CertificationResultQuestionableActivityProvider;
@@ -97,8 +97,8 @@ public class QuestionableActivityManager {
     }
 
     public void checkProductQuestionableActivity(Product origProduct, Product newProduct, ActivityDTO activity) {
-        QuestionableActivityProductDTO productActivity = null;
-        List<QuestionableActivityProductDTO> productActivities = null;
+        QuestionableActivityProduct productActivity = null;
+        List<QuestionableActivityProduct> productActivities = null;
 
         productActivity = productQuestionableActivityProvider.checkNameUpdated(origProduct, newProduct);
         if (productActivity != null) {
@@ -112,19 +112,19 @@ public class QuestionableActivityManager {
 
         productActivities = productQuestionableActivityProvider.checkOwnerHistoryAdded(origProduct.getOwnerHistory(),
                 newProduct.getOwnerHistory());
-        for (QuestionableActivityProductDTO currProductActivity : productActivities) {
+        for (QuestionableActivityProduct currProductActivity : productActivities) {
             createProductActivity(currProductActivity, newProduct.getId(), activity, QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_ADDED);
         }
 
         productActivities = productQuestionableActivityProvider.checkOwnerHistoryRemoved(origProduct.getOwnerHistory(),
                 newProduct.getOwnerHistory());
-        for (QuestionableActivityProductDTO currProductActivity : productActivities) {
+        for (QuestionableActivityProduct currProductActivity : productActivities) {
             createProductActivity(currProductActivity, newProduct.getId(), activity, QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_REMOVED);
         }
 
         productActivities = productQuestionableActivityProvider.checkOwnerHistoryItemEdited(
                 origProduct.getOwnerHistory(), newProduct.getOwnerHistory());
-        for (QuestionableActivityProductDTO currProductActivity : productActivities) {
+        for (QuestionableActivityProduct currProductActivity : productActivities) {
             createProductActivity(currProductActivity, newProduct.getId(), activity, QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_EDITED);
         }
     }
@@ -209,7 +209,7 @@ public class QuestionableActivityManager {
         createDeveloperActivity(questionableActivity, developerId, activity, triggerConcept, null);
     }
 
-    private void createProductActivity(QuestionableActivityProductDTO questionableActivity, Long productId,
+    private void createProductActivity(QuestionableActivityProduct questionableActivity, Long productId,
             ActivityDTO activity, QuestionableActivityTriggerConcept triggerConcept) {
         questionableActivity.setActivityId(activity.getId());
         questionableActivity.setProductId(productId);

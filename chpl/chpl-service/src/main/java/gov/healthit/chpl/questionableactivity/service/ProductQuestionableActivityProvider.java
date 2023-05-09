@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductOwner;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProductDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProduct;
 
 /**
  * Checks for Product questionable activities.
@@ -22,12 +22,12 @@ public class ProductQuestionableActivityProvider {
      * @param newProduct new product
      * @return DTO of questionable activity
      */
-    public QuestionableActivityProductDTO checkNameUpdated(Product origProduct, Product newProduct) {
-        QuestionableActivityProductDTO activity = null;
+    public QuestionableActivityProduct checkNameUpdated(Product origProduct, Product newProduct) {
+        QuestionableActivityProduct activity = null;
         if ((origProduct.getName() != null && newProduct.getName() == null)
                 || (origProduct.getName() == null && newProduct.getName() != null)
                 || !origProduct.getName().equals(newProduct.getName())) {
-            activity = new QuestionableActivityProductDTO();
+            activity = new QuestionableActivityProduct();
             activity.setBefore(origProduct.getName());
             activity.setAfter(newProduct.getName());
         }
@@ -41,23 +41,23 @@ public class ProductQuestionableActivityProvider {
      * @param newProduct new product
      * @return DTO of questionable activity
      */
-    public QuestionableActivityProductDTO checkCurrentOwnerChanged(Product origProduct, Product newProduct) {
-        QuestionableActivityProductDTO activity = null;
+    public QuestionableActivityProduct checkCurrentOwnerChanged(Product origProduct, Product newProduct) {
+        QuestionableActivityProduct activity = null;
         Developer origOwner = origProduct.getOwner();
         Developer newOwner = newProduct.getOwner();
         if (origOwner != null && origOwner.getId() != null
                 && (newOwner == null || newOwner.getId() == null)) {
-            activity = new QuestionableActivityProductDTO();
+            activity = new QuestionableActivityProduct();
             activity.setBefore(origOwner.getName());
             activity.setAfter(null);
         } else if ((origOwner == null || origOwner.getId() == null)
                 && newOwner != null && newOwner.getId() != null) {
-            activity = new QuestionableActivityProductDTO();
+            activity = new QuestionableActivityProduct();
             activity.setBefore(null);
             activity.setAfter(newOwner.getName());
         } else if (origOwner != null && newOwner != null
                 && origOwner.getId().longValue() != newOwner.getId().longValue()) {
-            activity = new QuestionableActivityProductDTO();
+            activity = new QuestionableActivityProduct();
             activity.setBefore(origOwner.getName());
             activity.setAfter(newOwner.getName());
         }
@@ -70,15 +70,15 @@ public class ProductQuestionableActivityProvider {
      * @param newOwners new product owners
      * @return list of added owners
      */
-    public List<QuestionableActivityProductDTO> checkOwnerHistoryAdded(
+    public List<QuestionableActivityProduct> checkOwnerHistoryAdded(
             List<ProductOwner> origOwners, List<ProductOwner> newOwners) {
 
-        List<QuestionableActivityProductDTO> ownerAddedActivities = new ArrayList<QuestionableActivityProductDTO>();
+        List<QuestionableActivityProduct> ownerAddedActivities = new ArrayList<QuestionableActivityProduct>();
         if ((origOwners == null || origOwners.size() == 0)
                 && newOwners != null && newOwners.size() > 0) {
             //all the newOwners are "added"
             for (ProductOwner newOwner : newOwners) {
-                QuestionableActivityProductDTO activity = new QuestionableActivityProductDTO();
+                QuestionableActivityProduct activity = new QuestionableActivityProduct();
                 activity.setBefore(null);
                 activity.setAfter(newOwner.getDeveloper().getName() + " (" + newOwner.getTransferDay() + ")");
                 ownerAddedActivities.add(activity);
@@ -96,7 +96,7 @@ public class ProductQuestionableActivityProvider {
                 }
                 //new owner had this item but old did not
                 if (!foundOwner) {
-                    QuestionableActivityProductDTO activity = new QuestionableActivityProductDTO();
+                    QuestionableActivityProduct activity = new QuestionableActivityProduct();
                     activity.setBefore(null);
                     activity.setAfter(newOwner.getDeveloper().getName() + " (" + newOwner.getTransferDay() + ")");
                     ownerAddedActivities.add(activity);
@@ -112,15 +112,15 @@ public class ProductQuestionableActivityProvider {
      * @param newOwners new product owners
      * @return list of removed owners
      */
-    public List<QuestionableActivityProductDTO> checkOwnerHistoryRemoved(
+    public List<QuestionableActivityProduct> checkOwnerHistoryRemoved(
             List<ProductOwner> origOwners, List<ProductOwner> newOwners) {
 
-        List<QuestionableActivityProductDTO> ownerRemovedActivities = new ArrayList<QuestionableActivityProductDTO>();
+        List<QuestionableActivityProduct> ownerRemovedActivities = new ArrayList<QuestionableActivityProduct>();
         if (origOwners != null && origOwners.size() > 0
                 && (newOwners == null || newOwners.size() == 0)) {
             //all the origOwners are "removed"
             for (ProductOwner origOwner : origOwners) {
-                QuestionableActivityProductDTO activity = new QuestionableActivityProductDTO();
+                QuestionableActivityProduct activity = new QuestionableActivityProduct();
                 activity.setBefore(origOwner.getDeveloper().getName() + " (" + origOwner.getTransferDay() + ")");
                 activity.setAfter(null);
                 ownerRemovedActivities.add(activity);
@@ -138,7 +138,7 @@ public class ProductQuestionableActivityProvider {
                 }
                 //orig owner had this item but new did not
                 if (!foundOwner) {
-                    QuestionableActivityProductDTO activity = new QuestionableActivityProductDTO();
+                    QuestionableActivityProduct activity = new QuestionableActivityProduct();
                     activity.setBefore(origOwner.getDeveloper().getName() + " (" + origOwner.getTransferDay() + ")");
                     activity.setAfter(null);
                     ownerRemovedActivities.add(activity);
@@ -154,10 +154,10 @@ public class ProductQuestionableActivityProvider {
      * @param newOwners new product owners
      * @return list of edited owners
      */
-    public List<QuestionableActivityProductDTO> checkOwnerHistoryItemEdited(
+    public List<QuestionableActivityProduct> checkOwnerHistoryItemEdited(
             List<ProductOwner> origOwners, List<ProductOwner> newOwners) {
 
-        List<QuestionableActivityProductDTO> ownerEditedActivities = new ArrayList<QuestionableActivityProductDTO>();
+        List<QuestionableActivityProduct> ownerEditedActivities = new ArrayList<QuestionableActivityProduct>();
         if (origOwners != null && origOwners.size() > 0
                 && newOwners != null && newOwners.size() > 0) {
             for (ProductOwner origOwner : origOwners) {
@@ -177,7 +177,7 @@ public class ProductQuestionableActivityProvider {
                 }
                 //orig owner history item was edited
                 if (ownerEdited) {
-                    QuestionableActivityProductDTO activity = new QuestionableActivityProductDTO();
+                    QuestionableActivityProduct activity = new QuestionableActivityProduct();
                     activity.setBefore(origOwner.getDeveloper().getName() + " (" + origOwner.getTransferDay() + ")");
                     activity.setAfter(matchingNewOwner.getDeveloper().getName() + " (" + matchingNewOwner.getTransferDay() + ")");
                     ownerEditedActivities.add(activity);
