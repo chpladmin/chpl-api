@@ -10,14 +10,14 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListing;
 
 @Component
 public class UpdatedTestingLabActivity implements ListingActivity {
 
     @Override
-    public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
-        QuestionableActivityListingDTO activity = null;
+    public List<QuestionableActivityListing> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+        QuestionableActivityListing activity = null;
         List<CertifiedProductTestingLab> origAtls = origListing.getTestingLabs();
         List<CertifiedProductTestingLab> newAtls = newListing.getTestingLabs();
         List<String> addedAtls = new ArrayList<String>();
@@ -46,7 +46,7 @@ public class UpdatedTestingLabActivity implements ListingActivity {
             }
         }
         if (!addedAtls.isEmpty() || !removedAtls.isEmpty()) {
-            activity = new QuestionableActivityListingDTO();
+            activity = new QuestionableActivityListing();
             if (!removedAtls.isEmpty()) {
                 activity.setBefore("Removed " + StringUtils.collectionToCommaDelimitedString(removedAtls));
             }

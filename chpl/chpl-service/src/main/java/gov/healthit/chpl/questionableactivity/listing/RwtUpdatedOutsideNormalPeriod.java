@@ -6,7 +6,7 @@ import java.util.Objects;
 
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListing;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -15,12 +15,12 @@ public abstract class RwtUpdatedOutsideNormalPeriod {
     abstract String getStartMonthAndDay();
     abstract String getEndMonthAndDay();
 
-    public List<QuestionableActivityListingDTO> getQuestionableActivity(String origUrl, String newUrl, LocalDate origCheckDate, LocalDate newCheckDate) {
+    public List<QuestionableActivityListing> getQuestionableActivity(String origUrl, String newUrl, LocalDate origCheckDate, LocalDate newCheckDate) {
         if ((hasUrlChanged(origUrl, newUrl)
                 || hasCheckDateChanged(origCheckDate, newCheckDate))
                 && isCurrentDateOutsideNormalPlanUpdatePeriod()) {
 
-            return List.of(QuestionableActivityListingDTO.builder()
+            return List.of(QuestionableActivityListing.builder()
                     .before(getFormatRwtInfo(origUrl, origCheckDate))
                     .after(getFormatRwtInfo(newUrl, newCheckDate))
                     .build());

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListing;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -35,7 +35,7 @@ public class RwtPlansUpdatedOutsideNormalPeriod extends RwtUpdatedOutsideNormalP
     }
 
     @Override
-    public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+    public List<QuestionableActivityListing> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         return getQuestionableActivity(origListing.getRwtPlansUrl(), newListing.getRwtPlansUrl(), origListing.getRwtPlansCheckDate(),  newListing.getRwtPlansCheckDate());
     }
 

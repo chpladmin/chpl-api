@@ -17,7 +17,7 @@ import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListing;
 import gov.healthit.chpl.util.DateUtil;
 
 @Component
@@ -29,14 +29,14 @@ public class UpdatedCertificationStatusHistoryActivity implements ListingActivit
     }
 
     @Override
-    public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+    public List<QuestionableActivityListing> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         //If this activity can be determined to be ONLY a certification status change
         //where the previous status gets added as the first one in the history then
         //this is not questionable - it is expected.
         if (isCertificationStatusChangeOnly(origListing, newListing)) {
             return null;
         }
-        List<QuestionableActivityListingDTO> activities = new ArrayList<QuestionableActivityListingDTO>();
+        List<QuestionableActivityListing> activities = new ArrayList<QuestionableActivityListing>();
 
         //sort events oldest first
         List<CertificationStatusEvent> origEvents = new ArrayList<CertificationStatusEvent>(origListing.getCertificationEvents());
@@ -76,7 +76,7 @@ public class UpdatedCertificationStatusHistoryActivity implements ListingActivit
                 .collect(Collectors.toList());
 
         removedStatusEvents.stream()
-            .forEach(removedStatusEvent -> activities.add(QuestionableActivityListingDTO.builder()
+            .forEach(removedStatusEvent -> activities.add(QuestionableActivityListing.builder()
                     .before(removedStatusEvent.getStatus().getName()
                             + " (" + DateUtil.toLocalDate(removedStatusEvent.getEventDate()) + ")")
                     .after(null)
@@ -84,7 +84,7 @@ public class UpdatedCertificationStatusHistoryActivity implements ListingActivit
                     .build()));
 
         addedStatusEvents.stream()
-            .forEach(addedStatusEvent -> activities.add(QuestionableActivityListingDTO.builder()
+            .forEach(addedStatusEvent -> activities.add(QuestionableActivityListing.builder()
                 .before(null)
                 .after(addedStatusEvent.getStatus().getName()
                         + " (" + DateUtil.toLocalDate(addedStatusEvent.getEventDate()) + ")")

@@ -14,7 +14,7 @@ import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListing;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -28,7 +28,7 @@ public class UpdatedPromotingInteroperabilityActivity implements ListingActivity
     }
 
     @Override
-    public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+    public List<QuestionableActivityListing> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         if (!resourcePermissions.doesAuditUserHaveRole(Authority.ROLE_ACB)
                 || (CollectionUtils.isEmpty(origListing.getPromotingInteroperabilityUserHistory())
                 && CollectionUtils.isEmpty(newListing.getPromotingInteroperabilityUserHistory()))) {
@@ -36,17 +36,17 @@ public class UpdatedPromotingInteroperabilityActivity implements ListingActivity
         }
 
         String piUpdatedMessage = "Promoting Interoperability history was updated.";
-        QuestionableActivityListingDTO activity = null;
+        QuestionableActivityListing activity = null;
         if (CollectionUtils.isEmpty(origListing.getPromotingInteroperabilityUserHistory())
                 && CollectionUtils.isNotEmpty(newListing.getPromotingInteroperabilityUserHistory())) {
-            activity = new QuestionableActivityListingDTO();
+            activity = new QuestionableActivityListing();
             activity.setAfter(piUpdatedMessage);
         } else if (CollectionUtils.isNotEmpty(origListing.getPromotingInteroperabilityUserHistory())
                 && CollectionUtils.isEmpty(newListing.getPromotingInteroperabilityUserHistory())) {
-            activity = new QuestionableActivityListingDTO();
+            activity = new QuestionableActivityListing();
             activity.setAfter(piUpdatedMessage);
         } else if (hasPromotingInteroperabilityHistoryChanged(origListing, newListing)) {
-            activity = new QuestionableActivityListingDTO();
+            activity = new QuestionableActivityListing();
             activity.setAfter(piUpdatedMessage);
         }
         return Arrays.asList(activity);

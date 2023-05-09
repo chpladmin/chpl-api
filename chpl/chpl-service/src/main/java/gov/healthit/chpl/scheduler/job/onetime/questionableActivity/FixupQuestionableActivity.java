@@ -20,7 +20,7 @@ import gov.healthit.chpl.questionableactivity.QuestionableActivityDAO;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResultDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloper;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListing;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProduct;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersion;
 import gov.healthit.chpl.questionableactivity.listing.DeletedCertificationsActivity;
@@ -82,7 +82,7 @@ public class FixupQuestionableActivity  implements Job {
 
     private void linkQuestionableActivityToActivity(LocalDateTime startDt, LocalDateTime endDt) {
         LOGGER.info("Linking Activity to Listing Questionable Activity");
-        List<QuestionableActivityListingDTO> listingQuestionableActivity
+        List<QuestionableActivityListing> listingQuestionableActivity
             = questionableActivityDao.findListingActivityBetweenDates(DateUtil.toDate(startDt), DateUtil.toDate(endDt));
         listingQuestionableActivity.stream()
             .filter(lqa -> lqa.getActivityId() == null)
@@ -127,7 +127,7 @@ public class FixupQuestionableActivity  implements Job {
             .forEach(vqa -> addActivityId(vqa));
     }
 
-    private void addActivityId(QuestionableActivityListingDTO questionableActivity) {
+    private void addActivityId(QuestionableActivityListing questionableActivity) {
         ActivityConcept concept = ActivityConcept.CERTIFIED_PRODUCT;
         ActivityDTO activity = getActivity(concept, questionableActivity.getActivityDate(), questionableActivity.getListingId());
         if (activity != null) {

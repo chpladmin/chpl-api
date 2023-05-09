@@ -7,19 +7,19 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListing;
 
 @Component
 public class DeletedSurveillanceActivity implements ListingActivity {
 
     @Override
-    public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
-        QuestionableActivityListingDTO activity = null;
+    public List<QuestionableActivityListing> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+        QuestionableActivityListing activity = null;
         if (origListing.getSurveillance() != null && origListing.getSurveillance().size() > 0
                 && (newListing.getSurveillance() == null
                 || newListing.getSurveillance().size() < origListing.getSurveillance().size())) {
 
-            activity = new QuestionableActivityListingDTO();
+            activity = new QuestionableActivityListing();
             activity.setBefore(null);
             activity.setAfter(null);
         }

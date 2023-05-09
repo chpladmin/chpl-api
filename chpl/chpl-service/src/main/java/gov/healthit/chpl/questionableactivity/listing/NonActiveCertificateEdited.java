@@ -6,15 +6,15 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListing;
 
 @Component
 public class NonActiveCertificateEdited implements ListingActivity {
 
     @Override
-    public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+    public List<QuestionableActivityListing> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         if (!origListing.isCertificateActive()) {
-            return List.of(QuestionableActivityListingDTO.builder().build());
+            return List.of(QuestionableActivityListing.builder().build());
         } else {
             return null;
         }

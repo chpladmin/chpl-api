@@ -14,8 +14,10 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListing;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -83,5 +85,21 @@ public class QuestionableActivityListingEntity implements QuestionableActivityEn
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
+
+    public QuestionableActivityListing toDomain() {
+        return QuestionableActivityListing.builder()
+                .id(this.getId())
+                .activityId(this.getActivityId())
+                .trigger(this.getTrigger().toDomain())
+                .before(this.getBefore())
+                .after(this.getAfter())
+                .activityDate(this.getActivityDate())
+                .userId(this.getUserId())
+                .listingId(this.getListingId())
+                .listing(new CertifiedProductDetailsDTO(this.getListing()))
+                .certificationStatusChangeReason(this.getCertificationStatusChangeReason())
+                .reason(this.getReason())
+                .build();
+    }
 }
 

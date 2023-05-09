@@ -9,7 +9,7 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListing;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityServiceFactory;
 import lombok.extern.log4j.Log4j2;
 
@@ -24,12 +24,12 @@ public class AddedRwtResultsNonEligibleListingActivity implements ListingActivit
     }
 
     @Override
-    public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
-        QuestionableActivityListingDTO activity = null;
+    public List<QuestionableActivityListing> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+        QuestionableActivityListing activity = null;
         if (StringUtils.isEmpty(origListing.getRwtResultsUrl())
                 && !StringUtils.isEmpty(newListing.getRwtResultsUrl())
                 && !isListingRealWorldTestingEligible(newListing.getId())) {
-            activity = new QuestionableActivityListingDTO();
+            activity = new QuestionableActivityListing();
             activity.setAfter("Added Results URL " + newListing.getRwtResultsUrl());
         }
         return Arrays.asList(activity);

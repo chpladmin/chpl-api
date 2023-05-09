@@ -15,7 +15,7 @@ import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListing;
 
 public class NonActiveCertificateEditedActivityTest {
 
@@ -40,7 +40,7 @@ public class NonActiveCertificateEditedActivityTest {
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .certificationEvents(Stream.of(activeStatusEvent).collect(Collectors.toList()))
                 .build();
-        List<QuestionableActivityListingDTO> activities = activityChecker.check(originalListing, updatedListing);
+        List<QuestionableActivityListing> activities = activityChecker.check(originalListing, updatedListing);
         assertNull(activities);
     }
 
@@ -58,7 +58,7 @@ public class NonActiveCertificateEditedActivityTest {
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .certificationEvents(Stream.of(activeStatusEvent).collect(Collectors.toList()))
                 .build();
-        List<QuestionableActivityListingDTO> activities = activityChecker.check(originalListing, updatedListing);
+        List<QuestionableActivityListing> activities = activityChecker.check(originalListing, updatedListing);
         assertNull(activities);
     }
 
@@ -76,7 +76,7 @@ public class NonActiveCertificateEditedActivityTest {
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .certificationEvents(Stream.of(activeStatusEvent).collect(Collectors.toList()))
                 .build();
-        List<QuestionableActivityListingDTO> activities = activityChecker.check(originalListing, updatedListing);
+        List<QuestionableActivityListing> activities = activityChecker.check(originalListing, updatedListing);
         assertNull(activities);
     }
 
@@ -101,7 +101,7 @@ public class NonActiveCertificateEditedActivityTest {
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .certificationEvents(Stream.of(activeStatusEvent, inactiveStatusEvent).collect(Collectors.toList()))
                 .build();
-        List<QuestionableActivityListingDTO> activities = activityChecker.check(originalListing, updatedListing);
+        List<QuestionableActivityListing> activities = activityChecker.check(originalListing, updatedListing);
         assertNull(activities);
     }
 
@@ -126,7 +126,7 @@ public class NonActiveCertificateEditedActivityTest {
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .certificationEvents(Stream.of(activeStatusEvent, inactiveStatusEvent).collect(Collectors.toList()))
                 .build();
-        List<QuestionableActivityListingDTO> activities = activityChecker.check(originalListing, updatedListing);
+        List<QuestionableActivityListing> activities = activityChecker.check(originalListing, updatedListing);
         assertNotNull(activities);
         assertEquals(1, activities.size());
     }

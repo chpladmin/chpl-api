@@ -8,16 +8,16 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListing;
 
 @Component
 public class DeletedRwtResultsActivity implements ListingActivity {
 
     @Override
-    public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
-        QuestionableActivityListingDTO activity = null;
+    public List<QuestionableActivityListing> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+        QuestionableActivityListing activity = null;
         if (!StringUtils.isEmpty(origListing.getRwtResultsUrl()) && StringUtils.isEmpty(newListing.getRwtResultsUrl())) {
-            activity = new QuestionableActivityListingDTO();
+            activity = new QuestionableActivityListing();
             activity.setBefore("Removed Results URL: " + origListing.getRwtResultsUrl());
         }
         return Arrays.asList(activity);

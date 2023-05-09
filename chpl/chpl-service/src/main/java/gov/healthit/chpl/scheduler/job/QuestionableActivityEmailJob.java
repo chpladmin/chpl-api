@@ -38,7 +38,7 @@ import gov.healthit.chpl.questionableactivity.QuestionableActivityDAO;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResultDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloper;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListing;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProduct;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTrigger;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersion;
@@ -284,24 +284,24 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
     private List<List<String>> createListingActivityRows(Date startDate, Date endDate) {
         LOGGER.debug("Getting listing activity between " + startDate + " and " + endDate);
-        List<QuestionableActivityListingDTO> listingActivities = questionableActivityDao
+        List<QuestionableActivityListing> listingActivities = questionableActivityDao
                 .findListingActivityBetweenDates(startDate, endDate);
         LOGGER.debug("Found " + listingActivities.size() + " questionable listing activities");
 
         // create a bucket for each activity timestamp+trigger type
-        Map<ActivityDateTriggerGroup, List<QuestionableActivityListingDTO>> activityByGroup =
-                new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityListingDTO>>();
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityListing>> activityByGroup =
+                new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityListing>>();
 
-        for (QuestionableActivityListingDTO activity : listingActivities) {
+        for (QuestionableActivityListing activity : listingActivities) {
             ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(),
                     activity.getTrigger());
 
             if (activityByGroup.get(groupKey) == null) {
-                List<QuestionableActivityListingDTO> activitiesForDate = new ArrayList<QuestionableActivityListingDTO>();
+                List<QuestionableActivityListing> activitiesForDate = new ArrayList<QuestionableActivityListing>();
                 activitiesForDate.add(activity);
                 activityByGroup.put(groupKey, activitiesForDate);
             } else {
-                List<QuestionableActivityListingDTO> existingActivitiesForDate = activityByGroup.get(groupKey);
+                List<QuestionableActivityListing> existingActivitiesForDate = activityByGroup.get(groupKey);
                 existingActivitiesForDate.add(activity);
             }
         }
@@ -309,8 +309,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         List<List<String>> activityCsvRows = new ArrayList<List<String>>();
         Set<ActivityDateTriggerGroup> activityGroups = activityByGroup.keySet();
         for (ActivityDateTriggerGroup activityGroup : activityGroups) {
-            List<QuestionableActivityListingDTO> activitiesForGroup = activityByGroup.get(activityGroup);
-            for (QuestionableActivityListingDTO activity : activitiesForGroup) {
+            List<QuestionableActivityListing> activitiesForGroup = activityByGroup.get(activityGroup);
+            for (QuestionableActivityListing activity : activitiesForGroup) {
                 List<String> currRow = createEmptyRow();
                 currRow.set(ACTIVITY_DATE_COL, Util.getTimestampFormatter().format(activityGroup.getActivityDate()));
                 currRow.set(ACTIVITY_LEVEL_COL, activityGroup.getTrigger().getLevel());
@@ -448,7 +448,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         return activityCsvRows;
     }
 
-    private void putListingActivityInRow(QuestionableActivityListingDTO activity, List<String> currRow) {
+    private void putListingActivityInRow(QuestionableActivityListing activity, List<String> currRow) {
         // fill in info about the listing that will be the same for every
         // activity found in this date bucket
         currRow.set(ACB_COL, activity.getListing().getCertificationBodyName());
