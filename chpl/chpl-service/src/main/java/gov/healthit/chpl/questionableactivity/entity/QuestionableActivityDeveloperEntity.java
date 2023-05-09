@@ -14,6 +14,7 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloper;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -77,5 +78,20 @@ public class QuestionableActivityDeveloperEntity implements QuestionableActivity
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
+
+    public QuestionableActivityDeveloper toDomain() {
+        return QuestionableActivityDeveloper.builder()
+                .id(this.getId())
+                .activityId(this.getActivityId())
+                .trigger(this.getTrigger().toDomain())
+                .before(this.getBefore())
+                .after(this.getAfter())
+                .activityDate(this.getActivityDate())
+                .userId(this.getUserId())
+                .developerId(this.getDeveloperId())
+                .developer(this.getDeveloper().toDomain())
+                .reason(this.getReason())
+                .build();
+    }
 }
 

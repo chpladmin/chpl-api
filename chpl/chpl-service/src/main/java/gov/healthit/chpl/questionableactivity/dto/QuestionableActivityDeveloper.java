@@ -1,7 +1,6 @@
 package gov.healthit.chpl.questionableactivity.dto;
 
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityDeveloperEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,19 +12,10 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 @AllArgsConstructor
-public class QuestionableActivityDeveloperDTO extends QuestionableActivity {
+public class QuestionableActivityDeveloper extends QuestionableActivity {
     private Long developerId;
     private Developer developer;
     private String reason;
-
-    public QuestionableActivityDeveloperDTO(QuestionableActivityDeveloperEntity entity) {
-        super(entity);
-        this.developerId = entity.getDeveloperId();
-        this.reason = entity.getReason();
-        if (entity.getDeveloper() != null) {
-            this.developer = entity.getDeveloper().toDomain();
-        }
-    }
 
     public Class<?> getActivityObjectClass() {
         return Developer.class;

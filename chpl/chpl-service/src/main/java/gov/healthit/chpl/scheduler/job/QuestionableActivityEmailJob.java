@@ -37,7 +37,7 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityDAO;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResultDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloperDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloper;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProduct;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTrigger;
@@ -324,24 +324,24 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
     private List<List<String>> createDeveloperActivityRows(Date startDate, Date endDate) {
         LOGGER.debug("Getting developer activity between " + startDate + " and " + endDate);
-        List<QuestionableActivityDeveloperDTO> developerActivities = questionableActivityDao
+        List<QuestionableActivityDeveloper> developerActivities = questionableActivityDao
                 .findDeveloperActivityBetweenDates(startDate, endDate);
         LOGGER.debug("Found " + developerActivities.size() + " questionable developer activities");
 
         // create a bucket for each activity timestamp+trigger type
-        Map<ActivityDateTriggerGroup, List<QuestionableActivityDeveloperDTO>> activityByGroup =
-                new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityDeveloperDTO>>();
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityDeveloper>> activityByGroup =
+                new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityDeveloper>>();
 
-        for (QuestionableActivityDeveloperDTO activity : developerActivities) {
+        for (QuestionableActivityDeveloper activity : developerActivities) {
             ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(),
                     activity.getTrigger());
 
             if (activityByGroup.get(groupKey) == null) {
-                List<QuestionableActivityDeveloperDTO> activitiesForDate = new ArrayList<QuestionableActivityDeveloperDTO>();
+                List<QuestionableActivityDeveloper> activitiesForDate = new ArrayList<QuestionableActivityDeveloper>();
                 activitiesForDate.add(activity);
                 activityByGroup.put(groupKey, activitiesForDate);
             } else {
-                List<QuestionableActivityDeveloperDTO> existingActivitiesForDate = activityByGroup.get(groupKey);
+                List<QuestionableActivityDeveloper> existingActivitiesForDate = activityByGroup.get(groupKey);
                 existingActivitiesForDate.add(activity);
             }
         }
@@ -354,8 +354,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             currRow.set(ACTIVITY_LEVEL_COL, activityGroup.getTrigger().getLevel());
             currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
-            List<QuestionableActivityDeveloperDTO> activitiesForGroup = activityByGroup.get(activityGroup);
-            for (QuestionableActivityDeveloperDTO activity : activitiesForGroup) {
+            List<QuestionableActivityDeveloper> activitiesForGroup = activityByGroup.get(activityGroup);
+            for (QuestionableActivityDeveloper activity : activitiesForGroup) {
                 putDeveloperActivityInRow(activity, currRow);
             }
 
@@ -572,7 +572,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         currRow.set(ACTIVITY_REASON_COL, activity.getReason());
     }
 
-    private void putDeveloperActivityInRow(QuestionableActivityDeveloperDTO developerActivity, List<String> activityRow) {
+    private void putDeveloperActivityInRow(QuestionableActivityDeveloper developerActivity, List<String> activityRow) {
         activityRow.set(DEVELOPER_COL, developerActivity.getDeveloper().getName());
         activityRow.set(ACTIVITY_USER_COL, developerActivity.getUser().getUsername());
         if (developerActivity.getReason() != null) {

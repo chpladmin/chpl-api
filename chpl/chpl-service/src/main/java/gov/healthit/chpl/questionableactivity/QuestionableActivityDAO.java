@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivity;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResultDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloperDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloper;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProduct;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTrigger;
@@ -55,11 +55,11 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
             toCreate = new QuestionableActivityProductEntity();
             QuestionableActivityProductEntity productActivity = (QuestionableActivityProductEntity) toCreate;
             productActivity.setProductId(((QuestionableActivityProduct) qa).getProductId());
-        } else if (qa instanceof QuestionableActivityDeveloperDTO) {
+        } else if (qa instanceof QuestionableActivityDeveloper) {
             toCreate = new QuestionableActivityDeveloperEntity();
             QuestionableActivityDeveloperEntity developerActivity = (QuestionableActivityDeveloperEntity) toCreate;
-            developerActivity.setDeveloperId(((QuestionableActivityDeveloperDTO) qa).getDeveloperId());
-            developerActivity.setReason(((QuestionableActivityDeveloperDTO) qa).getReason());
+            developerActivity.setDeveloperId(((QuestionableActivityDeveloper) qa).getDeveloperId());
+            developerActivity.setReason(((QuestionableActivityDeveloper) qa).getReason());
         } else if (qa instanceof QuestionableActivityListingDTO) {
             toCreate = new QuestionableActivityListingEntity();
             QuestionableActivityListingEntity listingActivity = (QuestionableActivityListingEntity) toCreate;
@@ -94,7 +94,7 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
         } else if (toCreate instanceof QuestionableActivityProductEntity) {
             created = mapEntityToDomain((QuestionableActivityProductEntity) toCreate);
         } else if (toCreate instanceof QuestionableActivityDeveloperEntity) {
-            created = mapEntityToDto((QuestionableActivityDeveloperEntity) toCreate);
+            created = mapEntityToDomain((QuestionableActivityDeveloperEntity) toCreate);
         } else if (toCreate instanceof QuestionableActivityListingEntity) {
             created = mapEntityToDto((QuestionableActivityListingEntity) toCreate);
         } else if (toCreate instanceof QuestionableActivityCertificationResultEntity) {
@@ -156,7 +156,7 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
     }
 
     @Transactional
-    public List<QuestionableActivityDeveloperDTO> findDeveloperActivityBetweenDates(Date start, Date end) {
+    public List<QuestionableActivityDeveloper> findDeveloperActivityBetweenDates(Date start, Date end) {
         Query query = entityManager.createQuery("SELECT activity "
                 + "FROM QuestionableActivityDeveloperEntity activity "
                 + "LEFT OUTER JOIN FETCH activity.developer "
@@ -170,12 +170,9 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
         query.setParameter("startDate", start);
         query.setParameter("endDate", end);
         List<QuestionableActivityDeveloperEntity> queryResults = query.getResultList();
-        List<QuestionableActivityDeveloperDTO> results = new ArrayList<QuestionableActivityDeveloperDTO>(
-                queryResults.size());
-        for (QuestionableActivityDeveloperEntity queryResult : queryResults) {
-            results.add(mapEntityToDto(queryResult));
-        }
-        return results;
+        return queryResults.stream()
+                .map(entity -> mapEntityToDomain(entity))
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -238,10 +235,10 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
         return qa;
     }
 
-    private QuestionableActivityDeveloperDTO mapEntityToDto(QuestionableActivityDeveloperEntity entity) {
-        QuestionableActivityDeveloperDTO dto = new QuestionableActivityDeveloperDTO(entity);
-        dto.setUser(userMapper.from(entity.getUser()));
-        return dto;
+    private QuestionableActivityDeveloper mapEntityToDomain(QuestionableActivityDeveloperEntity entity) {
+        QuestionableActivityDeveloper qa = entity.toDomain();
+        qa.setUser(userMapper.from(entity.getUser()));
+        return qa;
     }
 
     private QuestionableActivityListingDTO mapEntityToDto(QuestionableActivityListingEntity entity) {

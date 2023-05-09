@@ -12,7 +12,7 @@ import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResultDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloperDTO;
+import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloper;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProduct;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTrigger;
 import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersion;
@@ -58,8 +58,8 @@ public class QuestionableActivityManager {
     }
 
     public void checkDeveloperQuestionableActivity(Developer origDeveloper, Developer newDeveloper, ActivityDTO activity) {
-        QuestionableActivityDeveloperDTO devActivity = null;
-        List<QuestionableActivityDeveloperDTO> devActivities = null;
+        QuestionableActivityDeveloper devActivity = null;
+        List<QuestionableActivityDeveloper> devActivities = null;
 
         devActivity = developerQuestionableActivityProvider.checkNameUpdated(origDeveloper, newDeveloper);
         if (devActivity != null) {
@@ -73,7 +73,7 @@ public class QuestionableActivityManager {
 
         devActivities = developerQuestionableActivityProvider.checkStatusHistoryAdded(
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
-        for (QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
+        for (QuestionableActivityDeveloper currDevActivity : devActivities) {
             createDeveloperActivity(currDevActivity, newDeveloper.getId(), activity,
                     QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_ADDED,
                     currDevActivity.getReason());
@@ -81,7 +81,7 @@ public class QuestionableActivityManager {
 
         devActivities = developerQuestionableActivityProvider.checkStatusHistoryRemoved(
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
-        for (QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
+        for (QuestionableActivityDeveloper currDevActivity : devActivities) {
             createDeveloperActivity(currDevActivity, newDeveloper.getId(), activity,
                     QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_REMOVED,
                     currDevActivity.getReason());
@@ -89,7 +89,7 @@ public class QuestionableActivityManager {
 
         devActivities = developerQuestionableActivityProvider.checkStatusHistoryItemEdited(
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
-        for (QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
+        for (QuestionableActivityDeveloper currDevActivity : devActivities) {
             createDeveloperActivity(currDevActivity, newDeveloper.getId(), activity,
                     QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_EDITED,
                     currDevActivity.getReason());
@@ -192,7 +192,7 @@ public class QuestionableActivityManager {
         questionableActivityDao.create(questionableActivity);
     }
 
-    private void createDeveloperActivity(QuestionableActivityDeveloperDTO questionableActivity, Long developerId,
+    private void createDeveloperActivity(QuestionableActivityDeveloper questionableActivity, Long developerId,
             ActivityDTO activity, QuestionableActivityTriggerConcept triggerConcept, String reason) {
         questionableActivity.setActivityId(activity.getId());
         questionableActivity.setDeveloperId(developerId);
@@ -204,7 +204,7 @@ public class QuestionableActivityManager {
         questionableActivityDao.create(questionableActivity);
     }
 
-    private void createDeveloperActivity(QuestionableActivityDeveloperDTO questionableActivity, Long developerId,
+    private void createDeveloperActivity(QuestionableActivityDeveloper questionableActivity, Long developerId,
             ActivityDTO activity, QuestionableActivityTriggerConcept triggerConcept) {
         createDeveloperActivity(questionableActivity, developerId, activity, triggerConcept, null);
     }
