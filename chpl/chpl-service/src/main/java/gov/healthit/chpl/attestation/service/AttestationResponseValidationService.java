@@ -17,7 +17,6 @@ import gov.healthit.chpl.scheduler.job.developer.attestation.AttestationFormMeta
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.SearchRequest;
-import gov.healthit.chpl.service.ListingApplicabilityService;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2

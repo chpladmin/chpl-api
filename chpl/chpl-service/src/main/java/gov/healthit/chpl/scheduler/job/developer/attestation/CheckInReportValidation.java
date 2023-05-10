@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.service.AttestationResponseValidationService;
+import gov.healthit.chpl.attestation.service.ListingApplicabilityService;
 import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
-import gov.healthit.chpl.service.ListingApplicabilityService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 
