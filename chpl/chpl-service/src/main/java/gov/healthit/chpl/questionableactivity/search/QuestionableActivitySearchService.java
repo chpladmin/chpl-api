@@ -31,8 +31,9 @@ public class QuestionableActivitySearchService {
     private DateTimeFormatter dateFormatter;
 
     @Autowired
-    public QuestionableActivitySearchService(
+    public QuestionableActivitySearchService(QuestionableActivitySearchDAO questionableActivitySearchDao,
             @Qualifier("questionableActivitySearchRequestValidator") SearchRequestValidator searchRequestValidator) {
+        this.questionableActivitySearchDao = questionableActivitySearchDao;
         this.searchRequestValidator = searchRequestValidator;
         this.searchRequestNormalizer = new SearchRequestNormalizer();
         dateFormatter = DateTimeFormatter.ofPattern(SearchRequest.DATE_SEARCH_FORMAT);
@@ -54,7 +55,7 @@ public class QuestionableActivitySearchService {
         LOGGER.debug("Total matched questionable activities: " + matchedQuestionableActivities.size());
 
         QuestionableActivitySearchResponse response = new QuestionableActivitySearchResponse();
-        response.setRecordCount(allQuestionableActivities.size());
+        response.setRecordCount(matchedQuestionableActivities.size());
         response.setPageNumber(searchRequest.getPageNumber());
         response.setPageSize(searchRequest.getPageSize());
 
@@ -113,8 +114,13 @@ public class QuestionableActivitySearchService {
         if (StringUtils.isAllEmpty(activityDateRangeStart, activityDateRangeEnd)) {
             return true;
         }
-        LocalDateTime startDate = parseLocalDate(activityDateRangeStart).atStartOfDay();
-        LocalDateTime endDate = parseLocalDate(activityDateRangeEnd).atTime(23, 59, 59, 999);
+        LocalDateTime startDate = null, endDate = null;
+        if (!StringUtils.isEmpty(activityDateRangeStart)) {
+            startDate = parseLocalDate(activityDateRangeStart).atStartOfDay();
+        }
+        if (!StringUtils.isEmpty(activityDateRangeEnd)) {
+            endDate = parseLocalDate(activityDateRangeEnd).atTime(23, 59, 59, 999);
+        }
         if (qa.getActivityDate() != null) {
             if (startDate == null && endDate != null) {
                 return qa.getActivityDate().isEqual(endDate) || qa.getActivityDate().isBefore(endDate);
