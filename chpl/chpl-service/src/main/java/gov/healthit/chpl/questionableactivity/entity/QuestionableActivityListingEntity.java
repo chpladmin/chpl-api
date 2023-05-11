@@ -28,7 +28,7 @@ import lombok.ToString;
 @ToString
 @Table(name = "questionable_activity_listing")
 @Where(clause = " deleted = false ")
-public class QuestionableActivityListingEntity implements QuestionableActivityEntity {
+public class QuestionableActivityListingEntity implements QuestionableActivityBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

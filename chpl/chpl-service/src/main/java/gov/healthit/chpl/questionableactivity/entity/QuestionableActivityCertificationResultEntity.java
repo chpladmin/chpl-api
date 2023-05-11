@@ -26,7 +26,7 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name = "questionable_activity_certification_result")
-public class QuestionableActivityCertificationResultEntity implements QuestionableActivityEntity {
+public class QuestionableActivityCertificationResultEntity implements QuestionableActivityBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -24,7 +24,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @Table(name = "questionable_activity_developer")
-public class QuestionableActivityDeveloperEntity implements QuestionableActivityEntity {
+public class QuestionableActivityDeveloperEntity implements QuestionableActivityBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

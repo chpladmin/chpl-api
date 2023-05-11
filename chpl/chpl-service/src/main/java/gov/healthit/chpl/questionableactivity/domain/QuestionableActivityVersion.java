@@ -12,7 +12,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 @AllArgsConstructor
-public class QuestionableActivityVersion extends QuestionableActivity {
+public class QuestionableActivityVersion extends QuestionableActivityBase {
     private Long versionId;
     private ProductVersionDTO version;
 

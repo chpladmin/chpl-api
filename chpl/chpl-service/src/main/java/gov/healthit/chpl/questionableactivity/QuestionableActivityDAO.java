@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.questionableactivity.domain.QuestionableActivity;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityBase;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityCertificationResult;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityDeveloper;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
@@ -21,7 +21,7 @@ import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityVersion;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityCertificationResultEntity;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityDeveloperEntity;
-import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityEntity;
+import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityBaseEntity;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityListingEntity;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityProductEntity;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityTriggerEntity;
@@ -41,9 +41,9 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
     }
 
     @Transactional
-    public QuestionableActivity create(QuestionableActivity qa) {
-        QuestionableActivity created = null;
-        QuestionableActivityEntity toCreate = null;
+    public QuestionableActivityBase create(QuestionableActivityBase qa) {
+        QuestionableActivityBase created = null;
+        QuestionableActivityBaseEntity toCreate = null;
         if (qa instanceof QuestionableActivityVersion) {
             toCreate = new QuestionableActivityVersionEntity();
             QuestionableActivityVersionEntity versionActivity = (QuestionableActivityVersionEntity) toCreate;

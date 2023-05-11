@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 @AllArgsConstructor
-public class QuestionableActivityCertificationResult extends QuestionableActivity {
+public class QuestionableActivityCertificationResult extends QuestionableActivityBase {
     private Long certResultId;
     private String reason;
     private CertificationResultDetailsDTO certResult;
