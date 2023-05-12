@@ -69,7 +69,7 @@ public abstract class PermissionBasedReviewer implements Reviewer {
             String message) {
         if (certResult.getCriterion() != null && (certResult.getCriterion().getRemoved() == null
                 || certResult.getCriterion().getRemoved().equals(Boolean.FALSE))) {
-            listing.addBusinessErrorMessage(message);
+            listing.addDataErrorMessage(message);
         }
     }
 

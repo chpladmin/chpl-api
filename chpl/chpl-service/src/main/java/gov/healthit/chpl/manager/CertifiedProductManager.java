@@ -1674,11 +1674,15 @@ public class CertifiedProductManager extends SecuredManager {
         return !CollectionUtils.isEmpty(listing.getWarningMessages().castToCollection());
     }
 
+    private boolean doDataErrorMessagesExist(CertifiedProductSearchDetails listing) {
+        return !CollectionUtils.isEmpty(listing.getDataErrorMessages().castToCollection());
+    }
+
     private boolean shouldValidationExceptionBeThrown(CertifiedProductSearchDetails listing, boolean acknowledgeBusinessErrors, boolean acknowledgeWarnings) {
         // return true when we want to throw ValidationException
         if (doErrorMessagesExist(listing)) {
             if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
-                return doBusinessErrorMessagesExist(listing) && !acknowledgeBusinessErrors;
+                return doDataErrorMessagesExist(listing) || (doBusinessErrorMessagesExist(listing) && !acknowledgeBusinessErrors);
             } else {
                 return true;
             }
