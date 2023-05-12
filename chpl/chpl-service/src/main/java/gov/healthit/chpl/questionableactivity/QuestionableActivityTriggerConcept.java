@@ -36,7 +36,6 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
     RWT_RESULTS_UPDATED_OUTSIDE_NORMAL_PERIOD("Real World Testing Results URL or Check Date updated outside normal update period"),
     NON_ACTIVE_CERTIFIFCATE_EDITED("Non Active Certificate Edited"),
     CURES_UPDATE_REMOVED("Cures Update Designation Removed"),
-    BUSINESS_ERROR_OVERIDDEN("Error(s) overridden when listing was saved"),
 
     //These are no longer being detected but there may be existing older questionable activities
     CERTIFICATION_STATUS_DATE_EDITED_CURRENT("Current Certification Status Date Edited");
