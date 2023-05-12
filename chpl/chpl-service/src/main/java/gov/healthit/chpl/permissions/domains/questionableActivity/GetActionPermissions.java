@@ -4,8 +4,8 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
-@Component("questionableActivitySearchActionPermissions")
-public class SearchActionPermissions extends ActionPermissions {
+@Component("questionableActivityGetActionPermissions")
+public class GetActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {

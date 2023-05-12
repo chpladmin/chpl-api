@@ -1,6 +1,8 @@
 package gov.healthit.chpl.questionableactivity.search;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +20,10 @@ public class SearchRequest implements Serializable {
     public static final int MAX_PAGE_SIZE = 100;
 
     private String searchTerm;
+    @Builder.Default
+    private Set<String> triggerIdStrings = new HashSet<String>();
+    @Builder.Default
+    private Set<Long> triggerIds = new HashSet<Long>();
     private String activityDateStart;
     private String activityDateEnd;
     private String orderByString;

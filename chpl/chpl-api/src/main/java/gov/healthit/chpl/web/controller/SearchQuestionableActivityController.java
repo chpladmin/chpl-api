@@ -1,5 +1,13 @@
 package gov.healthit.chpl.web.controller;
 
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -9,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.questionableactivity.QuestionableActivityManager;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
 import gov.healthit.chpl.questionableactivity.search.QuestionableActivitySearchResponse;
 import gov.healthit.chpl.questionableactivity.search.QuestionableActivitySearchService;
 import gov.healthit.chpl.questionableactivity.search.SearchRequest;
@@ -22,35 +32,58 @@ import lombok.extern.log4j.Log4j2;
 
 @Tag(name = "search-questionable-activity", description = "Allows searching for questionable activity.")
 @RestController
-@RequestMapping("/questionable-activity/search")
+@RequestMapping("/questionable-activity")
 @Log4j2
 public class SearchQuestionableActivityController {
 
+    private QuestionableActivityManager questionableActivityManager;
     private QuestionableActivitySearchService questionableActivitySearchService;
 
     @Autowired
-    public SearchQuestionableActivityController(QuestionableActivitySearchService questionableActivitySearchService) {
+    public SearchQuestionableActivityController(QuestionableActivityManager questionableActivityManager,
+            QuestionableActivitySearchService questionableActivitySearchService) {
+        this.questionableActivityManager = questionableActivityManager;
         this.questionableActivitySearchService = questionableActivitySearchService;
     }
 
     @SuppressWarnings({
         "checkstyle:methodlength", "checkstyle:parameternumber"
     })
+    @Operation(summary = "Get the list of all types of actions that may trigger questionable activity to be recorded. "
+            + "This is only available to ROLE_ADMIN and ROLE_ONC users.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/trigger-types", method = RequestMethod.GET, produces = {
+            "application/json; charset=utf-8", "application/xml"
+    })
+    public List<QuestionableActivityTrigger> getAllTriggerTypes() {
+        return questionableActivityManager.getTriggerTypes();
+    }
+
+    @SuppressWarnings({
+        "checkstyle:methodlength", "checkstyle:parameternumber"
+    })
     @Operation(summary = "Search Questionable Activity in the CHPL. This is only available to ROLE_ADMIN and ROLE_ONC users.",
-            description = "If paging parameters are not specified, the first 20 records are returned by default. "
+            description = "If paging parameters are not specified, the first 20 records are returned by default."
                     + "All parameters are optional. "
                     + "Date parameters are required to be in the format "
                     + SearchRequest.DATE_SEARCH_FORMAT + ". ",
             security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = {
+    @RequestMapping(value = "/search", method = RequestMethod.GET, produces = {
             "application/json; charset=utf-8", "application/xml"
     })
     public @ResponseBody QuestionableActivitySearchResponse search(
-        @Parameter(description = "Developer name, product name, version name, or CHPL Product Number",
+        @Parameter(description = "Developer name, product name, or CHPL Product Number",
             allowEmptyValue = true, in = ParameterIn.QUERY, name = "searchTerm")
             @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,
+        @Parameter(description = "A comma-separated list of questionable activity trigger IDs (ex: \"1,2,3\"). Results may match any of the provided triggers.",
+            allowEmptyValue = true, in = ParameterIn.QUERY, name = "triggerIds")
+            @RequestParam(value = "triggerIds", required = false, defaultValue = "") String triggerIdsDelimited,
         @Parameter(description = "To return only questionable activities that occurred on or after this date. Required format is " + SearchRequest.DATE_SEARCH_FORMAT,
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "activityDateStart")
             @RequestParam(value = "activityDateStart", required = false, defaultValue = "") String activityDateStart,
@@ -75,6 +108,7 @@ public class SearchQuestionableActivityController {
 
         SearchRequest searchRequest = SearchRequest.builder()
                 .searchTerm(searchTerm.trim())
+                .triggerIdStrings(convertToSetWithDelimeter(triggerIdsDelimited, ","))
                 .activityDateStart(activityDateStart)
                 .activityDateEnd(activityDateEnd)
                 .pageSize(pageSize)
@@ -83,5 +117,14 @@ public class SearchQuestionableActivityController {
                 .sortDescending(sortDescending)
                 .build();
         return questionableActivitySearchService.searchQuestionableActivities(searchRequest);
+    }
+
+    private Set<String> convertToSetWithDelimeter(String delimitedString, String delimeter) {
+        if (ObjectUtils.isEmpty(delimitedString)) {
+            return new LinkedHashSet<String>();
+        }
+        return Stream.of(delimitedString.split(delimeter))
+                .map(value -> StringUtils.normalizeSpace(value))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }

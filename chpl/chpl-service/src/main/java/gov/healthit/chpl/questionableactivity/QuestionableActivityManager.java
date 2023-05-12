@@ -3,7 +3,9 @@ package gov.healthit.chpl.questionableactivity;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -55,6 +57,13 @@ public class QuestionableActivityManager {
         this.certResultRules = certResultRules;
         this.questionableActivityDao = questionableActivityDao;
         triggerTypes = questionableActivityDao.getAllTriggers();
+    }
+
+    @Transactional(readOnly = true)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).QUESTIONABLE_ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.QuestionableActivityDomainPermissions).GET)")
+    public List<QuestionableActivityTrigger> getTriggerTypes() {
+        return triggerTypes;
     }
 
     public void checkDeveloperQuestionableActivity(Developer origDeveloper, Developer newDeveloper, ActivityDTO activity) {

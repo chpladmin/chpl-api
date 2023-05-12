@@ -4,16 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.permissions.domains.questionableActivity.SearchActionPermissions;
+import gov.healthit.chpl.permissions.domains.questionableActivity.GetActionPermissions;
 
 @Component
 public class QuestionableActivityDomainPermissions extends DomainPermissions {
-    public static final String SEARCH = "SEARCH";
+    public static final String GET = "GET";
 
     @Autowired
     public QuestionableActivityDomainPermissions(
-            @Qualifier("questionableActivitySearchActionPermissions") SearchActionPermissions searchActionPermissions) {
+            @Qualifier("questionableActivityGetActionPermissions") GetActionPermissions getActionPermissions) {
 
-        getActionPermissions().put(SEARCH, searchActionPermissions);
+        getActionPermissions().put(GET, getActionPermissions);
     }
 }

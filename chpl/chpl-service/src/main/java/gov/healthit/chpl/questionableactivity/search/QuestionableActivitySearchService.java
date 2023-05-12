@@ -7,8 +7,11 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,7 +20,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.questionableactivity.QuestionableActivityDAO;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivity;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -28,20 +33,25 @@ public class QuestionableActivitySearchService {
     private SearchRequestValidator searchRequestValidator;
     private SearchRequestNormalizer searchRequestNormalizer;
     private QuestionableActivitySearchDAO questionableActivitySearchDao;
+    private QuestionableActivityDAO questionableActivityDao;
     private DateTimeFormatter dateFormatter;
+
+    private List<QuestionableActivityTrigger> allTriggerTypes;
 
     @Autowired
     public QuestionableActivitySearchService(QuestionableActivitySearchDAO questionableActivitySearchDao,
+            QuestionableActivityDAO questionableActivityDao,
             @Qualifier("questionableActivitySearchRequestValidator") SearchRequestValidator searchRequestValidator) {
         this.questionableActivitySearchDao = questionableActivitySearchDao;
         this.searchRequestValidator = searchRequestValidator;
         this.searchRequestNormalizer = new SearchRequestNormalizer();
         dateFormatter = DateTimeFormatter.ofPattern(SearchRequest.DATE_SEARCH_FORMAT);
+        this.allTriggerTypes = questionableActivityDao.getAllTriggers();
     }
 
     @Transactional(readOnly = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).QUESTIONABLE_ACTIVITY, "
-            + "T(gov.healthit.chpl.permissions.domains.QuestionableActivityDomainPermissions).SEARCH)")
+            + "T(gov.healthit.chpl.permissions.domains.QuestionableActivityDomainPermissions).GET)")
     public QuestionableActivitySearchResponse searchQuestionableActivities(SearchRequest searchRequest) throws ValidationException {
         searchRequestNormalizer.normalize(searchRequest);
         searchRequestValidator.validate(searchRequest);
@@ -50,6 +60,7 @@ public class QuestionableActivitySearchService {
         LOGGER.debug("Total questionable activities: " + allQuestionableActivities.size());
         List<QuestionableActivity> matchedQuestionableActivities = allQuestionableActivities.stream()
             .filter(qa -> matchesSearchTerm(qa, searchRequest.getSearchTerm()))
+            .filter(qa -> matchesTriggers(qa, searchRequest.getTriggerIds()))
             .filter(qa -> matchesActivityDateRange(qa, searchRequest.getActivityDateStart(), searchRequest.getActivityDateEnd()))
             .collect(Collectors.toList());
         LOGGER.debug("Total matched questionable activities: " + matchedQuestionableActivities.size());
@@ -69,7 +80,6 @@ public class QuestionableActivitySearchService {
     private boolean matchesSearchTerm(QuestionableActivity qa, String searchTerm) {
         return matchesDeveloperName(qa, searchTerm)
                 || matchesProductName(qa, searchTerm)
-                || matchesVersionName(qa, searchTerm)
                 || matchesChplProductNumber(qa, searchTerm);
     }
 
@@ -91,15 +101,6 @@ public class QuestionableActivitySearchService {
                 && qa.getProductName().toUpperCase().contains(productName.toUpperCase());
     }
 
-    private boolean matchesVersionName(QuestionableActivity qa, String versionName) {
-        if (StringUtils.isEmpty(versionName)) {
-            return true;
-        }
-
-        return !StringUtils.isEmpty(qa.getVersionName())
-                && qa.getVersionName().toUpperCase().contains(versionName.toUpperCase());
-    }
-
     private boolean matchesChplProductNumber(QuestionableActivity qa, String chplProductNumber) {
         if (StringUtils.isEmpty(chplProductNumber)) {
             return true;
@@ -107,6 +108,25 @@ public class QuestionableActivitySearchService {
 
         return !StringUtils.isEmpty(qa.getChplProductNumber())
                 && qa.getChplProductNumber().toUpperCase().contains(chplProductNumber.toUpperCase());
+    }
+
+    private boolean matchesTriggers(QuestionableActivity qa, Set<Long> triggerIds) {
+        if (CollectionUtils.isEmpty(triggerIds)) {
+            return true;
+        }
+        return triggerIds.stream()
+                    .anyMatch(triggerId -> getTriggerId(qa.getTriggerLevel(), qa.getTriggerName()).equals(triggerId));
+    }
+
+    private Long getTriggerId(String triggerLevel, String triggerName) {
+        Optional<QuestionableActivityTrigger> matchingTrigger = allTriggerTypes.stream()
+                .filter(trigger -> trigger.getLevel().equals(triggerLevel)
+                        && trigger.getName().equals(triggerName))
+                .findAny();
+        if (matchingTrigger.isEmpty()) {
+            return 0L;
+        }
+        return matchingTrigger.get().getId();
     }
 
     private boolean matchesActivityDateRange(QuestionableActivity qa, String activityDateRangeStart,
