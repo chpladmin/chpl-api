@@ -357,7 +357,8 @@ public class CertifiedProductManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_LISTINGS,
-            CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.COMPLAINTS
+            CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.COMPLAINTS,
+            CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#updateRequest.listing.id")
