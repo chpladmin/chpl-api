@@ -29,6 +29,7 @@ public class QuestionableActivity implements Serializable {
     @JsonSerialize(using = SystemToEasternLocalDateTimeSerializer.class)
     private LocalDateTime activityDate;
     private Long userId;
+    private String username;
     private String certificationStatusChangeReason;
     private String reason;
     private Long developerId;
@@ -39,5 +40,9 @@ public class QuestionableActivity implements Serializable {
     private String versionName;
     private Long listingId;
     private String chplProductNumber;
+    private Long acbId;
+    private String acbName;
+    private Long certificationStatusId;
+    private String certificationStatusName;
     private Long certificationCriterionId;
 }

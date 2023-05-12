@@ -48,6 +48,9 @@ public class QuestionableActivityEntity {
     @Column(name = "activity_user_id")
     private Long userId;
 
+    @Column(name = "user_contact_info")
+    private String username;
+
     @Column(name = "certification_status_change_reason")
     private String certificationStatusChangeReason;
 
@@ -78,6 +81,18 @@ public class QuestionableActivityEntity {
     @Column(name = "chpl_product_number")
     private String chplProductNumber;
 
+    @Column(name = "certification_body_id")
+    private Long acbId;
+
+    @Column(name = "certification_body_name")
+    private String acbName;
+
+    @Column(name = "certification_status_id")
+    private Long certificationStatusId;
+
+    @Column(name = "certification_status_name")
+    private String certificationStatusName;
+
     @Column(name = "certification_criterion_id")
     private Long certificationCriterionId;
 
@@ -90,6 +105,7 @@ public class QuestionableActivityEntity {
                 .after(after)
                 .activityDate(DateUtil.toLocalDateTime(activityDate.getTime()))
                 .userId(userId)
+                .username(username)
                 .certificationStatusChangeReason(certificationStatusChangeReason)
                 .reason(reason)
                 .developerId(developerId)
@@ -100,6 +116,10 @@ public class QuestionableActivityEntity {
                 .versionName(versionName)
                 .listingId(listingId)
                 .chplProductNumber(chplProductNumber)
+                .acbId(acbId)
+                .acbName(acbName)
+                .certificationStatusId(certificationStatusId)
+                .certificationStatusName(certificationStatusName)
                 .certificationCriterionId(certificationCriterionId)
                 .build();
     }
