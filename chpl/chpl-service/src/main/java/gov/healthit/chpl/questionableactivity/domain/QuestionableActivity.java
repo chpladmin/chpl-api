@@ -2,10 +2,15 @@ package gov.healthit.chpl.questionableactivity.domain;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.EasternToSystemLocalDateTimeDeserializer;
 import gov.healthit.chpl.util.SystemToEasternLocalDateTimeSerializer;
 import lombok.AllArgsConstructor;
@@ -45,4 +50,30 @@ public class QuestionableActivity implements Serializable {
     private Long certificationStatusId;
     private String certificationStatusName;
     private Long certificationCriterionId;
+
+    public List<String> toCsvFormat() {
+        List<String> csvFields = new ArrayList<String>();
+        csvFields.add(acbName);
+        csvFields.add(developerName);
+        csvFields.add(productName);
+        csvFields.add(versionName);
+        csvFields.add(chplProductNumber);
+        csvFields.add(certificationStatusName);
+        csvFields.add(DateUtil.formatInEasternTime(activityDate));
+        //TODO: get url begin in here
+        csvFields.add("#/reports/listings/" + listingId);
+        csvFields.add(username);
+        csvFields.add(triggerLevel);
+        csvFields.add(triggerName);
+        if (StringUtils.isEmpty(before)) {
+            csvFields.add("Added " + after);
+        } else if (StringUtils.isEmpty(after)) {
+            csvFields.add("Removed " + before);
+        } else {
+            csvFields.add("From " + before + " to " + after);
+        }
+        csvFields.add(certificationStatusChangeReason);
+        csvFields.add(reason);
+        return csvFields;
+    }
 }

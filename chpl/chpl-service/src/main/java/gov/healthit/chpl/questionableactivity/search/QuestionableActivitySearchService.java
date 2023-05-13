@@ -33,7 +33,6 @@ public class QuestionableActivitySearchService {
     private SearchRequestValidator searchRequestValidator;
     private SearchRequestNormalizer searchRequestNormalizer;
     private QuestionableActivitySearchDAO questionableActivitySearchDao;
-    private QuestionableActivityDAO questionableActivityDao;
     private DateTimeFormatter dateFormatter;
 
     private List<QuestionableActivityTrigger> allTriggerTypes;
@@ -75,6 +74,24 @@ public class QuestionableActivitySearchService {
             = getPage(matchedQuestionableActivities, getBeginIndex(searchRequest), getEndIndex(searchRequest));
         response.setResults(pageOfQuestionableActivity);
         return response;
+    }
+
+    @Transactional(readOnly = true)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).QUESTIONABLE_ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.QuestionableActivityDomainPermissions).GET)")
+    public List<QuestionableActivity> getFilteredQuestionableActivities(SearchRequest searchRequest) throws ValidationException {
+        searchRequestNormalizer.normalize(searchRequest);
+        searchRequestValidator.validate(searchRequest);
+
+        List<QuestionableActivity> allQuestionableActivities = questionableActivitySearchDao.getAll();
+        LOGGER.debug("Total questionable activities: " + allQuestionableActivities.size());
+        List<QuestionableActivity> matchedQuestionableActivities = allQuestionableActivities.stream()
+            .filter(qa -> matchesSearchTerm(qa, searchRequest.getSearchTerm()))
+            .filter(qa -> matchesTriggers(qa, searchRequest.getTriggerIds()))
+            .filter(qa -> matchesActivityDateRange(qa, searchRequest.getActivityDateStart(), searchRequest.getActivityDateEnd()))
+            .collect(Collectors.toList());
+        LOGGER.debug("Total matched questionable activities: " + matchedQuestionableActivities.size());
+        return matchedQuestionableActivities;
     }
 
     private boolean matchesSearchTerm(QuestionableActivity qa, String searchTerm) {
