@@ -135,6 +135,9 @@ public class ListingSearchEntity {
     @Column(name = "rwt_results_url")
     private String rwtResultsUrl;
 
+    @Column(name = "svap_notice_url")
+    private String svapNoticeUrl;
+
     @Column(name = "certification_criteria_met")
     private String certificationCriteriaMet;
 
@@ -143,6 +146,9 @@ public class ListingSearchEntity {
 
     @Column(name = "criteria_with_service_base_url_list")
     private String criteriaWithServiceBaseUrlList;
+
+    @Column(name = "criteria_with_svap")
+    private String criteriaWithSvap;
 
     @Column(name = "cqms_met")
     private String cqmsMet;

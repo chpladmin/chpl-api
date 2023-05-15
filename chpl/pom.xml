@@ -15,26 +15,26 @@
         <module>chpl-resources</module>
     </modules>
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <org.springframework.version>5.3.18</org.springframework.version>
-        <org.springsecurity.version>5.6.1</org.springsecurity.version>
-        <org.springboot.version>2.6.6</org.springboot.version>
-        <java.version>17</java.version>
-        <lombok.version>1.18.22</lombok.version>
-        <log4j2.version>2.17.1</log4j2.version>
-        <aspectj.version>1.9.8.RC3</aspectj.version>
-        <commons.csv.version>1.9.0</commons.csv.version>
-        <commons.fileupload.version>1.4</commons.fileupload.version>
-        <ff4j.version>1.8</ff4j.version>
-        <junit.version>5.8.2</junit.version>
-        <checkstyle.version>9.2.1</checkstyle.version>
+        <aspectj.version>1.9.19</aspectj.version>
         <checkstyle.plugin.version>3.1.2</checkstyle.plugin.version>
-        <mvn.site.plugin.version>3.10.0</mvn.site.plugin.version>
-        <mvn.resources.plugin.version>3.2.0</mvn.resources.plugin.version>
+        <checkstyle.version>9.2.1</checkstyle.version>
+        <commons.csv.version>1.10.0</commons.csv.version>
+        <commons.fileupload.version>1.5</commons.fileupload.version>
+        <ff4j.version>1.8</ff4j.version>
+        <java.version>17</java.version>
+        <junit.version>5.9.3</junit.version>
+        <log4j2.version>2.20.0</log4j2.version>
+        <lombok.version>1.18.26</lombok.version>
         <mvn.compiler.plugin.version>3.9.0</mvn.compiler.plugin.version>
         <mvn.jar.plugin.version>3.2.1</mvn.jar.plugin.version>
-        <mvn.war.plugin.version>3.3.2</mvn.war.plugin.version>
         <mvn.jxr.plugin.version>3.1.1</mvn.jxr.plugin.version>
+        <mvn.resources.plugin.version>3.2.0</mvn.resources.plugin.version>
+        <mvn.site.plugin.version>3.10.0</mvn.site.plugin.version>
+        <mvn.war.plugin.version>3.3.2</mvn.war.plugin.version>
+        <org.springboot.version>2.6.6</org.springboot.version>
+        <org.springframework.version>5.3.18</org.springframework.version>
+        <org.springsecurity.version>5.6.1</org.springsecurity.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencyManagement>
