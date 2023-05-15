@@ -6,8 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import javax.xml.bind.annotation.XmlTransient;
+
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -25,6 +28,9 @@ import lombok.NoArgsConstructor;
 @Data
 public class QuestionableActivity implements Serializable {
     private static final long serialVersionUID = -8153861360218726537L;
+
+    @JsonIgnore
+    @XmlTransient
     public static final List<String> CSV_HEADINGS = Stream.of("ONC-ACB", "Developer", "Product", "Version",
             "CHPL Product Number", "Current Certification Status", "Link", "Activity Timestamp", "Responsible User",
             "Activity Level", "Activity Type", "Activity", "Reason for Status Change", "Reason").toList();
@@ -55,6 +61,8 @@ public class QuestionableActivity implements Serializable {
     private String certificationStatusName;
     private Long certificationCriterionId;
 
+    @JsonIgnore
+    @XmlTransient
     public List<String> toListOfStringsForCsv() {
         List<String> csvFields = new ArrayList<String>();
         csvFields.add(acbName);
