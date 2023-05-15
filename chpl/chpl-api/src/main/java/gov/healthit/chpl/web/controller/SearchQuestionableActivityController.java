@@ -112,7 +112,7 @@ public class SearchQuestionableActivityController {
                 + "Defaults to 20. Maximum allowed page size is 100.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "pageSize")
             @RequestParam(value = "pageSize", required = false, defaultValue = "20") Integer pageSize,
-        @Parameter(description = "What to order by. Options are one of the following: ACTIVITY_DATE. "
+        @Parameter(description = "What to order by. Options are one of the following: ACTIVITY_DATE, DEVELOPER, PRODUCT, or CHPL_PRODUCT_NUMBER. "
                 + "Defaults to ACTIVITY_DATE.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "orderBy")
             @RequestParam(value = "orderBy", required = false, defaultValue = "activity_date") String orderBy,
