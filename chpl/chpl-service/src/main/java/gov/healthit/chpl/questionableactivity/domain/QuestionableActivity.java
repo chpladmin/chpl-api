@@ -35,6 +35,7 @@ public class QuestionableActivity implements Serializable {
             "CHPL Product Number", "Current Certification Status", "Link", "Activity Timestamp", "Responsible User",
             "Activity Level", "Activity Type", "Activity", "Reason for Status Change", "Reason").toList();
 
+    private Long id;
     private String triggerLevel;
     private String triggerName;
     private Long activityId;

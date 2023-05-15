@@ -142,9 +142,7 @@ public class SearchQuestionableActivityController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/download", method = RequestMethod.GET, produces = {
-            "text/csv; charset=utf-8"
-    })
+    @RequestMapping(value = "/download", method = RequestMethod.GET, produces = {"text/csv; charset=utf-8"})
     public void download(@Parameter(description = "Developer name, product name, or CHPL Product Number",
             allowEmptyValue = true, in = ParameterIn.QUERY, name = "searchTerm")
             @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,

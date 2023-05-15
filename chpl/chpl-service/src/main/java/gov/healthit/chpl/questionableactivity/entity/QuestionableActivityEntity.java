@@ -98,6 +98,7 @@ public class QuestionableActivityEntity {
 
     public QuestionableActivity toDomain() {
         return QuestionableActivity.builder()
+                .id(id)
                 .triggerLevel(triggerLevel)
                 .triggerName(triggerName)
                 .activityId(activityId)
