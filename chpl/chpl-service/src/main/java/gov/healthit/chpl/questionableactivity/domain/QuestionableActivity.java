@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,6 +25,9 @@ import lombok.NoArgsConstructor;
 @Data
 public class QuestionableActivity implements Serializable {
     private static final long serialVersionUID = -8153861360218726537L;
+    public static final List<String> CSV_HEADINGS = Stream.of("ONC-ACB", "Developer", "Product", "Version",
+            "CHPL Product Number", "Current Certification Status", "Link", "Activity Timestamp", "Responsible User",
+            "Activity Level", "Activity Type", "Activity", "Reason for Status Change", "Reason").toList();
 
     private String triggerLevel;
     private String triggerName;
@@ -51,7 +55,7 @@ public class QuestionableActivity implements Serializable {
     private String certificationStatusName;
     private Long certificationCriterionId;
 
-    public List<String> toCsvFormat() {
+    public List<String> toListOfStringsForCsv() {
         List<String> csvFields = new ArrayList<String>();
         csvFields.add(acbName);
         csvFields.add(developerName);

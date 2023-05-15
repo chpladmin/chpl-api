@@ -170,13 +170,14 @@ public class SearchQuestionableActivityController {
             = questionableActivitySearchService.getFilteredQuestionableActivities(searchRequest);
 
         List<List<String>> rows = filteredQuestionableActivities.stream()
-                .map(qa -> qa.toCsvFormat())
+                .map(qa -> qa.toListOfStringsForCsv())
                 .collect(Collectors.toList());
 
-        File file = new File("questionable-activity-" + System.currentTimeMillis() + ".csv");
+        File file = File.createTempFile("questionable-activity", ".csv");
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
             writer.write('\ufeff');
+            csvPrinter.printRecord(QuestionableActivity.CSV_HEADINGS);
             for (List<String> row : rows) {
                 csvPrinter.printRecord(row);
             }
@@ -184,6 +185,11 @@ public class SearchQuestionableActivityController {
             LOGGER.error("Could not write file " + file.getName(), ex);
         }
         fileUtils.streamFileAsResponse(file, "text/csv", response);
+        try {
+            file.delete();
+        } catch (Exception ex) {
+            LOGGER.warn("Temp file " + file.getAbsolutePath() + " could not be deleted.", ex);
+        }
     }
 
     private Set<String> convertToSetWithDelimeter(String delimitedString, String delimeter) {
