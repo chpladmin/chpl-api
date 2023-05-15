@@ -213,6 +213,15 @@ public class QuestionableActivitySearchService {
             case ACTIVITY_DATE:
                 activities.sort(new ActivityDateComparator(descending));
                 break;
+            case DEVELOPER:
+                activities.sort(new DeveloperNameComparator(descending));
+                break;
+            case PRODUCT:
+                activities.sort(new ProductNameComparator(descending));
+                break;
+            case CHPL_PRODUCT_NUMBER:
+                activities.sort(new ChplProductNumberComparator(descending));
+                break;
             default:
                 LOGGER.error("Unrecognized value for Order By: " + orderBy.name());
                 break;
@@ -233,6 +242,57 @@ public class QuestionableActivitySearchService {
             }
             int sortFactor = descending ? -1 : 1;
             return (qa1.getActivityDate().compareTo(qa2.getActivityDate())) * sortFactor;
+        }
+    }
+
+    private class DeveloperNameComparator implements Comparator<QuestionableActivity> {
+        private boolean descending = false;
+
+        DeveloperNameComparator(boolean descending) {
+            this.descending = descending;
+        }
+
+        @Override
+        public int compare(QuestionableActivity qa1, QuestionableActivity qa2) {
+            if (qa1.getDeveloperName() == null ||  qa2.getDeveloperName() == null) {
+                return 0;
+            }
+            int sortFactor = descending ? -1 : 1;
+            return (qa1.getDeveloperName().compareTo(qa2.getDeveloperName())) * sortFactor;
+        }
+    }
+
+    private class ProductNameComparator implements Comparator<QuestionableActivity> {
+        private boolean descending = false;
+
+        ProductNameComparator(boolean descending) {
+            this.descending = descending;
+        }
+
+        @Override
+        public int compare(QuestionableActivity qa1, QuestionableActivity qa2) {
+            if (qa1.getProductName() == null ||  qa2.getProductName() == null) {
+                return 0;
+            }
+            int sortFactor = descending ? -1 : 1;
+            return (qa1.getProductName().compareTo(qa2.getProductName())) * sortFactor;
+        }
+    }
+
+    private class ChplProductNumberComparator implements Comparator<QuestionableActivity> {
+        private boolean descending = false;
+
+        ChplProductNumberComparator(boolean descending) {
+            this.descending = descending;
+        }
+
+        @Override
+        public int compare(QuestionableActivity qa1, QuestionableActivity qa2) {
+            if (qa1.getChplProductNumber() == null ||  qa2.getChplProductNumber() == null) {
+                return 0;
+            }
+            int sortFactor = descending ? -1 : 1;
+            return (qa1.getChplProductNumber().compareTo(qa2.getChplProductNumber())) * sortFactor;
         }
     }
 }
