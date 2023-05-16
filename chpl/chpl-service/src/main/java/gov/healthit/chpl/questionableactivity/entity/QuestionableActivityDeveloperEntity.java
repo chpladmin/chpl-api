@@ -12,9 +12,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityDeveloper;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -83,13 +85,17 @@ public class QuestionableActivityDeveloperEntity implements QuestionableActivity
         return QuestionableActivityDeveloper.builder()
                 .id(this.getId())
                 .activityId(this.getActivityId())
-                .trigger(this.getTrigger().toDomain())
+                .trigger(this.getTrigger() == null
+                    ? QuestionableActivityTrigger.builder().id(this.getTriggerId()).build()
+                            : this.getTrigger().toDomain())
                 .before(this.getBefore())
                 .after(this.getAfter())
                 .activityDate(this.getActivityDate())
                 .userId(this.getUserId())
                 .developerId(this.getDeveloperId())
-                .developer(this.getDeveloper().toDomain())
+                .developer(this.getDeveloper() == null
+                    ? Developer.builder().id(this.getDeveloperId()).build()
+                            : this.getDeveloper().toDomain())
                 .reason(this.getReason())
                 .build();
     }

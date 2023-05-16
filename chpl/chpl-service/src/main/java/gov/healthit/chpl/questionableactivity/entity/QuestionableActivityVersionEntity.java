@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.ProductVersionEntity;
 import gov.healthit.chpl.entity.auth.UserEntity;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityVersion;
 import lombok.Getter;
 import lombok.Setter;
@@ -81,13 +82,17 @@ public class QuestionableActivityVersionEntity implements QuestionableActivityBa
         return QuestionableActivityVersion.builder()
                 .id(this.getId())
                 .activityId(this.getActivityId())
-                .trigger(this.getTrigger().toDomain())
+                .trigger(this.getTrigger() == null
+                    ? QuestionableActivityTrigger.builder().id(this.getTriggerId()).build()
+                        : this.getTrigger().toDomain())
                 .before(this.getBefore())
                 .after(this.getAfter())
                 .activityDate(this.getActivityDate())
                 .userId(this.getUserId())
                 .versionId(this.getVersionId())
-                .version(new ProductVersionDTO(this.getVersion()))
+                .version(this.getVersion() == null
+                    ? ProductVersionDTO.builder().id(this.getVersionId()).build()
+                            : new ProductVersionDTO(this.getVersion()))
                 .build();
     }
 }

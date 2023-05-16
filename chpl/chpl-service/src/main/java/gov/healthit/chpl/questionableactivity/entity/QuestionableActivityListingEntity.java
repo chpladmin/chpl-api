@@ -18,6 +18,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -90,13 +91,17 @@ public class QuestionableActivityListingEntity implements QuestionableActivityBa
         return QuestionableActivityListing.builder()
                 .id(this.getId())
                 .activityId(this.getActivityId())
-                .trigger(this.getTrigger().toDomain())
+                .trigger(this.getTrigger() == null
+                    ? QuestionableActivityTrigger.builder().id(this.getTriggerId()).build()
+                        : this.getTrigger().toDomain())
                 .before(this.getBefore())
                 .after(this.getAfter())
                 .activityDate(this.getActivityDate())
                 .userId(this.getUserId())
                 .listingId(this.getListingId())
-                .listing(new CertifiedProductDetailsDTO(this.getListing()))
+                .listing(this.getListing() == null
+                    ? CertifiedProductDetailsDTO.builder().id(this.getListingId()).build()
+                        : new CertifiedProductDetailsDTO(this.getListing()))
                 .certificationStatusChangeReason(this.getCertificationStatusChangeReason())
                 .reason(this.getReason())
                 .build();

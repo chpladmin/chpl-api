@@ -17,6 +17,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityCertificationResult;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -85,14 +86,18 @@ public class QuestionableActivityCertificationResultEntity implements Questionab
         return QuestionableActivityCertificationResult.builder()
                 .id(this.getId())
                 .activityId(this.getActivityId())
-                .trigger(this.getTrigger().toDomain())
+                .trigger(this.getTrigger() == null
+                    ? QuestionableActivityTrigger.builder().id(this.getTriggerId()).build()
+                            : this.getTrigger().toDomain())
                 .before(this.getBefore())
                 .after(this.getAfter())
                 .activityDate(this.getActivityDate())
                 .userId(this.getUserId())
                 .listing(new CertifiedProductDetailsDTO(this.getCertResult().getListing()))
                 .certResultId(this.getCertResultId())
-                .certResult(new CertificationResultDetailsDTO(this.getCertResult()))
+                .certResult(this.getCertResult() == null
+                    ? CertificationResultDetailsDTO.builder().id(this.getCertResultId()).build()
+                            : new CertificationResultDetailsDTO(this.getCertResult()))
                 .reason(this.getReason())
                 .build();
     }

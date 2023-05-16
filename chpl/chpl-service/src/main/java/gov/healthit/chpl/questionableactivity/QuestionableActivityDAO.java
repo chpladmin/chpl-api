@@ -19,9 +19,9 @@ import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityProduct;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityVersion;
+import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityBaseEntity;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityCertificationResultEntity;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityDeveloperEntity;
-import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityBaseEntity;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityListingEntity;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityProductEntity;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityTriggerEntity;
