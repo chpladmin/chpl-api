@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import gov.healthit.chpl.questionableactivity.domain.QuestionableActivity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,5 +16,5 @@ public class QuestionableActivitySearchResponse implements Serializable {
     private Integer recordCount;
     private Integer pageSize;
     private Integer pageNumber;
-    private List<QuestionableActivity> results = new ArrayList<QuestionableActivity>();
+    private List<QuestionableActivitySearchResult> results = new ArrayList<QuestionableActivitySearchResult>();
 }

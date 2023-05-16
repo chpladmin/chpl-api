@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Immutable;
 
-import gov.healthit.chpl.questionableactivity.domain.QuestionableActivity;
+import gov.healthit.chpl.questionableactivity.search.QuestionableActivitySearchResult;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +21,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @Table(name = "questionable_activity_combined")
-public class QuestionableActivityEntity {
+public class QuestionableActivitySearchResultEntity {
 
     @Id
     @Column(name = "id")
@@ -96,8 +96,8 @@ public class QuestionableActivityEntity {
     @Column(name = "certification_criterion_id")
     private Long certificationCriterionId;
 
-    public QuestionableActivity toDomain() {
-        return QuestionableActivity.builder()
+    public QuestionableActivitySearchResult toDomain() {
+        return QuestionableActivitySearchResult.builder()
                 .id(id)
                 .triggerLevel(triggerLevel)
                 .triggerName(triggerName)

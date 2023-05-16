@@ -16,7 +16,6 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityDAO;
-import gov.healthit.chpl.questionableactivity.domain.QuestionableActivity;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
 
 @SuppressWarnings("checkstyle:magicnumber")
@@ -84,7 +83,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_sortByDeveloperNameAscending_ordersResults() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(5);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(5);
         searchResults.get(0).setDeveloperName("a");
         searchResults.get(1).setDeveloperName("z");
         searchResults.get(2).setDeveloperName("c");
@@ -111,7 +110,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_sortByDeveloperNameDescending_ordersResults() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(5);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(5);
         searchResults.get(0).setDeveloperName("a");
         searchResults.get(1).setDeveloperName("z");
         searchResults.get(2).setDeveloperName("c");
@@ -138,7 +137,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_sortByProductNameAscending_ordersResults() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(5);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(5);
         searchResults.get(0).setProductName("a");
         searchResults.get(1).setProductName("z");
         searchResults.get(2).setProductName("c");
@@ -165,7 +164,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_sortByProductNameDescending_ordersResults() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(5);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(5);
         searchResults.get(0).setProductName("a");
         searchResults.get(1).setProductName("z");
         searchResults.get(2).setProductName("c");
@@ -192,7 +191,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_sortByChplProductNumberAscending_ordersResults() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(5);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(5);
         searchResults.get(0).setChplProductNumber("a");
         searchResults.get(1).setChplProductNumber("z");
         searchResults.get(2).setChplProductNumber("c");
@@ -219,7 +218,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_sortByChplProductNumberDescending_ordersResults() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(5);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(5);
         searchResults.get(0).setChplProductNumber("a");
         searchResults.get(1).setChplProductNumber("z");
         searchResults.get(2).setChplProductNumber("c");
@@ -246,7 +245,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_sortByActivityDateAscending_ordersResults() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(5);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(5);
         searchResults.get(0).setActivityDate(LocalDateTime.parse("2022-02-01T00:00:00"));
         searchResults.get(1).setActivityDate(LocalDateTime.parse("2022-01-01T00:00:00"));
         searchResults.get(2).setActivityDate(LocalDateTime.parse("2022-04-01T00:00:00"));
@@ -273,7 +272,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_sortByActivityDateDescending_ordersResults() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(5);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(5);
         searchResults.get(0).setActivityDate(LocalDateTime.parse("2022-02-01T00:00:00"));
         searchResults.get(1).setActivityDate(LocalDateTime.parse("2022-01-01T00:00:00"));
         searchResults.get(2).setActivityDate(LocalDateTime.parse("2022-04-01T00:00:00"));
@@ -300,7 +299,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_noQuestionableActivitiesWithSearchTerm_returnsEmptyResponse() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(50);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(50);
         searchResults.get(1).setDeveloperName("developer name");
         searchResults.get(2).setProductName("product name");
         searchResults.get(3).setChplProductNumber("15.02.02.3007.A056.01.00.0.180214");
@@ -319,7 +318,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_questionableActivityDeveloperNameMatchesSearchTerm_returnsMatches() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(50);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(50);
         searchResults.get(1).setDeveloperName("developer name");
         searchResults.get(2).setProductName("product name");
         searchResults.get(3).setChplProductNumber("15.02.02.3007.A056.01.00.0.180214");
@@ -339,7 +338,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_questionableActivityProductNameMatchesSearchTerm_returnsMatches() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(50);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(50);
         searchResults.get(1).setDeveloperName("developer name");
         searchResults.get(2).setProductName("product name");
         searchResults.get(3).setChplProductNumber("15.02.02.3007.A056.01.00.0.180214");
@@ -359,7 +358,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_questionableActivityChplProductNumberMatchesSearchTerm_returnsMatches() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(50);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(50);
         searchResults.get(1).setDeveloperName("developer name");
         searchResults.get(2).setProductName("product name");
         searchResults.get(3).setChplProductNumber("15.02.02.3007.A056.01.00.0.180214");
@@ -379,7 +378,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_questionableActivityDeveloperAndProductMatchesSearchTerm_returnsMatches() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(50);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(50);
         searchResults.get(1).setDeveloperName("developer name");
         searchResults.get(2).setProductName("product name");
         searchResults.get(3).setChplProductNumber("15.02.02.3007.A056.01.00.0.180214");
@@ -398,7 +397,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_questionableActivitySingleTriggerId_returnsMatches() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(50);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(50);
         searchResults.get(1).setTriggerLevel("Developer");
         searchResults.get(1).setTriggerName("Developer Name Changed");
         searchResults.get(2).setTriggerLevel("Product");
@@ -420,7 +419,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_questionableActivityMultipleTriggersId_returnsMatches() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(50);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(50);
         searchResults.get(1).setTriggerLevel("Developer");
         searchResults.get(1).setTriggerName("Developer Name Changed");
         searchResults.get(2).setTriggerLevel("Product");
@@ -443,7 +442,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_activityStartDateEqualsActivityDate_findsMatches() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(50);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(50);
         searchResults.get(0).setActivityDate(LocalDateTime.parse("2020-06-25T05:00:00"));
         searchResults.get(1).setActivityDate(LocalDateTime.parse("2020-06-01T05:00:00"));
 
@@ -462,7 +461,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_activityStartDateBeforeActivityDate_findsMatches() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(50);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(50);
         searchResults.get(0).setActivityDate(LocalDateTime.parse("2020-06-25T05:00:00"));
         searchResults.get(1).setActivityDate(LocalDateTime.parse("2020-06-01T05:00:00"));
 
@@ -481,7 +480,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_activityEndDateEqualsActivityDate_findsMatches() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(50);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(50);
         searchResults.get(0).setActivityDate(LocalDateTime.parse("2020-06-25T05:00:00"));
         searchResults.get(1).setActivityDate(LocalDateTime.parse("2020-06-27T05:00:00"));
 
@@ -500,7 +499,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_activityEndDateAfterActivityDate_findsMatches() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(50);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(50);
         searchResults.get(0).setActivityDate(LocalDateTime.parse("2020-06-25T05:00:00"));
         searchResults.get(1).setActivityDate(LocalDateTime.parse("2020-06-27T05:00:00"));
 
@@ -519,7 +518,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_questionableActivityDateBetweenStartAndEnd_findsMatches() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(50);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(50);
         searchResults.get(0).setActivityDate(LocalDateTime.parse("2020-06-25T05:00:00"));
         searchResults.get(1).setActivityDate(LocalDateTime.parse("2020-06-27T05:00:00"));
 
@@ -539,7 +538,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_questionableActivityDateEqualsStartAndBeforeEnd_findsMatches() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(50);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(50);
         searchResults.get(0).setActivityDate(LocalDateTime.parse("2020-06-25T05:00:00"));
         searchResults.get(1).setActivityDate(LocalDateTime.parse("2020-06-27T05:00:00"));
 
@@ -559,7 +558,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_questionableActivityDateEqualsEndAndAfterStart_findsMatches() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(50);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(50);
         searchResults.get(0).setActivityDate(LocalDateTime.parse("2020-06-25T05:00:00"));
         searchResults.get(1).setActivityDate(LocalDateTime.parse("2020-06-27T05:00:00"));
 
@@ -579,7 +578,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_questionableActivityDateEqualsEndAndStart_findsMatches() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(50);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(50);
         searchResults.get(0).setActivityDate(LocalDateTime.parse("2020-06-25T05:00:00"));
         searchResults.get(1).setActivityDate(LocalDateTime.parse("2020-06-27T05:00:00"));
 
@@ -599,7 +598,7 @@ public class QuestionableActivitySearchServiceTest {
 
     @Test
     public void search_questionableActivityDateEndBeforeStart_findsNoMatches() throws ValidationException {
-        List<QuestionableActivity> searchResults = createSearchResultCollection(50);
+        List<QuestionableActivitySearchResult> searchResults = createSearchResultCollection(50);
         searchResults.get(0).setActivityDate(LocalDateTime.parse("2020-06-25T05:00:00"));
         searchResults.get(1).setActivityDate(LocalDateTime.parse("2020-06-27T05:00:00"));
         searchResults.get(2).setActivityDate(LocalDateTime.parse("2020-06-01T05:00:00"));
@@ -618,10 +617,10 @@ public class QuestionableActivitySearchServiceTest {
         assertEquals(0, searchResponse.getResults().size());
     }
 
-    private List<QuestionableActivity> createSearchResultCollection(int collectionSize) {
-        List<QuestionableActivity> searchResults = new ArrayList<QuestionableActivity>();
+    private List<QuestionableActivitySearchResult> createSearchResultCollection(int collectionSize) {
+        List<QuestionableActivitySearchResult> searchResults = new ArrayList<QuestionableActivitySearchResult>();
         for (int i = 0; i < collectionSize; i++) {
-            searchResults.add(new QuestionableActivity());
+            searchResults.add(new QuestionableActivitySearchResult());
         }
         return searchResults;
     }

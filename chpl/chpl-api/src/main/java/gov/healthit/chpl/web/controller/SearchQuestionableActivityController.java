@@ -19,6 +19,7 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,9 +29,9 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityManager;
-import gov.healthit.chpl.questionableactivity.domain.QuestionableActivity;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
 import gov.healthit.chpl.questionableactivity.search.QuestionableActivitySearchResponse;
+import gov.healthit.chpl.questionableactivity.search.QuestionableActivitySearchResult;
 import gov.healthit.chpl.questionableactivity.search.QuestionableActivitySearchService;
 import gov.healthit.chpl.questionableactivity.search.SearchRequest;
 import gov.healthit.chpl.util.FileUtils;
@@ -47,18 +48,23 @@ import lombok.extern.log4j.Log4j2;
 @RequestMapping("/questionable-activity")
 @Log4j2
 public class SearchQuestionableActivityController {
+    private static final String DOWNLOAD_FILENAME_BEGIN = "questionable-activity";
 
     private QuestionableActivityManager questionableActivityManager;
     private QuestionableActivitySearchService questionableActivitySearchService;
     private FileUtils fileUtils;
+    private String listingsReportUrlPartBegin;
 
     @Autowired
     public SearchQuestionableActivityController(QuestionableActivityManager questionableActivityManager,
             QuestionableActivitySearchService questionableActivitySearchService,
-            FileUtils fileUtils) {
+            FileUtils fileUtils,
+            @Value("${chplUrlBegin}") String chplUrlBegin,
+            @Value("${listingReportsUrlPart}") String listingsReportUrlPart) {
         this.questionableActivityManager = questionableActivityManager;
         this.questionableActivitySearchService = questionableActivitySearchService;
         this.fileUtils = fileUtils;
+        this.listingsReportUrlPartBegin = chplUrlBegin + listingsReportUrlPart;
     }
 
     @SuppressWarnings({
@@ -164,18 +170,18 @@ public class SearchQuestionableActivityController {
                 .activityDateStart(activityDateStart)
                 .activityDateEnd(activityDateEnd)
                 .build();
-        List<QuestionableActivity> filteredQuestionableActivities
+        List<QuestionableActivitySearchResult> filteredQuestionableActivities
             = questionableActivitySearchService.getFilteredQuestionableActivities(searchRequest);
 
         List<List<String>> rows = filteredQuestionableActivities.stream()
-                .map(qa -> qa.toListOfStringsForCsv())
+                .map(qa -> qa.toListOfStringsForCsv(listingsReportUrlPartBegin))
                 .collect(Collectors.toList());
 
-        File file = File.createTempFile("questionable-activity", ".csv");
+        File file = File.createTempFile(DOWNLOAD_FILENAME_BEGIN, ".csv");
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
             writer.write('\ufeff');
-            csvPrinter.printRecord(QuestionableActivity.CSV_HEADINGS);
+            csvPrinter.printRecord(QuestionableActivitySearchResult.CSV_HEADINGS);
             for (List<String> row : rows) {
                 csvPrinter.printRecord(row);
             }

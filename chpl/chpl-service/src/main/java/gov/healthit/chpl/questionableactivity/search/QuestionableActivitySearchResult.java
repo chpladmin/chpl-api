@@ -1,4 +1,4 @@
-package gov.healthit.chpl.questionableactivity.domain;
+package gov.healthit.chpl.questionableactivity.search;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -26,13 +26,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class QuestionableActivity implements Serializable {
+public class QuestionableActivitySearchResult implements Serializable {
     private static final long serialVersionUID = -8153861360218726537L;
+    private static final String LEVEL_LISTING = "Listing";
+    private static final String LEVEL_CRITERIA = "Certification Criteria";
 
     @JsonIgnore
     @XmlTransient
     public static final List<String> CSV_HEADINGS = Stream.of("ONC-ACB", "Developer", "Product", "Version",
-            "CHPL Product Number", "Current Certification Status", "Link", "Activity Timestamp", "Responsible User",
+            "CHPL Product Number", "Current Certification Status", "Activity Timestamp", "Link", "Responsible User",
             "Activity Level", "Activity Type", "Activity", "Reason for Status Change", "Reason").toList();
 
     private Long id;
@@ -64,7 +66,7 @@ public class QuestionableActivity implements Serializable {
 
     @JsonIgnore
     @XmlTransient
-    public List<String> toListOfStringsForCsv() {
+    public List<String> toListOfStringsForCsv(String listingsReportUrlPartBegin) {
         List<String> csvFields = new ArrayList<String>();
         csvFields.add(acbName);
         csvFields.add(developerName);
@@ -73,7 +75,11 @@ public class QuestionableActivity implements Serializable {
         csvFields.add(chplProductNumber);
         csvFields.add(certificationStatusName);
         csvFields.add(DateUtil.formatInEasternTime(activityDate));
-        //TODO: get url begin in here
+        if (LEVEL_LISTING.equals(triggerLevel) || LEVEL_CRITERIA.equals(triggerLevel)) {
+            csvFields.add(listingsReportUrlPartBegin + "/" + listingId);
+        } else {
+            csvFields.add("");
+        }
         csvFields.add("#/reports/listings/" + listingId);
         csvFields.add(username);
         csvFields.add(triggerLevel);

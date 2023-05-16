@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityDAO;
-import gov.healthit.chpl.questionableactivity.domain.QuestionableActivity;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -55,9 +54,9 @@ public class QuestionableActivitySearchService {
         searchRequestNormalizer.normalize(searchRequest);
         searchRequestValidator.validate(searchRequest);
 
-        List<QuestionableActivity> allQuestionableActivities = questionableActivitySearchDao.getAll();
+        List<QuestionableActivitySearchResult> allQuestionableActivities = questionableActivitySearchDao.getAll();
         LOGGER.debug("Total questionable activities: " + allQuestionableActivities.size());
-        List<QuestionableActivity> matchedQuestionableActivities = allQuestionableActivities.stream()
+        List<QuestionableActivitySearchResult> matchedQuestionableActivities = allQuestionableActivities.stream()
             .filter(qa -> matchesSearchTerm(qa, searchRequest.getSearchTerm()))
             .filter(qa -> matchesTriggers(qa, searchRequest.getTriggerIds()))
             .filter(qa -> matchesActivityDateRange(qa, searchRequest.getActivityDateStart(), searchRequest.getActivityDateEnd()))
@@ -70,7 +69,7 @@ public class QuestionableActivitySearchService {
         response.setPageSize(searchRequest.getPageSize());
 
         sort(matchedQuestionableActivities, searchRequest.getOrderBy(), searchRequest.getSortDescending());
-        List<QuestionableActivity> pageOfQuestionableActivity
+        List<QuestionableActivitySearchResult> pageOfQuestionableActivity
             = getPage(matchedQuestionableActivities, getBeginIndex(searchRequest), getEndIndex(searchRequest));
         response.setResults(pageOfQuestionableActivity);
         return response;
@@ -79,13 +78,13 @@ public class QuestionableActivitySearchService {
     @Transactional(readOnly = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).QUESTIONABLE_ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.QuestionableActivityDomainPermissions).GET)")
-    public List<QuestionableActivity> getFilteredQuestionableActivities(SearchRequest searchRequest) throws ValidationException {
+    public List<QuestionableActivitySearchResult> getFilteredQuestionableActivities(SearchRequest searchRequest) throws ValidationException {
         searchRequestNormalizer.normalize(searchRequest);
         searchRequestValidator.validate(searchRequest);
 
-        List<QuestionableActivity> allQuestionableActivities = questionableActivitySearchDao.getAll();
+        List<QuestionableActivitySearchResult> allQuestionableActivities = questionableActivitySearchDao.getAll();
         LOGGER.debug("Total questionable activities: " + allQuestionableActivities.size());
-        List<QuestionableActivity> matchedQuestionableActivities = allQuestionableActivities.stream()
+        List<QuestionableActivitySearchResult> matchedQuestionableActivities = allQuestionableActivities.stream()
             .filter(qa -> matchesSearchTerm(qa, searchRequest.getSearchTerm()))
             .filter(qa -> matchesTriggers(qa, searchRequest.getTriggerIds()))
             .filter(qa -> matchesActivityDateRange(qa, searchRequest.getActivityDateStart(), searchRequest.getActivityDateEnd()))
@@ -94,13 +93,13 @@ public class QuestionableActivitySearchService {
         return matchedQuestionableActivities;
     }
 
-    private boolean matchesSearchTerm(QuestionableActivity qa, String searchTerm) {
+    private boolean matchesSearchTerm(QuestionableActivitySearchResult qa, String searchTerm) {
         return matchesDeveloperName(qa, searchTerm)
                 || matchesProductName(qa, searchTerm)
                 || matchesChplProductNumber(qa, searchTerm);
     }
 
-    private boolean matchesDeveloperName(QuestionableActivity qa, String developerName) {
+    private boolean matchesDeveloperName(QuestionableActivitySearchResult qa, String developerName) {
         if (StringUtils.isEmpty(developerName)) {
             return true;
         }
@@ -109,7 +108,7 @@ public class QuestionableActivitySearchService {
                 && qa.getDeveloperName().toUpperCase().contains(developerName.toUpperCase());
     }
 
-    private boolean matchesProductName(QuestionableActivity qa, String productName) {
+    private boolean matchesProductName(QuestionableActivitySearchResult qa, String productName) {
         if (StringUtils.isEmpty(productName)) {
             return true;
         }
@@ -118,7 +117,7 @@ public class QuestionableActivitySearchService {
                 && qa.getProductName().toUpperCase().contains(productName.toUpperCase());
     }
 
-    private boolean matchesChplProductNumber(QuestionableActivity qa, String chplProductNumber) {
+    private boolean matchesChplProductNumber(QuestionableActivitySearchResult qa, String chplProductNumber) {
         if (StringUtils.isEmpty(chplProductNumber)) {
             return true;
         }
@@ -127,7 +126,7 @@ public class QuestionableActivitySearchService {
                 && qa.getChplProductNumber().toUpperCase().contains(chplProductNumber.toUpperCase());
     }
 
-    private boolean matchesTriggers(QuestionableActivity qa, Set<Long> triggerIds) {
+    private boolean matchesTriggers(QuestionableActivitySearchResult qa, Set<Long> triggerIds) {
         if (CollectionUtils.isEmpty(triggerIds)) {
             return true;
         }
@@ -146,7 +145,7 @@ public class QuestionableActivitySearchService {
         return matchingTrigger.get().getId();
     }
 
-    private boolean matchesActivityDateRange(QuestionableActivity qa, String activityDateRangeStart,
+    private boolean matchesActivityDateRange(QuestionableActivitySearchResult qa, String activityDateRangeStart,
             String activityDateRangeEnd) {
         if (StringUtils.isAllEmpty(activityDateRangeStart, activityDateRangeEnd)) {
             return true;
@@ -185,12 +184,12 @@ public class QuestionableActivitySearchService {
         return date;
     }
 
-    private List<QuestionableActivity> getPage(List<QuestionableActivity> activities, int beginIndex, int endIndex) {
+    private List<QuestionableActivitySearchResult> getPage(List<QuestionableActivitySearchResult> activities, int beginIndex, int endIndex) {
         if (endIndex > activities.size()) {
             endIndex = activities.size();
         }
         if (endIndex <= beginIndex) {
-            return new ArrayList<QuestionableActivity>();
+            return new ArrayList<QuestionableActivitySearchResult>();
         }
         LOGGER.debug("Getting filtered questionable activity results between [" + beginIndex + ", " + endIndex + ")");
         return activities.subList(beginIndex, endIndex);
@@ -204,7 +203,7 @@ public class QuestionableActivitySearchService {
         return getBeginIndex(searchRequest) + searchRequest.getPageSize();
     }
 
-    private void sort(List<QuestionableActivity> activities, OrderByOption orderBy, boolean descending) {
+    private void sort(List<QuestionableActivitySearchResult> activities, OrderByOption orderBy, boolean descending) {
         if (orderBy == null) {
             return;
         }
@@ -228,7 +227,7 @@ public class QuestionableActivitySearchService {
         }
     }
 
-    private class ActivityDateComparator implements Comparator<QuestionableActivity> {
+    private class ActivityDateComparator implements Comparator<QuestionableActivitySearchResult> {
         private boolean descending = false;
 
         ActivityDateComparator(boolean descending) {
@@ -236,7 +235,7 @@ public class QuestionableActivitySearchService {
         }
 
         @Override
-        public int compare(QuestionableActivity qa1, QuestionableActivity qa2) {
+        public int compare(QuestionableActivitySearchResult qa1, QuestionableActivitySearchResult qa2) {
             if (qa1.getActivityDate() == null ||  qa2.getActivityDate() == null) {
                 return 0;
             }
@@ -245,7 +244,7 @@ public class QuestionableActivitySearchService {
         }
     }
 
-    private class DeveloperNameComparator implements Comparator<QuestionableActivity> {
+    private class DeveloperNameComparator implements Comparator<QuestionableActivitySearchResult> {
         private boolean descending = false;
 
         DeveloperNameComparator(boolean descending) {
@@ -253,7 +252,7 @@ public class QuestionableActivitySearchService {
         }
 
         @Override
-        public int compare(QuestionableActivity qa1, QuestionableActivity qa2) {
+        public int compare(QuestionableActivitySearchResult qa1, QuestionableActivitySearchResult qa2) {
             if (qa1.getDeveloperName() == null ||  qa2.getDeveloperName() == null) {
                 return 0;
             }
@@ -262,7 +261,7 @@ public class QuestionableActivitySearchService {
         }
     }
 
-    private class ProductNameComparator implements Comparator<QuestionableActivity> {
+    private class ProductNameComparator implements Comparator<QuestionableActivitySearchResult> {
         private boolean descending = false;
 
         ProductNameComparator(boolean descending) {
@@ -270,7 +269,7 @@ public class QuestionableActivitySearchService {
         }
 
         @Override
-        public int compare(QuestionableActivity qa1, QuestionableActivity qa2) {
+        public int compare(QuestionableActivitySearchResult qa1, QuestionableActivitySearchResult qa2) {
             if (qa1.getProductName() == null ||  qa2.getProductName() == null) {
                 return 0;
             }
@@ -279,7 +278,7 @@ public class QuestionableActivitySearchService {
         }
     }
 
-    private class ChplProductNumberComparator implements Comparator<QuestionableActivity> {
+    private class ChplProductNumberComparator implements Comparator<QuestionableActivitySearchResult> {
         private boolean descending = false;
 
         ChplProductNumberComparator(boolean descending) {
@@ -287,7 +286,7 @@ public class QuestionableActivitySearchService {
         }
 
         @Override
-        public int compare(QuestionableActivity qa1, QuestionableActivity qa2) {
+        public int compare(QuestionableActivitySearchResult qa1, QuestionableActivitySearchResult qa2) {
             if (qa1.getChplProductNumber() == null ||  qa2.getChplProductNumber() == null) {
                 return 0;
             }
