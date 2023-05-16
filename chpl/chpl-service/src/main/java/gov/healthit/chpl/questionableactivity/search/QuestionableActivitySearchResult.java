@@ -80,7 +80,6 @@ public class QuestionableActivitySearchResult implements Serializable {
         } else {
             csvFields.add("");
         }
-        csvFields.add("#/reports/listings/" + listingId);
         csvFields.add(username);
         csvFields.add(triggerLevel);
         csvFields.add(triggerName);
