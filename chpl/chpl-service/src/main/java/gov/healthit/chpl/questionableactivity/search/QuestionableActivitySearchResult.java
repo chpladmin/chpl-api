@@ -74,7 +74,7 @@ public class QuestionableActivitySearchResult implements Serializable {
         csvFields.add(versionName);
         csvFields.add(chplProductNumber);
         csvFields.add(certificationStatusName);
-        csvFields.add(DateUtil.formatInEasternTime(activityDate));
+        csvFields.add(DateUtil.formatInEasternTime(DateUtil.fromSystemToEastern(activityDate)));
         if (LEVEL_LISTING.equals(triggerLevel) || LEVEL_CRITERIA.equals(triggerLevel)) {
             csvFields.add(listingsReportUrlPartBegin + "/" + listingId);
         } else {
