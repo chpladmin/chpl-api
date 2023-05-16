@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -32,6 +33,12 @@ public class UrlUptimeCreatorJob extends QuartzJob {
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
+    @Autowired
+    private ChplUptimeMonitorService chplUptimeMonitorService;
+
+    @Autowired
+    private ChplUptimeMonitorTestService chplUptimeMonitorTestService;
+
     @Value("${datadog.apiKey}")
     private String datadogApiKey;
 
@@ -47,7 +54,9 @@ public class UrlUptimeCreatorJob extends QuartzJob {
             defaultClient.configureApiKeys(getDatadogSecrets());
             apiInstance = new SyntheticsApi(defaultClient);
 
-            gatherResultsForAllTests();
+            //gatherResultsForAllTests();
+            chplUptimeMonitorService.go(apiInstance);
+            chplUptimeMonitorTestService.go(apiInstance);
         } catch (Exception e) {
             LOGGER.error(e);
         }
