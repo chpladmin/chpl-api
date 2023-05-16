@@ -218,6 +218,9 @@ public class QuestionableActivitySearchService {
             case PRODUCT:
                 activities.sort(new ProductNameComparator(descending));
                 break;
+            case VERSION:
+                activities.sort(new VersionComparator(descending));
+                break;
             case CHPL_PRODUCT_NUMBER:
                 activities.sort(new ChplProductNumberComparator(descending));
                 break;
@@ -253,11 +256,16 @@ public class QuestionableActivitySearchService {
 
         @Override
         public int compare(QuestionableActivitySearchResult qa1, QuestionableActivitySearchResult qa2) {
-            if (qa1.getDeveloperName() == null ||  qa2.getDeveloperName() == null) {
-                return 0;
+            String firstToCompare = "", secondToCompare = "";
+            if (qa1.getDeveloperName() != null) {
+                firstToCompare = qa1.getDeveloperName().toUpperCase();
             }
+            if (qa2.getDeveloperName() != null) {
+                secondToCompare = qa2.getDeveloperName().toUpperCase();
+            }
+
             int sortFactor = descending ? -1 : 1;
-            return (qa1.getDeveloperName().compareTo(qa2.getDeveloperName())) * sortFactor;
+            return (firstToCompare.compareTo(secondToCompare)) * sortFactor;
         }
     }
 
@@ -270,11 +278,38 @@ public class QuestionableActivitySearchService {
 
         @Override
         public int compare(QuestionableActivitySearchResult qa1, QuestionableActivitySearchResult qa2) {
-            if (qa1.getProductName() == null ||  qa2.getProductName() == null) {
-                return 0;
+            String firstToCompare = "", secondToCompare = "";
+            if (qa1.getProductName() != null) {
+                firstToCompare = qa1.getProductName().toUpperCase();
             }
+            if (qa2.getProductName() != null) {
+                secondToCompare = qa2.getProductName().toUpperCase();
+            }
+
             int sortFactor = descending ? -1 : 1;
-            return (qa1.getProductName().compareTo(qa2.getProductName())) * sortFactor;
+            return (firstToCompare.compareTo(secondToCompare)) * sortFactor;
+        }
+    }
+
+    private class VersionComparator implements Comparator<QuestionableActivitySearchResult> {
+        private boolean descending = false;
+
+        VersionComparator(boolean descending) {
+            this.descending = descending;
+        }
+
+        @Override
+        public int compare(QuestionableActivitySearchResult qa1, QuestionableActivitySearchResult qa2) {
+            String firstToCompare = "", secondToCompare = "";
+            if (qa1.getVersionName() != null) {
+                firstToCompare = qa1.getVersionName().toUpperCase();
+            }
+            if (qa2.getVersionName() != null) {
+                secondToCompare = qa2.getVersionName().toUpperCase();
+            }
+
+            int sortFactor = descending ? -1 : 1;
+            return (firstToCompare.compareTo(secondToCompare)) * sortFactor;
         }
     }
 
@@ -287,11 +322,16 @@ public class QuestionableActivitySearchService {
 
         @Override
         public int compare(QuestionableActivitySearchResult qa1, QuestionableActivitySearchResult qa2) {
-            if (qa1.getChplProductNumber() == null ||  qa2.getChplProductNumber() == null) {
-                return 0;
+            String firstToCompare = "", secondToCompare = "";
+            if (qa1.getChplProductNumber() != null) {
+                firstToCompare = qa1.getChplProductNumber().toUpperCase();
             }
+            if (qa2.getChplProductNumber() != null) {
+                secondToCompare = qa2.getChplProductNumber().toUpperCase();
+            }
+
             int sortFactor = descending ? -1 : 1;
-            return (qa1.getChplProductNumber().compareTo(qa2.getChplProductNumber())) * sortFactor;
+            return (firstToCompare.compareTo(secondToCompare)) * sortFactor;
         }
     }
 }

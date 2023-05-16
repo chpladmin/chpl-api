@@ -30,6 +30,7 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityManager;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
+import gov.healthit.chpl.questionableactivity.search.OrderByOption;
 import gov.healthit.chpl.questionableactivity.search.QuestionableActivitySearchResponse;
 import gov.healthit.chpl.questionableactivity.search.QuestionableActivitySearchResult;
 import gov.healthit.chpl.questionableactivity.search.QuestionableActivitySearchService;
@@ -118,8 +119,8 @@ public class SearchQuestionableActivityController {
                 + "Defaults to 20. Maximum allowed page size is 100.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "pageSize")
             @RequestParam(value = "pageSize", required = false, defaultValue = "20") Integer pageSize,
-        @Parameter(description = "What to order by. Options are one of the following: ACTIVITY_DATE, DEVELOPER, PRODUCT, or CHPL_PRODUCT_NUMBER. "
-                + "Defaults to ACTIVITY_DATE.",
+        @Parameter(description = "What to order by. Options are one of the following: ACTIVITY_DATE, DEVELOPER, PRODUCT, "
+                + "VERSION, or CHPL_PRODUCT_NUMBER. Defaults to ACTIVITY_DATE.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "orderBy")
             @RequestParam(value = "orderBy", required = false, defaultValue = "activity_date") String orderBy,
         @Parameter(description = "Use to specify the direction of the sort. Defaults to false (ascending sort).",
@@ -169,6 +170,8 @@ public class SearchQuestionableActivityController {
                 .triggerIdStrings(convertToSetWithDelimeter(triggerIdsDelimited, ","))
                 .activityDateStart(activityDateStart)
                 .activityDateEnd(activityDateEnd)
+                .orderBy(OrderByOption.ACTIVITY_DATE)
+                .sortDescending(true)
                 .build();
         List<QuestionableActivitySearchResult> filteredQuestionableActivities
             = questionableActivitySearchService.getFilteredQuestionableActivities(searchRequest);
