@@ -19,20 +19,4 @@ public class QuestionableActivityProduct extends QuestionableActivityBase {
     public Class<?> getActivityObjectClass() {
         return Product.class;
     }
-
-    public Long getProductId() {
-        return productId;
-    }
-
-    public void setProductId(Long productId) {
-        this.productId = productId;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
 }

@@ -23,36 +23,4 @@ public class QuestionableActivityCertificationResult extends QuestionableActivit
     public Class<?> getActivityObjectClass() {
         return CertificationResultDetailsDTO.class;
     }
-
-    public Long getCertResultId() {
-        return certResultId;
-    }
-
-    public void setCertResultId(Long certResultId) {
-        this.certResultId = certResultId;
-    }
-
-    public CertificationResultDetailsDTO getCertResult() {
-        return certResult;
-    }
-
-    public void setCertResult(CertificationResultDetailsDTO certResult) {
-        this.certResult = certResult;
-    }
-
-    public CertifiedProductDetailsDTO getListing() {
-        return listing;
-    }
-
-    public void setListing(CertifiedProductDetailsDTO listing) {
-        this.listing = listing;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
 }

@@ -19,20 +19,4 @@ public class QuestionableActivityVersion extends QuestionableActivityBase {
     public Class<?> getActivityObjectClass() {
         return ProductVersionDTO.class;
     }
-
-    public Long getVersionId() {
-        return versionId;
-    }
-
-    public void setVersionId(Long versionId) {
-        this.versionId = versionId;
-    }
-
-    public ProductVersionDTO getVersion() {
-        return version;
-    }
-
-    public void setVersion(ProductVersionDTO version) {
-        this.version = version;
-    }
 }
