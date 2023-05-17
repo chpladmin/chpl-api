@@ -1,6 +1,7 @@
 package gov.healthit.chpl.scheduler.job.urluptime;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
@@ -27,4 +28,17 @@ public class ChplUptimeMonitorTestDAO extends BaseDAOImpl {
         return entity.toDomain();
     }
 
+    public List<ChplUptimeMonitorTest> getChplUptimeMonitorTests(Long chplUptimeMonitorId) {
+        return getChplUptimeMonitorTestEntities(chplUptimeMonitorId).stream()
+                .map(entity -> entity.toDomain())
+                .toList();
+    }
+
+    private List<ChplUptimeMonitorTestEntity> getChplUptimeMonitorTestEntities(Long chplUptimeMonitorId) {
+        return entityManager.createQuery("FROM ChplUptimeMonitorTestEntity cumt "
+                + "WHERE cumt.deleted = false "
+                + "AND cumt.chplUptimeMonitorId = :chplUptimeMonitorId ", ChplUptimeMonitorTestEntity.class)
+                .setParameter("chplUptimeMonitorId", chplUptimeMonitorId)
+                .getResultList();
+    }
 }
