@@ -197,5 +197,15 @@
                 <cron-expression>0 45 10 ? * 7#2</cron-expression> <!-- At 1045 UTC on the second Saturday of the month -->
             </cron>
         </trigger>
+                <trigger>
+            <cron>
+                <name>generateUrlUptime</name>
+                <group>generateUrlUptimeTrigger</group>
+                <job-name>urlUptimeCreatorJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 5 * * ?</cron-expression> <!-- At 1045 UTC on the second Saturday of the month -->
+            </cron>
+        </trigger>
     </schedule>
 </job-scheduling-data>
