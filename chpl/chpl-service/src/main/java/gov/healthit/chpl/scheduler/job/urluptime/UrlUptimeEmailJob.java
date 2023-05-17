@@ -54,7 +54,7 @@ public class UrlUptimeEmailJob extends QuartzJob {
         LOGGER.info("Sending email to: " + context.getMergedJobDataMap().getString("email"));
         chplEmailFactory.emailBuilder()
                 .recipient(context.getMergedJobDataMap().getString("email"))
-                .subject(env.getProperty("listingValidationReport.subject"))
+                .subject(env.getProperty("urlUptime.report.subject"))
                 .htmlMessage(createHtmlMessage(context, rows.size()))
                 .fileAttachments(Arrays.asList(urlUptimeCsvWriter.generateFile(rows)))
                 .sendEmail();
@@ -63,8 +63,8 @@ public class UrlUptimeEmailJob extends QuartzJob {
 
     private String createHtmlMessage(JobExecutionContext context, int errorCount) {
         return chplHtmlEmailBuilder.initialize()
-                .heading(env.getProperty("listingValidationReport.subject"))
-                .paragraph("", env.getProperty("listingValidationReport.paragraph1.body"))
+                .heading(env.getProperty("urlUptime.report.subject"))
+                .paragraph("", env.getProperty("urlUptime.report.paragraph1.body"))
                 .footer(true)
                 .build();
     }
