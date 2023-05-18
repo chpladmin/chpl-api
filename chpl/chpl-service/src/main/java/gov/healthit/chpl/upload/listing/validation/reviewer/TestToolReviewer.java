@@ -43,10 +43,10 @@ public class TestToolReviewer {
 
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
-            .forEach(certResult -> review(listing, certResult));
+                .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
+                .forEach(certResult -> review(listing, certResult));
         listing.getCertificationResults().stream()
-            .forEach(certResult -> removeTestToolsIfNotApplicable(certResult));
+                .forEach(certResult -> removeTestToolsIfNotApplicable(certResult));
     }
 
     private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -55,15 +55,15 @@ public class TestToolReviewer {
         reviewTestToolsRequiredWhenCertResultIsNotGap(listing, certResult);
         if (!CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
             certResult.getTestToolsUsed().stream()
-                .forEach(testTool -> reviewTestToolFields(listing, certResult, testTool));
+                    .forEach(testTool -> reviewTestToolFields(listing, certResult, testTool));
         }
     }
 
     private void reviewCriteriaCanHaveTestToolData(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.TEST_TOOLS_USED)) {
             if (!CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
-                listing.getWarningMessages().add(msgUtil.getMessage(
-                    "listing.criteria.testToolsNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+                listing.addWarningMessage(msgUtil.getMessage(
+                        "listing.criteria.testToolsNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setTestToolsUsed(null);
         }
@@ -84,7 +84,7 @@ public class TestToolReviewer {
             CertificationResultTestTool testTool = testToolIter.next();
             if (testTool.getTestToolId() == null) {
                 testToolIter.remove();
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.testToolNotFoundAndRemoved",
+                listing.addWarningMessage(msgUtil.getMessage("listing.criteria.testToolNotFoundAndRemoved",
                         Util.formatCriteriaNumber(certResult.getCriterion()), testTool.getTestToolName()));
             }
         }
@@ -94,9 +94,9 @@ public class TestToolReviewer {
         if (!isGapEligibileAndHasGap(certResult)
                 && certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.TEST_TOOLS_USED)
                 && CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
-            listing.getErrorMessages().add(msgUtil.getMessage(
-                            "listing.criteria.missingTestTool",
-                            Util.formatCriteriaNumber(certResult.getCriterion())));
+            listing.addDataErrorMessage(msgUtil.getMessage(
+                    "listing.criteria.missingTestTool",
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 
@@ -119,12 +119,12 @@ public class TestToolReviewer {
     private void reviewNameAndVersionRequired(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultTestTool testTool) {
         if (StringUtils.isEmpty(testTool.getTestToolName())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingTestToolName",
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingTestToolName",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         } else if (!StringUtils.isEmpty(testTool.getTestToolName())
                 && StringUtils.isEmpty(testTool.getTestToolVersion())) {
             // require test tool version if a test tool name was entered
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingTestToolVersion",
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingTestToolVersion",
                     testTool.getTestToolName(), Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
@@ -133,10 +133,10 @@ public class TestToolReviewer {
             CertificationResult certResult, CertificationResultTestTool testTool) {
         if (testTool.getTestToolId() != null && testTool.isRetired()
                 && (!hasIcs(listing) || hasIcsMismatch(listing))) {
-            listing.getErrorMessages().add(msgUtil.getMessage(
-                        "listing.criteria.retiredTestToolNoIcsNotAllowed",
-                        testTool.getTestToolName(),
-                        Util.formatCriteriaNumber(certResult.getCriterion())));
+            listing.addDataErrorMessage(msgUtil.getMessage(
+                    "listing.criteria.retiredTestToolNoIcsNotAllowed",
+                    testTool.getTestToolName(),
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 
@@ -157,9 +157,8 @@ public class TestToolReviewer {
 
     private void reviewTestToolValidForCriteria(CertifiedProductSearchDetails listing, CertificationResult certResult, CertificationResultTestTool testTool) {
         if (!isTestToolValidForCriteria(certResult.getCriterion(), testTool)) {
-            listing.getErrorMessages()
-                .add(msgUtil.getMessage("listing.criteria.testToolCriterionMismatch",
-                        testTool.getTestToolName(), Util.formatCriteriaNumber(certResult.getCriterion())));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.testToolCriterionMismatch",
+                    testTool.getTestToolName(), Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 

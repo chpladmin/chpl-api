@@ -101,7 +101,7 @@ public class ListingUploadManager {
         this.listingUploadDao = listingUploadDao;
         this.acbDao = acbDao;
         this.userDao = userDao;
-        this.listingConfirmationManager= listingConfirmationManager;
+        this.listingConfirmationManager = listingConfirmationManager;
         this.schedulerManager = schedulerManager;
         this.activityManager = activityManager;
         this.msgUtil = msgUtil;
@@ -138,15 +138,14 @@ public class ListingUploadManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
             + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).CREATE, #uploadMetadata)")
     public ListingUpload createOrReplaceListingUpload(ListingUpload uploadMetadata) throws ValidationException,
-        JsonProcessingException, EntityRetrievalException, EntityCreationException {
+            JsonProcessingException, EntityRetrievalException, EntityCreationException {
         if (StringUtils.isEmpty(uploadMetadata.getChplProductNumber())) {
             throw new ValidationException(msgUtil.getMessage("listing.upload.missingChplProductNumber"));
         } else if (uploadMetadata.getAcb() == null || uploadMetadata.getAcb().getId() == null) {
             throw new ValidationException(msgUtil.getMessage("listing.upload.missingAcb"));
         }
 
-        ListingUpload existingListing =
-                listingUploadDao.getByChplProductNumber(uploadMetadata.getChplProductNumber());
+        ListingUpload existingListing = listingUploadDao.getByChplProductNumber(uploadMetadata.getChplProductNumber());
         if (existingListing != null) {
             listingUploadDao.delete(existingListing.getId());
         }
@@ -190,8 +189,7 @@ public class ListingUploadManager {
         CSVRecord headingRecord = uploadUtil.getHeadingRecord(allCsvRecords);
         List<CSVRecord> allListingRecords = allCsvRecords.subList(headingRowIndex + 1, allCsvRecords.size());
         LOGGER.debug("Converting listing upload with ID " + id + " into CertifiedProductSearchDetails object");
-        CertifiedProductSearchDetails listing =
-                listingDetailsHandler.parseAsListing(headingRecord, allListingRecords);
+        CertifiedProductSearchDetails listing = listingDetailsHandler.parseAsListing(headingRecord, allListingRecords);
         listing.setId(id);
         LOGGER.debug("Converted listing upload with ID " + id + " into CertifiedProductSearchDetails object");
         listingNormalizer.normalize(listing);
@@ -217,8 +215,7 @@ public class ListingUploadManager {
         CSVRecord headingRecord = uploadUtil.getHeadingRecord(allCsvRecords);
         List<CSVRecord> allListingRecords = allCsvRecords.subList(headingRowIndex + 1, allCsvRecords.size());
         LOGGER.debug("Converting listing upload with ID " + id + " into CertifiedProductSearchDetails object");
-        CertifiedProductSearchDetails listing =
-                listingDetailsHandler.parseAsListing(headingRecord, allListingRecords);
+        CertifiedProductSearchDetails listing = listingDetailsHandler.parseAsListing(headingRecord, allListingRecords);
         copyUserEnteredDeveloperDataToRegularDeveloperData(listing);
         return listing;
     }
@@ -248,7 +245,8 @@ public class ListingUploadManager {
         Boolean selfDeveloper = null;
         try {
             selfDeveloper = uploadUtil.parseBoolean(listing.getDeveloper().getUserEnteredSelfDeveloper());
-        } catch (Exception ex) { }
+        } catch (Exception ex) {
+        }
         listing.getDeveloper().setSelfDeveloper(selfDeveloper);
         listing.getDeveloper().setWebsite(listing.getDeveloper().getUserEnteredWebsite());
     }
@@ -281,9 +279,9 @@ public class ListingUploadManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
             + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).CONFIRM, #id)")
     public CertifiedProductSearchDetails confirm(Long id, ConfirmListingRequest confirmListingRequest)
-        throws InvalidArgumentsException, JsonProcessingException, EntityRetrievalException, EntityCreationException,
-        ValidationException {
-        //Is listing already processing?
+            throws InvalidArgumentsException, JsonProcessingException, EntityRetrievalException, EntityCreationException,
+            ValidationException {
+        // Is listing already processing?
         if (!listingUploadDao.isAvailableForProcessing(id)) {
             throw new InvalidArgumentsException(msgUtil.getMessage("pendingListing.alreadyProcessing"));
         } else {
@@ -318,7 +316,7 @@ public class ListingUploadManager {
         if (listing.getErrorMessages() != null && listing.getErrorMessages().size() > 0
                 || (listing.getWarningMessages() != null && listing.getWarningMessages().size() > 0
                         && !acknowledgeWarnings)) {
-            throw new ValidationException(listing.getErrorMessages(), listing.getWarningMessages());
+            throw new ValidationException(listing.getErrorMessages(), listing.getBusinessErrorMessages(), listing.getDataErrorMessages(), listing.getWarningMessages());
         }
     }
 
@@ -344,10 +342,11 @@ public class ListingUploadManager {
         if (entity.getStatus().equals(ListingUploadStatus.CONFIRMED)
                 || entity.getStatus().equals(ListingUploadStatus.REJECTED)
                 || BooleanUtils.isTrue(entity.getDeleted())) {
-            ObjectMissingValidationException alreadyHandledEx = new ObjectMissingValidationException();
-            alreadyHandledEx.getErrorMessages()
-                    .add("This pending certified product has already been confirmed or rejected by another user.");
-            alreadyHandledEx.setObjectId(entity.getChplProductNumber());
+            ObjectMissingValidationException alreadyHandledEx =
+                    new ObjectMissingValidationException(
+                            "This pending certified product has already been confirmed or rejected by another user.",
+                            null,
+                            entity.getChplProductNumber());
             try {
                 UserDTO lastModifiedUserDto = userDao.getById(entity.getLastModifiedUser());
                 if (lastModifiedUserDto != null) {
@@ -379,9 +378,9 @@ public class ListingUploadManager {
 
     private void checkRequiredHeadings(CSVRecord headingRecord) throws ValidationException {
         List<String> missingRequiredHeadings = Headings.getRequiredHeadings().stream()
-            .filter(heading -> !uploadUtil.hasHeading(heading, headingRecord))
-            .map(headingVal -> headingVal.getNamesAsString())
-            .collect(Collectors.toList());
+                .filter(heading -> !uploadUtil.hasHeading(heading, headingRecord))
+                .map(headingVal -> headingVal.getNamesAsString())
+                .collect(Collectors.toList());
         if (missingRequiredHeadings.size() > 0) {
             throw new ValidationException(msgUtil.getMessage("listing.upload.missingRequiredHeadings",
                     String.join("; ", missingRequiredHeadings)));
@@ -390,9 +389,9 @@ public class ListingUploadManager {
 
     private void checkRequiredFields(CSVRecord headingRecord, List<CSVRecord> listingRecords) throws ValidationException {
         List<String> headingsWithMissingData = Headings.getRequiredHeadings().stream()
-            .filter(heading -> StringUtils.isEmpty(uploadUtil.parseSingleRowField(heading, headingRecord, listingRecords)))
-            .map(headingVal -> headingVal.getNamesAsString())
-            .collect(Collectors.toList());
+                .filter(heading -> StringUtils.isEmpty(uploadUtil.parseSingleRowField(heading, headingRecord, listingRecords)))
+                .map(headingVal -> headingVal.getNamesAsString())
+                .collect(Collectors.toList());
         if (headingsWithMissingData.size() > 0) {
             throw new ValidationException(msgUtil.getMessage("listing.upload.missingRequiredData",
                     String.join("; ", headingsWithMissingData)));
@@ -403,7 +402,7 @@ public class ListingUploadManager {
         String value = null;
         try {
             value = uploadUtil.parseRequiredSingleRowField(
-                heading, headingRecord, listingRecords);
+                    heading, headingRecord, listingRecords);
         } catch (Exception ex) {
             LOGGER.error("Could not parse required field " + heading.name() + ": " + ex.getMessage());
         }
@@ -412,23 +411,23 @@ public class ListingUploadManager {
 
     private CertificationBody determineAcb(CSVRecord headingRecord, List<CSVRecord> listingRecords, String chplProductNumber) {
         CertificationBody acb = null;
-        //first look for an ACB name in the file
-       String acbName = uploadUtil.parseSingleRowField(Headings.CERTIFICATION_BODY_NAME, headingRecord, listingRecords);
-       if (!StringUtils.isEmpty(acbName)) {
-           CertificationBodyDTO acbByName = acbDao.getByName(acbName);
-           if (acbByName != null) {
-               acb = new CertificationBody(acbByName);
-           }
-       }
-        //if it's not there use the ACB code from the CHPL product number
-       String acbCode = chplProductNumberUtil.getAcbCode(chplProductNumber);
-       if (!StringUtils.isEmpty(acbCode)) {
-           CertificationBodyDTO acbByCode = acbDao.getByCode(acbCode);
-           if (acbByCode != null) {
-               acb = new CertificationBody(acbByCode);
-           }
-       }
-       return acb;
+        // first look for an ACB name in the file
+        String acbName = uploadUtil.parseSingleRowField(Headings.CERTIFICATION_BODY_NAME, headingRecord, listingRecords);
+        if (!StringUtils.isEmpty(acbName)) {
+            CertificationBodyDTO acbByName = acbDao.getByName(acbName);
+            if (acbByName != null) {
+                acb = new CertificationBody(acbByName);
+            }
+        }
+        // if it's not there use the ACB code from the CHPL product number
+        String acbCode = chplProductNumberUtil.getAcbCode(chplProductNumber);
+        if (!StringUtils.isEmpty(acbCode)) {
+            CertificationBodyDTO acbByCode = acbDao.getByCode(acbCode);
+            if (acbByCode != null) {
+                acb = new CertificationBody(acbByCode);
+            }
+        }
+        return acb;
     }
 
     private List<CSVRecord> getNextListingRecordGroup(int startRow, CSVRecord headingRecord,

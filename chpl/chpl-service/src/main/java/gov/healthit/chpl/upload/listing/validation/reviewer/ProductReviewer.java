@@ -16,9 +16,10 @@ public class ProductReviewer implements Reviewer {
         this.msgUtil = msgUtil;
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         if (listing.getProduct() == null) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.missingProduct"));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.missingProduct"));
         }
     }
 }

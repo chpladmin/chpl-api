@@ -86,65 +86,65 @@ public class FieldLengthReviewer implements Reviewer {
     private void checkQmsStandardsFieldLength(CertifiedProductSearchDetails listing) {
         if (listing.getQmsStandards() != null && listing.getQmsStandards().size() > 0) {
             listing.getQmsStandards().stream()
-                .filter(qmsStandard -> !StringUtils.isEmpty(qmsStandard.getQmsStandardName()))
-                .forEach(qmsStandard -> checkFieldLength(listing, qmsStandard.getQmsStandardName(), "qmsStandard"));
+                    .filter(qmsStandard -> !StringUtils.isEmpty(qmsStandard.getQmsStandardName()))
+                    .forEach(qmsStandard -> checkFieldLength(listing, qmsStandard.getQmsStandardName(), "qmsStandard"));
         }
     }
 
     private void checkAccessibilityStandardsFieldLength(CertifiedProductSearchDetails listing) {
         if (listing.getAccessibilityStandards() != null && listing.getAccessibilityStandards().size() > 0) {
             listing.getAccessibilityStandards().stream()
-                .filter(accStandard -> !StringUtils.isEmpty(accStandard.getAccessibilityStandardName()))
-                .forEach(accStandard -> checkFieldLength(listing, accStandard.getAccessibilityStandardName(), "accessibilityStandard"));
+                    .filter(accStandard -> !StringUtils.isEmpty(accStandard.getAccessibilityStandardName()))
+                    .forEach(accStandard -> checkFieldLength(listing, accStandard.getAccessibilityStandardName(), "accessibilityStandard"));
         }
     }
 
     private void checkTargetedUsersFieldLength(CertifiedProductSearchDetails listing) {
         if (listing.getTargetedUsers() != null && listing.getTargetedUsers().size() > 0) {
             listing.getTargetedUsers().stream()
-                .filter(targetedUser -> !StringUtils.isEmpty(targetedUser.getTargetedUserName()))
-                .forEach(targetedUser -> checkFieldLength(listing, targetedUser.getTargetedUserName(), "targetedUser"));
+                    .filter(targetedUser -> !StringUtils.isEmpty(targetedUser.getTargetedUserName()))
+                    .forEach(targetedUser -> checkFieldLength(listing, targetedUser.getTargetedUserName(), "targetedUser"));
         }
     }
 
     private void checkCriteria(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-        .forEach(certResult -> {
-            checkFieldLength(listing, certResult.getApiDocumentation(), "apiDocumentationLink");
-            checkFieldLength(listing, certResult.getExportDocumentation(), "exportDocumentationLink");
-            checkFieldLength(listing, certResult.getDocumentationUrl(), "documentationUrlLink");
-            checkFieldLength(listing, certResult.getUseCases(), "useCasesLink");
-            checkFieldLength(listing, certResult.getServiceBaseUrlList(), "serviceBaseUrlListLink");
-            checkTestToolFields(listing, certResult);
-            checkTestDataFields(listing, certResult);
-            checkTestProcedureFields(listing, certResult);
-        });
+                .forEach(certResult -> {
+                    checkFieldLength(listing, certResult.getApiDocumentation(), "apiDocumentationLink");
+                    checkFieldLength(listing, certResult.getExportDocumentation(), "exportDocumentationLink");
+                    checkFieldLength(listing, certResult.getDocumentationUrl(), "documentationUrlLink");
+                    checkFieldLength(listing, certResult.getUseCases(), "useCasesLink");
+                    checkFieldLength(listing, certResult.getServiceBaseUrlList(), "serviceBaseUrlListLink");
+                    checkTestToolFields(listing, certResult);
+                    checkTestDataFields(listing, certResult);
+                    checkTestProcedureFields(listing, certResult);
+                });
     }
 
     private void checkTestToolFields(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResult.getTestToolsUsed() != null && certResult.getTestToolsUsed().size() > 0) {
             certResult.getTestToolsUsed().stream()
-                .forEach(testTool -> {
-                    checkFieldLength(listing, testTool.getTestToolVersion(), "testToolVersion");
-                });
+                    .forEach(testTool -> {
+                        checkFieldLength(listing, testTool.getTestToolVersion(), "testToolVersion");
+                    });
         }
     }
 
     private void checkTestDataFields(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResult.getTestDataUsed() != null && certResult.getTestDataUsed().size() > 0) {
             certResult.getTestDataUsed().stream()
-                .forEach(testData -> {
-                    checkFieldLength(listing, testData.getVersion(), "testDataVersion");
-                });
+                    .forEach(testData -> {
+                        checkFieldLength(listing, testData.getVersion(), "testDataVersion");
+                    });
         }
     }
 
     private void checkTestProcedureFields(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResult.getTestProcedures() != null && certResult.getTestProcedures().size() > 0) {
             certResult.getTestProcedures().stream()
-                .forEach(testProcedure -> {
-                    checkFieldLength(listing, testProcedure.getTestProcedureVersion(), "testProcedureVersion");
-                });
+                    .forEach(testProcedure -> {
+                        checkFieldLength(listing, testProcedure.getTestProcedureVersion(), "testProcedureVersion");
+                    });
         }
     }
 
@@ -161,31 +161,31 @@ public class FieldLengthReviewer implements Reviewer {
     private void checkTestTasks(CertifiedProductSearchDetails listing) {
         if (!CollectionUtils.isEmpty(listing.getSed().getTestTasks())) {
             listing.getSed().getTestTasks().stream()
-                .forEach(testTask -> {
-                    checkFieldLength(listing, testTask.getUniqueId(), "taskIdentifier");
-                    checkFieldLength(listing, testTask.getTaskRatingScale(), "taskRatingScale");
-                });
+                    .forEach(testTask -> {
+                        checkFieldLength(listing, testTask.getUniqueId(), "taskIdentifier");
+                        checkFieldLength(listing, testTask.getTaskRatingScale(), "taskRatingScale");
+                    });
         }
     }
 
     private void checkTestParticipants(CertifiedProductSearchDetails listing) {
         if (!CollectionUtils.isEmpty(listing.getSed().getTestTasks())) {
             listing.getSed().getTestTasks().stream()
-                .filter(testTask -> !CollectionUtils.isEmpty(testTask.getTestParticipants()))
-                .flatMap(testTask -> testTask.getTestParticipants().stream())
-                .forEach(testParticipant -> {
-                    checkFieldLength(listing, testParticipant.getUniqueId(), "participantIdentifier");
-                    checkFieldLength(listing, testParticipant.getGender(), "participantGender");
-                    checkFieldLength(listing, testParticipant.getOccupation(), "participantOccupation");
-                    checkFieldLength(listing, testParticipant.getAssistiveTechnologyNeeds(), "participantAssistiveTechnology");
-                });
+                    .filter(testTask -> !CollectionUtils.isEmpty(testTask.getTestParticipants()))
+                    .flatMap(testTask -> testTask.getTestParticipants().stream())
+                    .forEach(testParticipant -> {
+                        checkFieldLength(listing, testParticipant.getUniqueId(), "participantIdentifier");
+                        checkFieldLength(listing, testParticipant.getGender(), "participantGender");
+                        checkFieldLength(listing, testParticipant.getOccupation(), "participantOccupation");
+                        checkFieldLength(listing, testParticipant.getAssistiveTechnologyNeeds(), "participantAssistiveTechnology");
+                    });
         }
     }
 
     private void checkFieldLength(CertifiedProductSearchDetails product, String field, String errorField) {
         int maxAllowedFieldLength = getMaxLength(MAX_LENGTH_PROPERTY_PREFIX + errorField);
         if (!StringUtils.isEmpty(field) && field.length() > maxAllowedFieldLength) {
-            product.getErrorMessages().add(
+            product.addBusinessErrorMessage(
                     msgUtil.getMessage("listing." + errorField + MAX_LENGTH_PROPERTY_SUFFIX, maxAllowedFieldLength, field));
         }
     }

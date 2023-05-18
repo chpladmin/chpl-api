@@ -45,16 +45,18 @@ public class PrivacyAndSecurityCriteriaReviewer implements Reviewer {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         List<CertificationCriterion> attestedToCriteria = listing.getCertificationResults().stream()
                 .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
                 .map(certResult -> certResult.getCriterion())
                 .collect(Collectors.toList());
 
-        listing.getErrorMessages().addAll(
+        listing.addAllBusinessErrorMessages(
                 validationUtils.checkSubordinateCriteriaAllRequired(
                         privacyAndSecurityCriteria,
                         privacyAndSecurityRequiredCriteria,
-                        attestedToCriteria, errorMessageUtil));
+                        attestedToCriteria, errorMessageUtil).stream()
+                        .collect(Collectors.toSet()));
     }
 }

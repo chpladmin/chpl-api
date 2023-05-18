@@ -14,7 +14,7 @@ import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 
 @Component("testTool2015Reviewer")
-public class TestTool2015Reviewer extends PermissionBasedReviewer{
+public class TestTool2015Reviewer extends PermissionBasedReviewer {
 
     @Autowired
     public TestTool2015Reviewer(ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
@@ -30,7 +30,7 @@ public class TestTool2015Reviewer extends PermissionBasedReviewer{
                     if (!StringUtils.isEmpty(testTool.getTestToolName())
                             && StringUtils.isEmpty(testTool.getTestToolVersion())) {
                         // require test tool version if a test tool name was entered
-                        addCriterionError(listing, cert, "listing.criteria.missingTestToolVersion",
+                        addBusinessCriterionError(listing, cert, "listing.criteria.missingTestToolVersion",
                                 testTool.getTestToolName(), Util.formatCriteriaNumber(cert.getCriterion()));
                     }
                 }

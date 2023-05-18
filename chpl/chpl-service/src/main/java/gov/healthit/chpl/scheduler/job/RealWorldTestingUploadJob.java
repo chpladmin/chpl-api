@@ -159,7 +159,7 @@ public class RealWorldTestingUploadJob implements Job {
             request.setListing(listing);
             certifiedProductManager.update(request);
         } catch (ValidationException e) {
-            rwt.getValidationErrors().addAll(e.getErrorMessages());
+            rwt.getValidationErrors().addAll(e.getErrorMessages().castToCollection());
         } catch (Exception e) {
             rwt.getValidationErrors().add(e.getMessage());
         }

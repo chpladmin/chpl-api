@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -62,7 +61,7 @@ public class ListingUploadManagerTest {
 
     @Before
     public void setup() throws InvalidArgumentsException, JsonProcessingException,
-        EntityRetrievalException, EntityCreationException, IOException, FileNotFoundException {
+    EntityRetrievalException, EntityCreationException, IOException, FileNotFoundException {
         loadFiles();
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
@@ -75,14 +74,14 @@ public class ListingUploadManagerTest {
         ListingDetailsNormalizer listingNormalizer = Mockito.mock(ListingDetailsNormalizer.class);
 
         Mockito.when(acbDao.getByName(ArgumentMatchers.anyString())).thenReturn(createAcb());
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("upload.emptyFile"))).thenReturn("Empty file message");
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("upload.notCSV"))).thenReturn("Not CSV message");
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.upload.emptyRows"))).thenReturn("Header only message");
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("upload.emptyFile"), ArgumentMatchers.any())).thenReturn("Empty file message");
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("upload.notCSV"), ArgumentMatchers.any())).thenReturn("Not CSV message");
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.upload.emptyRows"), ArgumentMatchers.any())).thenReturn("Header only message");
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.upload.missingRequiredData"), ArgumentMatchers.any()))
+                .thenReturn("The following headings require non-empty data in the upload file: %s.");
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.upload.missingRequiredHeadings"), ArgumentMatchers.any()))
+                .thenReturn("Headings with the following values are required but were not found: %s.");
 
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.upload.missingRequiredHeadings"),
-                ArgumentMatchers.anyString()))
-        .thenAnswer(i -> String.format("Headings with the following values are required but were not found: %s.",
-                i.getArgument(1), ""));
         Mockito.doNothing().when(listingNormalizer).normalize(ArgumentMatchers.any());
 
         uploadUtil = new ListingUploadHandlerUtil(msgUtil);
@@ -340,7 +339,6 @@ public class ListingUploadManagerTest {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 CertifiedProductSearchDetails listing = (CertifiedProductSearchDetails) invocation.getArgument(0);
-                listing.setWarningMessages(new LinkedHashSet<String>());
                 return null;
             }
         }).when(listingUploadValidator).review(Mockito.eq(listing));
@@ -365,7 +363,6 @@ public class ListingUploadManagerTest {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 CertifiedProductSearchDetails listing = (CertifiedProductSearchDetails) invocation.getArgument(0);
-                listing.setWarningMessages(new LinkedHashSet<String>());
                 return null;
             }
         }).when(listingUploadValidator).review(Mockito.eq(listing));
@@ -390,8 +387,7 @@ public class ListingUploadManagerTest {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 CertifiedProductSearchDetails listing = (CertifiedProductSearchDetails) invocation.getArgument(0);
-                listing.setWarningMessages(new LinkedHashSet<String>());
-                listing.getWarningMessages().add("This is a test warning");
+                listing.addWarningMessage("This is a test warning");
                 return null;
             }
         }).when(listingUploadValidator).review(Mockito.eq(listing));
@@ -414,8 +410,7 @@ public class ListingUploadManagerTest {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 CertifiedProductSearchDetails listing = (CertifiedProductSearchDetails) invocation.getArgument(0);
-                listing.setWarningMessages(new LinkedHashSet<String>());
-                listing.getWarningMessages().add("This is a test warning");
+                listing.addWarningMessage("This is a test warning");
                 return null;
             }
         }).when(listingUploadValidator).review(Mockito.eq(listing));

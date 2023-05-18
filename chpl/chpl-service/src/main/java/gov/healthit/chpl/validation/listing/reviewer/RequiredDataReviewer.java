@@ -27,32 +27,32 @@ public class RequiredDataReviewer extends PermissionBasedReviewer {
     public void review(final CertifiedProductSearchDetails listing) {
         if (listing.getCertificationEdition() == null
                 || listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY) == null) {
-            listing.getErrorMessages().add("Certification edition is required but was not found.");
+            listing.addBusinessErrorMessage("Certification edition is required but was not found.");
         }
         if (StringUtils.isEmpty(listing.getAcbCertificationId())) {
-            listing.getWarningMessages().add("CHPL certification ID was not found.");
+            listing.addWarningMessage("CHPL certification ID was not found.");
         }
         if (listing.getCertificationDate() == null) {
-            listing.getErrorMessages().add("Certification date was not found.");
+            listing.addBusinessErrorMessage("Certification date was not found.");
         }
         if (listing.getDeveloper() == null) {
-            listing.getErrorMessages().add("A developer is required.");
+            listing.addBusinessErrorMessage("A developer is required.");
         }
         if (listing.getProduct() == null || StringUtils.isEmpty(listing.getProduct().getName())) {
-            listing.getErrorMessages().add("A product name is required.");
+            listing.addBusinessErrorMessage("A product name is required.");
         }
         if (listing.getVersion() == null || StringUtils.isEmpty(listing.getVersion().getVersion())) {
-            listing.getErrorMessages().add("A product version is required.");
+            listing.addBusinessErrorMessage("A product version is required.");
         }
         if (listing.getOldestStatus() == null) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.noStatusProvided"));
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.noStatusProvided"));
         }
 
         for (CertificationResult cert : listing.getCertificationResults()) {
             if (BooleanUtils.isTrue(cert.isSuccess())
                     && certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.GAP)
                     && cert.isGap() == null) {
-                addCriterionError(listing, cert, "listing.criteria.missingGap",
+                addBusinessCriterionError(listing, cert, "listing.criteria.missingGap",
                         Util.formatCriteriaNumber(cert.getCriterion()));
             }
         }

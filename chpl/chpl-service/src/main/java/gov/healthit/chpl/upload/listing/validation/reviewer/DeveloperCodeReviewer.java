@@ -29,6 +29,7 @@ public class DeveloperCodeReviewer implements Reviewer {
         this.msgUtil = msgUtil;
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         String chplProductNumber = listing.getChplProductNumber();
         if (StringUtils.isEmpty(chplProductNumber)
@@ -48,16 +49,16 @@ public class DeveloperCodeReviewer implements Reviewer {
         if (developer != null && isValidDeveloperCode(listing.getChplProductNumber())) {
             if (DeveloperManager.NEW_DEVELOPER_CODE.equals(developerCode)
                     && developer.getId() != null) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.shouldNotHaveXXXXCode"));
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.shouldNotHaveXXXXCode"));
             } else if (!DeveloperManager.NEW_DEVELOPER_CODE.equals(developerCode)
                     && developer.getId() == null) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.shouldHaveXXXXCode", developerCode));
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.shouldHaveXXXXCode", developerCode));
             } else if (!StringUtils.isEmpty(developer.getDeveloperCode())
                     && !developerCode.equals(developer.getDeveloperCode())) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.developerCodeMismatch", developerCode, developer.getDeveloperCode()));
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.developerCodeMismatch", developerCode, developer.getDeveloperCode()));
             } else if (!DeveloperManager.NEW_DEVELOPER_CODE.equals(developerCode)
                     && StringUtils.isEmpty(developer.getDeveloperCode())) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.missingDeveloperCode"));
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.missingDeveloperCode"));
             }
         }
     }
