@@ -33,7 +33,7 @@ public class ChplUptimeMonitorTestService {
     }
 
     @Transactional
-    public void go(SyntheticsApi apiInstance) {
+    public void retrieveTestResultsForPreviousDay(SyntheticsApi apiInstance) {
         getAllChplUptimeMonitors().stream()
                 .forEach(monitor -> getResultsForTest(monitor.getDatadogMonitorKey(), apiInstance).stream()
                         .forEach(synthTestResult -> chplUptimeMonitorTestDAO.create(ChplUptimeMonitorTest.builder()

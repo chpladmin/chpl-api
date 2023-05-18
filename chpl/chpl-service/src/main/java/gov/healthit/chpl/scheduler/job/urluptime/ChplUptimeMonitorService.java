@@ -25,7 +25,7 @@ public class ChplUptimeMonitorService {
     }
 
     @Transactional
-    public void go(SyntheticsApi apiInstance) {
+    public void synchronizeDatadogMonitorsForReporting(SyntheticsApi apiInstance) {
         try {
             addChplUptimeMonitors(missingFromDb(getAllChplUptimeMonitors(), getAllSyntheticTests(apiInstance).getTests()));
         } catch (ApiException e) {
