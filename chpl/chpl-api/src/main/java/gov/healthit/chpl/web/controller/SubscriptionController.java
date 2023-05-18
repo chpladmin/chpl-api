@@ -45,4 +45,18 @@ public class SubscriptionController {
         }
         return subscriptionManager.getAllReasons();
     }
+
+    @Operation(summary = "Subscribe to something.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/reasons", method = RequestMethod.POST,
+            produces = "application/json; charset=utf-8")
+    public void subscribe() {
+        if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
+            throw new NotImplementedException("The subscriptions feature is not yet implemented.");
+        }
+        //TODO:
+    }
 }
