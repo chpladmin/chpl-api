@@ -41,7 +41,7 @@ public class ListingStatusAndUserRoleReviewer implements ComparisonReviewer {
             return;
         }
 
-        updatedListing.getErrorMessages().add(messages.getMessage("listing.criteria.userCannotAddOrRemove"));
+        updatedListing.addBusinessErrorMessage(messages.getMessage("listing.criteria.userCannotAddOrRemove"));
     }
 
     private boolean isListingCurrentStatusConsideredActive(CertifiedProductSearchDetails listing) {

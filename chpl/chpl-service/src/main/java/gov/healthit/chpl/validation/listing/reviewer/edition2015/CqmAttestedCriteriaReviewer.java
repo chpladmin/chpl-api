@@ -39,26 +39,26 @@ public class CqmAttestedCriteriaReviewer implements Reviewer {
 
         List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
         listing.getCqmResults().stream()
-            .filter(cqmResult -> BooleanUtils.isTrue(cqmResult.isSuccess()))
-            .forEach(cqmResult -> removeValuesThatAreNotCriteria(cqmResult, listing));
+                .filter(cqmResult -> BooleanUtils.isTrue(cqmResult.isSuccess()))
+                .forEach(cqmResult -> removeValuesThatAreNotCriteria(cqmResult, listing));
 
         listing.getCqmResults().stream()
-            .filter(cqmResult -> BooleanUtils.isTrue(cqmResult.isSuccess()))
-            .forEach(cqmResult -> reviewListingHasAllCriteriaForCqmResult(cqmResult, listing, attestedCriteria));
+                .filter(cqmResult -> BooleanUtils.isTrue(cqmResult.isSuccess()))
+                .forEach(cqmResult -> reviewListingHasAllCriteriaForCqmResult(cqmResult, listing, attestedCriteria));
     }
 
     private void removeValuesThatAreNotCriteria(CQMResultDetails cqm, CertifiedProductSearchDetails listing) {
         List<CQMResultCertification> cqmCriteriaToRemove = cqm.getCriteria().stream()
-            .filter(cqmCriterion -> !criteriaService.isCriteriaNumber(cqmCriterion.getCertificationNumber()))
-            .toList();
+                .filter(cqmCriterion -> !criteriaService.isCriteriaNumber(cqmCriterion.getCertificationNumber()))
+                .toList();
         cqmCriteriaToRemove.stream()
-            .forEach(cqmCriterion -> removeAssociatedCriterion(cqm, cqmCriterion, listing));
+                .forEach(cqmCriterion -> removeAssociatedCriterion(cqm, cqmCriterion, listing));
     }
 
     private void removeAssociatedCriterion(CQMResultDetails cqm, CQMResultCertification cqmCriterionToRemove,
             CertifiedProductSearchDetails listing) {
         cqm.getCriteria().remove(cqmCriterionToRemove);
-        listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.removedCriteriaForCqm",
+        listing.addWarningMessage(msgUtil.getMessage("listing.criteria.removedCriteriaForCqm",
                 cqmCriterionToRemove.getCertificationNumber(),
                 cqm.getCmsId()));
     }
@@ -66,24 +66,24 @@ public class CqmAttestedCriteriaReviewer implements Reviewer {
     private void reviewListingHasAllCriteriaForCqmResult(CQMResultDetails cqm,
             CertifiedProductSearchDetails listing, List<CertificationCriterion> attestedCriteria) {
         cqm.getCriteria().stream()
-            .forEach(cqmCriterion -> reviewListingHasCqmCriterion(cqm, cqmCriterion, listing, attestedCriteria));
+                .forEach(cqmCriterion -> reviewListingHasCqmCriterion(cqm, cqmCriterion, listing, attestedCriteria));
     }
 
     private void reviewListingHasCqmCriterion(CQMResultDetails cqm, CQMResultCertification cqmCriterion,
             CertifiedProductSearchDetails listing, List<CertificationCriterion> attestedCriteria) {
         CertificationCriterion criterion = criteriaService.get(cqmCriterion.getCertificationId());
         if (criterion == null) {
-            listing.getErrorMessages().add(
+            listing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingCriteriaForCqm",
                             cqm.getCmsId(), cqmCriterion.getCertificationNumber()));
         } else if (cqmCriterion.getCriterion() != null
                 && !validationUtils.hasCriterion(criterion, attestedCriteria)) {
-            listing.getErrorMessages().add(
+            listing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingCriteriaForCqm",
                             cqm.getCmsId(), Util.formatCriteriaNumber(cqmCriterion.getCriterion())));
         } else if (cqmCriterion.getCriterion() == null
                 && !validationUtils.hasCriterion(criterion, attestedCriteria)) {
-            listing.getErrorMessages().add(
+            listing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingCriteriaForCqm",
                             cqm.getCmsId(), cqmCriterion.getCertificationNumber()));
         }

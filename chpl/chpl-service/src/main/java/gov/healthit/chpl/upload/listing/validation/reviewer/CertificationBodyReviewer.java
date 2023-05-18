@@ -19,10 +19,11 @@ public class CertificationBodyReviewer implements Reviewer {
         this.msgUtil = msgUtil;
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         Map<String, Object> acbMap = listing.getCertifyingBody();
         if (acbMap == null) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.missingCertificationBody"));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.missingCertificationBody"));
             return;
         }
 
@@ -32,20 +33,20 @@ public class CertificationBodyReviewer implements Reviewer {
         if (acbNameValue != null) {
             acbName = acbNameValue.toString();
             if (StringUtils.isEmpty(acbName)) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.missingCertificationBodyName"));
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.missingCertificationBodyName"));
             }
         } else {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.missingCertificationBodyName"));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.missingCertificationBodyName"));
         }
 
         Object acbIdValue = acbMap.get(CertifiedProductSearchDetails.ACB_ID_KEY);
         if (acbIdValue != null) {
             acbId = acbIdValue.toString();
             if (!StringUtils.isEmpty(acbName) && StringUtils.isEmpty(acbId)) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.invalidCertificationBody", acbName));
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.invalidCertificationBody", acbName));
             }
         } else if (acbIdValue == null && !StringUtils.isEmpty(acbName)) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.invalidCertificationBody", acbName));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.invalidCertificationBody", acbName));
         }
     }
 }

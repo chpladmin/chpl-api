@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,7 +35,8 @@ public class AtlDuplicateReviewer {
         }
 
         if (atlDuplicateResults.duplicatesExist()) {
-            listing.getWarningMessages().addAll(getWarnings(atlDuplicateResults.getDuplicateList()));
+            listing.addAllWarningMessages(getWarnings(atlDuplicateResults.getDuplicateList()).stream()
+                    .collect(Collectors.toSet()));
             listing.setTestingLabs(atlDuplicateResults.getUniqueList());
         }
     }

@@ -35,32 +35,31 @@ public class SedG32015Reviewer extends PermissionBasedReviewer {
                         && certResult.isSed() != null && certResult.isSed().equals(Boolean.TRUE)
                         && certResult.getCriterion().getRemoved() != null
                         && certResult.getCriterion().getRemoved().equals(Boolean.FALSE))
-                .collect(Collectors.<CertificationResult>toList());
+                .collect(Collectors.<CertificationResult> toList());
 
         List<CertificationResult> removedCriteriaWithSed = listing.getCertificationResults().stream()
                 .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess())
                         && certResult.isSed() != null && certResult.isSed().equals(Boolean.TRUE)
                         && certResult.getCriterion().getRemoved() != null
                         && certResult.getCriterion().getRemoved().equals(Boolean.TRUE))
-                .collect(Collectors.<CertificationResult>toList());
+                .collect(Collectors.<CertificationResult> toList());
 
         Optional<CertificationResult> g3CertificationResult = listing.getCertificationResults().stream()
                 .filter(certResult -> certResult.getCriterion() != null
-                    && certResult.getCriterion().getId().equals(g3.getId())
-                    && BooleanUtils.isTrue(certResult.isSuccess()))
+                        && certResult.getCriterion().getId().equals(g3.getId())
+                        && BooleanUtils.isTrue(certResult.isSuccess()))
                 .findFirst();
 
-
-        //cases where the listing has at least one sed criteria but has not attested to g3
+        // cases where the listing has at least one sed criteria but has not attested to g3
         if (hasPresentSedCriteria(presentCriteriaWithSed)
                 && !attestsToG3(g3CertificationResult)) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.foundSedCriteriaWithoutAttestingSed"));
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.foundSedCriteriaWithoutAttestingSed"));
         }
 
-        //cases where the listing has attested to g3 but has no sed criteria
+        // cases where the listing has attested to g3 but has no sed criteria
         if (!hasRemovedSedCriteria(removedCriteriaWithSed) && !hasPresentSedCriteria(presentCriteriaWithSed)
                 && attestsToG3(g3CertificationResult)) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.foundNoSedCriteriaButAttestingSed"));
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.foundNoSedCriteriaButAttestingSed"));
         }
     }
 

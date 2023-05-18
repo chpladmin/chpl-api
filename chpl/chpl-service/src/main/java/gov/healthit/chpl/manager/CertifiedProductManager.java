@@ -18,6 +18,7 @@ import org.quartz.JobDataMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -88,6 +89,7 @@ import gov.healthit.chpl.dto.CuresUpdateEventDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.CertifiedProductUpdateException;
@@ -98,6 +100,8 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
+import gov.healthit.chpl.notifier.BusinessRulesOverrideNotifierMessage;
+import gov.healthit.chpl.notifier.ChplTeamNotifier;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.qmsStandard.QmsStandard;
 import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
@@ -153,11 +157,16 @@ public class CertifiedProductManager extends SecuredManager {
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
     private ListingIcsSharedStoreHandler icsSharedStoreHandler;
+    private ChplTeamNotifier chplTeamNotifier;
+    private Environment env;
+    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
     public CertifiedProductManager() {
     }
 
-    @SuppressWarnings({"checkstyle:parameternumber"})
+    @SuppressWarnings({
+            "checkstyle:parameternumber"
+    })
     @Autowired
     public CertifiedProductManager(ErrorMessageUtil msgUtil,
             CertifiedProductDAO cpDao, CertifiedProductSearchDAO searchDao,
@@ -182,7 +191,8 @@ public class CertifiedProductManager extends SecuredManager {
             ActivityManager activityManager, ListingDetailsNormalizer listingNormalizer,
             ListingValidatorFactory validatorFactory,
             CuresUpdateService curesUpdateService,
-            @Lazy ListingIcsSharedStoreHandler icsSharedStoreHandler) {
+            @Lazy ListingIcsSharedStoreHandler icsSharedStoreHandler,
+            ChplTeamNotifier chplteamNotifier, Environment env, ChplHtmlEmailBuilder chplHtmlEmailBuilder) {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
@@ -219,6 +229,9 @@ public class CertifiedProductManager extends SecuredManager {
         this.validatorFactory = validatorFactory;
         this.curesUpdateService = curesUpdateService;
         this.icsSharedStoreHandler = icsSharedStoreHandler;
+        this.chplTeamNotifier = chplteamNotifier;
+        this.env = env;
+        this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
     }
 
     @Transactional(readOnly = true)
@@ -375,13 +388,13 @@ public class CertifiedProductManager extends SecuredManager {
             listingNormalizer.normalize(updatedListing);
 
             // validate - throws ValidationException if the listing cannot be updated
-            validateListingForUpdate(existingListing, updatedListing, updateRequest.isAcknowledgeWarnings());
+            validateListingForUpdate(existingListing, updatedListing, updateRequest.isAcknowledgeWarnings(), updateRequest.isAcknowledgeBusinessErrors());
 
             // if listing status has changed that may trigger other changes to developer status
             performSecondaryActionsBasedOnStatusChanges(existingListing, updatedListing, updateRequest.getReason());
 
-            //clear all ICS family from the shared store so that ICS relationships
-            //are cleared for ICS additions and ICS removals
+            // clear all ICS family from the shared store so that ICS relationships
+            // are cleared for ICS additions and ICS removals
             icsSharedStoreHandler.handle(updateRequest.getListing().getId());
 
             // Update the listing
@@ -393,6 +406,16 @@ public class CertifiedProductManager extends SecuredManager {
             // Log the activity
             logCertifiedProductUpdateActivity(existingListing, updateRequest.getReason());
 
+            //Send notification to Team
+            if (wereBusinessRulesOvewrriddenDuringUpdate(updateRequest)) {
+                chplTeamNotifier.sendNotification(new BusinessRulesOverrideNotifierMessage(
+                        updateRequest.getListing().getChplProductNumber(),
+                        AuthUtil.getCurrentUser(),
+                        updateRequest.getListing().getBusinessErrorMessages(),
+                        env,
+                        chplHtmlEmailBuilder));
+            }
+
             return result;
         } catch (EntityRetrievalException | EntityCreationException ex) {
             String msg = msgUtil.getMessage("listing.badListingData", existingListing.getChplProductNumber());
@@ -402,18 +425,23 @@ public class CertifiedProductManager extends SecuredManager {
         }
     }
 
+
+    private boolean wereBusinessRulesOvewrriddenDuringUpdate(ListingUpdateRequest request) {
+        return !request.getListing().getBusinessErrorMessages().isEmpty()
+                && request.isAcknowledgeBusinessErrors();
+    }
+
     private void logCertifiedProductUpdateActivity(CertifiedProductSearchDetails existingListing,
             String reason) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
 
-        CertifiedProductSearchDetails changedProduct
-                = certifiedProductDetailsManager.getCertifiedProductDetailsNoCache(existingListing.getId());
+        CertifiedProductSearchDetails changedProduct = certifiedProductDetailsManager.getCertifiedProductDetailsNoCache(existingListing.getId());
 
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
                 "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing,
                 changedProduct, reason);
     }
 
-    @SuppressWarnings({"checkstyle:linelength"})
+    @SuppressWarnings({ "checkstyle:linelength" })
     private void updateListingsChildData(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing)
             throws EntityCreationException, EntityRetrievalException, IOException {
 
@@ -517,22 +545,21 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     private void validateListingForUpdate(CertifiedProductSearchDetails existingListing,
-            CertifiedProductSearchDetails updatedListing, boolean acknowledgeWarnings) throws ValidationException {
+            CertifiedProductSearchDetails updatedListing, boolean acknowledgeWarnings, boolean acknowledgeBusinessErrors) throws ValidationException {
         Validator validator = validatorFactory.getValidator(updatedListing);
         if (validator != null) {
             validator.validate(existingListing, updatedListing);
         }
 
-        if ((updatedListing.getErrorMessages() != null && updatedListing.getErrorMessages().size() > 0)
-                || (!acknowledgeWarnings && updatedListing.getWarningMessages() != null
-                && updatedListing.getWarningMessages().size() > 0)) {
+        if (shouldValidationExceptionBeThrown(updatedListing, acknowledgeBusinessErrors, acknowledgeWarnings)) {
             for (String err : updatedListing.getErrorMessages()) {
                 LOGGER.error("Error updating listing " + updatedListing.getChplProductNumber() + ": " + err);
             }
             for (String warning : updatedListing.getWarningMessages()) {
                 LOGGER.error("Warning updating listing " + updatedListing.getChplProductNumber() + ": " + warning);
             }
-            throw new ValidationException(updatedListing.getErrorMessages(), updatedListing.getWarningMessages());
+            throw new ValidationException(updatedListing.getErrorMessages(), updatedListing.getBusinessErrorMessages(),
+                    updatedListing.getDataErrorMessages(), updatedListing.getWarningMessages());
         }
     }
 
@@ -904,7 +931,8 @@ public class CertifiedProductManager extends SecuredManager {
                     boolean inUpdatedListing = false;
                     for (ListingMeasure updatedItem : updatedMeasures) {
                         inUpdatedListing = !inUpdatedListing
-                                ? existingItem.getId().equals(updatedItem.getId()) : inUpdatedListing;
+                                ? existingItem.getId().equals(updatedItem.getId())
+                                : inUpdatedListing;
                     }
                     if (!inUpdatedListing) {
                         idsToRemove.add(existingItem.getId());
@@ -1008,7 +1036,7 @@ public class CertifiedProductManager extends SecuredManager {
     private int updateAccessibilityStandards(Long listingId,
             List<CertifiedProductAccessibilityStandard> existingAccessibilityStandards,
             List<CertifiedProductAccessibilityStandard> updatedAccessibilityStandards)
-             throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
 
         int numChanges = 0;
         List<CertifiedProductAccessibilityStandard> accStdsToAdd = new ArrayList<CertifiedProductAccessibilityStandard>();
@@ -1632,6 +1660,35 @@ public class CertifiedProductManager extends SecuredManager {
             possibleDeveloperBanTrigger = schedulerManager.createBackgroundJobTrigger(possibleDeveloperBanTrigger);
         } catch (Exception ex) {
             LOGGER.error("Unable to schedule Trigger Developer Ban Job.", ex);
+        }
+    }
+
+    private boolean doErrorMessagesExist(CertifiedProductSearchDetails listing) {
+        return !CollectionUtils.isEmpty(listing.getErrorMessages().castToCollection());
+    }
+
+    private boolean doBusinessErrorMessagesExist(CertifiedProductSearchDetails listing) {
+        return !CollectionUtils.isEmpty(listing.getBusinessErrorMessages().castToCollection());
+    }
+
+    private boolean doWarningMessagesExist(CertifiedProductSearchDetails listing) {
+        return !CollectionUtils.isEmpty(listing.getWarningMessages().castToCollection());
+    }
+
+    private boolean doDataErrorMessagesExist(CertifiedProductSearchDetails listing) {
+        return !CollectionUtils.isEmpty(listing.getDataErrorMessages().castToCollection());
+    }
+
+    private boolean shouldValidationExceptionBeThrown(CertifiedProductSearchDetails listing, boolean acknowledgeBusinessErrors, boolean acknowledgeWarnings) {
+        // return true when we want to throw ValidationException
+        if (doErrorMessagesExist(listing)) {
+            if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+                return doDataErrorMessagesExist(listing) || (doBusinessErrorMessagesExist(listing) && !acknowledgeBusinessErrors);
+            } else {
+                return true;
+            }
+        } else {
+            return doWarningMessagesExist(listing) && !acknowledgeWarnings;
         }
     }
 

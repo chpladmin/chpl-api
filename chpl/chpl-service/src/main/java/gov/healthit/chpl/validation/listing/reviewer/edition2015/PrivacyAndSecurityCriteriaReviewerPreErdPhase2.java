@@ -68,10 +68,10 @@ public class PrivacyAndSecurityCriteriaReviewerPreErdPhase2 implements Compariso
 
                 if (!addedCriteria.isEmpty()) {
                     LOGGER.debug("Criteria of some kind were added");
-                    updatedListing.getErrorMessages()
-                            .addAll(validationUtils.checkSubordinateCriteriaAllRequired(
-                                    privacyAndSecurityCriteria, privacyAndSecurityRequiredCriteria,
-                                    updatedAttestedToCriteria, errorMessageUtil));
+                    updatedListing.addAllBusinessErrorMessages(validationUtils.checkSubordinateCriteriaAllRequired(
+                            privacyAndSecurityCriteria, privacyAndSecurityRequiredCriteria,
+                            updatedAttestedToCriteria, errorMessageUtil).stream()
+                            .collect(Collectors.toSet()));
                 } else {
                     LOGGER.debug("No criteria of any kind were added, no further review required");
                 }

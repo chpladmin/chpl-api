@@ -20,11 +20,8 @@ import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * Given a user tries to edit a listing
- * And the listing has an old version of (d)(2), (d)(3), (d)(10), or (b)(3)
- * And the listing does not have ICS
- * And the certification date is on or after the criterion's "no longer allowed" date
- * Then the user should have errors
+ * Given a user tries to edit a listing And the listing has an old version of (d)(2), (d)(3), (d)(10), or (b)(3) And the listing does not have ICS And the
+ * certification date is on or after the criterion's "no longer allowed" date Then the user should have errors
  */
 @Log4j2
 @Component("oldCriteriaWithoutIcsReviewer")
@@ -78,19 +75,19 @@ public class OldCriteriaWithoutIcsReviewer implements Reviewer {
 
         String error = checkForError(listing, B3_CRITERIA_NUMBER, b3Id, b3ChangeDate);
         if (!StringUtils.isEmpty(error)) {
-            listing.getErrorMessages().add(error);
+            listing.addBusinessErrorMessage(error);
         }
         error = checkForError(listing, D2_CRITERIA_NUMBER, d2Id, ruleEffectiveDate);
         if (!StringUtils.isEmpty(error)) {
-            listing.getErrorMessages().add(error);
+            listing.addBusinessErrorMessage(error);
         }
         error = checkForError(listing, D3_CRITERIA_NUMBER, d3Id, ruleEffectiveDate);
         if (!StringUtils.isEmpty(error)) {
-            listing.getErrorMessages().add(error);
+            listing.addBusinessErrorMessage(error);
         }
         error = checkForError(listing, D10_CRITERIA_NUMBER, d10Id, ruleEffectiveDate);
         if (!StringUtils.isEmpty(error)) {
-            listing.getErrorMessages().add(error);
+            listing.addBusinessErrorMessage(error);
         }
     }
 
@@ -117,8 +114,8 @@ public class OldCriteriaWithoutIcsReviewer implements Reviewer {
     private boolean hasRelevantCriteria(CertifiedProductSearchDetails listing, long criteriaId) {
         return listing.getCertificationResults().stream()
                 .anyMatch(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId() != null
-                    && certResult.getCriterion().getId().equals(criteriaId)
-                    && BooleanUtils.isTrue(certResult.isSuccess()));
+                        && certResult.getCriterion().getId().equals(criteriaId)
+                        && BooleanUtils.isTrue(certResult.isSuccess()));
     }
 
     private boolean hasICS(CertifiedProductSearchDetails listing) {
