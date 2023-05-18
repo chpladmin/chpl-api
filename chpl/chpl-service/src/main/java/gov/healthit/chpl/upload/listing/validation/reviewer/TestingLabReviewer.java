@@ -24,30 +24,31 @@ public class TestingLabReviewer implements Reviewer {
         this.msgUtil = msgUtil;
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         String chplProductNumber = listing.getChplProductNumber();
         if (chplProductNumberUtil.isLegacyChplProductNumberStyle(chplProductNumber)) {
-            //testing labs are not required for legacy listings
+            // testing labs are not required for legacy listings
             return;
         } else {
             List<CertifiedProductTestingLab> atls = listing.getTestingLabs();
             if (atls == null || atls.size() == 0) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.missingTestingLab"));
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.missingTestingLab"));
                 return;
             }
         }
 
         listing.getTestingLabs().stream()
-            .forEach(atl -> reviewValidTestingLab(listing, atl));
+                .forEach(atl -> reviewValidTestingLab(listing, atl));
     }
 
     private void reviewValidTestingLab(CertifiedProductSearchDetails listing, CertifiedProductTestingLab atl) {
         if (StringUtils.isEmpty(atl.getTestingLabName())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.missingTestingLabName"));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.missingTestingLabName"));
         }
 
         if (atl.getTestingLabId() == null && !StringUtils.isEmpty(atl.getTestingLabName())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.invalidTestingLab", atl.getTestingLabName()));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.invalidTestingLab", atl.getTestingLabName()));
         }
     }
 }

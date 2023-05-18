@@ -3,6 +3,7 @@ package gov.healthit.chpl.validation.listing.reviewer.duplicate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,9 @@ public class AccessibilityStandardDuplicateReviewer {
             }
         }
         if (accessibilityStandardDuplicateResults.duplicatesExist()) {
-            listing.getWarningMessages().addAll(getWarnings(accessibilityStandardDuplicateResults.getDuplicateList()));
+            listing.addAllWarningMessages(getWarnings(accessibilityStandardDuplicateResults.getDuplicateList())
+                    .stream()
+                    .collect(Collectors.toSet()));
             listing.setAccessibilityStandards(accessibilityStandardDuplicateResults.getUniqueList());
         }
     }

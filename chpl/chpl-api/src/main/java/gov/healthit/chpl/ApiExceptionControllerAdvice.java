@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.eclipse.collections.api.factory.SortedSets;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -132,28 +133,26 @@ public class ApiExceptionControllerAdvice {
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ValidationErrorResponse> exception(ValidationException e) {
-        ValidationErrorResponse error = new ValidationErrorResponse();
-        error.setErrorMessages(e.getErrorMessages());
-        error.setWarningMessages(e.getWarningMessages());
-        return new ResponseEntity<ValidationErrorResponse>(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<ValidationErrorResponse>(ValidationErrorResponse.builder()
+                .errorMessages(e.getErrorMessages())
+                .businessErrorMessages(e.getBusinessErrorMessages())
+                .dataErrorMessages(e.getDataErrorMessages())
+                .warningMessages(e.getWarningMessages())
+                .build(), HttpStatus.BAD_REQUEST);
     }
 
-    /**
-     * Return bad request for thrown ObjectsMissingValidationException including contact information.
-     * @param e the thrown exception
-     * @return an http response with appropriate error code.
-     */
     @ExceptionHandler(ObjectsMissingValidationException.class)
     public ResponseEntity<ObjectsMissingValidationErrorResponse> exception(
             ObjectsMissingValidationException e) {
         ObjectsMissingValidationErrorResponse errorContainer = new ObjectsMissingValidationErrorResponse();
         if (e.getExceptions() != null) {
             for (ObjectMissingValidationException currEx : e.getExceptions()) {
-                ObjectMissingValidationErrorResponse error = new ObjectMissingValidationErrorResponse();
-                error.setErrorMessages(currEx.getErrorMessages());
-                error.setWarningMessages(currEx.getWarningMessages());
-                error.setContact(currEx.getUser());
-                error.setObjectId(currEx.getObjectId());
+                ObjectMissingValidationErrorResponse error = ObjectMissingValidationErrorResponse.builder()
+                        .errorMessages(currEx.getErrorMessages())
+                        .warningMessages(currEx.getWarningMessages())
+                        .contact(currEx.getUser())
+                        .objectId(currEx.getObjectId())
+                        .build();
                 errorContainer.getErrors().add(error);
             }
         }
@@ -163,11 +162,12 @@ public class ApiExceptionControllerAdvice {
 
     @ExceptionHandler(ObjectMissingValidationException.class)
     public ResponseEntity<ObjectMissingValidationErrorResponse> exception(ObjectMissingValidationException e) {
-        ObjectMissingValidationErrorResponse error = new ObjectMissingValidationErrorResponse();
-        error.setErrorMessages(e.getErrorMessages());
-        error.setWarningMessages(e.getWarningMessages());
-        error.setContact(e.getUser());
-        error.setObjectId(e.getObjectId());
+        ObjectMissingValidationErrorResponse error = ObjectMissingValidationErrorResponse.builder()
+                .errorMessages(e.getErrorMessages())
+                .warningMessages(e.getWarningMessages())
+                .contact(e.getUser())
+                .objectId(e.getObjectId())
+                .build();
         return new ResponseEntity<ObjectMissingValidationErrorResponse>(error, HttpStatus.BAD_REQUEST);
     }
 
@@ -180,12 +180,12 @@ public class ApiExceptionControllerAdvice {
     }
 
     @ExceptionHandler(MissingReasonException.class)
-    public ResponseEntity<ErrorResponse> exception(MissingReasonException e) {
+    public ResponseEntity<ValidationErrorResponse> exception(MissingReasonException e) {
         LOGGER.error("Caught missing reason exception.", e);
-        return new ResponseEntity<ErrorResponse>(
-                new ErrorResponse(e.getMessage() != null ? e.getMessage()
-                        : "A reason is required to perform this action."),
-                HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<ValidationErrorResponse>(ValidationErrorResponse.builder()
+                .errorMessages(SortedSets.immutable.of(e.getMessage() != null ? e.getMessage() : "A reason is required to perform this action."))
+                .businessErrorMessages(SortedSets.immutable.of(e.getMessage() != null ? e.getMessage() : "A reason is required to perform this action."))
+                .build(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ChplAccountEmailNotConfirmedException.class)
@@ -218,7 +218,7 @@ public class ApiExceptionControllerAdvice {
     public ResponseEntity<ErrorResponse> exceptionHandler(IOException e, HttpServletRequest request) {
         if (StringUtils.containsIgnoreCase(ExceptionUtils.getRootCauseMessage(e), "Broken pipe")) {
             LOGGER.warn("Broke Pipe IOException occurred: " + request.getMethod() + " " + request.getRequestURL());
-            return null; //socket is closed, cannot return any response
+            return null; // socket is closed, cannot return any response
         } else {
             return new ResponseEntity<ErrorResponse>(
                     new ErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);

@@ -39,13 +39,13 @@ public class TestStandardReviewer implements Reviewer {
     private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.STANDARDS_TESTED)) {
             if (!CollectionUtils.isEmpty(certResult.getTestStandards())) {
-                listing.getWarningMessages().add(msgUtil.getMessage(
+                listing.addWarningMessage(msgUtil.getMessage(
                     "listing.criteria.testStandardsNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setTestStandards(null);
         } else if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.STANDARDS_TESTED)
             && !CollectionUtils.isEmpty(certResult.getTestStandards())) {
-            listing.getWarningMessages().add(msgUtil.getMessage(
+            listing.addWarningMessage(msgUtil.getMessage(
                 "listing.criteria.testStandardsNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             certResult.getTestStandards().clear();
         }

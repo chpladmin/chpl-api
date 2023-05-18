@@ -37,8 +37,7 @@ public class MeasureComparisonReviewer implements ComparisonReviewer {
         List<ListingMeasure> updatedMeasuresForListing = updatedListing.getMeasures();
 
         getNewlyAddedRemovedItems(updatedMeasuresForListing, existingMeasuresForListing).stream()
-                .forEach(mm -> updatedListing.getErrorMessages()
-                        .add(getErrorMessage("listing.removedMeasure", mm)));
+                .forEach(mm -> updatedListing.addBusinessErrorMessage(getErrorMessage("listing.removedMeasure", mm)));
     }
 
     private List<ListingMeasure> getNewlyAddedRemovedItems(List<ListingMeasure> listInUpdatedListing,

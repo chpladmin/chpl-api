@@ -16,9 +16,10 @@ public class VersionReviewer implements Reviewer {
         this.msgUtil = msgUtil;
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         if (listing.getVersion() == null) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.missingVersion"));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.missingVersion"));
         }
     }
 }

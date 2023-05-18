@@ -36,6 +36,7 @@ public class UnsupportedCharacterReviewer implements Reviewer {
         this.msgUtil = msgUtil;
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         reviewListingFields(listing);
         reviewDeveloperFields(listing);
@@ -246,23 +247,23 @@ public class UnsupportedCharacterReviewer implements Reviewer {
 
     private void addListingWarningIfNotValid(CertifiedProductSearchDetails listing, String input, String fieldName) {
         if (!validationUtils.isValidUtf8(input)) {
-            listing.getWarningMessages().add(
+            listing.addWarningMessage(
                     msgUtil.getMessage("listing.badCharacterFound", fieldName));
         }
         if (validationUtils.hasNewline(input)) {
-            listing.getWarningMessages().add(
+            listing.addWarningMessage(
                     msgUtil.getMessage("listing.newlineCharacterFound", fieldName));
         }
     }
 
     private void addCriteriaWarningIfNotValid(CertifiedProductSearchDetails listing, CertificationResult criteria, String input, String fieldName) {
         if (!validationUtils.isValidUtf8(input)) {
-            listing.getWarningMessages().add(
+            listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.badCharacterFound",
                             Util.formatCriteriaNumber(criteria.getCriterion()), fieldName));
         }
         if (validationUtils.hasNewline(input)) {
-            listing.getWarningMessages().add(
+            listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.newlineCharacterFound",
                             Util.formatCriteriaNumber(criteria.getCriterion()), fieldName));
         }

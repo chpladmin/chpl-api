@@ -1,9 +1,12 @@
 package gov.healthit.chpl.validation.listing.reviewer.duplicate;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,36 +30,36 @@ public class TestToolDuplicateReviewer {
 
     public void review(CertifiedProductSearchDetails listing, CertificationResult certificationResult) {
 
-        DuplicateReviewResult<CertificationResultTestTool> testToolDuplicateResults =
-                new DuplicateReviewResult<CertificationResultTestTool>(duplicatePredicate());
+        DuplicateReviewResult<CertificationResultTestTool> testToolDuplicateResults = new DuplicateReviewResult<CertificationResultTestTool>(duplicatePredicate());
         if (certificationResult.getTestToolsUsed() != null) {
             for (CertificationResultTestTool dto : certificationResult.getTestToolsUsed()) {
                 testToolDuplicateResults.addObject(dto);
             }
         }
         if (testToolDuplicateResults.duplicatesExist()) {
-            listing.getWarningMessages().addAll(
+            listing.addAllWarningMessages(
                     getWarnings(testToolDuplicateResults.getDuplicateList(),
-                            Util.formatCriteriaNumber(certificationResult.getCriterion())));
+                            Util.formatCriteriaNumber(certificationResult.getCriterion()))
+                    .stream()
+                    .collect(Collectors.toSet()));
             certificationResult.setTestToolsUsed(testToolDuplicateResults.getUniqueList());
         }
 
-        DuplicateReviewResult<CertificationResultTestTool> testToolDuplicateIdResults =
-                new DuplicateReviewResult<CertificationResultTestTool>(duplicateIdPredicate());
+        DuplicateReviewResult<CertificationResultTestTool> testToolDuplicateIdResults = new DuplicateReviewResult<CertificationResultTestTool>(duplicateIdPredicate());
         if (certificationResult.getTestToolsUsed() != null) {
             for (CertificationResultTestTool dto : certificationResult.getTestToolsUsed()) {
                 testToolDuplicateIdResults.addObject(dto);
             }
         }
         if (testToolDuplicateIdResults.duplicatesExist()) {
-            listing.getErrorMessages().addAll(
+            listing.addAllBusinessErrorMessages(
                     getErrors(testToolDuplicateIdResults.getDuplicateList(),
                             Util.formatCriteriaNumber(certificationResult.getCriterion())));
         }
     }
 
-    private List<String> getErrors(List<CertificationResultTestTool> duplicates, String criteria) {
-        List<String> errors = new ArrayList<String>();
+    private Set<String> getErrors(List<CertificationResultTestTool> duplicates, String criteria) {
+        Set<String> errors = new HashSet<String>();
         for (CertificationResultTestTool duplicate : duplicates) {
             String error = errorMessageUtil.getMessage("listing.criteria.duplicateTestToolName",
                     criteria, duplicate.getTestToolName());
@@ -100,4 +103,3 @@ public class TestToolDuplicateReviewer {
         };
     }
 }
-

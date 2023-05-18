@@ -19,7 +19,7 @@ public class CertificationIdReviewer implements Reviewer {
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         if (StringUtils.isBlank(listing.getAcbCertificationId())) {
-            listing.getWarningMessages().add(msgUtil.getMessage("listing.certificationIdMissing"));
+            listing.addWarningMessage(msgUtil.getMessage("listing.certificationIdMissing"));
         }
     }
 }

@@ -39,10 +39,10 @@ public class FunctionalityTestedReviewer {
 
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
-            .forEach(certResult -> review(listing, certResult));
+                .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
+                .forEach(certResult -> review(listing, certResult));
         listing.getCertificationResults().stream()
-            .forEach(certResult -> removeFunctionalitiesTestedIfNotApplicable(certResult));
+                .forEach(certResult -> removeFunctionalitiesTestedIfNotApplicable(certResult));
     }
 
     private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -51,15 +51,15 @@ public class FunctionalityTestedReviewer {
         removeFunctionalitiesTestedMismatchedToCriteria(listing, certResult);
         if (certResult.getFunctionalitiesTested() != null && certResult.getFunctionalitiesTested().size() > 0) {
             certResult.getFunctionalitiesTested().stream()
-                .forEach(functionalityTested -> reviewFunctionalityTestedFields(listing, certResult, functionalityTested));
+                    .forEach(functionalityTested -> reviewFunctionalityTestedFields(listing, certResult, functionalityTested));
         }
     }
 
     private void reviewCriteriaCanHaveFunctionalitiesTested(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
             if (!CollectionUtils.isEmpty(certResult.getFunctionalitiesTested())) {
-                listing.getWarningMessages().add(msgUtil.getMessage(
-                    "listing.criteria.functionalityTestedNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+                listing.addWarningMessage(msgUtil.getMessage(
+                        "listing.criteria.functionalityTestedNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setFunctionalitiesTested(null);
             certResult.setTestFunctionality(null);
@@ -82,7 +82,7 @@ public class FunctionalityTestedReviewer {
             CertificationResultFunctionalityTested functionalityTested = functionalitiesTestedIter.next();
             if (functionalityTested.getFunctionalityTestedId() == null) {
                 functionalitiesTestedIter.remove();
-                listing.getWarningMessages().add(msgUtil.getMessage(
+                listing.addWarningMessage(msgUtil.getMessage(
                         "listing.criteria.functionalityTestedNotFoundAndRemoved",
                         Util.formatCriteriaNumber(certResult.getCriterion()), functionalityTested.getName()));
             }
@@ -99,18 +99,17 @@ public class FunctionalityTestedReviewer {
             if (!isFunctionalityTestedCritierionValid(certResult.getCriterion().getId(),
                     functionalityTested.getFunctionalityTestedId())) {
                 functionalitiesTestedIter.remove();
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.functionalityTestedCriterionMismatch",
-                            Util.formatCriteriaNumber(certResult.getCriterion()),
-                            functionalityTested.getName(),
-                            getDelimitedListOfValidCriteriaNumbers(functionalityTested),
-                            Util.formatCriteriaNumber(certResult.getCriterion())));
+                listing.addWarningMessage(msgUtil.getMessage("listing.criteria.functionalityTestedCriterionMismatch",
+                        Util.formatCriteriaNumber(certResult.getCriterion()),
+                        functionalityTested.getName(),
+                        getDelimitedListOfValidCriteriaNumbers(functionalityTested),
+                        Util.formatCriteriaNumber(certResult.getCriterion())));
             }
         }
     }
 
     private boolean isFunctionalityTestedCritierionValid(Long criteriaId, Long functionalityTestedId) {
-        List<FunctionalityTested> validFunctionalitiesTestedForCriteria =
-                functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps().get(criteriaId);
+        List<FunctionalityTested> validFunctionalitiesTestedForCriteria = functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps().get(criteriaId);
         if (validFunctionalitiesTestedForCriteria == null) {
             return false;
         } else {
@@ -139,7 +138,7 @@ public class FunctionalityTestedReviewer {
     private void reviewFunctionalityTestedName(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultFunctionalityTested functionalityTested) {
         if (StringUtils.isEmpty(functionalityTested.getName())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingFunctionalityTestedName",
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingFunctionalityTestedName",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }

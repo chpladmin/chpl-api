@@ -15,8 +15,8 @@ import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 
 /**
- * This reviewer confirms that an ACB user does not attempt to associate
- * a removed criteria with a UCD Process.
+ * This reviewer confirms that an ACB user does not attempt to associate a removed criteria with a UCD Process.
+ *
  * @author kekey
  *
  */
@@ -35,7 +35,7 @@ public class RemovedCriteriaUcdComparisonReviewer implements ComparisonReviewer 
     @Override
     public void review(final CertifiedProductSearchDetails existingListing,
             final CertifiedProductSearchDetails updatedListing) {
-        //this is only disallowed if the user is not ADMIN/ONC, so first check the permissions
+        // this is only disallowed if the user is not ADMIN/ONC, so first check the permissions
         if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             return;
         }
@@ -45,24 +45,24 @@ public class RemovedCriteriaUcdComparisonReviewer implements ComparisonReviewer 
             for (CertifiedProductUcdProcess existingUcd : existingListing.getSed().getUcdProcesses()) {
                 if (updatedUcd.matches(existingUcd)) {
                     existsInOriginal = true;
-                    //not a new UCD Process, but maybe there are new criteria?
+                    // not a new UCD Process, but maybe there are new criteria?
                     Set<CertificationCriterion> addedCriteria = getAddedCriteria(existingUcd.getCriteria(),
                             updatedUcd.getCriteria());
                     for (CertificationCriterion addedCriterion : addedCriteria) {
                         if (addedCriterion.getRemoved() != null
                                 && addedCriterion.getRemoved().booleanValue()) {
-                            updatedListing.getErrorMessages().add(
+                            updatedListing.addBusinessErrorMessage(
                                     msgUtil.getMessage("listing.ucd.removedCriteriaNotAllowed",
-                                    Util.formatCriteriaNumber(addedCriterion), updatedUcd.getName()));
+                                            Util.formatCriteriaNumber(addedCriterion), updatedUcd.getName()));
                         }
                     }
                 }
             }
             if (!existsInOriginal) {
-                //check all the criteria for this newly added UCD process to see if any are removed
+                // check all the criteria for this newly added UCD process to see if any are removed
                 for (CertificationCriterion criterion : updatedUcd.getCriteria()) {
                     if (criterion.getRemoved() != null && criterion.getRemoved().booleanValue()) {
-                        updatedListing.getErrorMessages().add(
+                        updatedListing.addBusinessErrorMessage(
                                 msgUtil.getMessage("listing.ucd.removedCriteriaNotAllowed",
                                         Util.formatCriteriaNumber(criterion), updatedUcd.getName()));
                     }
@@ -72,7 +72,7 @@ public class RemovedCriteriaUcdComparisonReviewer implements ComparisonReviewer 
     }
 
     private Set<CertificationCriterion> getAddedCriteria(Set<CertificationCriterion> originalCriteria,
-                Set<CertificationCriterion> updatedCriteria) {
+            Set<CertificationCriterion> updatedCriteria) {
         if (originalCriteria == null || originalCriteria.size() == 0) {
             return updatedCriteria;
         }

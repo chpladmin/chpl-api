@@ -24,8 +24,8 @@ public class RemovedCriteriaReviewer {
         }
 
         if (attestedCriterionIsRemoved(certResult)) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.removedCriteriaAddNotAllowed",
-                                    Util.formatCriteriaNumber(certResult.getCriterion())));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.removedCriteriaAddNotAllowed",
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 

@@ -331,6 +331,13 @@
             <artifactId>commonmark</artifactId>
             <version>${commonmark.version}</version>
         </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/org.eclipse.collections/eclipse-collections -->
+        <dependency>
+            <groupId>org.eclipse.collections</groupId>
+            <artifactId>eclipse-collections</artifactId>
+            <version>12.0.0.M1</version>
+        </dependency>
 
         <!-- jars provided by the system and not included in the packaged jar -->
         <dependency>
@@ -339,7 +346,7 @@
             <version>8.5.86</version>
             <scope>provided</scope>
         </dependency>
-
+        
         <!--  needed for unit tests -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

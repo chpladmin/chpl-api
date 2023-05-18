@@ -47,6 +47,7 @@ public class UcdProcessReviewer implements Reviewer {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         if (listing.getSed() == null) {
             return;
@@ -69,13 +70,13 @@ public class UcdProcessReviewer implements Reviewer {
                 ucdProcesses.removeAll(ucdProcessesWithoutFuzzyMatchesOrIds);
 
                 ucdProcessesWithoutFuzzyMatchesOrIds.stream()
-                    .filter(ucdProc -> doesUcdProcessHaveAnyNonRemovedCriteria(ucdProc))
-                    .forEach(ucdProcWithoutId -> listing.getWarningMessages().add(
-                            msgUtil.getMessage("listing.criteria.ucdProcessNotFoundAndRemoved",
-                                    ucdProcWithoutId.getName(),
-                                    ucdProcWithoutId.getCriteria().stream()
-                                        .map(criterion -> Util.formatCriteriaNumber(criterion))
-                                        .collect(Collectors.joining(",")))));
+                        .filter(ucdProc -> doesUcdProcessHaveAnyNonRemovedCriteria(ucdProc))
+                        .forEach(ucdProcWithoutId -> listing.addWarningMessage(
+                                msgUtil.getMessage("listing.criteria.ucdProcessNotFoundAndRemoved",
+                                        ucdProcWithoutId.getName(),
+                                        ucdProcWithoutId.getCriteria().stream()
+                                                .map(criterion -> Util.formatCriteriaNumber(criterion))
+                                                .collect(Collectors.joining(",")))));
             }
         }
     }
@@ -83,13 +84,26 @@ public class UcdProcessReviewer implements Reviewer {
     private void reviewAllUcdProcessCriteriaAreAllowed(CertifiedProductSearchDetails listing) {
         if (listing.getSed() != null && !CollectionUtils.isEmpty(listing.getSed().getUcdProcesses())) {
             listing.getSed().getUcdProcesses().stream()
-                .filter(ucdProcess -> !CollectionUtils.isEmpty(ucdProcess.getCriteria()))
-                .flatMap(ucdProcess -> ucdProcess.getCriteria().stream())
-                .filter(ucdCriterion -> !certResultRules.hasCertOption(ucdCriterion.getId(), CertificationResultRules.UCD_FIELDS))
-                .filter(ucdCriterion -> BooleanUtils.isFalse(ucdCriterion.getRemoved()))
-                .forEach(notAllowedUcdCriterion ->
-                    listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.ucdProcessNotApplicable", Util.formatCriteriaNumber(notAllowedUcdCriterion))));
+                    .filter(ucdProcess -> !CollectionUtils.isEmpty(ucdProcess.getCriteria()))
+                    .flatMap(ucdProcess -> ucdProcess.getCriteria().stream())
+                    .filter(ucdCriterion -> !certResultRules.hasCertOption(ucdCriterion.getId(), CertificationResultRules.UCD_FIELDS))
+                    .filter(ucdCriterion -> BooleanUtils.isFalse(ucdCriterion.getRemoved()))
+                    .forEach(notAllowedUcdCriterion -> addUcdProcessNotApplicableErrorMessage(listing, notAllowedUcdCriterion));
         }
+    }
+
+    private void addUcdProcessNotApplicableErrorMessage(CertifiedProductSearchDetails listing, CertificationCriterion notAllowedUcdCriterion) {
+        if (isListingNew(listing)) {
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.ucdProcessNotApplicable",
+                    Util.formatCriteriaNumber(notAllowedUcdCriterion)));
+        } else {
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.ucdProcessNotApplicable",
+                    Util.formatCriteriaNumber(notAllowedUcdCriterion)));
+        }
+    }
+
+    private boolean isListingNew(CertifiedProductSearchDetails listing) {
+        return listing.getId() == null;
     }
 
     private boolean doesUcdProcessHaveAnyNonRemovedCriteria(CertifiedProductUcdProcess ucdProcess) {
@@ -105,10 +119,10 @@ public class UcdProcessReviewer implements Reviewer {
     private void reviewCertResultsHaveUcdProcessesIfRequired(CertifiedProductSearchDetails listing) {
         List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
         ucdProcessCriteria.stream()
-            .filter(criterion -> validationUtils.hasCriterion(criterion, attestedCriteria))
-            .map(attestedUcdProcessCriterion -> getCertificationResultForCriterion(listing, attestedUcdProcessCriterion))
-            .filter(certResult -> certResult != null && validationUtils.isEligibleForErrors(certResult))
-            .forEach(certResult -> reviewCertResultHasUcdProcessIfRequired(listing, certResult));
+                .filter(criterion -> validationUtils.hasCriterion(criterion, attestedCriteria))
+                .map(attestedUcdProcessCriterion -> getCertificationResultForCriterion(listing, attestedUcdProcessCriterion))
+                .filter(certResult -> certResult != null && validationUtils.isEligibleForErrors(certResult))
+                .forEach(certResult -> reviewCertResultHasUcdProcessIfRequired(listing, certResult));
     }
 
     private CertificationResult getCertificationResultForCriterion(CertifiedProductSearchDetails listing, CertificationCriterion criterionToReview) {
@@ -124,27 +138,35 @@ public class UcdProcessReviewer implements Reviewer {
     private void reviewCertResultHasUcdProcessIfRequired(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResult.isSed()) {
             if (listing.getSed() == null || CollectionUtils.isEmpty(listing.getSed().getUcdProcesses())) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingUcdProcess",
-                        Util.formatCriteriaNumber(certResult.getCriterion())));
+                addCriterionRequiresUcdProcessErrorProcess(listing, certResult.getCriterion());
             } else if (!doesUcdProcessListContainCriterion(listing, certResult.getCriterion())) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingUcdProcess",
-                        Util.formatCriteriaNumber(certResult.getCriterion())));
+                addCriterionRequiresUcdProcessErrorProcess(listing, certResult.getCriterion());
             }
+        }
+    }
+
+    private void addCriterionRequiresUcdProcessErrorProcess(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
+        if (isListingNew(listing)) {
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingUcdProcess",
+                    Util.formatCriteriaNumber(criterion)));
+        } else {
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.missingUcdProcess",
+                    Util.formatCriteriaNumber(criterion)));
         }
     }
 
     private boolean doesUcdProcessListContainCriterion(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
         return listing.getSed().getUcdProcesses().stream()
-            .flatMap(ucdProcess -> ucdProcess.getCriteria().stream())
-            .filter(ucdProcessCriterion -> ucdProcessCriterion.getId().equals(criterion.getId()))
-            .count() > 0;
+                .flatMap(ucdProcess -> ucdProcess.getCriteria().stream())
+                .filter(ucdProcessCriterion -> ucdProcessCriterion.getId().equals(criterion.getId()))
+                .count() > 0;
     }
 
     private void addFuzzyMatchWarnings(CertifiedProductSearchDetails listing) {
         if (!CollectionUtils.isEmpty(listing.getSed().getUcdProcesses())) {
             listing.getSed().getUcdProcesses().stream()
-                .filter(ucdProcess -> hasFuzzyMatch(ucdProcess))
-                .forEach(ucdProcess -> addFuzzyMatchWarning(listing, ucdProcess));
+                    .filter(ucdProcess -> hasFuzzyMatch(ucdProcess))
+                    .forEach(ucdProcess -> addFuzzyMatchWarning(listing, ucdProcess));
         }
     }
 
@@ -157,6 +179,7 @@ public class UcdProcessReviewer implements Reviewer {
     private void addFuzzyMatchWarning(CertifiedProductSearchDetails listing, CertifiedProductUcdProcess ucdProcess) {
         String warningMsg = msgUtil.getMessage("listing.fuzzyMatch", FuzzyType.UCD_PROCESS.fuzzyType(),
                 ucdProcess.getUserEnteredName(), ucdProcess.getName());
-        listing.getWarningMessages().add(warningMsg);
+        listing.addWarningMessage(warningMsg);
     }
+
 }
