@@ -197,7 +197,7 @@
                 <cron-expression>0 45 10 ? * 7#2</cron-expression> <!-- At 1045 UTC on the second Saturday of the month -->
             </cron>
         </trigger>
-                <trigger>
+        <trigger>
             <cron>
                 <name>generateUrlUptime</name>
                 <group>generateUrlUptimeTrigger</group>
