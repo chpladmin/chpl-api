@@ -34,6 +34,7 @@ public class ChplUptimeMonitorTestService {
 
     @Transactional
     public void retrieveTestResultsForPreviousDay(SyntheticsApi apiInstance) {
+        LOGGER.info("Adding Datadog Monitor Tests to CHPL");
         getAllChplUptimeMonitors().stream()
                 .forEach(monitor -> getResultsForTest(monitor.getDatadogMonitorKey(), apiInstance).stream()
                         .forEach(synthTestResult -> chplUptimeMonitorTestDAO.create(ChplUptimeMonitorTest.builder()
@@ -42,6 +43,7 @@ public class ChplUptimeMonitorTestService {
                                 .checkTime(toLocalDateTime(synthTestResult.getCheckTime().longValue()))
                                 .passed(synthTestResult.getResult().getPassed())
                                 .build())));
+        LOGGER.info("Completed Adding Datadog Monitor Tests to CHPL");
     }
 
     private List<SyntheticsAPITestResultShort> getResultsForTest(String publicTestKey, SyntheticsApi apiInstance) {
@@ -54,6 +56,7 @@ public class ChplUptimeMonitorTestService {
         params.toTs(evening.toInstant().toEpochMilli());
         params.probeDc(List.of("azure:eastus"));
 
+        LOGGER.info("Retrieving tests for {} between {} and {}", publicTestKey, morning, evening);
         SyntheticsGetAPITestLatestResultsResponse response;
         List<SyntheticsAPITestResultShort> testResults = new ArrayList<SyntheticsAPITestResultShort>();
         try {
@@ -63,14 +66,16 @@ public class ChplUptimeMonitorTestService {
             while (response.getResults().size() > 1) {
                 testResults.addAll(response.getResults());
                 Long ts = getMostRecentTimestamp(response.getResults());
-                //LOGGER.info(LocalDateTime.ofInstant(Instant.ofEpochMilli(ts), ZoneId.of("US/Eastern")).format(formatter));
                 params.fromTs(ts);
                 response = apiInstance.getAPITestLatestResults(publicTestKey, params);
             }
+            LOGGER.info("Found {} tests for monitor {}", testResults.size(), publicTestKey);
+
         } catch (ApiException e) {
             response = null;
             LOGGER.error("Could not retrieve results for test key: {}", publicTestKey, e);
         }
+
         return testResults;
     }
 

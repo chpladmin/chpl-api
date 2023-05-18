@@ -27,7 +27,9 @@ public class ChplUptimeMonitorService {
     @Transactional
     public void synchronizeDatadogMonitorsForReporting(SyntheticsApi apiInstance) {
         try {
+            LOGGER.info("Synchronizing Datadog Monitors with CHPL");
             addChplUptimeMonitors(missingFromDb(getAllChplUptimeMonitors(), getAllSyntheticTests(apiInstance).getTests()));
+            LOGGER.info("Completing Datadog Monitors with CHPL");
         } catch (ApiException e) {
             LOGGER.error("Error retrieving Synthetic Test Details: {}", e.getMessage(), e);
         }
@@ -40,6 +42,7 @@ public class ChplUptimeMonitorService {
                         .url(synth.getConfig().getRequest().getUrl())
                         .datadogMonitorKey(synth.getPublicId())
                         .build())
+                .peek(monitor -> LOGGER.info("Monitor found in Datadog, adding to CHPL: {}", monitor.getUrl()))
                 .forEach(monitor -> chplUptimeMonitorDAO.create(monitor));
     }
 
