@@ -57,25 +57,8 @@ public class AttestationManagerTest {
 
         Mockito.when(formService.getForm(ArgumentMatchers.anyLong())).thenReturn(getFirstPeriodForm());
 
-        /*
-        Mockito.when(attestationDAO.getDeveloperAttestationSubmissionsByDeveloper(ArgumentMatchers.anyLong())).thenReturn(
-                Arrays.asList(DeveloperAttestationSubmission.builder().build(),
-                        DeveloperAttestationSubmission.builder().build()));
-
-        Mockito.when(attestationDAO.createDeveloperAttestationSubmission(ArgumentMatchers.any())).thenReturn(
-                DeveloperAttestationSubmission.builder().build());
-
-        attestationPeriodService = Mockito.mock(AttestationPeriodService.class);
-        Mockito.when(attestationPeriodService.getMostRecentPastAttestationPeriod()).thenReturn(
-                AttestationPeriod.builder()
-                        .id(1L)
-                        .periodStart(LocalDate.of(2021, 1, 1))
-                        .periodEnd(LocalDate.of(2022, 1, 31))
-                        .submissionStart(LocalDate.of(2022, 2, 1))
-                        .submissionEnd(LocalDate.of(2022, 2, 28))
-                        .description("First Period")
-                        .build());
-        */
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any()))
+                .thenReturn("This is an error message.");
 
         Mockito.when(attestationPeriodService.getAllPeriods()).thenReturn(
                 List.of(getFirstAttestationPeriod(), getSecondAttestationPeriod()));

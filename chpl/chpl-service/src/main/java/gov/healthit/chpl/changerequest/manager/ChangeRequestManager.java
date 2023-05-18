@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.ff4j.FF4j;
@@ -205,11 +204,13 @@ public class ChangeRequestManager {
         ChangeRequest crFromDb = getChangeRequest(cr.getId());
 
         ChangeRequestValidationContext crValidationContext = getNewValidationContext(cr, crFromDb);
-        ValidationException validationException = new ValidationException();
-        validationException.getErrorMessages().addAll(crValidationService.getErrorMessages(crValidationContext));
-        validationException.getWarningMessages().addAll(crValidationService.getWarningMessages(crValidationContext));
-        if (!CollectionUtils.isEmpty(validationException.getErrorMessages())
-                || (!crUpdateRequest.isAcknowledgeWarnings() && !CollectionUtils.isEmpty(validationException.getWarningMessages()))) {
+
+        ValidationException validationException = new ValidationException(
+                crValidationService.getErrorMessages(crValidationContext),
+                crValidationService.getWarningMessages(crValidationContext));
+        if ((validationException.getErrorMessages() != null && !validationException.getErrorMessages().isEmpty())
+                || (!crUpdateRequest.isAcknowledgeWarnings() &&
+                        validationException.getWarningMessages() != null && !validationException.getWarningMessages().isEmpty())) {
             throw validationException;
         }
 
@@ -293,12 +294,10 @@ public class ChangeRequestManager {
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
 
         ChangeRequestValidationContext crValidationContext = getNewValidationContext(cr, null);
-        ValidationException validationException = new ValidationException();
-        validationException.getErrorMessages().addAll(crValidationService.getErrorMessages(crValidationContext));
+        ValidationException validationException = new ValidationException(crValidationService.getErrorMessages(crValidationContext));
         if (validationException.getErrorMessages().size() > 0) {
             throw validationException;
         }
-
 
         ChangeRequest newCr = createBaseChangeRequest(cr);
         newCr.setDetails(cr.getDetails());

@@ -29,6 +29,7 @@ public class CertificationBodyCodeReviewer implements Reviewer {
         this.msgUtil = msgUtil;
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         String chplProductNumber = listing.getChplProductNumber();
         if (StringUtils.isEmpty(chplProductNumber)
@@ -51,7 +52,7 @@ public class CertificationBodyCodeReviewer implements Reviewer {
                 String listingAcbCode = listingAcbCodeValue.toString();
                 if (isValidAcbCode(listing.getChplProductNumber()) && !StringUtils.isEmpty(listingAcbCode)
                         && !acbCode.equals(listingAcbCode)) {
-                    listing.getErrorMessages().add(msgUtil.getMessage("listing.certificationBodyMismatch", acbCode, listingAcbCode));
+                    listing.addDataErrorMessage(msgUtil.getMessage("listing.certificationBodyMismatch", acbCode, listingAcbCode));
                 }
             }
         }

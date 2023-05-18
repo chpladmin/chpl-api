@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.collections.api.factory.SortedSets;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -136,8 +137,7 @@ public class ComplaintManager extends SecuredManager {
     @CacheEvict(value = { CacheNames.COMPLAINTS }, allEntries = true)
     public Complaint create(Complaint complaint)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
-        ValidationException validationException = new ValidationException();
-        validationException.getErrorMessages().addAll(runCreateValidations(complaint));
+        ValidationException validationException = new ValidationException(SortedSets.immutable.ofAll(runCreateValidations(complaint)));
         if (validationException.getErrorMessages().size() > 0) {
             throw validationException;
         }
@@ -156,8 +156,7 @@ public class ComplaintManager extends SecuredManager {
     public Complaint update(Complaint complaint)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
         Complaint originalFromDB = complaintDAO.getComplaint(complaint.getId());
-        ValidationException validationException = new ValidationException();
-        validationException.getErrorMessages().addAll(runUpdateValidations(complaint));
+        ValidationException validationException = new ValidationException(SortedSets.immutable.ofAll(runUpdateValidations(complaint)));
         if (validationException.getErrorMessages().size() > 0) {
             throw validationException;
         }

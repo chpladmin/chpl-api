@@ -45,92 +45,92 @@ public class UnattestedCriteriaWithDataReviewer {
 
     private void reviewCertificationResult(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResult.isGap() != null && certResult.isGap()) {
-            listing.getWarningMessages().add(
+            listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "GAP"));
         }
         if (certResult.isSed() != null && certResult.isSed()) {
-            listing.getWarningMessages().add(
+            listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "SED"));
         }
         if (!StringUtils.isEmpty(certResult.getApiDocumentation())) {
-            listing.getWarningMessages().add(
+            listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "API Documentation"));
         }
         if (!StringUtils.isEmpty(certResult.getServiceBaseUrlList())) {
-            listing.getWarningMessages().add(
+            listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Service Base URL List"));
         }
         if (!StringUtils.isEmpty(certResult.getExportDocumentation())) {
-            listing.getWarningMessages().add(
+            listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Export Documentation"));
         }
         if (!StringUtils.isEmpty(certResult.getDocumentationUrl())) {
-            listing.getWarningMessages().add(
+            listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Documentation URL"));
         }
         if (!StringUtils.isEmpty(certResult.getUseCases())) {
-            listing.getWarningMessages().add(
+            listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Use Cases"));
         }
         if (certResult.getAttestationAnswer() != null && certResult.getAttestationAnswer().booleanValue()) {
-            listing.getWarningMessages().add(
+            listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Attestation Answer"));
         }
         if (!StringUtils.isEmpty(certResult.getPrivacySecurityFramework())) {
-            listing.getWarningMessages().add(
+            listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Privacy and Security Framework"));
         }
         if (!CollectionUtils.isEmpty(certResult.getAdditionalSoftware())) {
-            listing.getWarningMessages().add(
+            listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Additional Software"));
         }
         if (!CollectionUtils.isEmpty(certResult.getTestDataUsed())) {
-            listing.getWarningMessages().add(
+            listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Test Data"));
         }
         if (!CollectionUtils.isEmpty(certResult.getFunctionalitiesTested())) {
-            listing.getWarningMessages().add(
+            listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Functionality Tested"));
         }
         if (!CollectionUtils.isEmpty(certResult.getTestProcedures())) {
-            listing.getWarningMessages().add(
+            listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Test Procedures"));
         }
         if (!CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
-            listing.getWarningMessages().add(
+            listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Conformance Methods"));
         }
         if (!CollectionUtils.isEmpty(certResult.getTestStandards())) {
-            listing.getWarningMessages().add(
+            listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Test Standards"));
         }
         if (!CollectionUtils.isEmpty(certResult.getOptionalStandards())) {
-            listing.getWarningMessages().add(
+            listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Optional Standards"));
         }
         if (!CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
-            listing.getWarningMessages().add(
+            listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Test Tools"));
         }
         if (!CollectionUtils.isEmpty(certResult.getSvaps())) {
-            listing.getWarningMessages().add(
+            listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Standards Version Advancement Processes"));
         }
@@ -139,7 +139,7 @@ public class UnattestedCriteriaWithDataReviewer {
     private void addWarningIfTestTaskCriterionIsNotAttestedTo(CertifiedProductSearchDetails listing, TestTask testTask) {
         testTask.getCriteria().stream()
             .filter(criterion -> !isCriterionAttestedTo(listing, criterion))
-            .forEach(criterion -> listing.getWarningMessages().add(
+            .forEach(criterion -> listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(criterion), "Test Tasks")));
     }
@@ -147,7 +147,7 @@ public class UnattestedCriteriaWithDataReviewer {
     private void addWarningIfUcdProcessCriterionIsNotAttestedTo(CertifiedProductSearchDetails listing, CertifiedProductUcdProcess ucdProcess) {
         ucdProcess.getCriteria().stream()
             .filter(criterion -> !isCriterionAttestedTo(listing, criterion))
-            .forEach(criterion -> listing.getWarningMessages().add(
+            .forEach(criterion -> listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(criterion), "UCD Processes")));
     }

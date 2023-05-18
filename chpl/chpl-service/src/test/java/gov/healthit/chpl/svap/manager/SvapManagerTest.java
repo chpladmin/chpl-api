@@ -58,10 +58,10 @@ public class SvapManagerTest {
         Mockito.when(svapDao.update(ArgumentMatchers.any(Svap.class)))
                 .thenReturn(updatedSvap.toBuilder().build());
 
-       Svap savedSvap = svapManager.update(updatedSvap);
+        Svap savedSvap = svapManager.update(updatedSvap);
 
-       assertNotNull(savedSvap);
-       Mockito.verify(svapDao, Mockito.times(1)).update(ArgumentMatchers.any(Svap.class));
+        assertNotNull(savedSvap);
+        Mockito.verify(svapDao, Mockito.times(1)).update(ArgumentMatchers.any(Svap.class));
     }
 
     @Test
@@ -88,10 +88,10 @@ public class SvapManagerTest {
         Mockito.when(svapDao.update(ArgumentMatchers.any(Svap.class)))
                 .thenReturn(updatedSvap.toBuilder().build());
 
-       Svap savedSvap = svapManager.update(updatedSvap);
+        Svap savedSvap = svapManager.update(updatedSvap);
 
-       assertNotNull(savedSvap);
-       Mockito.verify(svapDao, Mockito.times(1)).update(ArgumentMatchers.any(Svap.class));
+        assertNotNull(savedSvap);
+        Mockito.verify(svapDao, Mockito.times(1)).update(ArgumentMatchers.any(Svap.class));
     }
 
     @Test
@@ -119,10 +119,10 @@ public class SvapManagerTest {
         Mockito.when(svapDao.update(ArgumentMatchers.any(Svap.class)))
                 .thenReturn(updatedSvap.toBuilder().build());
 
-       Svap savedSvap = svapManager.update(updatedSvap);
+        Svap savedSvap = svapManager.update(updatedSvap);
 
-       assertNotNull(savedSvap);
-       Mockito.verify(svapDao, Mockito.times(1)).update(ArgumentMatchers.any(Svap.class));
+        assertNotNull(savedSvap);
+        Mockito.verify(svapDao, Mockito.times(1)).update(ArgumentMatchers.any(Svap.class));
     }
 
     @Test(expected = ValidationException.class)
@@ -146,7 +146,10 @@ public class SvapManagerTest {
         Mockito.when(svapDao.update(ArgumentMatchers.any(Svap.class)))
                 .thenReturn(updatedSvap.toBuilder().build());
 
-       svapManager.update(updatedSvap);
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any()))
+                .thenReturn("Error Message");
+
+        svapManager.update(updatedSvap);
     }
 
     @Test(expected = ValidationException.class)
@@ -230,7 +233,8 @@ public class SvapManagerTest {
         Mockito.when(svapDao.getCertifiedProductsBySvapAndCriteria(ArgumentMatchers.any(Svap.class), ArgumentMatchers.any(CertificationCriterion.class)))
                 .thenReturn(Arrays.asList(new CertifiedProductDetailsDTO()));
 
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString())).thenReturn("Error Message");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any()))
+                .thenReturn("Error Message");
 
         svapManager.update(updatedSvap);
     }
@@ -247,16 +251,15 @@ public class SvapManagerTest {
                         .build())
                 .build();
 
-
         Mockito.when(svapDao.getById(ArgumentMatchers.anyLong()))
                 .thenReturn(newSvap);
         Mockito.when(svapDao.create(ArgumentMatchers.any(Svap.class)))
                 .thenReturn(newSvap.toBuilder().build());
 
-       Svap savedSvap = svapManager.create(newSvap);
+        Svap savedSvap = svapManager.create(newSvap);
 
-       assertNotNull(savedSvap);
-       Mockito.verify(svapDao, Mockito.times(1)).create(ArgumentMatchers.any(Svap.class));
+        assertNotNull(savedSvap);
+        Mockito.verify(svapDao, Mockito.times(1)).create(ArgumentMatchers.any(Svap.class));
     }
 
     @Test(expected = ValidationException.class)
@@ -276,7 +279,10 @@ public class SvapManagerTest {
         Mockito.when(svapDao.create(ArgumentMatchers.any(Svap.class)))
                 .thenReturn(newSvap.toBuilder().build());
 
-       svapManager.update(newSvap);
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any()))
+                .thenReturn("Error Message");
+
+        svapManager.update(newSvap);
     }
 
     @Test(expected = ValidationException.class)
@@ -308,7 +314,6 @@ public class SvapManagerTest {
                 .approvedStandardVersion("This is the long text.")
                 .regulatoryTextCitation("170.205(a)(10)")
                 .build();
-
 
         Mockito.when(svapDao.getById(ArgumentMatchers.anyLong()))
                 .thenReturn(newSvap);
@@ -365,14 +370,14 @@ public class SvapManagerTest {
                         .build())
                 .build();
 
-
         Mockito.when(svapDao.getById(ArgumentMatchers.anyLong()))
                 .thenReturn(svap);
         Mockito.doNothing().when(svapDao).remove(ArgumentMatchers.any(Svap.class));
         Mockito.when(svapDao.getCertifiedProductsBySvap(ArgumentMatchers.any(Svap.class)))
                 .thenReturn(Arrays.asList(new CertifiedProductDetailsDTO()));
 
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString())).thenReturn("Error Message");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any()))
+                .thenReturn("Error Message");
 
         svapManager.delete(svap);
     }

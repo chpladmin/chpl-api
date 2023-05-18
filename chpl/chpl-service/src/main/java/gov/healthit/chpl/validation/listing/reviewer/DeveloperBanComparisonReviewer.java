@@ -10,8 +10,8 @@ import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 /**
- * Makes sure the user has the correct privileges to change
- * the status.
+ * Makes sure the user has the correct privileges to change the status.
+ *
  * @author kekey
  *
  */
@@ -46,12 +46,11 @@ public class DeveloperBanComparisonReviewer implements ComparisonReviewer {
                             .equals(CertificationStatusType.TerminatedByOnc.toString()))
                     && !resourcePermissions.isUserRoleOnc()
                     && !resourcePermissions.isUserRoleAdmin()) {
-                updatedListing.getErrorMessages()
-                        .add(msgUtil.getMessage("listing.certStatusChange.notAllowed",
-                                AuthUtil.getUsername(),
-                                existingListing.getChplProductNumber(),
-                                existingListing.getCurrentStatus().getStatus().getName(),
-                                updatedListing.getCurrentStatus().getStatus().getName()));
+                updatedListing.addBusinessErrorMessage(msgUtil.getMessage("listing.certStatusChange.notAllowed",
+                        AuthUtil.getUsername(),
+                        existingListing.getChplProductNumber(),
+                        existingListing.getCurrentStatus().getStatus().getName(),
+                        updatedListing.getCurrentStatus().getStatus().getName()));
             }
         }
     }

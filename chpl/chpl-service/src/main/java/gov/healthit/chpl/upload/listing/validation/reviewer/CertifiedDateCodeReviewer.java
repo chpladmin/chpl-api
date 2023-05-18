@@ -30,6 +30,7 @@ public class CertifiedDateCodeReviewer implements Reviewer {
         this.msgUtil = msgUtil;
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         String chplProductNumber = listing.getChplProductNumber();
         if (StringUtils.isEmpty(chplProductNumber)
@@ -51,7 +52,7 @@ public class CertifiedDateCodeReviewer implements Reviewer {
 
             if (isValidCertifiedDateCode(listing.getChplProductNumber()) && !StringUtils.isEmpty(listingCertificationDate)
                     && !listingCertificationDate.equals(certifiedDateCode)) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.certificationDateMismatch", certifiedDateCode, listingCertificationDate));
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.certificationDateMismatch", certifiedDateCode, listingCertificationDate));
             }
         }
     }

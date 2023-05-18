@@ -13,7 +13,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component
 public class SharedStoreDAO extends BaseDAOImpl {
 
@@ -75,6 +77,13 @@ public class SharedStoreDAO extends BaseDAOImpl {
         if (result.size() == 0) {
             return null;
         }
-        return result.get(0);
+
+        try {
+            getSession().evict(result.get(0));
+            return result.get(0);
+        } catch (Exception e) {
+            LOGGER.error("Error retrieving object from Shared Store ({}:{}) - {}", domain, key, e.getMessage(), e);
+            return null;
+        }
     }
 }

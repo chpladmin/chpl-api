@@ -33,6 +33,7 @@ public class RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewerTest {
     private static final String DEPENDENT_CRITERIA_REQUIRED_ERROR_KEY = "listing.criteria.dependentCriteriaRequired";
     private static final String DEPENDENT_CRITERIA_REQUIRED_ERROR = "Attesting to Criteria %s requires that Criteria %s must also be attested to.";
     private static final String CRITERIA_COMPLEMENT_NOT_FOUND = "Certification criterion %s was found so %s is required but was not found.";
+    private static final String CRITERIA_COMPLEMENT_NOT_FOUND_KEY = "listing.criteria.complementaryCriteriaRequired";
 
     private CertificationCriterionService certificationCriterionService;
     private ValidationUtils validationUtil;
@@ -41,8 +42,8 @@ public class RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewerTest {
     private RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewer reviewer;
 
     private CertificationCriterion a1, a4, a6, a9, a10, a13, b1, b1Cures, b2, b2Cures, b4, b6, b7, b8, b9, b9Cures, b10,
-        c1, c2, g4, g5, d1, d2, d2Cures, d3, d3Cures, d4, d5, d6, d7, d8, d9, d10, d10Cures,
-        e1, e1Cures, e2, e3, g6, g6Cures, g7, g8, g9, g9Cures, g10, f1, f5, f5Cures, h1, h2;
+            c1, c2, g4, g5, d1, d2, d2Cures, d3, d3Cures, d4, d5, d6, d7, d8, d9, d10, d10Cures,
+            e1, e1Cures, e2, e3, g6, g6Cures, g7, g8, g9, g9Cures, g10, f1, f5, f5Cures, h1, h2;
 
     @Before
     @SuppressWarnings("checkstyle:magicnumber")
@@ -155,26 +156,30 @@ public class RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewerTest {
 
         CertificationCriterionService criteriaService = Mockito.mock(CertificationCriterionService.class);
         Mockito.when(criteriaService.getByNumber(ArgumentMatchers.anyString()))
-            .thenAnswer(new Answer<List<CertificationCriterion>>() {
-                @Override
-                public List<CertificationCriterion> answer(InvocationOnMock invocation) throws Throwable {
-                    Object[] args = invocation.getArguments();
-                    List<CertificationCriterion> criteriaWithNumber = new ArrayList<CertificationCriterion>();
-                    criteriaWithNumber.add(CertificationCriterion.builder()
-                            .number(args[0].toString())
-                            .removed(false)
-                            .build());
-                    return criteriaWithNumber;
-                }
-            });
+                .thenAnswer(new Answer<List<CertificationCriterion>>() {
+                    @Override
+                    public List<CertificationCriterion> answer(InvocationOnMock invocation) throws Throwable {
+                        Object[] args = invocation.getArguments();
+                        List<CertificationCriterion> criteriaWithNumber = new ArrayList<CertificationCriterion>();
+                        criteriaWithNumber.add(CertificationCriterion.builder()
+                                .number(args[0].toString())
+                                .removed(false)
+                                .build());
+                        return criteriaWithNumber;
+                    }
+                });
 
         validationUtil = new ValidationUtils(criteriaService);
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq(CRITERIA_REQUIRED_ERROR_KEY), ArgumentMatchers.anyString()))
-            .thenAnswer(i -> String.format(CRITERIA_REQUIRED_ERROR, i.getArgument(1), ""));
+                .thenAnswer(i -> String.format(CRITERIA_REQUIRED_ERROR, i.getArgument(1), ""));
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq(DEPENDENT_CRITERIA_REQUIRED_ERROR_KEY),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(DEPENDENT_CRITERIA_REQUIRED_ERROR, i.getArgument(1), i.getArgument(2)));
+
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq(CRITERIA_COMPLEMENT_NOT_FOUND_KEY),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+                .thenAnswer(i -> String.format(CRITERIA_COMPLEMENT_NOT_FOUND, i.getArgument(1), i.getArgument(2)));
 
         reviewer = new RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewer(certificationCriterionService, errorMessageUtil,
                 validationUtil, resourcePermissions);
@@ -1140,7 +1145,6 @@ public class RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewerTest {
         assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, Util.formatCriteriaNumber(e3), Util.formatCriteriaNumber(d5))));
         assertTrue(listing.getErrorMessages().contains(String.format(CRITERIA_COMPLEMENT_NOT_FOUND, Util.formatCriteriaNumber(e3), Util.formatCriteriaNumber(d9))));
     }
-
 
     @Test
     public void review_e2AndE3AndSomeCriteriaAttestedWithoutDependencies_hasErrors() {

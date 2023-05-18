@@ -30,7 +30,7 @@ public class CertificationStatusReviewer implements Reviewer {
                     || !CertificationStatusType.Active.getName().equals(earliestStatusInUpdate.getName())) {
                 String msg = msgUtil.getMessage(
                         "listing.firstStatusNotActive", CertificationStatusType.Active.getName());
-                listing.getErrorMessages().add(msg);
+                listing.addBusinessErrorMessage(msg);
             }
         }
         doStatusesRepeat(listing);
@@ -45,7 +45,7 @@ public class CertificationStatusReviewer implements Reviewer {
         for (CertificationStatusEvent statusEvent : sortedStatusEvents) {
             if (lastStatusEvent != null) {
                 if (lastStatusEvent.getStatus().getId().equals(statusEvent.getStatus().getId())) {
-                    listing.getErrorMessages().add(msgUtil.getMessage("listing.duplicateStatus"));
+                    listing.addBusinessErrorMessage(msgUtil.getMessage("listing.duplicateStatus"));
                 }
             }
             lastStatusEvent = statusEvent;

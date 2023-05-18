@@ -5,16 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import javax.transaction.Transactional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.ParticipantGenderStatisticsDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestParticipant;
@@ -22,40 +19,25 @@ import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
 import gov.healthit.chpl.entity.statistics.ParticipantGenderStatisticsEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.search.domain.ListingSearchResult;
+import lombok.extern.log4j.Log4j2;
 
-/**
- * Populates the participant_gender_statistics table with summarized count
- * information.
- *
- * @author TYoung
- *
- */
-public class ParticipantGenderStatisticsCalculator {
-    private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
+@Component
+@Log4j2(topic = "chartDataCreatorJobLogger")
+public class ParticipantGenderStatisticsCalculator extends SedDataCollector {
 
-    @Autowired
     private ParticipantGenderStatisticsDAO participantGenderStatisticsDAO;
 
     @Autowired
-    private JpaTransactionManager txManager;
-
-    public ParticipantGenderStatisticsCalculator() {
-        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+    public ParticipantGenderStatisticsCalculator(ParticipantGenderStatisticsDAO participantGenderStatisticsDAO,
+            CertifiedProductDetailsManager certifiedProductDetailsManager, CertificationCriterionDAO criteriaDao) {
+        super(certifiedProductDetailsManager, criteriaDao);
+        this.participantGenderStatisticsDAO = participantGenderStatisticsDAO;
     }
 
-    /**
-     * This method calculates the participant gender counts and saves them to
-     * the participant_education_statistics table.
-     *
-     * @param certifiedProductSearchDetails
-     *            List of CertifiedProductSearchDetails objects
-     */
-    public void run(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
-
-        ParticipantGenderStatisticsEntity entity = getCounts(certifiedProductSearchDetails);
-
+    public void run(List<ListingSearchResult> listingSearchResults) {
+        ParticipantGenderStatisticsEntity entity = getCounts(getSedListings(listingSearchResults));
         logCounts(entity);
-
         save(entity);
     }
 
@@ -64,14 +46,13 @@ public class ParticipantGenderStatisticsCalculator {
         LOGGER.info("Total Male Count: " + entity.getMaleCount());
     }
 
-    private ParticipantGenderStatisticsEntity getCounts(
-            final List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
+    private ParticipantGenderStatisticsEntity getCounts(List<ListingSearchResult> listingSearchResults) {
         ParticipantGenderStatisticsEntity entity = new ParticipantGenderStatisticsEntity();
         entity.setFemaleCount(0L);
         entity.setMaleCount(0L);
         entity.setUnknownCount(0L);
 
-        List<TestParticipant> uniqueParticipants = getUniqueParticipants(certifiedProductSearchDetails);
+        List<TestParticipant> uniqueParticipants = getUniqueParticipants(listingSearchResults);
         for (TestParticipant participant : uniqueParticipants) {
             if (isParticipantFemale(participant)) {
                 entity.setFemaleCount(entity.getFemaleCount() + 1L);
@@ -85,22 +66,24 @@ public class ParticipantGenderStatisticsCalculator {
         return entity;
     }
 
-    private boolean isParticipantFemale(final TestParticipant participant) {
+    private boolean isParticipantFemale(TestParticipant participant) {
         return participant.getGender().equalsIgnoreCase("F") || participant.getGender().equalsIgnoreCase("Female");
     }
 
-    private boolean isParticipantMale(final TestParticipant participant) {
+    private boolean isParticipantMale(TestParticipant participant) {
         return participant.getGender().equalsIgnoreCase("M") || participant.getGender().equalsIgnoreCase("Male");
     }
 
-    private List<TestParticipant> getUniqueParticipants(
-            final List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
+    private List<TestParticipant> getUniqueParticipants(List<ListingSearchResult> listingSearchResults) {
         Map<Long, TestParticipant> participants = new HashMap<Long, TestParticipant>();
-        for (CertifiedProductSearchDetails detail : certifiedProductSearchDetails) {
-            for (TestTask task : detail.getSed().getTestTasks()) {
-                for (TestParticipant participant : task.getTestParticipants()) {
-                    if (!participants.containsKey(participant.getId())) {
-                        participants.put(participant.getId(), participant);
+        for (ListingSearchResult listingSearchResult : listingSearchResults) {
+            CertifiedProductSearchDetails listing = getListingDetails(listingSearchResult.getId());
+            if (listing != null) {
+                for (TestTask task : listing.getSed().getTestTasks()) {
+                    for (TestParticipant participant : task.getTestParticipants()) {
+                        if (!participants.containsKey(participant.getId())) {
+                            participants.put(participant.getId(), participant);
+                        }
                     }
                 }
             }
@@ -108,34 +91,20 @@ public class ParticipantGenderStatisticsCalculator {
         return new ArrayList<TestParticipant>(participants.values());
     }
 
-    private void save(final ParticipantGenderStatisticsEntity entity) {
+    private void save(ParticipantGenderStatisticsEntity entity) {
         saveSedParticipantGenderStatistics(entity);
     }
 
-    private void saveSedParticipantGenderStatistics(final ParticipantGenderStatisticsEntity entity) {
-        // We need to manually create a transaction in this case because of how AOP works. When a method is
-        // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
-        // The object's proxy is not called when the method is called from within this class. The object's proxy
-        // is called when the method is public and is called from a different object.
-        // https://stackoverflow.com/questions/3037006/starting-new-transaction-in-spring-bean
-        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
-        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        txTemplate.execute(new TransactionCallbackWithoutResult() {
+    @Transactional
+    private void saveSedParticipantGenderStatistics(ParticipantGenderStatisticsEntity entity) {
+        try {
+            deleteExistingPartcipantStatistics();
 
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                try {
-                    deleteExistingPartcipantStatistics();
-
-                    ParticipantGenderStatisticsDTO dto = new ParticipantGenderStatisticsDTO(entity);
-                    participantGenderStatisticsDAO.create(dto);
-                } catch (Exception e) {
-                    LOGGER.error("Error saving ParticipantGenderStatistics.", e);
-                    status.setRollbackOnly();
-                }
-
-            }
-        });
+            ParticipantGenderStatisticsDTO dto = new ParticipantGenderStatisticsDTO(entity);
+            participantGenderStatisticsDAO.create(dto);
+        } catch (Exception e) {
+            LOGGER.error("Error saving ParticipantGenderStatistics.", e);
+        }
     }
 
     private void deleteExistingPartcipantStatistics() throws EntityRetrievalException {
@@ -145,5 +114,4 @@ public class ParticipantGenderStatisticsCalculator {
             LOGGER.info("Deleted: " + dto.getId());
         }
     }
-
 }

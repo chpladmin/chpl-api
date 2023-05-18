@@ -49,7 +49,7 @@ public class ChangeRequestManagerTest {
         .thenReturn(true);
 
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString()))
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any()))
                 .thenReturn("Error message");
     }
 

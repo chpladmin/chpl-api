@@ -1,8 +1,8 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -24,7 +24,7 @@ public class UrlReviewer extends PermissionBasedReviewer {
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
-        //check all string fields at the listing level
+        // check all string fields at the listing level
         addListingErrorIfNotValid(listing, listing.getReportFileLocation(),
                 "Report File Location '" + listing.getReportFileLocation() + "'");
         addListingErrorIfNotValid(listing, listing.getSedReportFileLocation(),
@@ -34,7 +34,7 @@ public class UrlReviewer extends PermissionBasedReviewer {
         addListingErrorIfNotValid(listing, listing.getSvapNoticeUrl(),
                 "SVAP Notice URL '" + listing.getSvapNoticeUrl() + "'");
 
-        //check all criteria fields
+        // check all criteria fields
         for (CertificationResult cert : listing.getCertificationResults()) {
             if (validationUtils.isEligibleForErrors(cert)) {
                 addCriteriaErrorIfNotValid(listing, cert, cert.getApiDocumentation(), "API Documentation");
@@ -49,10 +49,10 @@ public class UrlReviewer extends PermissionBasedReviewer {
     private void addListingErrorIfNotValid(CertifiedProductSearchDetails listing, String input, String fieldName) {
         if (!StringUtils.isEmpty(input)) {
             if (validationUtils.hasNewline(input)) {
-                listing.getErrorMessages().add(
+                listing.addBusinessErrorMessage(
                         msgUtil.getMessage("listing.invalidUrlFound", fieldName));
             } else if (!validationUtils.isWellFormedUrl(input)) {
-                listing.getErrorMessages().add(
+                listing.addBusinessErrorMessage(
                         msgUtil.getMessage("listing.invalidUrlFound", fieldName));
             }
         }
@@ -61,7 +61,7 @@ public class UrlReviewer extends PermissionBasedReviewer {
     private void addCriteriaErrorIfNotValid(CertifiedProductSearchDetails listing, CertificationResult cert, String input, String fieldName) {
         if (!StringUtils.isEmpty(input)) {
             if (validationUtils.hasNewline(input) || !validationUtils.isWellFormedUrl(input)) {
-                addCriterionError(listing, cert,
+                addBusinessCriterionError(listing, cert,
                         "listing.criteria.invalidUrlFound", fieldName,
                         Util.formatCriteriaNumber(cert.getCriterion()));
             }
