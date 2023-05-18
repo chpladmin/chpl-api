@@ -14,7 +14,7 @@ import com.datadog.api.client.v1.model.SyntheticsTestDetails;
 
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic =  "urlUptimeCreatorJobLogger")
 @Component
 public class ChplUptimeMonitorService {
     private ChplUptimeMonitorDAO chplUptimeMonitorDAO;

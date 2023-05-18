@@ -6,6 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2(topic = "urlUptimeEmailJobLogger")
 @Component
 public class UrlUptimeCalculator {
 
@@ -35,6 +38,7 @@ public class UrlUptimeCalculator {
     }
 
     private UrlUptimeReport summarize(ChplUptimeMonitor chplUptimeMonitor, List<ChplUptimeMonitorTest> chplUptimeMonitorTests) {
+        LOGGER.info("Summarizing data for {}", chplUptimeMonitor.getUrl());
         return UrlUptimeReport.builder()
                 .description(chplUptimeMonitor.getDescription())
                 .url(chplUptimeMonitor.getUrl())

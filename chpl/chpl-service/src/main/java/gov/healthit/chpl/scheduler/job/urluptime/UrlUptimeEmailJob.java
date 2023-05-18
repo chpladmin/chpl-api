@@ -16,7 +16,7 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "urlUptimeEmailJobLogger")
 public class UrlUptimeEmailJob extends QuartzJob {
 
     @Autowired
