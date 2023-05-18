@@ -1,5 +1,22 @@
 # Release Notes
 
+## Version 40.3.0
+_15 May 2023_
+
+### Features
+* Update UrlStatusCollectorJob to not log errors when URL is bad
+* Add elements to /search/v3 endpoint to support SVAP search
+** Add hasAnySvap filter on listing search v3 endpoint
+** Add SVAP filtering options to /search/v3 endpoint
+** Add SVAPs and SVAP Notice URL to listing search response
+* Stop checking for 'Certifications Added' Questionable activity
+
+### Bug Fixes
+* Search results do show Listing updates in a timely manner
+* Refactor SED statistics collection in the ChartDataCreatorJob to use less memory
+
+---
+
 ## Version 40.2.0
 _1 May 2023_
 

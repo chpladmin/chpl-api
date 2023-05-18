@@ -14,9 +14,20 @@
     <name>chpl-service library</name>
 
     <properties>
-      <jackson.version>2.13.4</jackson.version>
-      <jackson.databind.version>2.13.4.2</jackson.databind.version>
-      <poi.version>5.2.0</poi.version>
+      <azure.version>1.9.0-beta.3</azure.version>
+      <bitbucket.version>0.9.3</bitbucket.version>
+      <commonmark.version>0.21.0</commonmark.version>
+      <fuzzywuzzy.version>1.4.0</fuzzywuzzy.version>
+      <itext.version>7.2.5</itext.version>
+      <jackson.version>2.15.0</jackson.version>
+      <jfreechart.version>1.5.4</jfreechart.version>
+      <microsoft-graph.version>5.54.0</microsoft-graph.version>
+      <netty.version>1.1.6</netty.version>
+      <org.apache.httpcomponents.version>4.5.14</org.apache.httpcomponents.version>
+      <poi.version>5.2.3</poi.version>
+      <postgresql.version>42.6.0</postgresql.version>
+      <quartz.version>2.4.0-rc2</quartz.version>
+      <zxcvbn.version>1.7.0</zxcvbn.version>
     </properties>
 
     <dependencies>
@@ -69,7 +80,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.4.3</version>
+            <version>${postgresql.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -81,7 +92,7 @@
             <artifactId>hibernate-jpa-2.1-api</artifactId>
             <version>1.0.2.Final</version>
         </dependency>
-        <!-- would like to update hibernate-validator to the latest (7.0.1.Final) but we have lots 
+        <!-- would like to update hibernate-validator to the latest (7.0.1.Final) but we have lots
              of validation exceptions that occur at query-time with the new library -->
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -94,29 +105,29 @@
           <version>2.0.1.Final</version>
         </dependency>
 
-        <!-- Microsoft Graph API librariess --> 
+        <!-- Microsoft Graph API librariess -->
        <dependency>
             <groupId>com.microsoft.graph</groupId>
             <artifactId>microsoft-graph</artifactId>
-            <version>5.39.0</version>
+            <version>${microsoft-graph.version}</version>
         </dependency>
         <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-identity</artifactId>
-            <version>1.6.1</version>
+            <version>${azure.version}</version>
         </dependency>
         <!--I don't think this should have to be here since it is transitively included with
             the azure library, but without it in the pom there is a NoClassDefFound error -->
         <dependency>
           <groupId>io.projectreactor.netty</groupId>
           <artifactId>reactor-netty-http</artifactId>
-          <version>1.0.24</version>
+          <version>${netty.version}</version>
         </dependency>
         <!-- END new Graph API libs -->
         <dependency>
             <groupId>org.bitbucket.b_c</groupId>
             <artifactId>jose4j</artifactId>
-            <version>0.7.9</version>
+            <version>${bitbucket.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -126,7 +137,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson.databind.version}</version>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -192,7 +203,7 @@
         <dependency>
             <groupId>me.xdrop</groupId>
             <artifactId>fuzzywuzzy</artifactId>
-            <version>1.3.3</version>
+            <version>${fuzzywuzzy.version}</version>
         </dependency>
         <dependency>
             <groupId>xerces</groupId>
@@ -223,12 +234,12 @@
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
-            <version>2.3.2</version>
+            <version>${quartz.version}</version>
         </dependency>
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz-jobs</artifactId>
-            <version>2.3.2</version>
+            <version>${quartz.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -248,14 +259,14 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.13</version>
+            <version>${org.apache.httpcomponents.version}</version>
         </dependency>
 
         <!-- Password strength checking library -->
         <dependency>
             <groupId>com.nulab-inc</groupId>
             <artifactId>zxcvbn</artifactId>
-            <version>1.5.2</version>
+            <version>${zxcvbn.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.ff4j/ff4j-core -->
@@ -303,7 +314,7 @@
         <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>itext7-core</artifactId>
-            <version>7.2.1</version>
+            <version>${itext.version}</version>
             <type>pom</type>
         </dependency>
 
@@ -311,14 +322,14 @@
         <dependency>
             <groupId>org.jfree</groupId>
             <artifactId>jfreechart</artifactId>
-            <version>1.5.3</version>
+            <version>${jfreechart.version}</version>
         </dependency>
 
         <!-- Convert Markdown -> HTML -->
         <dependency>
-            <groupId>org.commonmark</groupId>  
+            <groupId>org.commonmark</groupId>
             <artifactId>commonmark</artifactId>
-            <version>0.18.1</version>
+            <version>${commonmark.version}</version>
         </dependency>
 
         <!-- Provides Java interface to Datdog API -->

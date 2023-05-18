@@ -6,6 +6,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,6 +24,7 @@ import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CQMSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResultWithLongFields;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResultWithStringField;
 import gov.healthit.chpl.search.domain.ListingSearchResult.DateRangeSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.DeveloperSearchResult;
@@ -125,6 +127,7 @@ public class ListingSearchDao extends BaseDAOImpl {
                 .closedSurveillanceNonConformityCount(entity.getClosedSurveillanceNonConformityCount())
                 .rwtPlansUrl(entity.getRwtPlansUrl())
                 .rwtResultsUrl(entity.getRwtResultsUrl())
+                .svapNoticeUrl(entity.getSvapNoticeUrl())
                 .surveillanceDateRanges(convertToSetOfDateRangesWithDelimiter(entity.getSurveillanceDates(), STANDARD_VALUE_SPLIT_CHAR))
                 .statusEvents(convertToSetOfStatusEvents(entity.getStatusEvents(), STANDARD_VALUE_SPLIT_CHAR))
                 .criteriaMet(convertToSetOfCriteria(entity.getCertificationCriteriaMet(), STANDARD_VALUE_SPLIT_CHAR))
@@ -133,6 +136,7 @@ public class ListingSearchDao extends BaseDAOImpl {
                 .previousDevelopers(convertToSetOfProductOwners(entity.getPreviousDevelopers(), ListingSearchEntity.SMILEY_SPLIT_CHAR))
                 .apiDocumentation(convertToSetOfCriteriaWithStringFields(entity.getCriteriaWithApiDocumentation(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
                 .serviceBaseUrlList(convertToCriterionWithStringField(entity.getCriteriaWithServiceBaseUrlList()))
+                .svaps(convertToSetOfCriteriaWithLongFields(entity.getCriteriaWithSvap(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
                 .build();
     }
 
@@ -288,6 +292,69 @@ public class ListingSearchDao extends BaseDAOImpl {
                 .criterion(convertToCriterion(aggregatedCriterionFields))
                 .value(fieldValue)
                 .build();
+    }
+
+    private Set<CertificationCriterionSearchResultWithLongFields> convertToSetOfCriteriaWithLongFields(String delimitedCriteriaWithLongValue, String delimeter)
+            throws EntityRetrievalException, NumberFormatException {
+            if (ObjectUtils.isEmpty(delimitedCriteriaWithLongValue)) {
+                return new LinkedHashSet<CertificationCriterionSearchResultWithLongFields>();
+            }
+            Set<CertificationCriterionSearchResultWithLongFields> result = new LinkedHashSet<CertificationCriterionSearchResultWithLongFields>();
+
+            String[] criteriaWithLongFields = delimitedCriteriaWithLongValue.split(delimeter);
+            Stream.of(criteriaWithLongFields)
+                    .map(rethrowFunction(criterionWithValue -> convertToCriterionWithLongField(criterionWithValue)))
+                    .forEach(criterionWithLongField -> addToResult(criterionWithLongField, result));
+            return result;
+    }
+
+    private CertificationCriterionSearchResultWithLongFields convertToCriterionWithLongField(String value)
+            throws EntityRetrievalException, NumberFormatException {
+            if (StringUtils.isEmpty(value)) {
+                return null;
+            }
+
+            String[] criteriaSplitFromData = value.split(CertifiedProductSearchResult.FROWNEY_SPLIT_CHAR);
+            if (criteriaSplitFromData == null || criteriaSplitFromData.length != 2) {
+                throw new EntityRetrievalException("Unable to parse criteria with long value from '" + value + "'.");
+            }
+            String aggregatedCriterionFields = criteriaSplitFromData[0];
+            String fieldValueStr = criteriaSplitFromData[1];
+            Long fieldValue = null;
+            try {
+                fieldValue = Long.parseLong(fieldValueStr);
+            } catch (NumberFormatException ex) {
+                LOGGER.error("Cannot parse " + fieldValueStr + " as a Long.", ex);
+                fieldValue = null;
+            }
+
+            Set<Long> values = new LinkedHashSet<Long>();
+            values.add(fieldValue);
+
+            return CertificationCriterionSearchResultWithLongFields.builder()
+                .criterion(convertToCriterion(aggregatedCriterionFields))
+                .values(values)
+                .build();
+    }
+
+    private void addToResult(CertificationCriterionSearchResultWithLongFields item, Set<CertificationCriterionSearchResultWithLongFields> results) {
+        CertificationCriterionSearchResultWithLongFields resultWithCriterion = getResultWithCriterion(item.getCriterion(), results);
+        if (resultWithCriterion != null) {
+            resultWithCriterion.getValues().addAll(item.getValues());
+        } else {
+            results.add(item);
+        }
+    }
+
+    private CertificationCriterionSearchResultWithLongFields getResultWithCriterion(CertificationCriterionSearchResult criterion, Set<CertificationCriterionSearchResultWithLongFields> results) {
+        CertificationCriterionSearchResultWithLongFields resultWithCriterion = null;
+        Optional<CertificationCriterionSearchResultWithLongFields> resultWithCriterionOpt = results.stream()
+            .filter(result -> result.getCriterion().getId().equals(criterion.getId()))
+            .findAny();
+        if (resultWithCriterionOpt.isPresent()) {
+            resultWithCriterion = resultWithCriterionOpt.get();
+        }
+        return resultWithCriterion;
     }
 
     private Set<IdNamePair> convertToSetOfProductOwners(String delimitedProductOwnerString, String delimeter)
