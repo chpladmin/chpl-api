@@ -12,9 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.subscription.SubscriptionManager;
+import gov.healthit.chpl.subscription.domain.Subscription;
 import gov.healthit.chpl.subscription.domain.SubscriptionReason;
+import gov.healthit.chpl.subscription.domain.SubscriptionRequest;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -46,17 +49,17 @@ public class SubscriptionController {
         return subscriptionManager.getAllReasons();
     }
 
-    @Operation(summary = "Subscribe to something.",
+    @Operation(summary = "Subscribe to periodic notifications about changes to a specific item in the CHPL.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/reasons", method = RequestMethod.POST,
-            produces = "application/json; charset=utf-8")
-    public void subscribe() {
+    @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    public Subscription subscribe(@RequestBody SubscriptionRequest subscriptionRequest) {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
         }
         //TODO:
+        return null;
     }
 }
