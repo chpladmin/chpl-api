@@ -93,7 +93,8 @@ public class QuestionableActivityCertificationResultEntity implements Questionab
                 .after(this.getAfter())
                 .activityDate(this.getActivityDate())
                 .userId(this.getUserId())
-                .listing(new CertifiedProductDetailsDTO(this.getCertResult().getListing()))
+                .listing(this.getCertResult() == null ? null
+                    : new CertifiedProductDetailsDTO(this.getCertResult().getListing()))
                 .certResultId(this.getCertResultId())
                 .certResult(this.getCertResult() == null
                     ? CertificationResultDetailsDTO.builder().id(this.getCertResultId()).build()
