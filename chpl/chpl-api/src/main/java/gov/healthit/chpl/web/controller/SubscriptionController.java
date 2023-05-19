@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.commons.lang3.NotImplementedException;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -17,7 +19,6 @@ import gov.healthit.chpl.subscription.domain.SubscriptionReason;
 import gov.healthit.chpl.subscription.domain.SubscriptionRequest;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -40,8 +41,7 @@ public class SubscriptionController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/reasons", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/reasons", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<SubscriptionReason> getSubscriptionReasons() {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
@@ -54,8 +54,7 @@ public class SubscriptionController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/types", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/types", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<SubscribedObjectType> getSubscribedObjectTypes() {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
@@ -68,8 +67,9 @@ public class SubscriptionController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public void subscribe(@RequestBody SubscriptionRequest subscriptionRequest) {
+    @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8",
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void subscribe(@RequestBody(required = true) SubscriptionRequest subscriptionRequest) {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
         }

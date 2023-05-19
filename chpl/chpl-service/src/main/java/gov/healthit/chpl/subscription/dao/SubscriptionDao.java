@@ -97,8 +97,9 @@ public class SubscriptionDao extends BaseDAOImpl {
             subscriptionToCreate.setSubscriptionSubjectId(subjectId);
             create(subscriptionToCreate);
         } else {
-            LOGGER.info("A subscription for subscriber %s, subject ID %s, and object ID %s already exists"
-                    + "and will not be created again.", subscriberId, subjectId, subscribedObjectId);
+            LOGGER.info("A subscription for subscriber " + subscriberId + ", subjectID "
+                    + subjectId + ", and object ID " + subscribedObjectId + " already exists"
+                    + "and will not be created again.");
         }
     }
 

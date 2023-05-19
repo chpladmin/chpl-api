@@ -38,7 +38,7 @@ public class SubscriptionEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "subscriber_id")
+    @Column(name = "subscriber_id", nullable = false)
     private UUID subscriberId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
@@ -72,7 +72,7 @@ public class SubscriptionEntity {
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-    @Column(name = "deleted", nullable = false)
+    @Column(name = "deleted", nullable = false, insertable = false)
     private Boolean deleted;
 
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)

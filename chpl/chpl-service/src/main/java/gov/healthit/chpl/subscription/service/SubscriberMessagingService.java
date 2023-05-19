@@ -39,6 +39,7 @@ public class SubscriberMessagingService {
         this.pendingSubscriberSubject = pendingSubscriberSubject;
         this.pendingSubscriberBody1 = pendingSubscriberBody1;
         this.pendingSubscriberBody2 = pendingSubscriberBody2;
+        this.chplUrlBegin = chplUrlBegin;
         this.confirmSubscriberUrlPart = confirmSubscriberUrlPart;
         this.manageSubscriptionsUrlPart = manageSubscriptionsUrlPart;
     }
@@ -51,6 +52,7 @@ public class SubscriberMessagingService {
                 .heading(pendingSubscriberSubject)
                 .paragraph(null, String.format(pendingSubscriberBody1, chplUrlBegin + confirmationUrlPart))
                 .paragraph(null, String.format(pendingSubscriberBody2, chplUrlBegin + manageUrlPart))
+                .footer(true)
                 .build();
 
         try {
@@ -58,7 +60,6 @@ public class SubscriberMessagingService {
                     .recipients(List.of(subscriber.getEmail()))
                     .subject(pendingSubscriberSubject)
                     .htmlMessage(htmlMessage)
-                    .publicHtmlFooter()
                     .sendEmail();
         } catch (EmailNotSentException msgEx) {
             LOGGER.error("Could not send confirmation email to subscriber " + subscriber.getEmail(), msgEx);
