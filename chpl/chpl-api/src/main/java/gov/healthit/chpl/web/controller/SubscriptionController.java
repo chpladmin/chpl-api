@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.subscription.SubscriptionManager;
 import gov.healthit.chpl.subscription.domain.SubscribedObjectType;
-import gov.healthit.chpl.subscription.domain.Subscription;
 import gov.healthit.chpl.subscription.domain.SubscriptionReason;
 import gov.healthit.chpl.subscription.domain.SubscriptionRequest;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -70,11 +69,10 @@ public class SubscriptionController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public Subscription subscribe(@RequestBody SubscriptionRequest subscriptionRequest) {
+    public void subscribe(@RequestBody SubscriptionRequest subscriptionRequest) {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
         }
-        //TODO:
-        return null;
+        subscriptionManager.subscribe(subscriptionRequest);
     }
 }

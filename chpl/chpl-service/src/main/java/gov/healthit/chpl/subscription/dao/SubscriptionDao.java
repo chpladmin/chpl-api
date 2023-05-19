@@ -20,8 +20,10 @@ import gov.healthit.chpl.subscription.entity.SubscriptionConsolidationMethodEnti
 import gov.healthit.chpl.subscription.entity.SubscriptionEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionReasonEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionSubjectEntity;
+import lombok.extern.log4j.Log4j2;
 
 @Service
+@Log4j2
 public class SubscriptionDao extends BaseDAOImpl {
     private static final String SUBSCRIPTION_HQL = "SELECT subscription "
             + "FROM SubscriptionEntity subscription "
@@ -69,25 +71,49 @@ public class SubscriptionDao extends BaseDAOImpl {
                 .toList();
     }
 
-    public Long createSubscription(UUID subscriberId, Long subscribedObjectTypeId, Long objectId, Long reasonId) {
+    public void createSubscription(UUID subscriberId, Long subscribedObjectTypeId, Long subscribedObjectId, Long reasonId) {
         //Subscribing to a particular object may create create multiple subscriptions for each
         //"subject" related to that type of object. i.e. different things updated on a listing are different subjects.
         //A future management page might give a user more fine-grained control over the "subjects"
         //they subscribe to, so they could subscribe to surveillance added to a listing but not certification status changes.
         //For now, when you create a new subscription it will default to subscribing to all related subjects.
         List<SubscriptionSubject> subjectsForObjectType = getAllSubjectsForObjectType(subscribedObjectTypeId);
+        Long dailyConsolidationMethodId = getSubscriptionConsolidationMethodId(SubscriptionConsolidationMethod.CONSOLIDATION_METHOD_DAILY);
 
-        //TODO: loop this
-        SubscriptionEntity subscriptionToCreate = new SubscriptionEntity();
-        subscriptionToCreate.setLastModifiedUser(User.DEFAULT_USER_ID);
-        subscriptionToCreate.setSubscribedObjectId(objectId);
-        subscriptionToCreate.setSubscriberId(subscriberId);
-        subscriptionToCreate.setSubscriptionConsolidationMethodId(
-                getSubscriptionConsolidationMethodId(SubscriptionConsolidationMethod.CONSOLIDATION_METHOD_DAILY));
-        subscriptionToCreate.setSubscriptionReasonId(reasonId);
-        //TODO: Set subject ID
-        create(subscriptionToCreate);
-        return subscriptionToCreate.getId();
+        subjectsForObjectType.stream()
+            .forEach(subject -> createSubscriptionIfNotExists(
+                    subscriberId, subscribedObjectId, subject.getId(), dailyConsolidationMethodId, reasonId));
+    }
+
+    private void createSubscriptionIfNotExists(UUID subscriberId, Long subscribedObjectId, Long subjectId,
+            Long consolidationMethodId, Long reasonId) {
+        if (!doesSubscriptionExist(subscriberId, subscribedObjectId, subjectId)) {
+            SubscriptionEntity subscriptionToCreate = new SubscriptionEntity();
+            subscriptionToCreate.setLastModifiedUser(User.DEFAULT_USER_ID);
+            subscriptionToCreate.setSubscribedObjectId(subscribedObjectId);
+            subscriptionToCreate.setSubscriberId(subscriberId);
+            subscriptionToCreate.setSubscriptionConsolidationMethodId(consolidationMethodId);
+            subscriptionToCreate.setSubscriptionReasonId(reasonId);
+            subscriptionToCreate.setSubscriptionSubjectId(subjectId);
+            create(subscriptionToCreate);
+        } else {
+            LOGGER.info("A subscription for subscriber %s, subject ID %s, and object ID %s already exists"
+                    + "and will not be created again.", subscriberId, subjectId, subscribedObjectId);
+        }
+    }
+
+    private boolean doesSubscriptionExist(UUID subscriberId, Long subscribedObjectId, Long subjectId) {
+        Query query = entityManager.createQuery("SELECT subscription "
+                + "FROM SubscriptionEntity subscription "
+                + "WHERE subscription.subscriberId = :subscriberId "
+                + "AND subscription.subscribedObjectId = :subscribedObjectId "
+                + "AND subscription.subscriptionSubjectId = :subscriptionSubjectId");
+        query.setParameter("subscriberId", subscriberId);
+        query.setParameter("subscribedObjectId", subscribedObjectId);
+        query.setParameter("subscriptionSubjectId", subjectId);
+
+        List<SubscriptionEntity> results = query.getResultList();
+        return results != null && results.size() > 0;
     }
 
     public Subscription getSubscriptionById(Long subscriptionId) {
