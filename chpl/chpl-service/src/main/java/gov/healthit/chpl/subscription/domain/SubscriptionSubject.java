@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SubscriptionSubject {
     private Long id;
-    private SubscriptionType type;
+    private SubscribedObjectType type;
     private String subject;
 }

@@ -15,8 +15,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.subscription.domain.SubscribedObjectType;
 import gov.healthit.chpl.subscription.domain.SubscriptionSubject;
-import gov.healthit.chpl.subscription.domain.SubscriptionType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -34,12 +34,12 @@ public class SubscriptionSubjectEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "subscription_type_id")
-    private Long subscriptionTypeId;
+    @Column(name = "subscribed_object_type_id")
+    private Long subscribedObjectTypeId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "subscription_type_id", insertable = false, updatable = false)
-    private SubscriptionTypeEntity subscriptionType;
+    @JoinColumn(name = "subscribed_object_type_id", insertable = false, updatable = false)
+    private SubscribedObjectTypeEntity subscribedObjectType;
 
     @Column(name = "subject", nullable = false)
     private String subject;
@@ -59,9 +59,9 @@ public class SubscriptionSubjectEntity {
     public SubscriptionSubject toDomain() {
         return SubscriptionSubject.builder()
                 .id(getId())
-                .type(getSubscriptionType() == null
-                    ? SubscriptionType.builder().id(getSubscriptionTypeId()).build()
-                            : getSubscriptionType().toDomain())
+                .type(getSubscribedObjectType() == null
+                    ? SubscribedObjectType.builder().id(getSubscribedObjectTypeId()).build()
+                            : getSubscribedObjectType().toDomain())
                 .subject(getSubject())
                 .build();
     }

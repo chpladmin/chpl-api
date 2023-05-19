@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class SubscriberStatus {
+    public static final String SUBSCRIBER_STATUS_PENDING = "Pending";
+
     private Long id;
     private String name;
 }

@@ -12,7 +12,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Where;
 
-import gov.healthit.chpl.subscription.domain.SubscriptionType;
+import gov.healthit.chpl.subscription.domain.SubscribedObjectType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,9 +22,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Immutable
-@Table(name = "subscription_type")
+@Table(name = "subscribed_object_type")
 @Where(clause = "deleted <> 'true'")
-public class SubscriptionTypeEntity {
+public class SubscribedObjectTypeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -45,8 +45,8 @@ public class SubscriptionTypeEntity {
     @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
     private Date lastModifiedDate;
 
-    public SubscriptionType toDomain() {
-        return SubscriptionType.builder()
+    public SubscribedObjectType toDomain() {
+        return SubscribedObjectType.builder()
                 .id(getId())
                 .name(getName())
                 .build();

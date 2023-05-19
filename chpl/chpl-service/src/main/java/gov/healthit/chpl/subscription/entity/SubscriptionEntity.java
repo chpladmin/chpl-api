@@ -1,6 +1,7 @@
 package gov.healthit.chpl.subscription.entity;
 
 import java.util.Date;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,7 +39,7 @@ public class SubscriptionEntity {
     private Long id;
 
     @Column(name = "subscriber_id")
-    private Long subscriberId;
+    private UUID subscriberId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "subscriber_id", insertable = false, updatable = false)

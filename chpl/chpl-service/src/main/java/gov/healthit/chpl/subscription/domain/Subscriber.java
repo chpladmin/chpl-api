@@ -1,5 +1,7 @@
 package gov.healthit.chpl.subscription.domain;
 
+import java.util.UUID;
+
 import javax.xml.bind.annotation.XmlTransient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -14,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class Subscriber {
-    private Long id;
+    private UUID id;
     private SubscriberStatus status;
     private String email;
 

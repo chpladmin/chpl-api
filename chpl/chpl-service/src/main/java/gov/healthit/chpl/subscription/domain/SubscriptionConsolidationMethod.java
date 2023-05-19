@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class SubscriptionConsolidationMethod {
+    public static final String CONSOLIDATION_METHOD_DAILY = "Daily";
+
     private Long id;
     private String name;
 }

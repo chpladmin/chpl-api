@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.subscription.SubscriptionManager;
+import gov.healthit.chpl.subscription.domain.SubscribedObjectType;
 import gov.healthit.chpl.subscription.domain.Subscription;
 import gov.healthit.chpl.subscription.domain.SubscriptionReason;
 import gov.healthit.chpl.subscription.domain.SubscriptionRequest;
@@ -47,6 +48,20 @@ public class SubscriptionController {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
         }
         return subscriptionManager.getAllReasons();
+    }
+
+    @Operation(summary = "Get available types of things that may be subscribed to.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/types", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public @ResponseBody List<SubscribedObjectType> getSubscribedObjectTypes() {
+        if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
+            throw new NotImplementedException("The subscriptions feature is not yet implemented.");
+        }
+        return subscriptionManager.getAllSubscribedObjectTypes();
     }
 
     @Operation(summary = "Subscribe to periodic notifications about changes to a specific item in the CHPL.",

@@ -1,5 +1,6 @@
 package gov.healthit.chpl.subscription;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.springframework.stereotype.Component;
@@ -22,5 +23,6 @@ public class SubscriptionRequestValidator {
     }
 
     public Set<String> getErrorMessages(SubscriptionRequest subscriptionRequest) {
+        return Collections.EMPTY_SET;
     }
 }

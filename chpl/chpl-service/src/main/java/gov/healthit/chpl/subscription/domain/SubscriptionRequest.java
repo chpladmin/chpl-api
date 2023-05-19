@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SubscriptionRequest {
     private String email;
-    private String reason;
-    private Long subscriptionTypeId; // Listing, Developer, Product
+    private Long reasonId;
+    private Long subscribedObjectTypeId; // Listing, Developer, Product
     private Long subscribedObjectId; // listing id, developer id, or product id
 }
