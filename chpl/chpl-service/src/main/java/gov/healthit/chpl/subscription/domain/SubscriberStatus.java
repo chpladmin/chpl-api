@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SubscriberStatus {
     public static final String SUBSCRIBER_STATUS_PENDING = "Pending";
+    public static final String SUBSCRIBER_STATUS_CONFIRMED = "Confirmed";
 
     private Long id;
     private String name;

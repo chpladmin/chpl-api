@@ -13,7 +13,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.subscription.domain.Subscriber;
@@ -29,7 +28,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Entity
-@Immutable
 @Table(name = "subscription")
 @Where(clause = "deleted <> 'true'")
 public class SubscriptionEntity {

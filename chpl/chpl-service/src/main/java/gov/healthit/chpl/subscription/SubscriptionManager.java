@@ -63,4 +63,9 @@ public class SubscriptionManager {
         subscriptionDao.createSubscription(subscriber.getId(), subscriptionRequest.getSubscribedObjectTypeId(),
                 subscriptionRequest.getSubscribedObjectId(), subscriptionRequest.getReasonId());
     }
+
+    @Transactional
+    public void confirm(UUID subscriberUuid) {
+        subscriberDao.confirmSubscriber(subscriberUuid);
+    }
 }

@@ -12,7 +12,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.subscription.domain.Subscriber;
@@ -25,7 +24,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Entity
-@Immutable
 @Table(name = "subscriber")
 @Where(clause = "deleted <> 'true'")
 public class SubscriberEntity {
@@ -35,7 +33,7 @@ public class SubscriberEntity {
     @Column(name = "id", nullable = false)
     private UUID id;
 
-    @Column(name = "subscriber_status_id")
+    @Column(name = "subscriber_status_id", nullable = false)
     private Long subscriberStatusId;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)

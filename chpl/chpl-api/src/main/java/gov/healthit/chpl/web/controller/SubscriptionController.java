@@ -1,6 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.ff4j.FF4j;
@@ -62,7 +63,9 @@ public class SubscriptionController {
         return subscriptionManager.getAllSubscribedObjectTypes();
     }
 
-    @Operation(summary = "Subscribe to periodic notifications about changes to a specific item in the CHPL.",
+    @Operation(summary = "Subscribe to periodic notifications about changes to a specific item in the CHPL. "
+            + "A new subscriber will be created and will need confirm their email address "
+            + "if there is not currently a subscriber with this email address.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -74,5 +77,20 @@ public class SubscriptionController {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
         }
         subscriptionManager.subscribe(subscriptionRequest);
+    }
+
+    @Operation(summary = "Confirm a subscriber's email address is valid. Once confirmed, the subscriber "
+            + "will start receiving notifications at the specified email address.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/confirm-subscriber", method = RequestMethod.PUT, produces = "application/json; charset=utf-8",
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void subscribe(@RequestBody(required = true) String subscriberUuid) {
+        if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
+            throw new NotImplementedException("The subscriptions feature is not yet implemented.");
+        }
+        subscriptionManager.confirm(UUID.fromString(subscriberUuid));
     }
 }

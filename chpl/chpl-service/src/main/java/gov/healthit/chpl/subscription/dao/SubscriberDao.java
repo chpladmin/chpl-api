@@ -13,8 +13,10 @@ import gov.healthit.chpl.subscription.domain.Subscriber;
 import gov.healthit.chpl.subscription.domain.SubscriberStatus;
 import gov.healthit.chpl.subscription.entity.SubscriberEntity;
 import gov.healthit.chpl.subscription.entity.SubscriberStatusEntity;
+import lombok.extern.log4j.Log4j2;
 
 @Service
+@Log4j2
 public class SubscriberDao extends BaseDAOImpl {
     private static final String SUBSCRIBER_HQL = "SELECT subscriber "
             + "FROM SubscriberEntity subscriber "
@@ -27,6 +29,16 @@ public class SubscriberDao extends BaseDAOImpl {
         subscriberToCreate.setSubscriberStatusId(getSubscriberStatusId(SubscriberStatus.SUBSCRIBER_STATUS_PENDING));
         create(subscriberToCreate);
         return subscriberToCreate.getId();
+    }
+
+    public void confirmSubscriber(UUID subscriberUuid) {
+        SubscriberEntity subscriber = entityManager.find(SubscriberEntity.class, subscriberUuid);
+        if (subscriber == null) {
+            LOGGER.error("No subscriber was found with ID " + subscriberUuid);
+            return;
+        }
+        subscriber.setSubscriberStatusId(getSubscriberStatusId(SubscriberStatus.SUBSCRIBER_STATUS_CONFIRMED));
+        update(subscriber);
     }
 
     public Subscriber getSubscriberByEmail(String email) {
