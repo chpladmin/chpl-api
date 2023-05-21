@@ -5,19 +5,21 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.subscription.domain.SubscribedObjectType;
+import gov.healthit.chpl.subscription.domain.SubscriberStatus;
 import gov.healthit.chpl.subscription.domain.Subscription;
 import gov.healthit.chpl.subscription.domain.SubscriptionConsolidationMethod;
+import gov.healthit.chpl.subscription.domain.SubscriptionObjectType;
 import gov.healthit.chpl.subscription.domain.SubscriptionReason;
 import gov.healthit.chpl.subscription.domain.SubscriptionSubject;
-import gov.healthit.chpl.subscription.entity.SubscribedObjectTypeEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionConsolidationMethodEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionEntity;
+import gov.healthit.chpl.subscription.entity.SubscriptionObjectTypeEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionReasonEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionSubjectEntity;
 import lombok.extern.log4j.Log4j2;
@@ -31,7 +33,7 @@ public class SubscriptionDao extends BaseDAOImpl {
             + "LEFT JOIN FETCH subscriber.subscriberStatus "
             + "LEFT JOIN FETCH subscription.subscriptionReason "
             + "LEFT JOIN FETCH subscription.subscriptionSubject subject "
-            + "LEFT JOIN FETCH subject.subscribedObjectType "
+            + "LEFT JOIN FETCH subject.subscriptionObjectType "
             + "LEFT JOIN FETCH subscription.subscriptionConsolidationMethod ";
 
     public List<SubscriptionReason> getAllReasons() {
@@ -46,24 +48,36 @@ public class SubscriptionDao extends BaseDAOImpl {
                 .toList();
     }
 
-    public List<SubscribedObjectType> getAllSubscribedObjectTypes() {
+    public List<SubscriptionObjectType> getAllSubscribedObjectTypes() {
         Query query = entityManager.createQuery("SELECT types "
-                + "FROM SubscribedObjectTypeEntity types ",
-                SubscribedObjectTypeEntity.class);
+                + "FROM SubscriptionObjectTypeEntity types ",
+                SubscriptionObjectTypeEntity.class);
 
-        List<SubscribedObjectTypeEntity> results = query.getResultList();
+        List<SubscriptionObjectTypeEntity> results = query.getResultList();
+        return results.stream()
+                .map(entity -> entity.toDomain())
+                .toList();
+    }
+
+    @Transactional
+    public List<SubscriptionSubject> getAllSubjects() {
+        Query query = entityManager.createQuery("SELECT subjects "
+                + "FROM SubscriptionSubjectEntity subjects ",
+                SubscriptionSubjectEntity.class);
+
+        List<SubscriptionSubjectEntity> results = query.getResultList();
         return results.stream()
                 .map(entity -> entity.toDomain())
                 .toList();
     }
 
     //making this public because I suspect we will need it eventually for the management page
-    public List<SubscriptionSubject> getAllSubjectsForObjectType(Long subscribedObjectTypeId) {
+    public List<SubscriptionSubject> getAllSubjectsForObjectType(Long subscriptionObjectTypeId) {
         Query query = entityManager.createQuery("SELECT subjects "
                 + "FROM SubscriptionSubjectEntity subjects "
-                + "WHERE subjects.subscribedObjectTypeId = :subscribedObjectTypeId",
+                + "WHERE subjects.subscriptionObjectTypeId = :subscriptionObjectTypeId",
                 SubscriptionSubjectEntity.class);
-        query.setParameter("subscribedObjectTypeId", subscribedObjectTypeId);
+        query.setParameter("subscriptionObjectTypeId", subscriptionObjectTypeId);
 
         List<SubscriptionSubjectEntity> results = query.getResultList();
         return results.stream()
@@ -140,6 +154,24 @@ public class SubscriptionDao extends BaseDAOImpl {
         return results.stream()
                 .map(entity -> entity.toDomain())
                 .collect(Collectors.toList());
+    }
+
+    public List<Long> getSubscriptionIdsForConfirmedSubscribers(Long subjectId, Long subscribedObjectId) {
+        Query query = entityManager.createQuery("SELECT subscription "
+                + "FROM SubscriptionEntity subscription "
+                + "JOIN FETCH subscription.subscriber subscriber "
+                + "JOIN FETCH subscriber.subscriberStatus subscriberStatus "
+                + "WHERE subscription.subscribedObjectId = :subscribedObjectId "
+                + "AND subscription.subscriptionSubjectId = :subscriptionSubjectId "
+                + "AND subscriberStatus.name = :confirmedSubscriberStatusName");
+        query.setParameter("confirmedSubscriberStatusName", SubscriberStatus.SUBSCRIBER_STATUS_CONFIRMED);
+        query.setParameter("subscribedObjectId", subscribedObjectId);
+        query.setParameter("subscriptionSubjectId", subjectId);
+
+        List<SubscriptionEntity> results = query.getResultList();
+        return results.stream()
+            .map(result -> result.getId())
+            .collect(Collectors.toList());
     }
 
     private Long getSubscriptionConsolidationMethodId(String consolidationMethodName) {

@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.subscription.dao.SubscriberDao;
 import gov.healthit.chpl.subscription.dao.SubscriptionDao;
-import gov.healthit.chpl.subscription.domain.SubscribedObjectType;
 import gov.healthit.chpl.subscription.domain.Subscriber;
 import gov.healthit.chpl.subscription.domain.SubscriberStatus;
+import gov.healthit.chpl.subscription.domain.SubscriptionObjectType;
 import gov.healthit.chpl.subscription.domain.SubscriptionReason;
 import gov.healthit.chpl.subscription.domain.SubscriptionRequest;
 import gov.healthit.chpl.subscription.service.SubscriberMessagingService;
@@ -38,17 +38,18 @@ public class SubscriptionManager {
     }
 
     @Transactional
-    public List<SubscribedObjectType> getAllSubscribedObjectTypes() {
+    public List<SubscriptionObjectType> getAllSubscribedObjectTypes() {
         return subscriptionDao.getAllSubscribedObjectTypes();
     }
 
     @Transactional
     public void subscribe(SubscriptionRequest subscriptionRequest) {
         //TODO:  we should validate this request
+            // that the email is of a valid format and trim() it
             // that the subscribed object type ID is valid
             // that there is an object of the appropriate type with the ID that the user specified
             // that the reason ID is valid
-            // I think we should throw a validation exception and return bad request
+            // I think we should throw a validation exception and return bad request, though this should *never* happen in the UI
 
         Subscriber subscriber = subscriberDao.getSubscriberByEmail(subscriptionRequest.getEmail());
         if (subscriber == null) {

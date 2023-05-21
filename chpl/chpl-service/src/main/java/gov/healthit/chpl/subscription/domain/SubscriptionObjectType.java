@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SubscribedObjectType {
+public class SubscriptionObjectType {
     private Long id;
     private String name;
 }

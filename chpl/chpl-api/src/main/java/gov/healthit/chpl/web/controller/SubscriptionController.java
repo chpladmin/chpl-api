@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.subscription.SubscriptionManager;
-import gov.healthit.chpl.subscription.domain.SubscribedObjectType;
+import gov.healthit.chpl.subscription.domain.SubscriptionObjectType;
 import gov.healthit.chpl.subscription.domain.SubscriptionReason;
 import gov.healthit.chpl.subscription.domain.SubscriptionRequest;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -56,7 +56,7 @@ public class SubscriptionController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/types", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<SubscribedObjectType> getSubscribedObjectTypes() {
+    public @ResponseBody List<SubscriptionObjectType> getSubscribedObjectTypes() {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
         }
@@ -87,7 +87,7 @@ public class SubscriptionController {
             })
     @RequestMapping(value = "/confirm-subscriber", method = RequestMethod.PUT, produces = "application/json; charset=utf-8",
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void subscribe(@RequestBody(required = true) String subscriberUuid) {
+    public void confirmSubscriber(@RequestBody(required = true) String subscriberUuid) {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
         }

@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SubscriptionSubject {
+public class SubscriptionObservation {
+
     private Long id;
-    private SubscriptionObjectType type;
-    private String subject;
+    private Subscription subscription;
+    private Long activityId;
 }
