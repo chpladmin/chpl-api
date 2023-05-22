@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -24,7 +24,7 @@ import gov.healthit.chpl.subscription.entity.SubscriptionReasonEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionSubjectEntity;
 import lombok.extern.log4j.Log4j2;
 
-@Service
+@Repository
 @Log4j2
 public class SubscriptionDao extends BaseDAOImpl {
     private static final String SUBSCRIPTION_HQL = "SELECT subscription "

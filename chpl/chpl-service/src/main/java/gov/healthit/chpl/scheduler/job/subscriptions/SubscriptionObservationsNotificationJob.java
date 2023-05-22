@@ -2,7 +2,9 @@ package gov.healthit.chpl.scheduler.job.subscriptions;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -15,6 +17,7 @@ import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.subscription.dao.SubscriptionDao;
 import gov.healthit.chpl.subscription.dao.SubscriptionObservationDao;
+import gov.healthit.chpl.subscription.domain.Subscriber;
 import gov.healthit.chpl.subscription.domain.SubscriptionConsolidationMethod;
 import gov.healthit.chpl.subscription.domain.SubscriptionObservation;
 import lombok.extern.log4j.Log4j2;
@@ -48,12 +51,13 @@ public class SubscriptionObservationsNotificationJob  implements Job {
             return;
         }
 
-        //TODO: make sure we do notification + delete in a transaction so we don't
-        //delete any observations that failed to send for some reason
         try {
-            List<SubscriptionObservation> observationsToNotify = getObservations();
+            Map<Subscriber, List<SubscriptionObservation>> observationsGroupedBySubscriber
+                = getObservations().stream()
+                    .collect(Collectors.groupingBy(SubscriptionObservation::getSubscriber));
+
+            //notify the subscriber about their relevant observations + delete those observations in one tx
 //            sendEmails(context, observationsToNotify);
-            deleteNotifiedObservations(observationsToNotify);
         } catch (Exception e) {
             LOGGER.catching(e);
         } finally {
@@ -101,8 +105,4 @@ public class SubscriptionObservationsNotificationJob  implements Job {
 //                .footer(true)
 //                .build();
 //    }
-
-    private void deleteNotifiedObservations(List<SubscriptionObservation> observations) {
-        observationDao.deleteObservations(observations.stream().map(obs -> obs.getId()).toList());
-    }
 }

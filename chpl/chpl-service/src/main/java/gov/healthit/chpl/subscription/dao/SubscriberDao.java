@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import javax.persistence.Query;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -15,7 +15,7 @@ import gov.healthit.chpl.subscription.entity.SubscriberEntity;
 import gov.healthit.chpl.subscription.entity.SubscriberStatusEntity;
 import lombok.extern.log4j.Log4j2;
 
-@Service
+@Repository
 @Log4j2
 public class SubscriberDao extends BaseDAOImpl {
     private static final String SUBSCRIBER_HQL = "SELECT subscriber "

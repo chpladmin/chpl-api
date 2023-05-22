@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -12,7 +12,7 @@ import gov.healthit.chpl.subscription.domain.SubscriptionObservation;
 import gov.healthit.chpl.subscription.entity.SubscriptionObservationEntity;
 import lombok.extern.log4j.Log4j2;
 
-@Service
+@Repository
 @Log4j2
 public class SubscriptionObservationDao extends BaseDAOImpl {
     private static final String OBSERVATION_HQL = "SELECT observation "

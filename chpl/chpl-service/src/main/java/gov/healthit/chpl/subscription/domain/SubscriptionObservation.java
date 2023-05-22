@@ -14,4 +14,11 @@ public class SubscriptionObservation {
     private Long id;
     private Subscription subscription;
     private Long activityId;
+
+    public Subscriber getSubscriber() {
+        if (this.subscription == null) {
+            return null;
+        }
+        return this.subscription.getSubscriber();
+    }
 }

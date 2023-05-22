@@ -4,7 +4,13 @@ import gov.healthit.chpl.dto.ActivityDTO;
 
 public interface SubscriptionSubjectProcessor {
 
-    boolean doesActivityMatchSubject(ActivityDTO activity, Object originalData, Object newData);
-    String displayActivity(); //used by a system job when creating emails with consolidated observations
+    /**
+     * Determines if the passed-in activity is relevant to the subscription subject
+     */
+    boolean isRelevantTo(ActivityDTO activity, Object originalData, Object newData);
+
+    /**
+     * Returns the "subject" this processor is observing
+     */
     String getSubjectName();
 }

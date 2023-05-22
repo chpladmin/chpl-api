@@ -7,7 +7,7 @@ import gov.healthit.chpl.dto.ActivityDTO;
 public class CertificationStatusChangedActivityProcessor implements SubscriptionSubjectProcessor {
     private static final String SUBJECT_NAME = "Certification Status Changed";
 
-    public boolean doesActivityMatchSubject(ActivityDTO activity, Object originalData, Object newData) {
+    public boolean isRelevantTo(ActivityDTO activity, Object originalData, Object newData) {
         if (activity.getConcept().equals(ActivityConcept.CERTIFIED_PRODUCT)) {
             CertifiedProductSearchDetails originalListing = (CertifiedProductSearchDetails) originalData;
             CertifiedProductSearchDetails newListing = (CertifiedProductSearchDetails) newData;
@@ -19,11 +19,6 @@ public class CertificationStatusChangedActivityProcessor implements Subscription
     private boolean areCertificationStatusesDifferent(CertifiedProductSearchDetails originalListing,
             CertifiedProductSearchDetails newListing) {
         return !originalListing.getCurrentStatus().getStatus().getId().equals(newListing.getCurrentStatus().getStatus().getId());
-    }
-
-    public String displayActivity() {
-        //TODO:
-        return null;
     }
 
     public String getSubjectName() {

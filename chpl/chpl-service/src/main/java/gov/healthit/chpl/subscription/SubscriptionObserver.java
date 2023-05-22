@@ -36,7 +36,7 @@ public class SubscriptionObserver {
 
     public void checkActivityForSubscriptions(ActivityDTO activity, Object originalData, Object newData) {
         processors.stream()
-            .filter(processor -> processor.doesActivityMatchSubject(activity, originalData, newData))
+            .filter(processor -> processor.isRelevantTo(activity, originalData, newData))
             .map(processor -> getSubjectId(processor.getSubjectName()))
             .filter(subjectId -> subjectId != null)
             .forEach(subjectId -> createObservations(subjectId, activity.getActivityObjectId(), activity.getId()));
