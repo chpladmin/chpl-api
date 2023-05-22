@@ -8,14 +8,6 @@
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
-        <delete-job>
-            <name>mergeDeveloperJob</name>
-            <group>chplBackgroundJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>updateParticipantsJob</name>
-            <group>systemJobs</group>
-        </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
@@ -726,6 +718,36 @@
             <job-class>gov.healthit.chpl.scheduler.job.onetime.criteriaremoval.RemoveCriteriaJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
+        </job>
+
+        <job>
+            <name>subscriptionObservationsDailyNotificationJob</name>
+            <group>systemJobs</group>
+            <description>Notify subscribers of relevant changes in the CHPL on a daily basis</description>
+            <job-class>gov.healthit.chpl.scheduler.job.subscriptions.SubscriptionObservationsNotificationJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>consolidationMethod</key>
+                    <value>DAILY</value>
+                </entry>
+            </job-data-map>
+        </job>
+
+        <job>
+            <name>subscriptionObservationsWeeklyNotificationJob</name>
+            <group>systemJobs</group>
+            <description>Notify subscribers of relevant changes in the CHPL on a weekly basis</description>
+            <job-class>gov.healthit.chpl.scheduler.job.subscriptions.SubscriptionObservationsNotificationJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>consolidationMethod</key>
+                    <value>WEEKLY</value>
+                </entry>
+            </job-data-map>
         </job>
 
         <job>

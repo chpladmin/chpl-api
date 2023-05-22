@@ -20,7 +20,7 @@ import lombok.extern.log4j.Log4j2;
 public class SubscriberDao extends BaseDAOImpl {
     private static final String SUBSCRIBER_HQL = "SELECT subscriber "
             + "FROM SubscriberEntity subscriber "
-            + "LEFT JOIN FETCH subscriber.subscriberStatus ";
+            + "JOIN FETCH subscriber.subscriberStatus ";
 
     public UUID createSubscriber(String email) {
         SubscriberEntity subscriberToCreate = new SubscriberEntity();

@@ -29,12 +29,12 @@ import lombok.extern.log4j.Log4j2;
 public class SubscriptionDao extends BaseDAOImpl {
     private static final String SUBSCRIPTION_HQL = "SELECT subscription "
             + "FROM SubscriptionEntity subscription "
-            + "LEFT JOIN FETCH subscription.subscriber subscriber "
-            + "LEFT JOIN FETCH subscriber.subscriberStatus "
+            + "JOIN FETCH subscription.subscriber subscriber "
+            + "JOIN FETCH subscriber.subscriberStatus "
             + "LEFT JOIN FETCH subscription.subscriptionReason "
-            + "LEFT JOIN FETCH subscription.subscriptionSubject subject "
-            + "LEFT JOIN FETCH subject.subscriptionObjectType "
-            + "LEFT JOIN FETCH subscription.subscriptionConsolidationMethod ";
+            + "JOIN FETCH subscription.subscriptionSubject subject "
+            + "JOIN FETCH subject.subscriptionObjectType "
+            + "JOIN FETCH subscription.subscriptionConsolidationMethod ";
 
     public List<SubscriptionReason> getAllReasons() {
         Query query = entityManager.createQuery("SELECT reasons "
@@ -66,6 +66,17 @@ public class SubscriptionDao extends BaseDAOImpl {
                 SubscriptionSubjectEntity.class);
 
         List<SubscriptionSubjectEntity> results = query.getResultList();
+        return results.stream()
+                .map(entity -> entity.toDomain())
+                .toList();
+    }
+
+    public List<SubscriptionConsolidationMethod> getAllConsolidationMethods() {
+        Query query = entityManager.createQuery("SELECT methods "
+                + "FROM SubscriptionConsolidationMethodEntity methods ",
+                SubscriptionConsolidationMethodEntity.class);
+
+        List<SubscriptionConsolidationMethodEntity> results = query.getResultList();
         return results.stream()
                 .map(entity -> entity.toDomain())
                 .toList();

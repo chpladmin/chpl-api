@@ -55,7 +55,7 @@ public class SubscriptionObserver {
 
     private void createObservations(Long subjectId, Long objectId, Long activityId) {
         List<Long> subscriptionIds = subscriptionDao.getSubscriptionIdsForConfirmedSubscribers(subjectId, objectId);
-        observationDao.create(subscriptionIds, activityId);
+        observationDao.createObservations(subscriptionIds, activityId);
     }
 
     private void createSubscriptionSubjectProcessors() {
