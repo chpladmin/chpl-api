@@ -54,13 +54,13 @@ public class TestToolReviewer extends PermissionBasedReviewer {
 
     private void validateTestTool(CertifiedProductSearchDetails listing, CertificationResult cert, CertificationResultTestTool testTool) {
         if (StringUtils.isEmpty(testTool.getTestToolName()) && testTool.getTestToolId() == null) {
-            listing.getErrorMessages().add(msgUtil.getMessage(
+            listing.addDataErrorMessage(msgUtil.getMessage(
                     "listing.criteria.missingTestToolName",
                     Util.formatCriteriaNumber(cert.getCriterion())));
         } else {
             Optional<TestToolDTO> tt = getTestTool(testTool);
             if (!tt.isPresent()) {
-                listing.getErrorMessages().add(msgUtil.getMessage(
+                listing.addDataErrorMessage(msgUtil.getMessage(
                         "listing.criteria.testToolNotFound",
                         Util.formatCriteriaNumber(cert.getCriterion()),
                         testTool.getTestToolName()));
@@ -68,7 +68,7 @@ public class TestToolReviewer extends PermissionBasedReviewer {
             }
 
             if (!isTestToolValidForCriteria(new CertificationCriterionDTO(cert.getCriterion()), tt.get())) {
-                listing.getErrorMessages().add(msgUtil.getMessage(
+                listing.addBusinessErrorMessage(msgUtil.getMessage(
                         "listing.criteria.testToolCriterionMismatch",
                         testTool.getTestToolName(),
                         Util.formatCriteriaNumber(cert.getCriterion())));
@@ -76,7 +76,7 @@ public class TestToolReviewer extends PermissionBasedReviewer {
             }
 
             if (isTestToolRetired(tt.get())) {
-                listing.getWarningMessages().add(msgUtil.getMessage(
+                listing.addWarningMessage(msgUtil.getMessage(
                         "listing.criteria.retiredTestToolNotAllowed",
                         testTool.getTestToolName(),
                         Util.formatCriteriaNumber(cert.getCriterion())));

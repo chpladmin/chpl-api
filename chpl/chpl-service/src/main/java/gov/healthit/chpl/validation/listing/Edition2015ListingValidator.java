@@ -293,6 +293,7 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(measureReviewer);
         reviewers.add(accessibilityStandardReviewer);
         reviewers.add(qmsStandardReviewer);
+        reviewers.add(realWorldTestingReviewer);
         //after the grace period ends this reviewer should be included
         if (ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD_END)) {
             reviewers.add(privacyAndSecurityCriteriaReviewer);
@@ -315,7 +316,6 @@ public class Edition2015ListingValidator extends Validator {
         if (!ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD_END)) {
             comparisonReviewers.add(privacyAndSecurityCriteriaReviewerPreErdPhase2);
         }
-        comparisonReviewers.add(realWorldTestingReviewer);
         comparisonReviewers.add(svapReviewer);
         comparisonReviewers.add(inheritanceComparisonReviewer);
         comparisonReviewers.add(deprecatedFieldReviewer);

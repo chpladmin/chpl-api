@@ -30,11 +30,11 @@ public class ChplNumberReviewer implements Reviewer {
     }
 
     /**
-     * Looks at the format of the CHPL Product Number
-     * Makes sure each part of the identifier is correctly formatted and is the correct value.
-     * May change the CHPL ID if necessary (if additional software was added or certification date was changed)
-     * and if the CHPL ID is changed, confirms that the new ID is unique.
+     * Looks at the format of the CHPL Product Number Makes sure each part of the identifier is correctly formatted and is the correct value. May change the
+     * CHPL ID if necessary (if additional software was added or certification date was changed) and if the CHPL ID is changed, confirms that the new ID is
+     * unique.
      */
+    @Override
     public void review(final CertifiedProductSearchDetails listing) {
         String origUniqueId = listing.getChplProductNumber();
         String[] uniqueIdParts = origUniqueId.split("\\.");
@@ -46,47 +46,44 @@ public class ChplNumberReviewer implements Reviewer {
             if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                     ChplProductNumberUtil.PRODUCT_CODE_INDEX,
                     ChplProductNumberUtil.PRODUCT_CODE_REGEX)) {
-                listing.getErrorMessages()
-                .add(msgUtil.getMessage("listing.badProductCodeChars", ChplProductNumberUtil.PRODUCT_CODE_LENGTH));
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.badProductCodeChars", ChplProductNumberUtil.PRODUCT_CODE_LENGTH));
             }
 
             if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                     ChplProductNumberUtil.VERSION_CODE_INDEX,
                     ChplProductNumberUtil.VERSION_CODE_REGEX)) {
-                listing.getErrorMessages()
-                .add(msgUtil.getMessage("listing.badVersionCodeChars", ChplProductNumberUtil.VERSION_CODE_LENGTH));
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.badVersionCodeChars", ChplProductNumberUtil.VERSION_CODE_LENGTH));
             }
 
             if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                     ChplProductNumberUtil.ICS_CODE_INDEX,
                     ChplProductNumberUtil.ICS_CODE_REGEX)) {
-                listing.getErrorMessages()
-                .add(msgUtil.getMessage("listing.badIcsCodeChars", ChplProductNumberUtil.ICS_CODE_LENGTH));
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.badIcsCodeChars", ChplProductNumberUtil.ICS_CODE_LENGTH));
             } else {
                 Integer icsCodeInteger = Integer.valueOf(uniqueIdParts[ChplProductNumberUtil.ICS_CODE_INDEX]);
                 if (icsCodeInteger != null && icsCodeInteger.intValue() == 0) {
                     if (listing.getIcs() != null && listing.getIcs().getParents() != null
                             && listing.getIcs().getParents().size() > 0) {
-                        listing.getErrorMessages().add(msgUtil.getMessage("listing.ics00"));
+                        listing.addDataErrorMessage(msgUtil.getMessage("listing.ics00"));
                     }
 
                     if (listing.getIcs() != null && listing.getIcs().getInherits() != null
                             && listing.getIcs().getInherits().equals(Boolean.TRUE)) {
-                        listing.getErrorMessages().add(msgUtil.getMessage("listing.icsCodeFalseValueTrue"));
+                        listing.addDataErrorMessage(msgUtil.getMessage("listing.icsCodeFalseValueTrue"));
                     }
                 } else if (listing.getIcs() == null || listing.getIcs().getInherits() == null
                         || listing.getIcs().getInherits().equals(Boolean.FALSE) && icsCodeInteger != null
-                        && icsCodeInteger.intValue() > 0) {
-                    listing.getErrorMessages().add(msgUtil.getMessage("listing.icsCodeTrueValueFalse"));
+                                && icsCodeInteger.intValue() > 0) {
+                    listing.addDataErrorMessage(msgUtil.getMessage("listing.icsCodeTrueValueFalse"));
                 }
             }
 
             if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                     ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_INDEX,
                     ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_REGEX)) {
-                listing.getErrorMessages()
-                .add(msgUtil.getMessage("listing.badAdditionalSoftwareCodeChars",
-                        ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_LENGTH));
+                listing.addDataErrorMessage(
+                        msgUtil.getMessage("listing.badAdditionalSoftwareCodeChars",
+                                ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_LENGTH));
             } else {
                 boolean hasAS = certificationResultManager.getCertifiedProductHasAdditionalSoftware(listing.getId());
                 String desiredAdditionalSoftwareCode = hasAS ? "1" : "0";
@@ -99,8 +96,8 @@ public class ChplNumberReviewer implements Reviewer {
             if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                     ChplProductNumberUtil.CERTIFIED_DATE_CODE_INDEX,
                     ChplProductNumberUtil.CERTIFIED_DATE_CODE_REGEX)) {
-                listing.getErrorMessages()
-                .add(msgUtil.getMessage("listing.badCertifiedDateCodeChars", ChplProductNumberUtil.CERTIFIED_DATE_CODE_LENGTH));
+                listing.addDataErrorMessage(
+                        msgUtil.getMessage("listing.badCertifiedDateCodeChars", ChplProductNumberUtil.CERTIFIED_DATE_CODE_LENGTH));
             }
             SimpleDateFormat idDateFormat = new SimpleDateFormat("yyMMdd");
             idDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -119,10 +116,10 @@ public class ChplNumberReviewer implements Reviewer {
             // only check this if we know it changed
             // because if it hasn't changed there will be 1 product with its id (itself)
             if (!chplProductNumberUtil.isUnique(listing.getChplProductNumber())) {
-                listing.getErrorMessages().add(
+                listing.addDataErrorMessage(
                         msgUtil.getMessage("listing.chplProductNumber.systemChangedNotUnique",
-                        origUniqueId,
-                        updatedUniqueId));
+                                origUniqueId,
+                                updatedUniqueId));
             }
         }
     }

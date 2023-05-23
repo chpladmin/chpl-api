@@ -35,6 +35,7 @@ public class InheritanceReviewer implements Reviewer {
         this.msgUtil = msgUtil;
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         if (listing.getIcs() == null) {
             return;
@@ -42,10 +43,10 @@ public class InheritanceReviewer implements Reviewer {
 
         if (!inherits(listing) && listing.getIcs().getParents() != null
                 && listing.getIcs().getParents().size() > 0) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.icsFalseAndParentsFound"));
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.icsFalseAndParentsFound"));
         } else if (inherits(listing) && (listing.getIcs().getParents() == null
                 || listing.getIcs().getParents().size() == 0)) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.icsTrueAndNoParentsFound"));
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.icsTrueAndNoParentsFound"));
         }
 
         if (listing.getIcs().getParents() != null && listing.getIcs().getParents().size() > 0) {
@@ -53,11 +54,11 @@ public class InheritanceReviewer implements Reviewer {
             for (CertifiedProduct icsParent : listing.getIcs().getParents()) {
                 lookupListingId(icsParent);
 
-                //if the ID is still null after trying to look it up, that's a problem
+                // if the ID is still null after trying to look it up, that's a problem
                 if (icsParent.getId() == null) {
-                    listing.getErrorMessages().add(msgUtil.getMessage("listing.icsUniqueIdNotFound", icsParent.getChplProductNumber()));
+                    listing.addDataErrorMessage(msgUtil.getMessage("listing.icsUniqueIdNotFound", icsParent.getChplProductNumber()));
                 } else if (icsParent.getId().equals(listing.getId())) {
-                    listing.getErrorMessages().add(msgUtil.getMessage("listing.icsSelfInheritance"));
+                    listing.addDataErrorMessage(msgUtil.getMessage("listing.icsSelfInheritance"));
                 } else {
                     parentListingIds.add(icsParent.getId());
                 }
@@ -91,9 +92,9 @@ public class InheritanceReviewer implements Reviewer {
     private void reviewListingParentsHaveSameEditionAsListing(List<Long> parentIds, CertifiedProductSearchDetails listing) {
         List<CertificationEditionDTO> parentEditions = certEditionDao.getEditions(parentIds);
         parentEditions.stream()
-            .filter(parentEdition -> !listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString()
-                    .equals(parentEdition.getId().toString()))
-            .forEach(parentEdition -> listing.getErrorMessages().add(
+                .filter(parentEdition -> !listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString()
+                        .equals(parentEdition.getId().toString()))
+                .forEach(parentEdition -> listing.addBusinessErrorMessage(
                         msgUtil.getMessage("listing.icsEditionMismatch", parentEdition.getYear())));
     }
 
@@ -108,8 +109,8 @@ public class InheritanceReviewer implements Reviewer {
 
         if (largestIcs != null && icsCodeInteger != null
                 && icsCodeInteger.intValue() != (largestIcs.intValue() + 1)) {
-            listing.getErrorMessages().add(
-                       msgUtil.getMessage("listing.icsNotLargestCode", icsCodeInteger, largestIcs));
+            listing.addBusinessErrorMessage(
+                    msgUtil.getMessage("listing.icsNotLargestCode", icsCodeInteger, largestIcs));
         }
     }
 }

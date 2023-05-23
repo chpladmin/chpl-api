@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +39,10 @@ public class SvapDuplicateReviewer {
         }
 
         if (svapDuplicateResults.duplicatesExist()) {
-            listing.getWarningMessages().addAll(
+            listing.addAllWarningMessages(
                     getWarnings(svapDuplicateResults.getDuplicateList(),
-                            Util.formatCriteriaNumber(certificationResult.getCriterion())));
+                            Util.formatCriteriaNumber(certificationResult.getCriterion())).stream()
+                    .collect(Collectors.toSet()));
             certificationResult.setSvaps(svapDuplicateResults.getUniqueList());
         }
     }

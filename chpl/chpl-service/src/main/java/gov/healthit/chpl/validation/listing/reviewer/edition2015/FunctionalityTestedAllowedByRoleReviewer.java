@@ -53,7 +53,7 @@ public class FunctionalityTestedAllowedByRoleReviewer implements ComparisonRevie
 
                 List<CertificationResultFunctionalityTested> addedCrtfs = getAddedFunctionalitiesTested(listUpdateCrtfs, listExistingCrtfs);
 
-                //Only check removed CertificationResultFunctionalityTested if the criteria is attested to
+                // Only check removed CertificationResultFunctionalityTested if the criteria is attested to
                 List<CertificationResultFunctionalityTested> removedCrtfs = new ArrayList<CertificationResultFunctionalityTested>();
                 if (BooleanUtils.isTrue(updatedCr.isSuccess())) {
                     removedCrtfs = getRemovedFunctionalitiesTested(listUpdateCrtfs, listExistingCrtfs);
@@ -65,9 +65,8 @@ public class FunctionalityTestedAllowedByRoleReviewer implements ComparisonRevie
                 allEditedCrtfs.stream()
                         .forEach(crtf -> {
                             if (!isFunctionalityTestedChangeAllowedBasedOnRole(updatedCr.getCriterion().getId(), crtf.getFunctionalityTestedId())) {
-                                updatedListing.getErrorMessages()
-                                        .add(errorMessages.getMessage("listing.criteria.functionalityTestedPermissionError",
-                                                crtf.getName(), Util.formatCriteriaNumber(updatedCr.getCriterion())));
+                                updatedListing.addBusinessErrorMessage(errorMessages.getMessage("listing.criteria.functionalityTestedPermissionError",
+                                        crtf.getName(), Util.formatCriteriaNumber(updatedCr.getCriterion())));
                             }
                         });
             }

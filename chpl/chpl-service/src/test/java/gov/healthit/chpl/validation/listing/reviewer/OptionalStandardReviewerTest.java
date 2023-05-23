@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -37,13 +38,13 @@ public class OptionalStandardReviewerTest {
     public void before() throws EntityRetrievalException {
         optionalStandardDAO = Mockito.mock(OptionalStandardDAO.class);
         Mockito.when(optionalStandardDAO.getAllOptionalStandardCriteriaMap())
-        .thenReturn(getOptionalStandardCriteriaMaps());
+                .thenReturn(getOptionalStandardCriteriaMaps());
 
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(errorMessageUtil.getMessage(INVALID_EDITION_ERROR_KEY))
-        .thenReturn("Test Error Message 1");
-        Mockito.when(errorMessageUtil.getMessage(INVALID_OPTIONAL_STANDARD_CRITERIA_ERROR_KEY))
-        .thenReturn("Test Error Message 2");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq(INVALID_EDITION_ERROR_KEY), ArgumentMatchers.any()))
+                .thenReturn("Test Error Message 1");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq(INVALID_OPTIONAL_STANDARD_CRITERIA_ERROR_KEY), ArgumentMatchers.any()))
+                .thenReturn("Test Error Message 2");
 
         resourcePermissions = Mockito.mock(ResourcePermissions.class);
 
@@ -99,7 +100,6 @@ public class OptionalStandardReviewerTest {
                 .certificationEdition(certEdition)
                 .build();
 
-
         optionalStandardReviewer.review(listing);
 
         assertEquals(1, listing.getErrorMessages().size());
@@ -132,7 +132,6 @@ public class OptionalStandardReviewerTest {
                         .build())
                 .certificationEdition(certEdition)
                 .build();
-
 
         optionalStandardReviewer.review(listing);
 
@@ -167,7 +166,6 @@ public class OptionalStandardReviewerTest {
                         .build())
                 .certificationEdition(certEdition)
                 .build();
-
 
         optionalStandardReviewer.review(listing);
 

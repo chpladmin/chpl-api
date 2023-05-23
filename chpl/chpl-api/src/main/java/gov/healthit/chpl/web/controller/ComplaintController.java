@@ -44,11 +44,9 @@ public class ComplaintController {
             })
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody Complaint create(@RequestBody Complaint complaint) throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
-        ValidationException error = new ValidationException();
         // Make sure there is an ACB
         if (complaint.getCertificationBody() == null || complaint.getCertificationBody().getId() == null) {
-            error.getErrorMessages().add(errorMessageUtil.getMessage("complaints.create.acbRequired"));
-            throw error;
+            throw new ValidationException(errorMessageUtil.getMessage("complaints.create.acbRequired"));
         }
 
         return complaintManager.create(complaint);
@@ -63,10 +61,8 @@ public class ComplaintController {
     @RequestMapping(value = "/{complaintId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public @ResponseBody Complaint update(@RequestBody Complaint complaint)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
-        ValidationException error = new ValidationException();
         if (complaint.getCertificationBody() == null || complaint.getCertificationBody().getId() == null) {
-            error.getErrorMessages().add(errorMessageUtil.getMessage("complaints.update.acbRequired"));
-            throw error;
+            throw new ValidationException(errorMessageUtil.getMessage("complaints.update.acbRequired"));
         }
         return complaintManager.update(complaint);
     }

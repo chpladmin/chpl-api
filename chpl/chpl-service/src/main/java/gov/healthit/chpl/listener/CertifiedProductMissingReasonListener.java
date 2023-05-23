@@ -65,25 +65,33 @@ public class CertifiedProductMissingReasonListener {
         List<QuestionableActivityListingDTO> activities;
 
         activities = updated2011EditionListingActivity.check(origListing, newListing);
-                if (doActivitiesExist(activities) && StringUtils.isEmpty(updateRequest.getReason())) {
+        if (doActivitiesExist(activities)
+                && StringUtils.isEmpty(updateRequest.getReason())
+                && !updateRequest.isAcknowledgeBusinessErrors()) {
             throw new MissingReasonException(errorMessageUtil
                     .getMessage("listing.reasonRequired", "updating a 2011 Edition Certified Product"));
         }
 
         activities = updated2014EditionListingActivity.check(origListing, newListing);
-        if (doActivitiesExist(activities) && StringUtils.isEmpty(updateRequest.getReason())) {
+        if (doActivitiesExist(activities)
+                && StringUtils.isEmpty(updateRequest.getReason())
+                && !updateRequest.isAcknowledgeBusinessErrors()) {
             throw new MissingReasonException(errorMessageUtil
                     .getMessage("listing.reasonRequired", "updating a 2014 Edition Certified Product"));
         }
 
         activities = deletedCqmsActivity.check(origListing, newListing);
-        if (doActivitiesExist(activities) && StringUtils.isEmpty(updateRequest.getReason())) {
+        if (doActivitiesExist(activities)
+                && StringUtils.isEmpty(updateRequest.getReason())
+                && !updateRequest.isAcknowledgeBusinessErrors()) {
             throw new MissingReasonException(errorMessageUtil
                     .getMessage("listing.reasonRequired", "removing a Clinical Quality Measure"));
         }
 
         activities = deletedCertificationsActivity.check(origListing, newListing);
-        if (doActivitiesExist(activities) && StringUtils.isEmpty(updateRequest.getReason())) {
+        if (doActivitiesExist(activities)
+                && StringUtils.isEmpty(updateRequest.getReason())
+                && !updateRequest.isAcknowledgeBusinessErrors()) {
             throw new MissingReasonException(errorMessageUtil
                     .getMessage("listing.reasonRequired", "removing a Certification Criteria"));
         }
@@ -92,7 +100,8 @@ public class CertifiedProductMissingReasonListener {
         if (doActivitiesExist(activities)
                 && newListing.getCurrentStatus().getStatus().getName().toUpperCase(Locale.ENGLISH).equals(
                         CertificationStatusType.Active.getName().toUpperCase(Locale.ENGLISH))
-                && StringUtils.isEmpty(updateRequest.getReason())) {
+                && StringUtils.isEmpty(updateRequest.getReason())
+                && !updateRequest.isAcknowledgeBusinessErrors()) {
             throw new MissingReasonException(errorMessageUtil
                     .getMessage("listing.reasonRequired", "changing Certification Status from anything to \"Active\""));
         }
