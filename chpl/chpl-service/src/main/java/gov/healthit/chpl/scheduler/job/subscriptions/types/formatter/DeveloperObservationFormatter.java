@@ -36,8 +36,8 @@ public class DeveloperObservationFormatter extends ObservationTypeFormatter {
             LOGGER.error("Cannot process subscription observation " + observation.getId());
             return "";
         }
-        String developerUrl = String.format(getUnformattedDeveloperDetailsUrl(), developer.getId(), developer.getName());
-        return String.format(getUnformattedSubscribedItemFooter(), "developer", developerUrl);
+        String developerUrl = String.format(getUnformattedDeveloperDetailsUrl(), developer.getId());
+        return String.format(getUnformattedSubscribedItemFooter(), "developer", developerUrl, developer.getName());
     }
 
     private Developer getDeveloper(Long developerId) {

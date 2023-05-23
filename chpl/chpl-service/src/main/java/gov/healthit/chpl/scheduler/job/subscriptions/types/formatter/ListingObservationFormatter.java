@@ -37,8 +37,8 @@ public class ListingObservationFormatter extends ObservationTypeFormatter {
             LOGGER.error("Cannot process subscription observation " + observation.getId());
             return "";
         }
-        String listingUrl = String.format(getUnformattedListingDetailsUrl(), listing.getId(), listing.getChplProductNumber());
-        return String.format(getUnformattedSubscribedItemFooter(), "listing", listingUrl);
+        String listingUrl = String.format(getUnformattedListingDetailsUrl(), listing.getId());
+        return String.format(getUnformattedSubscribedItemFooter(), "listing", listingUrl, listing.getChplProductNumber());
     }
 
     private ListingSearchResult getListing(Long listingId) {

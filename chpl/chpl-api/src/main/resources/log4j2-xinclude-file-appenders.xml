@@ -592,8 +592,8 @@
     </RollingFile>
 
     <RollingFile name="subscriptionObservationsNotificationJob"
-        fileName="${logDir}/cache/subscriptionObservationsNotificationJob.log"
-        filePattern="${logDir}/cache/history/subscriptionObservationsNotificationJob-%d{yyyy-MM-dd}.log"
+        fileName="${logDir}/scheduler/subscriptionObservationsNotificationJob.log"
+        filePattern="${logDir}/scheduler/history/subscriptionObservationsNotificationJob-%d{yyyy-MM-dd}.log"
         filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>

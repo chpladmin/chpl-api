@@ -45,8 +45,9 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
 
     public List<SubscriptionObservation> getObservations(Long consolidationMethodId) {
         Query query = entityManager.createQuery(OBSERVATION_HQL
-                + "WHERE consolidationMethod.id = :consolidationMethodid ",
+                + "WHERE consolidationMethod.id = :consolidationMethodId ",
                 SubscriptionObservationEntity.class);
+        query.setParameter("consolidationMethodId", consolidationMethodId);
 
         List<SubscriptionObservationEntity> results = query.getResultList();
         return results.stream()
@@ -56,8 +57,8 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
 
     public void deleteObservations(List<Long> observationIds) {
         entityManager.createQuery("UPDATE SubscriptionObservationEntity observations "
-                + "SET obsrevations.deleted = true "
-                + "WHERE obsrevations.id IN (:observationIds)")
+                + "SET observations.deleted = true "
+                + "WHERE observations.id IN (:observationIds)")
         .executeUpdate();
     }
 }
