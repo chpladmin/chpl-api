@@ -26,18 +26,20 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
             + "JOIN FETCH subscription.subscriptionConsolidationMethod consolidationMethod ";
 
     public void createObservations(List<Long> subscriptionIds, Long activityId) {
-        //TODO: I want to batch insert these observations but when I turn on SQL printing
-        //it doesn't appear as though that is being done. Need to investigate more or remove the code.
-        for (int i = 0; i < subscriptionIds.size(); i++) {
-            if (i > 0 && i % BATCH_SIZE == 0) {
-                entityManager.flush();
-                entityManager.clear();
-            }
+        //TODO: I want to batch insert these observations
+        subscriptionIds.stream()
+            .forEach(subscriptionId -> createObservation(subscriptionId, activityId));
+    }
+
+    public void createObservation(Long subscriptionId, Long activityId) {
+        try {
             SubscriptionObservationEntity observationToCreate = new SubscriptionObservationEntity();
             observationToCreate.setLastModifiedUser(User.DEFAULT_USER_ID);
             observationToCreate.setActivityId(activityId);
-            observationToCreate.setSubscriptionId(subscriptionIds.get(i));
-            entityManager.persist(observationToCreate);
+            observationToCreate.setSubscriptionId(subscriptionId);
+            create(observationToCreate);
+        } catch (Exception ex) {
+            LOGGER.error("Unable to save observation for subscription ID " + subscriptionId + " and activity ID " + activityId, ex);
         }
     }
 
