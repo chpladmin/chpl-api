@@ -5,7 +5,7 @@ import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 
-public class SubscribedItemValidation extends ValidationRule<SubscriptionRequestValidationContext> {
+public class SubscribedObjectValidation extends ValidationRule<SubscriptionRequestValidationContext> {
 
     @Override
     public boolean isValid(SubscriptionRequestValidationContext context) {
@@ -51,7 +51,7 @@ public class SubscribedItemValidation extends ValidationRule<SubscriptionRequest
     private boolean isDeveloperIdValid(Long developerId, SubscriptionRequestValidationContext context) {
         Developer developer = null;
         try {
-            developer = context.getDeveloperDao().findById(developerId);
+            developer = context.getDeveloperDao().getSimpleDeveloperById(developerId, false);
         } catch (Exception ex) {
             getMessages().add(context.getErrorMessageUtil().getMessage("subscription.objectIdInvalid",
                     developerId));

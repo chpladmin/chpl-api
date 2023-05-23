@@ -15,15 +15,13 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 public class SubscriberMessagingService {
+    private SubscriptionLookupUtil lookupUtil;
     private ChplEmailFactory chplEmailFactory;
     private ChplHtmlEmailBuilder emailBuilder;
 
     private String pendingSubscriberSubject;
     private String pendingSubscriberBody1;
     private String pendingSubscriberBody2;
-    private String chplUrlBegin;
-    private String confirmSubscriberUrlPart;
-    private String manageSubscriptionsUrlPart;
 
     @Autowired
     public SubscriberMessagingService(ChplEmailFactory chplEmailFactory,
@@ -31,27 +29,20 @@ public class SubscriberMessagingService {
             @Value("${subscriber.confirmMessage.subject}") String pendingSubscriberSubject,
             @Value("${subscriber.confirmMessage.paragraph1}") String pendingSubscriberBody1,
             @Value("${subscriber.confirmMessage.paragraph2}") String pendingSubscriberBody2,
-            @Value("${chplUrlBegin}") String chplUrlBegin,
-            @Value("${subscriber.confirm.url}") String confirmSubscriberUrlPart,
-            @Value("${subscriptions.manage.url}") String manageSubscriptionsUrlPart) {
+            SubscriptionLookupUtil lookupUtil) {
         this.chplEmailFactory = chplEmailFactory;
         this.emailBuilder = emailBuilder;
+        this.lookupUtil = lookupUtil;
         this.pendingSubscriberSubject = pendingSubscriberSubject;
         this.pendingSubscriberBody1 = pendingSubscriberBody1;
         this.pendingSubscriberBody2 = pendingSubscriberBody2;
-        this.chplUrlBegin = chplUrlBegin;
-        this.confirmSubscriberUrlPart = confirmSubscriberUrlPart;
-        this.manageSubscriptionsUrlPart = manageSubscriptionsUrlPart;
     }
 
     public void sendConfirmation(Subscriber subscriber) {
-        String confirmationUrlPart = String.format(confirmSubscriberUrlPart, subscriber.getId());
-        String manageUrlPart = String.format(manageSubscriptionsUrlPart, subscriber.getId());
-
         String htmlMessage = emailBuilder.initialize()
                 .heading(pendingSubscriberSubject)
-                .paragraph(null, String.format(pendingSubscriberBody1, chplUrlBegin + confirmationUrlPart))
-                .paragraph(null, String.format(pendingSubscriberBody2, chplUrlBegin + manageUrlPart))
+                .paragraph(null, String.format(pendingSubscriberBody1, lookupUtil.getConfirmationUrl(subscriber)))
+                .paragraph(null, String.format(pendingSubscriberBody2, lookupUtil.getUnsubscribeUrl(subscriber)))
                 .footer(true)
                 .build();
 

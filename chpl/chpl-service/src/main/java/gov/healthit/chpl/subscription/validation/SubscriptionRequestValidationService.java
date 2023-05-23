@@ -23,7 +23,7 @@ public class SubscriptionRequestValidationService {
                 new EmailAddressValidation(),
                 new SubscriptionReasonValidation(),
                 new SubscriptionObjectTypeValidation(),
-                new SubscribedItemValidation()));
+                new SubscribedObjectValidation()));
     }
 
     private List<String> runValidations(List<ValidationRule<SubscriptionRequestValidationContext>> rules, SubscriptionRequestValidationContext context) {

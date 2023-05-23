@@ -1,8 +1,10 @@
 package gov.healthit.chpl.scheduler.job.subscriptions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.transaction.Transactional;
 
@@ -15,10 +17,14 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
+import gov.healthit.chpl.scheduler.job.subscriptions.subjects.formatter.ObservationSubjectFormatterFactory;
+import gov.healthit.chpl.scheduler.job.subscriptions.types.formatter.ObservationTypeFormatter;
+import gov.healthit.chpl.scheduler.job.subscriptions.types.formatter.ObservationTypeFormatterFactory;
 import gov.healthit.chpl.subscription.dao.SubscriptionObservationDao;
 import gov.healthit.chpl.subscription.domain.Subscriber;
 import gov.healthit.chpl.subscription.domain.SubscriptionObjectType;
 import gov.healthit.chpl.subscription.domain.SubscriptionObservation;
+import gov.healthit.chpl.subscription.service.SubscriptionLookupUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -29,15 +35,32 @@ public class ObservationProcessor {
     private ChplHtmlEmailBuilder htmlEmailBuilder;
 
     private String notificationEmailSubject;
+    private String notificationEmailIntroduction;
+    private String notificationEmailManageFooter;
+    private ObservationTypeFormatterFactory observationTypeFormatterFactory;
+    private ObservationSubjectFormatterFactory observationSubjectFormatterFactory;
+    private SubscriptionLookupUtil lookupUtil;
+    private List<String> observationTableHeadings;
 
     @Autowired
     public ObservationProcessor(SubscriptionObservationDao observationDao,
             ChplEmailFactory chplEmailFactory, ChplHtmlEmailBuilder htmlEmailBuilder,
-            @Value("${observation.notification.subject}") String notificationEmailSubject) {
+            @Value("${observation.notification.subject}") String notificationEmailSubject,
+            @Value("${observation.notification.introduction}") String notificationEmailIntroduction,
+            @Value("${observation.notification.unsubscribe}") String notificationEmailManageFooter,
+            ObservationTypeFormatterFactory observationTypeFormatterFactory,
+            ObservationSubjectFormatterFactory observationSubjectFormatterFactory,
+            SubscriptionLookupUtil lookupUtil) {
         this.observationDao = observationDao;
         this.chplEmailFactory = chplEmailFactory;
         this.htmlEmailBuilder = htmlEmailBuilder;
         this.notificationEmailSubject = notificationEmailSubject;
+        this.notificationEmailIntroduction = notificationEmailIntroduction;
+        this.notificationEmailManageFooter = notificationEmailManageFooter;
+        this.observationTypeFormatterFactory = observationTypeFormatterFactory;
+        this.observationSubjectFormatterFactory = observationSubjectFormatterFactory;
+        this.lookupUtil = lookupUtil;
+        this.observationTableHeadings = Stream.of("Change Type", "Change Details").toList();
     }
 
     @Transactional
@@ -55,9 +78,12 @@ public class ObservationProcessor {
     }
 
     private String buildMessage(List<SubscriptionObservation> observations) {
+        Subscriber subscriber = observations.get(0).getSubscriber();
         return htmlEmailBuilder.initialize()
             .heading(notificationEmailSubject)
+            .paragraph(null, notificationEmailIntroduction)
             .customHtml(getObservationsHtml(observations))
+            .paragraph(null, String.format(notificationEmailManageFooter, lookupUtil.getUnsubscribeUrl(subscriber)))
             .footer(true)
             .build();
     }
@@ -71,18 +97,34 @@ public class ObservationProcessor {
         observationsPerSubscribedObject.keySet().stream()
             .map(observedItemKey -> getObservationHtmlForSubscribedObject(observationsPerSubscribedObject.get(observedItemKey)))
             .forEach(observedItemHtml -> observationsHtmlBuf.append(observedItemHtml));
+
         return observationsHtmlBuf.toString();
     }
 
     private String getObservationHtmlForSubscribedObject(List<SubscriptionObservation> observationsForSubscribedObject) {
-        //all observations in this method are for the same object - the same listing, same developer, same product, whatever
-        //need to pass something into a class that can build the heading, paragraph, and maybe table? of HTML
-        //for this set of subscriptions
-        //and need this to be a factory or some easily extensible thing
-        //TODO
-        return "";
-        //htmlEmailBuilder.getParagraphHtml(observationsPerSubscribedObject, notificationEmailSubject, null);
+        ObservationTypeFormatter formatter = observationTypeFormatterFactory.getObjectTypeFormatter(observationsForSubscribedObject.get(0));
+        String subscribedItemHeading = formatter.getSubscribedItemHeading(observationsForSubscribedObject.get(0));
+        String subscribedItemFooter = formatter.getSubscribedItemFooter(observationsForSubscribedObject.get(0));
 
+        String observationsTable = htmlEmailBuilder.getTableHtml(observationTableHeadings,
+                toListsOfStrings(observationsForSubscribedObject),
+                "No observations were found for this object",
+                subscribedItemFooter);
+
+        return htmlEmailBuilder.getParagraphHtml(subscribedItemHeading, observationsTable, null);
+    }
+
+    private List<List<String>> toListsOfStrings(List<SubscriptionObservation> observationsForSubscribedObject) {
+        List<List<String>> observationsTabularLists = new ArrayList<List<String>>();
+        observationsForSubscribedObject.stream()
+            .map(observation -> toListOfStrings(observation))
+            .filter(obsAsStrings -> obsAsStrings != null)
+            .forEach(obsAsStrings -> observationsTabularLists.add(obsAsStrings));
+        return observationsTabularLists;
+    }
+
+    private List<String> toListOfStrings(SubscriptionObservation observation) {
+        return observationSubjectFormatterFactory.getSubjectFormatter(observation).toListOfStrings(observation);
     }
 
     private void deleteNotifiedObservations(List<SubscriptionObservation> observations) {

@@ -175,7 +175,8 @@ public class ChplHtmlEmailBuilder {
         return emailContents.replace(EMAIL_CONTENT_TAG, "");
     }
 
-    public String getTableHtml(List<String> tableHeadings, List<List<String>> tableData, String emptyDataText) {
+    public String getTableHtml(List<String> tableHeadings, List<List<String>> tableData, String emptyDataText,
+            String tableCaption) {
         String customHtmlTable = new String(htmlTable);
         if (!CollectionUtils.isEmpty(tableHeadings)) {
             StringBuffer tableHeadingHtml = new StringBuffer();
@@ -197,7 +198,15 @@ public class ChplHtmlEmailBuilder {
         } else {
             customHtmlTable = customHtmlTable.replace(TABLE_DATA_TAG, "");
         }
+
+        if (!StringUtils.isEmpty(tableCaption)) {
+            customHtmlTable += "<br />" + tableCaption;
+        }
         return customHtmlTable;
+    }
+
+    public String getTableHtml(List<String> tableHeadings, List<List<String>> tableData, String emptyDataText) {
+        return getTableHtml(tableHeadings, tableData, emptyDataText, null);
     }
 
     public String getParagraphHtml(String heading, String text, String headingLevel) {

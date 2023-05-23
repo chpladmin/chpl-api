@@ -4,13 +4,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.subscription.domain.Subscriber;
+
 @Component
 public class SubscriptionLookupUtil {
     private Environment environment;
+    private String chplUrlBegin;
 
     @Autowired
     public SubscriptionLookupUtil(Environment environment) {
         this.environment = environment;
+        this.chplUrlBegin = environment.getProperty("chplUrlBegin");
+    }
+
+    public String getConfirmationUrl(Subscriber subscriber) {
+        String unformattedConfirmationUrl = chplUrlBegin + environment.getProperty("subscriber.confirm.url");
+        return String.format(unformattedConfirmationUrl, subscriber.getId().toString());
+    }
+
+    public String getUnsubscribeUrl(Subscriber subscriber) {
+        String unformattedUnsubscribeUrl = chplUrlBegin + environment.getProperty("subscriptions.manage.url");
+        return String.format(unformattedUnsubscribeUrl, subscriber.getId().toString());
     }
 
     public Long getListingObjectTypeId() {
@@ -23,6 +37,10 @@ public class SubscriptionLookupUtil {
 
     public Long getProductObjectTypeId() {
         return Long.parseLong(environment.getProperty("subscription.objectType.product"));
+    }
+
+    public Long getCertificationStatusChangedSubjectId() {
+        return Long.parseLong(environment.getProperty("subscription.subject.certificationStatusChanged"));
     }
 
     public Long getDailyConsolidationMethodId() {

@@ -5,7 +5,7 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
 
 public class CertificationStatusChangedActivityProcessor implements SubscriptionSubjectProcessor {
-    private static final String SUBJECT_NAME = "Certification Status Changed";
+    public static final String SUBJECT_NAME = "Certification Status Changed";
 
     public boolean isRelevantTo(ActivityDTO activity, Object originalData, Object newData) {
         if (activity.getConcept().equals(ActivityConcept.CERTIFIED_PRODUCT)) {

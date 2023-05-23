@@ -76,6 +76,11 @@ public class SubscriptionManager {
 
         Subscriber subscriber = subscriberDao.getSubscriberByEmail(subscriptionRequest.getEmail());
         if (subscriber == null) {
+            //TODO: a 'Pending' subscriber, created below, should probably expire after some period of time
+            //and the link they are sent should no longer work. Is it a job that runs nightly to delete the
+            //those subscribers greated more than X days ago, as we do with API Keys?
+            //Or is it built into business logic in the confirm method to ignore subscriber IDs
+            //generated more than X days ago as we do with Invitations?
             UUID newSubscriberId = subscriberDao.createSubscriber(subscriptionRequest.getEmail());
             subscriber = subscriberDao.getSubscriberById(newSubscriberId);
         }
