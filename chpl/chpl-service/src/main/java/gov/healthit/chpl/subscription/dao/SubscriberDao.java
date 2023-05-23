@@ -5,14 +5,14 @@ import java.util.UUID;
 
 import javax.persistence.Query;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.subscription.domain.Subscriber;
-import gov.healthit.chpl.subscription.domain.SubscriberStatus;
 import gov.healthit.chpl.subscription.entity.SubscriberEntity;
-import gov.healthit.chpl.subscription.entity.SubscriberStatusEntity;
+import gov.healthit.chpl.subscription.service.SubscriptionLookupUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Repository
@@ -22,11 +22,18 @@ public class SubscriberDao extends BaseDAOImpl {
             + "FROM SubscriberEntity subscriber "
             + "JOIN FETCH subscriber.subscriberStatus ";
 
+    private SubscriptionLookupUtil lookupUtil;
+
+    @Autowired
+    public SubscriberDao(SubscriptionLookupUtil lookupUtil) {
+        this.lookupUtil = lookupUtil;
+    }
+
     public UUID createSubscriber(String email) {
         SubscriberEntity subscriberToCreate = new SubscriberEntity();
         subscriberToCreate.setEmail(email);
         subscriberToCreate.setLastModifiedUser(User.DEFAULT_USER_ID);
-        subscriberToCreate.setSubscriberStatusId(getSubscriberStatusId(SubscriberStatus.SUBSCRIBER_STATUS_PENDING));
+        subscriberToCreate.setSubscriberStatusId(lookupUtil.getPendingSubscriberStatusId());
         create(subscriberToCreate);
         return subscriberToCreate.getId();
     }
@@ -37,7 +44,7 @@ public class SubscriberDao extends BaseDAOImpl {
             LOGGER.error("No subscriber was found with ID " + subscriberUuid);
             return;
         }
-        subscriber.setSubscriberStatusId(getSubscriberStatusId(SubscriberStatus.SUBSCRIBER_STATUS_CONFIRMED));
+        subscriber.setSubscriberStatusId(lookupUtil.getConfirmedSubscriberStatusId());
         update(subscriber);
     }
 
@@ -63,19 +70,5 @@ public class SubscriberDao extends BaseDAOImpl {
             return null;
         }
         return results.get(0).toDomain();
-    }
-
-    private Long getSubscriberStatusId(String statusName) {
-        Query query = entityManager.createQuery("SELECT status "
-                + "FROM SubscriberStatusEntity status "
-                + "WHERE status.name = :statusName",
-                SubscriberStatusEntity.class);
-        query.setParameter("statusName", statusName);
-
-        List<SubscriberStatusEntity> results = query.getResultList();
-        if (results == null || results.size() == 0) {
-            return null;
-        }
-        return results.get(0).getId();
     }
 }

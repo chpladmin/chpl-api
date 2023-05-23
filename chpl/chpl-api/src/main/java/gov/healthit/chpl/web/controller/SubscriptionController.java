@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.subscription.SubscriptionManager;
 import gov.healthit.chpl.subscription.domain.SubscriptionObjectType;
 import gov.healthit.chpl.subscription.domain.SubscriptionReason;
@@ -60,7 +61,7 @@ public class SubscriptionController {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
         }
-        return subscriptionManager.getAllSubscribedObjectTypes();
+        return subscriptionManager.getAllSubscriptionObjectTypes();
     }
 
     @Operation(summary = "Subscribe to periodic notifications about changes to a specific item in the CHPL. "
@@ -72,7 +73,8 @@ public class SubscriptionController {
             })
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8",
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void subscribe(@RequestBody(required = true) SubscriptionRequest subscriptionRequest) {
+    public void subscribe(@RequestBody(required = true) SubscriptionRequest subscriptionRequest)
+        throws ValidationException {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
         }

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.subscription.domain.SubscriberStatus;
 import gov.healthit.chpl.subscription.domain.Subscription;
 import gov.healthit.chpl.subscription.domain.SubscriptionConsolidationMethod;
 import gov.healthit.chpl.subscription.domain.SubscriptionObjectType;
@@ -22,6 +21,7 @@ import gov.healthit.chpl.subscription.entity.SubscriptionEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionObjectTypeEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionReasonEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionSubjectEntity;
+import gov.healthit.chpl.subscription.service.SubscriptionLookupUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Repository
@@ -36,6 +36,12 @@ public class SubscriptionDao extends BaseDAOImpl {
             + "JOIN FETCH subject.subscriptionObjectType "
             + "JOIN FETCH subscription.subscriptionConsolidationMethod ";
 
+    private SubscriptionLookupUtil lookupUtil;
+
+    public SubscriptionDao(SubscriptionLookupUtil lookupUtil) {
+        this.lookupUtil = lookupUtil;
+    }
+
     public List<SubscriptionReason> getAllReasons() {
         Query query = entityManager.createQuery("SELECT reasons "
                 + "FROM SubscriptionReasonEntity reasons "
@@ -48,7 +54,7 @@ public class SubscriptionDao extends BaseDAOImpl {
                 .toList();
     }
 
-    public List<SubscriptionObjectType> getAllSubscribedObjectTypes() {
+    public List<SubscriptionObjectType> getAllSubscriptionObjectTypes() {
         Query query = entityManager.createQuery("SELECT types "
                 + "FROM SubscriptionObjectTypeEntity types ",
                 SubscriptionObjectTypeEntity.class);
@@ -103,11 +109,11 @@ public class SubscriptionDao extends BaseDAOImpl {
         //they subscribe to, so they could subscribe to surveillance added to a listing but not certification status changes.
         //For now, when you create a new subscription it will default to subscribing to all related subjects.
         List<SubscriptionSubject> subjectsForObjectType = getAllSubjectsForObjectType(subscribedObjectTypeId);
-        Long dailyConsolidationMethodId = getSubscriptionConsolidationMethodId(SubscriptionConsolidationMethod.CONSOLIDATION_METHOD_DAILY);
 
         subjectsForObjectType.stream()
             .forEach(subject -> createSubscriptionIfNotExists(
-                    subscriberId, subscribedObjectId, subject.getId(), dailyConsolidationMethodId, reasonId));
+                    subscriberId, subscribedObjectId, subject.getId(),
+                    lookupUtil.getDailyConsolidationMethodId(), reasonId));
     }
 
     private void createSubscriptionIfNotExists(UUID subscriberId, Long subscribedObjectId, Long subjectId,
@@ -174,8 +180,8 @@ public class SubscriptionDao extends BaseDAOImpl {
                 + "JOIN FETCH subscriber.subscriberStatus subscriberStatus "
                 + "WHERE subscription.subscribedObjectId = :subscribedObjectId "
                 + "AND subscription.subscriptionSubjectId = :subscriptionSubjectId "
-                + "AND subscriberStatus.name = :confirmedSubscriberStatusName");
-        query.setParameter("confirmedSubscriberStatusName", SubscriberStatus.SUBSCRIBER_STATUS_CONFIRMED);
+                + "AND subscriberStatus.id = :confirmedSubscriberStatusId");
+        query.setParameter("confirmedSubscriberStatusId", lookupUtil.getConfirmedSubscriberStatusId());
         query.setParameter("subscribedObjectId", subscribedObjectId);
         query.setParameter("subscriptionSubjectId", subjectId);
 
@@ -183,19 +189,5 @@ public class SubscriptionDao extends BaseDAOImpl {
         return results.stream()
             .map(result -> result.getId())
             .collect(Collectors.toList());
-    }
-
-    private Long getSubscriptionConsolidationMethodId(String consolidationMethodName) {
-        Query query = entityManager.createQuery("SELECT cm "
-                + "FROM SubscriptionConsolidationMethodEntity cm "
-                + "WHERE cm.name = :consolidationMethodName",
-                SubscriptionConsolidationMethodEntity.class);
-        query.setParameter("consolidationMethodName", consolidationMethodName);
-
-        List<SubscriptionConsolidationMethodEntity> results = query.getResultList();
-        if (results == null || results.size() == 0) {
-            return null;
-        }
-        return results.get(0).getId();
     }
 }
