@@ -56,9 +56,10 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
     }
 
     public void deleteObservations(List<Long> observationIds) {
-        entityManager.createQuery("UPDATE SubscriptionObservationEntity observations "
+        Query query = entityManager.createQuery("UPDATE SubscriptionObservationEntity observations "
                 + "SET observations.deleted = true "
-                + "WHERE observations.id IN (:observationIds)")
-        .executeUpdate();
+                + "WHERE observations.id IN (:observationIds)");
+        query.setParameter("observationIds", observationIds);
+        query.executeUpdate();
     }
 }

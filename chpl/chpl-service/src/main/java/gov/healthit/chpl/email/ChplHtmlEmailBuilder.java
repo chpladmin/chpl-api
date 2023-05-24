@@ -25,6 +25,7 @@ public class ChplHtmlEmailBuilder {
     private static final String PARAGRAPH_TEXT_TAG = "${paragraph-text}";
     private static final String TABLE_HEADER_TAG = "${table-header}";
     private static final String TABLE_DATA_TAG = "${table-data}";
+    private static final String TABLE_CAPTION_TAG = "${table-caption}";
     private static final String BUTTON_BAR_TAG = "${buttons}";
     private static final String FEEDBACK_URL_TAG = "${feedback-url}";
     private static final String EMPTY_TABLE_DEFAULT_TEXT = "No Applicable Data";
@@ -96,11 +97,16 @@ public class ChplHtmlEmailBuilder {
     }
 
     public ChplHtmlEmailBuilder table(List<String> tableHeadings, List<List<String>> tableData, String emptyDataText) {
+        return table(tableHeadings, tableData, emptyDataText, null);
+    }
+
+    public ChplHtmlEmailBuilder table(List<String> tableHeadings, List<List<String>> tableData, String tableCaption,
+            String emptyDataText) {
         if (CollectionUtils.isEmpty(tableHeadings) && CollectionUtils.isEmpty(tableData)) {
             return this;
         }
 
-        String modifiedHtmlTable = getTableHtml(tableHeadings, tableData, emptyDataText);
+        String modifiedHtmlTable = getTableHtml(tableHeadings, tableData, emptyDataText, tableCaption);
         addItemToEmailContents(modifiedHtmlTable);
         return this;
     }
@@ -175,6 +181,10 @@ public class ChplHtmlEmailBuilder {
         return emailContents.replace(EMAIL_CONTENT_TAG, "");
     }
 
+    public String getTableHtml(List<String> tableHeadings, List<List<String>> tableData, String emptyDataText) {
+        return getTableHtml(tableHeadings, tableData, emptyDataText, null);
+    }
+
     public String getTableHtml(List<String> tableHeadings, List<List<String>> tableData, String emptyDataText,
             String tableCaption) {
         String customHtmlTable = new String(htmlTable);
@@ -200,13 +210,12 @@ public class ChplHtmlEmailBuilder {
         }
 
         if (!StringUtils.isEmpty(tableCaption)) {
-            customHtmlTable += "<br />" + tableCaption;
+            customHtmlTable = customHtmlTable.replace(TABLE_CAPTION_TAG,
+                    "<tr><td colspan=\"" + tableHeadings.size() + "\">" + tableCaption + "</td></tr>");
+        } else {
+            customHtmlTable = customHtmlTable.replace(TABLE_CAPTION_TAG, "");
         }
         return customHtmlTable;
-    }
-
-    public String getTableHtml(List<String> tableHeadings, List<List<String>> tableData, String emptyDataText) {
-        return getTableHtml(tableHeadings, tableData, emptyDataText, null);
     }
 
     public String getParagraphHtml(String heading, String text, String headingLevel) {

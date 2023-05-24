@@ -108,10 +108,10 @@ public class ObservationProcessor {
 
         String observationsTable = htmlEmailBuilder.getTableHtml(observationTableHeadings,
                 toListsOfStrings(observationsForSubscribedObject),
-                "No observations were found for this object",
+                "No observations were found.",
                 subscribedItemFooter);
 
-        return htmlEmailBuilder.getParagraphHtml(subscribedItemHeading, observationsTable, null);
+        return htmlEmailBuilder.getParagraphHtml(subscribedItemHeading, observationsTable, "h3");
     }
 
     private List<List<String>> toListsOfStrings(List<SubscriptionObservation> observationsForSubscribedObject) {
