@@ -30,6 +30,7 @@ public class ChplHtmlEmailBuilder {
     private static final String FEEDBACK_URL_TAG = "${feedback-url}";
     private static final String EMPTY_TABLE_DEFAULT_TEXT = "No Applicable Data";
     private static final String DEFAULT_PARAGRAPH_HEADING_LEVEL = "h2";
+    private static final String TABLE_CAPTION_HTML ="<caption>" + TABLE_CAPTION_TAG + "</caption>";
 
     private String htmlSkeleton;
     private String htmlHeading;
@@ -209,8 +210,8 @@ public class ChplHtmlEmailBuilder {
         }
 
         if (!StringUtils.isEmpty(tableCaption)) {
-            customHtmlTable = customHtmlTable.replace(TABLE_CAPTION_TAG,
-                    "<tr><td colspan=\"" + tableHeadings.size() + "\">" + tableCaption + "</td></tr>");
+            String captionHtml = TABLE_CAPTION_HTML.replace(TABLE_CAPTION_TAG, tableCaption);
+            customHtmlTable = customHtmlTable.replace(TABLE_CAPTION_TAG, captionHtml);
         } else {
             customHtmlTable = customHtmlTable.replace(TABLE_CAPTION_TAG, "");
         }
