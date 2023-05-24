@@ -26,7 +26,7 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
             + "JOIN FETCH subscription.subscriptionConsolidationMethod consolidationMethod ";
 
     public void createObservations(List<Long> subscriptionIds, Long activityId) {
-        //TODO: I want to batch insert these observations
+        //TODO: figure out how to batch insert these observations
         subscriptionIds.stream()
             .forEach(subscriptionId -> createObservation(subscriptionId, activityId));
     }

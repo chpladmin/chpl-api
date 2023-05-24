@@ -12,6 +12,8 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.search.ListingSearchService;
+import gov.healthit.chpl.subscriber.validation.SubscriberValidationContext;
+import gov.healthit.chpl.subscriber.validation.SubscriberValidationService;
 import gov.healthit.chpl.subscription.dao.SubscriberDao;
 import gov.healthit.chpl.subscription.dao.SubscriptionDao;
 import gov.healthit.chpl.subscription.domain.Subscriber;
@@ -34,6 +36,7 @@ public class SubscriptionManager {
     private ListingSearchService listingSearchService;
     private ErrorMessageUtil errorMessageUtil;
     private SubscriptionLookupUtil lookupUtil;
+    private SubscriberValidationService subscriberValidationService;
     private SubscriptionRequestValidationService subscriptionValidationService;
 
     @Autowired
@@ -54,6 +57,7 @@ public class SubscriptionManager {
         this.errorMessageUtil = errorMessageUtil;
         this.lookupUtil = lookupUtil;
         this.subscriptionValidationService = new SubscriptionRequestValidationService();
+        this.subscriberValidationService = new SubscriberValidationService();
     }
 
     @Transactional
@@ -68,7 +72,7 @@ public class SubscriptionManager {
 
     @Transactional
     public void subscribe(SubscriptionRequest subscriptionRequest) throws ValidationException {
-        SubscriptionRequestValidationContext validationContext = getNewValidationContext(subscriptionRequest);
+        SubscriptionRequestValidationContext validationContext = getSubscriptionValidationContext(subscriptionRequest);
         ValidationException validationException = new ValidationException(subscriptionValidationService.validate(validationContext));
         if (validationException.getErrorMessages().size() > 0) {
             throw validationException;
@@ -76,11 +80,6 @@ public class SubscriptionManager {
 
         Subscriber subscriber = subscriberDao.getSubscriberByEmail(subscriptionRequest.getEmail());
         if (subscriber == null) {
-            //TODO: a 'Pending' subscriber, created below, should probably expire after some period of time
-            //and the link they are sent should no longer work. Is it a job that runs nightly to delete the
-            //those subscribers greated more than X days ago, as we do with API Keys?
-            //Or is it built into business logic in the confirm method to ignore subscriber IDs
-            //generated more than X days ago as we do with Invitations?
             UUID newSubscriberId = subscriberDao.createSubscriber(subscriptionRequest.getEmail());
             subscriber = subscriberDao.getSubscriberById(newSubscriberId);
         }
@@ -94,11 +93,17 @@ public class SubscriptionManager {
     }
 
     @Transactional
-    public void confirm(UUID subscriberUuid) {
-        subscriberDao.confirmSubscriber(subscriberUuid);
+    public Subscriber confirm(UUID subscriberId) throws ValidationException {
+        SubscriberValidationContext validationContext = getSubscriberValidationContext(subscriberId);
+        ValidationException validationException = new ValidationException(subscriberValidationService.validate(validationContext));
+        if (validationException.getErrorMessages().size() > 0) {
+            throw validationException;
+        }
+        subscriberDao.confirmSubscriber(subscriberId);
+        return subscriberDao.getSubscriberById(subscriberId);
     }
 
-    private SubscriptionRequestValidationContext getNewValidationContext(SubscriptionRequest subscriptionRequest) {
+    private SubscriptionRequestValidationContext getSubscriptionValidationContext(SubscriptionRequest subscriptionRequest) {
         return new SubscriptionRequestValidationContext(
                 subscriptionRequest,
                 subscriptionDao,
@@ -107,5 +112,12 @@ public class SubscriptionManager {
                 listingSearchService,
                 errorMessageUtil,
                 lookupUtil);
+    }
+
+    private SubscriberValidationContext getSubscriberValidationContext(UUID subscriberId) {
+        return new SubscriberValidationContext(
+                subscriberId,
+                subscriberDao,
+                errorMessageUtil);
     }
 }
