@@ -6,13 +6,11 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.compliance.directreview.DirectReviewCachingService;
 import gov.healthit.chpl.search.CertifiedProductSearchManager;
 import gov.healthit.chpl.search.ListingSearchManager;
 import lombok.extern.log4j.Log4j2;
-import net.sf.ehcache.CacheManager;
 
 @DisallowConcurrentExecution
 @Log4j2(topic = "directReviewCacheRefreshJobLogger")
@@ -41,8 +39,8 @@ public class DirectReviewCacheRefreshJob extends QuartzJob {
         }
 
         LOGGER.info("Refreshing searchable listing collection (deprecated)");
-        CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_LISTINGS).removeAll();
-        certifiedProductSearchManager.getFlatListingCollection();
+        //CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_LISTINGS).removeAll();
+        //certifiedProductSearchManager.getFlatListingCollection();
         LOGGER.info("Completed refreshing searchable listing collection (deprecated)");
 
         LOGGER.info("********* Completed the Direct Review Cache Refresh job. *********");

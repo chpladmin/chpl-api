@@ -6,6 +6,8 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -13,14 +15,12 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import gov.healthit.chpl.search.ListingSearchManager;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import lombok.extern.log4j.Log4j2;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
 
 @Component
 @Aspect
 @Log4j2(topic = "listingSearchCacheRefreshLogger")
 public class ListingSearchCacheRefreshAspect {
+    private static final String COLLECTIONS_SEARCH_KEY = "collections search";
     private static final String REFRESHING = "refreshing";
     private static final String NEEDS_REFRESHED = "needs refreshed";
     private static final String IDLE = "idle";
@@ -43,14 +43,13 @@ public class ListingSearchCacheRefreshAspect {
             setCacheRefreshingStatus(REFRESHING);
             LOGGER.info("REFRESHING LISTING COLLECTION - START");
             Cache searchCache = cacheManager.getCache(CacheNames.COLLECTIONS_SEARCH);
-            Object key = searchCache.getKeys().get(0);
 
             Thread thread = new Thread(() -> {
                     while (!getCacheRefreshingStatus().equals(IDLE)) {
                         LOGGER.info("REFRESHING LISTING COLLECTION IN NEW THREAD");
                         List<ListingSearchResult> results = listingSearchManager.getAllListingsNoCache();
                         Cache searchCacheLater = cacheManager.getCache(CacheNames.COLLECTIONS_SEARCH);
-                        searchCacheLater.put(new Element(key, results));
+                        searchCacheLater.put(COLLECTIONS_SEARCH_KEY, results);
                         if (getCacheRefreshingStatus().equals(NEEDS_REFRESHED)) {
                             setCacheRefreshingStatus(REFRESHING);
                         } else {
@@ -81,10 +80,10 @@ public class ListingSearchCacheRefreshAspect {
         } else if (cache.get(CacheNames.LISTING_SEARCH_CACHE_REFRESH_STATUS) == null) {
             setCacheRefreshingStatus(IDLE);
         }
-        return (String) cache.get(CacheNames.LISTING_SEARCH_CACHE_REFRESH_STATUS).getObjectValue();
+        return (String) cache.get(CacheNames.LISTING_SEARCH_CACHE_REFRESH_STATUS).get();
     }
 
     private void setCacheRefreshingStatus(String status) {
-        cacheManager.getCache(CacheNames.LISTING_SEARCH_CACHE_REFRESH_STATUS).put(new Element(CacheNames.LISTING_SEARCH_CACHE_REFRESH_STATUS, status));
+        cacheManager.getCache(CacheNames.LISTING_SEARCH_CACHE_REFRESH_STATUS).put(CacheNames.LISTING_SEARCH_CACHE_REFRESH_STATUS, status);
     }
 }

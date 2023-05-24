@@ -1,22 +1,16 @@
 package gov.healthit.chpl;
 
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
-import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisPassword;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 
-import gov.healthit.chpl.caching.CacheNames;
 import lombok.extern.log4j.Log4j2;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.config.CacheConfiguration;
-import net.sf.ehcache.config.CacheConfiguration.TransactionalMode;
-import net.sf.ehcache.config.PersistenceConfiguration;
-import net.sf.ehcache.config.PersistenceConfiguration.Strategy;
-import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
 
 @Configuration
 @EnableCaching
@@ -29,7 +23,33 @@ public class ChplCacheConfig {
     private static final int DISK_SPOOL_BUFFER_SIZE_MB = 20;
 
     @Bean
+    public LettuceConnectionFactory redisConnectionFactory() {
+        LOGGER.info("Creating LettuceConnectionFactory");
+        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
+        redisStandaloneConfiguration.setHostName("localhost");
+        redisStandaloneConfiguration.setPort(6379);
+        redisStandaloneConfiguration.setPassword(RedisPassword.of("mypass"));
+        return new LettuceConnectionFactory(redisStandaloneConfiguration);
+    }
+
+    @Bean
+    public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
+        LOGGER.info("Creating RedisCacheManager");
+
+        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
+          //.prefixCacheNameWith(this.getClass().getPackageName() + ".")
+          //.entryTtl(Duration.ofHours(1))
+          .disableCachingNullValues();
+
+      return RedisCacheManager.builder(connectionFactory)
+          .cacheDefaults(config)
+          .build();
+    }
+
+    /*
+    @Bean
     public EhCacheManagerFactoryBean ehCacheCacheManager() {
+        Redis
         EhCacheManagerFactoryBean cmfb = new EhCacheManagerFactoryBean();
         ClassPathResource ehCacheConfigResource = new ClassPathResource("ehcache.xml");
         if (ehCacheConfigResource.exists()) {
@@ -97,4 +117,6 @@ public class ChplCacheConfig {
                   .persistence(new PersistenceConfiguration().strategy(Strategy.LOCALTEMPSWAP)));
         return cache;
     }
+    */
+
 }
