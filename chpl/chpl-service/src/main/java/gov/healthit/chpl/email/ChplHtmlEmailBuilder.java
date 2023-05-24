@@ -100,8 +100,7 @@ public class ChplHtmlEmailBuilder {
         return table(tableHeadings, tableData, emptyDataText, null);
     }
 
-    public ChplHtmlEmailBuilder table(List<String> tableHeadings, List<List<String>> tableData, String tableCaption,
-            String emptyDataText) {
+    public ChplHtmlEmailBuilder table(List<String> tableHeadings, List<List<String>> tableData, String emptyDataText, String tableCaption) {
         if (CollectionUtils.isEmpty(tableHeadings) && CollectionUtils.isEmpty(tableData)) {
             return this;
         }
