@@ -64,6 +64,18 @@ public class QuestionableActivitySearchResult implements Serializable {
     private String certificationStatusName;
     private Long certificationCriterionId;
 
+    public String getDescription() {
+        if (StringUtils.isEmpty(before) && StringUtils.isEmpty(after)) {
+            return "";
+        } else if (StringUtils.isEmpty(before)) {
+            return "Added " + after;
+        } else if (StringUtils.isEmpty(after)) {
+            return "Removed " + before;
+        } else {
+            return "From " + before + " to " + after;
+        }
+    }
+
     @JsonIgnore
     @XmlTransient
     public List<String> toListOfStringsForCsv(String listingsReportUrlPartBegin) {
@@ -83,13 +95,7 @@ public class QuestionableActivitySearchResult implements Serializable {
         csvFields.add(username);
         csvFields.add(triggerLevel);
         csvFields.add(triggerName);
-        if (StringUtils.isEmpty(before)) {
-            csvFields.add("Added " + after);
-        } else if (StringUtils.isEmpty(after)) {
-            csvFields.add("Removed " + before);
-        } else {
-            csvFields.add("From " + before + " to " + after);
-        }
+        csvFields.add(getDescription());
         csvFields.add(certificationStatusChangeReason);
         csvFields.add(reason);
         return csvFields;
