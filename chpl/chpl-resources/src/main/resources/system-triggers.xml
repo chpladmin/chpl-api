@@ -169,16 +169,6 @@
         </trigger>
         <trigger>
             <cron>
-                <name>subscriptionObservationsWeeklyNotificationJob</name>
-                <group>subscriptionObservationsWeeklyNotificationJobTrigger</group>
-                <job-name>subscriptionObservationsWeeklyNotificationJob</job-name>
-                <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
-                <cron-expression>0 30 12 ? * MON *</cron-expression> <!-- At 1230 UTC weekly on Monday-->
-            </cron>
-        </trigger>
-        <trigger>
-            <cron>
                 <name>refreshDirectReviews</name>
                 <group>refreshDirectReviewsTrigger</group>
                 <job-name>directReviewCacheRefresh</job-name>
