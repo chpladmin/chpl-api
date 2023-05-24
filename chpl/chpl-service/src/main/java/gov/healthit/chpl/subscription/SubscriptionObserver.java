@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,7 +56,9 @@ public class SubscriptionObserver {
 
     private void createObservations(Long subjectId, Long objectId, Long activityId) {
         List<Long> subscriptionIds = subscriptionDao.getSubscriptionIdsForConfirmedSubscribers(subjectId, objectId);
-        observationDao.createObservations(subscriptionIds, activityId);
+        if (!CollectionUtils.isEmpty(subscriptionIds)) {
+            observationDao.createObservations(subscriptionIds, activityId);
+        }
     }
 
     private void createSubscriptionSubjectProcessors() {
