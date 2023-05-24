@@ -57,6 +57,7 @@ public class SubscriptionObservationsNotificationJob  implements Job {
         try {
             Map<Subscriber, List<SubscriptionObservation>> observationsGroupedBySubscriber
                 = getObservations().stream().collect(Collectors.groupingBy(SubscriptionObservation::getSubscriber));
+            LOGGER.info("Found " + observationsGroupedBySubscriber.keySet().size() + " subscribers with observations.");
 
             observationsGroupedBySubscriber.keySet().stream().forEach(
                     subscriber -> observationProcessor.processObservations(subscriber, observationsGroupedBySubscriber.get(subscriber)));
