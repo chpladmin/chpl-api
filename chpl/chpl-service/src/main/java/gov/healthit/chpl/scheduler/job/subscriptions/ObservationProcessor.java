@@ -65,6 +65,7 @@ public class ObservationProcessor {
 
     @Transactional
     public void processObservations(Subscriber subscriber, List<SubscriptionObservation> observations) {
+        LOGGER.info("Processing obsevations for " + subscriber.getEmail());
         try {
             chplEmailFactory.emailBuilder()
                     .recipients(List.of(subscriber.getEmail()))
