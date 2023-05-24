@@ -5,12 +5,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.ff4j.FF4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.subscription.dao.SubscriptionDao;
 import gov.healthit.chpl.subscription.dao.SubscriptionObservationDao;
 import gov.healthit.chpl.subscription.domain.Subscriber;
@@ -31,11 +33,19 @@ public class SubscriptionObservationsNotificationJob  implements Job {
     @Autowired
     private ObservationProcessor observationProcessor;
 
+    @Autowired
+    private FF4j ff4j;
+
     private SubscriptionConsolidationMethod consolidationMethod;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
+            LOGGER.info("Subscriptions are not enabled and the job exit.");
+            return;
+        }
+
         LOGGER.info("********* Starting the " + context.getMergedJobDataMap().getString(CONSOLIDATION_METHOD_PARAM)
                 + " Subscription Observations Notification Email Job *********");
         getConsolidationMethodFromJobContext(context);
