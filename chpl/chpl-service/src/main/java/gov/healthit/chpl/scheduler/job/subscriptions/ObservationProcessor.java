@@ -60,7 +60,7 @@ public class ObservationProcessor {
         this.observationTypeFormatterFactory = observationTypeFormatterFactory;
         this.observationSubjectFormatterFactory = observationSubjectFormatterFactory;
         this.lookupUtil = lookupUtil;
-        this.observationTableHeadings = Stream.of("Change Type", "Change Details").toList();
+        this.observationTableHeadings = Stream.of("Change Type", "Change Details", "Change Date").toList();
     }
 
     @Transactional

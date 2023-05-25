@@ -13,6 +13,7 @@ import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.subscription.domain.SubscriptionObservation;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -41,7 +42,8 @@ public class CertificationStatusChangedFormatter extends ObservationSubjectForma
         List<List<String>> formattedObservations = new ArrayList<List<String>>();
         formattedObservations.add(Stream.of(observation.getSubscription().getSubject().getSubject(),
                 String.format(DESCRIPTION_UNFORMATTED, before.getCurrentStatus().getStatus().getName(),
-                        after.getCurrentStatus().getStatus().getName())).toList());
+                        after.getCurrentStatus().getStatus().getName()),
+                DateUtil.formatInEasternTime(activity.getActivityDate())).toList());
         return formattedObservations;
     }
 }
