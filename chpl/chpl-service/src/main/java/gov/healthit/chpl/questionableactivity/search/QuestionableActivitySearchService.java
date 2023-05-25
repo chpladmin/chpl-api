@@ -2,6 +2,7 @@ package gov.healthit.chpl.questionableactivity.search;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -155,7 +156,7 @@ public class QuestionableActivitySearchService {
             startDate = parseLocalDate(activityDateRangeStart).atStartOfDay();
         }
         if (!StringUtils.isEmpty(activityDateRangeEnd)) {
-            endDate = parseLocalDate(activityDateRangeEnd).atTime(23, 59, 59, 999);
+            endDate = parseLocalDate(activityDateRangeEnd).atTime(LocalTime.MAX);
         }
         if (qa.getActivityDate() != null) {
             if (startDate == null && endDate != null) {
