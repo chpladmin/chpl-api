@@ -12,7 +12,7 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.Util;
 
@@ -30,8 +30,8 @@ public class DeletedCertificationsActivity implements ListingActivity {
     }
 
     @Override
-     public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
-        List<QuestionableActivityListingDTO> certRemovedActivities = new ArrayList<QuestionableActivityListingDTO>();
+     public List<QuestionableActivityListing> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+        List<QuestionableActivityListing> certRemovedActivities = new ArrayList<QuestionableActivityListing>();
         if (origListing.getCertificationResults() != null && origListing.getCertificationResults().size() > 0
                 && newListing.getCertificationResults() != null && newListing.getCertificationResults().size() > 0) {
             // all cert results are in the details so find the same one in the orig and new objects
@@ -42,7 +42,7 @@ public class DeletedCertificationsActivity implements ListingActivity {
                         if (origCertResult.isSuccess() && !newCertResult.isSuccess()
                                 && !wasCuresCriteriaSwappedForOriginal(newCertResult.getCriterion(), origListing, newListing)) {
                             // orig did have this cert result but new does not so it was removed
-                            QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
+                            QuestionableActivityListing activity = new QuestionableActivityListing();
                             activity.setBefore(CertificationCriterionService.formatCriteriaNumber(origCertResult.getCriterion()));
                             activity.setAfter(null);
                             certRemovedActivities.add(activity);

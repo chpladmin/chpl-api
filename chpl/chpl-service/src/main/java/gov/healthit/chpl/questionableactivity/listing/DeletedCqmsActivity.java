@@ -9,14 +9,14 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
 
 @Component
 public class DeletedCqmsActivity implements ListingActivity {
 
     @Override
-    public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
-        List<QuestionableActivityListingDTO> cqmRemovedActivities = new ArrayList<QuestionableActivityListingDTO>();
+    public List<QuestionableActivityListing> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+        List<QuestionableActivityListing> cqmRemovedActivities = new ArrayList<QuestionableActivityListing>();
         if (origListing.getCqmResults() != null && origListing.getCqmResults().size() > 0
                 && newListing.getCqmResults() != null && newListing.getCqmResults().size() > 0) {
             // all cqms are in the details so find the same one in the orig and new objects
@@ -32,7 +32,7 @@ public class DeletedCqmsActivity implements ListingActivity {
                         // NQF is the same if the NQF numbers are equal
                         if (origCqm.isSuccess() && !newCqm.isSuccess()) {
                             // orig did have this cqm but new does not so it was removed
-                            QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
+                            QuestionableActivityListing activity = new QuestionableActivityListing();
                             activity.setBefore(
                                     origCqm.getCmsId() != null ? origCqm.getCmsId() : origCqm.getNqfNumber());
                             activity.setAfter(null);
@@ -44,14 +44,14 @@ public class DeletedCqmsActivity implements ListingActivity {
                         // CMS is the same if the CMS ID and version is equal
                         if (origCqm.isSuccess() && !newCqm.isSuccess()) {
                             // orig did not have this cqm but new does so it was added
-                            QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
+                            QuestionableActivityListing activity = new QuestionableActivityListing();
                             activity.setBefore(
                                     origCqm.getCmsId() != null ? origCqm.getCmsId() : origCqm.getNqfNumber());
                             activity.setAfter(null);
                             cqmRemovedActivities.add(activity);
                         } else if (origCqm.getSuccessVersions() != null && origCqm.getSuccessVersions().size() > 0
                                 && (newCqm.getSuccessVersions() == null || newCqm.getSuccessVersions().size() == 0)) {
-                            QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
+                            QuestionableActivityListing activity = new QuestionableActivityListing();
                             activity.setBefore(
                                     origCqm.getCmsId() != null ? origCqm.getCmsId() : origCqm.getNqfNumber());
                             activity.setAfter(null);
