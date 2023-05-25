@@ -13,6 +13,7 @@ import gov.healthit.chpl.subscription.dao.SubscriptionDao;
 import gov.healthit.chpl.subscription.dao.SubscriptionObservationDao;
 import gov.healthit.chpl.subscription.domain.SubscriptionSubject;
 import gov.healthit.chpl.subscription.service.SubscriptionLookupUtil;
+import gov.healthit.chpl.subscription.subject.processor.CertificationCriteriaAddedActivityProcessor;
 import gov.healthit.chpl.subscription.subject.processor.CertificationStatusChangedActivityProcessor;
 import gov.healthit.chpl.subscription.subject.processor.SubscriptionSubjectProcessor;
 import lombok.extern.log4j.Log4j2;
@@ -66,6 +67,6 @@ public class SubscriptionObserver {
     private void createSubscriptionSubjectProcessors() {
         this.processors = new ArrayList<SubscriptionSubjectProcessor>();
         this.processors.add(new CertificationStatusChangedActivityProcessor(getSubject(lookupUtil.getCertificationStatusChangedSubjectId())));
-        //TODO: Add processors in the future for other actions we care about
+        this.processors.add(new CertificationCriteriaAddedActivityProcessor(getSubject(lookupUtil.getCertificationCriteriaAddedSubjectId())));
     }
 }

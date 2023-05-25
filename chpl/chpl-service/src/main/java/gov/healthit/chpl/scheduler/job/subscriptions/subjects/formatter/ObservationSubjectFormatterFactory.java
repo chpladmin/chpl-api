@@ -12,12 +12,15 @@ import lombok.extern.log4j.Log4j2;
 public class ObservationSubjectFormatterFactory {
 
     private CertificationStatusChangedFormatter certStatusChangedFormatter;
+    private CertificationCriteriaAddedFormatter criteriaAddedFormatter;
     private SubscriptionLookupUtil lookupUtil;
 
     @Autowired
     public ObservationSubjectFormatterFactory(CertificationStatusChangedFormatter certStatusChangedFormatter,
-        SubscriptionLookupUtil lookupUtil) {
+            CertificationCriteriaAddedFormatter criteriaAddedFormatter,
+            SubscriptionLookupUtil lookupUtil) {
         this.certStatusChangedFormatter = certStatusChangedFormatter;
+        this.criteriaAddedFormatter = criteriaAddedFormatter;
         this.lookupUtil = lookupUtil;
     }
 
@@ -25,6 +28,8 @@ public class ObservationSubjectFormatterFactory {
         Long observationSubjectId = observation.getSubscription().getSubject().getId();
         if (lookupUtil.getCertificationStatusChangedSubjectId().equals(observationSubjectId)) {
             return certStatusChangedFormatter;
+        } else if (lookupUtil.getCertificationCriteriaAddedSubjectId().equals(observationSubjectId)) {
+            return criteriaAddedFormatter;
         } else {
             LOGGER.error("No subject ormatter found for subject with ID " + observationSubjectId);
         }

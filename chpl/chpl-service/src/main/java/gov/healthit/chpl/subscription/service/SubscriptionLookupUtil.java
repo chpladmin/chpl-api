@@ -43,6 +43,10 @@ public class SubscriptionLookupUtil {
         return Long.parseLong(environment.getProperty("subscription.subject.certificationStatusChanged"));
     }
 
+    public Long getCertificationCriteriaAddedSubjectId() {
+        return Long.parseLong(environment.getProperty("subscription.subject.certificationCriteriaAdded"));
+    }
+
     public Long getDailyConsolidationMethodId() {
         return Long.parseLong(environment.getProperty("subscription.consolidationMethod.daily"));
     }
