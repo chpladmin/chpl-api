@@ -12,7 +12,6 @@ import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.subscription.domain.SubscriptionObservation;
-import gov.healthit.chpl.subscription.subject.processor.CertificationStatusChangedActivityProcessor;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -59,7 +58,7 @@ public class CertificationStatusChangedFormatter extends ObservationSubjectForma
             return null;
         }
 
-        return Stream.of(CertificationStatusChangedActivityProcessor.SUBJECT_NAME,
+        return Stream.of(observation.getSubscription().getSubject().getSubject(),
                 String.format(DESCRIPTION_UNFORMATTED, before.getCurrentStatus().getStatus().getName(),
                         after.getCurrentStatus().getStatus().getName())).toList();
     }

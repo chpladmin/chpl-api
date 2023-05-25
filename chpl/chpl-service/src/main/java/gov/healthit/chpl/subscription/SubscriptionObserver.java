@@ -12,6 +12,7 @@ import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.subscription.dao.SubscriptionDao;
 import gov.healthit.chpl.subscription.dao.SubscriptionObservationDao;
 import gov.healthit.chpl.subscription.domain.SubscriptionSubject;
+import gov.healthit.chpl.subscription.service.SubscriptionLookupUtil;
 import gov.healthit.chpl.subscription.subject.processor.CertificationStatusChangedActivityProcessor;
 import gov.healthit.chpl.subscription.subject.processor.SubscriptionSubjectProcessor;
 import lombok.extern.log4j.Log4j2;
@@ -21,15 +22,18 @@ import lombok.extern.log4j.Log4j2;
 public class SubscriptionObserver {
     private SubscriptionDao subscriptionDao;
     private SubscriptionObservationDao observationDao;
+    private SubscriptionLookupUtil lookupUtil;
 
     private List<SubscriptionSubjectProcessor> processors;
     private List<SubscriptionSubject> allSubjects;
 
     @Autowired
     public SubscriptionObserver(SubscriptionDao subscriptionDao,
-            SubscriptionObservationDao observationDao) {
+            SubscriptionObservationDao observationDao,
+            SubscriptionLookupUtil lookupUtil) {
         this.subscriptionDao = subscriptionDao;
         this.observationDao = observationDao;
+        this.lookupUtil = lookupUtil;
         this.allSubjects = subscriptionDao.getAllSubjects();
 
         createSubscriptionSubjectProcessors();
@@ -38,20 +42,7 @@ public class SubscriptionObserver {
     public void checkActivityForSubscriptions(ActivityDTO activity, Object originalData, Object newData) {
         processors.stream()
             .filter(processor -> processor.isRelevantTo(activity, originalData, newData))
-            .map(processor -> getSubjectId(processor.getSubjectName()))
-            .filter(subjectId -> subjectId != null)
-            .forEach(subjectId -> createObservations(subjectId, activity.getActivityObjectId(), activity.getId()));
-    }
-
-    private Long getSubjectId(String subjectName) {
-        Optional<SubscriptionSubject> subjectWithName = allSubjects.stream()
-                .filter(subj -> subj.getSubject().equals(subjectName))
-                .findAny();
-        if (subjectWithName.isEmpty()) {
-            LOGGER.error("Expected a subscription subject '" + subjectName + "' but it was not found.");
-            return null;
-        }
-        return subjectWithName.get().getId();
+            .forEach(processor -> createObservations(processor.getSubject().getId(), activity.getActivityObjectId(), activity.getId()));
     }
 
     private void createObservations(Long subjectId, Long objectId, Long activityId) {
@@ -61,9 +52,20 @@ public class SubscriptionObserver {
         }
     }
 
+    private SubscriptionSubject getSubject(Long subjectId) {
+        Optional<SubscriptionSubject> subjectWithId = allSubjects.stream()
+                .filter(subj -> subj.getId().equals(subjectId))
+                .findAny();
+        if (subjectWithId.isEmpty()) {
+            LOGGER.error("Expected a subscription subject with ID '" + subjectId + "' but it was not found.");
+            return null;
+        }
+        return subjectWithId.get();
+    }
+
     private void createSubscriptionSubjectProcessors() {
         this.processors = new ArrayList<SubscriptionSubjectProcessor>();
-        this.processors.add(new CertificationStatusChangedActivityProcessor());
+        this.processors.add(new CertificationStatusChangedActivityProcessor(getSubject(lookupUtil.getCertificationStatusChangedSubjectId())));
         //TODO: Add processors in the future for other actions we care about
     }
 }

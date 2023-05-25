@@ -3,9 +3,13 @@ package gov.healthit.chpl.subscription.subject.processor;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.subscription.domain.SubscriptionSubject;
 
-public class CertificationStatusChangedActivityProcessor implements SubscriptionSubjectProcessor {
-    public static final String SUBJECT_NAME = "Certification Status Changed";
+public class CertificationStatusChangedActivityProcessor extends SubscriptionSubjectProcessor {
+
+    public CertificationStatusChangedActivityProcessor(SubscriptionSubject subject) {
+        super(subject);
+    }
 
     public boolean isRelevantTo(ActivityDTO activity, Object originalData, Object newData) {
         if (activity.getConcept().equals(ActivityConcept.CERTIFIED_PRODUCT)) {
@@ -19,9 +23,5 @@ public class CertificationStatusChangedActivityProcessor implements Subscription
     private boolean areCertificationStatusesDifferent(CertifiedProductSearchDetails originalListing,
             CertifiedProductSearchDetails newListing) {
         return !originalListing.getCurrentStatus().getStatus().getId().equals(newListing.getCurrentStatus().getStatus().getId());
-    }
-
-    public String getSubjectName() {
-        return SUBJECT_NAME;
     }
 }
