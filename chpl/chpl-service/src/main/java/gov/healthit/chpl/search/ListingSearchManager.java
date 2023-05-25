@@ -1,5 +1,6 @@
 package gov.healthit.chpl.search;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,9 +38,14 @@ public class ListingSearchManager {
     }
 
     public  List<ListingSearchResult> getAllListingsNoCache() {
+        Date start = new Date();
+        LOGGER.info("Starting retrieval of listing search collection");
         List<ListingSearchResult> results = searchDao.getListingSearchResults();
         results.parallelStream()
             .forEach(searchResult -> populateDirectReviews(searchResult));
+
+        Date end = new Date();
+        LOGGER.info("Retrieval of listing search collection to {} ms", (end.getTime() - start.getTime()));
         return results;
     }
 

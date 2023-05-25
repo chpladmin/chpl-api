@@ -13,10 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -34,6 +34,7 @@ import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewContainer;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.exception.JiraRequestFailedException;
+import gov.healthit.chpl.util.RedisUtil;
 import gov.healthit.chpl.validation.compliance.DirectReviewValidator;
 import lombok.extern.log4j.Log4j2;
 
@@ -65,19 +66,22 @@ public class DirectReviewCachingService {
     private RestTemplate jiraAuthenticatedRestTemplate;
     private DirectReviewDeserializingObjectMapper mapper;
     private DirectReviewListingSharedStoreHandler directReviewListingSharedStoreHandler;
-    private RedisCacheManager cacheManager;
+    private CacheManager cacheManager;
+    private RedisUtil redisUtil;
 
     @Autowired
     public DirectReviewCachingService(DirectReviewValidator drValidator,
             DeveloperDAO developerDao, RestTemplate jiraAuthenticatedRestTemplate,
             DirectReviewDeserializingObjectMapper mapper,
             DirectReviewListingSharedStoreHandler directReviewListingSharedStoreHandler,
-            RedisCacheManager cacheManager) {
+            CacheManager cacheManager, RedisUtil redisUtil) {
         this.drValidator = drValidator;
         this.developerDao = developerDao;
         this.jiraAuthenticatedRestTemplate = jiraAuthenticatedRestTemplate;
         this.mapper = mapper;
         this.directReviewListingSharedStoreHandler = directReviewListingSharedStoreHandler;
+        this.cacheManager = cacheManager;
+        this.redisUtil = redisUtil;
     }
 
     @CacheEvict(value = { CacheNames.COLLECTIONS_LISTINGS }, allEntries = true)
@@ -112,17 +116,16 @@ public class DirectReviewCachingService {
             calculatedHttpStatus = ex.getStatusCode();
         }
 
-        //if (calculatedHttpStatus == null || !calculatedHttpStatus.is2xxSuccessful()
-        //        && doesCacheHaveAnyOkData()) {
-        //    logger.warn("The request to Jira failed with status " + calculatedHttpStatus + ", but the DR cache "
-        //            + "currently has at least one record with 'OK' data. Not replacing the cache contents.");
-        //} else {
+        if (calculatedHttpStatus == null || !calculatedHttpStatus.is2xxSuccessful()
+                && doesCacheHaveAnyOkData()) {
+            logger.warn("The request to Jira failed with status " + calculatedHttpStatus + ", but the DR cache "
+                    + "currently has at least one record with 'OK' data. Not replacing the cache contents.");
+        } else {
             replaceAllDataInDirectReviewCache(allDirectReviews, calculatedHttpStatus, logger);
-        //}
+        }
         directReviewListingSharedStoreHandler.handle(allDirectReviews, logger);
     }
 
-    /*
     public boolean doesCacheHaveAnyOkData() {
         List<DirectReviewContainer> drContainers = getAll();
         return !CollectionUtils.isEmpty(drContainers)
@@ -134,22 +137,16 @@ public class DirectReviewCachingService {
     private List<DirectReviewContainer> getAll() {
         List<DirectReviewContainer> drContainers = new ArrayList<DirectReviewContainer>();
 
-        RedisCache drCache = (RedisCache)getDirectReviewsCache();
-        drCache.getNativeCache();
-        HashO
+        Cache drCache = getDirectReviewsCache();
 
-        //drContainers = drCache.getAll(drCache.  getKeys()).values().stream()
-        drContainers = ((RedisCache)drCache.getNativeCache()). getKeys()).values().stream()
-            .map(value -> value.getObjectValue())
-            .filter(objValue -> objValue != null && (objValue instanceof DirectReviewContainer))
-            .map(objValue -> (DirectReviewContainer) objValue)
-            .toList();
-
-
+        drContainers = redisUtil.getAllKeysForCache(drCache).stream()
+                .map(key -> drCache.get(key))
+                .filter(objValue -> objValue != null && (objValue instanceof DirectReviewContainer))
+                .map(objValue -> (DirectReviewContainer) objValue)
+                .toList();
 
         return drContainers;
     }
-    */
 
     private void replaceAllDataInDirectReviewCache(List<DirectReview> allDirectReviews, HttpStatus httpStatus, Logger logger) {
         final LocalDateTime drFetchTime = LocalDateTime.now();
@@ -186,11 +183,12 @@ public class DirectReviewCachingService {
 
     public void addDirectReviewToCache(Cache drCache, DirectReview dr, HttpStatus httpStatus, LocalDateTime drFetchTime) {
         if (drCache.get(dr.getDeveloperId()) != null) {
-            //Element devDirectReviewElement = drCache.get(dr.getDeveloperId());
-            Object devDirectReviewsContainerObj = drCache.get(dr.getDeveloperId()).get();
+            ValueWrapper devDirectReviewElement = drCache.get(dr.getDeveloperId());
+            Object devDirectReviewsContainerObj = devDirectReviewElement.get();
             if (devDirectReviewsContainerObj instanceof DirectReviewContainer) {
                 DirectReviewContainer drContainer = (DirectReviewContainer) devDirectReviewsContainerObj;
                 drContainer.getDirectReviews().add(dr);
+                drCache.put(dr.getDeveloperId(), drContainer);
             }
         } else {
             List<DirectReview> devDirectReviews = new ArrayList<DirectReview>();

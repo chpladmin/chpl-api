@@ -1,59 +1,74 @@
 package gov.healthit.chpl.compliance.directreview;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.jfree.data.time.DateRange;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
+import gov.healthit.chpl.domain.comparator.CertificationStatusEventComparator;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewContainer;
+import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
+import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.util.RedisUtil;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import one.util.streamex.StreamEx;
 
 @Component("directReviewSearchService")
 @NoArgsConstructor
 @Log4j2
 public class DirectReviewSearchService {
     private DirectReviewCachingService drCacheService;
+    private CacheManager cacheManager;
+    private RedisUtil redisUtil;
 
     @Autowired
-    public DirectReviewSearchService(DirectReviewCachingService drCacheService) {
+    public DirectReviewSearchService(DirectReviewCachingService drCacheService, CacheManager cacheManager, RedisUtil redisUtil) {
         this.drCacheService = drCacheService;
+        this.cacheManager = cacheManager;
+        this.redisUtil = redisUtil;
     }
 
     public boolean doesCacheHaveAnyOkData() {
         //DRs are available if there is at least one developer with a 2xx http status code for it's dr list
-        //return drCacheService.doesCacheHaveAnyOkData();
-        return true;
+        return drCacheService.doesCacheHaveAnyOkData();
     }
 
     public boolean areDirectReviewsLoading() {
         //if there are any entries in the cache with "null" http status then it's still loading
-        //List<DirectReviewContainer> drContainers = getAll();
-        //return CollectionUtils.isEmpty(drContainers)
-        //        || drContainers.stream()
-        //            .filter(drResponse -> drResponse.getHttpStatus() == null)
-        //            .findAny().isPresent();
-        return false;
+        List<DirectReviewContainer> drContainers = getAll();
+        return CollectionUtils.isEmpty(drContainers)
+                || drContainers.stream()
+                    .filter(drResponse -> drResponse.getHttpStatus() == null)
+                    .findAny().isPresent();
     }
 
     public List<DirectReviewContainer> getAll() {
         List<DirectReviewContainer> drContainers = new ArrayList<DirectReviewContainer>();
 
-        /*
         Cache drCache = getDirectReviewsCache();
-        ((RedisTemplate<String, List<DirectReviewContainer>) drCache.getNativeCache()).opsForHash().values(drCache.getName());
 
-        drContainers = drCache.getAll(drCache.getKeys()).values().stream()
-            .map(value -> value.getObjectValue())
-            .filter(objValue -> objValue != null && (objValue instanceof DirectReviewContainer))
-            .map(objValue -> (DirectReviewContainer) objValue)
-            .toList();
-        */
+        drContainers = redisUtil.getAllKeysForCache(drCache).stream()
+                .map(key -> drCache.get(key))
+                .filter(objValue -> objValue != null && (objValue instanceof DirectReviewContainer))
+                .map(objValue -> (DirectReviewContainer) objValue)
+                .toList();
+
         return drContainers;
     }
 
@@ -74,7 +89,6 @@ public class DirectReviewSearchService {
     public List<DirectReview> getDirectReviewsRelatedToListing(Long listingId, Long developerId, String editionYear,
             List<CertificationStatusEvent> statusEvents, Logger logger) {
         List<DirectReview> drs = new ArrayList<DirectReview>();
-        /*
         drs.addAll(getDirectReviewsWithDeveloperAssociatedListingId(listingId));
 
         if (!StringUtils.isEmpty(editionYear) && editionYear.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())) {
@@ -84,11 +98,10 @@ public class DirectReviewSearchService {
         drs = StreamEx.of(drs)
             .distinct(DirectReview::getJiraKey)
             .collect(Collectors.toList());
-        */
+
         return drs;
     }
 
-    /*
     private List<DirectReview> getDeveloperDirectReviewsWithoutAssociatedListings(Long developerId,
             List<CertificationStatusEvent> statusEvents, Logger logger) {
         List<DirectReview> allDeveloperDirectReviews = getDeveloperDirectReviews(developerId, logger);
@@ -165,7 +178,6 @@ public class DirectReviewSearchService {
     }
 
     private Cache getDirectReviewsCache() {
-        return CacheManager.getInstance().getCache(CacheNames.DIRECT_REVIEWS);
+        return cacheManager.getCache(CacheNames.DIRECT_REVIEWS);
     }
-    */
 }

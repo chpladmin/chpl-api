@@ -11,6 +11,9 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -18,6 +21,7 @@ import lombok.extern.log4j.Log4j2;
 @EnableCaching
 @Log4j2
 public class ChplCacheConfig {
+    public static final String CACHE_NAME_PREFIX = "chpl.";
 
     @Autowired
     private Environment env;
@@ -34,11 +38,22 @@ public class ChplCacheConfig {
 
 
     @Bean
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+
+      RedisTemplate<String, Object> template = new RedisTemplate<>();
+      template.setConnectionFactory(redisConnectionFactory);
+      template.setKeySerializer(new StringRedisSerializer());
+
+      return template;
+    }
+
+    @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
         LOGGER.info("Creating RedisCacheManager");
 
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-                .prefixCacheNameWith("chpl.")
+                .prefixCacheNameWith(CACHE_NAME_PREFIX)
+                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .disableCachingNullValues();
 
         RedisCacheManager manager = RedisCacheManager.builder(connectionFactory)
