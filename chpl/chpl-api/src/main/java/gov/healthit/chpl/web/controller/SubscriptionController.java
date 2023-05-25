@@ -17,6 +17,7 @@ import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.subscription.SubscriptionManager;
 import gov.healthit.chpl.subscription.domain.Subscriber;
+import gov.healthit.chpl.subscription.domain.SubscriberConfirmationRequest;
 import gov.healthit.chpl.subscription.domain.SubscriptionObjectType;
 import gov.healthit.chpl.subscription.domain.SubscriptionReason;
 import gov.healthit.chpl.subscription.domain.SubscriptionRequest;
@@ -90,11 +91,11 @@ public class SubscriptionController {
             })
     @RequestMapping(value = "/confirm-subscriber", method = RequestMethod.PUT, produces = "application/json; charset=utf-8",
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Subscriber confirmSubscriber(@RequestBody(required = true) String subscriberUuid)
+    public Subscriber confirmSubscriber(@RequestBody(required = true) SubscriberConfirmationRequest request)
         throws ValidationException {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
         }
-        return subscriptionManager.confirm(UUID.fromString(subscriberUuid));
+        return subscriptionManager.confirm(UUID.fromString(request.getSubscriberId()));
     }
 }
