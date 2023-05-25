@@ -13,14 +13,17 @@ public class ObservationSubjectFormatterFactory {
 
     private CertificationStatusChangedFormatter certStatusChangedFormatter;
     private CertificationCriteriaAddedFormatter criteriaAddedFormatter;
+    private CertificationCriteriaRemovedFormatter criteriaRemovedFormatter;
     private SubscriptionLookupUtil lookupUtil;
 
     @Autowired
     public ObservationSubjectFormatterFactory(CertificationStatusChangedFormatter certStatusChangedFormatter,
             CertificationCriteriaAddedFormatter criteriaAddedFormatter,
+            CertificationCriteriaRemovedFormatter criteriaRemovedFormatter,
             SubscriptionLookupUtil lookupUtil) {
         this.certStatusChangedFormatter = certStatusChangedFormatter;
         this.criteriaAddedFormatter = criteriaAddedFormatter;
+        this.criteriaRemovedFormatter = criteriaRemovedFormatter;
         this.lookupUtil = lookupUtil;
     }
 
@@ -30,8 +33,10 @@ public class ObservationSubjectFormatterFactory {
             return certStatusChangedFormatter;
         } else if (lookupUtil.getCertificationCriteriaAddedSubjectId().equals(observationSubjectId)) {
             return criteriaAddedFormatter;
+        } else if (lookupUtil.getCertificationCriteriaRemovedSubjectId().equals(observationSubjectId)) {
+            return criteriaRemovedFormatter;
         } else {
-            LOGGER.error("No subject ormatter found for subject with ID " + observationSubjectId);
+            LOGGER.error("No subject formatter found for subject with ID " + observationSubjectId);
         }
         return null;
     }
