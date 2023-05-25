@@ -28,7 +28,7 @@ import gov.healthit.chpl.subscription.service.SubscriptionLookupUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
-@Log4j2
+@Log4j2(topic = "subscriptionObservationsNotificationJobLogger")
 public class ObservationProcessor {
     private SubscriptionObservationDao observationDao;
     private ChplEmailFactory chplEmailFactory;
