@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job.subscriptions.subjects.formatter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -19,47 +20,28 @@ import lombok.extern.log4j.Log4j2;
 public class CertificationStatusChangedFormatter extends ObservationSubjectFormatter {
     private static final String DESCRIPTION_UNFORMATTED = "Certification status changed from '%s' to '%s'";
 
-    private ActivityDAO activityDao;
-    private ListingActivityUtil listingActivityUtil;
-
     @Autowired
     public CertificationStatusChangedFormatter(@Qualifier("activityDAO") ActivityDAO activityDao,
             ListingActivityUtil listingActivityUtil) {
-        this.activityDao = activityDao;
-        this.listingActivityUtil = listingActivityUtil;
+        super(activityDao, listingActivityUtil);
     }
 
-    public List<String> toListOfStrings(SubscriptionObservation observation) {
-        ActivityDTO activity = null;
-        try {
-            activity = activityDao.getById(observation.getActivityId());
-        } catch (Exception ex) {
-            LOGGER.error("Could not get activity with ID " + observation.getActivityId(), ex);
-        }
+    @Override
+    public List<List<String>> toListsOfStrings(SubscriptionObservation observation) {
+        ActivityDTO activity = getActivity(observation.getActivityId());
 
-        if (activity == null) {
-            return null;
-        }
-
-        CertifiedProductSearchDetails before = null, after = null;
-        try {
-            before = listingActivityUtil.getListing(activity.getOriginalData());
-        } catch (Exception ex) {
-            LOGGER.error("Could not convert 'originalData' from activity " + activity.getId() + " to a listing details.", ex);
-        }
-
-        try {
-            after = listingActivityUtil.getListing(activity.getNewData());
-        } catch (Exception ex) {
-            LOGGER.error("Could not convert 'newData' from activity " + activity.getId() + " to a listing details.", ex);
-        }
+        CertifiedProductSearchDetails before = getListing(activity.getOriginalData());
+        CertifiedProductSearchDetails after = getListing(activity.getNewData());
 
         if (before == null || after == null) {
+            LOGGER.error("There was a problem turning activityID " + activity.getId() + " into listing details objects.");
             return null;
         }
 
-        return Stream.of(observation.getSubscription().getSubject().getSubject(),
+        List<List<String>> formattedObservations = new ArrayList<List<String>>();
+        formattedObservations.add(Stream.of(observation.getSubscription().getSubject().getSubject(),
                 String.format(DESCRIPTION_UNFORMATTED, before.getCurrentStatus().getStatus().getName(),
-                        after.getCurrentStatus().getStatus().getName())).toList();
+                        after.getCurrentStatus().getStatus().getName())).toList());
+        return formattedObservations;
     }
 }

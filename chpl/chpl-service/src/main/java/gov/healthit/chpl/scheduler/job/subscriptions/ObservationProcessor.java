@@ -108,24 +108,25 @@ public class ObservationProcessor {
         String subscribedItemFooter = formatter.getSubscribedItemFooter(observationsForSubscribedObject.get(0));
 
         String observationsTable = htmlEmailBuilder.getTableHtml(observationTableHeadings,
-                toListsOfStrings(observationsForSubscribedObject),
+                toTableRowsLists(observationsForSubscribedObject),
                 "No observations were found.",
                 subscribedItemFooter);
 
         return htmlEmailBuilder.getParagraphHtml(subscribedItemHeading, observationsTable, "h3");
     }
 
-    private List<List<String>> toListsOfStrings(List<SubscriptionObservation> observationsForSubscribedObject) {
+    private List<List<String>> toTableRowsLists(List<SubscriptionObservation> observationsForSubscribedObject) {
         List<List<String>> observationsTabularLists = new ArrayList<List<String>>();
         observationsForSubscribedObject.stream()
-            .map(observation -> toListOfStrings(observation))
-            .filter(obsAsStrings -> obsAsStrings != null)
-            .forEach(obsAsStrings -> observationsTabularLists.add(obsAsStrings));
+            .map(observation -> toTableRowLists(observation))
+            .filter(rowsForObservationTable -> rowsForObservationTable != null)
+            .flatMap(rowsForObservationTable -> rowsForObservationTable.stream())
+            .forEach(rowForObservationTable -> observationsTabularLists.add(rowForObservationTable));
         return observationsTabularLists;
     }
 
-    private List<String> toListOfStrings(SubscriptionObservation observation) {
-        return observationSubjectFormatterFactory.getSubjectFormatter(observation).toListOfStrings(observation);
+    private List<List<String>> toTableRowLists(SubscriptionObservation observation) {
+        return observationSubjectFormatterFactory.getSubjectFormatter(observation).toListsOfStrings(observation);
     }
 
     private void deleteNotifiedObservations(List<SubscriptionObservation> observations) {
