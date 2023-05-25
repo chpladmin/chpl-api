@@ -148,7 +148,7 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE_OWNERSHIP, #product)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#product.id")
