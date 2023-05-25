@@ -8,18 +8,18 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
 
 @Component
 public class UpdatedCertificationStatusWithdrawnByDeveloperUnderReviewActivity implements ListingActivity {
 
     @Override
-    public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
-        QuestionableActivityListingDTO activity = null;
+    public List<QuestionableActivityListing> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+        QuestionableActivityListing activity = null;
         CertificationStatusType withdrawnByDeveloperUnderReview = CertificationStatusType.WithdrawnByDeveloperUnderReview;
         if (!origListing.getCurrentStatus().getStatus().getName().equals(withdrawnByDeveloperUnderReview.getName())
                 && newListing.getCurrentStatus().getStatus().getName().equals(withdrawnByDeveloperUnderReview.getName())) {
-            activity = new QuestionableActivityListingDTO();
+            activity = new QuestionableActivityListing();
             activity.setBefore(origListing.getCurrentStatus().getStatus().getName());
             activity.setAfter(newListing.getCurrentStatus().getStatus().getName());
             activity.setCertificationStatusChangeReason(newListing.getCurrentStatus().getReason());

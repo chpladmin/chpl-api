@@ -12,8 +12,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.entity.ProductEntity;
 import gov.healthit.chpl.entity.auth.UserEntity;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityProduct;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -23,7 +26,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @Table(name = "questionable_activity_product")
-public class QuestionableActivityProductEntity implements QuestionableActivityEntity {
+public class QuestionableActivityProductEntity implements QuestionableActivityBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -74,5 +77,23 @@ public class QuestionableActivityProductEntity implements QuestionableActivityEn
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
+
+    public QuestionableActivityProduct toDomain() {
+        return QuestionableActivityProduct.builder()
+                .id(this.getId())
+                .activityId(this.getActivityId())
+                .trigger(this.getTrigger() == null
+                    ? QuestionableActivityTrigger.builder().id(this.getTriggerId()).build()
+                        : this.getTrigger().toDomain())
+                .before(this.getBefore())
+                .after(this.getAfter())
+                .activityDate(this.getActivityDate())
+                .userId(this.getUserId())
+                .productId(this.getProductId())
+                .product(this.getProduct() == null
+                    ? Product.builder().id(this.getProductId()).build()
+                            : this.getProduct().toDomain())
+                .build();
+    }
 }
 

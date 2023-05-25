@@ -141,6 +141,7 @@ public class JoinDeveloperJob implements Job {
         CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_DEVELOPERS).removeAll();
         CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_LISTINGS).removeAll();
         CacheManager.getInstance().getCache(CacheNames.GET_DECERTIFIED_DEVELOPERS).removeAll();
+        CacheManager.getInstance().getCache(CacheNames.QUESTIONABLE_ACTIVITIES).removeAll();
     }
 
     private void sendJobCompletionEmails(Developer developerJoined, List<Developer> developersJoining,

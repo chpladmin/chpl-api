@@ -1,9 +1,9 @@
-package gov.healthit.chpl.questionableactivity.dto;
+package gov.healthit.chpl.questionableactivity.domain;
 
 import java.util.Date;
 
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityEntity;
+import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityBaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,11 +13,10 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public abstract class QuestionableActivityDTO {
+public abstract class QuestionableActivityBase {
     private Long id;
-    private Long triggerId;
     private Long activityId;
-    private QuestionableActivityTriggerDTO trigger;
+    private QuestionableActivityTrigger trigger;
     private String before;
     private String after;
     private Date activityDate;
@@ -26,12 +25,11 @@ public abstract class QuestionableActivityDTO {
 
     public abstract Class<?> getActivityObjectClass();
 
-    public QuestionableActivityDTO(QuestionableActivityEntity entity) {
+    public QuestionableActivityBase(QuestionableActivityBaseEntity entity) {
         this.id = entity.getId();
-        this.triggerId = entity.getTriggerId();
         this.activityId = entity.getActivityId();
         if (entity.getTrigger() != null) {
-            this.trigger = new QuestionableActivityTriggerDTO(entity.getTrigger());
+            this.trigger = entity.getTrigger().toDomain();
         }
         this.before = entity.getBefore();
         this.after = entity.getAfter();

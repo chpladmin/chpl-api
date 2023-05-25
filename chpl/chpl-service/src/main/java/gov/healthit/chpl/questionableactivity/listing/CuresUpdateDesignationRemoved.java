@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -15,9 +15,9 @@ import lombok.extern.log4j.Log4j2;
 public class CuresUpdateDesignationRemoved implements ListingActivity {
 
     @Override
-    public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+    public List<QuestionableActivityListing> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         if (curesUpdateChangedTrueToFalse(origListing, newListing)) {
-            return List.of(QuestionableActivityListingDTO.builder()
+            return List.of(QuestionableActivityListing.builder()
                     .before(Boolean.TRUE.toString())
                     .after(Boolean.FALSE.toString())
                     .build());

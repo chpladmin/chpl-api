@@ -14,8 +14,11 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -26,7 +29,7 @@ import lombok.ToString;
 @ToString
 @Table(name = "questionable_activity_listing")
 @Where(clause = " deleted = false ")
-public class QuestionableActivityListingEntity implements QuestionableActivityEntity {
+public class QuestionableActivityListingEntity implements QuestionableActivityBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -83,5 +86,25 @@ public class QuestionableActivityListingEntity implements QuestionableActivityEn
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
+
+    public QuestionableActivityListing toDomain() {
+        return QuestionableActivityListing.builder()
+                .id(this.getId())
+                .activityId(this.getActivityId())
+                .trigger(this.getTrigger() == null
+                    ? QuestionableActivityTrigger.builder().id(this.getTriggerId()).build()
+                        : this.getTrigger().toDomain())
+                .before(this.getBefore())
+                .after(this.getAfter())
+                .activityDate(this.getActivityDate())
+                .userId(this.getUserId())
+                .listingId(this.getListingId())
+                .listing(this.getListing() == null
+                    ? CertifiedProductDetailsDTO.builder().id(this.getListingId()).build()
+                        : new CertifiedProductDetailsDTO(this.getListing()))
+                .certificationStatusChangeReason(this.getCertificationStatusChangeReason())
+                .reason(this.getReason())
+                .build();
+    }
 }
 

@@ -8,7 +8,7 @@ import javax.transaction.Transactional;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTriggerDTO;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityCertificationResultEntity;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityDeveloperEntity;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityListingEntity;
@@ -23,7 +23,7 @@ import lombok.extern.log4j.Log4j2;
 public class UpdatableQuestionableActivityDao extends BaseDAOImpl {
 
     @Transactional
-    public void deleteQuestionableActivityForTriggerBetweenDates(QuestionableActivityTriggerDTO trigger, Date startDate, Date endDate) {
+    public void deleteQuestionableActivityForTriggerBetweenDates(QuestionableActivityTrigger trigger, Date startDate, Date endDate) {
         LOGGER.info("Deleting " + trigger.getName() + " questionable activities since " + startDate);
         String hql = "UPDATE QuestionableActivityListingEntity "
                 + "SET deleted = true "

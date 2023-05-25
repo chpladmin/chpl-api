@@ -3,7 +3,7 @@ package gov.healthit.chpl.questionableactivity.service;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dto.ProductVersionDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersionDTO;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityVersion;
 
 /**
  * Tools for checking for Questionable Activity related to Versions.
@@ -17,14 +17,14 @@ public class VersionQuestionableActivityProvider {
      * @param newVersion the new version
      * @return DTO iff there was a change
      */
-    public QuestionableActivityVersionDTO checkNameUpdated(
+    public QuestionableActivityVersion checkNameUpdated(
             final ProductVersionDTO origVersion, final ProductVersionDTO newVersion) {
 
-        QuestionableActivityVersionDTO activity = null;
+        QuestionableActivityVersion activity = null;
         if ((origVersion.getVersion() != null && newVersion.getVersion() == null)
                 || (origVersion.getVersion() == null && newVersion.getVersion() != null)
                 || !origVersion.getVersion().equals(newVersion.getVersion())) {
-            activity = new QuestionableActivityVersionDTO();
+            activity = new QuestionableActivityVersion();
             activity.setBefore(origVersion.getVersion());
             activity.setAfter(newVersion.getVersion());
         }
