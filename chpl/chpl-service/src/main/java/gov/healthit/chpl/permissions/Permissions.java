@@ -25,6 +25,7 @@ import gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions;
 import gov.healthit.chpl.permissions.domains.ProductDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions;
 import gov.healthit.chpl.permissions.domains.QmsStandardDomainPermissions;
+import gov.healthit.chpl.permissions.domains.QuestionableActivityDomainPermissions;
 import gov.healthit.chpl.permissions.domains.RealWorldTestingDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions;
@@ -66,6 +67,7 @@ public class Permissions {
     public static final String ACCESSIBILITY_STANDARD = "ACCESSIBILITY_STANDARD";
     public static final String QMS_STANDARD = "QMS_STANDARD";
     public static final String ATTESTATION = "ATTESTATION";
+    public static final String QUESTIONABLE_ACTIVITY = "QUESTIONABLE_ACTIVITY";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
@@ -97,7 +99,8 @@ public class Permissions {
             UcdProcessDomainPermissions ucdProcessDomainPermissions,
             AccessibilityStandardDomainPermissions accessibilityStandardDomainPermissions,
             QmsStandardDomainPermissions qmsStandardDomainPermissions,
-            AttestationDomainPermissions attestationDomainPermissions) {
+            AttestationDomainPermissions attestationDomainPermissions,
+            QuestionableActivityDomainPermissions qaDomainPermissions) {
 
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
         domainPermissions.put(CERTIFIED_PRODUCT, certifiedProductDomainPermissions);
@@ -126,6 +129,7 @@ public class Permissions {
         domainPermissions.put(ACCESSIBILITY_STANDARD, accessibilityStandardDomainPermissions);
         domainPermissions.put(QMS_STANDARD, qmsStandardDomainPermissions);
         domainPermissions.put(ATTESTATION, attestationDomainPermissions);
+        domainPermissions.put(QUESTIONABLE_ACTIVITY, qaDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {

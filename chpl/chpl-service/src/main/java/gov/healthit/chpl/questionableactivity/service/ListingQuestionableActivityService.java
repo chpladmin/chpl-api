@@ -13,8 +13,8 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityDAO;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTriggerDTO;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
 import gov.healthit.chpl.questionableactivity.listing.AddedCqmsActivity;
 import gov.healthit.chpl.questionableactivity.listing.AddedRwtPlanNonEligibleListingActivity;
 import gov.healthit.chpl.questionableactivity.listing.AddedRwtResultsNonEligibleListingActivity;
@@ -49,7 +49,7 @@ public class ListingQuestionableActivityService {
     private CertifiedProductDAO certifiedProductDAO;
     private Environment env;
 
-    private List<QuestionableActivityTriggerDTO> triggerTypes;
+    private List<QuestionableActivityTrigger> triggerTypes;
 
     @Autowired
     ListingQuestionableActivityService(QuestionableActivityDAO questionableActivityDao, List<ListingActivity> listingActivities,
@@ -106,9 +106,9 @@ public class ListingQuestionableActivityService {
         if (!listingActivity.isPresent()) {
             LOGGER.error("Could not find class: " + className);
         } else {
-            List<QuestionableActivityListingDTO> activities = listingActivity.get().check(origListing, newListing);
+            List<QuestionableActivityListing> activities = listingActivity.get().check(origListing, newListing);
             if (activities != null && activities.size() > 0) {
-                for (QuestionableActivityListingDTO dto : activities) {
+                for (QuestionableActivityListing dto : activities) {
                     if (dto != null) {
                         //Need to get the real user here
                         createListingActivity(dto, origListing.getId(), listingActivity.get().getTriggerType(), activity, activityReason);
@@ -119,23 +119,23 @@ public class ListingQuestionableActivityService {
         return activitiesCreated;
     }
 
-    private void createListingActivity(QuestionableActivityListingDTO questionableActivity, Long listingId,
-            QuestionableActivityTriggerConcept trigger, ActivityDTO activity, String activityReason) {
+    private void createListingActivity(QuestionableActivityListing questionableActivity, Long listingId,
+            QuestionableActivityTriggerConcept triggerConcept, ActivityDTO activity, String activityReason) {
         questionableActivity.setListingId(listingId);
         questionableActivity.setUserId(activity.getUser().getId());
         questionableActivity.setActivityDate(activity.getActivityDate());
         questionableActivity.setActivityId(activity.getId());
         questionableActivity.setReason(activityReason);
-        QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
-        questionableActivity.setTriggerId(triggerDto.getId());
+        QuestionableActivityTrigger trigger = getTrigger(triggerConcept);
+        questionableActivity.setTrigger(trigger);
 
         questionableActivityDao.create(questionableActivity);
     }
 
-    private QuestionableActivityTriggerDTO getTrigger(QuestionableActivityTriggerConcept trigger) {
-        QuestionableActivityTriggerDTO result = null;
-        for (QuestionableActivityTriggerDTO currTrigger : triggerTypes) {
-            if (trigger.getName().equalsIgnoreCase(currTrigger.getName())) {
+    private QuestionableActivityTrigger getTrigger(QuestionableActivityTriggerConcept triggerConcept) {
+        QuestionableActivityTrigger result = null;
+        for (QuestionableActivityTrigger currTrigger : triggerTypes) {
+            if (triggerConcept.getName().equalsIgnoreCase(currTrigger.getName())) {
                 result = currTrigger;
             }
         }

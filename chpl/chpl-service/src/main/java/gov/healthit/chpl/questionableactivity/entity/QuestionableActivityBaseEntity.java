@@ -4,7 +4,7 @@ import java.util.Date;
 
 import gov.healthit.chpl.entity.auth.UserEntity;
 
-public interface QuestionableActivityEntity {
+public interface QuestionableActivityBaseEntity {
 
     Long getId();
     void setId(Long id);

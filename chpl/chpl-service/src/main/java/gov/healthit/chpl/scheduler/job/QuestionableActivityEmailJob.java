@@ -36,12 +36,12 @@ import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityDAO;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResultDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloperDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProductDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityTriggerDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersionDTO;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityCertificationResult;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityDeveloper;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityProduct;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityVersion;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.Util;
 
@@ -240,25 +240,25 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
     private List<List<String>> createCriteriaActivityRows(Date startDate, Date endDate) {
         LOGGER.debug("Getting certification result activity between " + startDate + " and " + endDate);
-        List<QuestionableActivityCertificationResultDTO> certResultActivities = questionableActivityDao
+        List<QuestionableActivityCertificationResult> certResultActivities = questionableActivityDao
                 .findCertificationResultActivityBetweenDates(startDate, endDate);
         LOGGER.debug("Found " + certResultActivities.size() + " questionable certification result activities");
 
         // create a bucket for each activity timestamp+trigger type
-        Map<ActivityDateTriggerGroup, List<QuestionableActivityCertificationResultDTO>> activityByGroup =
-                new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityCertificationResultDTO>>();
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityCertificationResult>> activityByGroup =
+                new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityCertificationResult>>();
 
-        for (QuestionableActivityCertificationResultDTO activity : certResultActivities) {
+        for (QuestionableActivityCertificationResult activity : certResultActivities) {
             ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(),
                     activity.getTrigger());
 
             if (activityByGroup.get(groupKey) == null) {
-                List<QuestionableActivityCertificationResultDTO> activitiesForGroup =
-                        new ArrayList<QuestionableActivityCertificationResultDTO>();
+                List<QuestionableActivityCertificationResult> activitiesForGroup =
+                        new ArrayList<QuestionableActivityCertificationResult>();
                 activitiesForGroup.add(activity);
                 activityByGroup.put(groupKey, activitiesForGroup);
             } else {
-                List<QuestionableActivityCertificationResultDTO> existingActivitiesForGroup = activityByGroup
+                List<QuestionableActivityCertificationResult> existingActivitiesForGroup = activityByGroup
                         .get(groupKey);
                 existingActivitiesForGroup.add(activity);
             }
@@ -272,8 +272,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             currRow.set(ACTIVITY_LEVEL_COL, activityGroup.getTrigger().getLevel());
             currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
-            List<QuestionableActivityCertificationResultDTO> activitiesForGroup = activityByGroup.get(activityGroup);
-            for (QuestionableActivityCertificationResultDTO activity : activitiesForGroup) {
+            List<QuestionableActivityCertificationResult> activitiesForGroup = activityByGroup.get(activityGroup);
+            for (QuestionableActivityCertificationResult activity : activitiesForGroup) {
                 putCertResultActivityInRow(activity, currRow);
             }
 
@@ -284,24 +284,24 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
     private List<List<String>> createListingActivityRows(Date startDate, Date endDate) {
         LOGGER.debug("Getting listing activity between " + startDate + " and " + endDate);
-        List<QuestionableActivityListingDTO> listingActivities = questionableActivityDao
+        List<QuestionableActivityListing> listingActivities = questionableActivityDao
                 .findListingActivityBetweenDates(startDate, endDate);
         LOGGER.debug("Found " + listingActivities.size() + " questionable listing activities");
 
         // create a bucket for each activity timestamp+trigger type
-        Map<ActivityDateTriggerGroup, List<QuestionableActivityListingDTO>> activityByGroup =
-                new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityListingDTO>>();
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityListing>> activityByGroup =
+                new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityListing>>();
 
-        for (QuestionableActivityListingDTO activity : listingActivities) {
+        for (QuestionableActivityListing activity : listingActivities) {
             ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(),
                     activity.getTrigger());
 
             if (activityByGroup.get(groupKey) == null) {
-                List<QuestionableActivityListingDTO> activitiesForDate = new ArrayList<QuestionableActivityListingDTO>();
+                List<QuestionableActivityListing> activitiesForDate = new ArrayList<QuestionableActivityListing>();
                 activitiesForDate.add(activity);
                 activityByGroup.put(groupKey, activitiesForDate);
             } else {
-                List<QuestionableActivityListingDTO> existingActivitiesForDate = activityByGroup.get(groupKey);
+                List<QuestionableActivityListing> existingActivitiesForDate = activityByGroup.get(groupKey);
                 existingActivitiesForDate.add(activity);
             }
         }
@@ -309,8 +309,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         List<List<String>> activityCsvRows = new ArrayList<List<String>>();
         Set<ActivityDateTriggerGroup> activityGroups = activityByGroup.keySet();
         for (ActivityDateTriggerGroup activityGroup : activityGroups) {
-            List<QuestionableActivityListingDTO> activitiesForGroup = activityByGroup.get(activityGroup);
-            for (QuestionableActivityListingDTO activity : activitiesForGroup) {
+            List<QuestionableActivityListing> activitiesForGroup = activityByGroup.get(activityGroup);
+            for (QuestionableActivityListing activity : activitiesForGroup) {
                 List<String> currRow = createEmptyRow();
                 currRow.set(ACTIVITY_DATE_COL, Util.getTimestampFormatter().format(activityGroup.getActivityDate()));
                 currRow.set(ACTIVITY_LEVEL_COL, activityGroup.getTrigger().getLevel());
@@ -324,24 +324,24 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
     private List<List<String>> createDeveloperActivityRows(Date startDate, Date endDate) {
         LOGGER.debug("Getting developer activity between " + startDate + " and " + endDate);
-        List<QuestionableActivityDeveloperDTO> developerActivities = questionableActivityDao
+        List<QuestionableActivityDeveloper> developerActivities = questionableActivityDao
                 .findDeveloperActivityBetweenDates(startDate, endDate);
         LOGGER.debug("Found " + developerActivities.size() + " questionable developer activities");
 
         // create a bucket for each activity timestamp+trigger type
-        Map<ActivityDateTriggerGroup, List<QuestionableActivityDeveloperDTO>> activityByGroup =
-                new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityDeveloperDTO>>();
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityDeveloper>> activityByGroup =
+                new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityDeveloper>>();
 
-        for (QuestionableActivityDeveloperDTO activity : developerActivities) {
+        for (QuestionableActivityDeveloper activity : developerActivities) {
             ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(),
                     activity.getTrigger());
 
             if (activityByGroup.get(groupKey) == null) {
-                List<QuestionableActivityDeveloperDTO> activitiesForDate = new ArrayList<QuestionableActivityDeveloperDTO>();
+                List<QuestionableActivityDeveloper> activitiesForDate = new ArrayList<QuestionableActivityDeveloper>();
                 activitiesForDate.add(activity);
                 activityByGroup.put(groupKey, activitiesForDate);
             } else {
-                List<QuestionableActivityDeveloperDTO> existingActivitiesForDate = activityByGroup.get(groupKey);
+                List<QuestionableActivityDeveloper> existingActivitiesForDate = activityByGroup.get(groupKey);
                 existingActivitiesForDate.add(activity);
             }
         }
@@ -354,8 +354,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             currRow.set(ACTIVITY_LEVEL_COL, activityGroup.getTrigger().getLevel());
             currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
-            List<QuestionableActivityDeveloperDTO> activitiesForGroup = activityByGroup.get(activityGroup);
-            for (QuestionableActivityDeveloperDTO activity : activitiesForGroup) {
+            List<QuestionableActivityDeveloper> activitiesForGroup = activityByGroup.get(activityGroup);
+            for (QuestionableActivityDeveloper activity : activitiesForGroup) {
                 putDeveloperActivityInRow(activity, currRow);
             }
 
@@ -366,24 +366,24 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
     private List<List<String>> createProductActivityRows(Date startDate, Date endDate) {
         LOGGER.debug("Getting product activity between " + startDate + " and " + endDate);
-        List<QuestionableActivityProductDTO> productActivities = questionableActivityDao
+        List<QuestionableActivityProduct> productActivities = questionableActivityDao
                 .findProductActivityBetweenDates(startDate, endDate);
         LOGGER.debug("Found " + productActivities.size() + " questionable developer activities");
 
         // create a bucket for each activity timestamp+trigger type
-        Map<ActivityDateTriggerGroup, List<QuestionableActivityProductDTO>> activityByGroup =
-                new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityProductDTO>>();
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityProduct>> activityByGroup =
+                new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityProduct>>();
 
-        for (QuestionableActivityProductDTO activity : productActivities) {
+        for (QuestionableActivityProduct activity : productActivities) {
             ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(),
                     activity.getTrigger());
 
             if (activityByGroup.get(groupKey) == null) {
-                List<QuestionableActivityProductDTO> activitiesForDate = new ArrayList<QuestionableActivityProductDTO>();
+                List<QuestionableActivityProduct> activitiesForDate = new ArrayList<QuestionableActivityProduct>();
                 activitiesForDate.add(activity);
                 activityByGroup.put(groupKey, activitiesForDate);
             } else {
-                List<QuestionableActivityProductDTO> existingActivitiesForDate = activityByGroup.get(groupKey);
+                List<QuestionableActivityProduct> existingActivitiesForDate = activityByGroup.get(groupKey);
                 existingActivitiesForDate.add(activity);
             }
         }
@@ -396,8 +396,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             currRow.set(ACTIVITY_LEVEL_COL, activityGroup.getTrigger().getLevel());
             currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
-            List<QuestionableActivityProductDTO> activitiesForGroup = activityByGroup.get(activityGroup);
-            for (QuestionableActivityProductDTO activity : activitiesForGroup) {
+            List<QuestionableActivityProduct> activitiesForGroup = activityByGroup.get(activityGroup);
+            for (QuestionableActivityProduct activity : activitiesForGroup) {
                 putProductActivityInRow(activity, currRow);
             }
 
@@ -408,24 +408,24 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
     private List<List<String>> createVersionActivityRows(Date startDate, Date endDate) {
         LOGGER.debug("Getting version activity between " + startDate + " and " + endDate);
-        List<QuestionableActivityVersionDTO> versionActivities = questionableActivityDao
+        List<QuestionableActivityVersion> versionActivities = questionableActivityDao
                 .findVersionActivityBetweenDates(startDate, endDate);
         LOGGER.debug("Found " + versionActivities.size() + " questionable developer activities");
 
         // create a bucket for each activity timestamp+trigger type
-        Map<ActivityDateTriggerGroup, List<QuestionableActivityVersionDTO>> activityByGroup =
-                new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityVersionDTO>>();
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityVersion>> activityByGroup =
+                new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityVersion>>();
 
-        for (QuestionableActivityVersionDTO activity : versionActivities) {
+        for (QuestionableActivityVersion activity : versionActivities) {
             ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(activity.getActivityDate(),
                     activity.getTrigger());
 
             if (activityByGroup.get(groupKey) == null) {
-                List<QuestionableActivityVersionDTO> activitiesForDate = new ArrayList<QuestionableActivityVersionDTO>();
+                List<QuestionableActivityVersion> activitiesForDate = new ArrayList<QuestionableActivityVersion>();
                 activitiesForDate.add(activity);
                 activityByGroup.put(groupKey, activitiesForDate);
             } else {
-                List<QuestionableActivityVersionDTO> existingActivitiesForDate = activityByGroup.get(groupKey);
+                List<QuestionableActivityVersion> existingActivitiesForDate = activityByGroup.get(groupKey);
                 existingActivitiesForDate.add(activity);
             }
         }
@@ -438,8 +438,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             currRow.set(ACTIVITY_LEVEL_COL, activityGroup.getTrigger().getLevel());
             currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
-            List<QuestionableActivityVersionDTO> activitiesForGroup = activityByGroup.get(activityGroup);
-            for (QuestionableActivityVersionDTO activity : activitiesForGroup) {
+            List<QuestionableActivityVersion> activitiesForGroup = activityByGroup.get(activityGroup);
+            for (QuestionableActivityVersion activity : activitiesForGroup) {
                 putVersionActivityInRow(activity, currRow);
             }
 
@@ -448,7 +448,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         return activityCsvRows;
     }
 
-    private void putListingActivityInRow(QuestionableActivityListingDTO activity, List<String> currRow) {
+    private void putListingActivityInRow(QuestionableActivityListing activity, List<String> currRow) {
         // fill in info about the listing that will be the same for every
         // activity found in this date bucket
         currRow.set(ACB_COL, activity.getListing().getCertificationBodyName());
@@ -543,7 +543,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         currRow.set(ACTIVITY_REASON_COL, activity.getReason());
     }
 
-    private void putCertResultActivityInRow(QuestionableActivityCertificationResultDTO activity, List<String> currRow) {
+    private void putCertResultActivityInRow(QuestionableActivityCertificationResult activity, List<String> currRow) {
         // fill in info about the listing that will be the same for every
         // activity found in this date bucket
         currRow.set(ACB_COL, activity.getListing().getCertificationBodyName());
@@ -572,7 +572,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         currRow.set(ACTIVITY_REASON_COL, activity.getReason());
     }
 
-    private void putDeveloperActivityInRow(QuestionableActivityDeveloperDTO developerActivity, List<String> activityRow) {
+    private void putDeveloperActivityInRow(QuestionableActivityDeveloper developerActivity, List<String> activityRow) {
         activityRow.set(DEVELOPER_COL, developerActivity.getDeveloper().getName());
         activityRow.set(ACTIVITY_USER_COL, developerActivity.getUser().getUsername());
         if (developerActivity.getReason() != null) {
@@ -619,7 +619,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         }
     }
 
-    private void putProductActivityInRow(QuestionableActivityProductDTO activity, List<String> activityRow) {
+    private void putProductActivityInRow(QuestionableActivityProduct activity, List<String> activityRow) {
         activityRow.set(DEVELOPER_COL, activity.getProduct().getOwner().getName());
         activityRow.set(PRODUCT_COL, activity.getProduct().getName());
         activityRow.set(ACTIVITY_USER_COL, activity.getUser().getUsername());
@@ -661,7 +661,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         }
     }
 
-    private void putVersionActivityInRow(QuestionableActivityVersionDTO activity, List<String> activityRow) {
+    private void putVersionActivityInRow(QuestionableActivityVersion activity, List<String> activityRow) {
         activityRow.set(DEVELOPER_COL, activity.getVersion().getDeveloperName());
         activityRow.set(PRODUCT_COL, activity.getVersion().getProductName());
         activityRow.set(VERSION_COL, activity.getVersion().getVersion());
@@ -716,9 +716,9 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
     private static class ActivityDateTriggerGroup {
         private Date activityDate;
-        private QuestionableActivityTriggerDTO trigger;
+        private QuestionableActivityTrigger trigger;
 
-        ActivityDateTriggerGroup(Date activityDate, QuestionableActivityTriggerDTO trigger) {
+        ActivityDateTriggerGroup(Date activityDate, QuestionableActivityTrigger trigger) {
             this.activityDate = activityDate;
             this.trigger = trigger;
         }
@@ -756,7 +756,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             return activityDate;
         }
 
-        public QuestionableActivityTriggerDTO getTrigger() {
+        public QuestionableActivityTrigger getTrigger() {
             return trigger;
         }
     }
