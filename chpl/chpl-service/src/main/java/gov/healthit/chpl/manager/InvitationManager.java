@@ -25,7 +25,6 @@ import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UserInvitation;
 import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserInvitationDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -113,15 +112,6 @@ public class InvitationManager extends SecuredManager {
     public UserInvitation inviteWithAcbAccess(String emailAddress, Long acbId)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
         return inviteToAccount(Authority.ROLE_ACB, acbId, emailAddress);
-    }
-
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
-            + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ATL, #atlId)")
-    public UserInvitation inviteWithAtlAccess(String emailAddress, Long atlId)
-            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
-        return inviteToAccount(Authority.ROLE_ATL, atlId, emailAddress);
-
     }
 
     @Transactional
@@ -295,15 +285,14 @@ public class InvitationManager extends SecuredManager {
     }
 
     /**
-     * Adds the invited user (who has now created an account) to any ACBs, ATLs, or Developers
+     * Adds the invited user (who has now created an account) to any ACBs or Developers
      * that the invitation specifies they should have access to.
-     * Also could be an existing user getting ACBs, ATLs, or Developers added to their account.
+     * Also could be an existing user getting ACBs or Developers added to their account.
      * The securitycontext must have a valid authentication specified when this is called
      */
     private void handleInvitation(UserInvitation invitation, UserDTO user)
             throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException {
         CertificationBodyDTO userAcb = null;
-        TestingLabDTO userAtl = null;
         Developer userDeveloper = null;
 
         if (!StringUtils.isEmpty(invitation.getRole()) && invitation.getRole().equals(Authority.ROLE_ACB)
@@ -311,14 +300,6 @@ public class InvitationManager extends SecuredManager {
             userAcb = resourcePermissions.getAcbIfPermissionById(invitation.getPermissionObjectId());
             if (userAcb == null) {
                 throw new InvalidArgumentsException("Could not find ACB with id " + invitation.getPermissionObjectId());
-            }
-        } else if (!StringUtils.isEmpty(invitation.getRole())
-                && invitation.getRole().equals(Authority.ROLE_ATL)
-                && invitation.getPermissionObjectId() != null) {
-            userAtl = resourcePermissions.getAtlIfPermissionById(invitation.getPermissionObjectId());
-            if (userAtl == null) {
-                throw new InvalidArgumentsException(
-                        "Could not find the testing lab with id " + invitation.getPermissionObjectId());
             }
         } else if (!StringUtils.isEmpty(invitation.getRole())
                 && invitation.getRole().equals(Authority.ROLE_DEVELOPER)
@@ -333,8 +314,6 @@ public class InvitationManager extends SecuredManager {
         // give them access to the invited acb, atl, or developer
         if (userAcb != null) {
             userPermissionsManager.addAcbPermission(userAcb, user.getId());
-        } else if (userAtl != null) {
-            userPermissionsManager.addAtlPermission(userAtl, user.getId());
         } else if (userDeveloper != null) {
             userPermissionsManager.addDeveloperPermission(userDeveloper, user.getId());
         }

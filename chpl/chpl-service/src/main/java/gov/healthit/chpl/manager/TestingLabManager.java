@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -111,13 +110,6 @@ public class TestingLabManager extends SecuredManager {
         activityManager.addActivity(ActivityConcept.TESTING_LAB, result.getId(), activityMsg,
                 beforeAtl, result);
         return result;
-    }
-
-    @Transactional(readOnly = true)
-    @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TESTING_LAB, "
-            + "T(gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions).GET_ALL, filterObject)")
-    public List<TestingLabDTO> getAllForUser() {
-        return testingLabDAO.findAll();
     }
 
     @Transactional(readOnly = true)

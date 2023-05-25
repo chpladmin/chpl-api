@@ -75,17 +75,6 @@ public class GetAllSystemTriggersActionPermissionsTest extends ActionPermissions
 
     @Override
     @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-
-        assertFalse(permissions.hasAccess());
-
-        // Not used
-        assertFalse(permissions.hasAccess(new Object()));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Cms() throws Exception {
         setupForCmsUser(resourcePermissions);
 

@@ -102,22 +102,6 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-
-        assertFalse(permissions.hasAccess());
-
-        FilterDTO dto = getFilterDTO(1L, 3l);
-        Mockito.when(filterDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getFilterDTO(1L, 3l));
-        assertTrue(permissions.hasAccess(dto));
-
-        FilterDTO dto2 = getFilterDTO(1L, 3l);
-        Mockito.when(filterDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getFilterDTO(1L, -5l));
-        assertFalse(permissions.hasAccess(dto2));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Cms() throws Exception {
         setupForCmsUser(resourcePermissions);
 

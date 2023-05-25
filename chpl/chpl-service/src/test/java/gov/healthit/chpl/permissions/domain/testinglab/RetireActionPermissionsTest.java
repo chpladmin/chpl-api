@@ -3,6 +3,8 @@ package gov.healthit.chpl.permissions.domain.testinglab;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.stream.Stream;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -10,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.testinglab.RetireActionPermissions;
@@ -25,7 +28,8 @@ public class RetireActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllAtlsForCurrentUser()).thenReturn(getAllAtlForUser(2L, 4L));
+        Mockito.when(resourcePermissions.getAllAtlsForCurrentUser()).thenReturn(
+                Stream.of(TestingLabDTO.builder().id(2L).build()).toList());
     }
 
     @Override
@@ -66,18 +70,6 @@ public class RetireActionPermissionsTest extends ActionPermissionsBaseTest {
 
         // This is not used
         assertFalse(permissions.hasAccess(new Object()));
-    }
-
-    @Override
-    @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-
-        assertFalse(permissions.hasAccess());
-
-        // This is not used
-        assertFalse(permissions.hasAccess(new Object()));
-
     }
 
     @Override

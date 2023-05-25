@@ -38,21 +38,6 @@ public class TestingUsers {
         return acbUser;
     }
 
-    public void setupForAtlUser(ResourcePermissions resourcePermissions) {
-        SecurityContextHolder.getContext().setAuthentication(getAtlUser());
-        Mockito.when(resourcePermissions.isUserRoleAtlAdmin()).thenReturn(true);
-    }
-
-    private JWTAuthenticatedUser getAtlUser() {
-        JWTAuthenticatedUser atlUser = new JWTAuthenticatedUser();
-        atlUser.setFullName("ATL");
-        atlUser.setId(3L);
-        atlUser.setFriendlyName("User");
-        atlUser.setSubjectName("atlUser");
-        atlUser.getPermissions().add(new GrantedPermission("ROLE_ATL"));
-        return atlUser;
-    }
-
     public void setupForCmsUser(ResourcePermissions resourcePermissions) {
         SecurityContextHolder.getContext().setAuthentication(getCmsUser());
         Mockito.when(resourcePermissions.isUserRoleCmsStaff()).thenReturn(true);

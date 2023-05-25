@@ -7,7 +7,6 @@ public final class Authority {
     public static final String ROLE_ONC_STAFF = "ROLE_ONC_STAFF";
     public static final String ROLE_USER_CREATOR = "ROLE_USER_CREATOR";
     public static final String ROLE_ACB = "ROLE_ACB";
-    public static final String ROLE_ATL = "ROLE_ATL";
     public static final String ROLE_CMS_STAFF = "ROLE_CMS_STAFF";
     public static final String ROLE_DEVELOPER = "ROLE_DEVELOPER";
     public static final String ROLE_USER_AUTHENTICATOR = "ROLE_USER_AUTHENTICATOR";

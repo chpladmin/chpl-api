@@ -85,20 +85,6 @@ public class GetByIdActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-
-        // Not Used
-        assertFalse(permissions.hasAccess());
-
-        // Role atl does not have access
-        CertificationBodyDTO dto = new CertificationBodyDTO();
-        dto.setId(1L);
-        assertFalse(permissions.hasAccess(dto));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Cms() throws Exception {
         setupForCmsUser(resourcePermissions);
 

@@ -3,6 +3,8 @@ package gov.healthit.chpl.permissions.domain.testinglab;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.stream.Stream;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -26,7 +28,8 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        Mockito.when(resourcePermissions.getAllAtlsForCurrentUser()).thenReturn(getAllAtlForUser(2L, 4L));
+        Mockito.when(resourcePermissions.getAllAtlsForCurrentUser()).thenReturn(
+                Stream.of(TestingLabDTO.builder().id(2L).build()).toList());
     }
 
     @Override
@@ -81,23 +84,6 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-
-        // This is not used
-        assertFalse(permissions.hasAccess());
-
-        TestingLabDTO dto = new TestingLabDTO();
-        dto.setId(1L);
-        assertFalse(permissions.hasAccess(dto));
-
-        dto = new TestingLabDTO();
-        dto.setId(2L);
-        assertTrue(permissions.hasAccess(dto));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Cms() throws Exception {
         setupForCmsUser(resourcePermissions);
 
@@ -110,7 +96,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
         dto = new TestingLabDTO();
         dto.setId(2L);
-        assertTrue(permissions.hasAccess(dto));
+        assertFalse(permissions.hasAccess(dto));
     }
 
     @Override

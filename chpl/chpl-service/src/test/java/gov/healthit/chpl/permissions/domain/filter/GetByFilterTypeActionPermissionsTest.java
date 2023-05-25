@@ -94,20 +94,6 @@ public class GetByFilterTypeActionPermissionsTest extends ActionPermissionsBaseT
 
     @Override
     @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-
-        assertFalse(permissions.hasAccess());
-
-        FilterDTO dto = getFilterDTO(1L, 3l);
-        assertTrue(permissions.hasAccess(dto));
-
-        FilterDTO dto2 = getFilterDTO(1L, 5l);
-        assertFalse(permissions.hasAccess(dto2));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Cms() throws Exception {
         setupForCmsUser(resourcePermissions);
 

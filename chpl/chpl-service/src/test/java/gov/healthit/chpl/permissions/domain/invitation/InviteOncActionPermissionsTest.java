@@ -76,18 +76,6 @@ public class InviteOncActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-
-        // Only ROLE_ADMIN and ROLE_ONC has access
-        assertFalse(permissions.hasAccess());
-
-        // This should always be false
-        assertFalse(permissions.hasAccess(new Object()));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Cms() throws Exception {
         setupForCmsUser(resourcePermissions);
 

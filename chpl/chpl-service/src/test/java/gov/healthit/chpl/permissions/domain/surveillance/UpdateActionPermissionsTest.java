@@ -148,10 +148,4 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
                 .certificationEditionId(editionId)
                 .build();
     }
-
-    @Override
-    @Test
-    @Ignore
-    public void hasAccess_Atl() throws Exception {
-    }
 }

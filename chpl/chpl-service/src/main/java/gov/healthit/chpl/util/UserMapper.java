@@ -8,12 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.OrganizationDTO;
-import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.auth.UserEntity;
 
@@ -21,14 +19,12 @@ import gov.healthit.chpl.entity.auth.UserEntity;
 public class UserMapper {
 
     private CertificationBodyDAO acbDao;
-    private TestingLabDAO atlDao;
     private DeveloperDAO developerDao;
 
     @Autowired
     public UserMapper(CertificationBodyDAO abcDao,
-            TestingLabDAO atlDao, DeveloperDAO developerDao) {
+            DeveloperDAO developerDao) {
         this.acbDao = abcDao;
-        this.atlDao = atlDao;
         this.developerDao = developerDao;
     }
 
@@ -77,12 +73,6 @@ public class UserMapper {
                 user.getOrganizations().add(new OrganizationDTO(acb.getId(), acb.getName()));
             }
         }
-        if (user.getPermission().getAuthority().equals(Authority.ROLE_ATL)) {
-            List<TestingLabDTO> atls = getAllAtlsForUser(user.getId());
-            for (TestingLabDTO atl : atls) {
-                user.getOrganizations().add(new OrganizationDTO(atl.getId(), atl.getName()));
-            }
-        }
         if (user.getPermission().getAuthority().equals(Authority.ROLE_DEVELOPER)) {
             List<Developer> devs = getAllDevelopersForUser(user.getId());
             for (Developer dev : devs) {
@@ -93,10 +83,6 @@ public class UserMapper {
 
     private List<CertificationBodyDTO> getAllAcbsForUser(Long userID) {
         return acbDao.getCertificationBodiesByUserId(userID);
-    }
-
-    private List<TestingLabDTO> getAllAtlsForUser(Long userId) {
-        return atlDao.getTestingLabsByUserId(userId);
     }
 
     private List<Developer> getAllDevelopersForUser(Long userId) {

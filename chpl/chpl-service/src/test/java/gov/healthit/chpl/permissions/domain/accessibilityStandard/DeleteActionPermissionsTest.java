@@ -85,18 +85,6 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-
-        // This should always be false
-        assertFalse(permissions.hasAccess());
-
-        // Should always be false -- not used
-        assertFalse(permissions.hasAccess(new Object()));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Cms() throws Exception {
         setupForCmsUser(resourcePermissions);
 

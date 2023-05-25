@@ -7,12 +7,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
-import gov.healthit.chpl.dao.UserTestingLabMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
-import gov.healthit.chpl.dto.UserTestingLabMapDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
@@ -20,14 +18,12 @@ import gov.healthit.chpl.permissions.domains.ActionPermissions;
 @Component("activityGetUserMaintenanceMetadataActionPermissions")
 public class GetUserMaintenanceMetadataActionPermissions extends ActionPermissions {
     private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
-    private UserTestingLabMapDAO userTestingLabMapDAO;
     private UserDAO userDAO;
 
     @Autowired
     public GetUserMaintenanceMetadataActionPermissions(final UserCertificationBodyMapDAO userCertificationBodyMapDAO,
-            final UserTestingLabMapDAO userTestingLabMapDAO, final UserDAO userDAO) {
+            final UserDAO userDAO) {
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
-        this.userTestingLabMapDAO = userTestingLabMapDAO;
         this.userDAO = userDAO;
     }
 
@@ -37,7 +33,6 @@ public class GetUserMaintenanceMetadataActionPermissions extends ActionPermissio
                 || getResourcePermissions().isUserRoleOnc()
                 || getResourcePermissions().isUserRoleOncStaff()
                 || getResourcePermissions().isUserRoleAcbAdmin()
-                || getResourcePermissions().isUserRoleAtlAdmin()
                 || getResourcePermissions().isUserRoleCmsStaff();
     }
 
@@ -52,9 +47,6 @@ public class GetUserMaintenanceMetadataActionPermissions extends ActionPermissio
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             ActivityMetadata activity = (ActivityMetadata) obj;
             return checkIfCurrentUserHasAcbAccessToUser(activity.getObjectId());
-        } else if (getResourcePermissions().isUserRoleAtlAdmin()) {
-            ActivityMetadata activity = (ActivityMetadata) obj;
-            return checkIfCurrentUserHasAtlAccessToUser(activity.getObjectId());
         } else if (getResourcePermissions().isUserRoleCmsStaff()) {
             ActivityMetadata activity = (ActivityMetadata) obj;
             return checkIfCurrentUserHasCmsAccessToUser(activity.getObjectId());
@@ -67,16 +59,6 @@ public class GetUserMaintenanceMetadataActionPermissions extends ActionPermissio
         List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(userId);
         for (UserCertificationBodyMapDTO dto : dtos) {
             if (isAcbValidForCurrentUser(dto.getCertificationBody().getId())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private Boolean checkIfCurrentUserHasAtlAccessToUser(Long userId) {
-        List<UserTestingLabMapDTO> dtos = userTestingLabMapDAO.getByUserId(userId);
-        for (UserTestingLabMapDTO dto : dtos) {
-            if (isAtlValidForCurrentUser(dto.getTestingLab().getId())) {
                 return true;
             }
         }

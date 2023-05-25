@@ -17,12 +17,9 @@ public class UpdateActionPermissions extends ActionPermissions {
     public boolean hasAccess(Object obj) {
         if (!(obj instanceof TestingLabDTO)) {
             return false;
-        } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
-            return true;
-        } else {
-            TestingLabDTO atl = (TestingLabDTO) obj;
-            return isAtlValidForCurrentUser(atl.getId());
         }
+
+        return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
     }
 
 }

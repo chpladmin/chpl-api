@@ -90,19 +90,6 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     @Override
     @Test
     @Ignore
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-
-        // This should always be false
-        assertFalse(permissions.hasAccess());
-
-        // Atl has no access - the param shouldn't even matter
-        assertFalse(permissions.hasAccess(1L));
-    }
-
-    @Override
-    @Test
-    @Ignore
     public void hasAccess_Cms() throws Exception {
         setupForCmsUser(resourcePermissions);
 

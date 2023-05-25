@@ -114,17 +114,6 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-
-        // Not used
-        assertFalse(permissions.hasAccess());
-
-        assertFalse(permissions.hasAccess(AttestationSubmission.builder().build()));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Cms() throws Exception {
         setupForCmsUser(resourcePermissions);
 

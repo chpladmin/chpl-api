@@ -62,14 +62,6 @@ public class GetUploadedCsvActionPermissionsTest extends ActionPermissionsBaseTe
 
     @Override
     @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-        assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(1L));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Cms() throws Exception {
         setupForCmsUser(resourcePermissions);
         assertFalse(permissions.hasAccess());

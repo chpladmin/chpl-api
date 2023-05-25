@@ -177,7 +177,7 @@ public class UserManagementController {
     }
 
     @Operation(summary = "Update an existing user account with new permissions.",
-            description = "Gives the user permission on the object in the invitation (usually an additional ACB or ATL)."
+            description = "Gives the user permission on the object in the invitation (usually an additional ACB or Developer)."
                     + "The correct order to call invitation requests is "
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm.  Security Restrictions: ROLE_ADMIN "
                     + "or ROLE_ONC.",
@@ -238,7 +238,7 @@ public class UserManagementController {
                     + "modify CHPL user accounts." + "The correct order to call invitation requests is "
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm. "
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC can invite users to any organization.  "
-                    + "ROLE_ACB and ROLE_ATL can add users to their own organization.",
+                    + "ROLE_ACB can add users to their own organization.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -260,10 +260,6 @@ public class UserManagementController {
         } else if (invitation.getRole().equals(Authority.ROLE_ACB)
                 && invitation.getPermissionObjectId() != null) {
             createdInvitiation = invitationManager.inviteWithAcbAccess(invitation.getEmailAddress(),
-                    invitation.getPermissionObjectId());
-        } else if (invitation.getRole().equals(Authority.ROLE_ATL)
-                && invitation.getPermissionObjectId() != null) {
-            createdInvitiation = invitationManager.inviteWithAtlAccess(invitation.getEmailAddress(),
                     invitation.getPermissionObjectId());
         } else if (invitation.getRole().equals(Authority.ROLE_DEVELOPER)
                 && invitation.getPermissionObjectId() != null) {
@@ -294,7 +290,7 @@ public class UserManagementController {
     }
 
     @Operation(summary = "Delete a user.",
-            description = "Deletes a user account and all associated authorities on ACBs and ATLs. "
+            description = "Deletes a user account and all associated authorities on organizations. "
                     + "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -319,7 +315,7 @@ public class UserManagementController {
     }
 
     @Operation(summary = "View users of the system.",
-            description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can see all users.  ROLE_ACB, ROLE_ATL, "
+            description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can see all users.  ROLE_ACB "
                     + "and ROLE_CMS_STAFF can see themselves.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),

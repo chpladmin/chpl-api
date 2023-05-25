@@ -70,15 +70,6 @@ public class ListingUploadActionPermissionsTest extends ActionPermissionsBaseTes
 
     @Override
     @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-        assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(buildUploadMetadata(USER_ACB_ID)));
-        assertFalse(permissions.hasAccess(buildUploadMetadata(OTHER_ACB_ID)));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Cms() throws Exception {
         setupForCmsUser(resourcePermissions);
         assertFalse(permissions.hasAccess());

@@ -91,17 +91,6 @@ public class GetByDeveloperIdActionPermissionsTest extends ActionPermissionsBase
 
     @Override
     @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-
-        // Not used
-        assertFalse(permissions.hasAccess());
-
-        assertFalse(permissions.hasAccess(1L));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Cms() throws Exception {
         setupForCmsUser(resourcePermissions);
 
