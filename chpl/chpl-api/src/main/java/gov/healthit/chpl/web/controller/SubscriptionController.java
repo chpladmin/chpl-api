@@ -75,12 +75,12 @@ public class SubscriptionController {
             })
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8",
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void subscribe(@RequestBody(required = true) SubscriptionRequest subscriptionRequest)
+    public Subscriber subscribe(@RequestBody(required = true) SubscriptionRequest subscriptionRequest)
         throws ValidationException {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
         }
-        subscriptionManager.subscribe(subscriptionRequest);
+        return subscriptionManager.subscribe(subscriptionRequest);
     }
 
     @Operation(summary = "Confirm a subscriber's email address is valid. Once confirmed, the subscriber "

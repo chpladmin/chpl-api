@@ -71,7 +71,7 @@ public class SubscriptionManager {
     }
 
     @Transactional
-    public void subscribe(SubscriptionRequest subscriptionRequest) throws ValidationException {
+    public Subscriber subscribe(SubscriptionRequest subscriptionRequest) throws ValidationException {
         SubscriptionRequestValidationContext validationContext = getSubscriptionValidationContext(subscriptionRequest);
         ValidationException validationException = new ValidationException(subscriptionValidationService.validate(validationContext));
         if (validationException.getErrorMessages().size() > 0) {
@@ -90,6 +90,7 @@ public class SubscriptionManager {
 
         subscriptionDao.createSubscription(subscriber.getId(), subscriptionRequest.getSubscribedObjectTypeId(),
                 subscriptionRequest.getSubscribedObjectId(), subscriptionRequest.getReasonId());
+        return subscriber;
     }
 
     @Transactional
