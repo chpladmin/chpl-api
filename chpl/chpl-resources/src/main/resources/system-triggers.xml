@@ -144,7 +144,7 @@
                 <job-name>urlStatusDataCollector</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 0 10 * * ?</cron-expression> <!-- At 1000 UTC every day -->
+                <cron-expression>0 0 17 * * ?</cron-expression> <!-- At 1700 UTC every day -->
             </cron>
         </trigger>
         <trigger>
