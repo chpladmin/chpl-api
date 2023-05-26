@@ -10,8 +10,9 @@ import javax.sql.DataSource;
 import org.ff4j.FF4j;
 import org.ff4j.audit.repository.JdbcEventRepository;
 import org.ff4j.cache.FF4JCacheManager;
-import org.ff4j.cache.FeatureCacheProviderEhCache;
+import org.ff4j.cache.FF4jCacheManagerRedis;
 import org.ff4j.property.store.JdbcPropertyStore;
+import org.ff4j.redis.RedisConnection;
 import org.ff4j.store.JdbcFeatureStore;
 import org.ff4j.store.JdbcQueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,11 @@ public class FF4JConfiguration {
             eventRepository.setQueryBuilder(new JdbcQueryBuilder(TABLE_PREFIX, "", FF4J_SCHEMA));
             ff4j.setEventRepository(new JdbcEventRepository(ff4jDataSource()));
 
-            FF4JCacheManager ff4jCache = new FeatureCacheProviderEhCache();
+            RedisConnection conn = new RedisConnection(env.getProperty("spring.redis.host"),
+                    Integer.valueOf(env.getProperty("spring.redis.port")),
+                    env.getProperty("spring.redis.password"));
+
+            FF4JCacheManager ff4jCache = new FF4jCacheManagerRedis(conn);
             ff4j.cache(ff4jCache);
 
             return ff4j;
@@ -56,7 +61,7 @@ public class FF4JConfiguration {
     private DataSource ff4jDataSource() throws NamingException, SQLException {
         Context ctx = new InitialContext();
         DataSource ds = (DataSource) ctx.lookup(env.getProperty("jndiName"));
-        return (DataSource) ds;
+        return ds;
     }
 
 }
