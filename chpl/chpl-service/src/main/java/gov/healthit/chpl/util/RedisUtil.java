@@ -20,8 +20,10 @@ public class RedisUtil {
         this.redisTemplate = redisTemplate;
     }
 
-    public List<String> getAllKeysForCache(Cache cache) {
-        return redisTemplate.keys(ChplCacheConfig.CACHE_NAME_PREFIX + cache.getName() + "*").stream().toList();
+    public List<Long> getAllKeysForCacheAsLong(Cache cache) {
+        return redisTemplate.keys(ChplCacheConfig.CACHE_NAME_PREFIX + cache.getName() + "*").stream()
+                .map(redisKey -> Long.valueOf(redisKey.split("::")[1]))
+                .toList();
         //List<String> keys = redisTemplate.keys(ChplCacheConfig.CACHE_NAME_PREFIX + cache.getName() + "*").stream().toList();
         //LOGGER.info("Found {} keys in cache {}", keys.size(), cache.getName());
         //return keys;
