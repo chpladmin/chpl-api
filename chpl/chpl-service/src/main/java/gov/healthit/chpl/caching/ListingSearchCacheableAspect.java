@@ -26,7 +26,7 @@ public class ListingSearchCacheableAspect {
     @Around("@annotation(ListingSearchCacheable)")
     public Object getListingSearchCollection(ProceedingJoinPoint joinPoint) throws Throwable {
         ValueWrapper cacheItem = cacheManager.getCache(CacheNames.COLLECTIONS_SEARCH).get(COLLECTIONS_SEARCH_KEY);
-        if (cacheItem == null) {
+        if (cacheItem == null || cacheItem.get() == null) {
             Object functionValue = joinPoint.proceed();
             cacheManager.getCache(CacheNames.COLLECTIONS_SEARCH).put(COLLECTIONS_SEARCH_KEY, functionValue);
             return functionValue;
