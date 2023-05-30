@@ -1,5 +1,14 @@
 # Release Notes
 
+## Version 40.4.0
+_30 May 2023_
+
+### Features
+* Allow Admin and ONC users to edit Listing with validation errors in cases of emergency
+* Create questionable-activity/search and /trigger-types endpoints
+
+---
+
 ## Version 40.3.0
 _15 May 2023_
 
