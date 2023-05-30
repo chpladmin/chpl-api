@@ -56,11 +56,11 @@ public class SedRelatedCriteriaReviewer {
         List<CertificationCriterion> presentAttestedSedCriteria = attestedCriteria.stream()
                 .filter(criterion -> criterion.getRemoved() == null || criterion.getRemoved().equals(Boolean.FALSE))
                 .filter(criterion -> certIdIsInCertList(criterion, sedRelatedCriteria.stream().map(sedCriterion -> sedCriterion.getId()).collect(Collectors.toList())))
-                .collect(Collectors.<CertificationCriterion>toList());
+                .collect(Collectors.<CertificationCriterion> toList());
         boolean hasG3 = validationUtils.hasCriterion(g3, attestedCriteria);
 
         if (presentAttestedSedCriteria != null && presentAttestedSedCriteria.size() > 0 && !hasG3) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteriaRequired", Util.formatCriteriaNumber(g3)));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteriaRequired", Util.formatCriteriaNumber(g3)));
         }
     }
 
@@ -69,12 +69,12 @@ public class SedRelatedCriteriaReviewer {
         List<CertificationCriterion> presentAttestedSedCriteria = attestedCriteria.stream()
                 .filter(criterion -> criterion.getRemoved() == null || criterion.getRemoved().equals(Boolean.FALSE))
                 .filter(criterion -> certIdIsInCertList(criterion, sedRelatedCriteria.stream().map(sedCriterion -> sedCriterion.getId()).collect(Collectors.toList())))
-                .collect(Collectors.<CertificationCriterion>toList());
+                .collect(Collectors.<CertificationCriterion> toList());
         boolean hasG3 = validationUtils.hasCriterion(g3, attestedCriteria);
 
         if ((presentAttestedSedCriteria == null || presentAttestedSedCriteria.size() == 0)
                 && hasG3) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.g3NotAllowed"));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.g3NotAllowed"));
         }
     }
 

@@ -55,7 +55,7 @@ public class SedReviewer {
     private void reviewCriteriaCanHaveSed(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.SED)) {
             if (BooleanUtils.isTrue(certResult.isSed())) {
-                listing.getWarningMessages().add(msgUtil.getMessage(
+                listing.addWarningMessage(msgUtil.getMessage(
                     "listing.criteria.sedNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
         }
@@ -71,12 +71,12 @@ public class SedReviewer {
         if (listing.getSed() != null
                 && !CollectionUtils.isEmpty(listing.getSed().getUnusedTestTaskUniqueIds())) {
             listing.getSed().getUnusedTestTaskUniqueIds().stream()
-                .forEach(unusedTestTask -> listing.getWarningMessages().add(msgUtil.getMessage("listing.sed.unusedTestTask", unusedTestTask)));
+                .forEach(unusedTestTask -> listing.addWarningMessage(msgUtil.getMessage("listing.sed.unusedTestTask", unusedTestTask)));
         }
         if (listing.getSed() != null
                 && !CollectionUtils.isEmpty(listing.getSed().getUnusedTestParticipantUniqueIds())) {
             listing.getSed().getUnusedTestParticipantUniqueIds().stream()
-                .forEach(unusedTestParticipant -> listing.getWarningMessages().add(msgUtil.getMessage("listing.sed.unusedTestParticipant", unusedTestParticipant)));
+                .forEach(unusedTestParticipant -> listing.addWarningMessage(msgUtil.getMessage("listing.sed.unusedTestParticipant", unusedTestParticipant)));
         }
     }
 }

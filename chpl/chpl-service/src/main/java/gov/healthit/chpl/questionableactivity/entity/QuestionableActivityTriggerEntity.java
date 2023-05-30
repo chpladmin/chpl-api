@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
 import lombok.Data;
 
 @Entity
@@ -38,5 +39,13 @@ public class QuestionableActivityTriggerEntity {
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
+
+    public QuestionableActivityTrigger toDomain() {
+        return QuestionableActivityTrigger.builder()
+                .id(this.getId())
+                .name(this.getName())
+                .level(this.getLevel())
+                .build();
+    }
 }
 

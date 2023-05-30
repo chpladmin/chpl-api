@@ -37,15 +37,16 @@ public class DeveloperReviewer implements Reviewer {
         this.urlValidator = new UrlValidator();
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         Developer developer = listing.getDeveloper();
         if (developer == null) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.missingDeveloper"));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.missingDeveloper"));
             return;
         }
 
         if (developer.getId() != null) {
-            //it's an existing developer - give the user warnings if any required developer data is
+            // it's an existing developer - give the user warnings if any required developer data is
             // 1) missing in the system, or 2) does not match the user-entered data
             reviewRequiredDeveloperData(listing, WARNING);
             reviewUserEnteredDataSystemDataMismatch(listing);
@@ -57,11 +58,11 @@ public class DeveloperReviewer implements Reviewer {
             } catch (Exception ex) {
             }
             if (devCode.equals(DeveloperManager.NEW_DEVELOPER_CODE)) {
-                //it's a new developer - give the user errors if any required data has not been entered
+                // it's a new developer - give the user errors if any required data has not been entered
                 reviewRequiredDeveloperData(listing, ERROR);
             } else {
-                //it's not a new developer by code so it must be an error that no developer was found
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.developer.notFound", listing.getDeveloper().getUserEnteredName()));
+                // it's not a new developer by code so it must be an error that no developer was found
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.developer.notFound", listing.getDeveloper().getUserEnteredName()));
             }
         }
     }
@@ -69,10 +70,10 @@ public class DeveloperReviewer implements Reviewer {
     private void reviewUserEnteredDataSystemDataMismatch(CertifiedProductSearchDetails listing) {
         Developer developer = listing.getDeveloper();
         if (!StringUtils.isEmpty(developer.getUserEnteredName()) && !developer.getUserEnteredName().equals(developer.getName())) {
-            listing.getWarningMessages().add(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "name", developer.getUserEnteredName(), developer.getName()));
+            listing.addWarningMessage(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "name", developer.getUserEnteredName(), developer.getName()));
         }
         if (!StringUtils.isEmpty(developer.getUserEnteredWebsite()) && !developer.getUserEnteredWebsite().equals(developer.getWebsite())) {
-            listing.getWarningMessages().add(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "website", developer.getUserEnteredWebsite(), developer.getWebsite()));
+            listing.addWarningMessage(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "website", developer.getUserEnteredWebsite(), developer.getWebsite()));
         }
         if (!StringUtils.isEmpty(developer.getUserEnteredSelfDeveloper())) {
             Boolean userEnteredSelfDeveloper = null;
@@ -81,43 +82,43 @@ public class DeveloperReviewer implements Reviewer {
             } catch (Exception ex) {
             }
             if (userEnteredSelfDeveloper != null && !userEnteredSelfDeveloper.equals(developer.getSelfDeveloper())) {
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "self-developer", developer.getUserEnteredSelfDeveloper(), developer.getSelfDeveloper() + ""));
+                listing.addWarningMessage(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "self-developer", developer.getUserEnteredSelfDeveloper(), developer.getSelfDeveloper() + ""));
             } else if (userEnteredSelfDeveloper == null && developer.getSelfDeveloper() != null) {
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "self-developer", developer.getUserEnteredSelfDeveloper(), developer.getSelfDeveloper() + ""));
+                listing.addWarningMessage(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "self-developer", developer.getUserEnteredSelfDeveloper(), developer.getSelfDeveloper() + ""));
             } else if (userEnteredSelfDeveloper != null && developer.getSelfDeveloper() == null) {
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "self-developer", developer.getUserEnteredSelfDeveloper(), "''"));
+                listing.addWarningMessage(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "self-developer", developer.getUserEnteredSelfDeveloper(), "''"));
             }
         }
         if (developer.getUserEnteredAddress() != null && developer.getAddress() != null) {
             Address userEnteredAddress = developer.getUserEnteredAddress();
             Address address = developer.getAddress();
             if (!StringUtils.isEmpty(userEnteredAddress.getLine1()) && !userEnteredAddress.getLine1().equals(address.getLine1())) {
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "street address", userEnteredAddress.getLine1(), address.getLine1()));
+                listing.addWarningMessage(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "street address", userEnteredAddress.getLine1(), address.getLine1()));
             }
             if (!StringUtils.isEmpty(userEnteredAddress.getLine2()) && !userEnteredAddress.getLine2().equals(address.getLine2())) {
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "street address line 2", userEnteredAddress.getLine2(), address.getLine2()));
+                listing.addWarningMessage(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "street address line 2", userEnteredAddress.getLine2(), address.getLine2()));
             }
             if (!StringUtils.isEmpty(userEnteredAddress.getCity()) && !userEnteredAddress.getCity().equals(address.getCity())) {
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "city", userEnteredAddress.getCity(), address.getCity()));
+                listing.addWarningMessage(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "city", userEnteredAddress.getCity(), address.getCity()));
             }
             if (!StringUtils.isEmpty(userEnteredAddress.getState()) && !userEnteredAddress.getState().equals(address.getState())) {
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "state", userEnteredAddress.getState(), address.getState()));
+                listing.addWarningMessage(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "state", userEnteredAddress.getState(), address.getState()));
             }
             if (!StringUtils.isEmpty(userEnteredAddress.getZipcode()) && !userEnteredAddress.getZipcode().equals(address.getZipcode())) {
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "zipcode", userEnteredAddress.getZipcode(), address.getZipcode()));
+                listing.addWarningMessage(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "zipcode", userEnteredAddress.getZipcode(), address.getZipcode()));
             }
         }
         if (developer.getUserEnteredPointOfContact() != null && developer.getContact() != null) {
             PointOfContact userEnteredContact = developer.getUserEnteredPointOfContact();
             PointOfContact contact = developer.getContact();
             if (!StringUtils.isEmpty(userEnteredContact.getFullName()) && !userEnteredContact.getFullName().equals(contact.getFullName())) {
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "point of contact name", userEnteredContact.getFullName(), contact.getFullName()));
+                listing.addWarningMessage(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "point of contact name", userEnteredContact.getFullName(), contact.getFullName()));
             }
             if (!StringUtils.isEmpty(userEnteredContact.getEmail()) && !userEnteredContact.getEmail().equals(contact.getEmail())) {
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "email address", userEnteredContact.getEmail(), contact.getEmail()));
+                listing.addWarningMessage(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "email address", userEnteredContact.getEmail(), contact.getEmail()));
             }
             if (!StringUtils.isEmpty(userEnteredContact.getPhoneNumber()) && !userEnteredContact.getPhoneNumber().equals(contact.getPhoneNumber())) {
-                listing.getWarningMessages().add(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "phone number", userEnteredContact.getPhoneNumber(), contact.getPhoneNumber()));
+                listing.addWarningMessage(msgUtil.getMessage("listing.developer.userAndSystemMismatch", "phone number", userEnteredContact.getPhoneNumber(), contact.getPhoneNumber()));
             }
         }
     }
@@ -193,9 +194,9 @@ public class DeveloperReviewer implements Reviewer {
         if (developer.getId() != null) {
             DeveloperStatus mostRecentStatus = developer.getStatus();
             if (mostRecentStatus == null || StringUtils.isEmpty(mostRecentStatus.getStatus())) {
-                listing.getErrorMessages().add(msgUtil.getMessage("developer.status.noCurrent"));
+                listing.addDataErrorMessage(msgUtil.getMessage("developer.status.noCurrent"));
             } else if (!mostRecentStatus.getStatus().equals(DeveloperStatusType.Active.getName())) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.developer.notActive.noCreate",
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.developer.notActive.noCreate",
                         developer.getName() != null ? developer.getName() : "?",
                         mostRecentStatus.getStatus()));
             }
@@ -204,9 +205,9 @@ public class DeveloperReviewer implements Reviewer {
 
     private void addMessageToListing(CertifiedProductSearchDetails listing, String message, String msgLevel) {
         if (msgLevel.equals(ERROR)) {
-            listing.getErrorMessages().add(message);
+            listing.addDataErrorMessage(message);
         } else if (msgLevel.equals(WARNING)) {
-            listing.getWarningMessages().add(message);
+            listing.addWarningMessage(message);
         }
     }
 }

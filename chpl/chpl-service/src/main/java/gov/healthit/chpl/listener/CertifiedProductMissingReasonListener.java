@@ -18,7 +18,7 @@ import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MissingReasonException;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
 import gov.healthit.chpl.questionableactivity.listing.DeletedCertificationsActivity;
 import gov.healthit.chpl.questionableactivity.listing.DeletedCqmsActivity;
 import gov.healthit.chpl.questionableactivity.listing.UpdateCurrentCertificationStatusActivity;
@@ -62,28 +62,36 @@ public class CertifiedProductMissingReasonListener {
             throws EntityRetrievalException, MissingReasonException {
         CertifiedProductSearchDetails newListing = updateRequest.getListing();
         CertifiedProductSearchDetails origListing = cpdManager.getCertifiedProductDetails(newListing.getId());
-        List<QuestionableActivityListingDTO> activities;
+        List<QuestionableActivityListing> activities;
 
         activities = updated2011EditionListingActivity.check(origListing, newListing);
-                if (doActivitiesExist(activities) && StringUtils.isEmpty(updateRequest.getReason())) {
+        if (doActivitiesExist(activities)
+                && StringUtils.isEmpty(updateRequest.getReason())
+                && !updateRequest.isAcknowledgeBusinessErrors()) {
             throw new MissingReasonException(errorMessageUtil
                     .getMessage("listing.reasonRequired", "updating a 2011 Edition Certified Product"));
         }
 
         activities = updated2014EditionListingActivity.check(origListing, newListing);
-        if (doActivitiesExist(activities) && StringUtils.isEmpty(updateRequest.getReason())) {
+        if (doActivitiesExist(activities)
+                && StringUtils.isEmpty(updateRequest.getReason())
+                && !updateRequest.isAcknowledgeBusinessErrors()) {
             throw new MissingReasonException(errorMessageUtil
                     .getMessage("listing.reasonRequired", "updating a 2014 Edition Certified Product"));
         }
 
         activities = deletedCqmsActivity.check(origListing, newListing);
-        if (doActivitiesExist(activities) && StringUtils.isEmpty(updateRequest.getReason())) {
+        if (doActivitiesExist(activities)
+                && StringUtils.isEmpty(updateRequest.getReason())
+                && !updateRequest.isAcknowledgeBusinessErrors()) {
             throw new MissingReasonException(errorMessageUtil
                     .getMessage("listing.reasonRequired", "removing a Clinical Quality Measure"));
         }
 
         activities = deletedCertificationsActivity.check(origListing, newListing);
-        if (doActivitiesExist(activities) && StringUtils.isEmpty(updateRequest.getReason())) {
+        if (doActivitiesExist(activities)
+                && StringUtils.isEmpty(updateRequest.getReason())
+                && !updateRequest.isAcknowledgeBusinessErrors()) {
             throw new MissingReasonException(errorMessageUtil
                     .getMessage("listing.reasonRequired", "removing a Certification Criteria"));
         }
@@ -92,13 +100,14 @@ public class CertifiedProductMissingReasonListener {
         if (doActivitiesExist(activities)
                 && newListing.getCurrentStatus().getStatus().getName().toUpperCase(Locale.ENGLISH).equals(
                         CertificationStatusType.Active.getName().toUpperCase(Locale.ENGLISH))
-                && StringUtils.isEmpty(updateRequest.getReason())) {
+                && StringUtils.isEmpty(updateRequest.getReason())
+                && !updateRequest.isAcknowledgeBusinessErrors()) {
             throw new MissingReasonException(errorMessageUtil
                     .getMessage("listing.reasonRequired", "changing Certification Status from anything to \"Active\""));
         }
     }
 
-    private Boolean doActivitiesExist(List<QuestionableActivityListingDTO> activities) {
+    private Boolean doActivitiesExist(List<QuestionableActivityListing> activities) {
         return activities != null
                 && activities.size() > 0
                 && activities.get(0) != null;

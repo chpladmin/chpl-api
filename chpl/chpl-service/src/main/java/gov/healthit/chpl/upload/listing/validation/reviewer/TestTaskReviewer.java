@@ -61,38 +61,36 @@ public class TestTaskReviewer {
     private void reviewAllTestTaskCriteriaAreAllowed(CertifiedProductSearchDetails listing) {
         if (listing.getSed() != null && !CollectionUtils.isEmpty(listing.getSed().getTestTasks())) {
             listing.getSed().getTestTasks().stream()
-                .filter(testTask -> !CollectionUtils.isEmpty(testTask.getCriteria()))
-                .flatMap(testTask -> testTask.getCriteria().stream())
-                .filter(testTaskCriterion -> !certResultRules.hasCertOption(testTaskCriterion.getId(), CertificationResultRules.TEST_TASK))
-                .filter(testTaskCriterion -> BooleanUtils.isFalse(testTaskCriterion.getRemoved()))
-                .forEach(notAllowedTestTaskCriterion ->
-                    listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.testTasksNotApplicable", Util.formatCriteriaNumber(notAllowedTestTaskCriterion))));
+                    .filter(testTask -> !CollectionUtils.isEmpty(testTask.getCriteria()))
+                    .flatMap(testTask -> testTask.getCriteria().stream())
+                    .filter(testTaskCriterion -> !certResultRules.hasCertOption(testTaskCriterion.getId(), CertificationResultRules.TEST_TASK))
+                    .filter(testTaskCriterion -> BooleanUtils.isFalse(testTaskCriterion.getRemoved()))
+                    .forEach(notAllowedTestTaskCriterion -> listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.testTasksNotApplicable", Util.formatCriteriaNumber(notAllowedTestTaskCriterion))));
 
             listing.getSed().getTestTasks().stream()
-                .filter(testTask -> !CollectionUtils.isEmpty(testTask.getCriteria()))
-                .flatMap(testTask -> testTask.getCriteria().stream())
-                .filter(testTaskCriterion -> !doesListingAttestToCriterion(listing, testTaskCriterion))
-                .filter(testTaskCriterion -> BooleanUtils.isFalse(testTaskCriterion.getRemoved()))
-                .forEach(notAllowedTestTaskCriterion ->
-                    listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.testTasksNotApplicable", Util.formatCriteriaNumber(notAllowedTestTaskCriterion))));
+                    .filter(testTask -> !CollectionUtils.isEmpty(testTask.getCriteria()))
+                    .flatMap(testTask -> testTask.getCriteria().stream())
+                    .filter(testTaskCriterion -> !doesListingAttestToCriterion(listing, testTaskCriterion))
+                    .filter(testTaskCriterion -> BooleanUtils.isFalse(testTaskCriterion.getRemoved()))
+                    .forEach(notAllowedTestTaskCriterion -> listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.testTasksNotApplicable", Util.formatCriteriaNumber(notAllowedTestTaskCriterion))));
         }
     }
 
     private boolean doesListingAttestToCriterion(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
         return listing.getCertificationResults().stream()
-            .filter(certResult -> certResult.getCriterion() != null && BooleanUtils.isTrue(certResult.isSuccess())
-                && certResult.getCriterion().getId().equals(criterion.getId()))
-            .count() > 0;
+                .filter(certResult -> certResult.getCriterion() != null && BooleanUtils.isTrue(certResult.isSuccess())
+                        && certResult.getCriterion().getId().equals(criterion.getId()))
+                .count() > 0;
     }
 
     private void reviewCertResultsHaveTestTasksIfRequired(CertifiedProductSearchDetails listing) {
         List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
 
         testTaskCriteria.stream()
-            .filter(criterion -> validationUtils.hasCriterion(criterion, attestedCriteria))
-            .map(attestedTestTaskCriterion -> getCertificationResultForCriterion(listing, attestedTestTaskCriterion))
-            .filter(certResult -> certResult != null && validationUtils.isEligibleForErrors(certResult))
-            .forEach(certResult -> reviewCertResultHasTestTasksIfRequired(listing, certResult));
+                .filter(criterion -> validationUtils.hasCriterion(criterion, attestedCriteria))
+                .map(attestedTestTaskCriterion -> getCertificationResultForCriterion(listing, attestedTestTaskCriterion))
+                .filter(certResult -> certResult != null && validationUtils.isEligibleForErrors(certResult))
+                .forEach(certResult -> reviewCertResultHasTestTasksIfRequired(listing, certResult));
     }
 
     private CertificationResult getCertificationResultForCriterion(CertifiedProductSearchDetails listing, CertificationCriterion criterionToReview) {
@@ -108,10 +106,10 @@ public class TestTaskReviewer {
     private void reviewCertResultHasTestTasksIfRequired(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResult.isSed()) {
             if (listing.getSed() == null || CollectionUtils.isEmpty(listing.getSed().getTestTasks())) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingTestTask",
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingTestTask",
                         Util.formatCriteriaNumber(certResult.getCriterion())));
             } else if (!doesTestTaskListContainCriterion(listing, certResult.getCriterion())) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingTestTask",
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingTestTask",
                         Util.formatCriteriaNumber(certResult.getCriterion())));
             }
         }
@@ -130,11 +128,11 @@ public class TestTaskReviewer {
             return;
         }
         listing.getSed().getTestTasks().stream()
-            .forEach(testTask -> reviewTaskCriteria(listing, testTask));
+                .forEach(testTask -> reviewTaskCriteria(listing, testTask));
 
         listing.getSed().getTestTasks().stream()
-            .filter(testTask -> doesTestTaskHaveNonRemovedCriteria(testTask))
-            .forEach(testTask -> reviewTestTaskFields(listing, testTask));
+                .filter(testTask -> doesTestTaskHaveNonRemovedCriteria(testTask))
+                .forEach(testTask -> reviewTestTaskFields(listing, testTask));
 
     }
 
@@ -169,37 +167,37 @@ public class TestTaskReviewer {
 
     private void reviewTaskUniqueId(CertifiedProductSearchDetails listing, TestTask testTask) {
         if (StringUtils.isEmpty(testTask.getUniqueId())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingTestTaskUniqueId", formatTaskCriteria(testTask)));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingTestTaskUniqueId", formatTaskCriteria(testTask)));
         }
     }
 
     private void reviewTaskCriteria(CertifiedProductSearchDetails listing, TestTask testTask) {
         if (CollectionUtils.isEmpty(testTask.getCriteria())) {
-            listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingTestTaskCriteria", formatTaskRef(testTask)));
+            listing.addWarningMessage(msgUtil.getMessage("listing.criteria.missingTestTaskCriteria", formatTaskRef(testTask)));
         }
     }
 
     private void reviewTaskParticipantSize(CertifiedProductSearchDetails listing, TestTask testTask) {
         if (CollectionUtils.isEmpty(testTask.getTestParticipants()) || testTask.getTestParticipants().size() < MINIMUM_TEST_PARTICIPANT_COUNT) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.badTestTaskParticipantsSize",
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.badTestTaskParticipantsSize",
                     formatTaskRef(testTask), formatTaskCriteria(testTask)));
         }
     }
 
     private void reviewTaskDescription(CertifiedProductSearchDetails listing, TestTask testTask) {
         if (StringUtils.isEmpty(testTask.getDescription())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingTestDescription",
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingTestDescription",
                     formatTaskRef(testTask), formatTaskCriteria(testTask)));
         }
     }
 
     private void reviewTaskSuccessAverage(CertifiedProductSearchDetails listing, TestTask testTask) {
         if (testTask.getTaskSuccessAverage() == null && !StringUtils.isEmpty(testTask.getTaskSuccessAverageStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidTestTaskSuccessAverage",
                             formatTaskRef(testTask), formatTaskCriteria(testTask), testTask.getTaskSuccessAverageStr()));
         } else if (testTask.getTaskSuccessAverage() == null && StringUtils.isEmpty(testTask.getTaskSuccessAverageStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingTestTaskSuccessAverage",
                             formatTaskRef(testTask), formatTaskCriteria(testTask)));
         }
@@ -207,11 +205,11 @@ public class TestTaskReviewer {
 
     private void reviewTaskSuccessStddev(CertifiedProductSearchDetails listing, TestTask testTask) {
         if (testTask.getTaskSuccessStddev() == null && !StringUtils.isEmpty(testTask.getTaskSuccessStddevStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidTestTaskSuccessStddev",
                             formatTaskRef(testTask), formatTaskCriteria(testTask), testTask.getTaskSuccessStddevStr()));
         } else if (testTask.getTaskSuccessStddev() == null && StringUtils.isEmpty(testTask.getTaskSuccessStddevStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingTestTaskSuccessStddev",
                             formatTaskRef(testTask), formatTaskCriteria(testTask)));
         }
@@ -219,11 +217,11 @@ public class TestTaskReviewer {
 
     private void reviewTaskPathDeviationObserved(CertifiedProductSearchDetails listing, TestTask testTask) {
         if (testTask.getTaskPathDeviationObserved() == null && !StringUtils.isEmpty(testTask.getTaskPathDeviationObservedStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidTestTaskPathDeviationObserved",
                             formatTaskRef(testTask), formatTaskCriteria(testTask), testTask.getTaskPathDeviationObservedStr()));
         } else if (testTask.getTaskPathDeviationObserved() == null && StringUtils.isEmpty(testTask.getTaskPathDeviationObservedStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingTestTaskPathDeviationObserved", formatTaskRef(testTask), formatTaskCriteria(testTask)));
         } else if (testTask.getTaskPathDeviationObserved() != null) {
             try {
@@ -231,7 +229,7 @@ public class TestTaskReviewer {
             } catch (NumberFormatException ex) {
                 try {
                     int val = Math.round(Float.valueOf(testTask.getTaskPathDeviationObservedStr()));
-                    listing.getWarningMessages().add(
+                    listing.addWarningMessage(
                             msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
                                     formatTaskRef(testTask), "Task Path Deviation Observed",
                                     testTask.getTaskPathDeviationObservedStr(), String.valueOf(val)));
@@ -243,11 +241,11 @@ public class TestTaskReviewer {
 
     private void reviewTaskPathDeviationOptimal(CertifiedProductSearchDetails listing, TestTask testTask) {
         if (testTask.getTaskPathDeviationOptimal() == null && !StringUtils.isEmpty(testTask.getTaskPathDeviationOptimalStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidTestTaskPathDeviationOptimal",
                             formatTaskRef(testTask), formatTaskCriteria(testTask), testTask.getTaskPathDeviationOptimalStr()));
         } else if (testTask.getTaskPathDeviationOptimal() == null && StringUtils.isEmpty(testTask.getTaskPathDeviationOptimalStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingTestTaskPathDeviationOptimal",
                             formatTaskRef(testTask), formatTaskCriteria(testTask)));
         } else if (testTask.getTaskPathDeviationOptimal() != null) {
@@ -256,7 +254,7 @@ public class TestTaskReviewer {
             } catch (NumberFormatException ex) {
                 try {
                     int val = Math.round(Float.valueOf(testTask.getTaskPathDeviationOptimalStr()));
-                    listing.getWarningMessages().add(
+                    listing.addWarningMessage(
                             msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
                                     formatTaskRef(testTask), "Task Path Deviation Optimal",
                                     testTask.getTaskPathDeviationOptimalStr(), String.valueOf(val)));
@@ -268,11 +266,11 @@ public class TestTaskReviewer {
 
     private void reviewTaskTimeAverage(CertifiedProductSearchDetails listing, TestTask testTask) {
         if (testTask.getTaskTimeAvg() == null && !StringUtils.isEmpty(testTask.getTaskTimeAvgStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidTestTaskTimeAvg",
                             formatTaskRef(testTask), formatTaskCriteria(testTask), testTask.getTaskTimeAvgStr()));
         } else if (testTask.getTaskTimeAvg() == null && StringUtils.isEmpty(testTask.getTaskTimeAvgStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingTestTaskTimeAvg", formatTaskRef(testTask), formatTaskCriteria(testTask)));
         } else if (testTask.getTaskTimeAvg() != null) {
             try {
@@ -280,7 +278,7 @@ public class TestTaskReviewer {
             } catch (NumberFormatException ex) {
                 try {
                     int val = Math.round(Float.valueOf(testTask.getTaskTimeAvgStr()));
-                    listing.getWarningMessages().add(
+                    listing.addWarningMessage(
                             msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
                                     formatTaskRef(testTask), "Task Time Average",
                                     testTask.getTaskTimeAvgStr(), String.valueOf(val)));
@@ -292,11 +290,11 @@ public class TestTaskReviewer {
 
     private void reviewTaskTimeStddev(CertifiedProductSearchDetails listing, TestTask testTask) {
         if (testTask.getTaskTimeStddev() == null && !StringUtils.isEmpty(testTask.getTaskTimeStddevStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidTestTaskTimeStddev",
                             formatTaskRef(testTask), formatTaskCriteria(testTask), testTask.getTaskTimeStddevStr()));
         } else if (testTask.getTaskTimeStddev() == null && StringUtils.isEmpty(testTask.getTaskTimeStddevStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingTestTaskTimeStddev", formatTaskRef(testTask), formatTaskCriteria(testTask)));
         } else if (testTask.getTaskTimeStddev() != null) {
             try {
@@ -304,7 +302,7 @@ public class TestTaskReviewer {
             } catch (NumberFormatException ex) {
                 try {
                     int val = Math.round(Float.valueOf(testTask.getTaskTimeStddevStr()));
-                    listing.getWarningMessages().add(
+                    listing.addWarningMessage(
                             msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
                                     formatTaskRef(testTask), "Task Time Standard Deviation",
                                     testTask.getTaskTimeStddevStr(), String.valueOf(val)));
@@ -316,11 +314,11 @@ public class TestTaskReviewer {
 
     private void reviewTaskTimeDeviationObservedAvg(CertifiedProductSearchDetails listing, TestTask testTask) {
         if (testTask.getTaskTimeDeviationObservedAvg() == null && !StringUtils.isEmpty(testTask.getTaskTimeDeviationObservedAvgStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidTestTaskTimeDeviationObservedAvg",
                             formatTaskRef(testTask), formatTaskCriteria(testTask), testTask.getTaskTimeDeviationObservedAvgStr()));
         } else if (testTask.getTaskTimeDeviationObservedAvg() == null && StringUtils.isEmpty(testTask.getTaskTimeDeviationObservedAvgStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingTestTaskTimeDeviationObservedAvg", formatTaskRef(testTask), formatTaskCriteria(testTask)));
         } else if (testTask.getTaskTimeDeviationObservedAvg() != null) {
             try {
@@ -328,7 +326,7 @@ public class TestTaskReviewer {
             } catch (NumberFormatException ex) {
                 try {
                     int val = Math.round(Float.valueOf(testTask.getTaskTimeDeviationObservedAvgStr()));
-                    listing.getWarningMessages().add(
+                    listing.addWarningMessage(
                             msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
                                     formatTaskRef(testTask), "Task Time Deviation Observed Average",
                                     testTask.getTaskTimeDeviationObservedAvgStr(), String.valueOf(val)));
@@ -340,11 +338,11 @@ public class TestTaskReviewer {
 
     private void reviewTaskTimeDeviationOptimalAvg(CertifiedProductSearchDetails listing, TestTask testTask) {
         if (testTask.getTaskTimeDeviationOptimalAvg() == null && !StringUtils.isEmpty(testTask.getTaskTimeDeviationOptimalAvgStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidTestTaskTimeDeviationOptimalAvg",
                             formatTaskRef(testTask), formatTaskCriteria(testTask), testTask.getTaskTimeDeviationOptimalAvgStr()));
         } else if (testTask.getTaskTimeDeviationOptimalAvg() == null && StringUtils.isEmpty(testTask.getTaskTimeDeviationOptimalAvgStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingTestTaskTimeDeviationOptimalAvg", formatTaskRef(testTask), formatTaskCriteria(testTask)));
         } else if (testTask.getTaskTimeDeviationOptimalAvg() != null) {
             try {
@@ -352,7 +350,7 @@ public class TestTaskReviewer {
             } catch (NumberFormatException ex) {
                 try {
                     int val = Math.round(Float.valueOf(testTask.getTaskTimeDeviationOptimalAvgStr()));
-                    listing.getWarningMessages().add(
+                    listing.addWarningMessage(
                             msgUtil.getMessage("listing.criteria.roundedTestTaskNumber",
                                     formatTaskRef(testTask), "Task Time Deviation Optimal Average",
                                     testTask.getTaskTimeDeviationOptimalAvgStr(), String.valueOf(val)));
@@ -364,52 +362,52 @@ public class TestTaskReviewer {
 
     private void reviewTestTaskErrors(CertifiedProductSearchDetails listing, TestTask testTask) {
         if (testTask.getTaskErrors() == null && !StringUtils.isEmpty(testTask.getTaskErrorsStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidTestTaskErrors", formatTaskRef(testTask), formatTaskCriteria(testTask),
                             testTask.getTaskErrorsStr()));
         } else if (testTask.getTaskErrors() == null && StringUtils.isEmpty(testTask.getTaskErrorsStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingTestTaskErrors", formatTaskRef(testTask), formatTaskCriteria(testTask)));
         }
     }
 
     private void reviewTestTaskErrorsStddev(CertifiedProductSearchDetails listing, TestTask testTask) {
         if (testTask.getTaskErrorsStddev() == null && !StringUtils.isEmpty(testTask.getTaskErrorsStddevStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidTestTaskErrorsStddev", formatTaskRef(testTask), formatTaskCriteria(testTask),
                             testTask.getTaskErrorsStddevStr()));
         } else if (testTask.getTaskErrorsStddev() == null && StringUtils.isEmpty(testTask.getTaskErrorsStddevStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingTestTaskErrorsStddev", formatTaskRef(testTask), formatTaskCriteria(testTask)));
         }
     }
 
     private void reviewTestTaskRatingScale(CertifiedProductSearchDetails listing, TestTask testTask) {
         if (StringUtils.isEmpty(testTask.getTaskRatingScale())) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingTestTaskRatingScale",
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingTestTaskRatingScale",
                     formatTaskRef(testTask), formatTaskCriteria(testTask)));
         }
-        //TODO: should we add validation to confirm it is in a set of allowed values? This was not done before as best I can tell
+        // TODO: should we add validation to confirm it is in a set of allowed values? This was not done before as best I can tell
     }
 
     private void reviewTestTaskRating(CertifiedProductSearchDetails listing, TestTask testTask) {
         if (testTask.getTaskRating() == null && !StringUtils.isEmpty(testTask.getTaskRatingStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidTestTaskRating",
                             formatTaskRef(testTask), formatTaskCriteria(testTask), testTask.getTaskRatingStr()));
         } else if (testTask.getTaskRating() == null && StringUtils.isEmpty(testTask.getTaskRatingStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingTestTaskRating", formatTaskRef(testTask), formatTaskCriteria(testTask)));
         }
     }
 
     private void reviewTestTaskRatingStddev(CertifiedProductSearchDetails listing, TestTask testTask) {
         if (testTask.getTaskRatingStddev() == null && !StringUtils.isEmpty(testTask.getTaskRatingStddevStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidTestTaskRatingStddev",
                             formatTaskRef(testTask), formatTaskCriteria(testTask), testTask.getTaskRatingStddevStr()));
         } else if (testTask.getTaskRatingStddev() == null && StringUtils.isEmpty(testTask.getTaskRatingStddevStr())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingTestTaskRatingStddev", formatTaskRef(testTask), formatTaskCriteria(testTask)));
         }
     }

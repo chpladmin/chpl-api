@@ -23,6 +23,7 @@ public class IcsCodeReviewer implements Reviewer {
         this.msgUtil = msgUtil;
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         String chplProductNumber = listing.getChplProductNumber();
         if (StringUtils.isEmpty(chplProductNumber)
@@ -41,12 +42,12 @@ public class IcsCodeReviewer implements Reviewer {
         if (icsCodeInteger != null && icsCodeInteger.intValue() == 0) {
             if (listing.getIcs() != null && listing.getIcs().getInherits() != null
                     && listing.getIcs().getInherits().equals(Boolean.TRUE)) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.icsCodeFalseValueTrue"));
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.icsCodeFalseValueTrue"));
             }
         } else if ((listing.getIcs() == null || (listing.getIcs().getInherits() == null
                 || listing.getIcs().getInherits().equals(Boolean.FALSE))) && icsCodeInteger != null
                 && icsCodeInteger.intValue() > 0) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.icsCodeTrueValueFalse"));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.icsCodeTrueValueFalse"));
         }
     }
 }

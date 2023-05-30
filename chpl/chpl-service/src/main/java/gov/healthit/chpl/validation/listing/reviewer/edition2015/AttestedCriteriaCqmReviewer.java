@@ -42,18 +42,18 @@ public class AttestedCriteriaCqmReviewer implements Reviewer {
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
-        //any attested criteria that is eligible for CQM must have a CQM that references it
+        // any attested criteria that is eligible for CQM must have a CQM that references it
         List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
         attestedCriteria.stream()
-            .filter(attestedCriterion -> isCriterionEligibleForCqm(attestedCriterion))
-            .filter(attestedCqmEligibleCriterion -> !isCriterionInAnyCqm(attestedCqmEligibleCriterion, listing.getCqmResults()))
-            .forEach(attestedCqmEligibleCriterionNotInCqms -> addError(listing, attestedCqmEligibleCriterionNotInCqms));
+                .filter(attestedCriterion -> isCriterionEligibleForCqm(attestedCriterion))
+                .filter(attestedCqmEligibleCriterion -> !isCriterionInAnyCqm(attestedCqmEligibleCriterion, listing.getCqmResults()))
+                .forEach(attestedCqmEligibleCriterionNotInCqms -> addError(listing, attestedCqmEligibleCriterionNotInCqms));
     }
 
     private boolean isCriterionEligibleForCqm(CertificationCriterion criterion) {
         Optional<CertificationCriterion> foundCriterion = cqmEligibleCriteria.stream()
-            .filter(eligibleCqmCriterion -> eligibleCqmCriterion.getId().equals(criterion.getId()))
-            .findFirst();
+                .filter(eligibleCqmCriterion -> eligibleCqmCriterion.getId().equals(criterion.getId()))
+                .findFirst();
         return foundCriterion.isPresent();
     }
 
@@ -73,7 +73,7 @@ public class AttestedCriteriaCqmReviewer implements Reviewer {
     }
 
     private void addError(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
-        listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingCqmForCriteria",
+        listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.missingCqmForCriteria",
                 Util.formatCriteriaNumber(criterion)));
     }
 }

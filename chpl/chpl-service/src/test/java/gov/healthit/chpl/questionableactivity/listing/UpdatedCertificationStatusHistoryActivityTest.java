@@ -16,7 +16,7 @@ import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
 
 public class UpdatedCertificationStatusHistoryActivityTest {
 
@@ -46,7 +46,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
         updatedListing.setCertificationEvents(Stream.of(activeStatusEvent).collect(
                         Collectors.toCollection(ArrayList<CertificationStatusEvent>::new)));
 
-        List<QuestionableActivityListingDTO> activities = activityChecker.check(originalListing, updatedListing);
+        List<QuestionableActivityListing> activities = activityChecker.check(originalListing, updatedListing);
         assertNull(activities);
     }
 
@@ -77,7 +77,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
         updatedListing.setCertificationEvents(Stream.of(activeStatusEvent, withdrawnStatusEvent).collect(
                         Collectors.toCollection(ArrayList<CertificationStatusEvent>::new)));
 
-        List<QuestionableActivityListingDTO> activities = activityChecker.check(originalListing, updatedListing);
+        List<QuestionableActivityListing> activities = activityChecker.check(originalListing, updatedListing);
         assertNull(activities);
     }
 
@@ -109,7 +109,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
         updatedListing.setCertificationEvents(Stream.of(activeStatusEvent, withdrawnStatusEvent).collect(
                         Collectors.toCollection(ArrayList<CertificationStatusEvent>::new)));
 
-        List<QuestionableActivityListingDTO> activities = activityChecker.check(originalListing, updatedListing);
+        List<QuestionableActivityListing> activities = activityChecker.check(originalListing, updatedListing);
         assertNull(activities);
     }
 
@@ -148,7 +148,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
         updatedListing.setCertificationEvents(Stream.of(activeStatusEvent, withdrawnStatusEvent, retiredStatusEvent).collect(
                         Collectors.toCollection(ArrayList<CertificationStatusEvent>::new)));
 
-        List<QuestionableActivityListingDTO> activities = activityChecker.check(originalListing, updatedListing);
+        List<QuestionableActivityListing> activities = activityChecker.check(originalListing, updatedListing);
         assertNull(activities);
     }
 
@@ -178,7 +178,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
         updatedListing.setCertificationEvents(Stream.of(updatedActiveStatusEvent).collect(
                         Collectors.toCollection(ArrayList<CertificationStatusEvent>::new)));
 
-        List<QuestionableActivityListingDTO> activities = activityChecker.check(originalListing, updatedListing);
+        List<QuestionableActivityListing> activities = activityChecker.check(originalListing, updatedListing);
         assertNull(activities);
     }
 
@@ -221,7 +221,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
         updatedListing.setCertificationEvents(Stream.of(activeStatusEvent, retiredStatusEvent, withdrawnStatusEvent).collect(
                         Collectors.toCollection(ArrayList<CertificationStatusEvent>::new)));
 
-        List<QuestionableActivityListingDTO> activities = activityChecker.check(originalListing, updatedListing);
+        List<QuestionableActivityListing> activities = activityChecker.check(originalListing, updatedListing);
         assertNotNull(activities);
         assertEquals(1, activities.size());
         assertNull(activities.get(0).getBefore());
@@ -266,7 +266,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
         updatedListing.setCertificationEvents(Stream.of(activeStatusEvent, updatedWithdrawnStatusEvent).collect(
                         Collectors.toCollection(ArrayList<CertificationStatusEvent>::new)));
 
-        List<QuestionableActivityListingDTO> activities = activityChecker.check(originalListing, updatedListing);
+        List<QuestionableActivityListing> activities = activityChecker.check(originalListing, updatedListing);
         assertNotNull(activities);
         assertEquals(2, activities.size());
         assertEquals(CertificationStatusType.WithdrawnByDeveloper.getName() + " (2021-12-31)", activities.get(0).getBefore());
@@ -313,7 +313,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
         updatedListing.setCertificationEvents(Stream.of(activeStatusEvent, withdrawnStatusEvent, retiredStatusEvent).collect(
                         Collectors.toCollection(ArrayList<CertificationStatusEvent>::new)));
 
-        List<QuestionableActivityListingDTO> activities = activityChecker.check(originalListing, updatedListing);
+        List<QuestionableActivityListing> activities = activityChecker.check(originalListing, updatedListing);
         assertNotNull(activities);
         assertEquals(2, activities.size());
         assertNull(activities.get(0).getBefore());

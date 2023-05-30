@@ -2,6 +2,8 @@ package gov.healthit.chpl.exception;
 
 import java.util.Date;
 
+import org.eclipse.collections.api.factory.SortedSets;
+
 import gov.healthit.chpl.domain.auth.User;
 import lombok.Data;
 
@@ -20,7 +22,7 @@ public class ObjectMissingValidationException extends ValidationException {
 
     public ObjectMissingValidationException(String message, User user, String objectId) {
         super();
-        errorMessages.add(message);
+        errorMessages = SortedSets.immutable.of(message);
         setUser(user);
         this.objectId = objectId;
     }

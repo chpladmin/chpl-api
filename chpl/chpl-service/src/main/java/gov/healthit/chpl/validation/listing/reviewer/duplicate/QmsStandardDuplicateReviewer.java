@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,9 @@ public class QmsStandardDuplicateReviewer {
             }
         }
         if (qmsStandardDuplicateResults.duplicatesExist()) {
-            listing.getWarningMessages().addAll(getWarnings(qmsStandardDuplicateResults.getDuplicateList()));
+            listing.addAllWarningMessages(
+                    getWarnings(qmsStandardDuplicateResults.getDuplicateList()).stream()
+                    .collect(Collectors.toSet()));
             listing.setQmsStandards(qmsStandardDuplicateResults.getUniqueList());
         }
     }

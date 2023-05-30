@@ -15,7 +15,7 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.Util;
 
@@ -51,7 +51,7 @@ public class DeletedCertificationsActivityTest {
                 .build();
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .build();
-        List<QuestionableActivityListingDTO> activities = activityChecker.check(originalListing, updatedListing);
+        List<QuestionableActivityListing> activities = activityChecker.check(originalListing, updatedListing);
         assertNotNull(activities);
         assertEquals(0, activities.size());
     }
@@ -86,7 +86,7 @@ public class DeletedCertificationsActivityTest {
                         .success(false)
                         .build())
                 .build();
-        List<QuestionableActivityListingDTO> activities = activityChecker.check(originalListing, updatedListing);
+        List<QuestionableActivityListing> activities = activityChecker.check(originalListing, updatedListing);
         assertNotNull(activities);
         assertEquals(0, activities.size());
     }
@@ -121,7 +121,7 @@ public class DeletedCertificationsActivityTest {
                         .success(true)
                         .build())
                 .build();
-        List<QuestionableActivityListingDTO> activities = activityChecker.check(originalListing, updatedListing);
+        List<QuestionableActivityListing> activities = activityChecker.check(originalListing, updatedListing);
         assertNotNull(activities);
         assertEquals(0, activities.size());
     }
@@ -156,7 +156,7 @@ public class DeletedCertificationsActivityTest {
                         .success(true)
                         .build())
                 .build();
-        List<QuestionableActivityListingDTO> activities = activityChecker.check(originalListing, updatedListing);
+        List<QuestionableActivityListing> activities = activityChecker.check(originalListing, updatedListing);
         assertNotNull(activities);
         assertEquals(0, activities.size());
     }
@@ -191,7 +191,7 @@ public class DeletedCertificationsActivityTest {
                         .success(false)
                         .build())
                 .build();
-        List<QuestionableActivityListingDTO> activities = activityChecker.check(originalListing, updatedListing);
+        List<QuestionableActivityListing> activities = activityChecker.check(originalListing, updatedListing);
         assertNotNull(activities);
         assertEquals(1, activities.size());
         assertEquals(Util.formatCriteriaNumber(a1), activities.get(0).getBefore());
@@ -227,7 +227,7 @@ public class DeletedCertificationsActivityTest {
                         .success(true)
                         .build())
                 .build();
-        List<QuestionableActivityListingDTO> activities = activityChecker.check(originalListing, updatedListing);
+        List<QuestionableActivityListing> activities = activityChecker.check(originalListing, updatedListing);
         assertNotNull(activities);
         assertEquals(1, activities.size());
         assertEquals(Util.formatCriteriaNumber(a1), activities.get(0).getBefore());
@@ -263,7 +263,7 @@ public class DeletedCertificationsActivityTest {
                         .success(false)
                         .build())
                 .build();
-        List<QuestionableActivityListingDTO> activities = activityChecker.check(originalListing, updatedListing);
+        List<QuestionableActivityListing> activities = activityChecker.check(originalListing, updatedListing);
         assertNotNull(activities);
         assertEquals(2, activities.size());
         assertEquals(Util.formatCriteriaNumber(a1), activities.get(0).getBefore());

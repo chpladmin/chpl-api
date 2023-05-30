@@ -19,7 +19,9 @@ import lombok.extern.log4j.Log4j2;
 @Component("editionCodeReviewer")
 @Log4j2
 public class EditionCodeReviewer implements Reviewer {
-    private static final String[] EDITION_CODES = {"15"};
+    private static final String[] EDITION_CODES = {
+            "15"
+    };
     private ChplProductNumberUtil chplProductNumberUtil;
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
@@ -33,6 +35,7 @@ public class EditionCodeReviewer implements Reviewer {
         this.msgUtil = msgUtil;
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         String chplProductNumber = listing.getChplProductNumber();
         if (StringUtils.isEmpty(chplProductNumber)
@@ -49,14 +52,14 @@ public class EditionCodeReviewer implements Reviewer {
         }
 
         if (isValidEditionCode(listing.getChplProductNumber()) && !Arrays.asList(EDITION_CODES).contains(editionCode)) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.invalidEditionCode",
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.invalidEditionCode",
                     editionCode, Stream.of(EDITION_CODES).collect(Collectors.joining(","))));
         }
 
         String editionYear = MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY);
         if (isValidEditionCode(listing.getChplProductNumber()) && !StringUtils.isEmpty(editionYear)
                 && !convertEditionCodeToYear(editionCode).equals(editionYear)) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.certificationEditionMismatch", editionCode, editionYear));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.certificationEditionMismatch", editionCode, editionYear));
         }
     }
 

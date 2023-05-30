@@ -13,4 +13,5 @@ public class ListingUpdateRequest implements ExplainableAction {
     private CertifiedProductSearchDetails listing;
     private String reason;
     private boolean acknowledgeWarnings;
+    private boolean acknowledgeBusinessErrors;
 }

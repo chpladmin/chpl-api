@@ -25,6 +25,7 @@ public class ChplNumberFormatReviewer implements Reviewer {
         this.msgUtil = msgUtil;
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         String chplProductNumber = listing.getChplProductNumber();
         if (chplProductNumberUtil.isLegacyChplProductNumberStyle(chplProductNumber)) {
@@ -32,13 +33,13 @@ public class ChplNumberFormatReviewer implements Reviewer {
         }
 
         if (StringUtils.isEmpty(chplProductNumber)) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.chplProductNumberMissing"));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.chplProductNumberMissing"));
             return;
         }
 
         String[] uniqueIdParts = chplProductNumber.split("\\.");
         if (uniqueIdParts.length != ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.chplProductNumberInvalidFormat", ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS));
             return;
         }
@@ -46,64 +47,64 @@ public class ChplNumberFormatReviewer implements Reviewer {
         if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                 ChplProductNumberUtil.EDITION_CODE_INDEX,
                 ChplProductNumberUtil.EDITION_CODE_REGEX)) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.badEditionCodeChars", ChplProductNumberUtil.EDITION_CODE_LENGTH));
         }
 
         if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                 ChplProductNumberUtil.ATL_CODE_INDEX,
                 ChplProductNumberUtil.ATL_CODE_REGEX)) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.badAtlCodeChars", ChplProductNumberUtil.ATL_CODE_LENGTH));
         }
 
         if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                 ChplProductNumberUtil.ACB_CODE_INDEX,
                 ChplProductNumberUtil.ACB_CODE_REGEX)) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.badAcbCodeChars", ChplProductNumberUtil.ACB_CODE_LENGTH));
         }
 
         if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                 ChplProductNumberUtil.DEVELOPER_CODE_INDEX,
                 ChplProductNumberUtil.DEVELOPER_CODE_REGEX)) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.badDeveloperCodeChars", ChplProductNumberUtil.DEVELOPER_CODE_LENGTH));
         }
 
         if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                 ChplProductNumberUtil.PRODUCT_CODE_INDEX,
                 ChplProductNumberUtil.PRODUCT_CODE_REGEX)) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.badProductCodeChars", ChplProductNumberUtil.PRODUCT_CODE_LENGTH));
         }
 
         if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                 ChplProductNumberUtil.VERSION_CODE_INDEX,
                 ChplProductNumberUtil.VERSION_CODE_REGEX)) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.badVersionCodeChars", ChplProductNumberUtil.VERSION_CODE_LENGTH));
         }
 
         if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                 ChplProductNumberUtil.ICS_CODE_INDEX,
                 ChplProductNumberUtil.ICS_CODE_REGEX)) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.badIcsCodeChars", ChplProductNumberUtil.ICS_CODE_LENGTH));
         }
 
         if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                 ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_INDEX,
                 ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_REGEX)) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.badAdditionalSoftwareCodeChars",
-                    ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_LENGTH));
+                            ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_LENGTH));
         }
 
         if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                 ChplProductNumberUtil.CERTIFIED_DATE_CODE_INDEX,
                 ChplProductNumberUtil.CERTIFIED_DATE_CODE_REGEX)) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.badCertifiedDateCodeChars", ChplProductNumberUtil.CERTIFIED_DATE_CODE_LENGTH));
         }
     }

@@ -20,10 +20,11 @@ public class EditionReviewer implements Reviewer {
         this.msgUtil = msgUtil;
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         Map<String, Object> certEditionMap = listing.getCertificationEdition();
         if (certEditionMap == null) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.missingEdition"));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.missingEdition"));
             return;
         }
 
@@ -31,11 +32,11 @@ public class EditionReviewer implements Reviewer {
         String editionYear = MapUtils.getString(certEditionMap, CertifiedProductSearchDetails.EDITION_NAME_KEY);
 
         if (editionId == null && StringUtils.isEmpty(editionYear)) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.missingEdition"));
-        } else  if (editionId != null && StringUtils.isEmpty(editionYear)) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.missingEditionYear"));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.missingEdition"));
+        } else if (editionId != null && StringUtils.isEmpty(editionYear)) {
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.missingEditionYear"));
         } else if (!StringUtils.isEmpty(editionYear) && editionId == null) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.invalidEdition", editionYear));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.invalidEdition", editionYear));
         }
     }
 }

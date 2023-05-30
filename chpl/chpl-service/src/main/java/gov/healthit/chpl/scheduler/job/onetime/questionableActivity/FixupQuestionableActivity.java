@@ -18,11 +18,11 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityDAO;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityCertificationResultDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityDeveloperDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityProductDTO;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityVersionDTO;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityCertificationResult;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityDeveloper;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityProduct;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityVersion;
 import gov.healthit.chpl.questionableactivity.listing.DeletedCertificationsActivity;
 import gov.healthit.chpl.questionableactivity.listing.NonActiveCertificateEdited;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationDateActivity;
@@ -82,7 +82,7 @@ public class FixupQuestionableActivity  implements Job {
 
     private void linkQuestionableActivityToActivity(LocalDateTime startDt, LocalDateTime endDt) {
         LOGGER.info("Linking Activity to Listing Questionable Activity");
-        List<QuestionableActivityListingDTO> listingQuestionableActivity
+        List<QuestionableActivityListing> listingQuestionableActivity
             = questionableActivityDao.findListingActivityBetweenDates(DateUtil.toDate(startDt), DateUtil.toDate(endDt));
         listingQuestionableActivity.stream()
             .filter(lqa -> lqa.getActivityId() == null)
@@ -91,7 +91,7 @@ public class FixupQuestionableActivity  implements Job {
             .forEach(lqa -> addActivityId(lqa));
 
         LOGGER.info("Linking Activity to Certification Result Questionable Activity");
-        List<QuestionableActivityCertificationResultDTO> certResultQuestionableActivity
+        List<QuestionableActivityCertificationResult> certResultQuestionableActivity
             = questionableActivityDao.findCertificationResultActivityBetweenDates(DateUtil.toDate(startDt), DateUtil.toDate(endDt));
         certResultQuestionableActivity.stream()
             .filter(crqa -> crqa.getActivityId() == null)
@@ -100,7 +100,7 @@ public class FixupQuestionableActivity  implements Job {
             .forEach(crqa -> addActivityId(crqa));
 
         LOGGER.info("Linking Activity to Developer Questionable Activity");
-        List<QuestionableActivityDeveloperDTO> developerQuestionableActivity
+        List<QuestionableActivityDeveloper> developerQuestionableActivity
             = questionableActivityDao.findDeveloperActivityBetweenDates(DateUtil.toDate(startDt), DateUtil.toDate(endDt));
         developerQuestionableActivity.stream()
             .filter(dqa -> dqa.getActivityId() == null)
@@ -109,7 +109,7 @@ public class FixupQuestionableActivity  implements Job {
             .forEach(dqa -> addActivityId(dqa));
 
         LOGGER.info("Linking Activity to Product Questionable Activity");
-        List<QuestionableActivityProductDTO> productQuestionableActivity
+        List<QuestionableActivityProduct> productQuestionableActivity
             = questionableActivityDao.findProductActivityBetweenDates(DateUtil.toDate(startDt), DateUtil.toDate(endDt));
         productQuestionableActivity.stream()
             .filter(pqa -> pqa.getActivityId() == null)
@@ -118,7 +118,7 @@ public class FixupQuestionableActivity  implements Job {
             .forEach(pqa -> addActivityId(pqa));
 
         LOGGER.info("Linking Activity to Version Questionable Activity");
-        List<QuestionableActivityVersionDTO> versionQuestionableActivity
+        List<QuestionableActivityVersion> versionQuestionableActivity
             = questionableActivityDao.findVersionActivityBetweenDates(DateUtil.toDate(startDt), DateUtil.toDate(endDt));
         versionQuestionableActivity.stream()
             .filter(vqa -> vqa.getActivityId() == null)
@@ -127,7 +127,7 @@ public class FixupQuestionableActivity  implements Job {
             .forEach(vqa -> addActivityId(vqa));
     }
 
-    private void addActivityId(QuestionableActivityListingDTO questionableActivity) {
+    private void addActivityId(QuestionableActivityListing questionableActivity) {
         ActivityConcept concept = ActivityConcept.CERTIFIED_PRODUCT;
         ActivityDTO activity = getActivity(concept, questionableActivity.getActivityDate(), questionableActivity.getListingId());
         if (activity != null) {
@@ -136,7 +136,7 @@ public class FixupQuestionableActivity  implements Job {
         }
     }
 
-    private void addActivityId(QuestionableActivityCertificationResultDTO questionableActivity) {
+    private void addActivityId(QuestionableActivityCertificationResult questionableActivity) {
         ActivityConcept concept = ActivityConcept.CERTIFIED_PRODUCT;
         ActivityDTO activity = getActivity(concept, questionableActivity.getActivityDate(), questionableActivity.getListing().getId());
         if (activity != null) {
@@ -145,7 +145,7 @@ public class FixupQuestionableActivity  implements Job {
         }
     }
 
-    private void addActivityId(QuestionableActivityDeveloperDTO questionableActivity) {
+    private void addActivityId(QuestionableActivityDeveloper questionableActivity) {
         ActivityConcept concept = ActivityConcept.DEVELOPER;
         ActivityDTO activity = getActivity(concept, questionableActivity.getActivityDate(), questionableActivity.getDeveloperId());
         if (activity != null) {
@@ -154,7 +154,7 @@ public class FixupQuestionableActivity  implements Job {
         }
     }
 
-    private void addActivityId(QuestionableActivityProductDTO questionableActivity) {
+    private void addActivityId(QuestionableActivityProduct questionableActivity) {
         ActivityConcept concept = ActivityConcept.PRODUCT;
         ActivityDTO activity = getActivity(concept, questionableActivity.getActivityDate(), questionableActivity.getProductId());
         if (activity != null) {
@@ -163,7 +163,7 @@ public class FixupQuestionableActivity  implements Job {
         }
     }
 
-    private void addActivityId(QuestionableActivityVersionDTO questionableActivity) {
+    private void addActivityId(QuestionableActivityVersion questionableActivity) {
         ActivityConcept concept = ActivityConcept.VERSION;
         ActivityDTO activity = getActivity(concept, questionableActivity.getActivityDate(), questionableActivity.getVersionId());
         if (activity != null) {

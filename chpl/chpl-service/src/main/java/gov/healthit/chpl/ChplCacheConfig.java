@@ -74,6 +74,7 @@ public class ChplCacheConfig {
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.COMPLAINTS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.UPLOADED_LISTING_DETAILS));
         backingManager.addCacheIfAbsent(createEternalCache(CacheNames.LISTING_SEARCH_CACHE_REFRESH_STATUS));
+        backingManager.addCacheIfAbsent(createEternalCache(CacheNames.QUESTIONABLE_ACTIVITIES));
 
         return cacheManager;
     }

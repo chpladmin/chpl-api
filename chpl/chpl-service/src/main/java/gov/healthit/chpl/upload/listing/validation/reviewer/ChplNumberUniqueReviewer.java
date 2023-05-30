@@ -22,6 +22,7 @@ public class ChplNumberUniqueReviewer implements Reviewer {
         this.msgUtil = msgUtil;
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         String chplProductNumber = listing.getChplProductNumber();
         if (StringUtils.isEmpty(chplProductNumber)) {
@@ -30,7 +31,7 @@ public class ChplNumberUniqueReviewer implements Reviewer {
 
         CertifiedProduct listingWithThisChplProductNumber = certifiedProductUtil.getListing(chplProductNumber);
         if (listingWithThisChplProductNumber != null && listingWithThisChplProductNumber.getId() != listing.getId()) {
-            listing.getErrorMessages().add(msgUtil.getMessage(
+            listing.addDataErrorMessage(msgUtil.getMessage(
                     "listing.chplProductNumber.notUnique", chplProductNumber));
         }
     }

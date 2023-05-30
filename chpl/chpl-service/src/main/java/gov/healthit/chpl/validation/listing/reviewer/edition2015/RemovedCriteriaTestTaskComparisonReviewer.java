@@ -15,8 +15,8 @@ import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 
 /**
- * This reviewer confirms that an ACB user does not attempt to associate
- * a removed criteria with a Test Task.
+ * This reviewer confirms that an ACB user does not attempt to associate a removed criteria with a Test Task.
+ *
  * @author kekey
  *
  */
@@ -34,7 +34,7 @@ public class RemovedCriteriaTestTaskComparisonReviewer implements ComparisonRevi
 
     @Override
     public void review(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
-        //this is only disallowed if the user is not ADMIN/ONC, so first check the permissions
+        // this is only disallowed if the user is not ADMIN/ONC, so first check the permissions
         if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             return;
         }
@@ -44,13 +44,13 @@ public class RemovedCriteriaTestTaskComparisonReviewer implements ComparisonRevi
             for (TestTask existingTestTask : existingListing.getSed().getTestTasks()) {
                 if (updatedTestTask.matches(existingTestTask)) {
                     existsInOriginal = true;
-                    //not a new Test Task, but maybe there are new criteria?
+                    // not a new Test Task, but maybe there are new criteria?
                     Set<CertificationCriterion> addedCriteria = getAddedCriteria(existingTestTask.getCriteria(),
                             updatedTestTask.getCriteria());
                     for (CertificationCriterion addedCriterion : addedCriteria) {
                         if (addedCriterion.getRemoved() != null
                                 && addedCriterion.getRemoved().booleanValue()) {
-                            updatedListing.getErrorMessages().add(
+                            updatedListing.addBusinessErrorMessage(
                                     msgUtil.getMessage("listing.testTask.removedCriteriaNotAllowed",
                                             Util.formatCriteriaNumber(addedCriterion), updatedTestTask.getDescription()));
                         }
@@ -58,12 +58,12 @@ public class RemovedCriteriaTestTaskComparisonReviewer implements ComparisonRevi
                 }
             }
             if (!existsInOriginal) {
-                //check all the criteria for this newly added test task to see if any are removed
+                // check all the criteria for this newly added test task to see if any are removed
                 for (CertificationCriterion criterion : updatedTestTask.getCriteria()) {
                     if (criterion.getRemoved() != null && criterion.getRemoved().booleanValue()) {
-                        updatedListing.getErrorMessages().add(
+                        updatedListing.addBusinessErrorMessage(
                                 msgUtil.getMessage("listing.testTask.removedCriteriaNotAllowed",
-                                Util.formatCriteriaNumber(criterion), updatedTestTask.getDescription()));
+                                        Util.formatCriteriaNumber(criterion), updatedTestTask.getDescription()));
                     }
                 }
             }

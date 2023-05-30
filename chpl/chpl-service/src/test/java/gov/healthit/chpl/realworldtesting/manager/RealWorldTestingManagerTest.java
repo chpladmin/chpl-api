@@ -43,6 +43,8 @@ public class RealWorldTestingManagerTest {
                 .thenReturn(getUser());
 
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any()))
+                .thenReturn("This is an error message.");
 
         realWorldTestingManager = new RealWorldTestingManager(schedulerManager, userManager, errorMessageUtil);
     }

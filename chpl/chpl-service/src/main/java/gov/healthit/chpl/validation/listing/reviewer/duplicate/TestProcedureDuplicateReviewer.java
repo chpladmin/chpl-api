@@ -1,9 +1,12 @@
 package gov.healthit.chpl.validation.listing.reviewer.duplicate;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,40 +31,39 @@ public class TestProcedureDuplicateReviewer {
 
     public void review(CertifiedProductSearchDetails listing, CertificationResult certificationResult) {
 
-        DuplicateReviewResult<CertificationResultTestProcedure> testProcedureDuplicateResults =
-                new DuplicateReviewResult<CertificationResultTestProcedure>(duplicatePredicate());
+        DuplicateReviewResult<CertificationResultTestProcedure> testProcedureDuplicateResults = new DuplicateReviewResult<CertificationResultTestProcedure>(duplicatePredicate());
         if (certificationResult.getTestProcedures() != null) {
             for (CertificationResultTestProcedure dto : certificationResult.getTestProcedures()) {
                 testProcedureDuplicateResults.addObject(dto);
             }
         }
         if (testProcedureDuplicateResults.duplicatesExist()) {
-            listing.getWarningMessages().addAll(
+            listing.addAllWarningMessages(
                     getWarnings(testProcedureDuplicateResults.getDuplicateList(),
-                            Util.formatCriteriaNumber(certificationResult.getCriterion())));
+                            Util.formatCriteriaNumber(certificationResult.getCriterion())).stream()
+                    .collect(Collectors.toSet()));
             certificationResult.setTestProcedures(testProcedureDuplicateResults.getUniqueList());
         }
 
-        DuplicateReviewResult<CertificationResultTestProcedure> testProcedureDuplicateIdResults =
-                new DuplicateReviewResult<CertificationResultTestProcedure>(duplicateIdPredicate());
+        DuplicateReviewResult<CertificationResultTestProcedure> testProcedureDuplicateIdResults = new DuplicateReviewResult<CertificationResultTestProcedure>(duplicateIdPredicate());
         if (certificationResult.getTestProcedures() != null) {
             for (CertificationResultTestProcedure dto : certificationResult.getTestProcedures()) {
                 testProcedureDuplicateIdResults.addObject(dto);
             }
         }
         if (testProcedureDuplicateIdResults.duplicatesExist()) {
-            listing.getErrorMessages().addAll(
+            listing.addAllBusinessErrorMessages(
                     getErrors(testProcedureDuplicateIdResults.getDuplicateList(),
                             Util.formatCriteriaNumber(certificationResult.getCriterion())));
         }
     }
 
-    private List<String> getErrors(List<CertificationResultTestProcedure> duplicates,
+    private Set<String> getErrors(List<CertificationResultTestProcedure> duplicates,
             String criteria) {
-        List<String> errors = new ArrayList<String>();
+        Set<String> errors = new HashSet<String>();
         for (CertificationResultTestProcedure duplicate : duplicates) {
             String error = errorMessageUtil.getMessage("listing.criteria.duplicateTestProcedureName",
-                        criteria, duplicate.getTestProcedure().getName());
+                    criteria, duplicate.getTestProcedure().getName());
             errors.add(error);
         }
         return errors;
@@ -77,7 +79,7 @@ public class TestProcedureDuplicateReviewer {
                         criteria, duplicate.getTestProcedure().getName(), "");
             } else {
                 warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestProcedureNameAndVersion",
-                    criteria, duplicate.getTestProcedure().getName(), duplicate.getTestProcedureVersion());
+                        criteria, duplicate.getTestProcedure().getName(), duplicate.getTestProcedureVersion());
             }
             warnings.add(warning);
         }

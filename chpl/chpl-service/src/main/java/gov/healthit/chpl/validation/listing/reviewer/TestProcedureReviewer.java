@@ -30,9 +30,9 @@ public class TestProcedureReviewer extends PermissionBasedReviewer {
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(cert -> (cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0))
-            .forEach(certResult -> certResult.getTestProcedures().stream()
-                    .forEach(testProcedure -> reviewTestProcedure(listing, certResult, testProcedure)));
+                .filter(cert -> (cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0))
+                .forEach(certResult -> certResult.getTestProcedures().stream()
+                        .forEach(testProcedure -> reviewTestProcedure(listing, certResult, testProcedure)));
     }
 
     private void reviewTestProcedure(CertifiedProductSearchDetails listing, CertificationResult certResult,
@@ -41,7 +41,7 @@ public class TestProcedureReviewer extends PermissionBasedReviewer {
         if (testProcedure.getTestProcedure().getId() != null) {
             checkIfTestProcedureIsAllowedById(listing, certResult, testProcedure);
         } else if (!StringUtils.isEmpty(testProcedure.getTestProcedure().getName())) {
-           checkIfTestProcedureIsAllowedByName(listing, certResult, testProcedure);
+            checkIfTestProcedureIsAllowedByName(listing, certResult, testProcedure);
         }
         checkIfTestProcedureHasAnId(listing, certResult, testProcedure);
         checkIfTestProcedureHasAName(listing, certResult, testProcedure);
@@ -50,72 +50,70 @@ public class TestProcedureReviewer extends PermissionBasedReviewer {
 
     private void checkIfTestProcedureIsAllowedByFlag(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         boolean isAllowed = certResult.getCriterion().getCertificationEdition().equalsIgnoreCase("2014");
-            if (!isAllowed) {
-                addCriterionError(listing, certResult,
-                        "listing.criteria.testProcedureNotApplicable",
-                        Util.formatCriteriaNumber(certResult.getCriterion()));
-            }
+        if (!isAllowed) {
+            addBusinessCriterionError(listing, certResult,
+                    "listing.criteria.testProcedureNotApplicable",
+                    Util.formatCriteriaNumber(certResult.getCriterion()));
+        }
     }
 
     private void checkIfTestProcedureIsAllowedById(CertifiedProductSearchDetails listing, CertificationResult certResult,
-        CertificationResultTestProcedure testProcedure) {
-        Optional<TestProcedureDTO> allowedTestProcedure
-            = testProcedureDao.getByCriterionId(certResult.getCriterion().getId()).stream()
+            CertificationResultTestProcedure testProcedure) {
+        Optional<TestProcedureDTO> allowedTestProcedure = testProcedureDao.getByCriterionId(certResult.getCriterion().getId()).stream()
                 .filter(tp -> tp.getId().equals(testProcedure.getTestProcedure().getId()))
                 .findAny();
-            if (!allowedTestProcedure.isPresent()) {
-                addCriterionError(listing, certResult,
-                        "listing.criteria.badTestProcedureId",
-                        Util.formatCriteriaNumber(certResult.getCriterion()),
-                        testProcedure.getTestProcedure().getId());
-            } else {
-                testProcedure.getTestProcedure().setName(allowedTestProcedure.get().getName());
-            }
+        if (!allowedTestProcedure.isPresent()) {
+            addDataCriterionError(listing, certResult,
+                    "listing.criteria.badTestProcedureId",
+                    Util.formatCriteriaNumber(certResult.getCriterion()),
+                    testProcedure.getTestProcedure().getId());
+        } else {
+            testProcedure.getTestProcedure().setName(allowedTestProcedure.get().getName());
+        }
     }
 
     private void checkIfTestProcedureIsAllowedByName(CertifiedProductSearchDetails listing, CertificationResult certResult,
             CertificationResultTestProcedure testProcedure) {
-        Optional<TestProcedureDTO> allowedTestProcedure
-            = testProcedureDao.getByCriterionId(certResult.getCriterion().getId()).stream()
+        Optional<TestProcedureDTO> allowedTestProcedure = testProcedureDao.getByCriterionId(certResult.getCriterion().getId()).stream()
                 .filter(tp -> tp.getName().equalsIgnoreCase(testProcedure.getTestProcedure().getName()))
                 .findAny();
-            if (!allowedTestProcedure.isPresent()) {
-                addCriterionError(listing, certResult,
-                        "listing.criteria.badTestProcedureName",
-                        Util.formatCriteriaNumber(certResult.getCriterion()),
-                        testProcedure.getTestProcedure().getName());
-            } else {
-                testProcedure.getTestProcedure().setId(allowedTestProcedure.get().getId());
-            }
+        if (!allowedTestProcedure.isPresent()) {
+            addDataCriterionError(listing, certResult,
+                    "listing.criteria.badTestProcedureName",
+                    Util.formatCriteriaNumber(certResult.getCriterion()),
+                    testProcedure.getTestProcedure().getName());
+        } else {
+            testProcedure.getTestProcedure().setId(allowedTestProcedure.get().getId());
+        }
     }
 
     private void checkIfTestProcedureHasAnId(CertifiedProductSearchDetails listing, CertificationResult certResult,
             CertificationResultTestProcedure testProcedure) {
-            if (testProcedure.getTestProcedure() == null || testProcedure.getTestProcedure().getId() == null) {
-                addCriterionError(listing, certResult,
-                        "listing.criteria.missingTestProcedureId",
-                        Util.formatCriteriaNumber(certResult.getCriterion()));
-            }
+        if (testProcedure.getTestProcedure() == null || testProcedure.getTestProcedure().getId() == null) {
+            addDataCriterionError(listing, certResult,
+                    "listing.criteria.missingTestProcedureId",
+                    Util.formatCriteriaNumber(certResult.getCriterion()));
+        }
     }
 
     private void checkIfTestProcedureHasAName(CertifiedProductSearchDetails listing, CertificationResult certResult,
             CertificationResultTestProcedure testProcedure) {
-            if (testProcedure.getTestProcedure() == null
-                    || StringUtils.isEmpty(testProcedure.getTestProcedure().getName())) {
-                addCriterionError(listing, certResult,
-                        "listing.criteria.missingTestProcedureName",
-                        Util.formatCriteriaNumber(certResult.getCriterion()));
-            }
+        if (testProcedure.getTestProcedure() == null
+                || StringUtils.isEmpty(testProcedure.getTestProcedure().getName())) {
+            addDataCriterionError(listing, certResult,
+                    "listing.criteria.missingTestProcedureName",
+                    Util.formatCriteriaNumber(certResult.getCriterion()));
+        }
     }
 
     private void checkIfTestProcedureHasAVersion(CertifiedProductSearchDetails listing, CertificationResult certResult,
             CertificationResultTestProcedure testProcedure) {
-            if (testProcedure.getTestProcedure() != null
-                    && !StringUtils.isEmpty(testProcedure.getTestProcedure().getName())
-                    && StringUtils.isEmpty(testProcedure.getTestProcedureVersion())) {
-                addCriterionError(listing, certResult,
-                        "listing.criteria.missingTestProcedureVersion",
-                        Util.formatCriteriaNumber(certResult.getCriterion()));
-            }
+        if (testProcedure.getTestProcedure() != null
+                && !StringUtils.isEmpty(testProcedure.getTestProcedure().getName())
+                && StringUtils.isEmpty(testProcedure.getTestProcedureVersion())) {
+            addDataCriterionError(listing, certResult,
+                    "listing.criteria.missingTestProcedureVersion",
+                    Util.formatCriteriaNumber(certResult.getCriterion()));
+        }
     }
 }

@@ -31,6 +31,7 @@ public class TestingLabCodeReviewer implements Reviewer {
         this.msgUtil = msgUtil;
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         String chplProductNumber = listing.getChplProductNumber();
         if (StringUtils.isEmpty(chplProductNumber)
@@ -50,24 +51,24 @@ public class TestingLabCodeReviewer implements Reviewer {
         if (testingLabs != null) {
             if (isValidAtlCode(chplProductNumber) && testingLabs.size() > 1
                     && !atlCode.equals(TestingLab.MULTIPLE_TESTING_LABS_CODE)) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.atl.codeIsNotForMultiple"));
-                //should it actually do the code fix in here?
-                //I think for edit it would have to because the user can't change it otherwise
-                //but for newly uploaded listings it does not have to do the fix - the user can re-upload.
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.atl.codeIsNotForMultiple"));
+                // should it actually do the code fix in here?
+                // I think for edit it would have to because the user can't change it otherwise
+                // but for newly uploaded listings it does not have to do the fix - the user can re-upload.
             } else if (isValidAtlCode(chplProductNumber) && testingLabs.size() < 2
                     && atlCode.equals(TestingLab.MULTIPLE_TESTING_LABS_CODE)) {
-                listing.getErrorMessages().add(msgUtil.getMessage("atl.shouldNotBe99"));
+                listing.addDataErrorMessage(msgUtil.getMessage("atl.shouldNotBe99"));
             } else if (isValidAtlCode(chplProductNumber) && testingLabs.size() == 1) {
                 CertifiedProductTestingLab atl = testingLabs.get(0);
                 if (!StringUtils.isEmpty(atl.getTestingLabCode())
                         && !atl.getTestingLabCode().equals(atlCode)) {
-                    listing.getErrorMessages().add(msgUtil.getMessage("listing.testingLabMismatch", atlCode, atl.getTestingLabCode()));
+                    listing.addDataErrorMessage(msgUtil.getMessage("listing.testingLabMismatch", atlCode, atl.getTestingLabCode()));
                 }
             } else if (testingLabs.size() == 0 && isValidAtlCode(chplProductNumber)) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.invalidTestingLabCode", atlCode));
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.invalidTestingLabCode", atlCode));
             }
         } else if (testingLabs == null && isValidAtlCode(chplProductNumber)) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.invalidTestingLabCode", atlCode));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.invalidTestingLabCode", atlCode));
         }
     }
 

@@ -23,6 +23,7 @@ public class AdditionalSoftwareCodeReviewer implements Reviewer {
         this.msgUtil = msgUtil;
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         String chplProductNumber = listing.getChplProductNumber();
         if (StringUtils.isEmpty(chplProductNumber)
@@ -43,11 +44,11 @@ public class AdditionalSoftwareCodeReviewer implements Reviewer {
                 .findAny().isPresent();
         if (additionalSoftwareCode != null && additionalSoftwareCode.equals("0")) {
             if (certsHaveAdditionalSoftware) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.additionalSoftwareCode0Mismatch"));
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.additionalSoftwareCode0Mismatch"));
             }
         } else if (additionalSoftwareCode != null && additionalSoftwareCode.equals("1")) {
             if (!certsHaveAdditionalSoftware) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.additionalSoftwareCode1Mismatch"));
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.additionalSoftwareCode1Mismatch"));
             }
         }
     }

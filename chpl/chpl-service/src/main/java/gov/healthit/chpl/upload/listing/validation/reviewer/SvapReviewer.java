@@ -53,7 +53,7 @@ public class SvapReviewer {
     private void reviewCriteriaCanHaveSvaps(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.SVAP)) {
             if (!CollectionUtils.isEmpty(certResult.getSvaps())) {
-                listing.getWarningMessages().add(msgUtil.getMessage(
+                listing.addWarningMessage(msgUtil.getMessage(
                     "listing.criteria.svapsNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setSvaps(null);
@@ -75,7 +75,7 @@ public class SvapReviewer {
             CertificationResultSvap svap = svapIter.next();
             if (svap.getSvapId() == null) {
                 svapIter.remove();
-                listing.getWarningMessages().add(msgUtil.getMessage(
+                listing.addWarningMessage(msgUtil.getMessage(
                         "listing.criteria.svap.invalidCriteriaAndRemoved",
                         svap.getRegulatoryTextCitation(),
                         Util.formatCriteriaNumber(certResult.getCriterion())));
@@ -92,7 +92,7 @@ public class SvapReviewer {
     private void reviewRegulatoryTextCitationRequired(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultSvap svap) {
         if (StringUtils.isEmpty(svap.getRegulatoryTextCitation())) {
-            listing.getErrorMessages().add(
+            listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.svap.missingCitation",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }
@@ -103,7 +103,7 @@ public class SvapReviewer {
         if (svap.getSvapId() != null
                 && BooleanUtils.isTrue(svap.getReplaced())
                 && !doesListingHaveIcs(listing)) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.svap.replacedWithIcs",
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.svap.replacedWithIcs",
                     svap.getRegulatoryTextCitation(), certResult.getCriterion().getNumber()));
         }
     }
