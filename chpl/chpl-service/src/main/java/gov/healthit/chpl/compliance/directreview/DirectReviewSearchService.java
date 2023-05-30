@@ -59,6 +59,7 @@ public class DirectReviewSearchService {
     }
 
     public List<DirectReviewContainer> getAll() {
+        Date start = new Date();
         List<DirectReviewContainer> drContainers = new ArrayList<DirectReviewContainer>();
 
         Cache drCache = getDirectReviewsCache();
@@ -69,6 +70,9 @@ public class DirectReviewSearchService {
                 .map(objValue -> (DirectReviewContainer) objValue)
                 .toList();
 
+        Date end = new Date();
+
+        LOGGER.info("Time to get all DRs from cache: {} ms", (end.getTime() - start.getTime()));
         return drContainers;
     }
 
@@ -89,7 +93,7 @@ public class DirectReviewSearchService {
     public List<DirectReview> getDirectReviewsRelatedToListing(Long listingId, Long developerId, String editionYear,
             List<CertificationStatusEvent> statusEvents, Logger logger) {
         List<DirectReview> drs = new ArrayList<DirectReview>();
-        drs.addAll(getDirectReviewsWithDeveloperAssociatedListingId(listingId));
+        drs.addAll(getDirectReviewsWithDeveloperAssociatedListingId(listingId, developerId));
 
         if (!StringUtils.isEmpty(editionYear) && editionYear.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())) {
             drs.addAll(getDeveloperDirectReviewsWithoutAssociatedListings(developerId, statusEvents, logger));
@@ -126,10 +130,13 @@ public class DirectReviewSearchService {
             .isPresent();
     }
 
-    private List<DirectReview> getDirectReviewsWithDeveloperAssociatedListingId(Long listingId) {
-        List<DirectReviewContainer> allDirectReviewContainers = getAll();
-        return allDirectReviewContainers.stream()
-                .flatMap(container -> container.getDirectReviews().stream())
+    private List<DirectReview> getDirectReviewsWithDeveloperAssociatedListingId(Long listingId, Long developerId) {
+        //List<DirectReviewContainer> allDirectReviewContainers = getAll();
+
+        DirectReviewContainer directReviewContainerForDeveloper =
+                (DirectReviewContainer) cacheManager.getCache(CacheNames.DIRECT_REVIEWS).get(developerId).get();
+
+        return directReviewContainerForDeveloper.getDirectReviews().stream()
                 .filter(dr -> isAssociatedWithListing(dr, listingId))
                 .collect(Collectors.toList());
     }

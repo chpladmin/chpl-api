@@ -25,17 +25,12 @@ public class ListingSearchCacheableAspect {
 
     @Around("@annotation(ListingSearchCacheable)")
     public Object getListingSearchCollection(ProceedingJoinPoint joinPoint) throws Throwable {
-        LOGGER.info("Attempting to get COLLECTIONS_SEARCH");
         ValueWrapper cacheItem = cacheManager.getCache(CacheNames.COLLECTIONS_SEARCH).get(COLLECTIONS_SEARCH_KEY);
-        LOGGER.info("Completed getting COLLECTIONS_SEARCH");
         if (cacheItem == null || cacheItem.get() == null) {
-            LOGGER.info("COLLECTIONS_SEARCH was null");
             Object functionValue = joinPoint.proceed();
             cacheManager.getCache(CacheNames.COLLECTIONS_SEARCH).put(COLLECTIONS_SEARCH_KEY, functionValue);
-            LOGGER.info("COLLECTIONS_SEARCH was added to cache");
             return functionValue;
         } else {
-            LOGGER.info("COLLECTIONS_SEARCH was not null");
             return cacheItem.get();
         }
     }
