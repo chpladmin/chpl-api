@@ -33,8 +33,8 @@ public class UrlUptimeReport {
     public static List<String> getHeaders() {
         return List.of("Monitor Description",
                 "URL",
-                "Total Tests",
-                "Successful Tests",
+                "All Time Total Tests",
+                "All Time Successful Tests",
                 "Current Month Days Total Tests",
                 "Current Month Days Successful Tests",
                 "Past 7 Days Total Tests",
