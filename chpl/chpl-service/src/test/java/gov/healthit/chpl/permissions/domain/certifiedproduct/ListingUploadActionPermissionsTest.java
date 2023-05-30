@@ -52,15 +52,6 @@ public class ListingUploadActionPermissionsTest extends ActionPermissionsBaseTes
 
     @Override
     @Test
-    public void hasAccess_OncStaff() throws Exception {
-        setupForOncStaffUser(resourcePermissions);
-        assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(buildUploadMetadata(USER_ACB_ID)));
-        assertFalse(permissions.hasAccess(buildUploadMetadata(OTHER_ACB_ID)));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
         assertTrue(permissions.hasAccess());

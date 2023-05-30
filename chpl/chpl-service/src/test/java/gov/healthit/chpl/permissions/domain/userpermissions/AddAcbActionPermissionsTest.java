@@ -57,17 +57,6 @@ public class AddAcbActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    public void hasAccess_OncStaff() throws Exception {
-        setupForOncStaffUser(resourcePermissions);
-
-        assertFalse(permissions.hasAccess());
-        CertificationBodyDTO dto = new CertificationBodyDTO();
-        dto.setId(1L);
-        assertFalse(permissions.hasAccess(dto));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 

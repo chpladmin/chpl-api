@@ -13,8 +13,7 @@ public class GetAtlActivityMetadataActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {
-        return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
-                || getResourcePermissions().isUserRoleOncStaff() ;
+        return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
     }
 
     @Override
@@ -22,7 +21,6 @@ public class GetAtlActivityMetadataActionPermissions extends ActionPermissions {
         if (!(obj instanceof TestingLabActivityMetadata)) {
             return false;
         }
-        return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
-                || getResourcePermissions().isUserRoleOncStaff();
+        return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
     }
 }

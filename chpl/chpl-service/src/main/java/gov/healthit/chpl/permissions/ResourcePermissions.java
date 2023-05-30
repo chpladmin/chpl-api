@@ -117,7 +117,7 @@ public class ResourcePermissions {
         List<CertificationBodyDTO> acbs = new ArrayList<CertificationBodyDTO>();
 
         if (user != null) {
-            if (isUserRoleAdmin() || isUserRoleOnc() || isUserRoleOncStaff()) {
+            if (isUserRoleAdmin() || isUserRoleOnc()) {
                 acbs = acbDAO.findAll();
             } else {
                 List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(user.getId());
@@ -281,8 +281,6 @@ public class ResourcePermissions {
             return true;
         } else if (isUserRoleOnc()) {
             return !getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN);
-        } else if (isUserRoleOncStaff()) {
-            return getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(Authority.ROLE_ONC_STAFF);
         } else if (isUserRoleAcbAdmin()) {
             if (getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(Authority.ROLE_DEVELOPER)) {
                 return true;
@@ -318,10 +316,6 @@ public class ResourcePermissions {
 
     public boolean isUserRoleOnc() {
         return doesUserHaveRole(Authority.ROLE_ONC);
-    }
-
-    public boolean isUserRoleOncStaff() {
-        return doesUserHaveRole(Authority.ROLE_ONC_STAFF);
     }
 
     public boolean isUserRoleCmsStaff() {

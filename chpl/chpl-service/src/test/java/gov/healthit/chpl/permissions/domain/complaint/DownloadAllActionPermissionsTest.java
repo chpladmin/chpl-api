@@ -63,16 +63,6 @@ public class DownloadAllActionPermissionsTest extends ActionPermissionsBaseTest 
 
     @Override
     @Test
-    public void hasAccess_OncStaff() throws Exception {
-        setupForOncStaffUser(resourcePermissions);
-        assertTrue(permissions.hasAccess());
-
-        Complaint complaint = new Complaint();
-        assertFalse(permissions.hasAccess(complaint));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
         assertFalse(permissions.hasAccess());

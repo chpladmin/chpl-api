@@ -253,8 +253,6 @@ public class UserManagementController {
             createdInvitiation = invitationManager.inviteAdmin(invitation.getEmailAddress());
         } else if (invitation.getRole().equals(Authority.ROLE_ONC)) {
             createdInvitiation = invitationManager.inviteOnc(invitation.getEmailAddress());
-        } else if (invitation.getRole().equals(Authority.ROLE_ONC_STAFF)) {
-            createdInvitiation = invitationManager.inviteOncStaff(invitation.getEmailAddress());
         } else if (invitation.getRole().equals(Authority.ROLE_CMS_STAFF)) {
             createdInvitiation = invitationManager.inviteCms(invitation.getEmailAddress());
         } else if (invitation.getRole().equals(Authority.ROLE_ACB)

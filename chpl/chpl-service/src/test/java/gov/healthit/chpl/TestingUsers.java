@@ -83,21 +83,6 @@ public class TestingUsers {
         return oncUser;
     }
 
-    public void setupForOncStaffUser(ResourcePermissions resourcePermissions) {
-        SecurityContextHolder.getContext().setAuthentication(getOncStaffUser());
-        Mockito.when(resourcePermissions.isUserRoleOncStaff()).thenReturn(true);
-    }
-
-    private JWTAuthenticatedUser getOncStaffUser() {
-        JWTAuthenticatedUser oncUser = new JWTAuthenticatedUser();
-        oncUser.setFullName("ONC Staff");
-        oncUser.setId(3L);
-        oncUser.setFriendlyName("User");
-        oncUser.setSubjectName("oncStaffUser");
-        oncUser.getPermissions().add(new GrantedPermission("ROLE_ONC_STAFF"));
-        return oncUser;
-    }
-
     public void setupForDeveloperUser(ResourcePermissions resourcePermissions) {
         SecurityContextHolder.getContext().setAuthentication(getDeveloperUser());
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);

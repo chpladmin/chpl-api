@@ -91,14 +91,6 @@ public class InvitationManager extends SecuredManager {
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
-            + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ONC_STAFF)")
-    public UserInvitation inviteOncStaff(String emailAddress)
-            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
-        return inviteToAccount(Authority.ROLE_ONC_STAFF, null, emailAddress);
-    }
-
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
             + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_CMS)")
     public UserInvitation inviteCms(String emailAddress)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {

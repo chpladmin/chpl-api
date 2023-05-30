@@ -49,18 +49,6 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
         assertTrue(permissions.hasAccess());
         assertFalse(permissions.hasAccess(buildJob("ROLE_ADMIN")));
         assertTrue(permissions.hasAccess(buildJob("ROLE_ADMIN;ROLE_ONC")));
-        assertTrue(permissions.hasAccess(buildJob("ROLE_ADMIN;ROLE_ONC_STAFF;ROLE_ONC")));
-    }
-
-    @Override
-    @Test
-    public void hasAccess_OncStaff() throws Exception {
-        setupForOncStaffUser(resourcePermissions);
-
-        assertTrue(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(buildJob("ROLE_ADMIN")));
-        assertFalse(permissions.hasAccess(buildJob("ROLE_ADMIN;ROLE_ONC")));
-        assertTrue(permissions.hasAccess(buildJob("ROLE_ADMIN;ROLE_ONC_STAFF;ROLE_ONC")));
     }
 
     @Override
@@ -72,7 +60,6 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess(buildChplJob()));
         assertFalse(permissions.hasAccess(buildJob("ROLE_ADMIN")));
         assertFalse(permissions.hasAccess(buildJob("ROLE_ADMIN;ROLE_ONC")));
-        assertFalse(permissions.hasAccess(buildJob("ROLE_ADMIN;ROLE_ONC_STAFF;ROLE_ONC")));
         assertTrue(permissions.hasAccess(buildJob("ROLE_ACB")));
         assertTrue(permissions.hasAccess(buildJob("ROLE_ONC;ROLE_ACB")));
     }
