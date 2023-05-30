@@ -11,7 +11,9 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.subscription.domain.Subscriber;
+import gov.healthit.chpl.subscription.domain.SubscriberRole;
 import gov.healthit.chpl.subscription.entity.SubscriberEntity;
+import gov.healthit.chpl.subscription.entity.SubscriberRoleEntity;
 import gov.healthit.chpl.subscription.service.SubscriptionLookupUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -20,7 +22,8 @@ import lombok.extern.log4j.Log4j2;
 public class SubscriberDao extends BaseDAOImpl {
     private static final String SUBSCRIBER_HQL = "SELECT subscriber "
             + "FROM SubscriberEntity subscriber "
-            + "JOIN FETCH subscriber.subscriberStatus ";
+            + "JOIN FETCH subscriber.subscriberStatus "
+            + "LEFT JOIN FETCH subscriber.subscriberRole ";
 
     private SubscriptionLookupUtil lookupUtil;
 
@@ -29,9 +32,22 @@ public class SubscriberDao extends BaseDAOImpl {
         this.lookupUtil = lookupUtil;
     }
 
-    public UUID createSubscriber(String email) {
+    public List<SubscriberRole> getAllRoles() {
+        Query query = entityManager.createQuery("SELECT roles "
+                + "FROM SubscriberRoleEntity roles "
+                + "ORDER BY sortOrder",
+                SubscriberRoleEntity.class);
+
+        List<SubscriberRoleEntity> results = query.getResultList();
+        return results.stream()
+                .map(entity -> entity.toDomain())
+                .toList();
+    }
+
+    public UUID createSubscriber(String email, Long roleId) {
         SubscriberEntity subscriberToCreate = new SubscriberEntity();
         subscriberToCreate.setEmail(email);
+        subscriberToCreate.setSubscriberRoleId(roleId);
         subscriberToCreate.setLastModifiedUser(User.DEFAULT_USER_ID);
         subscriberToCreate.setSubscriberStatusId(lookupUtil.getPendingSubscriberStatusId());
         create(subscriberToCreate);

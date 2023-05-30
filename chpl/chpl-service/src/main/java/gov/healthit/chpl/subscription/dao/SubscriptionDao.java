@@ -14,12 +14,10 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.subscription.domain.Subscription;
 import gov.healthit.chpl.subscription.domain.SubscriptionConsolidationMethod;
 import gov.healthit.chpl.subscription.domain.SubscriptionObjectType;
-import gov.healthit.chpl.subscription.domain.SubscriptionReason;
 import gov.healthit.chpl.subscription.domain.SubscriptionSubject;
 import gov.healthit.chpl.subscription.entity.SubscriptionConsolidationMethodEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionObjectTypeEntity;
-import gov.healthit.chpl.subscription.entity.SubscriptionReasonEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionSubjectEntity;
 import gov.healthit.chpl.subscription.service.SubscriptionLookupUtil;
 import lombok.extern.log4j.Log4j2;
@@ -31,7 +29,6 @@ public class SubscriptionDao extends BaseDAOImpl {
             + "FROM SubscriptionEntity subscription "
             + "JOIN FETCH subscription.subscriber subscriber "
             + "JOIN FETCH subscriber.subscriberStatus "
-            + "LEFT JOIN FETCH subscription.subscriptionReason "
             + "JOIN FETCH subscription.subscriptionSubject subject "
             + "JOIN FETCH subject.subscriptionObjectType "
             + "JOIN FETCH subscription.subscriptionConsolidationMethod ";
@@ -40,18 +37,6 @@ public class SubscriptionDao extends BaseDAOImpl {
 
     public SubscriptionDao(SubscriptionLookupUtil lookupUtil) {
         this.lookupUtil = lookupUtil;
-    }
-
-    public List<SubscriptionReason> getAllReasons() {
-        Query query = entityManager.createQuery("SELECT reasons "
-                + "FROM SubscriptionReasonEntity reasons "
-                + "ORDER BY sortOrder",
-                SubscriptionReasonEntity.class);
-
-        List<SubscriptionReasonEntity> results = query.getResultList();
-        return results.stream()
-                .map(entity -> entity.toDomain())
-                .toList();
     }
 
     public List<SubscriptionObjectType> getAllSubscriptionObjectTypes() {
@@ -102,7 +87,7 @@ public class SubscriptionDao extends BaseDAOImpl {
                 .toList();
     }
 
-    public void createSubscription(UUID subscriberId, Long subscribedObjectTypeId, Long subscribedObjectId, Long reasonId) {
+    public void createSubscription(UUID subscriberId, Long subscribedObjectTypeId, Long subscribedObjectId) {
         //Subscribing to a particular object may create create multiple subscriptions for each
         //"subject" related to that type of object. i.e. different things updated on a listing are different subjects.
         //A future management page might give a user more fine-grained control over the "subjects"
@@ -113,18 +98,17 @@ public class SubscriptionDao extends BaseDAOImpl {
         subjectsForObjectType.stream()
             .forEach(subject -> createSubscriptionIfNotExists(
                     subscriberId, subscribedObjectId, subject.getId(),
-                    lookupUtil.getDailyConsolidationMethodId(), reasonId));
+                    lookupUtil.getDailyConsolidationMethodId()));
     }
 
     private void createSubscriptionIfNotExists(UUID subscriberId, Long subscribedObjectId, Long subjectId,
-            Long consolidationMethodId, Long reasonId) {
+            Long consolidationMethodId) {
         if (!doesSubscriptionExist(subscriberId, subscribedObjectId, subjectId)) {
             SubscriptionEntity subscriptionToCreate = new SubscriptionEntity();
             subscriptionToCreate.setLastModifiedUser(User.DEFAULT_USER_ID);
             subscriptionToCreate.setSubscribedObjectId(subscribedObjectId);
             subscriptionToCreate.setSubscriberId(subscriberId);
             subscriptionToCreate.setSubscriptionConsolidationMethodId(consolidationMethodId);
-            subscriptionToCreate.setSubscriptionReasonId(reasonId);
             subscriptionToCreate.setSubscriptionSubjectId(subjectId);
             create(subscriptionToCreate);
         } else {

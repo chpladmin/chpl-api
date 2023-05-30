@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.subscription.domain.Subscriber;
+import gov.healthit.chpl.subscription.domain.SubscriberRole;
 import gov.healthit.chpl.subscription.domain.SubscriberStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,6 +41,13 @@ public class SubscriberEntity {
     @JoinColumn(name = "subscriber_status_id", insertable = false, updatable = false)
     private SubscriberStatusEntity subscriberStatus;
 
+    @Column(name = "subscriber_role_id")
+    private Long subscriberRoleId;
+
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "subscriber_role_id", insertable = false, updatable = false)
+    private SubscriberRoleEntity subscriberRole;
+
     @Column(name = "email", nullable = false)
     private String email;
 
@@ -62,6 +70,9 @@ public class SubscriberEntity {
                 .status(getSubscriberStatus() == null
                         ? SubscriberStatus.builder().id(getSubscriberStatusId()).build()
                                 : getSubscriberStatus().toDomain())
+                .role(getSubscriberRole() == null
+                    ? SubscriberRole.builder().id(getSubscriberRoleId()).build()
+                            : getSubscriberRole().toDomain())
                 .build();
     }
 }

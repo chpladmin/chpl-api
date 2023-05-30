@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 public class Subscription {
     private Long id;
     private Subscriber subscriber;
-    private SubscriptionReason reason;
     private SubscriptionSubject subject;
     private Long subscribedObjectId;
     private SubscriptionConsolidationMethod consolidationMethod;

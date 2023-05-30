@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 public class Subscriber {
     private UUID id;
     private SubscriberStatus status;
+    private SubscriberRole role;
     private String email;
 
     @Override

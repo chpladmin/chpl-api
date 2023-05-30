@@ -21,7 +21,7 @@ public class SubscriptionRequestValidationService {
     private List<ValidationRule<SubscriptionRequestValidationContext>> getCreateValidations() {
         return new ArrayList<ValidationRule<SubscriptionRequestValidationContext>>(Arrays.asList(
                 new EmailAddressValidation(),
-                new SubscriptionReasonValidation(),
+                new SubscriberRoleValidation(),
                 new SubscriptionObjectTypeValidation(),
                 new SubscribedObjectValidation()));
     }

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SubscriptionReason {
+public class SubscriberRole {
     private Long id;
     private String name;
     private Integer sortOrder;

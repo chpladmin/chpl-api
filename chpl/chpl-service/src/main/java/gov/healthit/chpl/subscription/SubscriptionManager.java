@@ -17,8 +17,8 @@ import gov.healthit.chpl.subscriber.validation.SubscriberValidationService;
 import gov.healthit.chpl.subscription.dao.SubscriberDao;
 import gov.healthit.chpl.subscription.dao.SubscriptionDao;
 import gov.healthit.chpl.subscription.domain.Subscriber;
+import gov.healthit.chpl.subscription.domain.SubscriberRole;
 import gov.healthit.chpl.subscription.domain.SubscriptionObjectType;
-import gov.healthit.chpl.subscription.domain.SubscriptionReason;
 import gov.healthit.chpl.subscription.domain.SubscriptionRequest;
 import gov.healthit.chpl.subscription.service.SubscriberMessagingService;
 import gov.healthit.chpl.subscription.service.SubscriptionLookupUtil;
@@ -61,8 +61,8 @@ public class SubscriptionManager {
     }
 
     @Transactional
-    public List<SubscriptionReason> getAllReasons() {
-        return subscriptionDao.getAllReasons();
+    public List<SubscriberRole> getAllRoles() {
+        return subscriberDao.getAllRoles();
     }
 
     @Transactional
@@ -80,7 +80,7 @@ public class SubscriptionManager {
 
         Subscriber subscriber = subscriberDao.getSubscriberByEmail(subscriptionRequest.getEmail());
         if (subscriber == null) {
-            UUID newSubscriberId = subscriberDao.createSubscriber(subscriptionRequest.getEmail());
+            UUID newSubscriberId = subscriberDao.createSubscriber(subscriptionRequest.getEmail(), subscriptionRequest.getRoleId());
             subscriber = subscriberDao.getSubscriberById(newSubscriberId);
         }
 
@@ -89,7 +89,7 @@ public class SubscriptionManager {
         }
 
         subscriptionDao.createSubscription(subscriber.getId(), subscriptionRequest.getSubscribedObjectTypeId(),
-                subscriptionRequest.getSubscribedObjectId(), subscriptionRequest.getReasonId());
+                subscriptionRequest.getSubscribedObjectId());
         return subscriber;
     }
 
@@ -107,6 +107,7 @@ public class SubscriptionManager {
     private SubscriptionRequestValidationContext getSubscriptionValidationContext(SubscriptionRequest subscriptionRequest) {
         return new SubscriptionRequestValidationContext(
                 subscriptionRequest,
+                subscriberDao,
                 subscriptionDao,
                 developerDao,
                 productDao,

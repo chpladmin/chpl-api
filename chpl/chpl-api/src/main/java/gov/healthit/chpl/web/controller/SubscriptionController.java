@@ -18,8 +18,8 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.subscription.SubscriptionManager;
 import gov.healthit.chpl.subscription.domain.Subscriber;
 import gov.healthit.chpl.subscription.domain.SubscriberConfirmationRequest;
+import gov.healthit.chpl.subscription.domain.SubscriberRole;
 import gov.healthit.chpl.subscription.domain.SubscriptionObjectType;
-import gov.healthit.chpl.subscription.domain.SubscriptionReason;
 import gov.healthit.chpl.subscription.domain.SubscriptionRequest;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,12 +45,12 @@ public class SubscriptionController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/reasons", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<SubscriptionReason> getSubscriptionReasons() {
+    @RequestMapping(value = "/roles", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<SubscriberRole> getSubscriptionReasons() {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
         }
-        return subscriptionManager.getAllReasons();
+        return subscriptionManager.getAllRoles();
     }
 
     @Operation(summary = "Get available types of things that may be subscribed to.",

@@ -18,7 +18,6 @@ import org.hibernate.annotations.Where;
 import gov.healthit.chpl.subscription.domain.Subscriber;
 import gov.healthit.chpl.subscription.domain.Subscription;
 import gov.healthit.chpl.subscription.domain.SubscriptionConsolidationMethod;
-import gov.healthit.chpl.subscription.domain.SubscriptionReason;
 import gov.healthit.chpl.subscription.domain.SubscriptionSubject;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,13 +41,6 @@ public class SubscriptionEntity {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "subscriber_id", insertable = false, updatable = false)
     private SubscriberEntity subscriber;
-
-    @Column(name = "subscription_reason_id")
-    private Long subscriptionReasonId;
-
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "subscription_reason_id", insertable = false, updatable = false)
-    private SubscriptionReasonEntity subscriptionReason;
 
     @Column(name = "subscription_subject_id")
     private Long subscriptionSubjectId;
@@ -85,9 +77,6 @@ public class SubscriptionEntity {
                 .subscriber(getSubscriber() == null
                         ? Subscriber.builder().id(getSubscriberId()).build()
                                 : getSubscriber().toDomain())
-                .reason(getSubscriptionReason() == null
-                        ? SubscriptionReason.builder().id(getSubscriptionReasonId()).build()
-                                : getSubscriptionReason().toDomain())
                 .subject(getSubscriptionSubject() == null
                         ? SubscriptionSubject.builder().id(getSubscriptionSubjectId()).build()
                                 : getSubscriptionSubject().toDomain())
