@@ -5,14 +5,14 @@
 	},
 	"item": [
 		{
-			"name": "GET /certification_ids/{certificationId} - Returns 200 for ONC_STAFF user",
+			"name": "GET /certification_ids/{certificationId} - Returns 200 for ONC user",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
 						"exec": [
 							"var ReqBody= {\r",
-							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
+							"        userName:pm.environment.get(\"emailONC\"),password:pm.environment.get(\"passwordONC\")\r",
 							"    };\r",
 							"pm.sendRequest({\r",
 							"    url: pm.environment.get(\"authurl\"),\r",
@@ -34,7 +34,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"ONC_STAFF users should get 200 status and correct response for /certification_ids/{certificationId} end point\", function () {\r",
+							"pm.test(\"ONC users should get 200 status and correct response for /certification_ids/{certificationId} end point\", function () {\r",
 							"    var actualResponseBody = pm.response.json();\r",
 							"    pm.response.to.have.status(200);\r",
 							"    pm.expect(actualResponseBody.ehrCertificationId).to.equal(\"0015EUU3FE12AA3\");\r",
@@ -91,7 +91,7 @@
 					"script": {
 						"exec": [
 							"var ReqBody= {\r",
-							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
+							"        userName:pm.environment.get(\"emailONC\"),password:pm.environment.get(\"passwordONC\")\r",
 							"    };\r",
 							"pm.sendRequest({\r",
 							"    url: pm.environment.get(\"authurl\"),\r",
@@ -113,7 +113,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"ONC_STAFF users should get 200 status and correct response for POST /certification_ids/report-request end point\", function () {\r",
+							"pm.test(\"ONC users should get 200 status and correct response for POST /certification_ids/report-request end point\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.response.to.have.status(200);\r",
 							"    pm.expect(jsonData.response).not.eq(null);\r",

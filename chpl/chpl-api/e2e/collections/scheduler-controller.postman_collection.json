@@ -5,14 +5,14 @@
 	},
 	"item": [
 		{
-			"name": "GET /schedules/jobs - 200 response status validation for ROLE_ONC_STAFF",
+			"name": "GET /schedules/jobs - 200 response status validation for ROLE_ONC",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
 						"exec": [
 							"var ReqBody= {\r",
-							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
+							"        userName:pm.environment.get(\"emailONC\"),password:pm.environment.get(\"passwordONC\")\r",
 							"    };\r",
 							"pm.sendRequest({\r",
 							"    url: pm.environment.get(\"authurl\"),\r",
@@ -34,7 +34,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"ROLE_ONC_STAFF should get 200 response from /schedules/jobs end point and response body should not be empty\", function () {\r",
+							"pm.test(\"ROLE_ONC should get 200 response from /schedules/jobs end point and response body should not be empty\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData.response).not.eq(null);\r",
@@ -84,14 +84,14 @@
 			"response": []
 		},
 		{
-			"name": "GET /schedules/triggers - 200 response status validation for ROLE_ONC_STAFF",
+			"name": "GET /schedules/triggers - 200 response status validation for ROLE_ONC",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
 						"exec": [
 							"var ReqBody= {\r",
-							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
+							"        userName:pm.environment.get(\"emailONC\"),password:pm.environment.get(\"passwordONC\")\r",
 							"    };\r",
 							"pm.sendRequest({\r",
 							"    url: pm.environment.get(\"authurl\"),\r",
@@ -113,7 +113,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"ROLE_ONC_STAFF should get 200 response from /schedules/triggers end point and response body should not be empty\", function () {\r",
+							"pm.test(\"ROLE_ONC should get 200 response from /schedules/triggers end point and response body should not be empty\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData.response).not.eq(null);\r",

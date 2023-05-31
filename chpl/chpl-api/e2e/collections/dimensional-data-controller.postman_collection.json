@@ -207,7 +207,7 @@
 					"script": {
 						"exec": [
 							"var ReqBody= {\r",
-							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
+							"        userName:pm.environment.get(\"emailONC\"),password:pm.environment.get(\"passwordONC\")\r",
 							"    };\r",
 							"pm.sendRequest({\r",
 							"    url: pm.environment.get(\"authurl\"),\r",
@@ -229,7 +229,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"ONC_STAFF users should get 200 status and response is not null for data/fuzzy_choices end point\", function () {\r",
+							"pm.test(\"ONC users should get 200 status and response is not null for data/fuzzy_choices end point\", function () {\r",
 							"    var actualResponseBody = pm.response.json();\r",
 							"    pm.response.to.have.status(200);\r",
 							"    pm.expect(actualResponseBody).not.eql(null);\r",
