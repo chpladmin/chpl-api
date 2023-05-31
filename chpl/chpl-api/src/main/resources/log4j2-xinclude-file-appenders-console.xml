@@ -379,4 +379,20 @@
             <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
         </JsonLayout>
     </Console>
+
+    <Console name="urlUptimeCreatorJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="urlUptimeCreatorJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+
+    <Console name="urlUptimeEmailJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="urlUptimeEmailJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
 </Appenders>
