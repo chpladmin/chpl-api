@@ -789,5 +789,30 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
+
+        <job>
+            <name>urlUptimeCreatorJob</name>
+            <group>systemJobs</group>
+            <description>Retrieve uptime information from Datadog got (g)(10) Service Based URLs.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.urluptime.UrlUptimeCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
+        <job>
+            <name>CHPL URL Uptime Report</name>
+            <group>chplJobs</group>
+            <description>Sends the CHPL URL Uptime Report</description>
+            <job-class>gov.healthit.chpl.scheduler.job.urluptime.UrlUptimeEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
+
     </schedule>
 </job-scheduling-data>
