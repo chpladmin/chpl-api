@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ListingSearchCacheable {
-    String key() default "ALL_LISTINGS";
+    String key() default "collections search";
 }
