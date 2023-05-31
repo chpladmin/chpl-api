@@ -20,7 +20,7 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
             + "JOIN FETCH observation.subscription subscription "
             + "JOIN FETCH subscription.subscriber subscriber "
             + "JOIN FETCH subscriber.subscriberStatus "
-            + "LEFT JOIN FETCH subscription.subscriptionReason "
+            + "JOIN FETCH subscriber.subscriberRole "
             + "JOIN FETCH subscription.subscriptionSubject subject "
             + "JOIN FETCH subject.subscriptionObjectType "
             + "JOIN FETCH subscription.subscriptionConsolidationMethod consolidationMethod ";
