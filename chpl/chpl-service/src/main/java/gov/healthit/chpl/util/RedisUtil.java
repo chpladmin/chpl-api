@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
+import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.ChplCacheConfig;
@@ -21,16 +23,16 @@ public class RedisUtil {
     }
 
     public List<Long> getAllKeysForCacheAsLong(Cache cache) {
-//        ScanOptions opts = ScanOptions.scanOptions()
-//                .match(ChplCacheConfig.CACHE_NAME_PREFIX + cache.getName() + "*")
-//                .build();
-//        Cursor cursor = redisTemplate.scan(opts);
-//        return cursor.stream()
-//                .map(redisKey -> Long.valueOf(((String)redisKey).split("::")[1]))
-//                .toList();
-
-        return redisTemplate.keys(ChplCacheConfig.CACHE_NAME_PREFIX + cache.getName() + "*").parallelStream()
-                .map(redisKey -> Long.valueOf(redisKey.split("::")[1]))
+        ScanOptions opts = ScanOptions.scanOptions()
+                .match(ChplCacheConfig.CACHE_NAME_PREFIX + cache.getName() + "*")
+                .build();
+        Cursor cursor = redisTemplate.scan(opts);
+        return cursor.stream()
+                .map(redisKey -> Long.valueOf(((String)redisKey).split("::")[1]))
                 .toList();
+
+//        return redisTemplate.keys(ChplCacheConfig.CACHE_NAME_PREFIX + cache.getName() + "*").parallelStream()
+//                .map(redisKey -> Long.valueOf(redisKey.split("::")[1]))
+//                .toList();
     }
 }
