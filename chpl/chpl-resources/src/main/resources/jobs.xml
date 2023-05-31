@@ -806,7 +806,7 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
-        
+
         <job>
             <name>CHPL URL Uptime Report</name>
             <group>chplJobs</group>
@@ -821,6 +821,6 @@
                 </entry>
             </job-data-map>
         </job>
-        
+
     </schedule>
 </job-scheduling-data>

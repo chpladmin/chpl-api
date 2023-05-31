@@ -655,7 +655,7 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
-    
+
     <RollingFile name="urlUptimeCreatorJob"
         fileName="${logDir}/scheduler/urlUptimeCreatorJob.log"
         filePattern="${logDir}/scheduler/history/urlUptimeCreatorJob-%d{yyyy-MM-dd}.log"
@@ -681,5 +681,5 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
-    
+
 </Appenders>
