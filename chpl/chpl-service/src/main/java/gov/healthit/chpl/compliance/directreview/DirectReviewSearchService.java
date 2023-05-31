@@ -131,8 +131,6 @@ public class DirectReviewSearchService {
     }
 
     private List<DirectReview> getDirectReviewsWithDeveloperAssociatedListingId(Long listingId, Long developerId) {
-        //List<DirectReviewContainer> allDirectReviewContainers = getAll();
-
         DirectReviewContainer directReviewContainerForDeveloper =
                 (DirectReviewContainer) cacheManager.getCache(CacheNames.DIRECT_REVIEWS).get(developerId).get();
 
