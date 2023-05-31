@@ -164,4 +164,10 @@
     <Logger name="listingSearchCacheRefreshLogger" level="DEBUG" additivity="false">
         <AppenderRef ref="listingSearchCacheRefresh" />
     </Logger>
+    <Logger name="urlUptimeCreatorJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="urlUptimeCreatorJob" />
+    </Logger>
+        <Logger name="urlUptimeEmailJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="urlUptimeEmailJob" />
+    </Logger>
 </Loggers>
