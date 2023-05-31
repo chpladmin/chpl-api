@@ -222,4 +222,12 @@
         <AppenderRef ref="listingSearchCacheRefresh" />
         <AppenderRef ref="listingSearchCacheRefreshJson" />
     </Logger>
+    <Logger name="urlUptimeCreatorJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="urlUptimeCreatorJob" />
+        <AppenderRef ref="urlUptimeCreatorJobJson" />
+    </Logger>
+    <Logger name="urlUptimeEmailJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="urlUptimeEmailJob" />
+        <AppenderRef ref="urlUptimeEmailJobJson" />
+    </Logger>
 </Loggers>
