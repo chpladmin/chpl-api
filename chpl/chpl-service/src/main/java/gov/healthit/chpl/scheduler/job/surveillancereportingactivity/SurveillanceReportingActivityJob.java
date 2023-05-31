@@ -2,6 +2,7 @@ package gov.healthit.chpl.scheduler.job.surveillancereportingactivity;
 
 import java.io.File;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -70,7 +71,8 @@ public class SurveillanceReportingActivityJob implements Job {
 
             SurveillanceActivityReportWorkbook workbook = new SurveillanceActivityReportWorkbook();
 
-            List<CertificationBodyDTO> allAcbs = certificationBodyDAO.findAllActive();
+            LocalDate endDate = getEndDate(context);
+            List<CertificationBodyDTO> allAcbs = certificationBodyDAO.findAllActiveBefore(endDate.atTime(LocalTime.MAX));
             allAcbs.sort(Comparator.comparing(CertificationBodyDTO::getName));
 
             File excelFile = workbook.generateWorkbook(surveillances, allAcbs);
