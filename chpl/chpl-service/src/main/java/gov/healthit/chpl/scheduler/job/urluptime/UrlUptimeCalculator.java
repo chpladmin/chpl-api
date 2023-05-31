@@ -14,7 +14,6 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2(topic = "urlUptimeEmailJobLogger")
 @Component
 public class UrlUptimeCalculator {
-
     private ChplUptimeMonitorDAO chplUptimeMonitorDAO;
     private ChplUptimeMonitorTestDAO chplUptimeMonitorTestDAO;
 
@@ -66,7 +65,7 @@ public class UrlUptimeCalculator {
 
     private List<ChplUptimeMonitorTest> getEligibleTestsForPastWeek(List<ChplUptimeMonitorTest> chplUptimeMonitorTests) {
         LocalDateTime end = LocalDateTime.now().minusDays(1).with(ChronoField.NANO_OF_DAY, LocalTime.MAX.toNanoOfDay());
-        LocalDateTime start = LocalDateTime.now().minusDays(6).with(ChronoField.NANO_OF_DAY, LocalTime.MIN.toNanoOfDay());
+        LocalDateTime start = LocalDateTime.now().minusWeeks(1).with(ChronoField.NANO_OF_DAY, LocalTime.MIN.toNanoOfDay());
 
         return chplUptimeMonitorTests.stream()
                 .filter(test -> test.getCheckTime().isAfter(start) && test.getCheckTime().isBefore(end))
