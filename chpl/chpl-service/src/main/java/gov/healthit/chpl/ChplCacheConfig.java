@@ -1,19 +1,22 @@
 package gov.healthit.chpl;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.client.codec.StringCodec;
+import org.redisson.codec.CompositeCodec;
+import org.redisson.codec.Kryo5Codec;
+import org.redisson.config.Config;
+import org.redisson.spring.cache.CacheConfig;
+import org.redisson.spring.cache.RedissonSpringCacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.data.redis.cache.RedisCacheConfiguration;
-import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisPassword;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.RedisSerializationContext;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -26,40 +29,19 @@ public class ChplCacheConfig {
     @Autowired
     private Environment env;
 
-    @Bean
-    public LettuceConnectionFactory redisConnectionFactory() {
-        LOGGER.info("Creating LettuceConnectionFactory");
-        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-        redisStandaloneConfiguration.setHostName(env.getProperty("spring.redis.host"));
-        redisStandaloneConfiguration.setPort(Integer.valueOf(env.getProperty("spring.redis.port")));
-        redisStandaloneConfiguration.setPassword(RedisPassword.of(env.getProperty("spring.redis.password")));
-        return new LettuceConnectionFactory(redisStandaloneConfiguration);
-    }
-
-
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
-
-      RedisTemplate<String, Object> template = new RedisTemplate<>();
-      template.setConnectionFactory(redisConnectionFactory);
-      template.setKeySerializer(new StringRedisSerializer());
-
-      return template;
+    @Bean(destroyMethod="shutdown")
+    RedissonClient redisson() {
+        Config config = new Config();
+        config.useSingleServer()
+              .setAddress("redis://127.0.0.1:6379")
+              .setPassword("mypass");
+        return Redisson.create(config);
     }
 
     @Bean
-    public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
-        LOGGER.info("Creating RedisCacheManager");
-
-        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-                .prefixCacheNameWith(CACHE_NAME_PREFIX)
-                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                .disableCachingNullValues();
-
-        RedisCacheManager manager = RedisCacheManager.builder(connectionFactory)
-                .cacheDefaults(config)
-                .build();
-
-        return manager;
+    CacheManager cacheManager(RedissonClient redissonClient) {
+        Map<String, CacheConfig> config = new HashMap<>();
+        CompositeCodec compositeCodec = new CompositeCodec(new StringCodec(), new Kryo5Codec());
+        return new RedissonSpringCacheManager(redissonClient, config, compositeCodec);
     }
 }
