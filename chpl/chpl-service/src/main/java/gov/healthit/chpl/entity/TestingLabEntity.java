@@ -45,9 +45,6 @@ public class TestingLabEntity implements Serializable {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "accredidation_number")
-    private String accredidationNumber;
-
     @Column(name = "website")
     private String website;
 

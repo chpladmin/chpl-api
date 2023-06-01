@@ -57,7 +57,6 @@ public class TestingLabDAO extends BaseDAOImpl {
 
             entity.setName(dto.getName());
             entity.setWebsite(dto.getWebsite());
-            entity.setAccredidationNumber(dto.getAccredidationNumber());
             entity.setTestingLabCode(dto.getTestingLabCode());
             entity.setRetired(dto.isRetired());
             entity.setRetirementDate(dto.getRetirementDate());
@@ -89,7 +88,6 @@ public class TestingLabDAO extends BaseDAOImpl {
         }
 
         entity.setWebsite(dto.getWebsite());
-        entity.setAccredidationNumber(dto.getAccredidationNumber());
         entity.setRetired(dto.isRetired());
         entity.setRetirementDate(dto.getRetirementDate());
 

@@ -26,7 +26,6 @@ public class TestingLabDTO implements Serializable {
     private Address address;
     private String name;
     private String website;
-    private String accredidationNumber;
     private boolean retired;
     private Date retirementDate;
 
@@ -38,7 +37,6 @@ public class TestingLabDTO implements Serializable {
         }
         this.name = entity.getName();
         this.website = entity.getWebsite();
-        this.accredidationNumber = entity.getAccredidationNumber();
         this.retired = entity.getRetired();
         this.retirementDate = entity.getRetirementDate();
     }

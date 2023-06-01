@@ -3,12 +3,12 @@ package gov.healthit.chpl.web.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -120,7 +120,6 @@ public class TestingLabController {
             EntityRetrievalException, EntityCreationException, JsonProcessingException {
         TestingLabDTO toCreate = new TestingLabDTO();
         toCreate.setTestingLabCode(atlInfo.getAtlCode());
-        toCreate.setAccredidationNumber(atlInfo.getAccredidationNumber());
         if (StringUtils.isEmpty(atlInfo.getName())) {
             throw new InvalidArgumentsException("A name is required for a testing lab");
         }
@@ -176,7 +175,6 @@ public class TestingLabController {
             toUpdate.setTestingLabCode(updatedAtl.getAtlCode());
             toUpdate.setRetired(false);
             toUpdate.setRetirementDate(null);
-            toUpdate.setAccredidationNumber(updatedAtl.getAccredidationNumber());
             if (StringUtils.isEmpty(updatedAtl.getName())) {
                 throw new InvalidArgumentsException("A name is required for a testing lab");
             }
