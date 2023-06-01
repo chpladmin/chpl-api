@@ -3,8 +3,6 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.Date;
 
-import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.entity.CertificationBodyEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,26 +21,4 @@ public class CertificationBody implements Serializable {
     private Address address;
     private boolean retired;
     private Date retirementDate;
-
-    public CertificationBody(CertificationBodyDTO dto) {
-        this.id = dto.getId();
-        this.acbCode = dto.getAcbCode();
-        this.name = dto.getName();
-        this.website = dto.getWebsite();
-        this.retired = dto.isRetired();
-        this.retirementDate = dto.getRetirementDate();
-        this.address = dto.getAddress();
-    }
-
-    public CertificationBody(final CertificationBodyEntity entity) {
-        this.id = entity.getId();
-        this.acbCode = entity.getAcbCode();
-        this.name = entity.getName();
-        this.website = entity.getWebsite();
-        this.retired = entity.getRetired();
-        this.retirementDate = entity.getRetirementDate();
-        if (entity.getAddress() != null) {
-            this.address = entity.getAddress().toDomain();
-        }
-    }
 }

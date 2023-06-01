@@ -43,7 +43,6 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -414,17 +413,17 @@ public class ListingUploadManager {
         // first look for an ACB name in the file
         String acbName = uploadUtil.parseSingleRowField(Headings.CERTIFICATION_BODY_NAME, headingRecord, listingRecords);
         if (!StringUtils.isEmpty(acbName)) {
-            CertificationBodyDTO acbByName = acbDao.getByName(acbName);
+            CertificationBody acbByName = acbDao.getByName(acbName);
             if (acbByName != null) {
-                acb = new CertificationBody(acbByName);
+                acb = acbByName;
             }
         }
         // if it's not there use the ACB code from the CHPL product number
         String acbCode = chplProductNumberUtil.getAcbCode(chplProductNumber);
         if (!StringUtils.isEmpty(acbCode)) {
-            CertificationBodyDTO acbByCode = acbDao.getByCode(acbCode);
+            CertificationBody acbByCode = acbDao.getByCode(acbCode);
             if (acbByCode != null) {
-                acb = new CertificationBody(acbByCode);
+                acb = acbByCode;
             }
         }
         return acb;

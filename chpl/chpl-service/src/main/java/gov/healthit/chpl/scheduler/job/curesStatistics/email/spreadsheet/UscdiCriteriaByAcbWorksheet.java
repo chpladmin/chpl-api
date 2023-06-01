@@ -103,7 +103,6 @@ public class UscdiCriteriaByAcbWorksheet {
 
     private List<CertificationBody> getActiveAcbs() {
         return certificationBodyDAO.findAllActive().stream()
-                .map(dto -> new CertificationBody(dto))
                 .sorted((dto1, dto2) -> dto1.getName().compareTo(dto2.getName()))
                 .collect(Collectors.toList());
     }

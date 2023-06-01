@@ -246,8 +246,8 @@ public class DimensionalDataController {
     @RequestMapping(value = "/certification_bodies", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody Set<CertificationBody> getCertBodyNames() {
-        return dimensionalDataManager.getCertBodyNames();
+    public @ResponseBody Set<CertificationBody> getCertificationBodies() {
+        return dimensionalDataManager.getAllAcbs();
     }
 
     @Operation(summary = "Get all possible education types in the CHPL",

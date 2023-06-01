@@ -160,7 +160,7 @@ public class ChangeRequestStatusService {
     private CertificationBody getCertificationBodyForCurrentUser() {
         if (resourcePermissions.isUserRoleAcbAdmin()) {
             if (resourcePermissions.getAllAcbsForCurrentUser().size() == 1) {
-                return new CertificationBody(resourcePermissions.getAllAcbsForCurrentUser().get(0));
+                return resourcePermissions.getAllAcbsForCurrentUser().get(0);
             } else {
                 String msg = "Cannot determine ACB for current user.  There are multiple ACBs for this user: "
                         + AuthUtil.getUsername();

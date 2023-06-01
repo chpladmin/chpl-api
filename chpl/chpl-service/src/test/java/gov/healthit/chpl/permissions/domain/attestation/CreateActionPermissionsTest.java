@@ -17,7 +17,7 @@ import gov.healthit.chpl.attestation.domain.AttestationSubmission;
 import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.attestation.CreateActionPermissions;
@@ -40,7 +40,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
                 List.of(Developer.builder().id(1L).build()));
 
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(
-                List.of(CertificationBodyDTO.builder().id(1L).build()));
+                List.of(CertificationBody.builder().id(1L).build()));
 
         Mockito.when(developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(ArgumentMatchers.anyLong())).thenReturn(
                 List.of(CertificationBody.builder().id(1L).build()));

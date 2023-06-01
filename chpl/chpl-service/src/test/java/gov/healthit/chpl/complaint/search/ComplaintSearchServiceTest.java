@@ -21,7 +21,7 @@ import gov.healthit.chpl.complaint.domain.ComplaintListingMap;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
@@ -37,9 +37,9 @@ public class ComplaintSearchServiceTest {
 
         resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser())
-            .thenReturn(Stream.of(CertificationBodyDTO.builder().id(1L).build(),
-                    CertificationBodyDTO.builder().id(2L).build(),
-                    CertificationBodyDTO.builder().id(3L).build()).collect(Collectors.toList()));
+            .thenReturn(Stream.of(CertificationBody.builder().id(1L).build(),
+                    CertificationBody.builder().id(2L).build(),
+                    CertificationBody.builder().id(3L).build()).collect(Collectors.toList()));
 
         complaintDao = Mockito.mock(ComplaintDAO.class);
         Mockito.when(complaintDao.getAllComplaints())

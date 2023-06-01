@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.userpermissions.AddAcbActionPermissions;
@@ -37,7 +37,7 @@ public class AddAcbActionPermissionsTest extends ActionPermissionsBaseTest {
         // This is not used
         assertFalse(permissions.hasAccess());
 
-        CertificationBodyDTO dto = new CertificationBodyDTO();
+        CertificationBody dto = new CertificationBody();
         dto.setId(1L);
         assertTrue(permissions.hasAccess(dto));
     }
@@ -50,7 +50,7 @@ public class AddAcbActionPermissionsTest extends ActionPermissionsBaseTest {
         // This is not used
         assertFalse(permissions.hasAccess());
 
-        CertificationBodyDTO dto = new CertificationBodyDTO();
+        CertificationBody dto = new CertificationBody();
         dto.setId(1L);
         assertTrue(permissions.hasAccess(dto));
     }
@@ -61,7 +61,7 @@ public class AddAcbActionPermissionsTest extends ActionPermissionsBaseTest {
         setupForOncStaffUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
-        CertificationBodyDTO dto = new CertificationBodyDTO();
+        CertificationBody dto = new CertificationBody();
         dto.setId(1L);
         assertFalse(permissions.hasAccess(dto));
     }
@@ -74,7 +74,7 @@ public class AddAcbActionPermissionsTest extends ActionPermissionsBaseTest {
         // This is not used
         assertFalse(permissions.hasAccess());
 
-        CertificationBodyDTO dto = new CertificationBodyDTO();
+        CertificationBody dto = new CertificationBody();
         dto.setId(1L);
         assertFalse(permissions.hasAccess(dto));
 
@@ -90,7 +90,7 @@ public class AddAcbActionPermissionsTest extends ActionPermissionsBaseTest {
         // This is not used
         assertFalse(permissions.hasAccess());
 
-        CertificationBodyDTO dto = new CertificationBodyDTO();
+        CertificationBody dto = new CertificationBody();
         dto.setId(1L);
         assertFalse(permissions.hasAccess(dto));
     }
@@ -103,7 +103,7 @@ public class AddAcbActionPermissionsTest extends ActionPermissionsBaseTest {
         // This is not used
         assertFalse(permissions.hasAccess());
 
-        CertificationBodyDTO dto = new CertificationBodyDTO();
+        CertificationBody dto = new CertificationBody();
         dto.setId(1L);
         assertFalse(permissions.hasAccess(dto));
     }
@@ -116,7 +116,7 @@ public class AddAcbActionPermissionsTest extends ActionPermissionsBaseTest {
         // This is not used
         assertFalse(permissions.hasAccess());
 
-        CertificationBodyDTO dto = new CertificationBodyDTO();
+        CertificationBody dto = new CertificationBody();
         dto.setId(1L);
         assertFalse(permissions.hasAccess(dto));
     }

@@ -18,7 +18,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -70,8 +70,8 @@ public class SurveillanceReportingActivityJob implements Job {
 
             SurveillanceActivityReportWorkbook workbook = new SurveillanceActivityReportWorkbook();
 
-            List<CertificationBodyDTO> allAcbs = certificationBodyDAO.findAllActive();
-            allAcbs.sort(Comparator.comparing(CertificationBodyDTO::getName));
+            List<CertificationBody> allAcbs = certificationBodyDAO.findAllActive();
+            allAcbs.sort(Comparator.comparing(CertificationBody::getName));
 
             File excelFile = workbook.generateWorkbook(surveillances, allAcbs);
 

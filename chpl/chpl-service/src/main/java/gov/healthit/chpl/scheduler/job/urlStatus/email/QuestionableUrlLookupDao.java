@@ -17,7 +17,6 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.TestingLab;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
@@ -46,15 +45,15 @@ public class QuestionableUrlLookupDao {
 
     @Transactional
     public List<FailedUrlResult> getAcbsWithUrl(UrlResult urlResult) {
-        List<CertificationBodyDTO> acbsWithBadUrl = acbDao.getByWebsite(urlResult.getUrl());
+        List<CertificationBody> acbsWithBadUrl = acbDao.getByWebsite(urlResult.getUrl());
         return acbsWithBadUrl.stream()
-            .map(acbDto -> FailedUrlResult.builder()
+            .map(acb -> FailedUrlResult.builder()
                     .lastChecked(urlResult.getLastChecked())
                     .responseCode(urlResult.getResponseCode())
                     .responseMessage(urlResult.getResponseMessage())
                     .url(urlResult.getUrl())
                     .urlType(urlResult.getUrlType())
-                    .acb(new CertificationBody(acbDto))
+                    .acb(acb)
                     .build())
             .collect(Collectors.toList());
     }

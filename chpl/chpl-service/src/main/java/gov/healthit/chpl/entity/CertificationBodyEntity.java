@@ -17,7 +17,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import lombok.Data;
 
 /**
@@ -90,17 +89,6 @@ public class CertificationBodyEntity implements Serializable {
     }
 
     public static CertificationBodyEntity getNewAcbEntity(CertificationBody acb) {
-        CertificationBodyEntity entity = new CertificationBodyEntity();
-        entity.setId(acb.getId());
-        entity.setAcbCode(acb.getAcbCode());
-        entity.setName(acb.getName());
-        entity.setWebsite(acb.getWebsite());
-        entity.setRetired(acb.isRetired());
-        entity.setRetirementDate(acb.getRetirementDate());
-        return entity;
-    }
-
-    public static CertificationBodyEntity getNewAcbEntity(CertificationBodyDTO acb) {
         CertificationBodyEntity entity = new CertificationBodyEntity();
         entity.setId(acb.getId());
         entity.setAcbCode(acb.getAcbCode());

@@ -16,7 +16,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 
 public class ComplaintSearchRequestNormalizerTest {
 
@@ -356,12 +356,12 @@ public class ComplaintSearchRequestNormalizerTest {
     @Test
     public void normalize_certificationBodies_trimsNamesAndGetsAcbIds() {
         Mockito.when(acbDao.getByName(ArgumentMatchers.eq("ICSA Labs")))
-            .thenReturn(CertificationBodyDTO.builder()
+            .thenReturn(CertificationBody.builder()
                     .id(1L)
                     .name("ICSA Labs")
                     .build());
         Mockito.when(acbDao.getByName(ArgumentMatchers.eq("Drummond")))
-            .thenReturn(CertificationBodyDTO.builder()
+            .thenReturn(CertificationBody.builder()
                 .id(2L)
                 .name("Drummond")
                 .build());
@@ -386,12 +386,12 @@ public class ComplaintSearchRequestNormalizerTest {
     @Test
     public void normalize_certificationBodyNamesAndAcbIds_trimsNamesAndUnionsAcbIds() {
         Mockito.when(acbDao.getByName(ArgumentMatchers.eq("ICSA Labs")))
-            .thenReturn(CertificationBodyDTO.builder()
+            .thenReturn(CertificationBody.builder()
                     .id(1L)
                     .name("ICSA Labs")
                     .build());
         Mockito.when(acbDao.getByName(ArgumentMatchers.eq("Drummond")))
-            .thenReturn(CertificationBodyDTO.builder()
+            .thenReturn(CertificationBody.builder()
                 .id(2L)
                 .name("Drummond")
                 .build());
