@@ -33,8 +33,8 @@ public class ChplCacheConfig {
     RedissonClient redisson() {
         Config config = new Config();
         config.useSingleServer()
-              .setAddress("redis://127.0.0.1:6379")
-              .setPassword("mypass");
+              .setAddress("redis://" + env.getProperty("spring.redis.host") + ":" + env.getProperty("spring.redis.port"))
+              .setPassword(env.getProperty("spring.redis.password"));
         return Redisson.create(config);
     }
 
