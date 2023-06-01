@@ -1,6 +1,7 @@
 package gov.healthit.chpl.entity;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -17,14 +18,9 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.Data;
 
-/**
- * Certification body mapping to database.
- *
- * @author kekey
- *
- */
 @Entity
 @Table(name = "certification_body")
 @Data
@@ -57,7 +53,7 @@ public class CertificationBodyEntity implements Serializable {
     private Boolean retired;
 
     @Column(name = "retirement_date", nullable = true)
-    private Date retirementDate;
+    private LocalDate retirementDate;
 
     @Basic(optional = false)
     @Column(name = "creation_date", insertable = false, updatable = false)
@@ -83,7 +79,8 @@ public class CertificationBodyEntity implements Serializable {
                 .id(this.getId())
                 .name(this.getName())
                 .retired(this.getRetired())
-                .retirementDate(this.getRetirementDate())
+                .retirementDay(this.getRetirementDate())
+                .retirementDate(DateUtil.toDate(this.getRetirementDate()))
                 .website(this.getWebsite())
                 .build();
     }
@@ -95,7 +92,7 @@ public class CertificationBodyEntity implements Serializable {
         entity.setName(acb.getName());
         entity.setWebsite(acb.getWebsite());
         entity.setRetired(acb.isRetired());
-        entity.setRetirementDate(acb.getRetirementDate());
+        entity.setRetirementDate(acb.getRetirementDay());
         return entity;
     }
 }

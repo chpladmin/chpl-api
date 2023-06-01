@@ -80,7 +80,7 @@ public class CertificationBodyDAO extends BaseDAOImpl {
 
         entity.setWebsite(acb.getWebsite());
         entity.setRetired(acb.isRetired());
-        entity.setRetirementDate(acb.getRetirementDate());
+        entity.setRetirementDate(acb.getRetirementDay());
 
         if (acb.getName() != null) {
             entity.setName(acb.getName());

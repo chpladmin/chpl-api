@@ -1,6 +1,6 @@
 package gov.healthit.chpl.manager;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -121,8 +121,7 @@ public class CertificationBodyManager extends SecuredManager {
     public CertificationBody retire(CertificationBody acb)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, IllegalArgumentException,
             SchedulerException, ValidationException {
-        Date now = new Date();
-        if (acb.getRetirementDate() == null || now.before(acb.getRetirementDate())) {
+        if (acb.getRetirementDay() == null || LocalDate.now().isBefore(acb.getRetirementDay())) {
             throw new IllegalArgumentException("Retirement date is required and must be before \"now\".");
         }
         CertificationBody beforeAcb = certificationBodyDao.getById(acb.getId());
@@ -152,7 +151,7 @@ public class CertificationBodyManager extends SecuredManager {
         CertificationBody beforeAcb = certificationBodyDao.getById(acbId);
         CertificationBody toUnretire = certificationBodyDao.getById(acbId);
         toUnretire.setRetired(false);
-        toUnretire.setRetirementDate(null);
+        toUnretire.setRetirementDay(null);
         CertificationBody result = certificationBodyDao.update(toUnretire);
 
         String activityMsg = "Unretired acb " + toUnretire.getName();
