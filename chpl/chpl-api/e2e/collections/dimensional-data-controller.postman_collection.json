@@ -274,7 +274,7 @@
 						"fuzzy_choices"
 					]
 				},
-				"description": "ONC_STAFF users should get 200 status and response is not null for data/fuzzy_choices end point"
+				"description": "ONC users should get 200 status and response is not null for data/fuzzy_choices end point"
 			},
 			"response": []
 		},

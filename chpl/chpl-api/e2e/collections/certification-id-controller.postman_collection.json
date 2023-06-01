@@ -79,7 +79,7 @@
 						"0015EUU3FE12AA3"
 					]
 				},
-				"description": "ONC_STAFF users should get 200 status and correct response for GET /certification_ids/{certificationId} end point"
+				"description": "ONC users should get 200 status and correct response for GET /certification_ids/{certificationId} end point"
 			},
 			"response": []
 		},
