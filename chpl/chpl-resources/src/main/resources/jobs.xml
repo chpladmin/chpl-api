@@ -806,6 +806,15 @@
         </job>
 
         <job>
+            <name>fixupDeveloperAttestationActivityJob</name>
+            <group>systemJobs</group>
+            <description>Rewrite inaccurate Developer activity due to a duplicate submission of Attestations in Period 2.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.FixupDeveloperAttestationActivityJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
+        <job>
             <name>urlUptimeCreatorJob</name>
             <group>systemJobs</group>
             <description>Retrieve uptime information from Datadog got (g)(10) Service Based URLs.</description>
