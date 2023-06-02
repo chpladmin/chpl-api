@@ -2,7 +2,6 @@ package gov.healthit.chpl.scheduler.job.surveillancereportingactivity;
 
 import java.io.File;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -71,10 +70,13 @@ public class SurveillanceReportingActivityJob implements Job {
 
             SurveillanceActivityReportWorkbook workbook = new SurveillanceActivityReportWorkbook();
 
-            LocalDate endDate = getEndDate(context);
-            List<CertificationBodyDTO> allAcbs = certificationBodyDAO.findAllActiveBefore(endDate.atTime(LocalTime.MAX));
-            allAcbs.sort(Comparator.comparing(CertificationBodyDTO::getName));
+            LocalDate startDate = getStartDate(context);
+            LOGGER.info("Getting ACBs that were not retired before  " + startDate);
+            List<CertificationBodyDTO> allAcbs = certificationBodyDAO.findAllActiveBefore(startDate.atStartOfDay());
+            LOGGER.info(String.format("The following ACBs were not retired before " + startDate + ": \n%s",
+                    allAcbs.stream().map(acb -> acb.getName()).collect(Collectors.joining(", "))));
 
+            allAcbs.sort(Comparator.comparing(CertificationBodyDTO::getName));
             File excelFile = workbook.generateWorkbook(surveillances, allAcbs);
 
             sendSuccessEmail(excelFile, context);
