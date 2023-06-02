@@ -1,7 +1,5 @@
 package gov.healthit.chpl.caching;
 
-import java.util.Date;
-
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -16,7 +14,6 @@ import lombok.extern.log4j.Log4j2;
 @Aspect
 @Log4j2
 public class ListingSearchCacheableAspect {
-    private static final String COLLECTIONS_SEARCH_KEY = "collections search";
 
     private CacheManager cacheManager;
 
@@ -26,17 +23,12 @@ public class ListingSearchCacheableAspect {
     }
     @Around("@annotation(ListingSearchCacheable)")
     public Object getListingSearchCollection(ProceedingJoinPoint joinPoint) throws Throwable {
-        Date start = new Date();
-        ValueWrapper cacheItem = cacheManager.getCache(CacheNames.COLLECTIONS_SEARCH).get(COLLECTIONS_SEARCH_KEY);
+        ValueWrapper cacheItem = cacheManager.getCache(CacheNames.COLLECTIONS_SEARCH).get(CacheKeyNames.LISTING_SEARCH_KEY);
         if (cacheItem == null || cacheItem.get() == null) {
             Object functionValue = joinPoint.proceed();
-            cacheManager.getCache(CacheNames.COLLECTIONS_SEARCH).put(COLLECTIONS_SEARCH_KEY, functionValue);
-            Date end = new Date();
-            LOGGER.info("Time to get Listing Collection no cache: {} ms", (end.getTime() - start.getTime()));
+            cacheManager.getCache(CacheNames.COLLECTIONS_SEARCH).put(CacheKeyNames.LISTING_SEARCH_KEY, functionValue);
             return functionValue;
         } else {
-            Date end = new Date();
-            LOGGER.info("Time to get Listing Collection: {} ms", (end.getTime() - start.getTime()));
             return cacheItem.get();
         }
     }

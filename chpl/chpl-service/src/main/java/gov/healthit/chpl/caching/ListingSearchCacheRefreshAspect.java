@@ -20,7 +20,6 @@ import lombok.extern.log4j.Log4j2;
 @Aspect
 @Log4j2(topic = "listingSearchCacheRefreshLogger")
 public class ListingSearchCacheRefreshAspect {
-    private static final String COLLECTIONS_SEARCH_KEY = "collections search";
     private static final String REFRESHING = "refreshing";
     private static final String NEEDS_REFRESHED = "needs refreshed";
     private static final String IDLE = "idle";
@@ -42,14 +41,13 @@ public class ListingSearchCacheRefreshAspect {
         } else {
             setCacheRefreshingStatus(REFRESHING);
             LOGGER.info("REFRESHING LISTING COLLECTION - START");
-            Cache searchCache = cacheManager.getCache(CacheNames.COLLECTIONS_SEARCH);
 
             Thread thread = new Thread(() -> {
                     while (!getCacheRefreshingStatus().equals(IDLE)) {
                         LOGGER.info("REFRESHING LISTING COLLECTION IN NEW THREAD");
                         List<ListingSearchResult> results = listingSearchManager.getAllListingsNoCache();
                         Cache searchCacheLater = cacheManager.getCache(CacheNames.COLLECTIONS_SEARCH);
-                        searchCacheLater.put(COLLECTIONS_SEARCH_KEY, results);
+                        searchCacheLater.put(CacheKeyNames.LISTING_SEARCH_KEY, results);
                         if (getCacheRefreshingStatus().equals(NEEDS_REFRESHED)) {
                             setCacheRefreshingStatus(REFRESHING);
                         } else {
