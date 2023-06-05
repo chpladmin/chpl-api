@@ -56,12 +56,12 @@ public class ChplUptimeMonitorEntity {
     @Column(nullable = false, name = "deleted")
     private Boolean deleted;
 
-    public ChplUptimeMonitor toDomain() {
-        return ChplUptimeMonitor.builder()
-                .id(id)
-                .datadogMonitorKey(datadogMonitorKey)
-                .description(description)
-                .url(url)
-                .build();
-    }
+//    public ChplUptimeMonitor toDomain() {
+//        return ChplUptimeMonitor.builder()
+//                .id(id)
+//                .datadogMonitorKey(datadogMonitorKey)
+//                .description(description)
+//                .url(url)
+//                .build();
+//    }
 }

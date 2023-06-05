@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ChplUptimeMonitor {
+public class UrlUptimeMonitor {
     private Long id;
     private String description;
     private String url;
