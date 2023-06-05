@@ -26,14 +26,12 @@ import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.ProductVersionEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -51,7 +49,6 @@ public class ProductVersionManager extends SecuredManager {
     private CertifiedProductDAO cpDao;
     private ActivityManager activityManager;
     private CertifiedProductDetailsManager cpdManager;
-    private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
     private ChplProductNumberUtil chplProductNumberUtil;
     private ValidationUtils validationUtils;
@@ -60,7 +57,7 @@ public class ProductVersionManager extends SecuredManager {
     @SuppressWarnings({"checkstyle:parameternumber"})
     public ProductVersionManager(ProductVersionDAO versionDao, DeveloperDAO devDao,
             ProductDAO prodDao, CertifiedProductDAO cpDao, ActivityManager activityManager,
-            CertifiedProductDetailsManager cpdManager, ResourcePermissions resourcePermissions,
+            CertifiedProductDetailsManager cpdManager,
             ErrorMessageUtil msgUtil, ChplProductNumberUtil chplProductNumberUtil,
             ValidationUtils validationUtils) {
         this.versionDao = versionDao;
@@ -69,13 +66,11 @@ public class ProductVersionManager extends SecuredManager {
         this.cpDao = cpDao;
         this.activityManager = activityManager;
         this.cpdManager = cpdManager;
-        this.resourcePermissions = resourcePermissions;
         this.msgUtil = msgUtil;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.validationUtils = validationUtils;
 
     }
-
 
     @Transactional(readOnly = true)
     public ProductVersionDTO getById(Long id, boolean allowDeleted)
@@ -83,24 +78,20 @@ public class ProductVersionManager extends SecuredManager {
         return versionDao.getById(id, allowDeleted);
     }
 
-
     @Transactional(readOnly = true)
     public ProductVersionDTO getById(Long id) throws EntityRetrievalException {
         return getById(id, false);
     }
-
 
     @Transactional(readOnly = true)
     public List<ProductVersionDTO> getAll() {
         return versionDao.findAll();
     }
 
-
     @Transactional(readOnly = true)
     public List<ProductVersionDTO> getByProduct(Long productId) {
         return versionDao.getByProductId(productId);
     }
-
 
     @Transactional(readOnly = true)
     public List<ProductVersionDTO> getByProducts(List<Long> productIds) {
@@ -188,7 +179,7 @@ public class ProductVersionManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).UPDATE, #version)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.VERSION_ID, id = "#version.id")
@@ -234,7 +225,7 @@ public class ProductVersionManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).MERGE, #versionIdsToMerge)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.VERSION_ID, id = "#toCreate.id")
@@ -280,15 +271,13 @@ public class ProductVersionManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).SPLIT, #oldVersion)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.VERSION_ID, id = "#newVersion.id")
     public ProductVersionDTO split(ProductVersionDTO oldVersion, ProductVersionDTO newVersion,
             String newVersionCode, List<Long> newVersionListingIds)
             throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
-        // what ACB does the user have??
-        List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
 
         // create the new version and log activity
         // this method checks that the related developer is Active and will

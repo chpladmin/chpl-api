@@ -144,7 +144,7 @@
                 <job-name>urlStatusDataCollector</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 0 10 * * ?</cron-expression> <!-- At 1000 UTC every day -->
+                <cron-expression>0 0 17 * * ?</cron-expression> <!-- At 1700 UTC every day -->
             </cron>
         </trigger>
         <trigger>
@@ -164,7 +164,7 @@
                 <job-name>directReviewCacheRefresh</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
-                <cron-expression>0 0 0,3,6,9,12,15,18,21 ? * *</cron-expression> <!-- Every three hours -->
+                <cron-expression>0 22 0,3,6,9,12,15,18,21 ? * *</cron-expression> <!-- Every three hours -->
             </cron>
         </trigger>
         <trigger>
@@ -195,6 +195,16 @@
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
                 <cron-expression>0 45 10 ? * 7#2</cron-expression> <!-- At 1045 UTC on the second Saturday of the month -->
+            </cron>
+        </trigger>
+        <trigger>
+            <cron>
+                <name>generateUrlUptime</name>
+                <group>generateUrlUptimeTrigger</group>
+                <job-name>urlUptimeCreatorJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 5 * * ?</cron-expression> <!-- At 0500 UTC every day -->
             </cron>
         </trigger>
     </schedule>

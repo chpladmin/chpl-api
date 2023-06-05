@@ -12,8 +12,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityCertificationResult;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -23,7 +27,7 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name = "questionable_activity_certification_result")
-public class QuestionableActivityCertificationResultEntity implements QuestionableActivityEntity {
+public class QuestionableActivityCertificationResultEntity implements QuestionableActivityBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -77,5 +81,26 @@ public class QuestionableActivityCertificationResultEntity implements Questionab
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
+
+    public QuestionableActivityCertificationResult toDomain() {
+        return QuestionableActivityCertificationResult.builder()
+                .id(this.getId())
+                .activityId(this.getActivityId())
+                .trigger(this.getTrigger() == null
+                    ? QuestionableActivityTrigger.builder().id(this.getTriggerId()).build()
+                            : this.getTrigger().toDomain())
+                .before(this.getBefore())
+                .after(this.getAfter())
+                .activityDate(this.getActivityDate())
+                .userId(this.getUserId())
+                .listing(this.getCertResult() == null ? null
+                    : new CertifiedProductDetailsDTO(this.getCertResult().getListing()))
+                .certResultId(this.getCertResultId())
+                .certResult(this.getCertResult() == null
+                    ? CertificationResultDetailsDTO.builder().id(this.getCertResultId()).build()
+                            : new CertificationResultDetailsDTO(this.getCertResult()))
+                .reason(this.getReason())
+                .build();
+    }
 }
 

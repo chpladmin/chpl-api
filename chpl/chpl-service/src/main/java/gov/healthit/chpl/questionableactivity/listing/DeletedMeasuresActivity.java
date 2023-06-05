@@ -9,14 +9,14 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
 
 @Component
 public class DeletedMeasuresActivity implements ListingActivity {
 
     @Override
-    public List<QuestionableActivityListingDTO> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
-        List<QuestionableActivityListingDTO> measuresRemovedActivities = new ArrayList<QuestionableActivityListingDTO>();
+    public List<QuestionableActivityListing> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
+        List<QuestionableActivityListing> measuresRemovedActivities = new ArrayList<QuestionableActivityListing>();
         if (origListing.getMeasures() != null && origListing.getMeasures().size() > 0
                 && newListing.getMeasures() != null && newListing.getMeasures().size() > 0) {
             for (ListingMeasure origMeasure : origListing.getMeasures()) {
@@ -24,7 +24,7 @@ public class DeletedMeasuresActivity implements ListingActivity {
                     .filter(newMeasure -> origMeasure.getId().equals(newMeasure.getId()))
                     .findAny();
                 if (!matchingNewMeasure.isPresent()) {
-                    QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
+                    QuestionableActivityListing activity = new QuestionableActivityListing();
                     activity.setBefore(origMeasure.getMeasureType().getName()
                             + " measure " + origMeasure.getMeasure().getName()
                             + " for " + origMeasure.getMeasure().getAbbreviation());
@@ -35,7 +35,7 @@ public class DeletedMeasuresActivity implements ListingActivity {
         } else if (origListing.getMeasures() != null
                 && (newListing.getMeasures() == null || newListing.getMeasures().size() == 0)) {
             for (ListingMeasure origMeasure : origListing.getMeasures()) {
-                    QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
+                    QuestionableActivityListing activity = new QuestionableActivityListing();
                     activity.setBefore(origMeasure.getMeasureType().getName()
                             + " measure " + origMeasure.getMeasure().getName()
                             + " for " + origMeasure.getMeasure().getAbbreviation());

@@ -18,7 +18,7 @@ import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MissingReasonException;
-import gov.healthit.chpl.questionableactivity.dto.QuestionableActivityListingDTO;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
 import gov.healthit.chpl.questionableactivity.listing.DeletedCertificationsActivity;
 import gov.healthit.chpl.questionableactivity.listing.DeletedCqmsActivity;
 import gov.healthit.chpl.questionableactivity.listing.UpdateCurrentCertificationStatusActivity;
@@ -62,7 +62,7 @@ public class CertifiedProductMissingReasonListener {
             throws EntityRetrievalException, MissingReasonException {
         CertifiedProductSearchDetails newListing = updateRequest.getListing();
         CertifiedProductSearchDetails origListing = cpdManager.getCertifiedProductDetails(newListing.getId());
-        List<QuestionableActivityListingDTO> activities;
+        List<QuestionableActivityListing> activities;
 
         activities = updated2011EditionListingActivity.check(origListing, newListing);
         if (doActivitiesExist(activities)
@@ -107,7 +107,7 @@ public class CertifiedProductMissingReasonListener {
         }
     }
 
-    private Boolean doActivitiesExist(List<QuestionableActivityListingDTO> activities) {
+    private Boolean doActivitiesExist(List<QuestionableActivityListing> activities) {
         return activities != null
                 && activities.size() > 0
                 && activities.get(0) != null;

@@ -12,8 +12,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.ProductVersionEntity;
 import gov.healthit.chpl.entity.auth.UserEntity;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
+import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityVersion;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -23,7 +26,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @Table(name = "questionable_activity_version")
-public class QuestionableActivityVersionEntity implements QuestionableActivityEntity {
+public class QuestionableActivityVersionEntity implements QuestionableActivityBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -74,5 +77,23 @@ public class QuestionableActivityVersionEntity implements QuestionableActivityEn
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
+
+    public QuestionableActivityVersion toDomain() {
+        return QuestionableActivityVersion.builder()
+                .id(this.getId())
+                .activityId(this.getActivityId())
+                .trigger(this.getTrigger() == null
+                    ? QuestionableActivityTrigger.builder().id(this.getTriggerId()).build()
+                        : this.getTrigger().toDomain())
+                .before(this.getBefore())
+                .after(this.getAfter())
+                .activityDate(this.getActivityDate())
+                .userId(this.getUserId())
+                .versionId(this.getVersionId())
+                .version(this.getVersion() == null
+                    ? ProductVersionDTO.builder().id(this.getVersionId()).build()
+                            : new ProductVersionDTO(this.getVersion()))
+                .build();
+    }
 }
 
