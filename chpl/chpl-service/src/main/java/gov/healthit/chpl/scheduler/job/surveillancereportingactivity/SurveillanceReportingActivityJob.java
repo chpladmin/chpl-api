@@ -70,9 +70,13 @@ public class SurveillanceReportingActivityJob implements Job {
 
             SurveillanceActivityReportWorkbook workbook = new SurveillanceActivityReportWorkbook();
 
-            List<CertificationBodyDTO> allAcbs = certificationBodyDAO.findAllActive();
-            allAcbs.sort(Comparator.comparing(CertificationBodyDTO::getName));
+            LocalDate startDate = getStartDate(context);
+            LOGGER.info("Getting ACBs that were not retired before  " + startDate);
+            List<CertificationBodyDTO> allAcbs = certificationBodyDAO.findAllActiveBefore(startDate.atStartOfDay());
+            LOGGER.info(String.format("The following ACBs were not retired before " + startDate + ": \n%s",
+                    allAcbs.stream().map(acb -> acb.getName()).collect(Collectors.joining(", "))));
 
+            allAcbs.sort(Comparator.comparing(CertificationBodyDTO::getName));
             File excelFile = workbook.generateWorkbook(surveillances, allAcbs);
 
             sendSuccessEmail(excelFile, context);
