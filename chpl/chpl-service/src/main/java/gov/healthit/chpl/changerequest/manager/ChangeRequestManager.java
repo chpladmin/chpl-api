@@ -209,8 +209,9 @@ public class ChangeRequestManager {
                 crValidationService.getErrorMessages(crValidationContext),
                 crValidationService.getWarningMessages(crValidationContext));
         if ((validationException.getErrorMessages() != null && !validationException.getErrorMessages().isEmpty())
-                || (!crUpdateRequest.isAcknowledgeWarnings() &&
-                        validationException.getWarningMessages() != null && !validationException.getWarningMessages().isEmpty())) {
+                || (!crUpdateRequest.isAcknowledgeWarnings()
+                        && validationException.getWarningMessages() != null
+                        && !validationException.getWarningMessages().isEmpty())) {
             throw validationException;
         }
 
