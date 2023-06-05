@@ -181,7 +181,7 @@ public class TestingLabController {
             })
     @Deprecated
     @DeprecatedApi(httpMethod = "DELETE", friendlyUrl = "atls/{atlId}/users/{userId}",
-            message = "This endpoint will be removedl", removalDate = "2023-11-30")
+            message = "This endpoint will be removed", removalDate = "2023-11-30")
     @RequestMapping(value = "{atlId}/users/{userId}", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
     public String deleteUserFromAtl(@PathVariable final Long atlId, @PathVariable final Long userId)
@@ -198,7 +198,7 @@ public class TestingLabController {
             })
     @Deprecated
     @DeprecatedApi(friendlyUrl = "atls/{atlId}/users",
-            message = "This endpoint will be removedl", removalDate = "2023-11-30")
+            message = "This endpoint will be removed", removalDate = "2023-11-30")
     @RequestMapping(value = "/{atlId}/users", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody UsersResponse getUsers(@PathVariable("atlId") final Long atlId)
