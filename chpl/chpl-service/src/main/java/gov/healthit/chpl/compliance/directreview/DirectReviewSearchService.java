@@ -59,21 +59,13 @@ public class DirectReviewSearchService {
     }
 
     public List<DirectReviewContainer> getAll() {
-        Date start = new Date();
-        List<DirectReviewContainer> drContainers = new ArrayList<DirectReviewContainer>();
-
         Cache drCache = getDirectReviewsCache();
 
-        drContainers = redisUtil.getAllKeysForCacheAsLong(drCache).stream()
+        return  redisUtil.getAllKeysForCacheAsLong(drCache).stream()
                 .map(key -> drCache.get(key).get())
                 .filter(objValue -> objValue != null && (objValue instanceof DirectReviewContainer))
                 .map(objValue -> (DirectReviewContainer) objValue)
                 .toList();
-
-        Date end = new Date();
-
-        LOGGER.info("Time to get all DRs from cache: {} ms", (end.getTime() - start.getTime()));
-        return drContainers;
     }
 
     public List<DirectReview> getDeveloperDirectReviews(Long developerId, Logger logger) {
