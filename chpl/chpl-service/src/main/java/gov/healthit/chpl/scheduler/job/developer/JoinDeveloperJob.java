@@ -53,7 +53,7 @@ public class JoinDeveloperJob implements Job {
     private ChplHtmlEmailBuilder emailBuilder;
 
     @Autowired
-    private CacheManager cachManager;
+    private CacheManager cacheManager;
 
     @Value("${internalErrorEmailRecipients}")
     private String internalErrorEmailRecipients;
@@ -138,12 +138,12 @@ public class JoinDeveloperJob implements Job {
 
     @ListingSearchCacheRefresh
     private void clearCachesRelatedToDevelopers() {
-        cachManager.getCache(CacheNames.DEVELOPER_NAMES).invalidate();
-        cachManager.getCache(CacheNames.ALL_DEVELOPERS).invalidate();
-        cachManager.getCache(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED).invalidate();
-        cachManager.getCache(CacheNames.COLLECTIONS_DEVELOPERS).invalidate();
-        cachManager.getCache(CacheNames.COLLECTIONS_LISTINGS).invalidate();
-        cachManager.getCache(CacheNames.GET_DECERTIFIED_DEVELOPERS).invalidate();
+        cacheManager.getCache(CacheNames.DEVELOPER_NAMES).invalidate();
+        cacheManager.getCache(CacheNames.ALL_DEVELOPERS).invalidate();
+        cacheManager.getCache(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED).invalidate();
+        cacheManager.getCache(CacheNames.COLLECTIONS_DEVELOPERS).invalidate();
+        cacheManager.getCache(CacheNames.COLLECTIONS_LISTINGS).invalidate();
+        cacheManager.getCache(CacheNames.GET_DECERTIFIED_DEVELOPERS).invalidate();
     }
 
     private void sendJobCompletionEmails(Developer developerJoined, List<Developer> developersJoining,

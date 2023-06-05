@@ -29,7 +29,7 @@ public class ChplCacheConfig {
     @Autowired
     private Environment env;
 
-    @Bean(destroyMethod="shutdown")
+    @Bean(destroyMethod = "shutdown")
     RedissonClient redisson() {
         Config config = new Config();
         config.useSingleServer()
