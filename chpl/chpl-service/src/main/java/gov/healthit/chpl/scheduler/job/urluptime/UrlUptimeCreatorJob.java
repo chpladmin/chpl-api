@@ -1,13 +1,11 @@
 package gov.healthit.chpl.scheduler.job.urluptime;
 
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.datadog.api.client.v1.api.SyntheticsApi;
@@ -28,13 +26,6 @@ public class UrlUptimeCreatorJob extends QuartzJob {
 
     @Autowired
     private ChplUptimeMonitorTestService chplUptimeMonitorTestService;
-
-    @Value("${datadog.apiKey}")
-    private String datadogApiKey;
-
-    @Value("${datadog.appKey}")
-    private String datadogAppKey;
-
 
     @Autowired
     ServiceBasedUrlGatherer serviceBasedUrlGatherer;
@@ -61,10 +52,5 @@ public class UrlUptimeCreatorJob extends QuartzJob {
         LOGGER.info("********* Completed the Url Uptime Creator job *********");
     }
 
-    private HashMap<String, String> getDatadogSecrets() {
-        HashMap<String, String> secrets = new HashMap<>();
-        secrets.put("apiKeyAuth", datadogApiKey);
-        secrets.put("appKeyAuth", datadogAppKey);
-        return secrets;
-    }
+
 }
