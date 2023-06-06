@@ -1,6 +1,8 @@
 package gov.healthit.chpl.changerequest.validation;
 
 import gov.healthit.chpl.attestation.manager.AttestationManager;
+import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
+import gov.healthit.chpl.attestation.service.AttestationResponseValidationService;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
@@ -26,6 +28,8 @@ public class ChangeRequestValidationContext {
     private ValidationDAOs validationDAOs;
     private DomainManagers domainManagers;
     private FormValidator formValidator;
+    private AttestationResponseValidationService attestationResponseValidationService;
+    private AttestationPeriodService attestationPeriodService;
     private ResourcePermissions resourcePermissions;
     private ValidationUtils validationUtils;
     private ChangeRequestTypeIds changeRequestTypeIds;
@@ -35,6 +39,8 @@ public class ChangeRequestValidationContext {
             ChangeRequest newChangeRequest,
             ChangeRequest origChangeRequest,
             FormValidator formValidator,
+            AttestationResponseValidationService attestationResponseValidationService,
+            AttestationPeriodService attestationPeriodService,
             ResourcePermissions resourcePermissions,
             ValidationUtils validationUtils,
             DeveloperDAO developerDAO,
@@ -54,6 +60,8 @@ public class ChangeRequestValidationContext {
         this.newChangeRequest = newChangeRequest;
         this.origChangeRequest = origChangeRequest;
         this.formValidator = formValidator;
+        this.attestationResponseValidationService = attestationResponseValidationService;
+        this.attestationPeriodService = attestationPeriodService;
         this.resourcePermissions = resourcePermissions;
         this.validationUtils = validationUtils;
         this.validationDAOs = new ValidationDAOs(developerDAO, changeRequestDAO, changeRequestStatusTypeDAO, changeRequestTypeDAO);

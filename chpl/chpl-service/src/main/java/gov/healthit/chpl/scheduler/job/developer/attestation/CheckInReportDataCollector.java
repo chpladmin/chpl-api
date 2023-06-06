@@ -1,14 +1,11 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
@@ -46,20 +43,21 @@ public class CheckInReportDataCollector {
     private CheckInReportSourceService checkInReportSourceService;
     private CheckInReportValidation checkInReportValidation;
 
-    private Map<Long, List<ListingSearchResult>> developerListings = new HashMap<Long, List<ListingSearchResult>>();
-
     private Set<String> activeStatuses = Stream.of(
             CertificationStatusType.Active.getName(),
             CertificationStatusType.SuspendedByAcb.getName(),
             CertificationStatusType.SuspendedByOnc.getName())
             .collect(Collectors.toSet());
 
-    public CheckInReportDataCollector(AttestationManager attestationManager, DeveloperAttestationPeriodCalculator developerAttestationPeriodCalculator,
-            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO, ListingSearchService listingSearchService,
-            DirectReviewSearchService directReviewSearchService, CertificationCriterionService certificationCriterionService, RealWorldTestingCriteriaService realWorldTestingCriteriaService,
-            CheckInReportSourceService checkInReportSourceService, CheckInReportValidation checkInReportValidation,
-            @Value("${assurancesCriteriaKeys}") String[] assurancesCriteriaKeys,
-            @Value("${apiCriteriaKeys}") String[] apiCriteriaKeys) {
+    public CheckInReportDataCollector(AttestationManager attestationManager,
+            DeveloperAttestationPeriodCalculator developerAttestationPeriodCalculator,
+            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO,
+            ListingSearchService listingSearchService,
+            DirectReviewSearchService directReviewSearchService,
+            CertificationCriterionService certificationCriterionService,
+            RealWorldTestingCriteriaService realWorldTestingCriteriaService,
+            CheckInReportSourceService checkInReportSourceService,
+            CheckInReportValidation checkInReportValidation) {
 
         this.attestationManager = attestationManager;
         this.developerAttestationPeriodCalculator = developerAttestationPeriodCalculator;
@@ -239,21 +237,16 @@ public class CheckInReportDataCollector {
     }
 
     private List<ListingSearchResult> getActiveListingDataForDeveloper(Developer developer, Logger logger) {
-        if (developerListings.get(developer.getId()) != null) {
-            return developerListings.get(developer.getId());
-        } else {
-            try {
-                SearchRequest searchRequest = SearchRequest.builder()
-                        .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
-                        .developerId(developer.getId())
-                        .certificationStatuses(activeStatuses).pageSize(MAX_PAGE_SIZE).pageNumber(0).build();
-                List<ListingSearchResult> searchResults = listingSearchService.getAllPagesOfSearchResults(searchRequest);
-                developerListings.put(developer.getId(), searchResults);
-                return searchResults;
-            } catch (ValidationException ex) {
-                logger.error("Could not retrieve listings from search request.", ex);
-                return null;
-            }
+        try {
+            SearchRequest searchRequest = SearchRequest.builder()
+                    .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
+                    .developerId(developer.getId())
+                    .certificationStatuses(activeStatuses).pageSize(MAX_PAGE_SIZE).pageNumber(0).build();
+            List<ListingSearchResult> searchResults = listingSearchService.getAllPagesOfSearchResults(searchRequest);
+            return searchResults;
+        } catch (ValidationException ex) {
+            logger.error("Could not retrieve listings from search request.", ex);
+            return null;
         }
     }
 
