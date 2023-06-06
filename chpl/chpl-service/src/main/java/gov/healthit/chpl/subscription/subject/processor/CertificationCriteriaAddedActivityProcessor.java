@@ -23,7 +23,8 @@ public class CertificationCriteriaAddedActivityProcessor extends SubscriptionSub
         if (activity.getConcept().equals(ActivityConcept.CERTIFIED_PRODUCT)) {
             CertifiedProductSearchDetails originalListing = (CertifiedProductSearchDetails) originalData;
             CertifiedProductSearchDetails newListing = (CertifiedProductSearchDetails) newData;
-            return attestsToAnyDifferentCriteria(originalListing, newListing);
+            return originalListing != null && newListing != null
+                    && attestsToAnyDifferentCriteria(originalListing, newListing);
         }
         return false;
     }

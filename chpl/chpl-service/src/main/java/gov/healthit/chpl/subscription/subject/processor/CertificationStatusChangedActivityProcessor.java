@@ -15,7 +15,8 @@ public class CertificationStatusChangedActivityProcessor extends SubscriptionSub
         if (activity.getConcept().equals(ActivityConcept.CERTIFIED_PRODUCT)) {
             CertifiedProductSearchDetails originalListing = (CertifiedProductSearchDetails) originalData;
             CertifiedProductSearchDetails newListing = (CertifiedProductSearchDetails) newData;
-            return areCertificationStatusesDifferent(originalListing, newListing);
+            return originalData != null && newData != null
+                    && areCertificationStatusesDifferent(originalListing, newListing);
         }
         return false;
     }

@@ -23,7 +23,8 @@ public class CertificationCriteriaRemovedActivityProcessor extends SubscriptionS
         if (activity.getConcept().equals(ActivityConcept.CERTIFIED_PRODUCT)) {
             CertifiedProductSearchDetails originalListing = (CertifiedProductSearchDetails) originalData;
             CertifiedProductSearchDetails newListing = (CertifiedProductSearchDetails) newData;
-            return removesAnyCriteriaAttestations(originalListing, newListing);
+            return originalListing != null && newData != null
+                    && removesAnyCriteriaAttestations(originalListing, newListing);
         }
         return false;
     }
