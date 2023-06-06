@@ -25,8 +25,6 @@ import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.service.RealWorldTestingEligibility;
-import gov.healthit.chpl.service.RealWorldTestingEligiblityReason;
 import gov.healthit.chpl.util.DateUtil;
 
 // This class *should* only be instantiated by RealWorldTestingServiceFactory, so that the memoization is threadsafe.

@@ -19,6 +19,7 @@ import org.mockito.MockitoAnnotations;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestUpdateRequest;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -65,19 +66,24 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
                         .developer(Developer.builder().id(2L).build())
                         .build());
 
-        assertTrue(permissions.hasAccess(ChangeRequest.builder()
-                .developer(Developer.builder().id(2L).build())
-                .build()));
+        assertTrue(permissions.hasAccess(ChangeRequestUpdateRequest.builder()
+                    .changeRequest(ChangeRequest.builder()
+                                .developer(Developer.builder().id(2L).build())
+                                .build())
+                    .acknowledgeWarnings(false)
+                    .build()));
 
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong()))
                 .thenReturn(ChangeRequest.builder()
                         .developer(Developer.builder().id(3L).build())
                         .build());
 
-        assertFalse(permissions.hasAccess(ChangeRequest.builder()
-                .developer(Developer.builder().id(3L).build())
-                .build()));
-
+        assertFalse(permissions.hasAccess(ChangeRequestUpdateRequest.builder()
+                    .changeRequest(ChangeRequest.builder()
+                            .developer(Developer.builder().id(3L).build())
+                            .build())
+                    .acknowledgeWarnings(false)
+                    .build()));
     }
 
     @Override
@@ -85,7 +91,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Admin() throws Exception {
         setupForAdminUser(resourcePermissions);
         assertFalse(permissions.hasAccess());
-        assertTrue(permissions.hasAccess(new ChangeRequest()));
+        assertTrue(permissions.hasAccess(new ChangeRequestUpdateRequest()));
     }
 
     @Override
@@ -93,7 +99,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Onc() throws Exception {
         setupForOncUser(resourcePermissions);
         assertFalse(permissions.hasAccess());
-        assertTrue(permissions.hasAccess(new ChangeRequest()));
+        assertTrue(permissions.hasAccess(new ChangeRequestUpdateRequest()));
     }
 
     @Override
@@ -106,11 +112,17 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
                 .thenReturn(getDeveloperAcbs());
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser())
                 .thenReturn(getAllAcbForUser(1L));
-        assertTrue(permissions.hasAccess(ChangeRequest.builder().id(1L).build()));
+        assertTrue(permissions.hasAccess(ChangeRequestUpdateRequest.builder()
+                .changeRequest(ChangeRequest.builder().id(1L).build())
+                .acknowledgeWarnings(false)
+                .build()));
 
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser())
                 .thenReturn(getAllAcbForUser(5l));
-        assertFalse(permissions.hasAccess(ChangeRequest.builder().id(1L).build()));
+        assertFalse(permissions.hasAccess(ChangeRequestUpdateRequest.builder()
+                .changeRequest(ChangeRequest.builder().id(1L).build())
+                .acknowledgeWarnings(false)
+                .build()));
     }
 
     @Override
@@ -118,16 +130,15 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     public void hasAccess_Cms() throws Exception {
         setupForCmsUser(resourcePermissions);
         assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(new ChangeRequest()));
+        assertFalse(permissions.hasAccess(new ChangeRequestUpdateRequest()));
     }
 
     @Override
     @Test
-
     public void hasAccess_Anon() throws Exception {
         setupForAnonUser(resourcePermissions);
         assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(new ChangeRequest()));
+        assertFalse(permissions.hasAccess(new ChangeRequestUpdateRequest()));
 
     }
 

@@ -21,6 +21,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
+import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
+import gov.healthit.chpl.attestation.service.AttestationResponseValidationService;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
@@ -28,6 +30,7 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestDeveloperDemographics;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestUpdateRequest;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestDetailsFactory;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchRequest;
@@ -97,6 +100,8 @@ public class ChangeRequestManager {
     private DeveloperManager devManager;
     private ActivityManager activityManager;
     private AttestationManager attestationManager;
+    private AttestationResponseValidationService attestationResponseValidationService;
+    private AttestationPeriodService attestationPeriodService;
     private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
     private ValidationUtils validationUtils;
@@ -117,9 +122,12 @@ public class ChangeRequestManager {
             DeveloperDAO developerDAO,
             ChangeRequestStatusService crStatusHelper,
             ChangeRequestValidationService crValidationService,
-            ChangeRequestDetailsFactory crDetailsFactory, DeveloperManager devManager,
+            ChangeRequestDetailsFactory crDetailsFactory,
+            DeveloperManager devManager,
             ActivityManager activityManager,
             AttestationManager attestationManager,
+            AttestationResponseValidationService attestationResponseValidationService,
+            AttestationPeriodService attestationPeriodService,
             ResourcePermissions resourcePermissions,
             ErrorMessageUtil msgUtil,
             ValidationUtils validationUtils,
@@ -137,6 +145,8 @@ public class ChangeRequestManager {
         this.devManager = devManager;
         this.activityManager = activityManager;
         this.attestationManager = attestationManager;
+        this.attestationResponseValidationService = attestationResponseValidationService;
+        this.attestationPeriodService = attestationPeriodService;
         this.resourcePermissions = resourcePermissions;
         this.msgUtil = msgUtil;
         this.validationUtils = validationUtils;
@@ -170,6 +180,8 @@ public class ChangeRequestManager {
         changeRequest.setChangeRequestType(getChangeRequestType(changeRequest));
         changeRequest = updateChangeRequestWithCastedDetails(changeRequest);
 
+        //OCD-4200: Add validation here for developer warnings
+
         return saveChangeRequest(changeRequest);
     }
 
@@ -182,18 +194,24 @@ public class ChangeRequestManager {
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
-            + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).UPDATE, #cr)")
-    public ChangeRequest updateChangeRequest(ChangeRequest cr)
+            + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).UPDATE, #crUpdateRequest)")
+    public ChangeRequest updateChangeRequest(ChangeRequestUpdateRequest crUpdateRequest)
             throws EntityRetrievalException, ValidationException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
 
-        cr = updateChangeRequestWithCastedDetails(cr);
+        ChangeRequest cr = updateChangeRequestWithCastedDetails(crUpdateRequest.getChangeRequest());
 
         ChangeRequest crFromDb = getChangeRequest(cr.getId());
 
         ChangeRequestValidationContext crValidationContext = getNewValidationContext(cr, crFromDb);
-        ValidationException validationException = new ValidationException(crValidationService.validate(crValidationContext));
-        if (validationException.getErrorMessages().size() > 0) {
+
+        ValidationException validationException = new ValidationException(
+                crValidationService.getErrorMessages(crValidationContext),
+                crValidationService.getWarningMessages(crValidationContext));
+        if ((validationException.getErrorMessages() != null && !validationException.getErrorMessages().isEmpty())
+                || (!crUpdateRequest.isAcknowledgeWarnings()
+                        && validationException.getWarningMessages() != null
+                        && !validationException.getWarningMessages().isEmpty())) {
             throw validationException;
         }
 
@@ -263,8 +281,8 @@ public class ChangeRequestManager {
 
     private boolean isDeveloperDemogrpahicChangeRequest(ChangeRequest cr) {
         HashMap<String, Object> crMap = (HashMap) cr.getDetails();
-        return crMap.containsKey("developerId") ||
-                (ObjectUtils.allNotNull(cr, cr.getChangeRequestType())
+        return crMap.containsKey("developerId")
+                || (ObjectUtils.allNotNull(cr, cr.getChangeRequestType())
                 && cr.getChangeRequestType().isDemographics());
     }
 
@@ -276,13 +294,11 @@ public class ChangeRequestManager {
     private ChangeRequest saveChangeRequest(ChangeRequest cr)
             throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
 
-
         ChangeRequestValidationContext crValidationContext = getNewValidationContext(cr, null);
-        ValidationException validationException = new ValidationException(crValidationService.validate(crValidationContext));
+        ValidationException validationException = new ValidationException(crValidationService.getErrorMessages(crValidationContext));
         if (validationException.getErrorMessages().size() > 0) {
             throw validationException;
         }
-
 
         ChangeRequest newCr = createBaseChangeRequest(cr);
         newCr.setDetails(cr.getDetails());
@@ -317,6 +333,8 @@ public class ChangeRequestManager {
                 newChangeRequest,
                 originalChangeRequest,
                 formValidator,
+                attestationResponseValidationService,
+                attestationPeriodService,
                 resourcePermissions,
                 validationUtils,
                 developerDAO,

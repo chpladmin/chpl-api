@@ -136,6 +136,33 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
         return getEntityByChangeRequestId(changeRequestId).toDomain();
     }
 
+    public Long getIdOfMostRecentAttestationChangeRequest(Long developerId, Long attestationPeriodId) {
+        String hql = "SELECT DISTINCT crase "
+                + "FROM ChangeRequestAttestationSubmissionEntity crase "
+                + "JOIN FETCH crase.changeRequest cr "
+                + "JOIN FETCH crase.attestationPeriod per "
+                + "LEFT JOIN FETCH per.form "
+                + "WHERE (NOT crase.deleted = true) "
+                + "AND (NOT cr.deleted = true) "
+                + "AND (NOT per.deleted = true) "
+                + "AND (cr.developer.id = :developerId) "
+                + "AND (per.id = :attestationPeriodId) "
+                + "ORDER BY cr.creationDate DESC ";
+
+        List<ChangeRequestAttestationSubmissionEntity> result = entityManager
+                .createQuery(hql, ChangeRequestAttestationSubmissionEntity.class)
+                .setParameter("developerId", developerId)
+                .setParameter("attestationPeriodId", attestationPeriodId)
+                .setMaxResults(1)
+                .getResultList();
+
+        if (CollectionUtils.isEmpty(result)) {
+            return null;
+        }
+        return result.get(0).getChangeRequest().getId();
+    }
+
+
     public List<ChangeRequestAttestationSubmissionResponseEntity> getChangeRequestAttestationSubmissionResponseEntities(Long changeRequestAttestationSubmissionId) {
         String hql = "SELECT DISTINCT crasre "
                 + "FROM ChangeRequestAttestationSubmissionResponseEntity crasre "
@@ -214,21 +241,6 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
         }
         return result.get(0);
     }
-
-    /*
-    private ChangeRequestAttestationResponseEntity getChangeRequestAttestationResponseEntity(
-            AttestationSubmittedResponse response, Long changeRequestAttestatioSubmissionId) throws EntityRetrievalException {
-        return ChangeRequestAttestationResponseEntity.builder()
-                .changeRequestAttestationSubmissionId(changeRequestAttestatioSubmissionId)
-                .validResponse(getAttestationValidResponseEntity(response.getResponse().getId()))
-                .attestation(getAttestationEntity(response.getAttestation().getId()))
-                .deleted(false)
-                .lastModifiedUser(AuthUtil.getAuditId())
-                .creationDate(new Date())
-                .lastModifiedDate(new Date())
-                .build();
-    }
-    */
 
     private AttestationPeriodEntity getAttestationPeriodEntity(Long id) throws EntityRetrievalException {
         List<AttestationPeriodEntity> result = entityManager.createQuery(

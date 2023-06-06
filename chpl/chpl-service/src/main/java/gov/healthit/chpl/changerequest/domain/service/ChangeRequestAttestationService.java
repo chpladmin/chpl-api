@@ -12,9 +12,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationSubmission;
-import gov.healthit.chpl.attestation.manager.AttestationCertificationBodyService;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
+import gov.healthit.chpl.attestation.service.AttestationCertificationBodyService;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestAttestationDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
