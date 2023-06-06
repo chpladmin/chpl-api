@@ -1,4 +1,4 @@
-package gov.healthit.chpl.attestation.manager;
+package gov.healthit.chpl.attestation.service;
 
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
+import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
