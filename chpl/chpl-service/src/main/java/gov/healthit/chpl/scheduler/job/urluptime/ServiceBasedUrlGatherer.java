@@ -1,5 +1,8 @@
 package gov.healthit.chpl.scheduler.job.urluptime;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,7 +52,7 @@ public class ServiceBasedUrlGatherer {
     }
 
     private List<ServiceBasedUrl> reduceBasedOnUrl(List<ListingSearchResult> listingSearchResults) {
-        Map<String, ServiceBasedUrl> serviceBasedUrls = Map.of();
+        Map<String, ServiceBasedUrl> serviceBasedUrls = new HashMap<String, ServiceBasedUrl>();
 
         listingSearchResults.forEach(result -> {
             CertifiedProductSearchDetails listing = getListing(result.getId());
@@ -68,7 +71,7 @@ public class ServiceBasedUrlGatherer {
                         ServiceBasedUrl.builder()
                                 .url(certificationResult.getServiceBaseUrlList())
                                 .developerId(listing.getDeveloper().getId())
-                                .chplProductNumbers(List.of(listing.getChplProductNumber()))
+                                .chplProductNumbers(new ArrayList<String>(Arrays.asList(listing.getChplProductNumber())))
                                 .build());
             }
         });
