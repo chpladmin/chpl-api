@@ -20,6 +20,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -92,6 +93,7 @@ public class DirectReviewCachingService {
 
     @CacheEvict(value = { CacheNames.COLLECTIONS_LISTINGS }, allEntries = true)
     @ListingSearchCacheRefresh
+    @Transactional
     public void populateDirectReviewsCache(Logger logger) {
         logger.info("Fetching all direct review data.");
         HttpStatus calculatedHttpStatus = null;
