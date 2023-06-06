@@ -1,5 +1,7 @@
 package gov.healthit.chpl.dao;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,6 +18,7 @@ import gov.healthit.chpl.entity.UserCertificationBodyMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -113,6 +116,21 @@ public class CertificationBodyDAO extends BaseDAOImpl {
         return entities.stream()
                 .map(entity -> entity.toDomain())
                 .collect(Collectors.toList());
+    }
+
+    public List<CertificationBody> findAllActiveBefore(LocalDateTime dateTime) {
+        Query query = entityManager
+                .createQuery("SELECT acb "
+                        + "FROM CertificationBodyEntity acb "
+                        + "LEFT OUTER JOIN FETCH acb.address "
+                        + "WHERE (acb.retired = false OR acb.retirementDate <= :dateTime) "
+                        + "AND acb.deleted = false", CertificationBodyEntity.class);
+        query.setParameter("dateTime", DateUtil.toDate(dateTime));
+
+        List<CertificationBodyEntity> entities = query.getResultList();
+        return entities.stream()
+                    .map(entity -> entity.toDomain())
+                    .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public CertificationBody getById(Long acbId) throws EntityRetrievalException {

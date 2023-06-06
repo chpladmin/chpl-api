@@ -1,4 +1,4 @@
-package gov.healthit.chpl.attestation.manager;
+package gov.healthit.chpl.attestation.service;
 
 import java.util.List;
 
