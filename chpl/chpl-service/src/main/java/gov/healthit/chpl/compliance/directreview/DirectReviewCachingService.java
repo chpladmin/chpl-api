@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
@@ -85,13 +84,11 @@ public class DirectReviewCachingService {
         this.redisUtil = redisUtil;
     }
 
-    @CacheEvict(value = { CacheNames.COLLECTIONS_LISTINGS }, allEntries = true)
     @ListingSearchCacheRefresh
     public void populateDirectReviewsCache() {
         populateDirectReviewsCache(LOGGER);
     }
 
-    @CacheEvict(value = { CacheNames.COLLECTIONS_LISTINGS }, allEntries = true)
     @ListingSearchCacheRefresh
     @Transactional
     public void populateDirectReviewsCache(Logger logger) {
