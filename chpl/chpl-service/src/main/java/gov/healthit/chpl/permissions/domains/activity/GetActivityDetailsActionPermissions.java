@@ -16,7 +16,6 @@ import gov.healthit.chpl.domain.Announcement;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.auth.Authority;
-import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.surveillance.report.AnnualReportDAO;
@@ -259,21 +258,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
      * @return
      */
     private boolean hasAccessToTestingLab(JsonNode atlJson) {
-        boolean hasAccess = getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
-
-        if (!hasAccess) {
-            TestingLabDTO atl = null;
-            try {
-                atl = jsonMapper.convertValue(atlJson, TestingLabDTO.class);
-            } catch (Exception ex) {
-                LOGGER.error("Could not parse activity as TestingLabDTO. " + "JSON was: " + atlJson, ex);
-            }
-
-            if (atl != null && atl.getId() != null) {
-                hasAccess = isAtlValidForCurrentUser(atl.getId());
-            }
-        }
-        return hasAccess;
+        return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
     }
 
     /**
@@ -298,8 +283,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
      * @return
      */
     private boolean hasAccessToUser(JsonNode userJson) {
-        boolean hasAccess = getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
-                || getResourcePermissions().isUserRoleOncStaff();
+        boolean hasAccess = getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
 
         if (!hasAccess) {
             UserDTO user = null;
@@ -318,16 +302,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
                     for (CertificationBody acb : accessibleAcbs) {
                         accessibleUsers.addAll(getResourcePermissions().getAllUsersOnAcb(acb));
                     }
-                }
-                if (getResourcePermissions().isUserRoleAtlAdmin()) {
-                    // find all users on the atls that this user has access to
-                    // and see if the user in the activity is in that list
-                    List<TestingLabDTO> accessibleAtls = getResourcePermissions().getAllAtlsForCurrentUser();
-                    for (TestingLabDTO atl : accessibleAtls) {
-                        accessibleUsers.addAll(getResourcePermissions().getAllUsersOnAtl(atl));
-                    }
-                }
-                if (getResourcePermissions().isUserRoleCmsStaff()) {
+                } else if (getResourcePermissions().isUserRoleCmsStaff()) {
                     List<UserDTO> cmsUsers = userDao.getUsersWithPermission(Authority.ROLE_CMS_STAFF);
                     accessibleUsers.addAll(cmsUsers);
                 }

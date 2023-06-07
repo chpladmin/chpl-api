@@ -19,7 +19,6 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
-import gov.healthit.chpl.dao.UserTestingLabMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
@@ -28,7 +27,6 @@ import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserDeveloperMapDTO;
-import gov.healthit.chpl.dto.UserTestingLabMapDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -40,7 +38,6 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 @Component
 public class ResourcePermissions {
     private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
-    private UserTestingLabMapDAO userTestingLabMapDAO;
     private UserDeveloperMapDAO userDeveloperMapDAO;
     private ErrorMessageUtil errorMessageUtil;
     private CertificationBodyDAO acbDAO;
@@ -52,11 +49,10 @@ public class ResourcePermissions {
     @Autowired
     public ResourcePermissions(UserCertificationBodyMapDAO userCertificationBodyMapDAO,
             UserDeveloperMapDAO userDeveloperMapDAO, CertificationBodyDAO acbDAO,
-            UserTestingLabMapDAO userTestingLabMapDAO, TestingLabDAO atlDAO,
+            TestingLabDAO atlDAO,
             ErrorMessageUtil errorMessageUtil, UserDAO userDAO, DeveloperDAO developerDAO) {
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.acbDAO = acbDAO;
-        this.userTestingLabMapDAO = userTestingLabMapDAO;
         this.atlDAO = atlDAO;
         this.errorMessageUtil = errorMessageUtil;
         this.userDAO = userDAO;
@@ -105,18 +101,6 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public List<UserDTO> getAllUsersOnAtl(TestingLabDTO atl) {
-        List<UserDTO> userDtos = new ArrayList<UserDTO>();
-        List<UserTestingLabMapDTO> dtos = userTestingLabMapDAO.getByAtlId(atl.getId());
-
-        for (UserTestingLabMapDTO dto : dtos) {
-            userDtos.add(dto.getUser());
-        }
-
-        return userDtos;
-    }
-
-    @Transactional(readOnly = true)
     public List<UserDTO> getAllUsersOnDeveloper(Developer dev) {
         List<UserDTO> userDtos = new ArrayList<UserDTO>();
         List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByDeveloperId(dev.getId());
@@ -134,7 +118,7 @@ public class ResourcePermissions {
         List<CertificationBody> acbs = new ArrayList<CertificationBody>();
 
         if (user != null) {
-            if (isUserRoleAdmin() || isUserRoleOnc() || isUserRoleOncStaff()) {
+            if (isUserRoleAdmin() || isUserRoleOnc()) {
                 acbs = acbDAO.findAll();
             } else {
                 List<UserCertificationBodyMapDTO> userAcbMaps = userCertificationBodyMapDAO.getByUserId(user.getId());
@@ -163,22 +147,7 @@ public class ResourcePermissions {
         if (user != null) {
             if (isUserRoleAdmin() || isUserRoleOnc()) {
                 atls = atlDAO.findAll();
-            } else {
-                List<UserTestingLabMapDTO> dtos = userTestingLabMapDAO.getByUserId(user.getId());
-                for (UserTestingLabMapDTO dto : dtos) {
-                    atls.add(dto.getTestingLab());
-                }
             }
-        }
-        return atls;
-    }
-
-    @Transactional(readOnly = true)
-    public List<TestingLabDTO> getAllAtlsForUser(Long userId) {
-        List<TestingLabDTO> atls = new ArrayList<TestingLabDTO>();
-        List<UserTestingLabMapDTO> dtos = userTestingLabMapDAO.getByUserId(userId);
-        for (UserTestingLabMapDTO dto : dtos) {
-            atls.add(dto.getTestingLab());
         }
         return atls;
     }
@@ -224,12 +193,7 @@ public class ResourcePermissions {
                 for (CertificationBody acb : acbs) {
                     users.addAll(getAllUsersOnAcb(acb));
                 }
-            } else if (isUserRoleAtlAdmin()) {
-                List<TestingLabDTO> atls = getAllAtlsForCurrentUser();
-                for (TestingLabDTO atl : atls) {
-                    users.addAll(getAllUsersOnAtl(atl));
-                }
-            }  else if (isUserRoleDeveloperAdmin()) {
+            } else if (isUserRoleDeveloperAdmin()) {
                 List<Developer> devs = getAllDevelopersForCurrentUser();
                 for (Developer dev : devs) {
                     users.addAll(getAllUsersOnDeveloper(dev));
@@ -258,29 +222,6 @@ public class ResourcePermissions {
         CollectionUtils.filter(dtos, new Predicate<CertificationBody>() {
             @Override
             public boolean evaluate(final CertificationBody object) {
-                return object.getId().equals(id);
-            }
-
-        });
-
-        if (dtos.size() == 0) {
-            throw new AccessDeniedException(errorMessageUtil.getMessage("access.denied"));
-        }
-        return dtos.get(0);
-    }
-
-    @Transactional(readOnly = true)
-    public TestingLabDTO getAtlIfPermissionById(Long id) throws EntityRetrievalException {
-        try {
-            atlDAO.getById(id);
-        } catch (final EntityRetrievalException ex) {
-            throw new EntityRetrievalException(errorMessageUtil.getMessage("atl.notFound"));
-        }
-
-        List<TestingLabDTO> dtos = getAllAtlsForCurrentUser();
-        CollectionUtils.filter(dtos, new Predicate<TestingLabDTO>() {
-            @Override
-            public boolean evaluate(final TestingLabDTO object) {
                 return object.getId().equals(id);
             }
 
@@ -340,8 +281,6 @@ public class ResourcePermissions {
             return true;
         } else if (isUserRoleOnc()) {
             return !getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN);
-        } else if (isUserRoleOncStaff()) {
-            return getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(Authority.ROLE_ONC_STAFF);
         } else if (isUserRoleAcbAdmin()) {
             if (getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(Authority.ROLE_DEVELOPER)) {
                 return true;
@@ -352,17 +291,6 @@ public class ResourcePermissions {
             for (CertificationBody currUserAcb : currUserAcbs) {
                 for (CertificationBody otherUserAcb : otherUserAcbs) {
                     if (currUserAcb.getId().equals(otherUserAcb.getId())) {
-                        return true;
-                    }
-                }
-            }
-        } else if (isUserRoleAtlAdmin()) {
-            // is the user being checked on any of the same ATL(s) that the current user is on?
-            List<TestingLabDTO> currUserAtls = getAllAtlsForCurrentUser();
-            List<TestingLabDTO> otherUserAtls = getAllAtlsForUser(user.getId());
-            for (TestingLabDTO currUserAtl : currUserAtls) {
-                for (TestingLabDTO otherUserAtl : otherUserAtls) {
-                    if (currUserAtl.getId().equals(otherUserAtl.getId())) {
                         return true;
                     }
                 }
@@ -390,20 +318,12 @@ public class ResourcePermissions {
         return doesUserHaveRole(Authority.ROLE_ONC);
     }
 
-    public boolean isUserRoleOncStaff() {
-        return doesUserHaveRole(Authority.ROLE_ONC_STAFF);
-    }
-
     public boolean isUserRoleCmsStaff() {
         return doesUserHaveRole(Authority.ROLE_CMS_STAFF);
     }
 
     public boolean isUserRoleAcbAdmin() {
         return doesUserHaveRole(Authority.ROLE_ACB);
-    }
-
-    public boolean isUserRoleAtlAdmin() {
-        return doesUserHaveRole(Authority.ROLE_ATL);
     }
 
     public boolean isUserRoleDeveloperAdmin() {

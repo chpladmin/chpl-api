@@ -49,28 +49,11 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    public void hasAccess_OncStaff() throws Exception {
-        setupForOncStaffUser(resourcePermissions);
-
-        assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(new Object()));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
         assertTrue(permissions.hasAccess());
         assertFalse(permissions.hasAccess(buildListingUpload(1L)));
         assertTrue(permissions.hasAccess(buildListingUpload(2L)));
-    }
-
-    @Override
-    @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-        assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(buildListingUpload(1L)));
     }
 
     @Override

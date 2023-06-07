@@ -44,7 +44,7 @@ public class SchedulerController {
     private SchedulerManager schedulerManager;
 
     @Operation(summary = "Create a new trigger and return it",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -84,9 +84,9 @@ public class SchedulerController {
 
     @Operation(summary = "Get the list of all triggers of type '" + USER_JOB_TYPE + "' or '" + SYSTEM_JOB_TYPE + "' "
             + "that are applicable to the currently logged in user",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB for '" + USER_JOB_TYPE + "' jobs "
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB for '" + USER_JOB_TYPE + "' jobs "
                     + "and have administrative authority on the specified ONC-ACB. "
-                    + "ROLE_ADMIN, ROLE_ONC, or ROLE_ONC_STAFF for '" + SYSTEM_JOB_TYPE + "' jobs. "
+                    + "ROLE_ADMIN or ROLE_ONC for '" + SYSTEM_JOB_TYPE + "' jobs. "
                     + "Note: The default jobType query parameter is set to '" + USER_JOB_TYPE + "'.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -109,7 +109,7 @@ public class SchedulerController {
     }
 
     @Operation(summary = "Update an existing trigger and return it",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF or ROLE_ACB and have administrative authority on "
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC or ROLE_ACB and have administrative authority on "
                     + "the specified ONC-ACB.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -125,7 +125,7 @@ public class SchedulerController {
     }
 
     @Operation(summary = "Get the list of all jobs that are applicable to the currently logged in user",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB and have administrative authority on the specified ONC-ACB",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and have administrative authority on the specified ONC-ACB",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -140,7 +140,7 @@ public class SchedulerController {
     }
 
     @Operation(summary = "Update a given job",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF or ROLE_ACB and have administrative authority on "
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and have administrative authority on "
                     + "the specified ONC-ACB.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),

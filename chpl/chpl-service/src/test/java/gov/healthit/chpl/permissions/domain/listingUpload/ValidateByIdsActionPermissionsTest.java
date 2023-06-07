@@ -47,28 +47,11 @@ public class ValidateByIdsActionPermissionsTest extends ActionPermissionsBaseTes
 
     @Override
     @Test
-    public void hasAccess_OncStaff() throws Exception {
-        setupForOncStaffUser(resourcePermissions);
-
-        assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(1L));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
         assertTrue(permissions.hasAccess());
         assertFalse(permissions.hasAccess(1L));
         assertFalse(permissions.hasAccess(2L));
-    }
-
-    @Override
-    @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-        assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(1L));
     }
 
     @Override

@@ -56,15 +56,6 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    public void hasAccess_OncStaff() throws Exception {
-        setupForOncStaffUser(resourcePermissions);
-
-        assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(1L));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
         assertFalse(permissions.hasAccess());
@@ -79,15 +70,6 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
 
         complaint.getCertificationBody().setId(1L);
         Mockito.when(complaintDAO.getComplaint(ArgumentMatchers.anyLong())).thenReturn(complaint);
-        assertFalse(permissions.hasAccess(1L));
-    }
-
-    @Override
-    @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-        assertFalse(permissions.hasAccess());
-
         assertFalse(permissions.hasAccess(1L));
     }
 

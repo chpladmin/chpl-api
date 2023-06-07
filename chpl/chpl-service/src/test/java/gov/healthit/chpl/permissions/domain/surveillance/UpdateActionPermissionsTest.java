@@ -4,7 +4,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
@@ -66,15 +65,6 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         // Since it is onc it has access to all - param value does not matter.
         Surveillance surv = new Surveillance();
         assertFalse(permissions.hasAccess(surv));
-    }
-
-    @Override
-    @Test
-    public void hasAccess_OncStaff() throws Exception {
-        setupForOncStaffUser(resourcePermissions);
-
-        assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(new Surveillance()));
     }
 
     @Override
@@ -147,11 +137,5 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
                 .certificationBodyId(acbId)
                 .certificationEditionId(editionId)
                 .build();
-    }
-
-    @Override
-    @Test
-    @Ignore
-    public void hasAccess_Atl() throws Exception {
     }
 }
