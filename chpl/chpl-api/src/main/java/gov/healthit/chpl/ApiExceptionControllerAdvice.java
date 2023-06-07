@@ -8,7 +8,9 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.collections.api.factory.SortedSets;
+import org.redisson.client.RedisTimeoutException;
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -37,11 +39,19 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
 @RestControllerAdvice
 @Log4j2
 public class ApiExceptionControllerAdvice {
+
+    private ErrorMessageUtil errorMessageUtil;
+
+    @Autowired
+    public ApiExceptionControllerAdvice(ErrorMessageUtil errorMessageUtil) {
+        this.errorMessageUtil = errorMessageUtil;
+    }
 
     @ExceptionHandler(NotImplementedException.class)
     public ResponseEntity<ErrorResponse> exception(NotImplementedException e) {
@@ -232,4 +242,12 @@ public class ApiExceptionControllerAdvice {
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(RedisTimeoutException.class)
+    public ResponseEntity<ValidationErrorResponse> exception(RedisTimeoutException e) {
+        LOGGER.error(e.getMessage(), e);
+        return new ResponseEntity<ValidationErrorResponse>(ValidationErrorResponse.builder()
+                .errorMessages(SortedSets.immutable.of(errorMessageUtil.getMessage("redis.connection.timeout")))
+                .businessErrorMessages(SortedSets.immutable.of(errorMessageUtil.getMessage("redis.connection.timeout")))
+                .build(), HttpStatus.BAD_REQUEST);
+    }
 }
