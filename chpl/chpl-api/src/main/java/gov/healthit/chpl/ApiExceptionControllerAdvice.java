@@ -248,6 +248,6 @@ public class ApiExceptionControllerAdvice {
         return new ResponseEntity<ValidationErrorResponse>(ValidationErrorResponse.builder()
                 .errorMessages(SortedSets.immutable.of(errorMessageUtil.getMessage("redis.connection.timeout")))
                 .businessErrorMessages(SortedSets.immutable.of(errorMessageUtil.getMessage("redis.connection.timeout")))
-                .build(), HttpStatus.BAD_REQUEST);
+                .build(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
