@@ -80,7 +80,7 @@ public class ComplaintController {
     }
 
     @Operation(summary = "Generate the Complaints Report and email the results to the logged-in user.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, and ROLE_ONC_STAFF have access.",
+            description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC have access.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

@@ -74,15 +74,6 @@ public class SearchActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    public void hasAccess_OncStaff() throws Exception {
-        setupForOncStaffUser(resourcePermissions);
-
-        assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(new ChangeRequest()));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
         assertTrue(permissions.hasAccess());
@@ -101,14 +92,6 @@ public class SearchActionPermissionsTest extends ActionPermissionsBaseTest {
                 .developer(Developer.builder().id(1L).build())
                 .build()));
 
-    }
-
-    @Override
-    @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-        assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(new ChangeRequest()));
     }
 
     @Override

@@ -52,30 +52,10 @@ public class GetAllWithDeletedActionPermissionsTest extends ActionPermissionsBas
 
     @Override
     @Test
-    public void hasAccess_OncStaff() throws Exception {
-        setupForOncStaffUser(resourcePermissions);
-
-        assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(new Object()));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 
         assertTrue(permissions.hasAccess());
-
-        // Not used
-        assertFalse(permissions.hasAccess(new Object()));
-    }
-
-    @Override
-    @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-
-        assertFalse(permissions.hasAccess());
 
         // Not used
         assertFalse(permissions.hasAccess(new Object()));

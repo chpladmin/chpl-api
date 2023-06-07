@@ -52,26 +52,8 @@ public class CreateOneTimeTriggerActionPermissionsTest extends ActionPermissions
 
     @Override
     @Test
-    public void hasAccess_OncStaff() throws Exception {
-        setupForOncStaffUser(resourcePermissions);
-
-        assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(new ChplOneTimeTrigger()));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
-
-        assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(new ChplOneTimeTrigger()));
-    }
-
-    @Override
-    @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
         assertFalse(permissions.hasAccess(new ChplOneTimeTrigger()));
