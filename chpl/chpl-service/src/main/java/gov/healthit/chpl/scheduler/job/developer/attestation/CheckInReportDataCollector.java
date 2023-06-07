@@ -20,7 +20,6 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission
 import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -217,16 +216,18 @@ public class CheckInReportDataCollector {
     }
 
     private Long getTotalDirectReviewNonconformities(Developer developer, Logger logger) {
-        return directReviewSearchService.getDeveloperDirectReviews(developer.getId(), logger).stream()
-                .flatMap(dr -> dr.getNonConformities().stream())
-                .count();
+//        return directReviewSearchService.getDeveloperDirectReviews(developer.getId(), logger).stream()
+//                .flatMap(dr -> dr.getNonConformities().stream())
+//                .count();
+        return 0L;
     }
 
     private Long getOpenDirectReviewNonconformities(Developer developer, Logger logger) {
-        return directReviewSearchService.getDeveloperDirectReviews(developer.getId(), logger).stream()
-                .flatMap(dr -> dr.getNonConformities().stream())
-                .filter(nc -> nc.getNonConformityStatus().equalsIgnoreCase(DirectReviewNonConformity.STATUS_OPEN))
-                .count();
+//        return directReviewSearchService.getDeveloperDirectReviews(developer.getId(), logger).stream()
+//                .flatMap(dr -> dr.getNonConformities().stream())
+//                .filter(nc -> nc.getNonConformityStatus().equalsIgnoreCase(DirectReviewNonConformity.STATUS_OPEN))
+//                .count();
+        return 0L;
     }
 
     private Long addSurveillanceCount(ListingSearchResult listing) {
