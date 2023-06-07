@@ -125,7 +125,7 @@ public class CertificationBodyDAO extends BaseDAOImpl {
                         + "LEFT OUTER JOIN FETCH acb.address "
                         + "WHERE (acb.retired = false OR acb.retirementDate > :date) "
                         + "AND acb.deleted = false", CertificationBodyEntity.class);
-        query.setParameter("dateTime", DateUtil.toDate(date));
+        query.setParameter("date", DateUtil.toDate(date));
 
         List<CertificationBodyEntity> entities = query.getResultList();
         return entities.stream()
