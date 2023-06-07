@@ -25,6 +25,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ChplCacheConfig {
     public static final String CACHE_NAME_PREFIX = "chpl.";
+    private static final Integer NETTY_THREADS = 64;
 
     @Autowired
     private Environment env;
@@ -32,9 +33,10 @@ public class ChplCacheConfig {
     @Bean(destroyMethod = "shutdown")
     RedissonClient redisson() {
         Config config = new Config();
-        config.useSingleServer()
-              .setAddress("redis://" + env.getProperty("spring.redis.host") + ":" + env.getProperty("spring.redis.port"))
-              .setPassword(env.getProperty("spring.redis.password"));
+        config.setNettyThreads(NETTY_THREADS)
+                .useSingleServer()
+                .setAddress("redis://" + env.getProperty("spring.redis.host") + ":" + env.getProperty("spring.redis.port"))
+                .setPassword(env.getProperty("spring.redis.password"));
         return Redisson.create(config);
     }
 
