@@ -9,8 +9,7 @@ public class GetPendingSurveillanceMetadataActionPermissions extends ActionPermi
 
     @Override
     public boolean hasAccess() {
-        return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
-                || getResourcePermissions().isUserRoleOncStaff();
+        return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
     }
 
     @Override

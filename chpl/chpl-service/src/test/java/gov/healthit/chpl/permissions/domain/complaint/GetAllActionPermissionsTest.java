@@ -53,16 +53,6 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    public void hasAccess_OncStaff() throws Exception {
-        setupForOncStaffUser(resourcePermissions);
-        assertTrue(permissions.hasAccess());
-
-        Complaint complaint = new Complaint();
-        assertTrue(permissions.hasAccess(complaint));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
         assertTrue(permissions.hasAccess());
@@ -73,16 +63,6 @@ public class GetAllActionPermissionsTest extends ActionPermissionsBaseTest {
         assertTrue(permissions.hasAccess(complaint));
 
         complaint.getCertificationBody().setId(1L);
-        assertFalse(permissions.hasAccess(complaint));
-    }
-
-    @Override
-    @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-        assertFalse(permissions.hasAccess());
-
-        Complaint complaint = new Complaint();
         assertFalse(permissions.hasAccess(complaint));
     }
 

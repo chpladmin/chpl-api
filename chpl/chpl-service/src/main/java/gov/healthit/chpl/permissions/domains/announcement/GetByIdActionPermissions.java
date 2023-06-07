@@ -23,7 +23,6 @@ public class GetByIdActionPermissions extends ActionPermissions {
         return getResourcePermissions().isUserRoleAdmin()
                 || getResourcePermissions().isUserRoleOnc()
                 || getResourcePermissions().isUserRoleAcbAdmin()
-                || getResourcePermissions().isUserRoleAtlAdmin()
                 || getResourcePermissions().isUserRoleCmsStaff();
     }
 
@@ -39,7 +38,6 @@ public class GetByIdActionPermissions extends ActionPermissions {
         if (getResourcePermissions().isUserRoleAdmin()
                 || getResourcePermissions().isUserRoleOnc()
                 || getResourcePermissions().isUserRoleAcbAdmin()
-                || getResourcePermissions().isUserRoleAtlAdmin()
                 || getResourcePermissions().isUserRoleCmsStaff()) {
             return true;
         } else {
