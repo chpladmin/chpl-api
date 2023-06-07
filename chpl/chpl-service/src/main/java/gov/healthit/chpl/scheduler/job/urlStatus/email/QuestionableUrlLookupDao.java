@@ -19,7 +19,6 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
-import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlResult;
 import lombok.extern.log4j.Log4j2;
@@ -60,15 +59,15 @@ public class QuestionableUrlLookupDao {
 
     @Transactional
     public List<FailedUrlResult> getAtlsWithUrl(UrlResult urlResult) {
-        List<TestingLabDTO> atlsWithBadUrl = atlDao.getByWebsite(urlResult.getUrl());
+        List<TestingLab> atlsWithBadUrl = atlDao.getByWebsite(urlResult.getUrl());
         return atlsWithBadUrl.stream()
-            .map(atlDto -> FailedUrlResult.builder()
+            .map(atl -> FailedUrlResult.builder()
                     .lastChecked(urlResult.getLastChecked())
                     .responseCode(urlResult.getResponseCode())
                     .responseMessage(urlResult.getResponseMessage())
                     .url(urlResult.getUrl())
                     .urlType(urlResult.getUrlType())
-                    .atl(new TestingLab(atlDto))
+                    .atl(atl)
                     .build())
             .collect(Collectors.toList());
     }

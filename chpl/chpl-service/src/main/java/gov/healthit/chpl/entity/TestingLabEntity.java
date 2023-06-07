@@ -1,6 +1,7 @@
 package gov.healthit.chpl.entity;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -13,10 +14,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.domain.TestingLab;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -52,7 +54,7 @@ public class TestingLabEntity implements Serializable {
     private Boolean retired;
 
     @Column(name = "retirement_date", nullable = true)
-    private Date retirementDate;
+    private LocalDate retirementDate;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
@@ -70,17 +72,17 @@ public class TestingLabEntity implements Serializable {
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-    public TestingLabEntity(final Long id) {
-        this.id = id;
-    }
-
-    /**
-     * Return the type of this class. Useful for when dealing with proxies.
-     *
-     * @return Defining class.
-     */
-    @Transient
-    public Class<?> getClassType() {
-        return TestingLabEntity.class;
+    public TestingLab toDomain() {
+        return TestingLab.builder()
+                .atlCode(this.getTestingLabCode())
+                .address(this.getAddress() == null ? null
+                        : this.getAddress().toDomain())
+                .id(this.getId())
+                .name(this.getName())
+                .retired(this.getRetired())
+                .retirementDay(this.getRetirementDate())
+                .retirementDate(DateUtil.toDate(this.getRetirementDate()))
+                .website(this.getWebsite())
+                .build();
     }
 }

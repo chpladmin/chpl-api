@@ -1,6 +1,6 @@
 package gov.healthit.chpl.dao;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -118,14 +118,14 @@ public class CertificationBodyDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
-    public List<CertificationBody> findAllActiveBefore(LocalDateTime dateTime) {
+    public List<CertificationBody> findAllActiveBefore(LocalDate date) {
         Query query = entityManager
                 .createQuery("SELECT acb "
                         + "FROM CertificationBodyEntity acb "
                         + "LEFT OUTER JOIN FETCH acb.address "
-                        + "WHERE (acb.retired = false OR acb.retirementDate > :dateTime) "
+                        + "WHERE (acb.retired = false OR acb.retirementDate > :date) "
                         + "AND acb.deleted = false", CertificationBodyEntity.class);
-        query.setParameter("dateTime", DateUtil.toDate(dateTime));
+        query.setParameter("dateTime", DateUtil.toDate(date));
 
         List<CertificationBodyEntity> entities = query.getResultList();
         return entities.stream()

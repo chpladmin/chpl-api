@@ -25,7 +25,6 @@ import gov.healthit.chpl.domain.auth.CreateUserRequest;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UserInvitation;
 import gov.healthit.chpl.domain.auth.UserPermission;
-import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserInvitationDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -241,7 +240,7 @@ public class InvitationManager extends SecuredManager {
             throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException {
         gov.healthit.chpl.auth.user.User loggedInUser = gov.healthit.chpl.util.AuthUtil.getCurrentUser();
 
-        // have to give temporary permission to see all ACBs and ATLs
+        // have to give temporary permission to see all ACBs
         // because the logged in user wouldn't already have permission on them
         Authentication authenticator = AuthUtil
                 .getInvitedUserAuthenticator(userInvitation.getInvitation().getLastModifiedUserId());
@@ -286,7 +285,6 @@ public class InvitationManager extends SecuredManager {
     private void handleInvitation(UserInvitation invitation, UserDTO user)
             throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException {
         CertificationBody userAcb = null;
-        TestingLabDTO userAtl = null;
         Developer userDeveloper = null;
 
         if (!StringUtils.isEmpty(invitation.getRole()) && invitation.getRole().equals(Authority.ROLE_ACB)
@@ -305,7 +303,7 @@ public class InvitationManager extends SecuredManager {
             }
         }
 
-        // give them access to the invited acb, atl, or developer
+        // give them access to the invited acb or developer
         if (userAcb != null) {
             userPermissionsManager.addAcbPermission(userAcb, user.getId());
         } else if (userDeveloper != null) {

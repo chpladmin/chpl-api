@@ -72,7 +72,7 @@ public class SurveillanceReportingActivityJob implements Job {
 
             LocalDate startDate = getStartDate(context);
             LOGGER.info("Getting ACBs that were not retired before  " + startDate);
-            List<CertificationBody> allAcbs = certificationBodyDAO.findAllActiveBefore(startDate.atStartOfDay());
+            List<CertificationBody> allAcbs = certificationBodyDAO.findAllActiveBefore(startDate);
             LOGGER.info(String.format("The following ACBs were not retired before " + startDate + ": \n%s",
                     allAcbs.stream().map(acb -> acb.getName()).collect(Collectors.joining(", "))));
 

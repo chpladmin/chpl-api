@@ -22,9 +22,9 @@ import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.auth.UserPermission;
-import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserDeveloperMapDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
@@ -140,9 +140,9 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public List<TestingLabDTO> getAllAtlsForCurrentUser() {
+    public List<TestingLab> getAllAtlsForCurrentUser() {
         User user = AuthUtil.getCurrentUser();
-        List<TestingLabDTO> atls = new ArrayList<TestingLabDTO>();
+        List<TestingLab> atls = new ArrayList<TestingLab>();
 
         if (user != null) {
             if (isUserRoleAdmin() || isUserRoleOnc()) {
