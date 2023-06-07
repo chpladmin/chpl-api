@@ -18,7 +18,6 @@ import gov.healthit.chpl.entity.UserCertificationBodyMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
-import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -125,7 +124,7 @@ public class CertificationBodyDAO extends BaseDAOImpl {
                         + "LEFT OUTER JOIN FETCH acb.address "
                         + "WHERE (acb.retired = false OR acb.retirementDate > :date) "
                         + "AND acb.deleted = false", CertificationBodyEntity.class);
-        query.setParameter("date", DateUtil.toDate(date));
+        query.setParameter("date", date);
 
         List<CertificationBodyEntity> entities = query.getResultList();
         return entities.stream()
