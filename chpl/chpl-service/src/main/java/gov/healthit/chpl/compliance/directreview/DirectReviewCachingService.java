@@ -126,11 +126,12 @@ public class DirectReviewCachingService {
     }
 
     public boolean doesCacheHaveAnyOkData() {
-        List<DirectReviewContainer> drContainers = getAll();
-        return !CollectionUtils.isEmpty(drContainers)
-                && drContainers.stream()
-                    .filter(drResponse -> drResponse.getHttpStatus() != null && drResponse.getHttpStatus().is2xxSuccessful())
-                    .findAny().isPresent();
+//        List<DirectReviewContainer> drContainers = getAll();
+//        return !CollectionUtils.isEmpty(drContainers)
+//                && drContainers.stream()
+//                    .filter(drResponse -> drResponse.getHttpStatus() != null && drResponse.getHttpStatus().is2xxSuccessful())
+//                    .findAny().isPresent();
+        return true;
     }
 
     private List<DirectReviewContainer> getAll() {
