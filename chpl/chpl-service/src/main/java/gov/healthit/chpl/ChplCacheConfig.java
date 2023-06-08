@@ -35,6 +35,7 @@ public class ChplCacheConfig {
         Config config = new Config();
         config.setNettyThreads(NETTY_THREADS)
                 .useSingleServer()
+                .setTimeout(10000)
                 .setAddress("redis://" + env.getProperty("spring.redis.host") + ":" + env.getProperty("spring.redis.port"))
                 .setPassword(env.getProperty("spring.redis.password"));
         return Redisson.create(config);
