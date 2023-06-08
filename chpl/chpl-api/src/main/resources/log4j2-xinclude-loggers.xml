@@ -8,7 +8,7 @@
         <AppenderRef ref="cacheListenerActivity" />
         <AppenderRef ref="cacheListenerActivityJson" />
     </Logger>
-    <Logger name="org.redisson" level="TRACE">
+    <Logger name="org.redisson" level="DEBUG">
         <AppenderRef ref="redison" />
         <AppenderRef ref="redisonJson" />
     </Logger>
