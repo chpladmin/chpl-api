@@ -61,9 +61,7 @@ public class DirectReviewSearchService {
     public List<DirectReviewContainer> getAll() {
         Cache drCache = getDirectReviewsCache();
 
-        return  redisUtil.getAllKeysForCacheAsLong(drCache).stream()
-                .map(key -> drCache.get(key).get())
-                .filter(objValue -> objValue != null && (objValue instanceof DirectReviewContainer))
+        return ((List) redisUtil.getAllValuesForCache(drCache)).stream()
                 .map(objValue -> (DirectReviewContainer) objValue)
                 .toList();
     }

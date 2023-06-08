@@ -26,4 +26,11 @@ public class RedisUtil {
                 .map(entry -> Long.valueOf(entry.getKey()))
                 .toList();
     }
+
+    public List<Object> getAllValuesForCache(Cache cache) {
+        RedissonMap<String, Object> map = (RedissonMap) cache.getNativeCache();
+        return map.readAllEntrySet().stream()
+                .map(entry -> entry.getValue())
+                .toList();
+    }
 }
