@@ -127,14 +127,16 @@ public class CertificationBodyDAO extends BaseDAOImpl {
         return acbs;
     }
 
-    public List<CertificationBodyDTO> findAllActiveBefore(LocalDateTime dateTime) {
+    public List<CertificationBodyDTO> findAllActiveDuring(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         Query query = entityManager
                 .createQuery("SELECT acb "
                         + "FROM CertificationBodyEntity acb "
                         + "LEFT OUTER JOIN FETCH acb.address "
-                        + "WHERE (acb.retired = false OR acb.retirementDate > :dateTime) "
+                        + "WHERE (acb.creationDate < :endDateTime "
+                        + "AND (acb.retired = false OR acb.retirementDate > :startDateTime)) "
                         + "AND acb.deleted = false", CertificationBodyEntity.class);
-        query.setParameter("dateTime", DateUtil.toDate(dateTime));
+        query.setParameter("startDateTime", DateUtil.toDate(startDateTime));
+        query.setParameter("endDateTime", DateUtil.toDate(endDateTime));
 
         List<CertificationBodyEntity> entities = query.getResultList();
         return entities.stream()
