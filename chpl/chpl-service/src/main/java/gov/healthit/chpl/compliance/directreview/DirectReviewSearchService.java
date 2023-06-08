@@ -51,12 +51,11 @@ public class DirectReviewSearchService {
 
     public boolean areDirectReviewsLoading() {
         //if there are any entries in the cache with "null" http status then it's still loading
-//        List<DirectReviewContainer> drContainers = getAll();
-//        return CollectionUtils.isEmpty(drContainers)
-//                || drContainers.stream()
-//                    .filter(drResponse -> drResponse.getHttpStatus() == null)
-//                    .findAny().isPresent();
-        return false;
+        List<DirectReviewContainer> drContainers = getAll();
+        return CollectionUtils.isEmpty(drContainers)
+                || drContainers.stream()
+                    .filter(drResponse -> drResponse.getHttpStatus() == null)
+                    .findAny().isPresent();
     }
 
     public List<DirectReviewContainer> getAll() {
