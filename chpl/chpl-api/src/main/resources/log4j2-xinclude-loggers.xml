@@ -4,7 +4,7 @@
         <AppenderRef ref="cacheListenerActivity" />
         <AppenderRef ref="cacheListenerActivityJson" />
     </Logger>
-    <Logger name="org.springframework.cache" level="INFO">
+    <Logger name="org.springframework.cache" level="TRACE">
         <AppenderRef ref="cacheListenerActivity" />
         <AppenderRef ref="cacheListenerActivityJson" />
     </Logger>
