@@ -34,6 +34,7 @@ public class ChplCacheConfig {
     RedissonClient redisson() {
         Config config = new Config();
         config.setNettyThreads(NETTY_THREADS)
+                .setThreads(32)
                 .useSingleServer()
                 .setTimeout(10000)
                 .setAddress("redis://" + env.getProperty("spring.redis.host") + ":" + env.getProperty("spring.redis.port"))
