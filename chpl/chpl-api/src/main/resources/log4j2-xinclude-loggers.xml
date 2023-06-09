@@ -8,9 +8,9 @@
         <AppenderRef ref="cacheListenerActivity" />
         <AppenderRef ref="cacheListenerActivityJson" />
     </Logger>
-    <Logger name="org.redisson" level="DEBUG">
-        <AppenderRef ref="redison" />
-        <AppenderRef ref="redisonJson" />
+    <Logger name="org.redisson" level="INFO">
+        <AppenderRef ref="redisson" />
+        <AppenderRef ref="redissonJson" />
     </Logger>
     <Logger name="sharedDataStoreLogger" level="INFO">
         <AppenderRef ref="sharedDataStore" />
