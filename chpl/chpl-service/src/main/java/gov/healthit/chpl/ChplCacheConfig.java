@@ -25,7 +25,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ChplCacheConfig {
     public static final String CACHE_NAME_PREFIX = "chpl.";
-    private static final Integer NETTY_THREADS = 64;
+    private static final Integer NETTY_THREADS = 128;
 
     @Autowired
     private Environment env;
