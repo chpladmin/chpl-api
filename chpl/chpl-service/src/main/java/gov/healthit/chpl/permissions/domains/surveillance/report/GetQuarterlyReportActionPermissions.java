@@ -12,7 +12,6 @@ public class GetQuarterlyReportActionPermissions extends ActionPermissions {
     public boolean hasAccess() {
         return getResourcePermissions().isUserRoleAdmin()
                 || getResourcePermissions().isUserRoleOnc()
-                || getResourcePermissions().isUserRoleOncStaff()
                 || getResourcePermissions().isUserRoleAcbAdmin();
     }
 
@@ -21,8 +20,7 @@ public class GetQuarterlyReportActionPermissions extends ActionPermissions {
         if (!(obj instanceof QuarterlyReportDTO)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin()
-                || getResourcePermissions().isUserRoleOnc()
-                || getResourcePermissions().isUserRoleOncStaff()) {
+                || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             QuarterlyReportDTO report = (QuarterlyReportDTO) obj;

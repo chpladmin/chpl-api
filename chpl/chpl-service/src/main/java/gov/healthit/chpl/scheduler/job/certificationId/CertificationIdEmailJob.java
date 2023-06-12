@@ -78,8 +78,7 @@ public class CertificationIdEmailJob  implements Job {
 
     private List<SimpleCertificationId> getReportData() {
         List<SimpleCertificationId> certificationIds = new ArrayList<SimpleCertificationId>();
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()
-                || resourcePermissions.isUserRoleOncStaff()) {
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             LOGGER.info("Getting all certification IDs with Products...");
             certificationIds = certificationIdManager.getAllWithProducts();
         } else if (resourcePermissions.isUserRoleCmsStaff()) {

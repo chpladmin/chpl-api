@@ -30,6 +30,8 @@ public class QuestionableActivitySearchResult implements Serializable {
     private static final long serialVersionUID = -8153861360218726537L;
     private static final String LEVEL_LISTING = "Listing";
     private static final String LEVEL_CRITERIA = "Certification Criteria";
+    private static final String ADDED_PREFIX = "Added";
+    private static final String REMOVED_PREFIX = "Removed";
 
     @JsonIgnore
     @XmlTransient
@@ -68,12 +70,22 @@ public class QuestionableActivitySearchResult implements Serializable {
         if (StringUtils.isEmpty(before) && StringUtils.isEmpty(after)) {
             return "";
         } else if (StringUtils.isEmpty(before)) {
-            return "Added " + after;
+            return getDescription(after, ADDED_PREFIX);
         } else if (StringUtils.isEmpty(after)) {
-            return "Removed " + before;
+            return getDescription(before, REMOVED_PREFIX);
         } else {
             return "From " + before + " to " + after;
         }
+    }
+
+    private String getDescription(String description, String defaultPrefix) {
+        if (StringUtils.isEmpty(defaultPrefix)) {
+            return "";
+        }
+        if (description.startsWith(defaultPrefix)) {
+            return description;
+        }
+        return defaultPrefix + " " + description;
     }
 
     @JsonIgnore

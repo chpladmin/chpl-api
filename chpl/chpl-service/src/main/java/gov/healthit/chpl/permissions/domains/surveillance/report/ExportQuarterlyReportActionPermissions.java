@@ -24,8 +24,7 @@ public class ExportQuarterlyReportActionPermissions extends ActionPermissions {
         if (!(obj instanceof Long)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin()
-                || getResourcePermissions().isUserRoleOnc()
-                || getResourcePermissions().isUserRoleOncStaff()) {
+                || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             Long idToExport = (Long) obj;

@@ -43,7 +43,7 @@ public class AnnouncementController {
 
     @Operation(summary = "Get all announcements.",
             description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can retrieve future scheduled announcements "
-                    + "and private announcements.  ROLE_ACB, ROLE_ATL, and ROLE_CMS_STAFF can retrieve private "
+                    + "and private announcements.  ROLE_ACB and ROLE_CMS_STAFF can retrieve private "
                     + "announcements.  All users can retrieve public announcements.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),

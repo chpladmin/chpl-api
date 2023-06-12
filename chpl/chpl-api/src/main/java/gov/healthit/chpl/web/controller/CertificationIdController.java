@@ -77,9 +77,9 @@ public class CertificationIdController {
     @DeprecatedApi(friendlyUrl = "/certification_ids",
         removalDate = "2023-03-15",
         message = "This endpoint is deprecated and will be removed in a future release. Please use /certification_ids/report-request to receive all certification IDs in an emailed report.")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ONC_STAFF', 'ROLE_CMS_STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_CMS_STAFF')")
     @Operation(summary = "Retrieves a list of all CMS EHR Certification IDs along with the date they were created.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_CMS_STAFF",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_CMS_STAFF",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -89,8 +89,7 @@ public class CertificationIdController {
     })
     public List<SimpleCertificationId> getAll() throws IOException {
         List<SimpleCertificationId> results = null;
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()
-                || resourcePermissions.isUserRoleOncStaff()) {
+        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
             results = certificationIdManager.getAllWithProducts();
         } else {
             results = certificationIdManager.getAll();
@@ -100,7 +99,7 @@ public class CertificationIdController {
     }
 
     @Operation(summary = "Generate the CMS EHR Certification ID Report and email the results to the logged-in user.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_CMS_STAFF",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_CMS_STAFF",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)

@@ -15,7 +15,6 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.TestingLabEntity;
-import gov.healthit.chpl.entity.UserTestingLabMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
@@ -184,28 +183,6 @@ public class TestingLabDAO extends BaseDAOImpl {
             maxCode = result.get(0);
         }
         return maxCode;
-    }
-
-    public List<TestingLabDTO> getTestingLabsByUserId(Long userId) {
-        Query query = entityManager
-                .createQuery("FROM UserTestingLabMapEntity utlm "
-                        + "join fetch utlm.testingLab tl "
-                        + "left join fetch tl.address "
-                        + "join fetch utlm.user u "
-                        + "join fetch u.permission perm "
-                        + "join fetch u.contact contact "
-                        + "where (utlm.deleted != true) AND (u.id = :userId) ",
-                        UserTestingLabMapEntity.class);
-        query.setParameter("userId", userId);
-        List<UserTestingLabMapEntity> result = query.getResultList();
-
-        List<TestingLabDTO> dtos = new ArrayList<TestingLabDTO>();
-        if (result != null) {
-            for (UserTestingLabMapEntity entity : result) {
-                dtos.add(new TestingLabDTO(entity.getTestingLab()));
-            }
-        }
-        return dtos;
     }
 
     private void create(TestingLabEntity entity) {

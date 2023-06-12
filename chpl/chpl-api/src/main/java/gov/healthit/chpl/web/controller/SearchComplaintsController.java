@@ -121,7 +121,7 @@ public class SearchComplaintsController {
             message = "This endpoint has been deprecated and will be removed. Please use /complaints/search/v2.")
     @Deprecated
     @Operation(summary = "Search complaints accessible to the logged-in user based on a set of filters.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, and ROLE_ONC_STAFF can get all complaints. "
+            description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can get all complaints. "
                     + "ROLE_ACB can get complaints related to ONC-ACBs to which they have permissins.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -214,7 +214,7 @@ public class SearchComplaintsController {
     }
 
     @Operation(summary = "Search complaints accessible to the logged-in user based on a set of filters.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, and ROLE_ONC_STAFF can get all complaints. "
+            description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can get all complaints. "
                     + "ROLE_ACB can get complaints related to ONC-ACBs to which they have permissins.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),

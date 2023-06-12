@@ -56,17 +56,6 @@ public class GetByDeveloperIdActionPermissionsTest extends ActionPermissionsBase
 
     @Override
     @Test
-    public void hasAccess_OncStaff() throws Exception {
-        setupForOncStaffUser(resourcePermissions);
-
-        // Not used
-        assertFalse(permissions.hasAccess());
-
-        assertTrue(permissions.hasAccess(1L));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 
@@ -87,17 +76,6 @@ public class GetByDeveloperIdActionPermissionsTest extends ActionPermissionsBase
         assertTrue(permissions.hasAccess(1L));
 
         assertFalse(permissions.hasAccess(2L));
-    }
-
-    @Override
-    @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-
-        // Not used
-        assertFalse(permissions.hasAccess());
-
-        assertFalse(permissions.hasAccess(1L));
     }
 
     @Override

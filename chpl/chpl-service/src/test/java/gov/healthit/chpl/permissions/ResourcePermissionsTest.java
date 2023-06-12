@@ -28,7 +28,6 @@ public class ResourcePermissionsTest {
 
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
-        Mockito.when(resourcePermissions.isUserRoleOncStaff()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.getRoleByUserId(ArgumentMatchers.anyLong()))
                 .thenReturn(UserPermission.builder()

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.service;
+package gov.healthit.chpl.service.realworldtesting;
 
 public enum RealWorldTestingEligiblityReason {
     NOT_ELIGIBLE("Not Eligible"),

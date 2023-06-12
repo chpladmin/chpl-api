@@ -109,7 +109,6 @@ public class OptionalStandardReviewerTest {
     public void review_invalidOptionalStandardCriterionCombinationWhenCriteriaRemovedAndRoleAcb_NoMessageExists() {
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
-        Mockito.when(resourcePermissions.isUserRoleOncStaff()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
 
         Map<String, Object> certEdition = new HashMap<String, Object>();
@@ -143,7 +142,6 @@ public class OptionalStandardReviewerTest {
     public void review_invalidOptionalStandardCriterionCombinationWhenCriteriaRemovedAndRoleAdmin_noWarnings() {
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
-        Mockito.when(resourcePermissions.isUserRoleOncStaff()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
 
         Map<String, Object> certEdition = new HashMap<String, Object>();

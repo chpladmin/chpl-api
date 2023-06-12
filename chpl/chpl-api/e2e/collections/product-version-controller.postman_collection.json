@@ -60,7 +60,6 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "a35aabbc-c49c-41e4-af52-7971fac83fde",
 						"exec": [
 							"var ReqBody= {\r",
 							"        userName:pm.environment.get(\"emailACB\"),password:pm.environment.get(\"passwordACB\")\r",
@@ -84,7 +83,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "de8dc888-e261-417b-9c0b-acbf6b0da19d",
 						"exec": [
 							"pm.test(\"merge request attempt by ACB user should return Status code 401\", function () {\r",
 							"    pm.response.to.have.status(401);\r",
@@ -139,6 +137,5 @@
 			},
 			"response": []
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }
