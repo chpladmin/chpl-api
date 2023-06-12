@@ -24,19 +24,16 @@ import lombok.extern.log4j.Log4j2;
 @EnableCaching
 @Log4j2
 public class ChplCacheConfig {
-    public static final String CACHE_NAME_PREFIX = "chpl.";
-    private static final Integer NETTY_THREADS = 128;
-
     @Autowired
     private Environment env;
 
     @Bean(destroyMethod = "shutdown")
     RedissonClient redisson() {
         Config config = new Config();
-        config.setNettyThreads(NETTY_THREADS)
-                .setThreads(32)
+        config.setNettyThreads(Integer.valueOf(env.getProperty("spring.redis.nettythreads")))
+                .setThreads(Integer.valueOf(env.getProperty("spring.redis.threads")))
                 .useSingleServer()
-                .setTimeout(10000)
+                .setTimeout(Integer.valueOf(env.getProperty("spring.redis.timeout")))
                 .setAddress("redis://" + env.getProperty("spring.redis.host") + ":" + env.getProperty("spring.redis.port"))
                 .setPassword(env.getProperty("spring.redis.password"));
         return Redisson.create(config);
