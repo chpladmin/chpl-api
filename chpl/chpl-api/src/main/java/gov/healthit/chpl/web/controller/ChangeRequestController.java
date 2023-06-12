@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestUpdateRequest;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchRequest;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
@@ -99,9 +100,9 @@ public class ChangeRequestController {
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     @DeprecatedApiResponseFields(responseClass = ChangeRequest.class, httpMethod = "PUT", friendlyUrl = "/change-requests")
-    public ChangeRequest updateChangeRequest(@RequestBody final ChangeRequest cr)
+    public ChangeRequest updateChangeRequest(@RequestBody final ChangeRequestUpdateRequest updateRequest)
             throws EntityRetrievalException, ValidationException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
-        return changeRequestManager.updateChangeRequest(cr);
+        return changeRequestManager.updateChangeRequest(updateRequest);
     }
 }

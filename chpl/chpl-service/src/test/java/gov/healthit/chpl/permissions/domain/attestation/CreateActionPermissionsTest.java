@@ -71,17 +71,6 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    public void hasAccess_OncStaff() throws Exception {
-        setupForOncStaffUser(resourcePermissions);
-
-        // Not used
-        assertFalse(permissions.hasAccess());
-
-        assertFalse(permissions.hasAccess(AttestationSubmission.builder().build()));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 
@@ -105,17 +94,6 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
     @Test
     public void hasAccess_Developer() throws Exception {
         setupForDeveloperUser(resourcePermissions);
-
-        // Not used
-        assertFalse(permissions.hasAccess());
-
-        assertFalse(permissions.hasAccess(AttestationSubmission.builder().build()));
-    }
-
-    @Override
-    @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
 
         // Not used
         assertFalse(permissions.hasAccess());

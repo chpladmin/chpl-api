@@ -39,9 +39,6 @@ public class UpdateFromInvitationActionPermissions extends ActionPermissions {
             if (userToUpdate.getPermission().getAuthority().equals(Authority.ROLE_ACB)
                     && invitation.getRole().equals(Authority.ROLE_ACB)) {
                 return true;
-            } else if (userToUpdate.getPermission().getAuthority().equals(Authority.ROLE_ATL)
-                    && invitation.getRole().equals(Authority.ROLE_ATL)) {
-                return true;
             } else if (userToUpdate.getPermission().getAuthority().equals(Authority.ROLE_DEVELOPER)
                     && invitation.getRole().equals(Authority.ROLE_DEVELOPER)) {
                 return true;

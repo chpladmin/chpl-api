@@ -12,7 +12,6 @@ public class GetAnnualReportActionPermissions extends ActionPermissions {
     public boolean hasAccess() {
         return getResourcePermissions().isUserRoleAdmin()
                 || getResourcePermissions().isUserRoleOnc()
-                || getResourcePermissions().isUserRoleOncStaff()
                 || getResourcePermissions().isUserRoleAcbAdmin();
     }
 
@@ -21,8 +20,7 @@ public class GetAnnualReportActionPermissions extends ActionPermissions {
         if (!(obj instanceof AnnualReport)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin()
-                || getResourcePermissions().isUserRoleOnc()
-                || getResourcePermissions().isUserRoleOncStaff()) {
+                || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             AnnualReport report = (AnnualReport) obj;

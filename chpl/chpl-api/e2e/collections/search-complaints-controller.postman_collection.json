@@ -1,8 +1,7 @@
 {
 	"info": {
 		"name": "search-complaints-controller",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "8125082"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
@@ -288,85 +287,6 @@
 					}
 				}
 			]
-		},
-		{
-			"name": "GET /complaints/search - 200 status for ONC Staff user",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"ONC_STAFF users should get 200 status and response is not null for /complaints/search end point\", function () {\r",
-							"    var actualResponseBody = pm.response.json();\r",
-							"    pm.response.to.have.status(200);\r",
-							"    pm.expect(actualResponseBody).not.eql(null);\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"var ReqBody= {\r",
-							"        userName:pm.environment.get(\"emailONCStaff\"),password:pm.environment.get(\"passwordONCStaff\")\r",
-							"    };\r",
-							"pm.sendRequest({\r",
-							"    url: pm.environment.get(\"authurl\"),\r",
-							"    method: \"POST\",\r",
-							"    header: {\r",
-							"        \"Content-Type\": \"application/json\",\r",
-							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
-							"    },\r",
-							"    body: JSON.stringify(ReqBody)\r",
-							"}, function (err, response) {\r",
-							"   var jsonData = response.json();\r",
-							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "API-Key",
-						"value": "{{apiKey}}",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{url}}/rest/complaints/search",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"rest",
-						"complaints",
-						"search"
-					]
-				},
-				"description": "GET /complaints/search - 200 status and valid response for ONC Staff user"
-			},
-			"response": []
 		},
 		{
 			"name": "GET /complaints/search - 200 status for ACB users",

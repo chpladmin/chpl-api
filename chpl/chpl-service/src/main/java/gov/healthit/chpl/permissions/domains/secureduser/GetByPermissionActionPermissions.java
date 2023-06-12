@@ -7,14 +7,11 @@ import gov.healthit.chpl.permissions.domains.ActionPermissions;
 @Component("securedUserGetByPermissionActionPermissions")
 public class GetByPermissionActionPermissions extends ActionPermissions {
 
-    // Original security:
-    // @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_ACB',
-    // 'ROLE_ATL', 'ROLE_CMS_STAFF')")
     @Override
     public boolean hasAccess() {
         return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
-                || getResourcePermissions().isUserRoleOncStaff() || getResourcePermissions().isUserRoleAcbAdmin()
-                || getResourcePermissions().isUserRoleAtlAdmin() || getResourcePermissions().isUserRoleCmsStaff();
+                || getResourcePermissions().isUserRoleAcbAdmin()
+                || getResourcePermissions().isUserRoleCmsStaff();
     }
 
     @Override

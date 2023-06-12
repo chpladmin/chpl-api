@@ -1,6 +1,5 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -8,7 +7,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
@@ -45,20 +43,21 @@ public class CheckInReportDataCollector {
     private CheckInReportSourceService checkInReportSourceService;
     private CheckInReportValidation checkInReportValidation;
 
-    private Map<Long, List<ListingSearchResult>> developerListings = new HashMap<Long, List<ListingSearchResult>>();
-
     private Set<String> activeStatuses = Stream.of(
             CertificationStatusType.Active.getName(),
             CertificationStatusType.SuspendedByAcb.getName(),
             CertificationStatusType.SuspendedByOnc.getName())
             .collect(Collectors.toSet());
 
-    public CheckInReportDataCollector(AttestationManager attestationManager, DeveloperAttestationPeriodCalculator developerAttestationPeriodCalculator,
-            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO, ListingSearchService listingSearchService,
-            DirectReviewSearchService directReviewSearchService, CertificationCriterionService certificationCriterionService, RealWorldTestingCriteriaService realWorldTestingCriteriaService,
-            CheckInReportSourceService checkInReportSourceService, CheckInReportValidation checkInReportValidation,
-            @Value("${assurancesCriteriaKeys}") String[] assurancesCriteriaKeys,
-            @Value("${apiCriteriaKeys}") String[] apiCriteriaKeys) {
+    public CheckInReportDataCollector(AttestationManager attestationManager,
+            DeveloperAttestationPeriodCalculator developerAttestationPeriodCalculator,
+            DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO,
+            ListingSearchService listingSearchService,
+            DirectReviewSearchService directReviewSearchService,
+            CertificationCriterionService certificationCriterionService,
+            RealWorldTestingCriteriaService realWorldTestingCriteriaService,
+            CheckInReportSourceService checkInReportSourceService,
+            CheckInReportValidation checkInReportValidation) {
 
         this.attestationManager = attestationManager;
         this.developerAttestationPeriodCalculator = developerAttestationPeriodCalculator;

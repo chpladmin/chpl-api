@@ -8,8 +8,7 @@ import gov.healthit.chpl.permissions.domains.ActionPermissions;
 public class GetAllSystemTriggersActionPermissions extends ActionPermissions {
     @Override
     public boolean hasAccess() {
-        return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
-                || getResourcePermissions().isUserRoleOncStaff();
+        return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
     }
 
     @Override

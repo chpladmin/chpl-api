@@ -1,5 +1,6 @@
 package gov.healthit.chpl.exception;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -68,7 +69,8 @@ public class ValidationException extends Exception {
         dataErrorMessages = SortedSets.immutable.empty();
         this.warningMessages = SortedSets.immutable.empty();
     }
-    public ValidationException(Set<String> errorMessages, Set<String> warningMessages) {
+
+    public ValidationException(Collection<String> errorMessages, Collection<String> warningMessages) {
         super();
         this.errorMessages = SortedSets.immutable.ofAll(errorMessages);
         businessErrorMessages = SortedSets.immutable.empty();

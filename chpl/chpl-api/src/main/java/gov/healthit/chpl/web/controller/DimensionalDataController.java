@@ -88,7 +88,7 @@ public class DimensionalDataController {
         message = "This endpoint is deprecated and will be removed in a future release.",
         removalDate = "2023-04-30")
     @Operation(summary = "Get all fuzzy matching choices for the items that be fuzzy matched.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ONC_STAFF.",
+            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -141,7 +141,7 @@ public class DimensionalDataController {
     }
 
     @Operation(summary = "Get a list of surveillance process types.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -154,7 +154,7 @@ public class DimensionalDataController {
     }
 
     @Operation(summary = "Get a list of surveillance outcomes.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ONC_STAFF, or ROLE_ACB.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
