@@ -21,7 +21,6 @@ import gov.healthit.chpl.complaint.domain.ComplaintListingMap;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
-import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 

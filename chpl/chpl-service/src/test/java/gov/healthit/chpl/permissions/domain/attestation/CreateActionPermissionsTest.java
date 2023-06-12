@@ -17,7 +17,6 @@ import gov.healthit.chpl.attestation.domain.AttestationSubmission;
 import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.attestation.CreateActionPermissions;
