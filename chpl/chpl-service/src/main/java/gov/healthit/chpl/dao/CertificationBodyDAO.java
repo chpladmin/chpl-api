@@ -124,10 +124,10 @@ public class CertificationBodyDAO extends BaseDAOImpl {
                         + "FROM CertificationBodyEntity acb "
                         + "LEFT OUTER JOIN FETCH acb.address "
                         + "WHERE (acb.creationDate < :endDateTime "
-                        + "AND (acb.retired = false OR acb.retirementDate > :startDateTime)) "
+                        + "AND (acb.retired = false OR acb.retirementDate > :startDate)) "
                         + "AND acb.deleted = false", CertificationBodyEntity.class);
         query.setParameter("endDateTime", DateUtil.toDate(endDateTime));
-        query.setParameter("startDateTime", startDateTime.toLocalDate());
+        query.setParameter("startDate", startDateTime.toLocalDate());
 
         List<CertificationBodyEntity> entities = query.getResultList();
         return entities.stream()
