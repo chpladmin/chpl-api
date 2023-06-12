@@ -1,6 +1,5 @@
 package gov.healthit.chpl.caching;
 
-import java.util.Date;
 import java.util.List;
 
 import org.aspectj.lang.JoinPoint;
@@ -47,11 +46,8 @@ public class ListingSearchCacheRefreshAspect {
                     while (!getCacheRefreshingStatus().equals(IDLE)) {
                         LOGGER.info("REFRESHING LISTING COLLECTION IN NEW THREAD");
                         List<ListingSearchResult> results = listingSearchManager.getAllListingsNoCache();
-                        Date start = new Date();
                         Cache searchCacheLater = cacheManager.getCache(CacheNames.COLLECTIONS_SEARCH);
                         searchCacheLater.put(CacheKeyNames.LISTING_SEARCH_KEY, results);
-                        Date end = new Date();
-                        LOGGER.info("New Listing Search Data was placed in Redis took {} ms", (end.getTime() - start.getTime()));
                         if (getCacheRefreshingStatus().equals(NEEDS_REFRESHED)) {
                             setCacheRefreshingStatus(REFRESHING);
                         } else {
