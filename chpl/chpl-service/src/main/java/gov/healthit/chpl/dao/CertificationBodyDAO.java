@@ -1,6 +1,6 @@
 package gov.healthit.chpl.dao;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +18,7 @@ import gov.healthit.chpl.entity.UserCertificationBodyMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -117,14 +118,16 @@ public class CertificationBodyDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
-    public List<CertificationBody> findAllActiveBefore(LocalDate date) {
+    public List<CertificationBody> findAllActiveDuring(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         Query query = entityManager
                 .createQuery("SELECT acb "
                         + "FROM CertificationBodyEntity acb "
                         + "LEFT OUTER JOIN FETCH acb.address "
-                        + "WHERE (acb.retired = false OR acb.retirementDate > :date) "
+                        + "WHERE (acb.creationDate < :endDateTime "
+                        + "AND (acb.retired = false OR acb.retirementDate > :startDateTime)) "
                         + "AND acb.deleted = false", CertificationBodyEntity.class);
-        query.setParameter("date", date);
+        query.setParameter("endDateTime", DateUtil.toDate(endDateTime));
+        query.setParameter("startDateTime", startDateTime.toLocalDate());
 
         List<CertificationBodyEntity> entities = query.getResultList();
         return entities.stream()

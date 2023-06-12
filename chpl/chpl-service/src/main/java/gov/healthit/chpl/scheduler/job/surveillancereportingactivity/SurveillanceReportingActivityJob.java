@@ -2,6 +2,7 @@ package gov.healthit.chpl.scheduler.job.surveillancereportingactivity;
 
 import java.io.File;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -71,9 +72,10 @@ public class SurveillanceReportingActivityJob implements Job {
             SurveillanceActivityReportWorkbook workbook = new SurveillanceActivityReportWorkbook();
 
             LocalDate startDate = getStartDate(context);
+            LocalDate endDate = getEndDate(context);
             LOGGER.info("Getting ACBs that were not retired before  " + startDate);
-            List<CertificationBody> allAcbs = certificationBodyDAO.findAllActiveBefore(startDate);
-            LOGGER.info(String.format("The following ACBs were not retired before " + startDate + ": \n%s",
+            List<CertificationBody> allAcbs = certificationBodyDAO.findAllActiveDuring(startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX));
+            LOGGER.info(String.format("The following ACBs were active between " + startDate + " and " + endDate + ": \n%s",
                     allAcbs.stream().map(acb -> acb.getName()).collect(Collectors.joining(", "))));
 
             allAcbs.sort(Comparator.comparing(CertificationBody::getName));

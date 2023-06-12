@@ -1,6 +1,5 @@
 {
 	"info": {
-		"_postman_id": "d20692da-17cc-4561-aea2-3c8f04da76d6",
 		"name": "status-controller",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -11,7 +10,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "b8611504-2234-45ee-ae3a-4b6a923993c4",
 						"exec": [
 							"pm.test(\"Endpoints that did not require an API Key still work with valid one ,return status 200 and response should not be empty\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -57,7 +55,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "9ba86e84-6173-4fb2-b6c1-6e93b0a78980",
 						"exec": [
 							"pm.test(\"Endpoints that did not require an API Key still work with invalid one ,return status 200 and response should not be empty\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -103,7 +100,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "de5c0d38-b67f-48fb-ba9e-bfa98e2b4f6a",
 						"exec": [
 							"pm.test(\"Endpoints that did not require an API Key still work without one ,return status 200 and response should not be empty\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -131,6 +127,5 @@
 			},
 			"response": []
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }
