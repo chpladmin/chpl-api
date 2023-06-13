@@ -61,15 +61,6 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    public void hasAccess_OncStaff() throws Exception {
-        setupForOncStaffUser(resourcePermissions);
-
-        assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(new CertifiedProductSearchDetails()));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 
@@ -84,18 +75,6 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, 2L);
 
         assertTrue(permissions.hasAccess(listing));
-    }
-
-    @Override
-    @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-
-        // This should always be false
-        assertFalse(permissions.hasAccess());
-
-        // Atl has no access - the param shouldn't even matter
-        assertFalse(permissions.hasAccess(new CertifiedProductSearchDetails()));
     }
 
     @Override

@@ -13,15 +13,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
-import gov.healthit.chpl.dao.UserTestingLabMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserDeveloperMapDTO;
-import gov.healthit.chpl.dto.UserTestingLabMapDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -33,20 +30,17 @@ import lombok.extern.log4j.Log4j2;
 @Component
 public class UserPermissionsManager extends SecuredManager {
     private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
-    private UserTestingLabMapDAO userTestingLabMapDAO;
     private UserDeveloperMapDAO userDeveloperMapDAO;
     private UserDAO userDAO;
     private ActivityManager activityManager;
 
     @Autowired
     public UserPermissionsManager(UserCertificationBodyMapDAO userCertificationBodyMapDAO,
-            UserTestingLabMapDAO userTestingLabMapDAO,
             UserDeveloperMapDAO userDeveloperMapDAO,
             UserDAO userDAO,
             ActivityManager activityManager) {
 
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
-        this.userTestingLabMapDAO = userTestingLabMapDAO;
         this.userDeveloperMapDAO = userDeveloperMapDAO;
         this.userDAO = userDAO;
         this.activityManager = activityManager;
@@ -109,66 +103,6 @@ public class UserPermissionsManager extends SecuredManager {
                 activityManager.addActivity(ActivityConcept.USER, userId, message, originalUser, updatedUser);
             }
             LOGGER.info("Deleted ACB: " + acb.getId() + " for user: " + userId);
-        }
-    }
-
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
-            + "T(gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions).ADD_ATL, #atl)")
-    public void addAtlPermission(TestingLabDTO atl, Long userId)
-            throws EntityRetrievalException, UserRetrievalException {
-
-        if (doesUserTestingLabMapExist(atl.getId(), userId)) {
-            LOGGER.info("User (" + userId + ") already has permission to ATL (" + atl.getId() + ").");
-        } else {
-            UserTestingLabMapDTO dto = new UserTestingLabMapDTO();
-            dto.setTestingLab(atl);
-            UserDTO user = userDAO.getById(userId);
-            dto.setUser(user);
-
-            userTestingLabMapDAO.create(dto);
-        }
-    }
-
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
-            + "T(gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions).DELETE_ATL, #atl)")
-    public void deleteAtlPermission(TestingLabDTO atl, Long userId)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-        // Get the UserTestingLabMapDTO
-        List<UserTestingLabMapDTO> userPermissions = userTestingLabMapDAO.getByUserId(userId);
-        UserDTO originalUser = getUser(userId);
-
-        if (userPermissions == null || userPermissions.size() == 0) {
-            LOGGER.error(
-                    "Could not locate the UserTestingLabMapDTO object for Userid: " + userId + ", ATL: " + atl.getId());
-        }
-
-        CollectionUtils.filter(userPermissions, new Predicate() {
-            @Override
-            public boolean evaluate(final Object object) {
-                return ((UserTestingLabMapDTO) object).getTestingLab().getId().equals(atl.getId());
-            }
-        });
-
-        if (userPermissions.size() > 0) {
-            //remove the permission, only one can be getting removed per method call
-            UserTestingLabMapDTO permissionToRemove = userPermissions.get(0);
-            userTestingLabMapDAO.delete(permissionToRemove);
-
-            if (!doesUserHaveAnyPermissions(userId)) {
-                //if there are no additional permissions for this user
-                //remove them and log a single activity
-                removeUser(originalUser);
-            } else {
-                //user has additional permissions so log
-                //the user update activity with one permission removal
-                UserDTO updatedUser = getUser(userId);
-                String message = "Removed " + permissionToRemove.getTestingLab().getName() + " from "
-                            + permissionToRemove.getUser().getUsername();
-                activityManager.addActivity(ActivityConcept.USER, userId, message, originalUser, updatedUser);
-            }
-            LOGGER.info("Deleted ATL: " + atl.getId() + " for user: " + userId);
         }
     }
 
@@ -250,24 +184,6 @@ public class UserPermissionsManager extends SecuredManager {
         return dtos.size() > 0;
     }
 
-    private Boolean doesUserTestingLabMapExist(final Long atlId, final Long userId) {
-        List<UserTestingLabMapDTO> dtos = userTestingLabMapDAO.getByUserId(userId);
-
-        if (dtos == null || dtos.size() == 0) {
-            LOGGER.error("Could not locate the UserTestingLabyMap object for Userid: " + userId + ", ATL: " + atlId);
-        }
-
-        CollectionUtils.filter(dtos, new Predicate() {
-            @Override
-            public boolean evaluate(final Object object) {
-                return ((UserTestingLabMapDTO) object).getTestingLab().getId().equals(atlId)
-                        && ((UserTestingLabMapDTO) object).getUser().getId().equals(userId);
-            }
-        });
-
-        return dtos.size() > 0;
-    }
-
     private Boolean doesUserDeveloperMapExist(final Long developerId, final Long userId) {
         List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByUserId(userId);
 
@@ -307,11 +223,9 @@ public class UserPermissionsManager extends SecuredManager {
 
     private boolean doesUserHaveAnyPermissions(final Long userId) {
         List<UserCertificationBodyMapDTO> acbPermissions = userCertificationBodyMapDAO.getByUserId(userId);
-        List<UserTestingLabMapDTO> atlPermissions = userTestingLabMapDAO.getByUserId(userId);
         List<UserDeveloperMapDTO> devPermissions = userDeveloperMapDAO.getByUserId(userId);
 
         return (acbPermissions != null && acbPermissions.size() > 0)
-                || (atlPermissions != null && atlPermissions.size() > 0)
                 || (devPermissions != null && devPermissions.size() > 0);
     }
 

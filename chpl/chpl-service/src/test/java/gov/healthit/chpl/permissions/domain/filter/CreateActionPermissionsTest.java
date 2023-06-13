@@ -83,59 +83,8 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    public void hasAccess_OncStaff() throws Exception {
-        setupForOncStaffUser(resourcePermissions);
-
-        assertFalse(permissions.hasAccess());
-
-        FilterDTO filterDTO = new FilterDTO();
-        filterDTO.setFilter("{}");
-        filterDTO.setFilterType(new FilterTypeDTO());
-        filterDTO.getFilterType().setId(1L);
-        filterDTO.getFilterType().setName("SAMPLE_FILTER");
-        filterDTO.setUser(new UserDTO());
-        filterDTO.getUser().setId(3l);
-        assertTrue(permissions.hasAccess(filterDTO));
-
-        filterDTO = new FilterDTO();
-        filterDTO.setFilter("{}");
-        filterDTO.setFilterType(new FilterTypeDTO());
-        filterDTO.getFilterType().setId(1L);
-        filterDTO.getFilterType().setName("SAMPLE_FILTER");
-        filterDTO.setUser(new UserDTO());
-        filterDTO.getUser().setId(-3l);
-        assertFalse(permissions.hasAccess(filterDTO));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
-
-        assertFalse(permissions.hasAccess());
-
-        FilterDTO filterDTO = new FilterDTO();
-        filterDTO.setFilter("{}");
-        filterDTO.setFilterType(new FilterTypeDTO());
-        filterDTO.getFilterType().setId(1L);
-        filterDTO.getFilterType().setName("SAMPLE_FILTER");
-        filterDTO.setUser(new UserDTO());
-        filterDTO.getUser().setId(3l);
-        assertTrue(permissions.hasAccess(filterDTO));
-
-        filterDTO = new FilterDTO();
-        filterDTO.setFilter("{}");
-        filterDTO.setFilterType(new FilterTypeDTO());
-        filterDTO.getFilterType().setId(1L);
-        filterDTO.getFilterType().setName("SAMPLE_FILTER");
-        filterDTO.setUser(new UserDTO());
-        filterDTO.getUser().setId(-3l);
-        assertFalse(permissions.hasAccess(filterDTO));
-    }
-
-    @Override
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
 
         assertFalse(permissions.hasAccess());
 

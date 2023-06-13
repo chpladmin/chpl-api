@@ -17,7 +17,7 @@ public class GetByDeveloperIdActionPermissions extends ActionPermissions {
         if (!(obj instanceof Long)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()
-                || getResourcePermissions().isUserRoleAcbAdmin() || getResourcePermissions().isUserRoleOncStaff()) {
+                || getResourcePermissions().isUserRoleAcbAdmin()) {
             return true;
         } else if (getResourcePermissions().isUserRoleDeveloperAdmin()) {
             Long developerId = (Long) obj;

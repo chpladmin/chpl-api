@@ -57,17 +57,6 @@ public class DeleteAcbActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Override
     @Test
-    public void hasAccess_OncStaff() throws Exception {
-        setupForOncStaffUser(resourcePermissions);
-
-        assertFalse(permissions.hasAccess());
-        CertificationBodyDTO dto = new CertificationBodyDTO();
-        dto.setId(1L);
-        assertFalse(permissions.hasAccess(dto));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 
@@ -80,19 +69,6 @@ public class DeleteAcbActionPermissionsTest extends ActionPermissionsBaseTest {
 
         dto.setId(4L);
         assertTrue(permissions.hasAccess(dto));
-    }
-
-    @Override
-    @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-
-        // This is not used
-        assertFalse(permissions.hasAccess());
-
-        CertificationBodyDTO dto = new CertificationBodyDTO();
-        dto.setId(1L);
-        assertFalse(permissions.hasAccess(dto));
     }
 
     @Override

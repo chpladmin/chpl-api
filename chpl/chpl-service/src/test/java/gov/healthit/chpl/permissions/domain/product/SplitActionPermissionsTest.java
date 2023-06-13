@@ -56,15 +56,6 @@ public class SplitActionPermissionsTest extends ActionPermissionsBaseTest {
     }
 
     @Override
-    @Test
-    public void hasAccess_OncStaff() throws Exception {
-        setupForOncStaffUser(resourcePermissions);
-
-        assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(new Product()));
-    }
-
-    @Override
     @Test(expected = AccessDeniedException.class)
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
@@ -94,15 +85,6 @@ public class SplitActionPermissionsTest extends ActionPermissionsBaseTest {
         Mockito.doReturn(false).when(spyPermissions)
                 .doesCurrentUserHaveAccessToAllOfDevelopersListings(ArgumentMatchers.anyLong(), ArgumentMatchers.any());
         spyPermissions.hasAccess(product);
-    }
-
-    @Override
-    @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-
-        assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(new Object()));
     }
 
     @Override

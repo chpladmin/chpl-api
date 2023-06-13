@@ -94,7 +94,7 @@ public class DirectReviewListingSharedStoreHandler {
         try {
             return developerDAO.getById(developerId);
         } catch (Exception e) {
-            logger.error("Could not find developer: {}", developerId);
+            logger.error("Could not find developer: {}", developerId, e);
             return null;
         }
     }

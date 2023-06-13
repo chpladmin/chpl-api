@@ -9,17 +9,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
-
 import gov.healthit.chpl.domain.auth.UserPermission;
 import lombok.Data;
 
 @Data
 @Entity
 @Table(name = "user_permission")
-@SQLDelete(sql = "UPDATE user_permission SET deleted = true WHERE user_permission_id = ?")
-@Where(clause = "NOT deleted")
 public class UserPermissionEntity {
     @Id
     @Column(name = "user_permission_id")

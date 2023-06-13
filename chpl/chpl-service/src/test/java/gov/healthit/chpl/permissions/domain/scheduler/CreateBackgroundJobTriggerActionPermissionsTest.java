@@ -56,17 +56,6 @@ public class CreateBackgroundJobTriggerActionPermissionsTest extends ActionPermi
 
     @Override
     @Test
-    public void hasAccess_OncStaff() throws Exception {
-        setupForOncStaffUser(resourcePermissions);
-
-        //Not Used
-        assertFalse(permissions.hasAccess());
-
-        assertTrue(permissions.hasAccess("JOB NAME"));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
 
@@ -88,15 +77,6 @@ public class CreateBackgroundJobTriggerActionPermissionsTest extends ActionPermi
         job.setName("OTHER_JOB");
         trigger.setJob(job);
         assertFalse(permissions.hasAccess(trigger));
-    }
-
-    @Override
-    @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
-
-        assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(new Object()));
     }
 
     @Override

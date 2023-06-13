@@ -55,29 +55,8 @@ public class InviteAdminActionPermissionsTest extends ActionPermissionsBaseTest 
 
     @Override
     @Test
-    public void hasAccess_OncStaff() throws Exception {
-        setupForOncStaffUser(resourcePermissions);
-
-        assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(new Object()));
-    }
-
-    @Override
-    @Test
     public void hasAccess_Acb() throws Exception {
         setupForAcbUser(resourcePermissions);
-
-        // Only ROLE_ADMIN has access
-        assertFalse(permissions.hasAccess());
-
-        // This should always be false
-        assertFalse(permissions.hasAccess(new Object()));
-    }
-
-    @Override
-    @Test
-    public void hasAccess_Atl() throws Exception {
-        setupForAtlUser(resourcePermissions);
 
         // Only ROLE_ADMIN has access
         assertFalse(permissions.hasAccess());

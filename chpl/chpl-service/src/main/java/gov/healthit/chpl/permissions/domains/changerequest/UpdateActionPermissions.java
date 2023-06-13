@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.domain.ChangeRequestUpdateRequest;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
 @Component("changeRequestUpdateActionPermissions")
@@ -26,15 +27,15 @@ public class UpdateActionPermissions extends ActionPermissions {
     @Transactional(readOnly = true)
     public boolean hasAccess(Object obj) {
         try {
-            if (!(obj instanceof ChangeRequest)) {
+            if (!(obj instanceof ChangeRequestUpdateRequest)) {
                 return false;
             } else if (getResourcePermissions().isUserRoleOnc() || getResourcePermissions().isUserRoleAdmin()) {
                 return true;
             } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-                ChangeRequest cr = changeRequestDAO.get(((ChangeRequest) obj).getId());
+                ChangeRequest cr = changeRequestDAO.get((((ChangeRequestUpdateRequest) obj).getChangeRequest()).getId());
                 return isCurrentAcbUserAssociatedWithDeveloper(cr.getDeveloper().getId());
             } else if (getResourcePermissions().isUserRoleDeveloperAdmin()) {
-                ChangeRequest cr = changeRequestDAO.get(((ChangeRequest) obj).getId());
+                ChangeRequest cr = changeRequestDAO.get((((ChangeRequestUpdateRequest) obj).getChangeRequest()).getId());
                 return isDeveloperValidForCurrentUser(cr.getDeveloper().getId());
             }
             return false;
