@@ -721,6 +721,21 @@
         </job>
 
         <job>
+            <name>subscriptionObservationsDailyNotificationJob</name>
+            <group>systemJobs</group>
+            <description>Notify subscribers of relevant changes in the CHPL on a daily basis</description>
+            <job-class>gov.healthit.chpl.scheduler.job.subscriptions.SubscriptionObservationsNotificationJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>consolidationMethod</key>
+                    <value>DAILY</value>
+                </entry>
+            </job-data-map>
+        </job>
+
+        <job>
             <name>sendEmailJob</name>
             <group>chplBackgroundJobs</group>
             <description>Sends email and provides retry capability if send fails.</description>

@@ -1,5 +1,24 @@
 # Release Notes
 
+## Version 40.5.0
+_12 June 2023_
+
+### Features
+* Include ONC-ACBs active during quarter in surveillance activity report
+* Developer URL Uptime report based on existing CHPL URL monitors
+* Remove ROLE_ONC_STAFF capabilities
+* Remove ROLE_ATL
+* Require acknowledgement of warnings on a change request
+* Warn ONC-ACBs about inconsistent attestations responses
+
+### Flagged Features
+* Ignore most assurances warnings until erd-phase-3
+
+### Bug Fixes
+* Generate Questionable Activity description more correctly
+
+---
+
 ## Version 40.4.0
 _30 May 2023_
 

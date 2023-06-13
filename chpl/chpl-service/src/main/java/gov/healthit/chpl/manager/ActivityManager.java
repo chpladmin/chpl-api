@@ -30,6 +30,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listener.ChplProductNumberChangedListener;
 import gov.healthit.chpl.listener.QuestionableActivityListener;
 import gov.healthit.chpl.manager.impl.SecuredManager;
+import gov.healthit.chpl.subscription.SubscriptionObserver;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.JSONUtils;
 import lombok.extern.log4j.Log4j2;
@@ -43,15 +44,18 @@ public class ActivityManager extends SecuredManager {
     private JsonFactory factory = jsonMapper.getFactory();
     private QuestionableActivityListener questionableActivityListener;
     private ChplProductNumberChangedListener chplProductNumberChangedListener;
+    private SubscriptionObserver subscriptionObserver;
 
     @Autowired
     public ActivityManager(@Qualifier("activityDAO") ActivityDAO activityDAO, DeveloperDAO devDao,
             QuestionableActivityListener questionableActivityListener,
-            ChplProductNumberChangedListener chplProductNumberChangedListener) {
+            ChplProductNumberChangedListener chplProductNumberChangedListener,
+            SubscriptionObserver subscriptionObserver) {
         this.activityDAO = activityDAO;
         this.devDao = devDao;
         this.questionableActivityListener = questionableActivityListener;
         this.chplProductNumberChangedListener = chplProductNumberChangedListener;
+        this.subscriptionObserver = subscriptionObserver;
     }
 
     @Transactional
@@ -68,6 +72,7 @@ public class ActivityManager extends SecuredManager {
         if (activity != null) {
             questionableActivityListener.checkQuestionableActivity(activity, originalData, newData);
             chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
+            subscriptionObserver.checkActivityForSubscriptions(activity, originalData, newData);
         }
     }
 
@@ -85,6 +90,7 @@ public class ActivityManager extends SecuredManager {
         if (activity != null) {
             questionableActivityListener.checkQuestionableActivity(activity, originalData, newData, reason);
             chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
+            subscriptionObserver.checkActivityForSubscriptions(activity, originalData, newData);
         }
     }
 
@@ -97,6 +103,7 @@ public class ActivityManager extends SecuredManager {
         if (activity != null) {
             questionableActivityListener.checkQuestionableActivity(activity, originalData, newData);
             chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
+            subscriptionObserver.checkActivityForSubscriptions(activity, originalData, newData);
         }
     }
 

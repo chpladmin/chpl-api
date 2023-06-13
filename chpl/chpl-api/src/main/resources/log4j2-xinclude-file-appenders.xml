@@ -591,6 +591,19 @@
         </Policies>
     </RollingFile>
 
+    <RollingFile name="subscriptionObservationsNotificationJob"
+        fileName="${logDir}/scheduler/subscriptionObservationsNotificationJob.log"
+        filePattern="${logDir}/scheduler/history/subscriptionObservationsNotificationJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
+        <PatternLayout>
+            <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+        </PatternLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+    </RollingFile>
+
     <RollingFile name="developerAttestationReportJob"
         fileName="${logDir}/scheduler/developerAttestationReportJob.log"
         filePattern="${logDir}/scheduler/history/developerAttestationReportJob-%d{yyyy-MM-dd}.log"
