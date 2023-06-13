@@ -212,10 +212,9 @@ public class AttestationResponseValidationService {
     }
 
     private List<ListingSearchResult> getActiveListingDataForDeveloper(Long developerId) {
-        //TODO: I think we want this to be "active listings for the developer during the period start/end dates"
-        //which I thought we would be able to get because we keep the listing status history in the search
-        //request, but what about listings that might have changed ownership? Or a developer that doesn't
-        //exist now (got Joined) but did exist during the period?
+        //We are looking at the listing data at the time the call is made even though the most
+        //correct thing would be to look at a snapshot of the developer's active listings on
+        //the last day of the attestation period. This has been accepted by ONC.
         try {
             SearchRequest searchRequest = SearchRequest.builder()
                     .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))

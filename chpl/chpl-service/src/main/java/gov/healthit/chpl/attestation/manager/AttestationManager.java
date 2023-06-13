@@ -83,7 +83,7 @@ public class AttestationManager {
                     .build();
 
             if (developerId != null) {
-                populateResponseMessagesForUser(attestationPeriodForm, developerId, attestationPeriodId);
+                populateAllowedResponseMessagesForUser(attestationPeriodForm.getForm(), developerId, attestationPeriodId);
             }
             return attestationPeriodForm;
         } else {
@@ -91,40 +91,40 @@ public class AttestationManager {
         }
     }
 
-    private void populateResponseMessagesForUser(AttestationPeriodForm attestationPeriodForm, Long developerId, Long periodId) {
+    public void populateAllowedResponseMessagesForUser(Form attestationPeriodForm, Long developerId, Long periodId) {
         String apiResponseCompliantMessage = attestationResponseValidationService.getApiResponseCompliantMessage(developerId);
         AllowedResponse apiAllowedResponseCompliant = getAllowedResponse(
-                attestationPeriodForm.getForm(), AttestationFormMetaData.getApiConditionId(),
+                attestationPeriodForm, AttestationFormMetaData.getApiConditionId(),
                 AttestationFormMetaData.getCompliantResponseId());
         apiAllowedResponseCompliant.setMessage(apiResponseCompliantMessage);
 
         String apiResponseNotApplicableMessage = attestationResponseValidationService.getApiResponseNotApplicableMessage(developerId);
         AllowedResponse apiAllowedResponseNotApplicable = getAllowedResponse(
-                attestationPeriodForm.getForm(), AttestationFormMetaData.getApiConditionId(),
+                attestationPeriodForm, AttestationFormMetaData.getApiConditionId(),
                 AttestationFormMetaData.getNotApplicableResponseId());
         apiAllowedResponseNotApplicable.setMessage(apiResponseNotApplicableMessage);
 
         String assurancesResponseCompliantMessage = attestationResponseValidationService.getAssurancesResponseCompliantMessage(developerId);
         AllowedResponse assurancesAllowedResponseCompliant = getAllowedResponse(
-                attestationPeriodForm.getForm(), AttestationFormMetaData.getAssurancesConditionId(periodId),
+                attestationPeriodForm, AttestationFormMetaData.getAssurancesConditionId(periodId),
                 AttestationFormMetaData.getAssurancesCompliantIsApplicableResponseId(periodId));
         assurancesAllowedResponseCompliant.setMessage(assurancesResponseCompliantMessage);
 
         String assurancesResponseNotApplicableMessage = attestationResponseValidationService.getAssurancesResponseNotApplicableMessage(developerId);
         AllowedResponse assurancesAllowedResponseNotApplicable = getAllowedResponse(
-                attestationPeriodForm.getForm(), AttestationFormMetaData.getAssurancesConditionId(periodId),
+                attestationPeriodForm, AttestationFormMetaData.getAssurancesConditionId(periodId),
                 AttestationFormMetaData.getAssurancesCompliantIsNotApplicableResponseId(periodId));
         assurancesAllowedResponseNotApplicable.setMessage(assurancesResponseNotApplicableMessage);
 
         String rwtResponseCompliantMessage = attestationResponseValidationService.getRwtResponseCompliantMessage(developerId);
         AllowedResponse rwtAllowedResponseCompliant = getAllowedResponse(
-                attestationPeriodForm.getForm(), AttestationFormMetaData.getRwtConditionId(),
+                attestationPeriodForm, AttestationFormMetaData.getRwtConditionId(),
                 AttestationFormMetaData.getCompliantResponseId());
         rwtAllowedResponseCompliant.setMessage(rwtResponseCompliantMessage);
 
         String rwtResponseNotApplicableMessage = attestationResponseValidationService.getRwtResponseNotApplicableMessage(developerId);
         AllowedResponse rwtAllowedResponseNotApplicable = getAllowedResponse(
-                attestationPeriodForm.getForm(), AttestationFormMetaData.getRwtConditionId(),
+                attestationPeriodForm, AttestationFormMetaData.getRwtConditionId(),
                 AttestationFormMetaData.getNotApplicableResponseId());
         rwtAllowedResponseNotApplicable.setMessage(rwtResponseNotApplicableMessage);
     }

@@ -286,7 +286,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
         try {
             cr.setDetails(
                     changeRequestDetailsFactory.get(cr.getChangeRequestType().getId())
-                            .getByChangeRequestId(cr.getId()));
+                            .getByChangeRequestId(cr.getId(), cr.getDeveloper().getId()));
             return cr;
         } catch (Exception e) {
             throw new RuntimeException(e);

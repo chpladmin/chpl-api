@@ -179,9 +179,6 @@ public class ChangeRequestManager {
         changeRequest.setDeveloper(getDeveloperFromDb(changeRequest));
         changeRequest.setChangeRequestType(getChangeRequestType(changeRequest));
         changeRequest = updateChangeRequestWithCastedDetails(changeRequest);
-
-        //OCD-4200: Add validation here for developer warnings
-
         return saveChangeRequest(changeRequest);
     }
 

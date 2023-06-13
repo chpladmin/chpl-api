@@ -78,7 +78,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     }
 
     @Override
-    public ChangeRequestDeveloperDemographics getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
+    public ChangeRequestDeveloperDemographics getByChangeRequestId(Long changeRequestId, Long developerId) throws EntityRetrievalException {
         return crDeveloperDemographicsDAO.getByChangeRequestId(changeRequestId);
     }
 

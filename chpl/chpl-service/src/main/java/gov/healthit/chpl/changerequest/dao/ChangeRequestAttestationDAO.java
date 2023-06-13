@@ -53,6 +53,7 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
                             .response(AllowedResponseEntity.builder()
                                     .id(resp.getId())
                                     .build())
+                            .responseMessage(resp.getMessage())
                             .creationDate(new Date())
                             .lastModifiedDate(new Date())
                             .lastModifiedUser(AuthUtil.getAuditId())

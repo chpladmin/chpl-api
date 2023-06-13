@@ -57,7 +57,7 @@ public abstract class ChangeRequestDetailsService<T> {
         return cr;
     }
 
-    public abstract T getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException;
+    public abstract T getByChangeRequestId(Long changeRequestId, Long developerId) throws EntityRetrievalException;
 
     public abstract ChangeRequest create(ChangeRequest cr);
 
