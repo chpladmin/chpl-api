@@ -13,10 +13,12 @@ import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.form.Form;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.developer.attestation.AttestationFormMetaData;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.SearchRequest;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -26,6 +28,8 @@ public class AttestationResponseValidationService {
 
     private ListingApplicabilityService listingApplicabilityService;
     private ListingSearchService listingSearchService;
+    private ErrorMessageUtil msgUtil;
+    private ResourcePermissions resourcePermissions;
     private FF4j ff4j;
 
     private Set<String> activeStatuses = Stream.of(
@@ -35,11 +39,39 @@ public class AttestationResponseValidationService {
             .collect(Collectors.toSet());
 
     public AttestationResponseValidationService(ListingApplicabilityService listingApplicabilityService,
-            ListingSearchService listingSearchService,
-            FF4j ff4j) {
+            ListingSearchService listingSearchService, ErrorMessageUtil msgUtil,
+            ResourcePermissions resourcePermissions, FF4j ff4j) {
         this.listingApplicabilityService = listingApplicabilityService;
         this.listingSearchService = listingSearchService;
+        this.msgUtil = msgUtil;
+        this.resourcePermissions = resourcePermissions;
         this.ff4j = ff4j;
+    }
+
+    public String getApiResponseNotApplicableMessage(Long developerId) {
+        List<ListingSearchResult> allActiveListingsForDeveloper = getActiveListingDataForDeveloper(developerId);
+        boolean isApiApplicable = listingApplicabilityService.isApiApplicable(allActiveListingsForDeveloper);
+        if (isApiApplicable) {
+            if (isDeveloper()) {
+                return msgUtil.getMessage("attestation.developer.apiApplicableNotConsistent");
+            } else if (isAcbOrAdmin()) {
+                return msgUtil.getMessage("attestation.acb.apiApplicableNotConsistent");
+            }
+        }
+        return null;
+    }
+
+    public String getApiResponseCompliantMessage(Long developerId) {
+        List<ListingSearchResult> allActiveListingsForDeveloper = getActiveListingDataForDeveloper(developerId);
+        boolean isApiApplicable = listingApplicabilityService.isApiApplicable(allActiveListingsForDeveloper);
+        if (!isApiApplicable) {
+            if (isDeveloper()) {
+                return msgUtil.getMessage("attestation.developer.apiNotApplicableNotConsistent");
+            } else if (isAcbOrAdmin()) {
+                return msgUtil.getMessage("attestation.acb.apiNotApplicableNotConsistent");
+            }
+        }
+        return null;
     }
 
     public Boolean isApiApplicableAndResponseIsNotApplicable(Long developerId, Form attestationForm) {
@@ -64,6 +96,32 @@ public class AttestationResponseValidationService {
                 && doesFormResponseEqualResponse(attestationForm,
                         AttestationFormMetaData.getApiConditionId(),
                         AttestationFormMetaData.getCompliantResponseId());
+    }
+
+    public String getAssurancesResponseNotApplicableMessage(Long developerId) {
+        List<ListingSearchResult> allActiveListingsForDeveloper = getActiveListingDataForDeveloper(developerId);
+        boolean isAssurancesApplicable = listingApplicabilityService.isAssurancesApplicable(allActiveListingsForDeveloper);
+        if (isAssurancesApplicable) {
+            if (isDeveloper()) {
+                return msgUtil.getMessage("attestation.developer.assurancesApplicableNotConsistent");
+            } else if (isAcbOrAdmin()) {
+                return msgUtil.getMessage("attestation.acb.assurancesApplicableNotConsistent");
+            }
+        }
+        return null;
+    }
+
+    public String getAssurancesResponseCompliantMessage(Long developerId) {
+        List<ListingSearchResult> allActiveListingsForDeveloper = getActiveListingDataForDeveloper(developerId);
+        boolean isAssurancesApplicable = listingApplicabilityService.isAssurancesApplicable(allActiveListingsForDeveloper);
+        if (!isAssurancesApplicable) {
+            if (isDeveloper()) {
+                return msgUtil.getMessage("attestation.developer.assurancesNotApplicableNotConsistent");
+            } else if (isAcbOrAdmin()) {
+                return msgUtil.getMessage("attestation.acb.assurancesNotApplicableNotConsistent");
+            }
+        }
+        return null;
     }
 
     public Boolean isAssurancesApplicableAndResponseIsNotApplicable(Long developerId, Form attestationForm, Long attestationPeriodId) {
@@ -91,6 +149,32 @@ public class AttestationResponseValidationService {
                 && doesFormResponseEqualResponse(attestationForm,
                         AttestationFormMetaData.getAssurancesConditionId(attestationPeriodId),
                         AttestationFormMetaData.getAssurancesCompliantIsApplicableResponseId(attestationPeriodId));
+    }
+
+    public String getRwtResponseNotApplicableMessage(Long developerId) {
+        List<ListingSearchResult> allActiveListingsForDeveloper = getActiveListingDataForDeveloper(developerId);
+        boolean isRealWorldTestingApplicable = listingApplicabilityService.isRealWorldTestingApplicable(allActiveListingsForDeveloper);
+        if (isRealWorldTestingApplicable) {
+            if (isDeveloper()) {
+                return msgUtil.getMessage("attestation.developer.rwtApplicableNotConsistent");
+            } else if (isAcbOrAdmin()) {
+                return msgUtil.getMessage("attestation.acb.rwtApplicableNotConsistent");
+            }
+        }
+        return null;
+    }
+
+    public String getRwtResponseCompliantMessage(Long developerId) {
+        List<ListingSearchResult> allActiveListingsForDeveloper = getActiveListingDataForDeveloper(developerId);
+        boolean isRealWorldTestingApplicable = listingApplicabilityService.isRealWorldTestingApplicable(allActiveListingsForDeveloper);
+        if (!isRealWorldTestingApplicable) {
+            if (isDeveloper()) {
+                return msgUtil.getMessage("attestation.developer.rwtNotApplicableNotConsistent");
+            } else if (isAcbOrAdmin()) {
+                return msgUtil.getMessage("attestation.acb.rwtNotApplicableNotConsistent");
+            }
+        }
+        return null;
     }
 
     public Boolean isRwtApplicableAndResponseIsNotApplicable(Long developerId, Form attestationForm) {
@@ -128,6 +212,10 @@ public class AttestationResponseValidationService {
     }
 
     private List<ListingSearchResult> getActiveListingDataForDeveloper(Long developerId) {
+        //TODO: I think we want this to be "active listings for the developer during the period start/end dates"
+        //which I thought we would be able to get because we keep the listing status history in the search
+        //request, but what about listings that might have changed ownership? Or a developer that doesn't
+        //exist now (got Joined) but did exist during the period?
         try {
             SearchRequest searchRequest = SearchRequest.builder()
                     .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
@@ -142,5 +230,15 @@ public class AttestationResponseValidationService {
             LOGGER.error("Could not retrieve listings from search request.", ex);
             return null;
         }
+    }
+
+    private boolean isDeveloper() {
+        return resourcePermissions.isUserRoleDeveloperAdmin();
+    }
+
+    private boolean isAcbOrAdmin() {
+        return resourcePermissions.isUserRoleAcbAdmin()
+                || resourcePermissions.isUserRoleOnc()
+                || resourcePermissions.isUserRoleAdmin();
     }
 }
