@@ -1,6 +1,7 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,7 +22,6 @@ import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
@@ -74,9 +74,12 @@ public class CheckInReportDataCollector {
 
     private List<CheckInReport> getCheckInReports(List<Long> acbIds) {
         AttestationPeriod mostRecentAttestationPeriod = attestationManager.getMostRecentPastAttestationPeriod();
+        Map<Long, List<ListingSearchResult>> activeListingsByDeveloper = getMapOfActiveListingSearchResultsByDeveloper();
+        LOGGER.info("Found {} developers that should have attesations for period", activeListingsByDeveloper.entrySet().size());
+
         return getDevelopersActiveListingsDuringMostRecentPastAttestationPeriod().stream()
                 .filter(developer -> isDeveloperManagedBySelectedAcbs(developer, acbIds))
-                .map(developer -> getCheckInReport(developer))
+                .map(developer -> getCheckInReport(developer, getActiveListingDataForDeveloper(developer, activeListingsByDeveloper)))
                 .map(report -> {
                     report.setAttestationPeriod(String.format("%s - %s", mostRecentAttestationPeriod.getPeriodStart().toString(), mostRecentAttestationPeriod.getPeriodEnd().toString()));
                     return report;
@@ -84,10 +87,9 @@ public class CheckInReportDataCollector {
                 .sorted((o1, o2) -> o1.getDeveloperName().compareTo(o2.getDeveloperName())).toList();
     }
 
-    private CheckInReport getCheckInReport(Developer developer) {
-        List<ListingSearchResult> allActiveListingsForDeveloper = getActiveListingDataForDeveloper(developer, LOGGER);
+    private CheckInReport getCheckInReport(Developer developer, List<ListingSearchResult> allActiveListingsForDeveloper) {
         CheckInAttestation checkInAttestation = checkInReportSourceService.getCheckinReport(developer, attestationManager.getMostRecentPastAttestationPeriod(), LOGGER);
-        LOGGER.info("Getting data for Developer: {} ({})", developer.getName(), developer.getId());
+        LOGGER.info("Getting attestation data for Developer: {} ({})", developer.getName(), developer.getId());
         return convert(developer, checkInAttestation, allActiveListingsForDeveloper);
     }
 
@@ -236,18 +238,28 @@ public class CheckInReportDataCollector {
         return closed + open;
     }
 
-    private List<ListingSearchResult> getActiveListingDataForDeveloper(Developer developer, Logger logger) {
-        try {
-            SearchRequest searchRequest = SearchRequest.builder()
-                    .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
-                    .developerId(developer.getId())
-                    .certificationStatuses(activeStatuses).pageSize(MAX_PAGE_SIZE).pageNumber(0).build();
-            List<ListingSearchResult> searchResults = listingSearchService.getAllPagesOfSearchResults(searchRequest);
-            return searchResults;
-        } catch (ValidationException ex) {
-            logger.error("Could not retrieve listings from search request.", ex);
+    private List<ListingSearchResult> getActiveListingDataForDeveloper(Developer developer, Map<Long, List<ListingSearchResult>> listingsByDeveloper) {
+        if (listingsByDeveloper.containsKey(developer.getId())) {
+            return listingsByDeveloper.get(developer.getId());
+        } else {
             return null;
         }
+    }
+
+    private Map<Long, List<ListingSearchResult>> getMapOfActiveListingSearchResultsByDeveloper() {
+        return get2015ActiveListing().stream()
+                .collect(Collectors.groupingBy(listingSearchResult -> listingSearchResult.getDeveloper().getId()));
+    }
+
+    private List<ListingSearchResult> get2015ActiveListing() {
+        LOGGER.info("Getting all active listings for 2015 Edition");
+        SearchRequest searchRequest = SearchRequest.builder()
+                .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
+                .certificationStatuses(activeStatuses)
+                .pageSize(MAX_PAGE_SIZE)
+                .pageNumber(0)
+                .build();
+        return listingSearchService.getAllPagesOfSearchResults(searchRequest, LOGGER);
     }
 
     private Boolean isDeveloperManagedBySelectedAcbs(Developer developer, List<Long> acbIds) {

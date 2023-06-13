@@ -4,14 +4,17 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.jfree.data.time.DateRange;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
@@ -35,6 +38,8 @@ public class DeveloperAttestationPeriodCalculator {
     private AttestationPeriodService attestationPeriodService;
     private ListingSearchService listingSearchService;
 
+    private CacheManager cacheManager;
+
     private List<String> activeStatuses = Stream.of(CertificationStatusType.Active.getName(),
             CertificationStatusType.SuspendedByAcb.getName(),
             CertificationStatusType.SuspendedByOnc.getName())
@@ -43,10 +48,12 @@ public class DeveloperAttestationPeriodCalculator {
     @Autowired
     public DeveloperAttestationPeriodCalculator(DeveloperDAO developerDao,
             AttestationPeriodService attestationPeriodService,
-            ListingSearchService listingSearchService) {
+            ListingSearchService listingSearchService,
+            CacheManager cacheManager) {
         this.developerDao = developerDao;
         this.attestationPeriodService = attestationPeriodService;
         this.listingSearchService = listingSearchService;
+        this.cacheManager = cacheManager;
     }
 
     public List<Developer> getDevelopersWithActiveListingsDuringMostRecentPastAttestationPeriod(Logger logger) {
@@ -57,9 +64,11 @@ public class DeveloperAttestationPeriodCalculator {
     }
 
     public List<Developer> getDevelopersWithActiveListingsDuringAttestationPeriod(AttestationPeriod period, Logger logger) {
+        Map<Long, List<ListingSearchResult>> listingsByDeveloper = getMapOfListingSearchResultsByDeveloper(logger);
+
         return getAllDevelopers().stream()
                 .filter(dev -> {
-                    List<ListingSearchResult> listingsForDeveloper = getListingDataForDeveloper(dev, logger);
+                    List<ListingSearchResult> listingsForDeveloper = getListingDataForDeveloper(dev, listingsByDeveloper, logger);
                     return doesActiveListingExistDuringAttestationPeriod(listingsForDeveloper, period)
                             && doesCurrentActiveListingExist(listingsForDeveloper);
                 })
@@ -71,6 +80,9 @@ public class DeveloperAttestationPeriodCalculator {
     }
 
     private Boolean doesActiveListingExistDuringAttestationPeriod(List<ListingSearchResult> listingsForDeveloper, AttestationPeriod period) {
+        if (CollectionUtils.isEmpty(listingsForDeveloper)) {
+            return false;
+        }
         return listingsForDeveloper.stream()
                 .filter(listing -> isListingActiveDuringPeriod(listing, period))
                 .findAny()
@@ -78,6 +90,9 @@ public class DeveloperAttestationPeriodCalculator {
     }
 
     private Boolean doesCurrentActiveListingExist(List<ListingSearchResult> listings) {
+        if (CollectionUtils.isEmpty(listings)) {
+            return false;
+        }
         return listings.stream()
                 .filter(listing -> listing.isCertificateActive())
                 .findAny()
@@ -123,10 +138,23 @@ public class DeveloperAttestationPeriodCalculator {
         return  DateUtil.toDate(localDate);
     }
 
-    private List<ListingSearchResult> getListingDataForDeveloper(Developer developer, Logger logger) {
+    private List<ListingSearchResult> getListingDataForDeveloper(Developer developer, Map<Long, List<ListingSearchResult>> listingsByDeveloper, Logger logger) {
+        if (listingsByDeveloper.containsKey(developer.getId())) {
+            return listingsByDeveloper.get(developer.getId());
+        } else {
+            return null;
+        }
+    }
+
+    private Map<Long, List<ListingSearchResult>> getMapOfListingSearchResultsByDeveloper(Logger logger) {
+        return get2015Listing(logger).stream()
+                .collect(Collectors.groupingBy(listingSearchResult -> listingSearchResult.getDeveloper().getId()));
+    }
+
+    private List<ListingSearchResult> get2015Listing(Logger logger) {
+        logger.info("Getting all listings for 2015 Edition");
         SearchRequest searchRequest = SearchRequest.builder()
                 .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
-                .developerId(developer.getId())
                 .pageSize(MAX_PAGE_SIZE)
                 .pageNumber(0)
                 .build();
