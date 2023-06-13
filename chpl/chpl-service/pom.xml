@@ -28,6 +28,9 @@
       <postgresql.version>42.6.0</postgresql.version>
       <quartz.version>2.4.0-rc2</quartz.version>
       <zxcvbn.version>1.7.0</zxcvbn.version>
+      <spring.data.redis.version>3.1.0</spring.data.redis.version>
+      <redisson.version>3.21.3</redisson.version>
+      <ff4j.store.redis.version>2.0.0</ff4j.store.redis.version>
     </properties>
 
     <dependencies>
@@ -274,7 +277,7 @@
         <dependency>
             <groupId>org.ff4j</groupId>
             <artifactId>ff4j-store-redis</artifactId>
-            <version>2.0.0</version>
+            <version>${ff4j.store.redis.version}</version>
         </dependency>
 
         <!-- @Build annotation for generation of builder pattern -->
@@ -339,13 +342,13 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-redis</artifactId>
-            <version>3.1.0</version>
+            <version>${spring.data.redis.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>
-            <version>3.21.3</version>
+            <version>${redisson.version}</version>
         </dependency>
 
         <!-- Provides Java interface to Datdog API -->
