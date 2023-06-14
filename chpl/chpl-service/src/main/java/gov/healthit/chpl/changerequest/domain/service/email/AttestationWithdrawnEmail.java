@@ -14,7 +14,6 @@ import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.util.AuthUtil;
-import gov.healthit.chpl.util.DateUtil;
 
 @Component
 public class AttestationWithdrawnEmail extends ChangeRequestEmail {
@@ -53,7 +52,7 @@ public class AttestationWithdrawnEmail extends ChangeRequestEmail {
                 .heading("Developer Attestations Withdrawn")
                 .paragraph("", String.format(emailBody,
                         cr.getDeveloper().getName(),
-                        formatter.format(DateUtil.toLocalDate(cr.getSubmittedDate().getTime())),
+                        formatter.format(cr.getSubmittedDateTime()),
                         AuthUtil.getUsername()))
                 .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
                 .footer(true)

@@ -51,7 +51,7 @@ public class AttestationAcceptedEmail extends ChangeRequestEmail {
             DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
             return chplHtmlEmailBuilder.initialize()
                     .heading("Developer Attestations Accepted")
-                    .paragraph("", String.format(emailBody, df.format(cr.getSubmittedDate()), getApprovalBody(cr)))
+                    .paragraph("", String.format(emailBody, df.format(cr.getSubmittedDateTime()), getApprovalBody(cr)))
                     .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
                     .footer(true)
                     .build();

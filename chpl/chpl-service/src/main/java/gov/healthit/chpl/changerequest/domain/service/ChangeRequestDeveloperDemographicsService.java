@@ -177,7 +177,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Demographics Change Request Approved")
                 .paragraph("", String.format(approvalEmailBody,
-                        df.format(cr.getSubmittedDate()),
+                        df.format(cr.getSubmittedDateTime()),
                         formatDeveloperHtml(cr.getDeveloper()),
                         getApprovalBody(cr)))
                 .footer(true)
@@ -200,7 +200,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Demographics Change Request Pending Developer Action")
                 .paragraph("", String.format(pendingDeveloperActionEmailBody,
-                        df.format(cr.getSubmittedDate()),
+                        df.format(cr.getSubmittedDateTime()),
                         formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails()),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))

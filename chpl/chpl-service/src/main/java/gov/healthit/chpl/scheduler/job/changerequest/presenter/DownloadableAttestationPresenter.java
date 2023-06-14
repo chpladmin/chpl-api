@@ -63,8 +63,8 @@ public class DownloadableAttestationPresenter extends ChangeRequestCsvPresenter 
         }
         result.add(changeRequest.getChangeRequestType().getName());
         result.add(changeRequest.getCurrentStatus().getChangeRequestStatusType().getName());
-        result.add(DateUtil.formatInEasternTime(changeRequest.getSubmittedDate()));
-        result.add(DateUtil.formatInEasternTime(changeRequest.getCurrentStatus().getStatusChangeDate()));
+        result.add(DateUtil.formatInEasternTime(changeRequest.getSubmittedDateTime()));
+        result.add(DateUtil.formatInEasternTime(changeRequest.getCurrentStatus().getStatusChangeDateTime()));
         result.add(changeRequest.getCertificationBodies().stream()
                 .map(acb -> acb.getName())
                 .collect(Collectors.joining("; ")));

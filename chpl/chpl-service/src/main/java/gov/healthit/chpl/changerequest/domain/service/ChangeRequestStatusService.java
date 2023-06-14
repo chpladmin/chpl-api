@@ -1,6 +1,6 @@
 package gov.healthit.chpl.changerequest.domain.service;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
@@ -61,7 +61,7 @@ public class ChangeRequestStatusService {
         crStatusType.setId(this.pendingAcbActionStatus);
 
         ChangeRequestStatus crStatus = new ChangeRequestStatus();
-        crStatus.setStatusChangeDate(new Date());
+        crStatus.setStatusChangeDateTime(LocalDateTime.now());
         crStatus.setChangeRequestStatusType(crStatusType);
         crStatus.setUserPermission(resourcePermissions.getRoleByUserId(AuthUtil.getCurrentUser().getId()));
 
@@ -144,7 +144,7 @@ public class ChangeRequestStatusService {
         crStatusType.setId(crStatusTypeId);
         crStatus.setChangeRequestStatusType(crStatusType);
         crStatus.setComment(comment);
-        crStatus.setStatusChangeDate(new Date());
+        crStatus.setStatusChangeDateTime(LocalDateTime.now());
         crStatus.setUserPermission(resourcePermissions.getRoleByUserId(AuthUtil.getCurrentUser().getId()));
         if (resourcePermissions.isUserRoleAcbAdmin()) {
             crStatus.setCertificationBody(getCertificationBodyForCurrentUser());
