@@ -33,6 +33,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Component
 public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDetailsService<ChangeRequestDeveloperDemographics> {
@@ -62,6 +63,12 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
 
     @Value("${changeRequest.developerDemographics.pendingDeveloperAction.body}")
     private String pendingDeveloperActionEmailBody;
+
+    @Value("${changeRequest.developerDemographics.cancelled.subject}")
+    private String cancelledEmailSubject;
+
+    @Value("${changeRequest.developerDemographics.cancelled.body}")
+    private String cancelledEmailBody;
 
     @Autowired
     public ChangeRequestDeveloperDemographicsService(ChangeRequestDAO crDAO, ChangeRequestDeveloperDemographicsDAO crDeveloperDemographicsDAO,
@@ -225,10 +232,34 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Demographics Change Request Rejected")
                 .paragraph("", String.format(rejectedEmailBody,
-                        df.format(cr.getSubmittedDate()),
+                        df.format(cr.getSubmittedDateTime()),
                         formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails()),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
+                .footer(true)
+                .build();
+    }
+
+    @Override
+    protected void sendCancelledEmail(ChangeRequest cr) throws EmailNotSentException {
+        chplEmailFactory.emailBuilder()
+                .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
+                        .map(user -> user.getEmail())
+                        .collect(Collectors.<String>toList()))
+                .subject(cancelledEmailSubject)
+                .htmlMessage(createCancelledHtmlMessage(cr))
+                .sendEmail();
+    }
+
+    private String createCancelledHtmlMessage(ChangeRequest cr) {
+        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+        return chplHtmlEmailBuilder.initialize()
+                .heading("Developer Demographics Change Request Cancelled")
+                .paragraph("", String.format(cancelledEmailBody,
+                        cr.getDeveloper().getName(),
+                        df.format(cr.getSubmittedDateTime()),
+                        formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails()),
+                        AuthUtil.getUsername()))
                 .footer(true)
                 .build();
     }

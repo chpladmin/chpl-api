@@ -136,13 +136,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
             //Get email that based on current user
             ((ChangeRequestAttestationSubmission) cr.getDetails()).setSignatureEmail(getUserById(AuthUtil.getCurrentUser().getId()).getEmail());
 
-            if (isNewCurrentStatusCancelledByRequestor(cr, crFromDb)) {
-                sendWithdrawnDetailsEmail(cr);
-                activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
-                        "Change request cancelled by requestor",
-                        crFromDb, cr);
-            } else if (haveDetailsBeenUpdated(cr, crFromDb)) {
-
+            if (haveDetailsBeenUpdated(cr, crFromDb)) {
                 crAttestationDAO.update(cr, (ChangeRequestAttestationSubmission) cr.getDetails());
                 cr.setDetails(getByChangeRequestId(cr.getId(), cr.getDeveloper().getId()));
 
@@ -194,12 +188,13 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                 cr.getDeveloper().getId(), attestationPeriodService.getSubmittableAttestationPeriod(cr.getDeveloper().getId()).getId());
     }
 
-    private void sendWithdrawnDetailsEmail(ChangeRequest cr) throws EmailNotSentException {
-        attestationEmails.getWithdrawnEmail().send(cr);
-    }
-
     private void sendUpdatedDetailsEmail(ChangeRequest cr) throws EmailNotSentException {
         attestationEmails.getUpdatedEmail().send(cr);
+    }
+
+    @Override
+    protected void sendCancelledEmail(ChangeRequest cr) throws EmailNotSentException {
+        attestationEmails.getWithdrawnEmail().send(cr);
     }
 
     @Override
@@ -223,11 +218,6 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     private UserDTO getUserById(Long userId) throws UserRetrievalException {
         return userDAO.getById(userId);
-    }
-
-    private Boolean isNewCurrentStatusCancelledByRequestor(ChangeRequest updatedCr, ChangeRequest originalCr) {
-        return updatedCr.getCurrentStatus().getChangeRequestStatusType().getId().equals(cancelledStatus)
-                && !originalCr.getCurrentStatus().getChangeRequestStatusType().getId().equals(cancelledStatus);
     }
 
     private Boolean haveDetailsBeenUpdated(ChangeRequest updatedCr, ChangeRequest originalCr) {

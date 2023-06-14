@@ -112,6 +112,10 @@ public class AttestationResponseValidationService {
     }
 
     public String getAssurancesResponseCompliantMessage(Long developerId) {
+        if (!ff4j.check(FeatureList.ERD_PHASE_3)) {
+            return null;
+        }
+
         List<ListingSearchResult> allActiveListingsForDeveloper = getActiveListingDataForDeveloper(developerId);
         boolean isAssurancesApplicable = listingApplicabilityService.isAssurancesApplicable(allActiveListingsForDeveloper);
         if (!isAssurancesApplicable) {
