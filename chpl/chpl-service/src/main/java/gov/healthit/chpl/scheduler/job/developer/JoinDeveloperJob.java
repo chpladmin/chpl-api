@@ -14,6 +14,7 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -29,7 +30,6 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import lombok.extern.log4j.Log4j2;
-import net.sf.ehcache.CacheManager;
 
 @DisallowConcurrentExecution
 @Log4j2(topic = "joinDeveloperJobLogger")
@@ -51,6 +51,9 @@ public class JoinDeveloperJob implements Job {
 
     @Autowired
     private ChplHtmlEmailBuilder emailBuilder;
+
+    @Autowired
+    private CacheManager cacheManager;
 
     @Value("${internalErrorEmailRecipients}")
     private String internalErrorEmailRecipients;
@@ -135,13 +138,12 @@ public class JoinDeveloperJob implements Job {
 
     @ListingSearchCacheRefresh
     private void clearCachesRelatedToDevelopers() {
-        CacheManager.getInstance().getCache(CacheNames.DEVELOPER_NAMES).removeAll();
-        CacheManager.getInstance().getCache(CacheNames.ALL_DEVELOPERS).removeAll();
-        CacheManager.getInstance().getCache(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED).removeAll();
-        CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_DEVELOPERS).removeAll();
-        CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_LISTINGS).removeAll();
-        CacheManager.getInstance().getCache(CacheNames.GET_DECERTIFIED_DEVELOPERS).removeAll();
-        CacheManager.getInstance().getCache(CacheNames.QUESTIONABLE_ACTIVITIES).removeAll();
+        cacheManager.getCache(CacheNames.DEVELOPER_NAMES).invalidate();
+        cacheManager.getCache(CacheNames.ALL_DEVELOPERS).invalidate();
+        cacheManager.getCache(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED).invalidate();
+        cacheManager.getCache(CacheNames.COLLECTIONS_DEVELOPERS).invalidate();
+        cacheManager.getCache(CacheNames.COLLECTIONS_LISTINGS).invalidate();
+        cacheManager.getCache(CacheNames.GET_DECERTIFIED_DEVELOPERS).invalidate();
     }
 
     private void sendJobCompletionEmails(Developer developerJoined, List<Developer> developersJoining,

@@ -12,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.jfree.data.time.DateRange;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.caching.CacheNames;
@@ -22,10 +24,9 @@ import gov.healthit.chpl.domain.compliance.DirectReviewContainer;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.util.RedisUtil;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
 import one.util.streamex.StreamEx;
 
 @Component("directReviewSearchService")
@@ -33,10 +34,14 @@ import one.util.streamex.StreamEx;
 @Log4j2
 public class DirectReviewSearchService {
     private DirectReviewCachingService drCacheService;
+    private CacheManager cacheManager;
+    private RedisUtil redisUtil;
 
     @Autowired
-    public DirectReviewSearchService(DirectReviewCachingService drCacheService) {
+    public DirectReviewSearchService(DirectReviewCachingService drCacheService, CacheManager cacheManager, RedisUtil redisUtil) {
         this.drCacheService = drCacheService;
+        this.cacheManager = cacheManager;
+        this.redisUtil = redisUtil;
     }
 
     public boolean doesCacheHaveAnyOkData() {
@@ -54,16 +59,11 @@ public class DirectReviewSearchService {
     }
 
     public List<DirectReviewContainer> getAll() {
-        List<DirectReviewContainer> drContainers = new ArrayList<DirectReviewContainer>();
-
         Cache drCache = getDirectReviewsCache();
-        drContainers = drCache.getAll(drCache.getKeys()).values().stream()
-            .map(value -> value.getObjectValue())
-            .filter(objValue -> objValue != null && (objValue instanceof DirectReviewContainer))
-            .map(objValue -> (DirectReviewContainer) objValue)
-            .toList();
 
-        return drContainers;
+        return ((List) redisUtil.getAllValuesForCache(drCache)).stream()
+                .map(objValue -> (DirectReviewContainer) objValue)
+                .toList();
     }
 
     public List<DirectReview> getDeveloperDirectReviews(Long developerId, Logger logger) {
@@ -83,7 +83,7 @@ public class DirectReviewSearchService {
     public List<DirectReview> getDirectReviewsRelatedToListing(Long listingId, Long developerId, String editionYear,
             List<CertificationStatusEvent> statusEvents, Logger logger) {
         List<DirectReview> drs = new ArrayList<DirectReview>();
-        drs.addAll(getDirectReviewsWithDeveloperAssociatedListingId(listingId));
+        drs.addAll(getDirectReviewsWithDeveloperAssociatedListingId(listingId, developerId));
 
         if (!StringUtils.isEmpty(editionYear) && editionYear.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())) {
             drs.addAll(getDeveloperDirectReviewsWithoutAssociatedListings(developerId, statusEvents, logger));
@@ -120,10 +120,11 @@ public class DirectReviewSearchService {
             .isPresent();
     }
 
-    private List<DirectReview> getDirectReviewsWithDeveloperAssociatedListingId(Long listingId) {
-        List<DirectReviewContainer> allDirectReviewContainers = getAll();
-        return allDirectReviewContainers.stream()
-                .flatMap(container -> container.getDirectReviews().stream())
+    private List<DirectReview> getDirectReviewsWithDeveloperAssociatedListingId(Long listingId, Long developerId) {
+        DirectReviewContainer directReviewContainerForDeveloper =
+                (DirectReviewContainer) cacheManager.getCache(CacheNames.DIRECT_REVIEWS).get(developerId).get();
+
+        return directReviewContainerForDeveloper.getDirectReviews().stream()
                 .filter(dr -> isAssociatedWithListing(dr, listingId))
                 .collect(Collectors.toList());
     }
@@ -172,6 +173,6 @@ public class DirectReviewSearchService {
     }
 
     private Cache getDirectReviewsCache() {
-        return CacheManager.getInstance().getCache(CacheNames.DIRECT_REVIEWS);
+        return cacheManager.getCache(CacheNames.DIRECT_REVIEWS);
     }
 }
