@@ -7,7 +7,8 @@ The CHPL api
 ## Install required software
 
 * Java 17
-* Postgres 10.15
+* Postgres 14.8
+* Redis 6.0
 * mvn 3.6.3 or higher
 * Tomcat 8.5.x -- latest version
 * Eclipse (latest)
@@ -21,17 +22,6 @@ $ git clone https://github.com/chpladmin/chpl-api.git
 ## Load the data model
 
 See the instructions in [the Open Data CHPL data model README](https://github.com/chpladmin/chpl-data-model/blob/master/README.md).
-
-## Authentication token & testing databases
-
-The JSON token definition needs to be set in a file named `chpl/chpl-auth/src/main/resources/environment.auth.properties`. There is a file named `chpl/chpl-auth/src/main/resources/environment.auth.properties.template` that has the format. Copy that file and change the `keyLocation` key to something local.
-
-Two files are used for testing purposes. There are template files for each of them that will need to be copied and renamed, with valid local data inserted:
-
-```
-chpl/chpl-auth/src/test/resources/environment.auth.test.properties
-chpl/chpl-service/src/test/resources/environment.test.properties
-```
 
 ## Properties files
 
@@ -64,7 +54,9 @@ Each of the above files has "default" values for each key, though a few keys wit
 | environment.properties | emailBuilder_config_forwardAddress | For Non-PROD environments, emails will be sent to this address for verification                              |
 | environment.properties | jira.username                      | Username for authenticating with JIRA                                                                        |
 | environment.properties | jira.password                      | Password for authenticating with JIRA                                                                        |
-| environment.properties | auditDateFilePath                  | Location on server where "rolled off" log data files are placed                                              |
+| environment.properties | spring.redis.host                  | Name or ip address where Redis server exists                                                                 |
+| environment.properties | spring.redis.port                  | Port used by Redis                                                                                           |
+| environment.properties | spring.redis.password              | Password used for authenbtication with Redis                                                                 |
 
 
 ## Tomcat server

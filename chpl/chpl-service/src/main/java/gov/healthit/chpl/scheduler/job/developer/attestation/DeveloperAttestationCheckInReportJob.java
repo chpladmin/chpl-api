@@ -91,7 +91,9 @@ public class DeveloperAttestationCheckInReportJob implements Job {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
+                    LOGGER.info("Starting the transaction");
                     setSecurityContext(userDao.getById(User.ADMIN_USER_ID));
+                    LOGGER.info("Set the Security Context");
 
                     List<CheckInReport> reportRows = checkInReportDataCollection.collect(getAcbIds(context));
                     CheckInReportSummary reportSummary = checkInReportSummaryDataCollection.collect(reportRows);
