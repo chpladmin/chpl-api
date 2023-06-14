@@ -1,6 +1,7 @@
 package gov.healthit.chpl.changerequest.domain.service.email;
 
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,12 +48,11 @@ public class AttestationWithdrawnEmail extends ChangeRequestEmail {
     }
 
     private String withdrawnUpdatedHtmlMessage(ChangeRequest cr) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, YYYY");
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Attestations Withdrawn")
                 .paragraph("", String.format(emailBody,
                         cr.getDeveloper().getName(),
-                        formatter.format(cr.getSubmittedDateTime()),
+                        cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         AuthUtil.getUsername()))
                 .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
                 .footer(true)

@@ -1,6 +1,8 @@
 package gov.healthit.chpl.changerequest.domain.service;
 
 import java.text.DateFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -180,11 +182,10 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     }
 
     private String createApprovalHtmlMessage(ChangeRequest cr) {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Demographics Change Request Approved")
                 .paragraph("", String.format(approvalEmailBody,
-                        df.format(cr.getSubmittedDateTime()),
+                        cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         formatDeveloperHtml(cr.getDeveloper()),
                         getApprovalBody(cr)))
                 .footer(true)
@@ -207,7 +208,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Demographics Change Request Pending Developer Action")
                 .paragraph("", String.format(pendingDeveloperActionEmailBody,
-                        df.format(cr.getSubmittedDateTime()),
+                        cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails()),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
@@ -232,7 +233,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Demographics Change Request Rejected")
                 .paragraph("", String.format(rejectedEmailBody,
-                        df.format(cr.getSubmittedDateTime()),
+                        cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails()),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
@@ -252,12 +253,11 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     }
 
     private String createCancelledHtmlMessage(ChangeRequest cr) {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Demographics Change Request Cancelled")
                 .paragraph("", String.format(cancelledEmailBody,
                         cr.getDeveloper().getName(),
-                        df.format(cr.getSubmittedDateTime()),
+                        cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails()),
                         AuthUtil.getUsername()))
                 .footer(true)
