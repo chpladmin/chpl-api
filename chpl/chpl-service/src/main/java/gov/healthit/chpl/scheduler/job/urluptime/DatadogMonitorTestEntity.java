@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job.urluptime;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -16,12 +17,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "chpl_uptime_monitor")
+@Table(name = "datadog_monitor_test")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChplUptimeMonitorEntity {
+public class DatadogMonitorTestEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -29,16 +31,20 @@ public class ChplUptimeMonitorEntity {
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "description", nullable = false)
-    private String description;
+    @Column(name = "datadog_monitor_id", nullable = false)
+    private Long datadogMonitorId;
 
     @Basic(optional = false)
-    @Column(name = "url", nullable = false)
-    private String url;
+    @Column(name = "datadog_test_key", nullable = false)
+    private String datadogTestKey;
 
     @Basic(optional = false)
-    @Column(name = "datadog_monitor_key", nullable = false)
-    private String datadogMonitorKey;
+    @Column(name = "check_time", nullable = false)
+    private LocalDateTime checkTime;
+
+    @Basic(optional = false)
+    @Column(name = "passed", nullable = false)
+    private Boolean passed;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
@@ -56,12 +62,14 @@ public class ChplUptimeMonitorEntity {
     @Column(nullable = false, name = "deleted")
     private Boolean deleted;
 
-//    public ChplUptimeMonitor toDomain() {
-//        return ChplUptimeMonitor.builder()
-//                .id(id)
-//                .datadogMonitorKey(datadogMonitorKey)
-//                .description(description)
-//                .url(url)
-//                .build();
-//    }
+    public DatadogMonitorTest toDomain() {
+        return DatadogMonitorTest.builder()
+                .id(id)
+                .datadogMonitorId(datadogMonitorId)
+                .datadogTestKey(datadogTestKey)
+                .checkTime(checkTime)
+                .passed(passed)
+                .build();
+    }
+
 }

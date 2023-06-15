@@ -7,12 +7,12 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic =  "urlUptimeCreatorJobLogger")
 @Component
-public class ChplUptimeMonitorService {
-    private ChplUptimeMonitorDAO chplUptimeMonitorDAO;
+public class DatadogMonitorService {
+    private DatadogMonitorDAO datadogMonitorDAO;
 
     @Autowired
-    public ChplUptimeMonitorService(ChplUptimeMonitorDAO chplUptimeMonitorDAO) {
-        this.chplUptimeMonitorDAO = chplUptimeMonitorDAO;
+    public DatadogMonitorService(DatadogMonitorDAO datadogMonitorDAO) {
+        this.datadogMonitorDAO = datadogMonitorDAO;
     }
 
 //    @Transactional

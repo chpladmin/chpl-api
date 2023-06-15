@@ -27,14 +27,14 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-public class ServiceBasedUrlGatherer {
+public class ServiceBasedUrlService {
 
     private ListingSearchService listingSearchService;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
     private CertificationCriterionService certificationCriterionService;
 
     @Autowired
-    public ServiceBasedUrlGatherer(ListingSearchService listingSearchService, CertifiedProductDetailsManager certifiedProductDetailsManager,
+    public ServiceBasedUrlService(ListingSearchService listingSearchService, CertifiedProductDetailsManager certifiedProductDetailsManager,
             CertificationCriterionService certificationCriterionService) {
         this.listingSearchService = listingSearchService;
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;

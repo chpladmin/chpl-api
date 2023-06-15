@@ -8,13 +8,13 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2(topic = "urlUptimeEmailJobLogger")
 @Component
 public class UrlUptimeCalculator {
-    private ChplUptimeMonitorDAO chplUptimeMonitorDAO;
-    private ChplUptimeMonitorTestDAO chplUptimeMonitorTestDAO;
+    private DatadogMonitorDAO datadogMonitorDAO;
+    private DatadogMonitorTestDAO datadogMonitorTestDAO;
 
     @Autowired
-    public UrlUptimeCalculator(ChplUptimeMonitorDAO chplUptimeMonitorDAO, ChplUptimeMonitorTestDAO chplUptimeMonitorTestDAO) {
-        this.chplUptimeMonitorDAO = chplUptimeMonitorDAO;
-        this.chplUptimeMonitorTestDAO = chplUptimeMonitorTestDAO;
+    public UrlUptimeCalculator(DatadogMonitorDAO datadogMonitorDAO, DatadogMonitorTestDAO datadogMonitorTestDAO) {
+        this.datadogMonitorDAO = datadogMonitorDAO;
+        this.datadogMonitorTestDAO = datadogMonitorTestDAO;
     }
 
 //    public List<UrlUptimeReport> calculateRowsForReport() {

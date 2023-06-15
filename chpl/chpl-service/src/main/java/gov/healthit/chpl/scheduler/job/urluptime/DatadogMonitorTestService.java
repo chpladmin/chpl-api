@@ -7,14 +7,14 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic =  "urlUptimeCreatorJobLogger")
 @Component
-public class ChplUptimeMonitorTestService {
-    private ChplUptimeMonitorDAO chplUptimeMonitorDAO;
-    private ChplUptimeMonitorTestDAO chplUptimeMonitorTestDAO;
+public class DatadogMonitorTestService {
+    private DatadogMonitorDAO datadogMonitorDAO;
+    private DatadogMonitorTestDAO datadogMonitorTestDAO;
 
     @Autowired
-    public ChplUptimeMonitorTestService(ChplUptimeMonitorDAO chplUptimeMonitorDAO, ChplUptimeMonitorTestDAO chplUptimeMonitorTestDAO) {
-        this.chplUptimeMonitorDAO = chplUptimeMonitorDAO;
-        this.chplUptimeMonitorTestDAO = chplUptimeMonitorTestDAO;
+    public DatadogMonitorTestService(DatadogMonitorDAO datadogMonitorDAO, DatadogMonitorTestDAO datadogMonitorTestDAO) {
+        this.datadogMonitorDAO = datadogMonitorDAO;
+        this.datadogMonitorTestDAO = datadogMonitorTestDAO;
     }
 
 //    @Transactional

@@ -7,9 +7,9 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ChplUptimeMonitorTest {
+public class DatadogMonitorTest {
     private Long id;
-    private Long chplUptimeMonitorId;
+    private Long datadogMonitorId;
     private String datadogTestKey;
     private LocalDateTime checkTime;
     private Boolean passed;
