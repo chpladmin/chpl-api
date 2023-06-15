@@ -2,6 +2,7 @@ package gov.healthit.chpl.changerequest.validation.attestation;
 
 import java.util.List;
 
+import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.changerequest.domain.service.ChangeRequestStatusService;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext;
@@ -19,6 +20,7 @@ public class AttestationResponseValidation extends ValidationRule<ChangeRequestV
         List<ListingSearchResult> activeListingsForDeveloper = context.getListingSearchService().findActiveListingsForDeveloper(developerId);
 
         if (shouldUserReceiveAcbResponseWarnings(context)
+                && isAttestationPeriodMostRecent(context, attestationPeriodId)
                 && isChangeRequestBeingAccepted(context)) {
             if (context.getAttestationResponseValidationService().isApiApplicableAndResponseIsNotApplicable(activeListingsForDeveloper, form)) {
                 getMessages().add(getErrorMessage("attestation.acb.apiApplicableNotConsistent"));
@@ -41,6 +43,13 @@ public class AttestationResponseValidation extends ValidationRule<ChangeRequestV
             }
         }
         return getMessages().size() == 0;
+    }
+
+    private boolean isAttestationPeriodMostRecent(ChangeRequestValidationContext context, Long attestationPeriodId) {
+        AttestationPeriod mostRecentPastLongAttestationPeriod = context.getAttestationPeriodService().getMostRecentPastAttestationPeriod();
+        AttestationPeriod currentAttestationPeriod = context.getAttestationPeriodService().getCurrentAttestationPeriod();
+        return attestationPeriodId.equals(mostRecentPastLongAttestationPeriod.getId())
+                || attestationPeriodId.equals(currentAttestationPeriod.getId());
     }
 
     private boolean shouldUserReceiveAcbResponseWarnings(ChangeRequestValidationContext context) {

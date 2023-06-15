@@ -159,7 +159,8 @@ public class AttestationManagerTest {
         Mockito.when(attestationPeriodService.getMostRecentPastAttestationPeriod()).thenReturn(getFirstAttestationPeriod());
 
         // No pending Change Requests
-        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong())).thenReturn(
+        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(
                 List.of(ChangeRequest.builder()
                         .developer(Developer.builder()
                                 .id(1L)
@@ -192,7 +193,8 @@ public class AttestationManagerTest {
         Mockito.when(attestationPeriodService.getMostRecentPastAttestationPeriod()).thenReturn(getFirstAttestationPeriod());
 
         // ending Change Requests
-        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong())).thenReturn(
+        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(
                 List.of(ChangeRequest.builder()
                         .developer(Developer.builder()
                                 .id(1L)
@@ -225,7 +227,8 @@ public class AttestationManagerTest {
         Mockito.when(attestationPeriodService.getMostRecentPastAttestationPeriod()).thenReturn(getFirstAttestationPeriod());
 
         //Pending Change Requests
-        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong())).thenReturn(
+        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(
                 List.of(ChangeRequest.builder()
                         .developer(Developer.builder()
                                 .id(1L)
@@ -260,7 +263,8 @@ public class AttestationManagerTest {
         Mockito.when(attestationPeriodService.getMostRecentPastAttestationPeriod()).thenReturn(getFirstAttestationPeriod());
 
         // No pending Change Requests
-        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong())).thenReturn(
+        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(
                 List.of(ChangeRequest.builder()
                         .developer(Developer.builder()
                                 .id(1L)
@@ -329,7 +333,8 @@ public class AttestationManagerTest {
     @Test
     public void canCreateException_PendingCrExists_ReturnFalse() throws EntityRetrievalException {
         //Pending Change Requests
-        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong())).thenReturn(
+        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(
                 List.of(ChangeRequest.builder()
                         .developer(Developer.builder()
                                 .id(1L)
@@ -364,7 +369,8 @@ public class AttestationManagerTest {
         Mockito.doReturn(null).when(spyManager).getSubmittablePeriod(ArgumentMatchers.anyLong());
 
         //Pending Change Requests
-        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong())).thenReturn(
+        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(
                 List.of(ChangeRequest.builder()
                         .developer(Developer.builder()
                                 .id(1L)
@@ -398,7 +404,8 @@ public class AttestationManagerTest {
         Mockito.doReturn(getFirstAttestationPeriod()).when(spyManager).getSubmittablePeriod(ArgumentMatchers.anyLong());
 
         //Pending Change Requests
-        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong())).thenReturn(
+        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(
                 List.of(ChangeRequest.builder()
                         .developer(Developer.builder()
                                 .id(1L)

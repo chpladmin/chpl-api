@@ -255,7 +255,7 @@ public class AttestationManager {
     }
 
     private boolean doesPendingAttestationChangeRequestForDeveloperExist(Long developerId) throws EntityRetrievalException {
-        return changeRequestDAO.getByDeveloper(developerId).stream()
+        return changeRequestDAO.getByDeveloper(developerId, false).stream()
                 .filter(cr -> cr.getDeveloper().getId().equals(developerId)
                         && cr.getChangeRequestType().isAttestation()
                         && (cr.getCurrentStatus().getChangeRequestStatusType().getName().equals("Pending Developer Action")
