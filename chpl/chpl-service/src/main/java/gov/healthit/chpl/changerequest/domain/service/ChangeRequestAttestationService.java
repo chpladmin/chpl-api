@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
+import gov.healthit.chpl.attestation.domain.AttestationPeriodForm;
 import gov.healthit.chpl.attestation.domain.AttestationSubmission;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
@@ -236,7 +237,9 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                 heading.setFormItems(populateFormItemsWithSubmittedResponses(heading.getFormItems(), submittedResponses));
             }
 
-            attestationManager.populateAllowedResponseMessagesForUser(form, developerId, submission.getAttestationPeriod().getId());
+            attestationManager.populateAllowedResponseMessagesForUser(
+                    AttestationPeriodForm.builder().form(form).period(submission.getAttestationPeriod()).build(),
+                    developerId);
             return form;
         } catch (EntityRetrievalException e) {
             return null;

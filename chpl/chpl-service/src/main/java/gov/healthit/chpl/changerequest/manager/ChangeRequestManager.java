@@ -58,6 +58,7 @@ import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.changerequest.ChangeRequestReportEmailJob;
+import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -102,6 +103,7 @@ public class ChangeRequestManager {
     private AttestationManager attestationManager;
     private AttestationResponseValidationService attestationResponseValidationService;
     private AttestationPeriodService attestationPeriodService;
+    private ListingSearchService listingSearchService;
     private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
     private ValidationUtils validationUtils;
@@ -128,6 +130,7 @@ public class ChangeRequestManager {
             AttestationManager attestationManager,
             AttestationResponseValidationService attestationResponseValidationService,
             AttestationPeriodService attestationPeriodService,
+            ListingSearchService listingSearchService,
             ResourcePermissions resourcePermissions,
             ErrorMessageUtil msgUtil,
             ValidationUtils validationUtils,
@@ -147,6 +150,7 @@ public class ChangeRequestManager {
         this.attestationManager = attestationManager;
         this.attestationResponseValidationService = attestationResponseValidationService;
         this.attestationPeriodService = attestationPeriodService;
+        this.listingSearchService = listingSearchService;
         this.resourcePermissions = resourcePermissions;
         this.msgUtil = msgUtil;
         this.validationUtils = validationUtils;
@@ -332,6 +336,7 @@ public class ChangeRequestManager {
                 formValidator,
                 attestationResponseValidationService,
                 attestationPeriodService,
+                listingSearchService,
                 resourcePermissions,
                 validationUtils,
                 developerDAO,

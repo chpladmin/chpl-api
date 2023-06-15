@@ -33,6 +33,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.form.FormService;
 import gov.healthit.chpl.form.SectionHeading;
+import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class AttestationManagerTest {
@@ -66,6 +67,7 @@ public class AttestationManagerTest {
 
         manager = new AttestationManager(attestationDAO, attestationPeriodService, formService,
                 attestationSubmissionService, Mockito.mock(AttestationResponseValidationService.class),
+                Mockito.mock(ListingSearchService.class),
                 changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW);
     }
 
@@ -299,6 +301,7 @@ public class AttestationManagerTest {
         AttestationManager spyManager = Mockito.spy(
                 new AttestationManager(attestationDAO, attestationPeriodService, formService,
                         attestationSubmissionService, Mockito.mock(AttestationResponseValidationService.class),
+                        Mockito.mock(ListingSearchService.class),
                         changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
         Mockito.doReturn(false).when(spyManager).canDeveloperSubmitChangeRequest(ArgumentMatchers.anyLong());
 
@@ -313,6 +316,7 @@ public class AttestationManagerTest {
         AttestationManager spyManager = Mockito.spy(
                 new AttestationManager(attestationDAO, attestationPeriodService, formService,
                         attestationSubmissionService,  Mockito.mock(AttestationResponseValidationService.class),
+                        Mockito.mock(ListingSearchService.class),
                         changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
         Mockito.doReturn(true).when(spyManager).canDeveloperSubmitChangeRequest(ArgumentMatchers.anyLong());
         Mockito.when(attestationPeriodService.getSubmittableAttestationPeriod(ArgumentMatchers.anyLong())).thenReturn(getFirstAttestationPeriod());
@@ -353,6 +357,8 @@ public class AttestationManagerTest {
         AttestationManager spyManager = Mockito.spy(
                 new AttestationManager(attestationDAO, attestationPeriodService, formService,
                         attestationSubmissionService,  Mockito.mock(AttestationResponseValidationService.class),
+                        Mockito.mock(ListingSearchService.class),
+
                         changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
 
         Mockito.doReturn(null).when(spyManager).getSubmittablePeriod(ArgumentMatchers.anyLong());
@@ -386,6 +392,7 @@ public class AttestationManagerTest {
         AttestationManager spyManager = Mockito.spy(
                 new AttestationManager(attestationDAO, attestationPeriodService, formService,
                         attestationSubmissionService,  Mockito.mock(AttestationResponseValidationService.class),
+                        Mockito.mock(ListingSearchService.class),
                         changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
 
         Mockito.doReturn(getFirstAttestationPeriod()).when(spyManager).getSubmittablePeriod(ArgumentMatchers.anyLong());
@@ -427,6 +434,7 @@ public class AttestationManagerTest {
         AttestationManager spyManager = Mockito.spy(
                 new AttestationManager(attestationDAO, attestationPeriodService, formService,
                         attestationSubmissionService,  Mockito.mock(AttestationResponseValidationService.class),
+                        Mockito.mock(ListingSearchService.class),
                         changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
 
         Mockito.doReturn(false).when(spyManager).canCreateException(ArgumentMatchers.anyLong());

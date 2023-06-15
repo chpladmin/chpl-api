@@ -27,6 +27,8 @@ import gov.healthit.chpl.form.AllowedResponse;
 import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.form.FormService;
 import gov.healthit.chpl.scheduler.job.developer.attestation.AttestationFormMetaData;
+import gov.healthit.chpl.search.ListingSearchService;
+import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -40,6 +42,7 @@ public class AttestationManager {
     private FormService formService;
     private AttestationSubmissionService attestationSubmissionService;
     private AttestationResponseValidationService attestationResponseValidationService;
+    private ListingSearchService listingSearchService;
     private ChangeRequestDAO changeRequestDAO;
     private AttestationExceptionEmail exceptionEmail;
     private ErrorMessageUtil errorMessageUtil;
@@ -48,6 +51,7 @@ public class AttestationManager {
     @Autowired
     public AttestationManager(AttestationDAO attestationDAO, AttestationPeriodService attestationPeriodService, FormService formService,
             AttestationSubmissionService attestationSubmissionService, AttestationResponseValidationService attestationResponseValidationService,
+            ListingSearchService listingSearchService,
             ChangeRequestDAO changeRequestDAO,
             AttestationExceptionEmail exceptionEmail,
             ErrorMessageUtil errorMessageUtil,
@@ -57,6 +61,7 @@ public class AttestationManager {
         this.formService = formService;
         this.attestationSubmissionService = attestationSubmissionService;
         this.attestationResponseValidationService = attestationResponseValidationService;
+        this.listingSearchService = listingSearchService;
         this.changeRequestDAO = changeRequestDAO;
         this.exceptionEmail = exceptionEmail;
         this.errorMessageUtil = errorMessageUtil;
@@ -83,7 +88,7 @@ public class AttestationManager {
                     .build();
 
             if (developerId != null) {
-                populateAllowedResponseMessagesForUser(attestationPeriodForm.getForm(), developerId, attestationPeriodId);
+                populateAllowedResponseMessagesForUser(attestationPeriodForm, developerId);
             }
             return attestationPeriodForm;
         } else {
@@ -91,40 +96,49 @@ public class AttestationManager {
         }
     }
 
-    public void populateAllowedResponseMessagesForUser(Form attestationPeriodForm, Long developerId, Long periodId) {
-        String apiResponseCompliantMessage = attestationResponseValidationService.getApiResponseCompliantMessage(developerId);
+    public void populateAllowedResponseMessagesForUser(AttestationPeriodForm attestationPeriodForm, Long developerId) {
+        Long periodId = attestationPeriodForm.getPeriod().getId();
+        if (periodId == null || !periodId.equals(getMostRecentPastAttestationPeriod().getId())) {
+            return;
+        }
+
+        Form form = attestationPeriodForm.getForm();
+        List<ListingSearchResult> activeListingsForDeveloper = listingSearchService.findActiveListingsForDeveloper(developerId);
+
+        //only fill in allowed responses for the most recent period; others are too far in the past for the messages to be accurate
+        String apiResponseCompliantMessage = attestationResponseValidationService.getApiResponseCompliantMessage(activeListingsForDeveloper);
         AllowedResponse apiAllowedResponseCompliant = getAllowedResponse(
-                attestationPeriodForm, AttestationFormMetaData.getApiConditionId(),
+                form, AttestationFormMetaData.getApiConditionId(),
                 AttestationFormMetaData.getCompliantResponseId());
         apiAllowedResponseCompliant.setMessage(apiResponseCompliantMessage);
 
-        String apiResponseNotApplicableMessage = attestationResponseValidationService.getApiResponseNotApplicableMessage(developerId);
+        String apiResponseNotApplicableMessage = attestationResponseValidationService.getApiResponseNotApplicableMessage(activeListingsForDeveloper);
         AllowedResponse apiAllowedResponseNotApplicable = getAllowedResponse(
-                attestationPeriodForm, AttestationFormMetaData.getApiConditionId(),
+                form, AttestationFormMetaData.getApiConditionId(),
                 AttestationFormMetaData.getNotApplicableResponseId());
         apiAllowedResponseNotApplicable.setMessage(apiResponseNotApplicableMessage);
 
-        String assurancesResponseCompliantMessage = attestationResponseValidationService.getAssurancesResponseCompliantMessage(developerId);
+        String assurancesResponseCompliantMessage = attestationResponseValidationService.getAssurancesResponseCompliantMessage(activeListingsForDeveloper);
         AllowedResponse assurancesAllowedResponseCompliant = getAllowedResponse(
-                attestationPeriodForm, AttestationFormMetaData.getAssurancesConditionId(periodId),
+                form, AttestationFormMetaData.getAssurancesConditionId(periodId),
                 AttestationFormMetaData.getAssurancesCompliantIsApplicableResponseId(periodId));
         assurancesAllowedResponseCompliant.setMessage(assurancesResponseCompliantMessage);
 
-        String assurancesResponseNotApplicableMessage = attestationResponseValidationService.getAssurancesResponseNotApplicableMessage(developerId);
+        String assurancesResponseNotApplicableMessage = attestationResponseValidationService.getAssurancesResponseNotApplicableMessage(activeListingsForDeveloper);
         AllowedResponse assurancesAllowedResponseNotApplicable = getAllowedResponse(
-                attestationPeriodForm, AttestationFormMetaData.getAssurancesConditionId(periodId),
+                form, AttestationFormMetaData.getAssurancesConditionId(periodId),
                 AttestationFormMetaData.getAssurancesCompliantIsNotApplicableResponseId(periodId));
         assurancesAllowedResponseNotApplicable.setMessage(assurancesResponseNotApplicableMessage);
 
-        String rwtResponseCompliantMessage = attestationResponseValidationService.getRwtResponseCompliantMessage(developerId);
+        String rwtResponseCompliantMessage = attestationResponseValidationService.getRwtResponseCompliantMessage(activeListingsForDeveloper);
         AllowedResponse rwtAllowedResponseCompliant = getAllowedResponse(
-                attestationPeriodForm, AttestationFormMetaData.getRwtConditionId(),
+                form, AttestationFormMetaData.getRwtConditionId(),
                 AttestationFormMetaData.getCompliantResponseId());
         rwtAllowedResponseCompliant.setMessage(rwtResponseCompliantMessage);
 
-        String rwtResponseNotApplicableMessage = attestationResponseValidationService.getRwtResponseNotApplicableMessage(developerId);
+        String rwtResponseNotApplicableMessage = attestationResponseValidationService.getRwtResponseNotApplicableMessage(activeListingsForDeveloper);
         AllowedResponse rwtAllowedResponseNotApplicable = getAllowedResponse(
-                attestationPeriodForm, AttestationFormMetaData.getRwtConditionId(),
+                form, AttestationFormMetaData.getRwtConditionId(),
                 AttestationFormMetaData.getNotApplicableResponseId());
         rwtAllowedResponseNotApplicable.setMessage(rwtResponseNotApplicableMessage);
     }
