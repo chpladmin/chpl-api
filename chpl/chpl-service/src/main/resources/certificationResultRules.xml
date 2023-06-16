@@ -5,7 +5,6 @@
         <number>170.314 (a)(1)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -19,7 +18,6 @@
         <number>170.314 (a)(2)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -33,7 +31,6 @@
         <number>170.314 (a)(3)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -47,7 +44,6 @@
         <number>170.314 (a)(4)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -61,7 +57,6 @@
         <number>170.314 (a)(5)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -75,7 +70,6 @@
         <number>170.314 (a)(6)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -89,7 +83,6 @@
         <number>170.314 (a)(7)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -103,7 +96,6 @@
         <number>170.314 (a)(8)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -117,7 +109,6 @@
         <number>170.314 (a)(9)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -131,7 +122,6 @@
         <number>170.314 (a)(10)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -145,7 +135,6 @@
         <number>170.314 (a)(11)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -159,7 +148,6 @@
         <number>170.314 (a)(12)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -173,7 +161,6 @@
         <number>170.314 (a)(13)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -187,7 +174,6 @@
         <number>170.314 (a)(14)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -201,7 +187,6 @@
         <number>170.314 (a)(15)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -215,7 +200,6 @@
         <number>170.314 (a)(16)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -229,7 +213,6 @@
         <number>170.314 (a)(17)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -243,7 +226,6 @@
         <number>170.314 (a)(18)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -257,7 +239,6 @@
         <number>170.314 (a)(19)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -271,7 +252,6 @@
         <number>170.314 (a)(20)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -285,7 +265,6 @@
         <number>170.314 (b)(1)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -299,7 +278,6 @@
         <number>170.314 (b)(2)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -313,7 +291,6 @@
         <number>170.314 (b)(3)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -327,7 +304,6 @@
         <number>170.314 (b)(4)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -341,7 +317,6 @@
         <number>170.314 (b)(5)(A)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -355,7 +330,6 @@
         <number>170.314 (b)(5)(B)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -369,7 +343,6 @@
         <number>170.314 (b)(6)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -383,7 +356,6 @@
         <number>170.314 (b)(7)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -397,7 +369,6 @@
         <number>170.314 (b)(8)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -411,7 +382,6 @@
         <number>170.314 (b)(9)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -425,7 +395,6 @@
         <number>170.314 (c)(1)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -439,7 +408,6 @@
         <number>170.314 (c)(2)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -453,7 +421,6 @@
         <number>170.314 (c)(3)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -467,7 +434,6 @@
         <number>170.314 (d)(1)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -481,7 +447,6 @@
         <number>170.314 (d)(2)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -495,7 +460,6 @@
         <number>170.314 (d)(3)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -509,7 +473,6 @@
         <number>170.314 (d)(4)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -523,7 +486,6 @@
         <number>170.314 (d)(5)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -537,7 +499,6 @@
         <number>170.314 (d)(6)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -551,7 +512,6 @@
         <number>170.314 (d)(7)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -565,7 +525,6 @@
         <number>170.314 (d)(8)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -579,7 +538,6 @@
         <number>170.314 (d)(9)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -593,7 +551,6 @@
         <number>170.314 (e)(1)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -607,7 +564,6 @@
         <number>170.314 (e)(2)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -621,7 +577,6 @@
         <number>170.314 (e)(3)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -635,7 +590,6 @@
         <number>170.314 (f)(1)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -649,7 +603,6 @@
         <number>170.314 (f)(2)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -663,7 +616,6 @@
         <number>170.314 (f)(3)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -677,7 +629,6 @@
         <number>170.314 (f)(4)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -691,7 +642,6 @@
         <number>170.314 (f)(5)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -705,7 +655,6 @@
         <number>170.314 (f)(6)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -719,7 +668,6 @@
         <number>170.314 (f)(7)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -733,7 +681,6 @@
         <number>170.314 (g)(1)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -747,7 +694,6 @@
         <number>170.314 (g)(2)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -761,7 +707,6 @@
         <number>170.314 (g)(3)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -775,7 +720,6 @@
         <number>170.314 (g)(4)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -789,7 +733,6 @@
         <number>170.314 (h)(1)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -803,7 +746,6 @@
         <number>170.314 (h)(2)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -817,7 +759,6 @@
         <number>170.314 (h)(3)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -831,7 +772,6 @@
         <number>170.315 (a)(1)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -845,7 +785,6 @@
         <number>170.315 (a)(2)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -859,7 +798,6 @@
         <number>170.315 (a)(3)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -873,7 +811,6 @@
         <number>170.315 (a)(4)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -887,7 +824,6 @@
         <number>170.315 (a)(5)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -901,7 +837,6 @@
         <number>170.315 (a)(6)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -915,7 +850,6 @@
         <number>170.315 (a)(7)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -929,7 +863,6 @@
         <number>170.315 (a)(8)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -943,7 +876,6 @@
         <number>170.315 (a)(9)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -957,7 +889,6 @@
         <number>170.315 (a)(10)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -971,7 +902,6 @@
         <number>170.315 (a)(11)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -985,7 +915,6 @@
         <number>170.315 (a)(12)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -999,7 +928,6 @@
         <number>170.315 (a)(13)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1013,7 +941,6 @@
         <number>170.315 (a)(14)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1027,7 +954,6 @@
         <number>170.315 (a)(15)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1041,7 +967,6 @@
         <number>170.315 (b)(1)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1055,7 +980,6 @@
         <number>170.315 (b)(2)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1069,7 +993,6 @@
         <number>170.315 (b)(3)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1083,7 +1006,6 @@
         <number>170.315 (b)(4)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1097,7 +1019,6 @@
         <number>170.315 (b)(5)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1111,7 +1032,6 @@
         <number>170.315 (b)(6)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1125,7 +1045,6 @@
         <number>170.315 (b)(7)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1139,7 +1058,6 @@
         <number>170.315 (b)(8)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1153,7 +1071,6 @@
         <number>170.315 (b)(9)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1167,7 +1084,6 @@
         <number>170.315 (b)(10)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1181,7 +1097,6 @@
         <number>170.315 (c)(1)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1195,7 +1110,6 @@
         <number>170.315 (c)(2)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1209,7 +1123,6 @@
         <number>170.315 (c)(3)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1223,7 +1136,6 @@
         <number>170.315 (c)(4)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1237,7 +1149,6 @@
         <number>170.315 (d)(1)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1251,7 +1162,6 @@
         <number>170.315 (d)(2)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1265,7 +1175,6 @@
         <number>170.315 (d)(3)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1279,7 +1188,6 @@
         <number>170.315 (d)(4)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1293,7 +1201,6 @@
         <number>170.315 (d)(5)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1307,7 +1214,6 @@
         <number>170.315 (d)(6)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1321,7 +1227,6 @@
         <number>170.315 (d)(7)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1335,7 +1240,6 @@
         <number>170.315 (d)(8)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1349,7 +1253,6 @@
         <number>170.315 (d)(9)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1363,7 +1266,6 @@
         <number>170.315 (d)(10)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1377,7 +1279,6 @@
         <number>170.315 (d)(11)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1391,7 +1292,6 @@
         <number>170.315 (d)(12)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>true</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1405,7 +1305,6 @@
         <number>170.315 (d)(13)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>true</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1419,7 +1318,6 @@
         <number>170.315 (e)(1)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1433,7 +1331,6 @@
         <number>170.315 (e)(2)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1447,7 +1344,6 @@
         <number>170.315 (e)(3)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1461,7 +1357,6 @@
         <number>170.315 (f)(1)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1475,7 +1370,6 @@
         <number>170.315 (f)(2)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1489,7 +1383,6 @@
         <number>170.315 (f)(3)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1503,7 +1396,6 @@
         <number>170.315 (f)(4)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1517,7 +1409,6 @@
         <number>170.315 (f)(5)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1531,7 +1422,6 @@
         <number>170.315 (f)(6)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1545,7 +1435,6 @@
         <number>170.315 (f)(7)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1559,7 +1448,6 @@
         <number>170.315 (g)(1)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1573,7 +1461,6 @@
         <number>170.315 (g)(2)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1587,7 +1474,6 @@
         <number>170.315 (g)(3)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1601,7 +1487,6 @@
         <number>170.315 (g)(4)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1615,7 +1500,6 @@
         <number>170.315 (g)(5)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1629,7 +1513,6 @@
         <number>170.315 (g)(6)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1643,7 +1526,6 @@
         <number>170.315 (g)(7)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1657,7 +1539,6 @@
         <number>170.315 (g)(8)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1671,7 +1552,6 @@
         <number>170.315 (g)(9)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1685,7 +1565,6 @@
         <number>170.315 (g)(10)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1699,7 +1578,6 @@
         <number>170.315 (h)(1)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
@@ -1713,7 +1591,6 @@
         <number>170.315 (h)(2)</number>
         <properties>
             <standardsTested>true</standardsTested>
-            <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
             <additionalSoftware>true</additionalSoftware>
