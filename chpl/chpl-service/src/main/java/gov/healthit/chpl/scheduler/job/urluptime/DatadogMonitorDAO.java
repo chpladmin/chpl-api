@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
+import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import lombok.extern.log4j.Log4j2;
 
@@ -25,9 +26,7 @@ public class DatadogMonitorDAO extends BaseDAOImpl {
 
     public DatadogMonitor create(DatadogMonitor datadogMonitor) throws EntityRetrievalException {
         DatadogMonitorEntity entity = DatadogMonitorEntity.builder()
-                .developer(DeveloperEntity.builder()
-                        .id(datadogMonitor.getDeveloper().getId())
-                        .build())
+                .developer(getSimpleDeveloperById(datadogMonitor.getDeveloper().getId(), false))
                 .url(datadogMonitor.getUrl())
                 .datadogPublicId(datadogMonitor.getDatadogPublicId())
                 .creationDate(new Date())
@@ -93,4 +92,27 @@ public class DatadogMonitorDAO extends BaseDAOImpl {
         }
         return result.get(0);
     }
+
+    private DeveloperEntitySimple getSimpleDeveloperById(Long id, boolean includeDeleted) throws EntityRetrievalException {
+        String queryStr = "SELECT DISTINCT de "
+                + "FROM DeveloperEntitySimple de "
+                + "WHERE de.id = :entityid ";
+        if (!includeDeleted) {
+            queryStr += " AND de.deleted = false";
+        }
+
+        Query query = entityManager.createQuery(queryStr, DeveloperEntitySimple.class);
+        query.setParameter("entityid", id);
+        List<DeveloperEntitySimple> entities = query.getResultList();
+
+        if (entities == null || entities.size() == 0) {
+            String msg = msgUtil.getMessage("developer.notFound");
+            throw new EntityRetrievalException(msg);
+        } else if (entities.size() > 1) {
+            throw new EntityRetrievalException("Data error. Duplicate developer id in database.");
+        }
+        return entities.get(0);
+
+    }
+
 }

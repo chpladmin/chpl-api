@@ -1,7 +1,11 @@
 package gov.healthit.chpl.scheduler.job.urluptime;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
+
+import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
@@ -40,5 +44,16 @@ public class DatadogMonitorTestDAO extends BaseDAOImpl {
                 + "AND dmt.datadogMonitorId = :datadogMonitorId ", DatadogMonitorTestEntity.class)
                 .setParameter("datadogMonitorId", datadogMonitorId)
                 .getResultList();
+    }
+
+    public Long getTestCountForDate(LocalDate dateToCheck) {
+        Query query = entityManager.createQuery(
+                "SELECT count(*) "
+                + "FROM  DatadogMonitorTestEntity dmt "
+                + "WHERE dmt.checkTime >= :startDateTime "
+                + "AND dmt.checkTime <= :endDateTime")
+                .setParameter("startDateTime", dateToCheck.atStartOfDay())
+                .setParameter("endDateTime", dateToCheck.atTime(LocalTime.MAX));
+        return (Long) query.getSingleResult();
     }
 }

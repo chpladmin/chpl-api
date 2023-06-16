@@ -13,7 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.entity.developer.DeveloperEntity;
+import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,7 +35,7 @@ public class DatadogMonitorEntity {
     @Basic(optional = false)
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "developer_id")
-    private DeveloperEntity developer;;
+    private DeveloperEntitySimple developer;;
 
     @Basic(optional = false)
     @Column(name = "url", nullable = false)
