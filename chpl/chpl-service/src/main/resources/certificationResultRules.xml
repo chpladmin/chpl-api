@@ -6,7 +6,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -22,7 +21,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -38,7 +36,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -54,7 +51,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -70,7 +66,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -86,7 +81,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -102,7 +96,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -118,7 +111,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -134,7 +126,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -150,7 +141,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -166,7 +156,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -182,7 +171,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -198,7 +186,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -214,7 +201,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -230,7 +216,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -246,7 +231,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -262,7 +246,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -278,7 +261,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -294,7 +276,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -310,7 +291,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -326,7 +306,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -342,7 +321,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -358,7 +336,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -374,7 +351,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -390,7 +366,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -406,7 +381,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -422,7 +396,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -438,7 +411,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -454,7 +426,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -470,7 +441,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -486,7 +456,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -502,7 +471,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -518,7 +486,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -534,7 +501,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -550,7 +516,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -566,7 +531,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -582,7 +546,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -598,7 +561,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -614,7 +576,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -630,7 +591,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -646,7 +606,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -662,7 +621,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -678,7 +636,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -694,7 +651,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -710,7 +666,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>true</g1Success>
             <g2Success>true</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -726,7 +681,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -742,7 +696,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -758,7 +711,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -774,7 +726,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -790,7 +741,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -806,7 +756,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -822,7 +771,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -838,7 +786,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -854,7 +801,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -870,7 +816,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -886,7 +831,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -902,7 +846,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -918,7 +861,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -934,7 +876,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -950,7 +891,6 @@
         <properties>
             <standardsTested>false</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -966,7 +906,6 @@
         <properties>
             <standardsTested>false</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -982,7 +921,6 @@
         <properties>
             <standardsTested>false</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -998,7 +936,6 @@
         <properties>
             <standardsTested>false</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1014,7 +951,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1030,7 +966,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1046,7 +981,6 @@
         <properties>
             <standardsTested>false</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1062,7 +996,6 @@
         <properties>
             <standardsTested>false</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1078,7 +1011,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1094,7 +1026,6 @@
         <properties>
             <standardsTested>false</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1110,7 +1041,6 @@
         <properties>
             <standardsTested>false</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1126,7 +1056,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1142,7 +1071,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1158,7 +1086,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1174,7 +1101,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1190,7 +1116,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1206,7 +1131,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1222,7 +1146,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1238,7 +1161,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1254,7 +1176,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1270,7 +1191,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1286,7 +1206,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1302,7 +1221,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1318,7 +1236,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1334,7 +1251,6 @@
         <properties>
             <standardsTested>false</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1350,7 +1266,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1366,7 +1281,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1382,7 +1296,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1398,7 +1311,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1414,7 +1326,6 @@
         <properties>
             <standardsTested>false</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1430,7 +1341,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1446,7 +1356,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1462,7 +1371,6 @@
         <properties>
             <standardsTested>false</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1478,7 +1386,6 @@
         <properties>
             <standardsTested>false</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1494,7 +1401,6 @@
         <properties>
             <standardsTested>false</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1510,7 +1416,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1526,7 +1431,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1542,7 +1446,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1558,7 +1461,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1574,7 +1476,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1589,8 +1490,6 @@
         <number>170.315 (d)(12)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <documentationUrl>true</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>true</attestationAnswer>
@@ -1605,8 +1504,6 @@
         <number>170.315 (d)(13)</number>
         <properties>
             <standardsTested>false</standardsTested>
-            <documentationUrl>true</documentationUrl>
-            <useCases>true</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>true</attestationAnswer>
@@ -1622,7 +1519,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1638,7 +1534,6 @@
         <properties>
             <standardsTested>false</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1654,7 +1549,6 @@
         <properties>
             <standardsTested>false</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1670,7 +1564,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1686,7 +1579,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1702,7 +1594,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1718,7 +1609,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1734,7 +1624,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1750,7 +1639,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1766,7 +1654,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1782,7 +1669,6 @@
         <properties>
             <standardsTested>false</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1798,7 +1684,6 @@
         <properties>
             <standardsTested>false</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1814,7 +1699,6 @@
         <properties>
             <standardsTested>false</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1830,7 +1714,6 @@
         <properties>
             <standardsTested>false</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1846,7 +1729,6 @@
         <properties>
             <standardsTested>false</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1862,7 +1744,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1878,7 +1759,6 @@
         <properties>
             <standardsTested>false</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1894,7 +1774,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1910,7 +1789,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1926,7 +1804,6 @@
         <properties>
             <standardsTested>false</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1942,7 +1819,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
@@ -1958,7 +1834,6 @@
         <properties>
             <standardsTested>true</standardsTested>
             <documentationUrl>false</documentationUrl>
-            <useCases>false</useCases>
             <g1Success>false</g1Success>
             <g2Success>false</g2Success>
             <attestationAnswer>false</attestationAnswer>
