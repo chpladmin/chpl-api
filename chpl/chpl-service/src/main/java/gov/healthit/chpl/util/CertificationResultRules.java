@@ -49,9 +49,6 @@ public class CertificationResultRules {
     public static final String SED = "sed";
     public static final String SERVICE_BASE_URL_LIST = "serviceBaseUrlList";
     public static final String SVAP = "svap";
-    public static final String UCD_FIELDS = "ucd";
-    public static final String TEST_PARTICIPANT = "participant";
-    public static final String TEST_TASK = "task";
 
     private CertificationCriterionService criteriaService;
     private CertificationCriterionAttributeDAO certificationCriterionAttributeDao;
