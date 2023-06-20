@@ -1,29 +1,15 @@
 package gov.healthit.chpl.util;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import gov.healthit.chpl.dao.CertificationCriterionAttributeDAO;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.entity.CertificationCriterionAttributeEntity;
-import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -50,153 +36,122 @@ public class CertificationResultRules {
     public static final String SERVICE_BASE_URL_LIST = "serviceBaseUrlList";
     public static final String SVAP = "svap";
 
-    private CertificationCriterionService criteriaService;
     private CertificationCriterionAttributeDAO certificationCriterionAttributeDao;
     private Map<Long, List<CertificationResultOption>> rules = new HashMap<Long, List<CertificationResultOption>>();
 
     @Autowired
-    public CertificationResultRules(CertificationCriterionService criteriaService,
-            CertificationCriterionAttributeDAO certificationCriterionAttributeDao) {
-        this.criteriaService = criteriaService;
+    public CertificationResultRules(CertificationCriterionAttributeDAO certificationCriterionAttributeDao) {
         this.certificationCriterionAttributeDao = certificationCriterionAttributeDao;
-        setRulesUsingLegacyXmlFile();
-        setRulesUsingDatabase();
+        setRules();
     }
 
-    private void setRulesUsingLegacyXmlFile() {
-        Document dom;
-        // Make an instance of the DocumentBuilderFactory
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(false);
-        dbf.setCoalescing(true);
-        dbf.setExpandEntityReferences(true);
-        dbf.setIgnoringComments(true);
-        dbf.setIgnoringElementContentWhitespace(true);
-
-        ClassPathResource cpr = new ClassPathResource("certificationResultRules.xml");
-        try (InputStream xmlInput = cpr.getInputStream()) {
-            // use the factory to take an instance of the document builder
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            // parse using the builder to get the DOM mapping of the
-            // XML file
-            dom = db.parse(xmlInput);
-            Element doc = dom.getDocumentElement();
-            NodeList certNodes = doc.getElementsByTagName("certificationResult");
-            for (int i = 0; i < certNodes.getLength(); i++) {
-                Element certNode = (Element) certNodes.item(i);
-                List<CertificationCriterion> criteriaWithNumber = criteriaService.getByNumber(
-                        getTextValue(certNode, "number"));
-
-                NodeList propertiesNodes = certNode.getElementsByTagName("properties");
-                if (propertiesNodes.getLength() == 1) {
-                    Element certProperties = (Element) propertiesNodes.item(0);
-                    NodeList certPropertiesNodes = certProperties.getChildNodes();
-                    for (int j = 0; j < certPropertiesNodes.getLength(); j++) {
-                        Node propertyNode = certPropertiesNodes.item(j);
-                        if (propertyNode instanceof Element) {
-                            Element propertyElement = (Element) propertyNode;
-                            String propName = propertyElement.getNodeName();
-                            String propValue = propertyElement.getTextContent();
-                            boolean canHaveProperty = Boolean.valueOf(propValue);
-                            CertificationResultOption option = CertificationResultOption.builder()
-                                    .canHaveOption(propName.equals("gap") || canHaveProperty)
-                                    .optionName(propName)
-                                    .build();
-                            criteriaWithNumber.stream()
-                                .forEach(criterion -> addOptionForCriterion(criterion, option));
-                        }
-                    }
-                }
-            }
-        } catch (ParserConfigurationException pce) {
-            LOGGER.error(pce.getMessage(), pce);
-        } catch (SAXException se) {
-            LOGGER.error(se.getMessage(), se);
-        } catch (IOException ioe) {
-            LOGGER.error(ioe.getMessage(), ioe);
-        }
-    }
-
-    private void addOptionForCriterion(CertificationCriterion criterion, CertificationResultOption option) {
-        if (rules.get(criterion.getId()) == null) {
-            List<CertificationResultOption> options = new ArrayList<CertificationResultOption>();
-            options.add(option);
-            rules.put(criterion.getId(), options);
-        } else {
-            rules.get(criterion.getId()).add(option);
-        }
-    }
-
-    private void setRulesUsingDatabase() {
+    private void setRules() {
         List<CertificationCriterionAttributeEntity> attributes = certificationCriterionAttributeDao.getAllCriteriaAttributes();
         for (CertificationCriterionAttributeEntity attribute : attributes) {
             if (rules.get(attribute.getCriterion().getId()) == null) {
-                List<CertificationResultOption> options = new ArrayList<CertificationResultOption>();
-                rules.put(attribute.getCriterion().getId(), options);
+                rules.put(attribute.getCriterion().getId(), new ArrayList<CertificationResultOption>());
             }
-            if (attribute.getConformanceMethod()) {
-                rules.get(attribute.getCriterion().getId()).add(
-                        CertificationResultOption.builder()
-                        .canHaveOption(true)
-                        .optionName(CONFORMANCE_METHOD)
-                        .build());
-            }
-            if (attribute.getFunctionalityTested()) {
-                rules.get(attribute.getCriterion().getId()).add(
-                        CertificationResultOption.builder()
-                        .canHaveOption(true)
-                        .optionName(FUNCTIONALITY_TESTED)
-                        .build());
-            }
-            if (attribute.getOptionalStandard()) {
-                rules.get(attribute.getCriterion().getId()).add(
-                        CertificationResultOption.builder()
-                        .canHaveOption(true)
-                        .optionName(OPTIONAL_STANDARD)
-                        .build());
-            }
-            if (attribute.getPrivacySecurityFramework()) {
-                rules.get(attribute.getCriterion().getId()).add(
-                        CertificationResultOption.builder()
-                        .canHaveOption(true)
-                        .optionName(PRIVACY_SECURITY)
-                        .build());
-            }
-            if (attribute.getServiceBaseUrlList()) {
-                rules.get(attribute.getCriterion().getId()).add(
-                        CertificationResultOption.builder()
-                        .canHaveOption(true)
-                        .optionName(SERVICE_BASE_URL_LIST)
-                        .build());
-            }
-            if (attribute.getSvap()) {
-                rules.get(attribute.getCriterion().getId()).add(
-                        CertificationResultOption.builder()
-                        .canHaveOption(true)
-                        .optionName(SVAP)
-                        .build());
-            }
-            if (attribute.getTestProcedure()) {
-                rules.get(attribute.getCriterion().getId()).add(
-                        CertificationResultOption.builder()
-                        .canHaveOption(true)
-                        .optionName(TEST_PROCEDURE)
-                        .build());
-            }
-            if (attribute.getTestTool()) {
-                rules.get(attribute.getCriterion().getId()).add(
-                        CertificationResultOption.builder()
-                        .canHaveOption(true)
-                        .optionName(TEST_TOOLS_USED)
-                        .build());
-            }
-            if (attribute.getTestData()) {
-                rules.get(attribute.getCriterion().getId()).add(
-                        CertificationResultOption.builder()
-                        .canHaveOption(true)
-                        .optionName(TEST_DATA)
-                        .build());
-            }
+
+            rules.get(attribute.getCriterion().getId()).add(
+                CertificationResultOption.builder()
+                    .canHaveOption(attribute.getAdditionalSoftware())
+                    .optionName(ADDITIONAL_SOFTWARE)
+                .build());
+            rules.get(attribute.getCriterion().getId()).add(
+                CertificationResultOption.builder()
+                    .canHaveOption(attribute.getApiDocumentation())
+                    .optionName(API_DOCUMENTATION)
+                .build());
+            rules.get(attribute.getCriterion().getId()).add(
+                CertificationResultOption.builder()
+                    .canHaveOption(attribute.getAttestationAnswer())
+                    .optionName(ATTESTATION_ANSWER)
+                .build());
+            rules.get(attribute.getCriterion().getId()).add(
+                    CertificationResultOption.builder()
+                    .canHaveOption(attribute.getConformanceMethod())
+                    .optionName(CONFORMANCE_METHOD)
+                    .build());
+            rules.get(attribute.getCriterion().getId()).add(
+                CertificationResultOption.builder()
+                    .canHaveOption(attribute.getDocumentationUrl())
+                    .optionName(DOCUMENTATION_URL)
+                .build());
+            rules.get(attribute.getCriterion().getId()).add(
+                CertificationResultOption.builder()
+                    .canHaveOption(attribute.getExportDocumentation())
+                    .optionName(EXPORT_DOCUMENTATION)
+                .build());
+            rules.get(attribute.getCriterion().getId()).add(
+                CertificationResultOption.builder()
+                    .canHaveOption(attribute.getFunctionalityTested())
+                    .optionName(FUNCTIONALITY_TESTED)
+                .build());
+            rules.get(attribute.getCriterion().getId()).add(
+                CertificationResultOption.builder()
+                    .canHaveOption(attribute.getGap())
+                    .optionName(GAP)
+                .build());
+            rules.get(attribute.getCriterion().getId()).add(
+                CertificationResultOption.builder()
+                    .canHaveOption(attribute.getG1Success())
+                    .optionName(G1_SUCCESS)
+                .build());
+            rules.get(attribute.getCriterion().getId()).add(
+                CertificationResultOption.builder()
+                    .canHaveOption(attribute.getG2Success())
+                    .optionName(G2_SUCCESS)
+                .build());
+            rules.get(attribute.getCriterion().getId()).add(
+                CertificationResultOption.builder()
+                    .canHaveOption(attribute.getOptionalStandard())
+                    .optionName(OPTIONAL_STANDARD)
+                .build());
+            rules.get(attribute.getCriterion().getId()).add(
+                CertificationResultOption.builder()
+                    .canHaveOption(attribute.getPrivacySecurityFramework())
+                    .optionName(PRIVACY_SECURITY)
+                .build());
+            rules.get(attribute.getCriterion().getId()).add(
+                CertificationResultOption.builder()
+                    .canHaveOption(attribute.getSed())
+                    .optionName(SED)
+                .build());
+            rules.get(attribute.getCriterion().getId()).add(
+                CertificationResultOption.builder()
+                    .canHaveOption(attribute.getServiceBaseUrlList())
+                    .optionName(SERVICE_BASE_URL_LIST)
+                .build());
+            rules.get(attribute.getCriterion().getId()).add(
+                CertificationResultOption.builder()
+                    .canHaveOption(attribute.getTestStandard())
+                    .optionName(STANDARDS_TESTED)
+                .build());
+            rules.get(attribute.getCriterion().getId()).add(
+                CertificationResultOption.builder()
+                    .canHaveOption(attribute.getSvap())
+                    .optionName(SVAP)
+                .build());
+            rules.get(attribute.getCriterion().getId()).add(
+                CertificationResultOption.builder()
+                    .canHaveOption(attribute.getTestData())
+                    .optionName(TEST_DATA)
+                .build());
+            rules.get(attribute.getCriterion().getId()).add(
+                CertificationResultOption.builder()
+                    .canHaveOption(attribute.getTestProcedure())
+                    .optionName(TEST_PROCEDURE)
+                .build());
+            rules.get(attribute.getCriterion().getId()).add(
+                CertificationResultOption.builder()
+                    .canHaveOption(attribute.getTestTool())
+                    .optionName(TEST_TOOLS_USED)
+                .build());
+            rules.get(attribute.getCriterion().getId()).add(
+                CertificationResultOption.builder()
+                    .canHaveOption(attribute.getUseCases())
+                    .optionName(USE_CASES)
+                .build());
         }
     }
 
@@ -212,16 +167,5 @@ public class CertificationResultRules {
             }
         }
         return result;
-    }
-
-    private String getTextValue(Element ele, String tagName) {
-        String textVal = null;
-        NodeList nl = ele.getElementsByTagName(tagName);
-        if (nl != null && nl.getLength() > 0) {
-            Element el = (Element) nl.item(0);
-            textVal = el.getFirstChild().getNodeValue();
-        }
-
-        return textVal;
     }
 }

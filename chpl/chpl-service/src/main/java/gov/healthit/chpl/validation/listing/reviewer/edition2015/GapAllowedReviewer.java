@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -50,7 +51,7 @@ public class GapAllowedReviewer implements Reviewer {
     public void review(CertifiedProductSearchDetails listing) {
         if (isCertificationDateAfterCuresEffictiveRuleDate(listing)) {
             Optional<CertificationResult> f3Result = getF3Criterion(listing);
-            if (f3Result.isPresent() && f3Result.get().isSuccess() && f3Result.get().isGap()) {
+            if (f3Result.isPresent() && f3Result.get().isSuccess() && BooleanUtils.isTrue(f3Result.get().isGap())) {
                 listing.addBusinessErrorMessage(errorMessageUtil.getMessage("listing.criteria.f3CannotHaveGap"));
             }
         }
