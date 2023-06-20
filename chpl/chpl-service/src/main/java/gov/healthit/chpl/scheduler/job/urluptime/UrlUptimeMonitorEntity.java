@@ -20,12 +20,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "datadog_monitor")
+@Table(name = "url_uptime_monitor")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DatadogMonitorEntity {
+public class UrlUptimeMonitorEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -61,8 +61,8 @@ public class DatadogMonitorEntity {
     @Column(nullable = false, name = "deleted")
     private Boolean deleted;
 
-    public DatadogMonitor toDomain() {
-        return DatadogMonitor.builder()
+    public UrlUptimeMonitor toDomain() {
+        return UrlUptimeMonitor.builder()
                 .id(id)
                 .datadogPublicId(datadogPublicId)
                 .developer(developer.toDomain())

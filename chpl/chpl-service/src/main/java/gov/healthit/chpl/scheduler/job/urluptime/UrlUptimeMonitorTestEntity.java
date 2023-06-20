@@ -17,12 +17,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "datadog_monitor_test")
+@Table(name = "url_uptime_monitor_test")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DatadogMonitorTestEntity {
+public class UrlUptimeMonitorTestEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,8 +31,8 @@ public class DatadogMonitorTestEntity {
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "datadog_monitor_id", nullable = false)
-    private Long datadogMonitorId;
+    @Column(name = "url_uptime_monitor_id", nullable = false)
+    private Long urlUptimeMonitorId;
 
     @Basic(optional = false)
     @Column(name = "datadog_test_key", nullable = false)
@@ -62,10 +62,10 @@ public class DatadogMonitorTestEntity {
     @Column(nullable = false, name = "deleted")
     private Boolean deleted;
 
-    public DatadogMonitorTest toDomain() {
-        return DatadogMonitorTest.builder()
+    public UrlUptimeMonitorTest toDomain() {
+        return UrlUptimeMonitorTest.builder()
                 .id(id)
-                .datadogMonitorId(datadogMonitorId)
+                .urlUptimeMonitorId(urlUptimeMonitorId)
                 .datadogTestKey(datadogTestKey)
                 .checkTime(checkTime)
                 .passed(passed)

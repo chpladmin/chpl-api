@@ -16,16 +16,16 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Repository
-public class DatadogMonitorDAO extends BaseDAOImpl {
+public class UrlUptimeMonitorDAO extends BaseDAOImpl {
 
-    public List<DatadogMonitor> getAll() {
+    public List<UrlUptimeMonitor> getAll() {
         return getEntitiesAll().stream()
                 .map(entity -> entity.toDomain())
                 .toList();
     }
 
-    public DatadogMonitor create(DatadogMonitor datadogMonitor) throws EntityRetrievalException {
-        DatadogMonitorEntity entity = DatadogMonitorEntity.builder()
+    public UrlUptimeMonitor create(UrlUptimeMonitor datadogMonitor) throws EntityRetrievalException {
+        UrlUptimeMonitorEntity entity = UrlUptimeMonitorEntity.builder()
                 .developer(getSimpleDeveloperById(datadogMonitor.getDeveloper().getId(), false))
                 .url(datadogMonitor.getUrl())
                 .datadogPublicId(datadogMonitor.getDatadogPublicId())
@@ -40,8 +40,8 @@ public class DatadogMonitorDAO extends BaseDAOImpl {
         return entity.toDomain();
     }
 
-    public void delete(DatadogMonitor datadogMonitor) {
-        DatadogMonitorEntity entity = getEntityById(datadogMonitor.getId());
+    public void delete(UrlUptimeMonitor datadogMonitor) {
+        UrlUptimeMonitorEntity entity = getEntityById(datadogMonitor.getId());
         if (entity != null) {
             entity.setDeleted(true);
             entity.setLastModifiedUser(User.SYSTEM_USER_ID);
@@ -50,15 +50,15 @@ public class DatadogMonitorDAO extends BaseDAOImpl {
         }
     }
 
-    private DatadogMonitorEntity getEntityById(Long id) {
-        DatadogMonitorEntity entity = null;
+    private UrlUptimeMonitorEntity getEntityById(Long id) {
+        UrlUptimeMonitorEntity entity = null;
 
         Query query = entityManager.createQuery(
-                "from DatadogMonitorEntity "
-                + "where (NOT deleted = true) "
-                + "and id = :id", DatadogMonitorEntity.class);
+                "FROM UrlUptimeMonitorEntity "
+                + "WHERE (NOT deleted = true) "
+                + "AND id = :id", UrlUptimeMonitorEntity.class);
         query.setParameter("id", id);
-        List<DatadogMonitorEntity> result = query.getResultList();
+        List<UrlUptimeMonitorEntity> result = query.getResultList();
         if (result.size() > 0) {
             entity = result.get(0);
         }
@@ -66,9 +66,10 @@ public class DatadogMonitorDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private List<DatadogMonitorEntity> getEntitiesAll() {
-        return entityManager.createQuery("FROM DatadogMonitorEntity cume "
-                + "WHERE (cume.deleted = false)", DatadogMonitorEntity.class)
+    private List<UrlUptimeMonitorEntity> getEntitiesAll() {
+        return entityManager.createQuery(
+                "FROM UrlUptimeMonitorEntity uume "
+                + "WHERE (uume.deleted = false)", UrlUptimeMonitorEntity.class)
                 .getResultList();
     }
 

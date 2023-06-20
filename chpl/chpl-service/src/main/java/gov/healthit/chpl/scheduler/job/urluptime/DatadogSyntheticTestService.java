@@ -26,11 +26,11 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-public class SyntheticTestService {
+public class DatadogSyntheticTestService {
 
-    private SyntheticTestApiProvider apiProvider;
+    private DatadogSyntheticTestApiProvider apiProvider;
 
-    public SyntheticTestService(SyntheticTestApiProvider apiProvider) {
+    public DatadogSyntheticTestService(DatadogSyntheticTestApiProvider apiProvider) {
         this.apiProvider = apiProvider;
     }
 

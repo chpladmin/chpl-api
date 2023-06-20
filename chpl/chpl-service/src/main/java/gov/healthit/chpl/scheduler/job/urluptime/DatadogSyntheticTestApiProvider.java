@@ -11,14 +11,14 @@ import com.datadog.api.client.v1.api.SyntheticsApi;
 import lombok.Getter;
 
 @Component
-public class SyntheticTestApiProvider {
+public class DatadogSyntheticTestApiProvider {
     private String datadogApiKey;
     private String datadogAppKey;
 
     @Getter
     private SyntheticsApi apiInstance = null;
 
-    public SyntheticTestApiProvider(@Value("${datadog.apiKey}") String datadogApiKey, @Value("${datadog.appKey}") String datadogAppKey) {
+    public DatadogSyntheticTestApiProvider(@Value("${datadog.apiKey}") String datadogApiKey, @Value("${datadog.appKey}") String datadogAppKey) {
         this.datadogApiKey = datadogApiKey;
         this.datadogAppKey = datadogAppKey;
 

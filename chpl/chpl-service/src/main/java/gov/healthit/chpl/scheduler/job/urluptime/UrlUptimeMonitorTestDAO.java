@@ -13,14 +13,14 @@ import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 
 @Repository
-public class DatadogMonitorTestDAO extends BaseDAOImpl {
+public class UrlUptimeMonitorTestDAO extends BaseDAOImpl {
 
-    public DatadogMonitorTest create(DatadogMonitorTest chplUptimeMonitorTest) {
-        DatadogMonitorTestEntity entity = DatadogMonitorTestEntity.builder()
-                .datadogMonitorId(chplUptimeMonitorTest.getDatadogMonitorId())
-                .datadogTestKey(chplUptimeMonitorTest.getDatadogTestKey())
-                .checkTime(chplUptimeMonitorTest.getCheckTime())
-                .passed(chplUptimeMonitorTest.getPassed())
+    public UrlUptimeMonitorTest create(UrlUptimeMonitorTest urlUptimeMonitorTest) {
+        UrlUptimeMonitorTestEntity entity = UrlUptimeMonitorTestEntity.builder()
+                .urlUptimeMonitorId(urlUptimeMonitorTest.getUrlUptimeMonitorId())
+                .datadogTestKey(urlUptimeMonitorTest.getDatadogTestKey())
+                .checkTime(urlUptimeMonitorTest.getCheckTime())
+                .passed(urlUptimeMonitorTest.getPassed())
                 .creationDate(new Date())
                 .lastModifiedUser(User.SYSTEM_USER_ID)
                 .lastModifiedDate(new Date())
@@ -32,16 +32,16 @@ public class DatadogMonitorTestDAO extends BaseDAOImpl {
         return entity.toDomain();
     }
 
-    public List<DatadogMonitorTest> getChplUptimeMonitorTests(Long datadogMonitorId) {
+    public List<UrlUptimeMonitorTest> getChplUptimeMonitorTests(Long datadogMonitorId) {
         return getDatadogMonitorTestEntities(datadogMonitorId).stream()
                 .map(entity -> entity.toDomain())
                 .toList();
     }
 
-    private List<DatadogMonitorTestEntity> getDatadogMonitorTestEntities(Long datadogMonitorId) {
-        return entityManager.createQuery("FROM DatadogMonitorTestEntity dmt "
-                + "WHERE dmt.deleted = false "
-                + "AND dmt.datadogMonitorId = :datadogMonitorId ", DatadogMonitorTestEntity.class)
+    private List<UrlUptimeMonitorTestEntity> getDatadogMonitorTestEntities(Long datadogMonitorId) {
+        return entityManager.createQuery("FROM UrlUptimeMonitorTestEntity uumt "
+                + "WHERE uumt.deleted = false "
+                + "AND uumt.datadogMonitorId = :datadogMonitorId ", UrlUptimeMonitorTestEntity.class)
                 .setParameter("datadogMonitorId", datadogMonitorId)
                 .getResultList();
     }
@@ -49,9 +49,9 @@ public class DatadogMonitorTestDAO extends BaseDAOImpl {
     public Long getTestCountForDate(LocalDate dateToCheck) {
         Query query = entityManager.createQuery(
                 "SELECT count(*) "
-                + "FROM  DatadogMonitorTestEntity dmt "
-                + "WHERE dmt.checkTime >= :startDateTime "
-                + "AND dmt.checkTime <= :endDateTime")
+                + "FROM  UrlUptimeMonitorTestEntity uumt "
+                + "WHERE uumt.checkTime >= :startDateTime "
+                + "AND uumt.checkTime <= :endDateTime")
                 .setParameter("startDateTime", dateToCheck.atStartOfDay())
                 .setParameter("endDateTime", dateToCheck.atTime(LocalTime.MAX));
         return (Long) query.getSingleResult();

@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class DatadogMonitor {
+public class UrlUptimeMonitor {
     private Long id;
     private Developer developer;
     private String url;

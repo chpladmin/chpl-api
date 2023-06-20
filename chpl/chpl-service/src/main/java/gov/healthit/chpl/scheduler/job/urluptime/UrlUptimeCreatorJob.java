@@ -13,7 +13,7 @@ import lombok.extern.log4j.Log4j2;
 public class UrlUptimeCreatorJob extends QuartzJob {
 
     @Autowired
-    private DatadogChplSynchonizer datadogChplSynchonizer;
+    private DatadogUrlUptimeSynchonizer datadogChplSynchonizer;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {

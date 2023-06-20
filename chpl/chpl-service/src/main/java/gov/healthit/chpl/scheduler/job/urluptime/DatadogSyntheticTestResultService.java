@@ -19,12 +19,12 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2()
 @Component
-public class SyntheticTestResultService {
+public class DatadogSyntheticTestResultService {
 
-    private SyntheticTestApiProvider apiProvider;
+    private DatadogSyntheticTestApiProvider apiProvider;
 
     @Autowired
-    public SyntheticTestResultService(SyntheticTestApiProvider apiProvider) {
+    public DatadogSyntheticTestResultService(DatadogSyntheticTestApiProvider apiProvider) {
         this.apiProvider = apiProvider;
     }
 
@@ -36,7 +36,6 @@ public class SyntheticTestResultService {
         params.fromTs(startTime.toInstant().toEpochMilli());
         params.toTs(endTime.toInstant().toEpochMilli());
 
-        LOGGER.info("Retrieving tests for {} between {} and {}", publicTestKey, startTime, endTime);
         SyntheticsGetAPITestLatestResultsResponse response;
         List<SyntheticsAPITestResultShort> testResults = new ArrayList<SyntheticsAPITestResultShort>();
         try {
@@ -47,7 +46,7 @@ public class SyntheticTestResultService {
                 params.fromTs(ts);
                 response = apiProvider.getApiInstance().getAPITestLatestResults(publicTestKey, params);
             }
-            LOGGER.info("Found {} tests for monitor {}", testResults.size(), publicTestKey);
+            LOGGER.info("Found {} tests for monitor {} for {} between {} and {}", testResults.size(), publicTestKey, startTime, endTime);
 
         } catch (ApiException e) {
             response = null;
