@@ -28,6 +28,9 @@
       <postgresql.version>42.6.0</postgresql.version>
       <quartz.version>2.4.0-rc2</quartz.version>
       <zxcvbn.version>1.7.0</zxcvbn.version>
+      <spring.data.redis.version>3.1.0</spring.data.redis.version>
+      <redisson.version>3.21.3</redisson.version>
+      <ff4j.store.redis.version>2.0.0</ff4j.store.redis.version>
     </properties>
 
     <dependencies>
@@ -160,11 +163,6 @@
             <version>0.4.14</version>
         </dependency>
         <dependency>
-            <groupId>net.sf.ehcache</groupId>
-            <artifactId>ehcache</artifactId>
-            <version>2.10.9.2</version>
-        </dependency>
-        <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
             <version>${aspectj.version}</version>
@@ -275,10 +273,11 @@
             <artifactId>ff4j-core</artifactId>
             <version>${ff4j.version}</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.ff4j/ff4j-store-redis -->
         <dependency>
             <groupId>org.ff4j</groupId>
-            <artifactId>ff4j-store-ehcache</artifactId>
-            <version>${ff4j.version}</version>
+            <artifactId>ff4j-store-redis</artifactId>
+            <version>${ff4j.store.redis.version}</version>
         </dependency>
 
         <!-- @Build annotation for generation of builder pattern -->
@@ -337,6 +336,19 @@
             <groupId>org.eclipse.collections</groupId>
             <artifactId>eclipse-collections</artifactId>
             <version>12.0.0.M1</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-redis -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-redis</artifactId>
+            <version>${spring.data.redis.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson</artifactId>
+            <version>${redisson.version}</version>
         </dependency>
 
         <!-- Provides Java interface to Datdog API -->

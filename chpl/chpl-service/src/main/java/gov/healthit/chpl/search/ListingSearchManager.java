@@ -39,7 +39,7 @@ public class ListingSearchManager {
     public  List<ListingSearchResult> getAllListingsNoCache() {
         List<ListingSearchResult> results = searchDao.getListingSearchResults();
         results.parallelStream()
-            .forEach(searchResult -> populateDirectReviews(searchResult));
+                .forEach(searchResult -> populateDirectReviews(searchResult));
         return results;
     }
 
