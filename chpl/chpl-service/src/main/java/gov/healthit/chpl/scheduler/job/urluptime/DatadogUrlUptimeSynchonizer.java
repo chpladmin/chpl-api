@@ -75,13 +75,14 @@ public class DatadogUrlUptimeSynchonizer {
         List<SyntheticsTestDetails> syntheticsTestDetails = datadogSyntheticTestService.getAllSyntheticTests();
 
         addMissingUrlUptimeMonitorsToDb(syntheticsTestDetails, urlUptimeMonitors);
-        removeUnusedUrlUptimeMonitors(syntheticsTestDetails, urlUptimeMonitors);;
+        removeUnusedUrlUptimeMonitors(syntheticsTestDetails, urlUptimeMonitors);
     }
 
     private void addMissingDatadogSyntheticApiTests(List<ServiceBasedUrl> serviceBasedUrls, List<SyntheticsTestDetails> syntheticTestDetails) {
         List<ServiceBasedUrl> urlsNotInDatadog = new ArrayList<ServiceBasedUrl>(serviceBasedUrls);
         urlsNotInDatadog.removeIf(sbu -> syntheticTestDetails.stream()
-                .filter(synthTest -> synthTest.getConfig().getRequest().getUrl().equals(sbu.getUrl()))
+                .filter(synthTest -> synthTest.getConfig().getRequest().getUrl().equals(sbu.getUrl())
+                        && getDeveloperIdFromTags(synthTest.getTags()).equals(sbu.getDeveloperId()))
                 .findAny()
                 .isPresent());
 
@@ -94,7 +95,8 @@ public class DatadogUrlUptimeSynchonizer {
         List<SyntheticsTestDetails> syntheticsTestDetailsNotUsed = new ArrayList<SyntheticsTestDetails>(syntheticTestDetails);
 
         syntheticsTestDetailsNotUsed.removeIf(std -> serviceBasedUrls.stream()
-                .filter(serviceBasedUrl -> serviceBasedUrl.getUrl().equals(std.getConfig().getRequest().getUrl()))
+                .filter(serviceBasedUrl -> serviceBasedUrl.getUrl().equals(std.getConfig().getRequest().getUrl())
+                        && serviceBasedUrl.getDeveloperId().equals(getDeveloperIdFromTags(std.getTags())))
                 .findAny()
                 .isPresent());
 
@@ -107,7 +109,8 @@ public class DatadogUrlUptimeSynchonizer {
         List<SyntheticsTestDetails> syntheticTestsNotInDatdogMonitors = new ArrayList<SyntheticsTestDetails>(syntheticTestDetails);
 
         syntheticTestsNotInDatdogMonitors.removeIf(synthTest -> urlUptimeMonitors.stream()
-                .filter(urlUptimeMonitor -> urlUptimeMonitor.getUrl().equals(synthTest.getConfig().getRequest().getUrl()))
+                .filter(urlUptimeMonitor -> urlUptimeMonitor.getUrl().equals(synthTest.getConfig().getRequest().getUrl())
+                        && urlUptimeMonitor.getDeveloper().getId().equals(getDeveloperIdFromTags(synthTest.getTags())))
                 .findAny()
                 .isPresent());
 
@@ -126,7 +129,8 @@ public class DatadogUrlUptimeSynchonizer {
         List<UrlUptimeMonitor> urlUptimeMonitorsNotInSynthTests = new ArrayList<UrlUptimeMonitor>(urlUptimeMonitors);
 
         urlUptimeMonitorsNotInSynthTests.removeIf(monitor -> syntheticTestDetails.stream()
-                .filter(synthTest -> synthTest.getConfig().getRequest().getUrl().equals(monitor.getUrl()))
+                .filter(synthTest -> synthTest.getConfig().getRequest().getUrl().equals(monitor.getUrl())
+                        && getDeveloperIdFromTags(synthTest.getTags()).equals(monitor.getDeveloper().getId()))
                 .findAny()
                 .isPresent());
 
