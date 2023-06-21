@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import lombok.extern.log4j.Log4j2;
 
 @Component
-@Log4j2
+@Log4j2(topic = "serviceBasedUrlUptimeEmailJobLogger")
 public class ServiceBasedUrlUptimeCsvWriter {
 
     private String reportFileName;

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "urlUptimeEmailJobLogger")
+@Log4j2(topic = "serviceBasedUrlUptimeEmailJobLogger")
 @Component
 public class ServiceBasedUrlUptimeCalculator {
     private UrlUptimeMonitorDAO urlUptimeMonitorDAO;

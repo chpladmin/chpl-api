@@ -8,8 +8,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.extern.log4j.Log4j2;
 
-//@Log4j2(topic =  "urlUptimeCreatorJobLogger")
-@Log4j2
+@Log4j2(topic =  "serviceBasedUrlUptimeCreatorJobLogger")
 public class ServiceBasedUrlUptimeCreatorJob extends QuartzJob {
 
     @Autowired

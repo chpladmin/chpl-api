@@ -15,7 +15,7 @@ import com.datadog.api.client.v1.model.SyntheticsTestDetails;
 import gov.healthit.chpl.domain.Developer;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "serviceBasedUrlUptimeCreatorJobLogger")
 @Component
 public class DatadogUrlUptimeSynchonizer {
     private static final Long DAYS_TO_LOOK_BACK_FOR_RESULTS = 7L;

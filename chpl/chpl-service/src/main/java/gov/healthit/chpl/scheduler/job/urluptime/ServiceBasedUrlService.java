@@ -25,7 +25,7 @@ import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "serviceBasedUrlUptimeCreatorJobLogger")
 @Component
 public class ServiceBasedUrlService {
 

@@ -24,7 +24,7 @@ import com.datadog.api.client.v1.model.SyntheticsTestRequest;
 
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "serviceBasedUrlUptimeCreatorJobLogger")
 @Component
 public class DatadogSyntheticTestService {
 

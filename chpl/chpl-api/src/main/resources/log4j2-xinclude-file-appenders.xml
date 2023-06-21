@@ -694,9 +694,9 @@
         </Policies>
     </RollingFile>
 
-    <RollingFile name="urlUptimeCreatorJob"
-        fileName="${logDir}/scheduler/urlUptimeCreatorJob.log"
-        filePattern="${logDir}/scheduler/history/urlUptimeCreatorJob-%d{yyyy-MM-dd}.log"
+    <RollingFile name="serviceBasedUrlUptimeCreatorJob"
+        fileName="${logDir}/scheduler/serviceBasedUrlUptimeCreatorJob.log"
+        filePattern="${logDir}/scheduler/history/serviceBasedUrlUptimeCreatorJob-%d{yyyy-MM-dd}.log"
         filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
@@ -707,9 +707,9 @@
         </Policies>
     </RollingFile>
 
-    <RollingFile name="urlUptimeEmailJob"
-        fileName="${logDir}/scheduler/urlUptimeEmailJob.log"
-        filePattern="${logDir}/scheduler/history/urlUptimeEmailJob-%d{yyyy-MM-dd}.log"
+    <RollingFile name="serviceBasedUrlUptimeEmailJob"
+        fileName="${logDir}/scheduler/serviceBasedUrlUptimeEmailJob.log"
+        filePattern="${logDir}/scheduler/history/serviceBasedUrlUptimeEmailJob-%d{yyyy-MM-dd}.log"
         filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
