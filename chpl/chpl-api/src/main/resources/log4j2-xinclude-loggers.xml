@@ -228,10 +228,10 @@
     </Logger>
     <Logger name="serviceBasedUrlUptimeCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="serviceBasedUrlUptimeCreatorJob" />
-        <AppenderRef ref="serviceBasedrlUptimeCreatorJobJson" />
+        <AppenderRef ref="serviceBasedUrlUptimeCreatorJobJson" />
     </Logger>
-    <Logger name="serviceBasedrlUptimeEmailJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="serviceBasedrlUptimeEmailJob" />
+    <Logger name="serviceBasedUrlUptimeEmailJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="serviceBasedUrlUptimeEmailJob" />
         <AppenderRef ref="serviceBasedUrlUptimeEmailJobJson" />
     </Logger>
 </Loggers>
