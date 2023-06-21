@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.datadog.api.client.ApiException;
@@ -29,9 +30,11 @@ import lombok.extern.log4j.Log4j2;
 public class DatadogSyntheticTestService {
 
     private DatadogSyntheticTestApiProvider apiProvider;
+    private Boolean datadogIsReadOnly;
 
-    public DatadogSyntheticTestService(DatadogSyntheticTestApiProvider apiProvider) {
+    public DatadogSyntheticTestService(DatadogSyntheticTestApiProvider apiProvider, @Value("${datadog.syntheticTest.readOnly}") Boolean datadogIsReadOnly) {
         this.apiProvider = apiProvider;
+        this.datadogIsReadOnly = datadogIsReadOnly;
     }
 
     public List<SyntheticsTestDetails> getAllSyntheticTests() {
@@ -45,7 +48,12 @@ public class DatadogSyntheticTestService {
 
     public void deleteSyntheticApiTest(List<String> publicIds) {
         try {
-            apiProvider.getApiInstance().deleteTests(new SyntheticsDeleteTestsPayload().publicIds(publicIds));
+            if (datadogIsReadOnly) {
+                LOGGER.info("Not deleting from datadog (due to environment setting) with Public Ids: {}", publicIds);
+            } else {
+                apiProvider.getApiInstance().deleteTests(new SyntheticsDeleteTestsPayload().publicIds(publicIds));
+            }
+
         } catch (ApiException e) {
             LOGGER.error("Could not delete Synthetic Tests from Datadog: {}", publicIds, e);
         }
@@ -93,7 +101,6 @@ public class DatadogSyntheticTestService {
                                         .from("08:00")
                                         .to("17:00")))
                         .tickEvery(1200L))
-
                 .locations(Collections.singletonList("aws:us-east-2"))
                 .message("Failed: " + url)
                 .type(SyntheticsAPITestType.API)
@@ -101,7 +108,12 @@ public class DatadogSyntheticTestService {
                 .tags(List.of("developer:" + developerId));
 
         try {
-            return apiProvider.getApiInstance().createSyntheticsAPITest(body);
+            if (datadogIsReadOnly) {
+                LOGGER.info("Not updating datadog (due to environment setting) with Developer: {} and URL: {}", developerId, url);
+                return body;
+            } else {
+                return apiProvider.getApiInstance().createSyntheticsAPITest(body);
+            }
         } catch (ApiException e) {
             LOGGER.error("Could not create Synthetic Tests for URL: {}", url, e);
             return null;
