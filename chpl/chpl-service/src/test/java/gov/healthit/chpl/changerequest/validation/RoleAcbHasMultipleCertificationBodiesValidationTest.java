@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public class RoleAcbHasMultipleCertificationBodiesValidationTest {
@@ -24,7 +24,7 @@ public class RoleAcbHasMultipleCertificationBodiesValidationTest {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(
-                Arrays.asList(CertificationBodyDTO.builder().build()));
+                Arrays.asList(CertificationBody.builder().build()));
 
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
                 .resourcePermissions(resourcePermissions)
@@ -40,7 +40,7 @@ public class RoleAcbHasMultipleCertificationBodiesValidationTest {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(
-                Arrays.asList(CertificationBodyDTO.builder().build()));
+                Arrays.asList(CertificationBody.builder().build()));
 
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
                 .resourcePermissions(resourcePermissions)
@@ -57,8 +57,8 @@ public class RoleAcbHasMultipleCertificationBodiesValidationTest {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(
-                Arrays.asList(CertificationBodyDTO.builder().build(),
-                        CertificationBodyDTO.builder().build()));
+                Arrays.asList(CertificationBody.builder().build(),
+                        CertificationBody.builder().build()));
 
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
                 .resourcePermissions(resourcePermissions)

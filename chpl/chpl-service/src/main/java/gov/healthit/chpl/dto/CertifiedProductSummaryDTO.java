@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Date;
 
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.contact.PointOfContact;
@@ -33,7 +34,7 @@ public class CertifiedProductSummaryDTO implements Serializable {
     private String certificationStatus;
     private Date certificationDate;
     private Boolean curesUpdate;
-    private CertificationBodyDTO acb;
+    private CertificationBody acb;
     private Developer developer;
     private Product product;
     private ProductVersionDTO version;
@@ -61,11 +62,12 @@ public class CertifiedProductSummaryDTO implements Serializable {
         this.certificationDate = entity.getCertificationDate();
         this.curesUpdate = entity.getCuresUpdate();
         this.year = entity.getYear();
-        this.acb = new CertificationBodyDTO();
-        this.acb.setId(entity.getCertificationBodyId());
-        this.acb.setName(entity.getCertificationBodyName());
-        this.acb.setAcbCode(entity.getAcbCode());
-        this.acb.setWebsite(entity.getCertificationBodyWebsite());
+        this.acb = CertificationBody.builder()
+                .id(entity.getCertificationBodyId())
+                .name(entity.getCertificationBodyName())
+                .acbCode(entity.getAcbCode())
+                .website(entity.getCertificationBodyWebsite())
+                .build();
         this.developer = new Developer();
         this.developer.setName(entity.getDeveloperName());
         PointOfContact contact = new PointOfContact();
@@ -96,11 +98,12 @@ public class CertifiedProductSummaryDTO implements Serializable {
         this.certificationDate = entity.getCertificationDate();
         this.curesUpdate = entity.getCuresUpdate();
         this.year = entity.getYear();
-        this.acb = new CertificationBodyDTO();
-        this.acb.setId(entity.getCertificationBodyId());
-        this.acb.setName(entity.getCertificationBodyName());
-        this.acb.setAcbCode(entity.getCertificationBodyCode());
-        this.acb.setRetired(entity.getAcbIsRetired());
+        this.acb = CertificationBody.builder()
+                .id(entity.getCertificationBodyId())
+                .name(entity.getCertificationBodyName())
+                .acbCode(entity.getCertificationBodyCode())
+                .retired(entity.getAcbIsRetired())
+                .build();
         this.developer = new Developer();
         this.developer.setId(entity.getDeveloperId());
         this.developer.setName(entity.getDeveloperName());

@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -64,25 +64,25 @@ public class CertificationBodyNormalizer {
 
     private void updateListingFromAcbName(CertifiedProductSearchDetails listing) {
         String acbName = MapUtils.getString(listing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_NAME_KEY);
-        CertificationBodyDTO foundAcb = acbDao.getByName(acbName);
-        updateListingAcbFromDto(listing, foundAcb);
+        CertificationBody foundAcb = acbDao.getByName(acbName);
+        updateListingAcbFromFoundAcb(listing, foundAcb);
     }
 
     private void updateListingFromAcbCode(CertifiedProductSearchDetails listing) {
         String acbCode = MapUtils.getString(listing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_CODE_KEY);
-        CertificationBodyDTO foundAcb = acbDao.getByCode(acbCode);
-        updateListingAcbFromDto(listing, foundAcb);
+        CertificationBody foundAcb = acbDao.getByCode(acbCode);
+        updateListingAcbFromFoundAcb(listing, foundAcb);
     }
 
     private void updateListingFromAcbId(CertifiedProductSearchDetails listing) {
         Long acbId = MapUtils.getLong(listing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_ID_KEY);
-        CertificationBodyDTO foundAcb = null;
+        CertificationBody foundAcb = null;
         try {
             foundAcb = acbDao.getById(acbId);
         } catch (EntityRetrievalException ex) {
             LOGGER.warn("No ACB found with ID " + acbId);
         }
-        updateListingAcbFromDto(listing, foundAcb);
+        updateListingAcbFromFoundAcb(listing, foundAcb);
     }
 
     private boolean isAcbPortionOfChplProductNumberValid(CertifiedProductSearchDetails listing) {
@@ -94,21 +94,21 @@ public class CertificationBodyNormalizer {
 
     private void updateAcbFromChplProductNumber(CertifiedProductSearchDetails listing) {
         String acbCodeFromChplProductNumber = chplProductNumberUtil.getAcbCode(listing.getChplProductNumber());
-        CertificationBodyDTO foundAcb = acbDao.getByCode(acbCodeFromChplProductNumber);
+        CertificationBody foundAcb = acbDao.getByCode(acbCodeFromChplProductNumber);
         if (foundAcb != null) {
             listing.setCertifyingBody(new HashMap<String, Object>());
-            updateListingAcbFromDto(listing, foundAcb);
+            updateListingAcbFromFoundAcb(listing, foundAcb);
         }
     }
 
-    private void updateListingAcbFromDto(CertifiedProductSearchDetails listing, CertificationBodyDTO acbDto) {
-        if (acbDto != null) {
+    private void updateListingAcbFromFoundAcb(CertifiedProductSearchDetails listing, CertificationBody foundAcb) {
+        if (foundAcb != null) {
             if (listing.getCertifyingBody() == null) {
                 listing.setCertifyingBody(new HashMap<String, Object>());
             }
-            listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, acbDto.getId());
-            listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_CODE_KEY, acbDto.getAcbCode());
-            listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_NAME_KEY, acbDto.getName());
+            listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_ID_KEY, foundAcb.getId());
+            listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_CODE_KEY, foundAcb.getAcbCode());
+            listing.getCertifyingBody().put(CertifiedProductSearchDetails.ACB_NAME_KEY, foundAcb.getName());
         }
     }
 }

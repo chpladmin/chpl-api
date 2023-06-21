@@ -17,7 +17,7 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.complaint.ComplaintDAO;
 import gov.healthit.chpl.complaint.domain.ComplainantType;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -492,7 +492,7 @@ public class ComplaintSearchRequestValidatorTest {
     @Test
     public void validate_singleValidAcbId_noErrors() throws EntityRetrievalException {
         Mockito.when(acbDao.getById(ArgumentMatchers.eq(1L))).thenReturn(
-                CertificationBodyDTO.builder()
+                CertificationBody.builder()
                 .id(1L)
                 .build());
         ComplaintSearchRequest request = ComplaintSearchRequest.builder()
@@ -509,11 +509,11 @@ public class ComplaintSearchRequestValidatorTest {
     @Test
     public void validate_multipleValidAcbIds_noErrors() throws EntityRetrievalException {
         Mockito.when(acbDao.getById(ArgumentMatchers.eq(1L))).thenReturn(
-                CertificationBodyDTO.builder()
+                CertificationBody.builder()
                 .id(1L)
                 .build());
         Mockito.when(acbDao.getById(ArgumentMatchers.eq(1L))).thenReturn(
-                CertificationBodyDTO.builder()
+                CertificationBody.builder()
                 .id(2L)
                 .build());
         ComplaintSearchRequest request = ComplaintSearchRequest.builder()
@@ -564,7 +564,7 @@ public class ComplaintSearchRequestValidatorTest {
     @Test
     public void validate_oneValidAndOneInvalidAcbId_hasError() throws EntityRetrievalException {
         Mockito.when(acbDao.getById(ArgumentMatchers.eq(1L))).thenThrow(EntityRetrievalException.class);
-        Mockito.when(acbDao.getById(ArgumentMatchers.eq(2L))).thenReturn(CertificationBodyDTO.builder()
+        Mockito.when(acbDao.getById(ArgumentMatchers.eq(2L))).thenReturn(CertificationBody.builder()
                 .id(2L)
                 .build());
 

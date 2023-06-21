@@ -16,7 +16,7 @@ import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceEntity;
 import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Component
@@ -248,12 +248,12 @@ public class NonConformityDataCreator {
                 surveillance.getEndDate()));
     }
 
-    private CertificationBodyDTO getCertificationBody(Long id) {
+    private CertificationBody getCertificationBody(Long id) {
         try {
             return certificationBodyDAO.getById(id);
         } catch (EntityRetrievalException e) {
             LOGGER.error("Could not retrieve ACB: " + id, e);
-            return new CertificationBodyDTO();
+            return new CertificationBody();
         }
     }
 

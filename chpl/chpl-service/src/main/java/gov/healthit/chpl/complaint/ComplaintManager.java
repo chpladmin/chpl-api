@@ -28,11 +28,11 @@ import gov.healthit.chpl.complaint.search.ComplaintSearchRequest;
 import gov.healthit.chpl.complaint.search.ComplaintSearchResponse;
 import gov.healthit.chpl.complaint.search.ComplaintSearchServiceV1;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -94,7 +94,7 @@ public class ComplaintManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).GET_ALL)")
-    public List<Complaint> getAllComplaintsBetweenDates(CertificationBodyDTO acb, LocalDate startDate,
+    public List<Complaint> getAllComplaintsBetweenDates(CertificationBody acb, LocalDate startDate,
             LocalDate endDate) {
         ComplaintSearchRequest request = ComplaintSearchRequest.builder()
                 .acbIds(Stream.of(acb.getId()).collect(Collectors.toSet()))

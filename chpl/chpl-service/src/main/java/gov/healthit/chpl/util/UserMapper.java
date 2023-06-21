@@ -8,9 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.auth.Authority;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.OrganizationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.auth.UserEntity;
@@ -68,8 +68,8 @@ public class UserMapper {
 
     private void populateOrganizations(UserDTO user) {
         if (user.getPermission().getAuthority().equals(Authority.ROLE_ACB)) {
-            List<CertificationBodyDTO> acbs = getAllAcbsForUser(user.getId());
-            for (CertificationBodyDTO acb : acbs) {
+            List<CertificationBody> acbs = getAllAcbsForUser(user.getId());
+            for (CertificationBody acb : acbs) {
                 user.getOrganizations().add(new OrganizationDTO(acb.getId(), acb.getName()));
             }
         }
@@ -81,7 +81,7 @@ public class UserMapper {
         }
     }
 
-    private List<CertificationBodyDTO> getAllAcbsForUser(Long userID) {
+    private List<CertificationBody> getAllAcbsForUser(Long userID) {
         return acbDao.getCertificationBodiesByUserId(userID);
     }
 

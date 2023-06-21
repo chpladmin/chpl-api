@@ -7,24 +7,23 @@ import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.UserCertificationBodyMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.DateUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Repository(value = "certificationBodyDAO")
 public class CertificationBodyDAO extends BaseDAOImpl {
-    private static final Logger LOGGER = LogManager.getLogger(CertificationBodyDAO.class);
     private AddressDAO addressDao;
 
     @Autowired
@@ -33,12 +32,12 @@ public class CertificationBodyDAO extends BaseDAOImpl {
     }
 
     @Transactional
-    public CertificationBodyDTO create(final CertificationBodyDTO dto)
+    public CertificationBody create(CertificationBody acb)
             throws EntityRetrievalException, EntityCreationException {
         CertificationBodyEntity entity = null;
         try {
-            if (dto.getId() != null) {
-                entity = this.getEntityById(dto.getId());
+            if (acb.getId() != null) {
+                entity = this.getEntityById(acb.getId());
             }
         } catch (final EntityRetrievalException e) {
             throw new EntityCreationException(e);
@@ -48,30 +47,31 @@ public class CertificationBodyDAO extends BaseDAOImpl {
             throw new EntityCreationException("An entity with this ID already exists.");
         } else {
             entity = new CertificationBodyEntity();
-            Long addressId = addressDao.create(dto.getAddress());
+            Long addressId = addressDao.create(acb.getAddress());
             entity.setAddress(addressDao.getEntityById(addressId));
-            entity.setName(dto.getName());
-            entity.setWebsite(dto.getWebsite());
-            entity.setAcbCode(dto.getAcbCode());
+            entity.setName(acb.getName());
+            entity.setWebsite(acb.getWebsite());
+            entity.setAcbCode(acb.getAcbCode());
             entity.setRetired(Boolean.FALSE);
+            entity.setRetirementDate(null);
             entity.setLastModifiedUser(AuthUtil.getAuditId());
             create(entity);
-            return new CertificationBodyDTO(entity);
+            return entity.toDomain();
         }
     }
 
     @Transactional
-    public CertificationBodyDTO update(final CertificationBodyDTO dto) throws EntityRetrievalException {
+    public CertificationBody update(CertificationBody acb) throws EntityRetrievalException {
 
-        CertificationBodyEntity entity = getEntityById(dto.getId());
+        CertificationBodyEntity entity = getEntityById(acb.getId());
         if (entity == null) {
             throw new EntityRetrievalException(
-                    "Cannot update entity with id " + dto.getId() + ". Entity does not exist.");
+                    "Cannot update entity with id " + acb.getId() + ". Entity does not exist.");
         }
 
-        if (dto.getAddress() != null) {
+        if (acb.getAddress() != null) {
             try {
-                Long addressId = addressDao.saveAddress(dto.getAddress());
+                Long addressId = addressDao.saveAddress(acb.getAddress());
                 entity.setAddress(addressDao.getEntityById(addressId));
             } catch (final EntityCreationException ex) {
                 LOGGER.error("Could not create new address in the database.", ex);
@@ -81,36 +81,31 @@ public class CertificationBodyDAO extends BaseDAOImpl {
             entity.setAddress(null);
         }
 
-        entity.setWebsite(dto.getWebsite());
-        entity.setRetired(dto.isRetired());
-        entity.setRetirementDate(dto.getRetirementDate());
+        entity.setWebsite(acb.getWebsite());
+        entity.setRetired(acb.isRetired());
+        entity.setRetirementDate(acb.getRetirementDay());
 
-        if (dto.getName() != null) {
-            entity.setName(dto.getName());
+        if (acb.getName() != null) {
+            entity.setName(acb.getName());
         }
 
-        if (dto.getAcbCode() != null) {
-            entity.setAcbCode(dto.getAcbCode());
+        if (acb.getAcbCode() != null) {
+            entity.setAcbCode(acb.getAcbCode());
         }
 
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
-        return new CertificationBodyDTO(entity);
+        return entity.toDomain();
     }
 
-    public List<CertificationBodyDTO> findAll() {
+    public List<CertificationBody> findAll() {
         List<CertificationBodyEntity> entities = getAllEntities();
-        List<CertificationBodyDTO> acbs = new ArrayList<>();
-
-        for (CertificationBodyEntity entity : entities) {
-            CertificationBodyDTO acb = new CertificationBodyDTO(entity);
-            acbs.add(acb);
-        }
-        return acbs;
-
+        return entities.stream()
+                    .map(entity -> entity.toDomain())
+                    .collect(Collectors.toList());
     }
 
-    public List<CertificationBodyDTO> findAllActive() {
+    public List<CertificationBody> findAllActive() {
         List<CertificationBodyEntity> entities = entityManager
                 .createQuery("SELECT acb "
                         + "FROM CertificationBodyEntity acb "
@@ -118,53 +113,42 @@ public class CertificationBodyDAO extends BaseDAOImpl {
                         + "WHERE acb.retired = false "
                         + "AND acb.deleted = false", CertificationBodyEntity.class)
                 .getResultList();
-        List<CertificationBodyDTO> acbs = new ArrayList<>();
-
-        for (CertificationBodyEntity entity : entities) {
-            CertificationBodyDTO acb = new CertificationBodyDTO(entity);
-            acbs.add(acb);
-        }
-        return acbs;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    public List<CertificationBodyDTO> findAllActiveDuring(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public List<CertificationBody> findAllActiveDuring(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         Query query = entityManager
                 .createQuery("SELECT acb "
                         + "FROM CertificationBodyEntity acb "
                         + "LEFT OUTER JOIN FETCH acb.address "
                         + "WHERE (acb.creationDate < :endDateTime "
-                        + "AND (acb.retired = false OR acb.retirementDate > :startDateTime)) "
+                        + "AND (acb.retired = false OR acb.retirementDate > :startDate)) "
                         + "AND acb.deleted = false", CertificationBodyEntity.class);
-        query.setParameter("startDateTime", DateUtil.toDate(startDateTime));
         query.setParameter("endDateTime", DateUtil.toDate(endDateTime));
+        query.setParameter("startDate", startDateTime.toLocalDate());
 
         List<CertificationBodyEntity> entities = query.getResultList();
         return entities.stream()
-                    .map(entity -> new CertificationBodyDTO(entity))
+                    .map(entity -> entity.toDomain())
                     .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public CertificationBodyDTO getById(final Long acbId) throws EntityRetrievalException {
+    public CertificationBody getById(Long acbId) throws EntityRetrievalException {
         CertificationBodyEntity entity = getEntityById(acbId);
-
-        CertificationBodyDTO dto = null;
-        if (entity != null) {
-            dto = new CertificationBodyDTO(entity);
-        }
-        return dto;
+        return entity.toDomain();
     }
 
-    public CertificationBodyDTO getByName(final String name) {
+    public CertificationBody getByName(String name) {
         CertificationBodyEntity entity = getEntityByName(name);
-
-        CertificationBodyDTO dto = null;
-        if (entity != null) {
-            dto = new CertificationBodyDTO(entity);
+        if (entity == null) {
+            return null;
         }
-        return dto;
+        return entity.toDomain();
     }
 
-    public CertificationBodyDTO getByCode(String code) {
+    public CertificationBody getByCode(String code) {
         Query query = entityManager.createQuery("SELECT acb "
                 + "FROM CertificationBodyEntity acb "
                 + "LEFT OUTER JOIN FETCH acb.address "
@@ -175,12 +159,12 @@ public class CertificationBodyDAO extends BaseDAOImpl {
         List<CertificationBodyEntity> result = query.getResultList();
 
         if (result != null && result.size() > 0) {
-            return new CertificationBodyDTO(result.get(0));
+            return result.get(0).toDomain();
         }
         return null;
     }
 
-    public List<CertificationBodyDTO> getByWebsite(final String website) {
+    public List<CertificationBody> getByWebsite(String website) {
         Query query = entityManager.createQuery("SELECT acb "
                 + "FROM CertificationBodyEntity acb "
                 + "LEFT OUTER JOIN FETCH acb.address "
@@ -188,11 +172,9 @@ public class CertificationBodyDAO extends BaseDAOImpl {
                 + "AND acb.website = :website");
         query.setParameter("website", website);
         List<CertificationBodyEntity> results = query.getResultList();
-        List<CertificationBodyDTO> resultDtos = new ArrayList<CertificationBodyDTO>();
-        for (CertificationBodyEntity entity : results) {
-            resultDtos.add(new CertificationBodyDTO(entity));
-        }
-        return resultDtos;
+        return results.stream()
+                .map(result -> result.toDomain())
+                .collect(Collectors.toList());
     }
 
     public String getMaxCode() {
@@ -210,14 +192,14 @@ public class CertificationBodyDAO extends BaseDAOImpl {
     }
 
 
-    public List<CertificationBodyDTO> getByDeveloperId(final Long developerId) {
+    public List<CertificationBody> getByDeveloperId(Long developerId) {
         return getEntitiesByDeveloperId(developerId).stream()
-                .map(acb -> new CertificationBodyDTO(acb))
-                .collect(Collectors.<CertificationBodyDTO> toList());
+                .map(acb -> acb.toDomain())
+                .collect(Collectors.<CertificationBody>toList());
     }
 
 
-    public List<CertificationBodyDTO> getCertificationBodiesByUserId(Long userId) {
+    public List<CertificationBody> getCertificationBodiesByUserId(Long userId) {
         Query query = entityManager.createQuery(
                 "FROM UserCertificationBodyMapEntity ucbm "
                         + "join fetch ucbm.certificationBody acb "
@@ -228,32 +210,12 @@ public class CertificationBodyDAO extends BaseDAOImpl {
                         + "where (ucbm.deleted != true) AND (u.id = :userId) ",
                         UserCertificationBodyMapEntity.class);
         query.setParameter("userId", userId);
-        List<UserCertificationBodyMapEntity> result = query.getResultList();
-
-        List<CertificationBodyDTO> dtos = new ArrayList<CertificationBodyDTO>();
-        if (result != null) {
-            for (UserCertificationBodyMapEntity entity : result) {
-                dtos.add(new CertificationBodyDTO(entity.getCertificationBody()));
-            }
-        }
-        return dtos;
+        List<UserCertificationBodyMapEntity> results = query.getResultList();
+        return results.stream()
+                .map(result -> result.getCertificationBody().toDomain())
+                .collect(Collectors.toList());
     }
 
-    private void create(final CertificationBodyEntity acb) {
-        entityManager.persist(acb);
-        entityManager.flush();
-    }
-
-    private void update(final CertificationBodyEntity acb) {
-        entityManager.merge(acb);
-        entityManager.flush();
-    }
-
-    /**
-     * Get all ACBs.
-     *
-     * @return
-     */
     private List<CertificationBodyEntity> getAllEntities() {
         return entityManager.createQuery("SELECT acb "
                 + "FROM CertificationBodyEntity acb "
@@ -262,14 +224,7 @@ public class CertificationBodyDAO extends BaseDAOImpl {
                 .getResultList();
     }
 
-    /**
-     * Find an ACB by ID.
-     *
-     * @param entityId
-     * @return
-     * @throws EntityRetrievalException
-     */
-    private CertificationBodyEntity getEntityById(final Long entityId) throws EntityRetrievalException {
+    private CertificationBodyEntity getEntityById(Long entityId) throws EntityRetrievalException {
         CertificationBodyEntity entity = null;
 
         String queryStr = "SELECT acb "
@@ -294,13 +249,7 @@ public class CertificationBodyDAO extends BaseDAOImpl {
         return entity;
     }
 
-    /**
-     * Find an ACB by name.
-     *
-     * @param name
-     * @return
-     */
-    private CertificationBodyEntity getEntityByName(final String name) {
+    private CertificationBodyEntity getEntityByName(String name) {
         CertificationBodyEntity entity = null;
 
         Query query = entityManager.createQuery("SELECT acb "
@@ -318,7 +267,7 @@ public class CertificationBodyDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private List<CertificationBodyEntity> getEntitiesByDeveloperId(final Long developerId) {
+    private List<CertificationBodyEntity> getEntitiesByDeveloperId(Long developerId) {
         String hql = "SELECT DISTINCT cp.certificationBody "
                 + "FROM CertifiedProductEntity cp "
                 + "JOIN FETCH cp.productVersion pv "
