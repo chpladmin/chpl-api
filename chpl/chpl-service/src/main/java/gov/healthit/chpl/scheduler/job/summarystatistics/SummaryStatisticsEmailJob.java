@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.entity.statistics.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -59,7 +59,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
     @Autowired
     private ChplEmailFactory chplEmailFactory;
 
-    private List<CertificationBodyDTO> activeAcbs;
+    private List<CertificationBody> activeAcbs;
 
     public SummaryStatisticsEmailJob() throws Exception {
         super();

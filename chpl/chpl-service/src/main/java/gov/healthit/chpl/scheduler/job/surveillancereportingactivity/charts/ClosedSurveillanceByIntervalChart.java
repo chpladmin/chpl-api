@@ -11,7 +11,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.Statistics;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData.RecordType;
@@ -21,7 +21,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2(topic = "surveillanceActivityReportJobLogger")
 public class ClosedSurveillanceByIntervalChart {
 
-    public JFreeChart generateChart(List<SurveillanceData> surveillances, List<CertificationBodyDTO> allAcbs) {
+    public JFreeChart generateChart(List<SurveillanceData> surveillances, List<CertificationBody> allAcbs) {
         try {
             LOGGER.info("Starting to build the Closed Surveillance by Interval chart.");
 
@@ -41,7 +41,7 @@ public class ClosedSurveillanceByIntervalChart {
         }
     }
 
-    private CategoryDataset getData(List<SurveillanceData> surveillances, List<CertificationBodyDTO> allAcbs) {
+    private CategoryDataset getData(List<SurveillanceData> surveillances, List<CertificationBody> allAcbs) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
         allAcbs.stream()

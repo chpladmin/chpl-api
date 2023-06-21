@@ -1,12 +1,24 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
-import gov.healthit.chpl.dto.TestingLabDTO;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
+import gov.healthit.chpl.util.LocalDateDeserializer;
+import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Data
+@NoArgsConstructor
 @Builder
 @AllArgsConstructor
 public class TestingLab implements Serializable {
@@ -16,97 +28,14 @@ public class TestingLab implements Serializable {
     private String atlCode;
     private String name;
     private String website;
-    private String accredidationNumber;
     private Address address;
     private boolean retired;
+
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate retirementDay;
+
+    @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. Please use retirementDay.", removalDate = "2023-10-31")
     private Date retirementDate;
-
-    /**
-     * No-args constructor.
-     */
-    public TestingLab() {
-    }
-
-    public TestingLab(final TestingLabDTO dto) {
-        this.id = dto.getId();
-        this.atlCode = dto.getTestingLabCode();
-        this.name = dto.getName();
-        this.website = dto.getWebsite();
-        this.retired = dto.isRetired();
-        this.setRetirementDate(dto.getRetirementDate());
-        this.accredidationNumber = dto.getAccredidationNumber();
-        this.address = dto.getAddress();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setWebsite(final String website) {
-        this.website = website;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(final Address address) {
-        this.address = address;
-    }
-
-    public String getAtlCode() {
-        return atlCode;
-    }
-
-    public void setAtlCode(final String atlCode) {
-        this.atlCode = atlCode;
-    }
-
-    public String getAccredidationNumber() {
-        return accredidationNumber;
-    }
-
-    public void setAccredidationNumber(final String accredidationNumber) {
-        this.accredidationNumber = accredidationNumber;
-    }
-
-    public boolean isRetired() {
-        return retired;
-    }
-
-    public void setRetired(final boolean retired) {
-        this.retired = retired;
-    }
-
-    public Date getRetirementDate() {
-        return retirementDate;
-    }
-
-    public void setRetirementDate(final Date retirementDate) {
-        this.retirementDate = retirementDate;
-    }
-
-    @Override
-    public String toString() {
-        return "TestingLab [id=" + id + ", atlCode=" + atlCode + ", name=" + name + ", website=" + website
-                + ", accredidationNumber=" + accredidationNumber + ", address=" + address + ", retired=" + retired
-                + ", retirementDate=" + retirementDate + "]";
-    }
-
 }

@@ -5,16 +5,16 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailCertificationBodyStatistic;
 import lombok.Data;
 
 @Data
 public class StatisticsMassager {
 
-    private List<CertificationBodyDTO> activeAcbs;
+    private List<CertificationBody> activeAcbs;
 
-    public StatisticsMassager(List<CertificationBodyDTO> activeAcbs) {
+    public StatisticsMassager(List<CertificationBody> activeAcbs) {
         this.activeAcbs = activeAcbs;
     }
 
@@ -42,7 +42,7 @@ public class StatisticsMassager {
         return updatedStats;
     }
 
-    private Boolean isAcbInStatistics(CertificationBodyDTO acb, List<EmailCertificationBodyStatistic> stats) {
+    private Boolean isAcbInStatistics(CertificationBody acb, List<EmailCertificationBodyStatistic> stats) {
         return stats.stream()
                 .filter(stat -> stat.getAcbName().equals(acb.getName()))
                 .findAny()

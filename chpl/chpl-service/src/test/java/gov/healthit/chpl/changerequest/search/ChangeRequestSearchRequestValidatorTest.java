@@ -16,9 +16,9 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.KeyValueModel;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -156,7 +156,7 @@ public class ChangeRequestSearchRequestValidatorTest {
         Mockito.when(acbDao.getById(ArgumentMatchers.eq(1L)))
             .thenThrow(EntityRetrievalException.class);
         Mockito.when(acbDao.getById(ArgumentMatchers.eq(2L)))
-            .thenReturn(CertificationBodyDTO.builder().id(2L).build());
+            .thenReturn(CertificationBody.builder().id(2L).build());
         try {
             validator.validate(request);
         } catch (ValidationException ex) {
@@ -174,9 +174,9 @@ public class ChangeRequestSearchRequestValidatorTest {
             .build();
 
         Mockito.when(acbDao.getById(ArgumentMatchers.eq(1L)))
-            .thenReturn(CertificationBodyDTO.builder().id(1L).build());
+            .thenReturn(CertificationBody.builder().id(1L).build());
         Mockito.when(acbDao.getById(ArgumentMatchers.eq(2L)))
-            .thenReturn(CertificationBodyDTO.builder().id(2L).build());
+            .thenReturn(CertificationBody.builder().id(2L).build());
         try {
             validator.validate(request);
         } catch (ValidationException ex) {

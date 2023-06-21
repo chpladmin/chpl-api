@@ -19,21 +19,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.auth.UsersResponse;
-import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.TestingLabManager;
-import gov.healthit.chpl.manager.UserPermissionsManager;
-import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.CacheControl;
-import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
-import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.TestingLabResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -43,18 +37,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/atls")
 public class TestingLabController {
-
-    @Autowired
     private TestingLabManager atlManager;
 
     @Autowired
-    private UserManager userManager;
-
-    @Autowired
-    private ResourcePermissions resourcePermissions;
-
-    @Autowired
-    private UserPermissionsManager userPermissionsManager;
+    public TestingLabController(TestingLabManager atlManager) {
+        this.atlManager = atlManager;
+    }
 
     @Operation(summary = "List all testing labs (ATLs).",
             description = "ROLE_ADMIN and ROLE_ONC can view and edit ONC-ATLs.",
@@ -62,13 +50,12 @@ public class TestingLabController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
+    @DeprecatedApiResponseFields(friendlyUrl = "/atls", responseClass = TestingLabResults.class)
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody TestingLabResults getAtls(
-            @RequestParam(required = false, defaultValue = "false") final boolean editable) {
+            @RequestParam(required = false, defaultValue = "false") boolean editable) {
         TestingLabResults results = new TestingLabResults();
-        atlManager.getAll().stream()
-                .forEach(atlDto -> results.getAtls().add(new TestingLab(atlDto)));
+        results.getAtls().addAll(atlManager.getAll());
         return results;
     }
 
@@ -77,12 +64,11 @@ public class TestingLabController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @DeprecatedApiResponseFields(friendlyUrl = "/atls/{atlId}", responseClass = TestingLab.class)
     @RequestMapping(value = "/{atlId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody TestingLab getAtlById(@PathVariable("atlId") final Long atlId)
             throws EntityRetrievalException {
-        TestingLabDTO atl = atlManager.getById(atlId);
-
-        return new TestingLab(atl);
+        return atlManager.getById(atlId);
     }
 
     @Operation(summary = "Create a new testing lab.",
@@ -91,20 +77,14 @@ public class TestingLabController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
+    @DeprecatedApiResponseFields(friendlyUrl = "/atls/{atlId}", httpMethod = "POST", responseClass = TestingLab.class)
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public TestingLab createAtl(@RequestBody final TestingLab atlInfo)
             throws InvalidArgumentsException, UserRetrievalException, EntityRetrievalException,
             EntityCreationException, JsonProcessingException {
-
-        return create(atlInfo);
-    }
-
-    private TestingLab create(final TestingLab atlInfo) throws InvalidArgumentsException, UserRetrievalException,
-            EntityRetrievalException, EntityCreationException, JsonProcessingException {
-        TestingLabDTO toCreate = new TestingLabDTO();
-        toCreate.setTestingLabCode(atlInfo.getAtlCode());
-        toCreate.setAccredidationNumber(atlInfo.getAccredidationNumber());
+        TestingLab toCreate = new TestingLab();
+        toCreate.setAtlCode(atlInfo.getAtlCode());
         if (StringUtils.isEmpty(atlInfo.getName())) {
             throw new InvalidArgumentsException("A name is required for a testing lab");
         }
@@ -115,8 +95,8 @@ public class TestingLabController {
             throw new InvalidArgumentsException("An address is required for a new testing lab");
         }
         toCreate.setAddress(atlInfo.getAddress());
-        toCreate = atlManager.create(toCreate);
-        return new TestingLab(toCreate);
+        TestingLab created = atlManager.create(toCreate);
+        return created;
     }
 
     @Operation(summary = "Update an existing ATL.",
@@ -125,34 +105,28 @@ public class TestingLabController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
+    @DeprecatedApiResponseFields(friendlyUrl = "/atls/{atlId}", httpMethod = "PUT", responseClass = TestingLab.class)
     @RequestMapping(value = "/{atlId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public ResponseEntity<TestingLab> updateAtl(@RequestBody final TestingLab atlInfo)
+    public ResponseEntity<TestingLab> updateAtl(@RequestBody TestingLab updatedAtl)
             throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateTestingLabException {
-
-        return update(atlInfo);
-    }
-
-    private ResponseEntity<TestingLab> update(final TestingLab updatedAtl) throws InvalidArgumentsException,
-            EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateTestingLabException {
-        TestingLabDTO existingAtl = atlManager.getById(updatedAtl.getId());
+        TestingLab existingAtl = atlManager.getById(updatedAtl.getId());
         if (updatedAtl.isRetired()) {
             // we are retiring this ATL and no other changes can be made
             existingAtl.setRetired(true);
-            existingAtl.setRetirementDate(updatedAtl.getRetirementDate());
+            existingAtl.setRetirementDay(updatedAtl.getRetirementDay());
             atlManager.retire(existingAtl);
         } else {
             if (existingAtl.isRetired()) {
                 // unretire the ATL
                 atlManager.unretire(updatedAtl.getId());
             }
-            TestingLabDTO toUpdate = new TestingLabDTO();
+            TestingLab toUpdate = new TestingLab();
             toUpdate.setId(updatedAtl.getId());
-            toUpdate.setTestingLabCode(updatedAtl.getAtlCode());
+            toUpdate.setAtlCode(updatedAtl.getAtlCode());
             toUpdate.setRetired(false);
-            toUpdate.setRetirementDate(null);
-            toUpdate.setAccredidationNumber(updatedAtl.getAccredidationNumber());
+            toUpdate.setRetirementDay(null);
             if (StringUtils.isEmpty(updatedAtl.getName())) {
                 throw new InvalidArgumentsException("A name is required for a testing lab");
             }
@@ -166,11 +140,10 @@ public class TestingLabController {
             atlManager.update(toUpdate);
         }
 
-        TestingLabDTO result = atlManager.getById(updatedAtl.getId());
+        TestingLab result = atlManager.getById(updatedAtl.getId());
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-        TestingLab response = new TestingLab(result);
-        return new ResponseEntity<TestingLab>(response, responseHeaders, HttpStatus.OK);
+        return new ResponseEntity<TestingLab>(result, responseHeaders, HttpStatus.OK);
     }
 
     @Operation(summary = "Remove user permissions from an ATL.",

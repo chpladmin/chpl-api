@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.complaint.ComplaintDAO;
 import gov.healthit.chpl.complaint.domain.Complaint;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import lombok.extern.log4j.Log4j2;
@@ -69,7 +69,7 @@ public class ComplaintSearchServiceV1 {
     }
 
     private List<Complaint> filterResults(List<Complaint> allComplaints, ComplaintSearchRequest searchRequest) {
-        List<CertificationBodyDTO> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
+        List<CertificationBody> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
         List<Long> allowedAcbIds = allowedAcbs.stream().map(acb -> acb.getId()).toList();
 
         LOGGER.debug("Total complaints: " + allComplaints.size());

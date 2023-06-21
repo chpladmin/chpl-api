@@ -8,7 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import gov.healthit.chpl.TestingUsers;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
@@ -31,11 +31,11 @@ public abstract class ActionPermissionsBaseTest extends TestingUsers {
         // Do nothing - just Override if necessary
     }
 
-    public List<CertificationBodyDTO> getAllAcbForUser(Long... acbIds) {
-        List<CertificationBodyDTO> dtos = new ArrayList<CertificationBodyDTO>();
+    public List<CertificationBody> getAllAcbForUser(Long... acbIds) {
+        List<CertificationBody> dtos = new ArrayList<CertificationBody>();
 
         for (Long acbId : acbIds) {
-            CertificationBodyDTO dto = new CertificationBodyDTO();
+            CertificationBody dto = new CertificationBody();
             dto.setId(acbId);
             dtos.add(dto);
         }

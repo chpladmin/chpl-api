@@ -44,7 +44,6 @@ import gov.healthit.chpl.domain.developer.hierarchy.SimpleListing;
 import gov.healthit.chpl.domain.developer.hierarchy.VersionTree;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventPair;
 import gov.healthit.chpl.dto.ProductVersionDTO;
@@ -175,7 +174,7 @@ public class DeveloperManager extends SecuredManager {
     }
 
     public DeveloperTree getHierarchyById(Long id) throws EntityRetrievalException {
-        List<CertificationBodyDTO> acbs = acbManager.getAll();
+        List<CertificationBody> acbs = acbManager.getAll();
         Developer developer = getById(id);
         List<Product> products = productManager.getByDeveloper(developer.getId());
         List<ProductVersionDTO> versions = versionManager.getByDeveloper(developer.getId());
@@ -208,12 +207,12 @@ public class DeveloperManager extends SecuredManager {
         return developerTree;
     }
 
-    private SimpleListing convertToSimpleListing(CertifiedProductDetailsDTO listingDto, List<CertificationBodyDTO> acbs) {
+    private SimpleListing convertToSimpleListing(CertifiedProductDetailsDTO listingDto, List<CertificationBody> acbs) {
         SimpleListing listingLeaf = new SimpleListing();
-        Optional<CertificationBodyDTO> listingAcb = acbs.stream()
+        Optional<CertificationBody> listingAcb = acbs.stream()
                 .filter(acb -> acb.getId().equals(listingDto.getCertificationBodyId())).findFirst();
         if (listingAcb != null && listingAcb.isPresent()) {
-            listingLeaf.setAcb(new CertificationBody(listingAcb.get()));
+            listingLeaf.setAcb(listingAcb.get());
         }
         listingLeaf.setSurveillanceCount(listingDto.getCountSurveillance());
         listingLeaf.setOpenSurveillanceCount(listingDto.getCountOpenSurveillance());

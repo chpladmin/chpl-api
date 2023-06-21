@@ -123,7 +123,7 @@ public class AttestationCertificationBodyService {
 
     private CertificationBody getCertificationBody(Long acbId) {
         try {
-            return new CertificationBody(certificationBodyManager.getById(acbId));
+            return certificationBodyManager.getById(acbId);
         } catch (Exception e) {
             LOGGER.error("Could not identify Certification Body with id: {}", acbId);
             return null;

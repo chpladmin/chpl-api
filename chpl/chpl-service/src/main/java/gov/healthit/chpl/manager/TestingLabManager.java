@@ -1,6 +1,6 @@
 package gov.healthit.chpl.manager;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.dao.TestingLabDAO;
+import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
@@ -32,7 +32,7 @@ public class TestingLabManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TESTING_LAB, "
             + "T(gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions).CREATE)")
-    public TestingLabDTO create(final TestingLabDTO atl)
+    public TestingLab create(TestingLab atl)
             throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
         String maxCode = testingLabDAO.getMaxCode();
         int maxCodeValue = Integer.parseInt(maxCode);
@@ -47,29 +47,27 @@ public class TestingLabManager extends SecuredManager {
         } else {
             nextAtlCode = nextCodeValue + "";
         }
-        atl.setTestingLabCode(nextAtlCode);
+        atl.setAtlCode(nextAtlCode);
         atl.setRetired(false);
         // Create the atl itself
-        TestingLabDTO result = testingLabDAO.create(atl);
+        TestingLab result = testingLabDAO.create(atl);
 
         LOGGER.debug("Created testing lab " + result + " and granted admin permission to recipient "
                 + gov.healthit.chpl.util.AuthUtil.getUsername());
 
         String activityMsg = "Created Testing Lab " + result.getName();
-
         activityManager.addActivity(ActivityConcept.TESTING_LAB, result.getId(), activityMsg, null, result);
-
         return result;
     }
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TESTING_LAB, "
             + "T(gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions).UPDATE, #atl)")
-    public TestingLabDTO update(final TestingLabDTO atl) throws EntityRetrievalException, JsonProcessingException,
+    public TestingLab update(TestingLab atl) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateTestingLabException {
 
-        TestingLabDTO beforeAtl = testingLabDAO.getById(atl.getId());
-        TestingLabDTO result = testingLabDAO.update(atl);
+        TestingLab beforeAtl = testingLabDAO.getById(atl.getId());
+        TestingLab result = testingLabDAO.update(atl);
 
         String activityMsg = "Updated testing lab " + atl.getName();
         activityManager.addActivity(ActivityConcept.TESTING_LAB, result.getId(), activityMsg, beforeAtl,
@@ -80,14 +78,14 @@ public class TestingLabManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TESTING_LAB, "
             + "T(gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions).RETIRE)")
-    public TestingLabDTO retire(final TestingLabDTO atl) throws EntityRetrievalException, JsonProcessingException,
+    public TestingLab retire(TestingLab atl) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateTestingLabException {
-        Date now = new Date();
-        if (atl.getRetirementDate() == null || now.before(atl.getRetirementDate())) {
+
+        if (atl.getRetirementDay() == null || LocalDate.now().isBefore(atl.getRetirementDay())) {
             throw new UpdateTestingLabException("Retirement date is required and must be before \"now\".");
         }
-        TestingLabDTO beforeAtl = testingLabDAO.getById(atl.getId());
-        TestingLabDTO result = testingLabDAO.update(atl);
+        TestingLab beforeAtl = testingLabDAO.getById(atl.getId());
+        TestingLab result = testingLabDAO.update(atl);
 
         String activityMsg = "Retired atl " + beforeAtl.getName();
         activityManager.addActivity(ActivityConcept.TESTING_LAB, result.getId(), activityMsg,
@@ -98,13 +96,13 @@ public class TestingLabManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TESTING_LAB, "
             + "T(gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions).UNRETIRE)")
-    public TestingLabDTO unretire(final Long atlId) throws EntityRetrievalException, JsonProcessingException,
+    public TestingLab unretire(Long atlId) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateTestingLabException {
-        TestingLabDTO beforeAtl = testingLabDAO.getById(atlId);
-        TestingLabDTO toUnretire = testingLabDAO.getById(atlId);
+        TestingLab beforeAtl = testingLabDAO.getById(atlId);
+        TestingLab toUnretire = testingLabDAO.getById(atlId);
         toUnretire.setRetired(false);
-        toUnretire.setRetirementDate(null);
-        TestingLabDTO result = testingLabDAO.update(toUnretire);
+        toUnretire.setRetirementDay(null);
+        TestingLab result = testingLabDAO.update(toUnretire);
 
         String activityMsg = "Unretired atl " + toUnretire.getName();
         activityManager.addActivity(ActivityConcept.TESTING_LAB, result.getId(), activityMsg,
@@ -113,12 +111,12 @@ public class TestingLabManager extends SecuredManager {
     }
 
     @Transactional(readOnly = true)
-    public List<TestingLabDTO> getAll() {
+    public List<TestingLab> getAll() {
         return testingLabDAO.findAll();
     }
 
     @Transactional(readOnly = true)
-    public TestingLabDTO getById(final Long id) throws EntityRetrievalException {
+    public TestingLab getById(Long id) throws EntityRetrievalException {
         return testingLabDAO.getById(id);
     }
 }

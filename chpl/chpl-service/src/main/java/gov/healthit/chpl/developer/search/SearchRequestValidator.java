@@ -71,7 +71,7 @@ public class SearchRequestValidator {
             return Collections.emptySet();
         }
 
-        Set<CertificationBody> allAcbs = dimensionalDataManager.getCertBodyNames();
+        Set<CertificationBody> allAcbs = dimensionalDataManager.getAllAcbs();
         return acbs.stream()
                 .filter(acb -> !isInAcbSet(acb, allAcbs))
                 .map(acb -> msgUtil.getMessage("search.certificationBodies.invalid", acb))

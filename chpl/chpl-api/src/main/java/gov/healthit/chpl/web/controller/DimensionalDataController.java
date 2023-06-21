@@ -48,6 +48,7 @@ import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.CertificationCriterionResults;
 import gov.healthit.chpl.web.controller.results.SvapResults;
 import io.swagger.v3.oas.annotations.Operation;
@@ -243,11 +244,11 @@ public class DimensionalDataController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @DeprecatedApiResponseFields(friendlyUrl = "/data/certification_bodies", responseClass = CertificationBody.class)
     @RequestMapping(value = "/certification_bodies", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody Set<CertificationBody> getCertBodyNames() {
-        return dimensionalDataManager.getCertBodyNames();
+    public @ResponseBody Set<CertificationBody> getCertificationBodies() {
+        return dimensionalDataManager.getAllAcbs();
     }
 
     @Operation(summary = "Get all possible education types in the CHPL",

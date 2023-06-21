@@ -1,7 +1,6 @@
 package gov.healthit.chpl.permissions.domains;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,7 +9,6 @@ import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -34,8 +32,8 @@ public abstract class ActionPermissions {
             return false;
         }
 
-        List<CertificationBodyDTO> acbs = resourcePermissions.getAllAcbsForCurrentUser();
-        for (CertificationBodyDTO dto : acbs) {
+        List<CertificationBody> acbs = resourcePermissions.getAllAcbsForCurrentUser();
+        for (CertificationBody dto : acbs) {
             if (dto.getId().equals(acbId)) {
                 return true;
             }
@@ -78,9 +76,7 @@ public abstract class ActionPermissions {
     public boolean isCurrentAcbUserAssociatedWithDeveloper(final Long developerId) {
         List<CertificationBody> developerAcbs = developerCertificationBodyMapDAO
                 .getCertificationBodiesForDeveloper(developerId);
-        List<CertificationBody> userAcbs = resourcePermissions.getAllAcbsForCurrentUser().stream()
-                .map(acb -> new CertificationBody(acb))
-                .collect(Collectors.<CertificationBody>toList());
+        List<CertificationBody> userAcbs = resourcePermissions.getAllAcbsForCurrentUser();
 
         return developerAcbs.stream()
                 .anyMatch(developerAcb -> userAcbs.stream()
