@@ -53,7 +53,6 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
@@ -155,15 +154,11 @@ public class DimensionalDataManager {
     }
 
     @Transactional
-    public Set<CertificationBody> getCertBodyNames() {
+    public Set<CertificationBody> getAllAcbs() {
         LOGGER.debug("Getting all certification body names from the database (not cached).");
-        List<CertificationBodyDTO> dtos = this.certificationBodyDao.findAll();
-        Set<CertificationBody> acbNames = new HashSet<CertificationBody>();
-
-        for (CertificationBodyDTO dto : dtos) {
-            acbNames.add(new CertificationBody(dto));
-        }
-        return acbNames;
+        List<CertificationBody> acbs = this.certificationBodyDao.findAll();
+        return acbs.stream()
+                .collect(Collectors.toSet());
     }
 
     @Transactional
@@ -520,7 +515,7 @@ public class DimensionalDataManager {
         }
         result.setCertificationCriteria(criteria);
 
-        result.setAcbs(getCertBodyNames());
+        result.setAcbs(getAllAcbs());
         result.setEditions(getEditionNames(simple));
         result.setCertificationStatuses(getCertificationStatuses());
         result.setPracticeTypes(getPracticeTypeNames());

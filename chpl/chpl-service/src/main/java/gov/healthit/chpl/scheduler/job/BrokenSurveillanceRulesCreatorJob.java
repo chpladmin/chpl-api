@@ -31,12 +31,12 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.scheduler.BrokenSurveillanceRulesDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.OversightRuleResult;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.scheduler.BrokenSurveillanceRulesDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -354,7 +354,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         });
     }
 
-    private CertificationBodyDTO getCertificationBody(long certificationBodyId) throws EntityRetrievalException {
+    private CertificationBody getCertificationBody(Long certificationBodyId) throws EntityRetrievalException {
         return certificationBodyDAO.getById(certificationBodyId);
     }
 

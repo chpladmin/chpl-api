@@ -13,8 +13,8 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -82,7 +82,7 @@ public class CertificationBodyNormalizerTest {
                 .build();
 
         Mockito.when(acbDao.getById(ArgumentMatchers.anyLong()))
-            .thenReturn(CertificationBodyDTO.builder()
+            .thenReturn(CertificationBody.builder()
                     .id(1L)
                     .name("Drummond")
                     .acbCode("04")
@@ -105,7 +105,7 @@ public class CertificationBodyNormalizerTest {
                 .build();
 
         Mockito.when(acbDao.getById(ArgumentMatchers.anyLong()))
-        .thenReturn(CertificationBodyDTO.builder()
+        .thenReturn(CertificationBody.builder()
                 .id(1L)
                 .name("Drummond")
                 .acbCode("04")
@@ -127,7 +127,7 @@ public class CertificationBodyNormalizerTest {
                 .certifyingBody(acb)
                 .build();
         Mockito.when(acbDao.getById(ArgumentMatchers.anyLong()))
-        .thenReturn(CertificationBodyDTO.builder()
+        .thenReturn(CertificationBody.builder()
                 .id(1L)
                 .name("Drummond")
                 .acbCode("04")
@@ -166,7 +166,7 @@ public class CertificationBodyNormalizerTest {
                 .certifyingBody(acb)
                 .build();
         Mockito.when(acbDao.getByCode(ArgumentMatchers.anyString()))
-        .thenReturn(CertificationBodyDTO.builder()
+        .thenReturn(CertificationBody.builder()
                 .id(1L)
                 .name("Drummond")
                 .acbCode("04")
@@ -188,7 +188,7 @@ public class CertificationBodyNormalizerTest {
                 .build();
 
         Mockito.when(acbDao.getByName(ArgumentMatchers.anyString()))
-        .thenReturn(CertificationBodyDTO.builder()
+        .thenReturn(CertificationBody.builder()
                 .id(1L)
                 .name("Drummond")
                 .acbCode("04")
@@ -210,7 +210,7 @@ public class CertificationBodyNormalizerTest {
                 .build();
 
         Mockito.when(acbDao.getByName(ArgumentMatchers.anyString()))
-        .thenReturn(CertificationBodyDTO.builder()
+        .thenReturn(CertificationBody.builder()
                 .id(1L)
                 .name("Drummond")
                 .acbCode("04")
@@ -232,7 +232,7 @@ public class CertificationBodyNormalizerTest {
                 .build();
 
         Mockito.when(acbDao.getByName(ArgumentMatchers.anyString()))
-        .thenReturn(CertificationBodyDTO.builder()
+        .thenReturn(CertificationBody.builder()
                 .id(1L)
                 .name("Drummond")
                 .acbCode("04")
@@ -254,7 +254,7 @@ public class CertificationBodyNormalizerTest {
                 .build();
 
         Mockito.when(acbDao.getByName(ArgumentMatchers.anyString()))
-        .thenReturn(CertificationBodyDTO.builder()
+        .thenReturn(CertificationBody.builder()
                 .id(1L)
                 .name("Drummond")
                 .acbCode("04")
@@ -309,7 +309,7 @@ public class CertificationBodyNormalizerTest {
                 .build();
 
         Mockito.when(acbDao.getByCode(ArgumentMatchers.anyString()))
-        .thenReturn(CertificationBodyDTO.builder()
+        .thenReturn(CertificationBody.builder()
                 .id(1L)
                 .name("Test")
                 .acbCode("04")

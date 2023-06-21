@@ -6,11 +6,11 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.CertificationBodyActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 
 @Component("acbActivityMetadataBuilder")
 public class CertificationBodyActivityMetadataBuilder extends ActivityMetadataBuilder {
@@ -29,20 +29,20 @@ public class CertificationBodyActivityMetadataBuilder extends ActivityMetadataBu
         CertificationBodyActivityMetadata acbMetadata = (CertificationBodyActivityMetadata) metadata;
 
         // parse acb specific metadata
-        CertificationBodyDTO origAcb = null;
+        CertificationBody origAcb = null;
         if (dto.getOriginalData() != null) {
             try {
-                origAcb = jsonMapper.readValue(dto.getOriginalData(), CertificationBodyDTO.class);
+                origAcb = jsonMapper.readValue(dto.getOriginalData(), CertificationBody.class);
             } catch (final Exception ex) {
                 LOGGER.error("Could not parse activity ID " + dto.getId() + " original data. " + "JSON was: "
                         + dto.getOriginalData(), ex);
             }
         }
 
-        CertificationBodyDTO newAcb = null;
+        CertificationBody newAcb = null;
         if (dto.getNewData() != null) {
             try {
-                newAcb = jsonMapper.readValue(dto.getNewData(), CertificationBodyDTO.class);
+                newAcb = jsonMapper.readValue(dto.getNewData(), CertificationBody.class);
             } catch (final Exception ex) {
                 LOGGER.error(
                         "Could not parse activity ID " + dto.getId() + " new data. " + "JSON was: " + dto.getNewData(),
@@ -64,7 +64,7 @@ public class CertificationBodyActivityMetadataBuilder extends ActivityMetadataBu
         acbMetadata.getCategories().add(ActivityCategory.CERTIFICATION_BODY);
     }
 
-    private void parseAcbMetadata(final CertificationBodyActivityMetadata acbMetadata, final CertificationBodyDTO acb) {
+    private void parseAcbMetadata(final CertificationBodyActivityMetadata acbMetadata, final CertificationBody acb) {
         acbMetadata.setAcbId(acb.getId());
         acbMetadata.setAcbName(acb.getName());
     }

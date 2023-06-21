@@ -16,7 +16,6 @@ import gov.healthit.chpl.domain.Announcement;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.auth.Authority;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.surveillance.report.AnnualReportDAO;
@@ -299,8 +298,8 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
                 if (getResourcePermissions().isUserRoleAcbAdmin()) {
                     // find all users on the acbs that this user has access to
                     // and see if the user in the activity is in that list
-                    List<CertificationBodyDTO> accessibleAcbs = getResourcePermissions().getAllAcbsForCurrentUser();
-                    for (CertificationBodyDTO acb : accessibleAcbs) {
+                    List<CertificationBody> accessibleAcbs = getResourcePermissions().getAllAcbsForCurrentUser();
+                    for (CertificationBody acb : accessibleAcbs) {
                         accessibleUsers.addAll(getResourcePermissions().getAllUsersOnAcb(acb));
                     }
                 } else if (getResourcePermissions().isUserRoleCmsStaff()) {

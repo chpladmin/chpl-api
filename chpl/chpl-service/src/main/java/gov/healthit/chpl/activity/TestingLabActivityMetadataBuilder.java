@@ -6,11 +6,11 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.TestingLabActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
-import gov.healthit.chpl.dto.TestingLabDTO;
 
 @Component("atlActivityMetadataBuilder")
 public class TestingLabActivityMetadataBuilder extends ActivityMetadataBuilder {
@@ -29,22 +29,22 @@ public class TestingLabActivityMetadataBuilder extends ActivityMetadataBuilder {
         TestingLabActivityMetadata atlMetadata = (TestingLabActivityMetadata) metadata;
 
         //parse atl specific metadata
-        TestingLabDTO origAtl = null;
+        TestingLab origAtl = null;
         if (dto.getOriginalData() != null) {
             try {
                 origAtl =
-                    jsonMapper.readValue(dto.getOriginalData(), TestingLabDTO.class);
+                    jsonMapper.readValue(dto.getOriginalData(), TestingLab.class);
             } catch (final Exception ex) {
                 LOGGER.error("Could not parse activity ID " + dto.getId() + " original data. "
                         + "JSON was: " + dto.getOriginalData(), ex);
             }
         }
 
-        TestingLabDTO newAtl = null;
+        TestingLab newAtl = null;
         if (dto.getNewData() != null) {
             try {
                 newAtl =
-                    jsonMapper.readValue(dto.getNewData(), TestingLabDTO.class);
+                    jsonMapper.readValue(dto.getNewData(), TestingLab.class);
             } catch (final Exception ex) {
                 LOGGER.error("Could not parse activity ID " + dto.getId() + " new data. "
                         + "JSON was: " + dto.getNewData(), ex);
@@ -66,7 +66,7 @@ public class TestingLabActivityMetadataBuilder extends ActivityMetadataBuilder {
     }
 
     private void parseAtlMetadata(
-            final TestingLabActivityMetadata atlMetadata, final TestingLabDTO atl) {
+            TestingLabActivityMetadata atlMetadata, TestingLab atl) {
         atlMetadata.setAtlId(atl.getId());
         atlMetadata.setAtlName(atl.getName());
     }

@@ -3,7 +3,7 @@ package gov.healthit.chpl.dto.scheduler;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.entity.scheduler.BrokenSurveillanceRulesEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +19,7 @@ public class BrokenSurveillanceRulesDTO implements Serializable {
     private String developer;
     private String product;
     private String version;
-    private CertificationBodyDTO certificationBody;
+    private CertificationBody certificationBody;
     private String url;
     private String certificationStatus;
     private String dateOfLastStatusChange;
@@ -66,7 +66,7 @@ public class BrokenSurveillanceRulesDTO implements Serializable {
         this.developer = entity.getDeveloper();
         this.product = entity.getProduct();
         this.version = entity.getVersion();
-        this.certificationBody = new CertificationBodyDTO(entity.getCertificationBody());
+        this.certificationBody = entity.getCertificationBody().toDomain();
         this.chplProductNumber = entity.getChplProductNumber();
         this.url = entity.getUrl();
         this.certificationStatus = entity.getCertificationStatus();

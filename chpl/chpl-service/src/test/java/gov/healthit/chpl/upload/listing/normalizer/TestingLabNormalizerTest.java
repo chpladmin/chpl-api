@@ -15,7 +15,7 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
-import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -101,10 +101,10 @@ public class TestingLabNormalizerTest {
                 .build();
 
         Mockito.when(atlDao.getById(ArgumentMatchers.anyLong()))
-        .thenReturn(TestingLabDTO.builder()
+        .thenReturn(TestingLab.builder()
                 .id(1L)
                 .name("ICSA")
-                .testingLabCode("01")
+                .atlCode("01")
                 .build());
         normalizer.normalize(listing);
 
@@ -126,10 +126,10 @@ public class TestingLabNormalizerTest {
                 .build();
 
         Mockito.when(atlDao.getById(ArgumentMatchers.anyLong()))
-        .thenReturn(TestingLabDTO.builder()
+        .thenReturn(TestingLab.builder()
                 .id(1L)
                 .name("ICSA")
-                .testingLabCode("01")
+                .atlCode("01")
                 .build());
         normalizer.normalize(listing);
 
@@ -173,10 +173,10 @@ public class TestingLabNormalizerTest {
                 .build();
 
         Mockito.when(atlDao.getByName(ArgumentMatchers.anyString()))
-        .thenReturn(TestingLabDTO.builder()
+        .thenReturn(TestingLab.builder()
                 .id(1L)
                 .name("ICSA")
-                .testingLabCode("01")
+                .atlCode("01")
                 .build());
         normalizer.normalize(listing);
 
@@ -220,10 +220,10 @@ public class TestingLabNormalizerTest {
                 .build();
 
         Mockito.when(atlDao.getByCode(ArgumentMatchers.anyString()))
-        .thenReturn(TestingLabDTO.builder()
+        .thenReturn(TestingLab.builder()
                 .id(1L)
                 .name("ICSA")
-                .testingLabCode("01")
+                .atlCode("01")
                 .build());
         normalizer.normalize(listing);
 
@@ -263,10 +263,10 @@ public class TestingLabNormalizerTest {
                 .build();
 
         Mockito.when(atlDao.getByCode(ArgumentMatchers.anyString()))
-        .thenReturn(TestingLabDTO.builder()
+        .thenReturn(TestingLab.builder()
                 .id(1L)
                 .name("ICSA")
-                .testingLabCode("07")
+                .atlCode("07")
                 .build());
         normalizer.normalize(listing);
 

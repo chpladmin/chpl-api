@@ -24,7 +24,7 @@ public class DeveloperCertificationBodyMapDAO extends BaseDAOImpl {
                 .createQuery(hql, DeveloperCertificationBodyMapEntity.class)
                 .setParameter("developerId", developerId)
                 .getResultList().stream()
-                .map(item -> new CertificationBody(item.getCertificationBody()))
+                .map(item -> item.getCertificationBody().toDomain())
                 .collect(Collectors.<CertificationBody>toList());
     }
 
