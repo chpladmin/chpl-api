@@ -11,7 +11,7 @@ import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "urlUptimeEmailJobLogger")
-public class UrlUptimeEmailJob extends QuartzJob {
+public class ServiceBasedUrlUptimeEmailJob extends QuartzJob {
 
     @Autowired
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
@@ -20,10 +20,10 @@ public class UrlUptimeEmailJob extends QuartzJob {
     private ChplEmailFactory chplEmailFactory;
 
     @Autowired
-    private UrlUptimeCalculator urlUptimeCalculator;
+    private ServiceBasedUrlUptimeCalculator urlUptimeCalculator;
 
     @Autowired
-    private UrlUptimeCsvWriter urlUptimeCsvWriter;
+    private ServiceBasedUrlUptimeCsvWriter urlUptimeCsvWriter;
 
     @Autowired
     private Environment env;

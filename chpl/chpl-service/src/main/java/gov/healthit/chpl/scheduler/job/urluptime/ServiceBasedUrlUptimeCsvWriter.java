@@ -18,16 +18,16 @@ import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2
-public class UrlUptimeCsvWriter {
+public class ServiceBasedUrlUptimeCsvWriter {
 
     private String reportFileName;
 
     @Autowired
-    public UrlUptimeCsvWriter(@Value("${urlUptime.report.filename}") String reportFileName) {
+    public ServiceBasedUrlUptimeCsvWriter(@Value("${urlUptime.report.filename}") String reportFileName) {
         this.reportFileName = reportFileName;
     }
 
-    public File generateFile(List<UrlUptimeReport> rows) {
+    public File generateFile(List<ServiceBasedUrlUptimeReport> rows) {
         File outputFile = getOutputFile();
         if (rows == null || rows.size() == 0) {
             return outputFile;
@@ -37,7 +37,7 @@ public class UrlUptimeCsvWriter {
                 Charset.forName("UTF-8").newEncoder());
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
             writer.write('\ufeff');
-            csvPrinter.printRecord(UrlUptimeReport.getHeaders());
+            csvPrinter.printRecord(ServiceBasedUrlUptimeReport.getHeaders());
             rows.stream()
                     .forEach(row -> {
                         try {

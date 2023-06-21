@@ -10,7 +10,7 @@ import lombok.extern.log4j.Log4j2;
 
 //@Log4j2(topic =  "urlUptimeCreatorJobLogger")
 @Log4j2
-public class UrlUptimeCreatorJob extends QuartzJob {
+public class ServiceBasedUrlUptimeCreatorJob extends QuartzJob {
 
     @Autowired
     private DatadogUrlUptimeSynchonizer datadogChplSynchonizer;

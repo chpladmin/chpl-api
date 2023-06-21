@@ -8,6 +8,14 @@
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
+        <delete-job>
+            <name>urlUptimeCreatorJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>CHPL URL Uptime Report</name>
+            <group>chplJobs</group>
+        </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
@@ -815,10 +823,10 @@
         </job>
 
         <job>
-            <name>urlUptimeCreatorJob</name>
+            <name>serviceBasedUrlUptimeCreatorJob</name>
             <group>systemJobs</group>
             <description>Retrieve uptime information from Datadog got (g)(10) Service Based URLs.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.urluptime.UrlUptimeCreatorJob</job-class>
+            <job-class>gov.healthit.chpl.scheduler.job.urluptime.ServiceBasedUrlUptimeCreatorJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>
@@ -827,7 +835,7 @@
             <name>CHPL URL Uptime Report</name>
             <group>chplJobs</group>
             <description>Sends the CHPL URL Uptime Report</description>
-            <job-class>gov.healthit.chpl.scheduler.job.urluptime.UrlUptimeEmailJob</job-class>
+            <job-class>gov.healthit.chpl.scheduler.job.urluptime.ServiceBasedUrlUptimeEmailJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>
