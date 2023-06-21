@@ -23,7 +23,7 @@ public class ServiceBasedUrlUptimeCsvWriter {
     private String reportFileName;
 
     @Autowired
-    public ServiceBasedUrlUptimeCsvWriter(@Value("${urlUptime.report.filename}") String reportFileName) {
+    public ServiceBasedUrlUptimeCsvWriter(@Value("${serviceBasedUrlUptime.report.filename}") String reportFileName) {
         this.reportFileName = reportFileName;
     }
 

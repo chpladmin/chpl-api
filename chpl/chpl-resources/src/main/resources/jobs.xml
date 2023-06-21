@@ -832,9 +832,9 @@
         </job>
 
         <job>
-            <name>CHPL URL Uptime Report</name>
+            <name>Service Based URL Uptime Report</name>
             <group>chplJobs</group>
-            <description>Sends the CHPL URL Uptime Report</description>
+            <description>Sends the Service Based URL Uptime Report</description>
             <job-class>gov.healthit.chpl.scheduler.job.urluptime.ServiceBasedUrlUptimeEmailJob</job-class>
             <durability>true</durability>
             <recover>false</recover>

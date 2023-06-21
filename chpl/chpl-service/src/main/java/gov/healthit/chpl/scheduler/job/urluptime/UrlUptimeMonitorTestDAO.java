@@ -38,11 +38,11 @@ public class UrlUptimeMonitorTestDAO extends BaseDAOImpl {
                 .toList();
     }
 
-    private List<UrlUptimeMonitorTestEntity> getDatadogMonitorTestEntities(Long datadogMonitorId) {
+    private List<UrlUptimeMonitorTestEntity> getDatadogMonitorTestEntities(Long urlUptimeMonitorId) {
         return entityManager.createQuery("FROM UrlUptimeMonitorTestEntity uumt "
                 + "WHERE uumt.deleted = false "
-                + "AND uumt.datadogMonitorId = :datadogMonitorId ", UrlUptimeMonitorTestEntity.class)
-                .setParameter("datadogMonitorId", datadogMonitorId)
+                + "AND uumt.urlUptimeMonitorId = :urlUptimeMonitorId ", UrlUptimeMonitorTestEntity.class)
+                .setParameter("urlUptimeMonitorId", urlUptimeMonitorId)
                 .getResultList();
     }
 
