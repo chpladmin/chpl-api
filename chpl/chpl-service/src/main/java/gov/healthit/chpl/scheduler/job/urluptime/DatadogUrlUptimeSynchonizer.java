@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job.urluptime;
 
+import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -150,7 +151,9 @@ public class DatadogUrlUptimeSynchonizer {
     private List<LocalDate> getDatesToRetrieveResultsFor() {
         List<LocalDate> datesToRetrieveResultsFor = new ArrayList<LocalDate>();
         for (Long i = 1L; i <= DAYS_TO_LOOK_BACK_FOR_RESULTS; ++i) {
-            if (!doUrlUptimeMonitorTestsExistInDbForDate(LocalDate.now().minusDays(i))) {
+            if (!LocalDate.now().minusDays(i).getDayOfWeek().equals(DayOfWeek.SATURDAY)
+                    && !LocalDate.now().minusDays(i).getDayOfWeek().equals(DayOfWeek.SUNDAY)
+                    && !doUrlUptimeMonitorTestsExistInDbForDate(LocalDate.now().minusDays(i))) {
                 LOGGER.info("Retieve datadog monitor results for {}: YES", LocalDate.now().minusDays(i));
                 datesToRetrieveResultsFor.add(LocalDate.now().minusDays(i));
             } else {
