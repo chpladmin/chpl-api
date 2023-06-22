@@ -81,21 +81,21 @@ public class DatadogUrlUptimeSynchonizer {
     private void addMissingDatadogSyntheticApiTests(List<ServiceBasedUrl> serviceBasedUrls, List<SyntheticsTestDetails> syntheticTestDetails) {
         List<ServiceBasedUrl> urlsNotInDatadog = new ArrayList<ServiceBasedUrl>(serviceBasedUrls);
         urlsNotInDatadog.removeIf(sbu -> syntheticTestDetails.stream()
-                .filter(synthTest -> synthTest.getConfig().getRequest().getUrl().equals(sbu.getUrl())
+                .filter(synthTest -> synthTest.getConfig().getRequest().getUrl().equals(sbu.getDatadogFormattedUrl())
                         && getDeveloperIdFromTags(synthTest.getTags()).equals(sbu.getDeveloperId()))
                 .findAny()
                 .isPresent());
 
         urlsNotInDatadog.stream()
-                .peek(sbu -> LOGGER.info("Adding the following URL to Datadog: {}", sbu.getUrl()))
-                .forEach(sbu -> datadogSyntheticTestService.createSyntheticApiTest(sbu.getUrl(), sbu.getDeveloperId()));
+                .peek(sbu -> LOGGER.info("Adding the following URL to Datadog: {}", sbu.getDatadogFormattedUrl()))
+                .forEach(sbu -> datadogSyntheticTestService.createSyntheticApiTest(sbu.getDatadogFormattedUrl(), sbu.getDeveloperId()));
     }
 
     private void removeUnusedDatadogSyntheticApiTests(List<ServiceBasedUrl> serviceBasedUrls, List<SyntheticsTestDetails> syntheticTestDetails) {
         List<SyntheticsTestDetails> syntheticsTestDetailsNotUsed = new ArrayList<SyntheticsTestDetails>(syntheticTestDetails);
 
         syntheticsTestDetailsNotUsed.removeIf(std -> serviceBasedUrls.stream()
-                .filter(serviceBasedUrl -> serviceBasedUrl.getUrl().equals(std.getConfig().getRequest().getUrl())
+                .filter(serviceBasedUrl -> serviceBasedUrl.getDatadogFormattedUrl().equals(std.getConfig().getRequest().getUrl())
                         && serviceBasedUrl.getDeveloperId().equals(getDeveloperIdFromTags(std.getTags())))
                 .findAny()
                 .isPresent());

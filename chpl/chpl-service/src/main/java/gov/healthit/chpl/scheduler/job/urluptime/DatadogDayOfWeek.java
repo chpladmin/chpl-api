@@ -1,6 +1,9 @@
 package gov.healthit.chpl.scheduler.job.urluptime;
 
-public class DatadogDayOfWeek {
+public final class DatadogDayOfWeek {
+
+    private DatadogDayOfWeek() { }
+
     public static final Integer SUNDAY = 7;
     public static final Integer MONDAY = 1;
     public static final Integer TUESDAY = 2;
