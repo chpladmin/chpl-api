@@ -18,6 +18,7 @@ public class ServiceBasedUrlUptimeCreatorJob extends QuartzJob {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Url Uptime Creator job *********");
+        if
         try {
             datadogChplSynchonizer.synchronize();
         } catch (Exception e) {

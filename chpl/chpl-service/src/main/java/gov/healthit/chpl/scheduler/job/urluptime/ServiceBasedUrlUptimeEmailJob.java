@@ -7,6 +7,7 @@ import java.util.List;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -42,24 +43,30 @@ public class ServiceBasedUrlUptimeEmailJob extends QuartzJob {
     @Autowired
     private Environment env;
 
+    @Value("${datadog.syntheticTest.readOnly}")
+    private Boolean datadogReadOnly;
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Url Uptime Email job *********");
 
-
-        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
-        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        txTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                try {
-                    sendEmail(context, getReportRows());
-                } catch (Exception e) {
-                    LOGGER.error(e);
+        if (!datadogReadOnly) {
+            TransactionTemplate txTemplate = new TransactionTemplate(txManager);
+            txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+            txTemplate.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus status) {
+                    try {
+                        sendEmail(context, getReportRows());
+                    } catch (Exception e) {
+                        LOGGER.error(e);
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            LOGGER.info("Not synchonizing or gathering Service Based URL data based on configuration");
+        }
         LOGGER.info("********* Completed the Url Uptime Email job *********");
     }
 
