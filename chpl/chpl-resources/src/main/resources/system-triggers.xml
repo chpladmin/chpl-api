@@ -214,7 +214,7 @@
                 <job-name>serviceBasedUrlUptimeCreatorJob</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 0 5 * * ?</cron-expression> <!-- At 0500 UTC every day -->
+                <cron-expression>0 0 9 * * ?</cron-expression> <!-- At 0500 UTC every day -->
             </cron>
         </trigger>
     </schedule>
