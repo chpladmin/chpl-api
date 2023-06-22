@@ -102,6 +102,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
             attestation.setAttestationPeriod(getAttestationPeriod(cr));
             ChangeRequestAttestationSubmission createdAttestation = crAttestationDAO.create(cr, attestation);
 
+            attestation.setForm(formValidator.removePhantomAndDuplicateResponses(attestation.getForm()));
             List<FormItem> rolledUpFormItems = attestation.getForm().extractFlatFormItems();
             crAttestationDAO.addResponsesToChangeRequestAttestationSubmission(createdAttestation, rolledUpFormItems);
 
