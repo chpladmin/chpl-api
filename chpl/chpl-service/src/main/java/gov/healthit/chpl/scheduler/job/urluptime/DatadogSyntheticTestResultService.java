@@ -46,7 +46,7 @@ public class DatadogSyntheticTestResultService {
                 params.fromTs(ts);
                 response = apiProvider.getApiInstance().getAPITestLatestResults(publicTestKey, params);
             }
-            LOGGER.info("Found {} tests for monitor {} for {} between {} and {}", testResults.size(), publicTestKey, startTime, endTime);
+            LOGGER.info("Found {} tests for monitor {} between {} and {}", testResults.size(), publicTestKey, startTime, endTime);
 
         } catch (ApiException e) {
             response = null;
