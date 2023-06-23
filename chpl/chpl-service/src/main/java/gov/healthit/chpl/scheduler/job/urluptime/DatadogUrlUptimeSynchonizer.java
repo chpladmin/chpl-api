@@ -54,7 +54,7 @@ public class DatadogUrlUptimeSynchonizer {
         getDatesToRetrieveResultsFor().stream()
                 .peek(testDate -> LOGGER.info("**************** Retrieving test results for: {} ****************", testDate))
                 .forEach(testDate -> urlUptimeMonitorDAO.getAll()
-                        .forEach(urlUptimeMonitor ->  datadogSyntheticsTestResultService.getSyntheticTestResults(urlUptimeMonitor.getDatadogPublicId(), testDate)
+                        .forEach(urlUptimeMonitor ->  datadogSyntheticsTestResultService.getSyntheticsTestResults(urlUptimeMonitor.getDatadogPublicId(), testDate)
                                 .forEach(syntheticsTestResult -> utlUptimeMonitorTestDAO.create(UrlUptimeMonitorTest.builder()
                                       .urlUptimeMonitorId(urlUptimeMonitor.getId())
                                       .datadogTestKey(syntheticsTestResult.getResultId())

@@ -15,7 +15,7 @@ public class ServiceBasedUrlUptimeCreatorJob extends QuartzJob {
     @Autowired
     private DatadogUrlUptimeSynchonizer datadogChplSynchonizer;
 
-    @Value("${datadog.syntheticTest.readOnly}")
+    @Value("${datadog.syntheticsTest.readOnly}")
     private Boolean datadogReadOnly;
 
     @Override

@@ -28,7 +28,7 @@ public class DatadogSyntheticsTestResultService {
         this.apiProvider = apiProvider;
     }
 
-    public List<SyntheticsAPITestResultShort> getSyntheticTestResults(String publicTestKey, LocalDate dateToGetResultsFor) {
+    public List<SyntheticsAPITestResultShort> getSyntheticsTestResults(String publicTestKey, LocalDate dateToGetResultsFor) {
         GetAPITestLatestResultsOptionalParameters params = new GetAPITestLatestResultsOptionalParameters();
         ZonedDateTime startTime = dateToGetResultsFor.atTime(LocalTime.MIN).atZone(ZoneId.of("America/New_York"));
         ZonedDateTime endTime = dateToGetResultsFor.atTime(LocalTime.MAX).atZone(ZoneId.of("America/New_York"));
