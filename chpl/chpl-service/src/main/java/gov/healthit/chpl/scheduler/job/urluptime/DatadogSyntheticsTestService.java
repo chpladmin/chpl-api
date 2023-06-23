@@ -28,12 +28,12 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "serviceBasedUrlUptimeCreatorJobLogger")
 @Component
-public class DatadogSyntheticTestService {
+public class DatadogSyntheticsTestService {
     private static final Integer HTTP_STATUS_OK = 200;
     private static final String HTTP_METHOD_GET = "GET";
     private static final Long SECONDS_IN_A_MINUTE = 60L;
 
-    private DatadogSyntheticTestApiProvider apiProvider;
+    private DatadogSyntheticsTestApiProvider apiProvider;
     private Boolean datadogIsReadOnly;
     private String datadogTestStartTime;
     private String datadogTestEndTime;
@@ -41,13 +41,13 @@ public class DatadogSyntheticTestService {
     private Integer datadogTestTimeout;
     private String datadogTestLocation;
 
-    public DatadogSyntheticTestService(DatadogSyntheticTestApiProvider apiProvider,
-            @Value("${datadog.syntheticTest.readOnly}") Boolean datadogIsReadOnly,
-            @Value("${datadog.syntheticTest.startTime}") String datadogTestStartTime,
-            @Value("${datadog.syntheticTest.endTime}") String datadogTestEndTime,
-            @Value("${datadog.syntheticTest.checkEveryMinutes}") Long datadogCheckEveryMinutes,
-            @Value("${datadog.syntheticTest.timeout}") Integer datadogTestTimeout,
-            @Value("${datadog.syntheticTest.location}") String datadogTestLocation) {
+    public DatadogSyntheticsTestService(DatadogSyntheticsTestApiProvider apiProvider,
+            @Value("${datadog.syntheticsTest.readOnly}") Boolean datadogIsReadOnly,
+            @Value("${datadog.syntheticsTest.startTime}") String datadogTestStartTime,
+            @Value("${datadog.syntheticsTest.endTime}") String datadogTestEndTime,
+            @Value("${datadog.syntheticsTest.checkEveryMinutes}") Long datadogCheckEveryMinutes,
+            @Value("${datadog.syntheticsTest.timeout}") Integer datadogTestTimeout,
+            @Value("${datadog.syntheticsTest.location}") String datadogTestLocation) {
         this.apiProvider = apiProvider;
         this.datadogIsReadOnly = datadogIsReadOnly;
         this.datadogTestStartTime = datadogTestStartTime;
@@ -57,7 +57,7 @@ public class DatadogSyntheticTestService {
         this.datadogTestLocation = datadogTestLocation;
     }
 
-    public List<SyntheticsTestDetails> getAllSyntheticTests() {
+    public List<SyntheticsTestDetails> getAllSyntheticsTests() {
         try {
             return apiProvider.getApiInstance().listTests().getTests();
         } catch (ApiException e) {
@@ -66,7 +66,7 @@ public class DatadogSyntheticTestService {
         }
     }
 
-    public void deleteSyntheticApiTest(List<String> publicIds) {
+    public void deleteSyntheticsTests(List<String> publicIds) {
         try {
             if (datadogIsReadOnly) {
                 LOGGER.info("Not deleting from datadog (due to environment setting) with Public Ids: {}", publicIds);
@@ -79,7 +79,7 @@ public class DatadogSyntheticTestService {
         }
     }
 
-    public SyntheticsAPITest createSyntheticApiTest(String url, Long developerId) {
+    public SyntheticsAPITest createSyntheticsTest(String url, Long developerId) {
         SyntheticsAPITest body = new SyntheticsAPITest()
                 .config(new SyntheticsAPITestConfig()
                         .assertions(Arrays.asList(
@@ -135,7 +135,7 @@ public class DatadogSyntheticTestService {
                 return apiProvider.getApiInstance().createSyntheticsAPITest(body);
             }
         } catch (ApiException e) {
-            LOGGER.error("Could not create Synthetic Tests for URL: {}", url, e);
+            LOGGER.error("Could not create Synthetics Test for URL: {}", url, e);
             return null;
         }
     }

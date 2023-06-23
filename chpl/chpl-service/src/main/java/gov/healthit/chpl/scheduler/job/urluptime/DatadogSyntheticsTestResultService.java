@@ -19,12 +19,12 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "serviceBasedUrlUptimeCreatorJobLogger")
 @Component
-public class DatadogSyntheticTestResultService {
+public class DatadogSyntheticsTestResultService {
 
-    private DatadogSyntheticTestApiProvider apiProvider;
+    private DatadogSyntheticsTestApiProvider apiProvider;
 
     @Autowired
-    public DatadogSyntheticTestResultService(DatadogSyntheticTestApiProvider apiProvider) {
+    public DatadogSyntheticsTestResultService(DatadogSyntheticsTestApiProvider apiProvider) {
         this.apiProvider = apiProvider;
     }
 

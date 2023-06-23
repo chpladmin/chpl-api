@@ -13,14 +13,14 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "serviceBasedUrlUptimeCreatorJobLogger")
 @Component
-public class DatadogSyntheticTestApiProvider {
+public class DatadogSyntheticsTestApiProvider {
     private String datadogApiKey;
     private String datadogAppKey;
 
     @Getter
     private SyntheticsApi apiInstance = null;
 
-    public DatadogSyntheticTestApiProvider(@Value("${datadog.apiKey}") String datadogApiKey, @Value("${datadog.appKey}") String datadogAppKey) {
+    public DatadogSyntheticsTestApiProvider(@Value("${datadog.apiKey}") String datadogApiKey, @Value("${datadog.appKey}") String datadogAppKey) {
         this.datadogApiKey = datadogApiKey;
         this.datadogAppKey = datadogAppKey;
 
