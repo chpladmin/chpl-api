@@ -21,8 +21,8 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "serviceBasedUrlUptimeEmailJobLogger")
-public class ServiceBasedUrlUptimeEmailJob extends QuartzJob {
+@Log4j2(topic = "serviceBaseUrlListUptimeEmailJobLogger")
+public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
 
     @Autowired
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
@@ -31,10 +31,10 @@ public class ServiceBasedUrlUptimeEmailJob extends QuartzJob {
     private ChplEmailFactory chplEmailFactory;
 
     @Autowired
-    private ServiceBasedUrlUptimeCalculator urlUptimeCalculator;
+    private ServiceBaseUrlListUptimeCalculator serviceBaseUrlListUptimeCalculator;
 
     @Autowired
-    private ServiceBasedUrlUptimeCsvWriter urlUptimeCsvWriter;
+    private ServiceBaseUrlListUptimeCsvWriter serviceBaseUrlListUptimeCsvWriter;
 
     @Autowired
     private JpaTransactionManager txManager;
@@ -45,7 +45,7 @@ public class ServiceBasedUrlUptimeEmailJob extends QuartzJob {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        LOGGER.info("********* Starting the Url Uptime Email job *********");
+        LOGGER.info("********* Starting the Service Base Url List Uptime Email job *********");
         TransactionTemplate txTemplate = new TransactionTemplate(txManager);
         txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         txTemplate.execute(new TransactionCallbackWithoutResult() {
@@ -58,28 +58,28 @@ public class ServiceBasedUrlUptimeEmailJob extends QuartzJob {
                 }
             }
         });
-        LOGGER.info("********* Completed the Url Uptime Email job *********");
+        LOGGER.info("********* Completed the Service Base Url List Uptime Email job *********");
     }
 
-    private List<ServiceBasedUrlUptimeReport> getReportRows() {
-        return urlUptimeCalculator.calculateRowsForReport();
+    private List<ServiceBaseUrlListUptimeReport> getReportRows() {
+        return serviceBaseUrlListUptimeCalculator.calculateRowsForReport();
     }
 
-    private void sendEmail(JobExecutionContext context, List<ServiceBasedUrlUptimeReport> rows) throws EmailNotSentException, IOException {
+    private void sendEmail(JobExecutionContext context, List<ServiceBaseUrlListUptimeReport> rows) throws EmailNotSentException, IOException {
         LOGGER.info("Sending email to: " + context.getMergedJobDataMap().getString("email"));
         chplEmailFactory.emailBuilder()
                 .recipient(context.getMergedJobDataMap().getString("email"))
-                .subject(env.getProperty("serviceBasedUrlUptime.report.subject"))
+                .subject(env.getProperty("serviceBaseUrlListUptime.report.subject"))
                 .htmlMessage(createHtmlMessage(context, rows.size()))
-                .fileAttachments(Arrays.asList(urlUptimeCsvWriter.generateFile(rows)))
+                .fileAttachments(Arrays.asList(serviceBaseUrlListUptimeCsvWriter.generateFile(rows)))
                 .sendEmail();
         LOGGER.info("Completed Sending email to: " + context.getMergedJobDataMap().getString("email"));
     }
 
     private String createHtmlMessage(JobExecutionContext context, int errorCount) {
         return chplHtmlEmailBuilder.initialize()
-                .heading(env.getProperty("serviceBasedUrlUptime.report.subject"))
-                .paragraph("", env.getProperty("serviceBasedUrlUptime.report.paragraph1.body"))
+                .heading(env.getProperty("serviceBaseUrlListUptime.report.subject"))
+                .paragraph("", env.getProperty("serviceBaseUrlListUptime.report.paragraph1.body"))
                 .footer(true)
                 .build();
     }

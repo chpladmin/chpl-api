@@ -173,10 +173,10 @@
     <Logger name="listingSearchCacheRefreshLogger" level="DEBUG" additivity="false">
         <AppenderRef ref="listingSearchCacheRefresh" />
     </Logger>
-    <Logger name="serviceBasedUrlUptimeCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="serviceBasedUrlUptimeCreatorJob" />
+    <Logger name="serviceBaseUrlListUptimeCreatorJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="serviceBaseUrlListUptimeCreatorJob" />
     </Logger>
-        <Logger name="serviceBasedUrlUptimeEmailJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="serviceBasedUrlUptimeEmailJob" />
+        <Logger name="serviceBaseUrlListUptimeEmailJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="serviceBaseUrlListUptimeEmailJob" />
     </Logger>
 </Loggers>

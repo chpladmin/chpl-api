@@ -9,7 +9,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ServiceBasedUrl {
+public class ServiceBaseUrlList {
     private String url;
     private Long developerId;
     private List<String> chplProductNumbers;

@@ -226,12 +226,12 @@
         <AppenderRef ref="listingSearchCacheRefresh" />
         <AppenderRef ref="listingSearchCacheRefreshJson" />
     </Logger>
-    <Logger name="serviceBasedUrlUptimeCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="serviceBasedUrlUptimeCreatorJob" />
-        <AppenderRef ref="serviceBasedUrlUptimeCreatorJobJson" />
+    <Logger name="serviceBaseUrlListUptimeCreatorJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="serviceBaseUrlListUptimeCreatorJob" />
+        <AppenderRef ref="serviceBaseUrlListUptimeCreatorJobJson" />
     </Logger>
-    <Logger name="serviceBasedUrlUptimeEmailJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="serviceBasedUrlUptimeEmailJob" />
-        <AppenderRef ref="serviceBasedUrlUptimeEmailJobJson" />
+    <Logger name="serviceBaseUrlListUptimeEmailJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="serviceBaseUrlListUptimeEmailJob" />
+        <AppenderRef ref="serviceBaseUrlListUptimeEmailJobJson" />
     </Logger>
 </Loggers>

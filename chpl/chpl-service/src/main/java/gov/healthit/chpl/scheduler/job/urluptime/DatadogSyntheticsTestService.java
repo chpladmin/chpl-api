@@ -26,7 +26,7 @@ import com.datadog.api.client.v1.model.SyntheticsTestRequest;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "serviceBasedUrlUptimeCreatorJobLogger")
+@Log4j2(topic = "serviceBaseUrlListUptimeCreatorJobLogger")
 @Component
 public class DatadogSyntheticsTestService {
     private static final Integer HTTP_STATUS_OK = 200;

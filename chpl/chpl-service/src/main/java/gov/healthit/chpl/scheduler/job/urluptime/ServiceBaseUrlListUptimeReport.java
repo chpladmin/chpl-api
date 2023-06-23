@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ServiceBasedUrlUptimeReport {
+public class ServiceBaseUrlListUptimeReport {
     private String developerName;
     private Long developerId;
     private String url;

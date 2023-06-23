@@ -17,17 +17,17 @@ import org.springframework.stereotype.Component;
 import lombok.extern.log4j.Log4j2;
 
 @Component
-@Log4j2(topic = "serviceBasedUrlUptimeEmailJobLogger")
-public class ServiceBasedUrlUptimeCsvWriter {
+@Log4j2(topic = "serviceBaseUrlListUptimeEmailJobLogger")
+public class ServiceBaseUrlListUptimeCsvWriter {
 
     private String reportFileName;
 
     @Autowired
-    public ServiceBasedUrlUptimeCsvWriter(@Value("${serviceBasedUrlUptime.report.filename}") String reportFileName) {
+    public ServiceBaseUrlListUptimeCsvWriter(@Value("${serviceBaseUrlListUptime.report.filename}") String reportFileName) {
         this.reportFileName = reportFileName;
     }
 
-    public File generateFile(List<ServiceBasedUrlUptimeReport> rows) {
+    public File generateFile(List<ServiceBaseUrlListUptimeReport> rows) {
         File outputFile = getOutputFile();
         if (rows == null || rows.size() == 0) {
             return outputFile;
@@ -37,7 +37,7 @@ public class ServiceBasedUrlUptimeCsvWriter {
                 Charset.forName("UTF-8").newEncoder());
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
             writer.write('\ufeff');
-            csvPrinter.printRecord(ServiceBasedUrlUptimeReport.getHeaders());
+            csvPrinter.printRecord(ServiceBaseUrlListUptimeReport.getHeaders());
             rows.stream()
                     .forEach(row -> {
                         try {
@@ -63,5 +63,4 @@ public class ServiceBasedUrlUptimeCsvWriter {
 
         return temp;
     }
-
 }

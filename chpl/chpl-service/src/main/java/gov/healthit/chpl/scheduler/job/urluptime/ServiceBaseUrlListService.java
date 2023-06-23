@@ -25,23 +25,23 @@ import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "serviceBasedUrlUptimeCreatorJobLogger")
+@Log4j2(topic = "serviceBaseUrlListUptimeCreatorJobLogger")
 @Component
-public class ServiceBasedUrlService {
+public class ServiceBaseUrlListService {
 
     private ListingSearchService listingSearchService;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
     private CertificationCriterionService certificationCriterionService;
 
     @Autowired
-    public ServiceBasedUrlService(ListingSearchService listingSearchService, CertifiedProductDetailsManager certifiedProductDetailsManager,
+    public ServiceBaseUrlListService(ListingSearchService listingSearchService, CertifiedProductDetailsManager certifiedProductDetailsManager,
             CertificationCriterionService certificationCriterionService) {
         this.listingSearchService = listingSearchService;
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
         this.certificationCriterionService = certificationCriterionService;
     }
 
-    public List<ServiceBasedUrl> getAllServiceBasedUrls() {
+    public List<ServiceBaseUrlList> getAllServiceBaseUrlLists() {
         try {
             return reduceBasedOnUrl(findAllListingsWithG10Criteria());
         } catch (ValidationException e) {
@@ -51,8 +51,8 @@ public class ServiceBasedUrlService {
 
     }
 
-    private List<ServiceBasedUrl> reduceBasedOnUrl(List<ListingSearchResult> listingSearchResults) {
-        Map<String, ServiceBasedUrl> serviceBasedUrls = new HashMap<String, ServiceBasedUrl>();
+    private List<ServiceBaseUrlList> reduceBasedOnUrl(List<ListingSearchResult> listingSearchResults) {
+        Map<String, ServiceBaseUrlList> serviceBaseUrlLists = new HashMap<String, ServiceBaseUrlList>();
 
         listingSearchResults.forEach(result -> {
             CertifiedProductSearchDetails listing = getListing(result.getId());
@@ -64,18 +64,18 @@ public class ServiceBasedUrlService {
                 return;
             }
 
-            if (serviceBasedUrls.containsKey(certificationResult.getServiceBaseUrlList())) {
-                serviceBasedUrls.get(certificationResult.getServiceBaseUrlList()).getChplProductNumbers().add(listing.getChplProductNumber());
+            if (serviceBaseUrlLists.containsKey(certificationResult.getServiceBaseUrlList())) {
+                serviceBaseUrlLists.get(certificationResult.getServiceBaseUrlList()).getChplProductNumbers().add(listing.getChplProductNumber());
             } else {
-                serviceBasedUrls.put(certificationResult.getServiceBaseUrlList(),
-                        ServiceBasedUrl.builder()
+                serviceBaseUrlLists.put(certificationResult.getServiceBaseUrlList(),
+                        ServiceBaseUrlList.builder()
                                 .url(certificationResult.getServiceBaseUrlList())
                                 .developerId(listing.getDeveloper().getId())
                                 .chplProductNumbers(new ArrayList<String>(Arrays.asList(listing.getChplProductNumber())))
                                 .build());
             }
         });
-        return serviceBasedUrls.values().stream()
+        return serviceBaseUrlLists.values().stream()
                 .toList();
 
     }

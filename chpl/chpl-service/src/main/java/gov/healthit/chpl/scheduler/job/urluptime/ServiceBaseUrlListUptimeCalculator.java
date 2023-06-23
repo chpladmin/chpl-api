@@ -11,20 +11,20 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "serviceBasedUrlUptimeEmailJobLogger")
+@Log4j2(topic = "serviceBaseUrlListUptimeEmailJobLogger")
 @Component
-public class ServiceBasedUrlUptimeCalculator {
+public class ServiceBaseUrlListUptimeCalculator {
     private UrlUptimeMonitorDAO urlUptimeMonitorDAO;
     private UrlUptimeMonitorTestDAO urlUptimeMonitorTestDAO;
 
     @Autowired
-    public ServiceBasedUrlUptimeCalculator(UrlUptimeMonitorDAO urlUptimeMonitorDAO, UrlUptimeMonitorTestDAO urlUptimeMonitorTestDAO) {
+    public ServiceBaseUrlListUptimeCalculator(UrlUptimeMonitorDAO urlUptimeMonitorDAO, UrlUptimeMonitorTestDAO urlUptimeMonitorTestDAO) {
         this.urlUptimeMonitorDAO = urlUptimeMonitorDAO;
         this.urlUptimeMonitorTestDAO = urlUptimeMonitorTestDAO;
     }
 
-    public List<ServiceBasedUrlUptimeReport> calculateRowsForReport() {
-        List<ServiceBasedUrlUptimeReport> reports = new ArrayList<ServiceBasedUrlUptimeReport>();
+    public List<ServiceBaseUrlListUptimeReport> calculateRowsForReport() {
+        List<ServiceBaseUrlListUptimeReport> reports = new ArrayList<ServiceBaseUrlListUptimeReport>();
 
         getChplUptimeMonitors().stream()
                 .forEach(monitor -> reports.add(summarize(monitor, getUrlUptimeMonitorTests(monitor.getId()))));
@@ -39,13 +39,13 @@ public class ServiceBasedUrlUptimeCalculator {
         return urlUptimeMonitorTestDAO.getChplUptimeMonitorTests(chplUptimeMonitorId);
     }
 
-    private ServiceBasedUrlUptimeReport summarize(UrlUptimeMonitor urlUptimeMonitor, List<UrlUptimeMonitorTest> urlUptimeMonitorTests) {
+    private ServiceBaseUrlListUptimeReport summarize(UrlUptimeMonitor urlUptimeMonitor, List<UrlUptimeMonitorTest> urlUptimeMonitorTests) {
         LOGGER.info("Summarizing data for {}", urlUptimeMonitor.getUrl());
 
         List<UrlUptimeMonitorTest> allTestsForPastWeek = getEligibleTestsForPastWeek(urlUptimeMonitorTests);
         List<UrlUptimeMonitorTest> allTestsForCurrentMonth = getEligibleTestsForCurrentMonth(urlUptimeMonitorTests);
 
-        return ServiceBasedUrlUptimeReport.builder()
+        return ServiceBaseUrlListUptimeReport.builder()
                 .developerName(urlUptimeMonitor.getDeveloper().getName())
                 .developerId(urlUptimeMonitor.getDeveloper().getId())
                 .url(urlUptimeMonitor.getUrl())

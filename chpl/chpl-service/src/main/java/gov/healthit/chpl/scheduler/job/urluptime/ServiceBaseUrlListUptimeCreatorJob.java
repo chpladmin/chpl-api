@@ -9,8 +9,8 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic =  "serviceBasedUrlUptimeCreatorJobLogger")
-public class ServiceBasedUrlUptimeCreatorJob extends QuartzJob {
+@Log4j2(topic =  "serviceBaseUrlListUptimeCreatorJobLogger")
+public class ServiceBaseUrlListUptimeCreatorJob extends QuartzJob {
 
     @Autowired
     private DatadogUrlUptimeSynchonizer datadogChplSynchonizer;
@@ -21,7 +21,7 @@ public class ServiceBasedUrlUptimeCreatorJob extends QuartzJob {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        LOGGER.info("********* Starting the Url Uptime Creator job *********");
+        LOGGER.info("********* Starting the Service Base Url List Uptime Creator job *********");
         if (!datadogReadOnly) {
 
             try {
@@ -30,9 +30,9 @@ public class ServiceBasedUrlUptimeCreatorJob extends QuartzJob {
                 LOGGER.error(e);
             }
         } else {
-            LOGGER.info("Not synchonizing or gathering Service Based URL data based on configuration");
+            LOGGER.info("Not synchonizing or gathering Service Base URL List data based on configuration");
         }
-        LOGGER.info("********* Completed the Url Uptime Creator job *********");
+        LOGGER.info("********* Completed the Service Base Url List Uptime Creator job *********");
     }
 
 

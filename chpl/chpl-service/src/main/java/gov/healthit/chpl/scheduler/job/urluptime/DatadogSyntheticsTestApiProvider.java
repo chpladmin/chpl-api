@@ -11,7 +11,7 @@ import com.datadog.api.client.v1.api.SyntheticsApi;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "serviceBasedUrlUptimeCreatorJobLogger")
+@Log4j2(topic = "serviceBaseUrlListUptimeCreatorJobLogger")
 @Component
 public class DatadogSyntheticsTestApiProvider {
     private String datadogApiKey;

@@ -16,28 +16,28 @@ import com.datadog.api.client.v1.model.SyntheticsTestDetails;
 import gov.healthit.chpl.domain.Developer;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "serviceBasedUrlUptimeCreatorJobLogger")
+@Log4j2(topic = "serviceBaseUrlListUptimeCreatorJobLogger")
 @Component
 public class DatadogUrlUptimeSynchonizer {
     private static final Long DAYS_TO_LOOK_BACK_FOR_RESULTS = 7L;
 
     // VARIABLE NAMING CONVENTION
-    // ServiceBasedUrl - these are service based urls collected from the listings in CHPL, grouped by developer
+    // ServiceBaseUrlList - these are service base url lists collected from the listings in CHPL, grouped by developer
     // DatadogSyntheticsTest - these are synthetic tests that exist in Datadog
     // UrlUptimeMonitor - these are reporting entities that are store in the table url_uptime_monitors
 
     private DatadogSyntheticsTestService datadogSyntheticsTestService;
     private DatadogSyntheticsTestResultService datadogSyntheticsTestResultService;
-    private ServiceBasedUrlService serviceBasedUrlGatherer;
+    private ServiceBaseUrlListService serviceBaseUrlListService;
     private UrlUptimeMonitorDAO urlUptimeMonitorDAO;
     private UrlUptimeMonitorTestDAO utlUptimeMonitorTestDAO;
 
 
     public DatadogUrlUptimeSynchonizer(DatadogSyntheticsTestService datadogSyntheticsTestService, DatadogSyntheticsTestResultService datadogSyntheticsTestResultService,
-            ServiceBasedUrlService serviceBasedUrlGatherer, UrlUptimeMonitorDAO urlUptimeMonitorDAO, UrlUptimeMonitorTestDAO urlUptimeMonitorTestDAO) {
+            ServiceBaseUrlListService serviceBaseUrlListGatherer, UrlUptimeMonitorDAO urlUptimeMonitorDAO, UrlUptimeMonitorTestDAO urlUptimeMonitorTestDAO) {
         this.datadogSyntheticsTestService = datadogSyntheticsTestService;
         this.datadogSyntheticsTestResultService = datadogSyntheticsTestResultService;
-        this.serviceBasedUrlGatherer = serviceBasedUrlGatherer;
+        this.serviceBaseUrlListService = serviceBaseUrlListGatherer;
         this.urlUptimeMonitorDAO = urlUptimeMonitorDAO;
         this.utlUptimeMonitorTestDAO = urlUptimeMonitorTestDAO;
     }
@@ -45,7 +45,7 @@ public class DatadogUrlUptimeSynchonizer {
     @Transactional
     public void synchronize() {
         //These must called in the order
-        synchronizeDatadogSyntheticsTestsWithServiceBasedUrl();
+        synchronizeDatadogSyntheticsTestsWithServiceBaseUrlLists();
         synchronizeUrlUptimeMonitorsWithDatadogSyntheticsTests();
         synchronizeUrlUptimeMonitorTestsWithDatadogSyntheticsTestResults();
     }
@@ -63,12 +63,12 @@ public class DatadogUrlUptimeSynchonizer {
                                       .build()))));
     }
 
-    private void synchronizeDatadogSyntheticsTestsWithServiceBasedUrl() {
-        List<ServiceBasedUrl> serviceBasedUrls = serviceBasedUrlGatherer.getAllServiceBasedUrls();
+    private void synchronizeDatadogSyntheticsTestsWithServiceBaseUrlLists() {
+        List<ServiceBaseUrlList> serviceBaseUrlLists = serviceBaseUrlListService.getAllServiceBaseUrlLists();
         List<SyntheticsTestDetails> syntheticsTestDetails = datadogSyntheticsTestService.getAllSyntheticsTests();
 
-        addMissingDatadogSyntheticApiTests(serviceBasedUrls, syntheticsTestDetails);
-        removeUnusedDatadogSyntheticApiTests(serviceBasedUrls, syntheticsTestDetails);
+        addMissingDatadogSyntheticApiTests(serviceBaseUrlLists, syntheticsTestDetails);
+        removeUnusedDatadogSyntheticApiTests(serviceBaseUrlLists, syntheticsTestDetails);
     }
 
     private void synchronizeUrlUptimeMonitorsWithDatadogSyntheticsTests() {
@@ -79,8 +79,8 @@ public class DatadogUrlUptimeSynchonizer {
         removeUnusedUrlUptimeMonitors(syntheticsTestDetails, urlUptimeMonitors);
     }
 
-    private void addMissingDatadogSyntheticApiTests(List<ServiceBasedUrl> serviceBasedUrls, List<SyntheticsTestDetails> syntheticsTestDetails) {
-        List<ServiceBasedUrl> urlsNotInDatadog = new ArrayList<ServiceBasedUrl>(serviceBasedUrls);
+    private void addMissingDatadogSyntheticApiTests(List<ServiceBaseUrlList> serviceBaseUrlLists, List<SyntheticsTestDetails> syntheticsTestDetails) {
+        List<ServiceBaseUrlList> urlsNotInDatadog = new ArrayList<ServiceBaseUrlList>(serviceBaseUrlLists);
         urlsNotInDatadog.removeIf(sbu -> syntheticsTestDetails.stream()
                 .filter(synthTest -> synthTest.getConfig().getRequest().getUrl().equals(sbu.getDatadogFormattedUrl())
                         && getDeveloperIdFromTags(synthTest.getTags()).equals(sbu.getDeveloperId()))
@@ -92,12 +92,12 @@ public class DatadogUrlUptimeSynchonizer {
                 .forEach(sbu -> datadogSyntheticsTestService.createSyntheticsTest(sbu.getDatadogFormattedUrl(), sbu.getDeveloperId()));
     }
 
-    private void removeUnusedDatadogSyntheticApiTests(List<ServiceBasedUrl> serviceBasedUrls, List<SyntheticsTestDetails> syntheticsTestDetails) {
+    private void removeUnusedDatadogSyntheticApiTests(List<ServiceBaseUrlList> serviceBaseUrlListss, List<SyntheticsTestDetails> syntheticsTestDetails) {
         List<SyntheticsTestDetails> syntheticsTestDetailsNotUsed = new ArrayList<SyntheticsTestDetails>(syntheticsTestDetails);
 
-        syntheticsTestDetailsNotUsed.removeIf(std -> serviceBasedUrls.stream()
-                .filter(serviceBasedUrl -> serviceBasedUrl.getDatadogFormattedUrl().equals(std.getConfig().getRequest().getUrl())
-                        && serviceBasedUrl.getDeveloperId().equals(getDeveloperIdFromTags(std.getTags())))
+        syntheticsTestDetailsNotUsed.removeIf(std -> serviceBaseUrlListss.stream()
+                .filter(serviceBaseUrlList -> serviceBaseUrlList.getDatadogFormattedUrl().equals(std.getConfig().getRequest().getUrl())
+                        && serviceBaseUrlList.getDeveloperId().equals(getDeveloperIdFromTags(std.getTags())))
                 .findAny()
                 .isPresent());
 
