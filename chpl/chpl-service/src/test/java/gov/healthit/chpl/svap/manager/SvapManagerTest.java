@@ -349,7 +349,7 @@ public class SvapManagerTest {
 
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString())).thenReturn("Error Message");
 
-        svapManager.delete(svap);
+        svapManager.delete(svap.getSvapId());
     }
 
     @Test(expected = ValidationException.class)
@@ -379,7 +379,7 @@ public class SvapManagerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any()))
                 .thenReturn("Error Message");
 
-        svapManager.delete(svap);
+        svapManager.delete(svap.getSvapId());
     }
 
 }

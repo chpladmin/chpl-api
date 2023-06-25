@@ -31,7 +31,6 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.IdNamePair;
@@ -481,13 +480,6 @@ public class DeveloperManager extends SecuredManager {
             }
         }
         return duplicatedChplProductNumbers;
-    }
-
-    @Deprecated
-    @Transactional(readOnly = true)
-    @Cacheable(CacheNames.GET_DECERTIFIED_DEVELOPERS)
-    public List<DecertifiedDeveloper> getDecertifiedDeveloperCollection() {
-        return developerDao.getDecertifiedDeveloperCollection();
     }
 
     private void normalizeSpaces(Developer developer) {
