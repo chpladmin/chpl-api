@@ -35,10 +35,6 @@ public class UrlUptimeMonitorTestEntity {
     private Long urlUptimeMonitorId;
 
     @Basic(optional = false)
-    @Column(name = "datadog_test_key", nullable = false)
-    private String datadogTestKey;
-
-    @Basic(optional = false)
     @Column(name = "check_time", nullable = false)
     private LocalDateTime checkTime;
 
@@ -66,7 +62,6 @@ public class UrlUptimeMonitorTestEntity {
         return UrlUptimeMonitorTest.builder()
                 .id(id)
                 .urlUptimeMonitorId(urlUptimeMonitorId)
-                .datadogTestKey(datadogTestKey)
                 .checkTime(checkTime)
                 .passed(passed)
                 .build();

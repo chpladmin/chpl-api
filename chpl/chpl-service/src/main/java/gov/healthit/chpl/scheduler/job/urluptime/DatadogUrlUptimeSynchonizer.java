@@ -51,13 +51,17 @@ public class DatadogUrlUptimeSynchonizer {
     }
 
     private void synchronizeUrlUptimeMonitorTestsWithDatadogSyntheticsTestResults() {
+        List<SyntheticsTestDetails> syntheticsTestDetails = datadogSyntheticsTestService.getAllSyntheticsTests();
+
         getDatesToRetrieveResultsFor().stream()
                 .peek(testDate -> LOGGER.info("**************** Retrieving test results for: {} ****************", testDate))
                 .forEach(testDate -> urlUptimeMonitorDAO.getAll()
-                        .forEach(urlUptimeMonitor ->  datadogSyntheticsTestResultService.getSyntheticsTestResults(urlUptimeMonitor.getDatadogPublicId(), testDate)
+                        .forEach(urlUptimeMonitor ->  datadogSyntheticsTestResultService.getSyntheticsTestResults(getDatadogPublicId(
+                                    syntheticsTestDetails,
+                                    urlUptimeMonitor.getUrl(),
+                                    urlUptimeMonitor.getDeveloper().getId()), testDate)
                                 .forEach(syntheticsTestResult -> utlUptimeMonitorTestDAO.create(UrlUptimeMonitorTest.builder()
                                       .urlUptimeMonitorId(urlUptimeMonitor.getId())
-                                      .datadogTestKey(syntheticsTestResult.getResultId())
                                       .checkTime(toLocalDateTime(syntheticsTestResult.getCheckTime().longValue()))
                                       .passed(syntheticsTestResult.getResult().getPassed())
                                       .build()))));
@@ -180,6 +184,15 @@ public class DatadogUrlUptimeSynchonizer {
         }
     }
 
+    private String getDatadogPublicId(List<SyntheticsTestDetails> syntheticsTestDetails, String url, Long developerId) {
+        return syntheticsTestDetails.stream()
+                .filter(dets -> dets.getConfig().getRequest().getUrl().equals(url)
+                        && getDeveloperIdFromTags(dets.getTags()).equals(developerId))
+                .map(dets -> dets.getPublicId())
+                .findAny()
+                .get();
+
+    }
     private LocalDateTime toLocalDateTime(Long ts) {
         return LocalDateTime.ofInstant(Instant.ofEpochMilli(ts),
                 TimeZone.getDefault().toZoneId());

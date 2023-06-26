@@ -10,7 +10,6 @@ import lombok.Data;
 public class UrlUptimeMonitorTest {
     private Long id;
     private Long urlUptimeMonitorId;
-    private String datadogTestKey;
     private LocalDateTime checkTime;
     private Boolean passed;
 }
