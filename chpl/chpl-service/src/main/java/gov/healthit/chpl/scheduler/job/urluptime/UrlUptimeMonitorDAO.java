@@ -28,7 +28,6 @@ public class UrlUptimeMonitorDAO extends BaseDAOImpl {
         UrlUptimeMonitorEntity entity = UrlUptimeMonitorEntity.builder()
                 .developer(getSimpleDeveloperById(datadogMonitor.getDeveloper().getId(), false))
                 .url(datadogMonitor.getUrl())
-                .datadogPublicId(datadogMonitor.getDatadogPublicId())
                 .creationDate(new Date())
                 .lastModifiedUser(User.SYSTEM_USER_ID)
                 .lastModifiedDate(new Date())

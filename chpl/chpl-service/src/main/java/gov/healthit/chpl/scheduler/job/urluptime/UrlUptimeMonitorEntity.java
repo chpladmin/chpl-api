@@ -42,10 +42,6 @@ public class UrlUptimeMonitorEntity {
     private String url;
 
     @Basic(optional = false)
-    @Column(name = "datadog_public_id", nullable = false)
-    private String datadogPublicId;
-
-    @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
     private Date creationDate;
 
@@ -64,7 +60,6 @@ public class UrlUptimeMonitorEntity {
     public UrlUptimeMonitor toDomain() {
         return UrlUptimeMonitor.builder()
                 .id(id)
-                .datadogPublicId(datadogPublicId)
                 .developer(developer.toDomain())
                 .url(url)
                 .build();
