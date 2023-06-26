@@ -1,6 +1,7 @@
 package gov.healthit.chpl.changerequest.domain.service;
 
-import java.text.DateFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -173,11 +174,10 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     }
 
     private String createApprovalHtmlMessage(ChangeRequest cr) {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Demographics Change Request Approved")
                 .paragraph("", String.format(approvalEmailBody,
-                        df.format(cr.getSubmittedDate()),
+                        cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         formatDeveloperHtml(cr.getDeveloper()),
                         getApprovalBody(cr)))
                 .footer(true)
@@ -196,11 +196,10 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     }
 
     private String createPendingDeveloperActionHtmlMessage(ChangeRequest cr) {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Demographics Change Request Pending Developer Action")
                 .paragraph("", String.format(pendingDeveloperActionEmailBody,
-                        df.format(cr.getSubmittedDate()),
+                        cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails()),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
@@ -210,7 +209,6 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
 
     @Override
     protected void sendRejectedEmail(ChangeRequest cr) throws EmailNotSentException {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         chplEmailFactory.emailBuilder()
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
                         .map(user -> user.getEmail())
@@ -221,11 +219,10 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     }
 
     private String createRejectedHtmlMessage(ChangeRequest cr) {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Demographics Change Request Rejected")
                 .paragraph("", String.format(rejectedEmailBody,
-                        df.format(cr.getSubmittedDate()),
+                        cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails()),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))

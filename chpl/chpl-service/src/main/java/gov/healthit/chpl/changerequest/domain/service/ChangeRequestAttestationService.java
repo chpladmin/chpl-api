@@ -47,8 +47,6 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 public class ChangeRequestAttestationService extends ChangeRequestDetailsService<ChangeRequestAttestationSubmission> {
-    private static final Integer MAX_PAGE_SIZE = 100;
-
     private ChangeRequestDAO crDAO;
     private ChangeRequestAttestationDAO crAttestationDAO;
     private AttestationManager attestationManager;
