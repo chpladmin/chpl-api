@@ -149,6 +149,12 @@
     <Logger name="changeRequestsReportJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="changeRequestsReportJob" />
     </Logger>
+    <Logger name="complaintsReportJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="complaintsReportJob" />
+    </Logger>
+    <Logger name="subscriptionObservationsNotificationJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="subscriptionObservationsNotificationJob" />
+    </Logger>
     <Logger name="developerAttestationReportJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="developerAttestationReportJob" />
     </Logger>

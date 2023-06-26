@@ -371,6 +371,18 @@
                     interval="1" modulate="true" />
         </Policies>
     </RollingFile>
+    <RollingFile name="redisson"
+                 fileName="${logDir}/cache/redisson.log"
+                 filePattern="${logDir}/cache/history/redisson-%d{yyyy-MM-dd}.log"
+                 filePermissions="rw-rw-r--">
+        <PatternLayout>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>
+        </PatternLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                    interval="1" modulate="true" />
+        </Policies>
+    </RollingFile>
     <RollingFile name="sharedDataStore"
                  fileName="${logDir}/cache/sharedDataStore.log"
                  filePattern="${logDir}/cache/history/sharedDataStore-%d{yyyy-MM-dd}.log"
@@ -581,6 +593,19 @@
     <RollingFile name="complaintsReportJob"
         fileName="${logDir}/scheduler/complaintsReportJob.log"
         filePattern="${logDir}/scheduler/history/complaintsReportJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
+        <PatternLayout>
+            <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+        </PatternLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+    </RollingFile>
+
+    <RollingFile name="subscriptionObservationsNotificationJob"
+        fileName="${logDir}/scheduler/subscriptionObservationsNotificationJob.log"
+        filePattern="${logDir}/scheduler/history/subscriptionObservationsNotificationJob-%d{yyyy-MM-dd}.log"
         filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>

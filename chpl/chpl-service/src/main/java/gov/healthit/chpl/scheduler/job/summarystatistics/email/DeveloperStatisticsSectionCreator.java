@@ -2,13 +2,13 @@ package gov.healthit.chpl.scheduler.job.summarystatistics.email;
 
 import java.util.List;
 
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.scheduler.job.summarystatistics.StatisticsMassager;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
 
 public class DeveloperStatisticsSectionCreator extends StatisticsSectionCreator {
 
-    public String build(EmailStatistics stats, List<CertificationBodyDTO> activeAcbs) {
+    public String build(EmailStatistics stats, List<CertificationBody> activeAcbs) {
         return buildUniqueDeveloperSection(stats, new StatisticsMassager(activeAcbs));
     }
 

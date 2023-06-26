@@ -33,8 +33,8 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.contact.PointOfContact;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.auth.UserContactEntity;
@@ -83,7 +83,7 @@ public class DeveloperAccessReport extends QuartzJob {
                 "Creating developer access report for: " + jobContext.getMergedJobDataMap().getString("email"));
 
         try {
-            List<CertificationBodyDTO> acbs = getAppropriateAcbs(jobContext);
+            List<CertificationBody> acbs = getAppropriateAcbs(jobContext);
             List<List<String>> developerAccessRows = createDeveloperAccessRows(acbs);
             sendEmail(jobContext, developerAccessRows, acbs);
         } catch (Exception e) {
@@ -92,8 +92,8 @@ public class DeveloperAccessReport extends QuartzJob {
         LOGGER.info("********* Completed the Developer Access job. *********");
     }
 
-    private List<CertificationBodyDTO> getAppropriateAcbs(JobExecutionContext jobContext) {
-        List<CertificationBodyDTO> acbs = certificationBodyDAO.findAllActive();
+    private List<CertificationBody> getAppropriateAcbs(JobExecutionContext jobContext) {
+        List<CertificationBody> acbs = certificationBodyDAO.findAllActive();
         if (jobContext.getMergedJobDataMap().getBooleanValue("acbSpecific")) {
             List<Long> acbsFromJob = getAcbsFromJobContext(jobContext);
             acbs = acbs.stream()
@@ -110,7 +110,7 @@ public class DeveloperAccessReport extends QuartzJob {
     }
 
     private File getOutputFile(final List<List<String>> rows, final String reportFilename,
-            final List<CertificationBodyDTO> activeAcbs) {
+            final List<CertificationBody> activeAcbs) {
         File temp = null;
         try {
             temp = File.createTempFile(reportFilename, ".csv");
@@ -133,7 +133,7 @@ public class DeveloperAccessReport extends QuartzJob {
         return temp;
     }
 
-    private List<String> getHeaderRow(final List<CertificationBodyDTO> activeAcbs) {
+    private List<String> getHeaderRow(final List<CertificationBody> activeAcbs) {
         List<String> row = createEmptyRow(activeAcbs);
         row.set(DEVELOPER_NAME, "Developer Name");
         row.set(DEVELOPER_ID, "Developer ID");
@@ -149,7 +149,7 @@ public class DeveloperAccessReport extends QuartzJob {
         return row;
     }
 
-    private List<List<String>> createDeveloperAccessRows(List<CertificationBodyDTO> activeAcbs)
+    private List<List<String>> createDeveloperAccessRows(List<CertificationBody> activeAcbs)
             throws EntityRetrievalException {
         LOGGER.debug("Getting developer access data");
         List<DeveloperAcbMap> developerAcbMaps = getDeveloperAccessFilteredByACBs(activeAcbs);
@@ -164,10 +164,10 @@ public class DeveloperAccessReport extends QuartzJob {
         return activityCsvRows;
     }
 
-    private List<DeveloperAcbMap> getDeveloperAccessFilteredByACBs(List<CertificationBodyDTO> acbs)
+    private List<DeveloperAcbMap> getDeveloperAccessFilteredByACBs(List<CertificationBody> acbs)
             throws EntityRetrievalException {
         List<Long> acbIds = acbs.stream()
-                .map(CertificationBodyDTO::getId)
+                .map(CertificationBody::getId)
                 .collect(Collectors.toList());
         List<CertificationStatusType> activeStatuses = new ArrayList<CertificationStatusType>();
         activeStatuses.add(CertificationStatusType.Active);
@@ -178,7 +178,7 @@ public class DeveloperAccessReport extends QuartzJob {
     }
 
     private void putDeveloperAccessActivityInRow(DeveloperAcbMap devAcbMap,
-            List<String> currRow, List<CertificationBodyDTO> activeAcbs) {
+            List<String> currRow, List<CertificationBody> activeAcbs) {
         // Straightforward data
         currRow.set(DEVELOPER_NAME, devAcbMap.getDeveloperName());
         currRow.set(DEVELOPER_ID, devAcbMap.getDeveloperId() + "");
@@ -194,7 +194,7 @@ public class DeveloperAccessReport extends QuartzJob {
         // Is the CR relevant for each ONC-ACB?
         for (int i = 0; i < activeAcbs.size(); i++) {
             boolean isRelevant = false;
-            for (CertificationBodyDTO acb : devAcbMap.getAcbs()) {
+            for (CertificationBody acb : devAcbMap.getAcbs()) {
                 if (activeAcbs.get(i).getId().equals(acb.getId())) {
                     isRelevant = true;
                 }
@@ -203,7 +203,7 @@ public class DeveloperAccessReport extends QuartzJob {
         }
     }
 
-    private List<String> createEmptyRow(List<CertificationBodyDTO> activeAcbs) {
+    private List<String> createEmptyRow(List<CertificationBody> activeAcbs) {
         List<String> row = new ArrayList<String>(NUM_REPORT_COLS);
         for (int i = 0; i < NUM_REPORT_COLS + activeAcbs.size(); i++) {
             row.add("");
@@ -225,7 +225,7 @@ public class DeveloperAccessReport extends QuartzJob {
                 Locale.US);
     }
 
-    private void sendEmail(JobExecutionContext jobContext, List<List<String>> csvRows, List<CertificationBodyDTO> acbs)
+    private void sendEmail(JobExecutionContext jobContext, List<List<String>> csvRows, List<CertificationBody> acbs)
             throws EmailNotSentException {
         LOGGER.info("Sending email to {} with contents {} and a total of {} developer access rows",
                 getEmailRecipients(jobContext).get(0), getHtmlMessage((csvRows.size()), getAcbNamesAsCommaSeparatedList(jobContext)));
@@ -259,7 +259,7 @@ public class DeveloperAccessReport extends QuartzJob {
         return env.getProperty("developerAccessEmailSubject");
     }
 
-    private List<File> getAttachments(List<List<String>> csvRows, List<CertificationBodyDTO> acbs) {
+    private List<File> getAttachments(List<List<String>> csvRows, List<CertificationBody> acbs) {
         List<File> attachments = new ArrayList<File>();
         File csvFile = getCsvFile(csvRows, acbs);
         if (csvFile != null) {
@@ -268,7 +268,7 @@ public class DeveloperAccessReport extends QuartzJob {
         return attachments;
     }
 
-    private File getCsvFile(List<List<String>> csvRows, List<CertificationBodyDTO> acbs) {
+    private File getCsvFile(List<List<String>> csvRows, List<CertificationBody> acbs) {
         File csvFile = null;
         if (csvRows.size() > 0) {
             String filename = env.getProperty("developerAccessReportFilename");
@@ -330,7 +330,7 @@ public class DeveloperAccessReport extends QuartzJob {
                 map.setContactName(queryResult[2] != null ? queryResult[2].toString() : "");
                 map.setContactEmail(queryResult[3] != null ? queryResult[3].toString() : "");
                 map.setContactPhoneNumber(queryResult[4] != null ? queryResult[4].toString() : "");
-                CertificationBodyDTO acb = new CertificationBodyDTO();
+                CertificationBody acb = new CertificationBody();
                 acb.setId(Long.valueOf(queryResult[5].toString()));
                 acb.setName(queryResult[6].toString());
 
@@ -424,7 +424,7 @@ public class DeveloperAccessReport extends QuartzJob {
         private String contactName;
         private String contactEmail;
         private String contactPhoneNumber;
-        private Set<CertificationBodyDTO> acbs = new HashSet<CertificationBodyDTO>();
+        private Set<CertificationBody> acbs = new HashSet<CertificationBody>();
 
         @Override
         public boolean equals(Object anotherObj) {

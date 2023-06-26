@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
-import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 import lombok.extern.log4j.Log4j2;
@@ -52,15 +52,15 @@ public class TestingLabNormalizer {
 
     private void updateTestingLabFromChplProductNumber(CertifiedProductSearchDetails listing) {
         String atlCodeFromChplProductNumber = chplProductNumberUtil.getAtlCode(listing.getChplProductNumber());
-        TestingLabDTO testingLabDto = atlDao.getByCode(atlCodeFromChplProductNumber);
+        TestingLab testingLab = atlDao.getByCode(atlCodeFromChplProductNumber);
 
-        if (testingLabDto != null) {
-            CertifiedProductTestingLab testingLab = CertifiedProductTestingLab.builder()
-                    .testingLabId(testingLabDto.getId())
-                    .testingLabName(testingLabDto.getName())
-                    .testingLabCode(testingLabDto.getTestingLabCode())
+        if (testingLab != null) {
+            CertifiedProductTestingLab cpTestingLab = CertifiedProductTestingLab.builder()
+                    .testingLabId(testingLab.getId())
+                    .testingLabName(testingLab.getName())
+                    .testingLabCode(testingLab.getAtlCode())
                     .build();
-            listing.setTestingLabs(Stream.of(testingLab).collect(Collectors.toList()));
+            listing.setTestingLabs(Stream.of(cpTestingLab).collect(Collectors.toList()));
         }
     }
 
@@ -90,34 +90,34 @@ public class TestingLabNormalizer {
                         || StringUtils.isEmpty(testingLab.getTestingLabCode()));
     }
 
-    private void updateTestingLabBasedOnName(CertifiedProductTestingLab testingLab) {
-        TestingLabDTO testingLabDto = atlDao.getByName(testingLab.getTestingLabName());
-        updateTestingLabBasedOnTestingLabDto(testingLab, testingLabDto);
+    private void updateTestingLabBasedOnName(CertifiedProductTestingLab cpTestingLab) {
+        TestingLab testingLab = atlDao.getByName(cpTestingLab.getTestingLabName());
+        updateTestingLabBasedOnTestingLab(cpTestingLab, testingLab);
     }
 
-    private void updateTestingLabBasedOnCode(CertifiedProductTestingLab testingLab) {
-        TestingLabDTO testingLabDto = atlDao.getByCode(testingLab.getTestingLabCode());
-        updateTestingLabBasedOnTestingLabDto(testingLab, testingLabDto);
+    private void updateTestingLabBasedOnCode(CertifiedProductTestingLab cpTestingLab) {
+        TestingLab testingLab = atlDao.getByCode(cpTestingLab.getTestingLabCode());
+        updateTestingLabBasedOnTestingLab(cpTestingLab, testingLab);
     }
 
-    private void updateTestingLabBasedOnId(CertifiedProductTestingLab testingLab) {
-        TestingLabDTO testingLabDto = null;
+    private void updateTestingLabBasedOnId(CertifiedProductTestingLab cpTestingLab) {
+        TestingLab testingLab = null;
         try {
-            testingLabDto = atlDao.getById(testingLab.getTestingLabId());
+            testingLab = atlDao.getById(cpTestingLab.getTestingLabId());
         } catch (Exception ex) {
-            LOGGER.warn("Could not find Testing Lab with ID " + testingLab.getTestingLabId());
+            LOGGER.warn("Could not find Testing Lab with ID " + cpTestingLab.getTestingLabId());
         }
-        if (testingLabDto != null) {
-            testingLab.setTestingLabName(testingLabDto.getName());
-            testingLab.setTestingLabCode(testingLabDto.getTestingLabCode());
+        if (testingLab != null) {
+            cpTestingLab.setTestingLabName(testingLab.getName());
+            cpTestingLab.setTestingLabCode(testingLab.getAtlCode());
         }
     }
 
-    private void updateTestingLabBasedOnTestingLabDto(CertifiedProductTestingLab testingLab, TestingLabDTO testingLabDto) {
-        if (testingLabDto != null) {
-            testingLab.setTestingLabId(testingLabDto.getId());
-            testingLab.setTestingLabName(testingLabDto.getName());
-            testingLab.setTestingLabCode(testingLabDto.getTestingLabCode());
+    private void updateTestingLabBasedOnTestingLab(CertifiedProductTestingLab cpTestingLab, TestingLab testingLab) {
+        if (testingLab != null) {
+            cpTestingLab.setTestingLabId(testingLab.getId());
+            cpTestingLab.setTestingLabName(testingLab.getName());
+            cpTestingLab.setTestingLabCode(testingLab.getAtlCode());
         }
     }
 

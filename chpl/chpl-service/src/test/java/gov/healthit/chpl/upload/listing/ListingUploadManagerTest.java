@@ -30,7 +30,7 @@ import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ConfirmListingRequest;
 import gov.healthit.chpl.domain.ListingUpload;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -439,8 +439,8 @@ public class ListingUploadManagerTest {
                 .build());
     }
 
-    private CertificationBodyDTO createAcb() {
-        CertificationBodyDTO dto = new CertificationBodyDTO();
+    private CertificationBody createAcb() {
+        CertificationBody dto = new CertificationBody();
         dto.setId(1L);
         dto.setAcbCode("04");
         dto.setName("Test");

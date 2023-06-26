@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Loggers>
-    <Logger name="net.sf.ehcache" level="INFO" additivity="false">
-        <AppenderRef ref="cacheListenerActivity" />
-        <AppenderRef ref="cacheListenerActivityJson" />
-    </Logger>
     <Logger name="org.springframework.cache" level="INFO">
         <AppenderRef ref="cacheListenerActivity" />
         <AppenderRef ref="cacheListenerActivityJson" />
+    </Logger>
+    <Logger name="org.redisson" level="INFO">
+        <AppenderRef ref="redisson" />
+        <AppenderRef ref="redissonJson" />
     </Logger>
     <Logger name="sharedDataStoreLogger" level="INFO">
         <AppenderRef ref="sharedDataStore" />
@@ -197,6 +197,10 @@
     <Logger name="complaintsReportJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="complaintsReportJob" />
         <AppenderRef ref="complaintsReportJobJson" />
+    </Logger>
+    <Logger name="subscriptionObservationsNotificationJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="subscriptionObservationsNotificationJob" />
+        <AppenderRef ref="subscriptionObservationsNotificationJobJson" />
     </Logger>
     <Logger name="developerAttestationReportJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="developerAttestationReportJob" />

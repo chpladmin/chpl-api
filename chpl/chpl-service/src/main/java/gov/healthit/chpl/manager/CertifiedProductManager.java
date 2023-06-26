@@ -53,6 +53,7 @@ import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -70,6 +71,7 @@ import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
+import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
@@ -77,7 +79,6 @@ import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -88,7 +89,6 @@ import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.CuresUpdateEventDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
-import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
@@ -282,12 +282,12 @@ public class CertifiedProductManager extends SecuredManager {
     public List<CertifiedProduct> getByVersionWithEditPermission(Long versionId)
             throws EntityRetrievalException {
         versionManager.getById(versionId); // throws 404 if bad id
-        List<CertificationBodyDTO> userAcbs = resourcePermissions.getAllAcbsForCurrentUser();
+        List<CertificationBody> userAcbs = resourcePermissions.getAllAcbsForCurrentUser();
         if (userAcbs == null || userAcbs.size() == 0) {
             return new ArrayList<CertifiedProduct>();
         }
         List<Long> acbIdList = new ArrayList<Long>(userAcbs.size());
-        for (CertificationBodyDTO dto : userAcbs) {
+        for (CertificationBody dto : userAcbs) {
             acbIdList.add(dto.getId());
         }
         return cpDao.getDetailsByVersionAndAcbIds(versionId, acbIdList);
@@ -616,11 +616,11 @@ public class CertifiedProductManager extends SecuredManager {
 
         numChanges = tlsToAdd.size() + idsToRemove.size();
         for (CertifiedProductTestingLab toAdd : tlsToAdd) {
-            TestingLabDTO item = atlDao.getByName(toAdd.getTestingLabName());
+            TestingLab item = atlDao.getByName(toAdd.getTestingLabName());
             CertifiedProductTestingLabDTO tlDto = new CertifiedProductTestingLabDTO();
             tlDto.setTestingLabId(item.getId());
             tlDto.setTestingLabName(item.getName());
-            tlDto.setTestingLabCode(item.getTestingLabCode());
+            tlDto.setTestingLabCode(item.getAtlCode());
             tlDto.setCertifiedProductId(listingId);
             cpTestingLabDao.createCertifiedProductTestingLab(tlDto);
         }

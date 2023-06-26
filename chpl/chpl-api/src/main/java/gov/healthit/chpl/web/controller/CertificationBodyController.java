@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +21,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UsersResponse;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -34,9 +33,7 @@ import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.CacheControl;
-import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
-import gov.healthit.chpl.web.controller.annotation.CachePolicy;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -78,13 +75,13 @@ public class CertificationBodyController {
             @ApiResponse(responseCode = "500", description = "There was an unexpected error getting all ONC-ACBs.",
                     content = @Content)
     })
+    @DeprecatedApiResponseFields(friendlyUrl = "/acbs", responseClass = CertificationBodyResults.class)
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationBodyResults getAcbs(
             @RequestParam(required = false, defaultValue = "false") final boolean editable) {
         // TODO confirm a user is logged in here
         CertificationBodyResults results = new CertificationBodyResults();
-        List<CertificationBodyDTO> acbs = null;
+        List<CertificationBody> acbs = null;
         if (editable) {
             acbs = resourcePermissions.getAllAcbsForCurrentUser();
         } else {
@@ -92,9 +89,7 @@ public class CertificationBodyController {
         }
 
         if (acbs != null) {
-            for (CertificationBodyDTO acb : acbs) {
-                results.getAcbs().add(new CertificationBody(acb));
-            }
+            results.getAcbs().addAll(acbs);
         }
         return results;
     }
@@ -114,11 +109,11 @@ public class CertificationBodyController {
             @ApiResponse(responseCode = "500", description = "There was an unexpected error getting the ONC-ACB..",
                     content = @Content)
     })
+    @DeprecatedApiResponseFields(friendlyUrl = "/acbs/{acbId}", responseClass = CertificationBody.class)
     @RequestMapping(value = "/{acbId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CertificationBody getAcbById(@PathVariable("acbId") final Long acbId)
             throws EntityRetrievalException {
-        CertificationBodyDTO acb = acbManager.getById(acbId);
-        return new CertificationBody(acb);
+        return acbManager.getById(acbId);
     }
 
     @Operation(summary = "Create a new ONC-ACB.",
@@ -138,20 +133,13 @@ public class CertificationBodyController {
             @ApiResponse(responseCode = "500", description = "There was an unexpected error creating the ONC-ACB.",
                     content = @Content)
     })
+    @DeprecatedApiResponseFields(friendlyUrl = "/acbs", httpMethod = "POST", responseClass = CertificationBody.class)
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public CertificationBody createAcb(@RequestBody final CertificationBody acbInfo)
             throws InvalidArgumentsException, UserRetrievalException, EntityRetrievalException, EntityCreationException,
             JsonProcessingException {
-
-        return create(acbInfo);
-    }
-
-    private CertificationBody create(CertificationBody acbInfo)
-            throws InvalidArgumentsException, UserRetrievalException, EntityRetrievalException,
-            EntityCreationException, JsonProcessingException {
-
-        CertificationBodyDTO toCreate = new CertificationBodyDTO();
+        CertificationBody toCreate = new CertificationBody();
         toCreate.setAcbCode(acbInfo.getAcbCode());
         toCreate.setName(acbInfo.getName());
         if (ObjectUtils.isEmpty(acbInfo.getWebsite())) {
@@ -163,8 +151,7 @@ public class CertificationBodyController {
             throw new InvalidArgumentsException("An address is required for a new certification body");
         }
         toCreate.setAddress(acbInfo.getAddress());
-        toCreate = acbManager.create(toCreate);
-        return new CertificationBody(toCreate);
+        return acbManager.create(toCreate);
     }
 
     @Operation(summary = "Update an existing ONC-ACB.",
@@ -186,55 +173,39 @@ public class CertificationBodyController {
             @ApiResponse(responseCode = "500", description = "There was an unexpected error when updating the ONC-ACB.",
                     content = @Content)
     })
+    @DeprecatedApiResponseFields(friendlyUrl = "/acbs/{acbId}", httpMethod = "PUT", responseClass = CertificationBody.class)
     @RequestMapping(value = "/{acbId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public CertificationBody updateAcb(@RequestBody final CertificationBody acbInfo) throws InvalidArgumentsException,
+    public CertificationBody updateAcb(@RequestBody final CertificationBody acbToUpdate) throws InvalidArgumentsException,
             EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException,
             SchedulerException, ValidationException {
 
-        return update(acbInfo);
-    }
-
-    private CertificationBody update(final CertificationBody updatedAcb) throws InvalidArgumentsException,
-            EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException,
-            SchedulerException, ValidationException {
         // Get the ACB as it is currently in the database to find out if
         // the retired flag was changed.
         // Retirement and un-retirement is done as a separate manager action
-        // because
-        // security is different from normal ACB updates - only admins are
-        // allowed
-        // whereas an ACB admin can update other info
-        CertificationBodyDTO existingAcb = resourcePermissions.getAcbIfPermissionById(updatedAcb.getId());
-        if (updatedAcb.isRetired()) {
+        // because security is different from normal ACB updates - only admins are
+        // allowed whereas an ACB admin can update other info
+        CertificationBody existingAcb = resourcePermissions.getAcbIfPermissionById(acbToUpdate.getId());
+        if (acbToUpdate.isRetired()) {
             // we are retiring this ACB - no other updates can happen
-            existingAcb.setRetirementDate(updatedAcb.getRetirementDate());
+            existingAcb.setRetirementDay(acbToUpdate.getRetirementDay());
             existingAcb.setRetired(true);
             acbManager.retire(existingAcb);
         } else {
             if (existingAcb.isRetired()) {
                 // unretire the ACB
-                acbManager.unretire(updatedAcb.getId());
+                acbManager.unretire(acbToUpdate.getId());
             }
-            CertificationBodyDTO toUpdate = new CertificationBodyDTO();
-            toUpdate.setId(updatedAcb.getId());
-            toUpdate.setAcbCode(updatedAcb.getAcbCode());
-            toUpdate.setName(updatedAcb.getName());
-            toUpdate.setRetired(false);
-            toUpdate.setRetirementDate(null);
-            if (StringUtils.isEmpty(updatedAcb.getWebsite())) {
+
+            if (StringUtils.isEmpty(acbToUpdate.getWebsite())) {
                 throw new InvalidArgumentsException("A website is required to update the certification body");
             }
-            toUpdate.setWebsite(updatedAcb.getWebsite());
-
-            if (updatedAcb.getAddress() == null) {
+            if (acbToUpdate.getAddress() == null) {
                 throw new InvalidArgumentsException("An address is required to update the certification body");
             }
-            toUpdate.setAddress(updatedAcb.getAddress());
-            acbManager.update(toUpdate);
+            acbManager.update(acbToUpdate);
         }
-        CertificationBodyDTO result = acbManager.getById(updatedAcb.getId());
-        return new CertificationBody(result);
+        return acbManager.getById(acbToUpdate.getId());
     }
 
     @Operation(summary = "Remove user permissions from an ONC-ACB.",
@@ -263,7 +234,7 @@ public class CertificationBodyController {
     public String deleteUserFromAcb(@PathVariable final Long acbId, @PathVariable final Long userId)
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException, EntityCreationException {
         UserDTO user = userManager.getById(userId);
-        CertificationBodyDTO acb = resourcePermissions.getAcbIfPermissionById(acbId);
+        CertificationBody acb = resourcePermissions.getAcbIfPermissionById(acbId);
 
         if (user == null || acb == null) {
             throw new InvalidArgumentsException("Could not find either ACB or User specified");
@@ -299,7 +270,7 @@ public class CertificationBodyController {
             produces = "application/json; charset=utf-8")
     public @ResponseBody UsersResponse getUsers(@PathVariable("acbId") final Long acbId)
             throws InvalidArgumentsException, EntityRetrievalException {
-        CertificationBodyDTO acb = resourcePermissions.getAcbIfPermissionById(acbId);
+        CertificationBody acb = resourcePermissions.getAcbIfPermissionById(acbId);
         if (acb == null) {
             throw new InvalidArgumentsException("Could not find the ACB specified.");
         }

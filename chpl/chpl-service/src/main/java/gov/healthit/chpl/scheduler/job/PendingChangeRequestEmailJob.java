@@ -29,13 +29,13 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
-import gov.healthit.chpl.changerequest.search.ChangeRequestSearchServiceV1;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchRequest;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResponse;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult;
+import gov.healthit.chpl.changerequest.search.ChangeRequestSearchServiceV1;
 import gov.healthit.chpl.changerequest.search.OrderByOption;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -103,7 +103,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         LOGGER.info("Creating pending change request email for: " + jobContext.getMergedJobDataMap().getString("email"));
 
         List<ChangeRequestSearchResult> searchResults = null;
-        List<CertificationBodyDTO> acbs = null;
+        List<CertificationBody> acbs = null;
         try {
             setSecurityContext();
             acbs = getAppropriateAcbs(jobContext);
@@ -141,8 +141,8 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         LOGGER.info("********* Completed the Pending Change Request Email job. *********");
     }
 
-    private List<CertificationBodyDTO> getAppropriateAcbs(JobExecutionContext jobContext) {
-        List<CertificationBodyDTO> acbs = certificationBodyDAO.findAllActive();
+    private List<CertificationBody> getAppropriateAcbs(JobExecutionContext jobContext) {
+        List<CertificationBody> acbs = certificationBodyDAO.findAllActive();
         if (jobContext.getMergedJobDataMap().getBooleanValue("acbSpecific")) {
             List<Long> acbsFromJob = getAcbsFromJobContext(jobContext);
             acbs = acbs.stream()
@@ -158,7 +158,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
                 .collect(Collectors.toList());
     }
 
-    private ChangeRequestSearchRequest getSearchRequest(List<CertificationBodyDTO> acbs) {
+    private ChangeRequestSearchRequest getSearchRequest(List<CertificationBody> acbs) {
         List<ChangeRequestStatusType> statusTypes = changeRequestStatusTypeDao.getChangeRequestStatusTypes();
         List<Long> updatableStatusIds = changeRequestDao.getUpdatableStatusIds();
         Set<String> updatableStatusTypeNames = statusTypes.stream()

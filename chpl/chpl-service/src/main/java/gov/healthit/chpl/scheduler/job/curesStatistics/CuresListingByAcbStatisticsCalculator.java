@@ -72,9 +72,7 @@ public class CuresListingByAcbStatisticsCalculator {
     }
 
     private List<CuresListingStatisticByAcb> calculate(LocalDate statisticDate) {
-        List<CertificationBody> activeAcbs = certificationBodyDAO.findAllActive().stream()
-                .map(dto -> new CertificationBody(dto))
-                .collect(Collectors.toList());
+        List<CertificationBody> activeAcbs = certificationBodyDAO.findAllActive();
 
         ForkJoinPool pool = new ForkJoinPool(threadCount);
         try {

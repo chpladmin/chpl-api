@@ -1,5 +1,19 @@
 # Release Notes
 
+## Version 40.6.0
+_26 June 2023_
+
+### Features
+* Use retirementDay instead of retirementDate for ONC-ATLs
+* Deprecate retirementDate in favor of retirementDay for ONC-ACBs
+* Remove unused ONC-ATL accredidation_number field
+* Create POST /subscriptions endpoint to allow subscribing
+
+### Flagged Features
+* Add endpoint for available subscription reasons
+
+---
+
 ## Version 40.5.0
 _12 June 2023_
 

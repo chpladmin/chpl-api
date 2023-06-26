@@ -27,7 +27,6 @@ import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.search.ListingSearchService;
@@ -152,12 +151,12 @@ public class IcsErrorsReportCreatorJob extends QuartzJob {
     private IcsErrorsReportItem createIcsErrorsReportItem(CertifiedProductSearchDetails listing, String icsErrorMessage) {
         LOGGER.info("Found ICS Error for listing [" + listing.getId() + "]: " + icsErrorMessage);
 
-        CertificationBodyDTO acbDto = getCertificationBody(Long.parseLong(
+        CertificationBody acb = getCertificationBody(Long.parseLong(
                 listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()));
 
         return IcsErrorsReportItem.builder()
                 .listingId(listing.getId())
-                .certificationBody(acbDto != null ? new CertificationBody(acbDto) : null)
+                .certificationBody(acb)
                 .reason(icsErrorMessage)
                 .build();
     }
@@ -188,8 +187,8 @@ public class IcsErrorsReportCreatorJob extends QuartzJob {
         });
     }
 
-    private CertificationBodyDTO getCertificationBody(Long certificationBodyId) {
-        CertificationBodyDTO acb = null;
+    private CertificationBody getCertificationBody(Long certificationBodyId) {
+        CertificationBody acb = null;
         try {
             acb = certificationBodyDAO.getById(certificationBodyId);
         } catch (Exception ex) {

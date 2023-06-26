@@ -13,10 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.entity.ActivityConceptEntity;
 import gov.healthit.chpl.entity.ActivityEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -207,9 +207,9 @@ public class ActivityDAO extends BaseDAOImpl {
             .collect(Collectors.toList());
     }
 
-    public List<ActivityDTO> findAcbActivity(List<CertificationBodyDTO> acbs, Date startDate, Date endDate) {
+    public List<ActivityDTO> findAcbActivity(List<CertificationBody> acbs, Date startDate, Date endDate) {
         List<Long> acbIds = new ArrayList<Long>();
-        for (CertificationBodyDTO acb : acbs) {
+        for (CertificationBody acb : acbs) {
             acbIds.add(acb.getId());
         }
 
@@ -221,10 +221,10 @@ public class ActivityDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
-    public List<ActivityDTO> findAtlActivity(List<TestingLabDTO> atls, Date startDate,
+    public List<ActivityDTO> findAtlActivity(List<TestingLab> atls, Date startDate,
             Date endDate) {
         List<Long> atlIds = new ArrayList<Long>();
-        for (TestingLabDTO atl : atls) {
+        for (TestingLab atl : atls) {
             atlIds.add(atl.getId());
         }
 

@@ -6,7 +6,7 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.surveillance.report.domain.Quarter;
 import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportEntity;
 import lombok.AllArgsConstructor;
@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 public class QuarterlyReportDTO {
 
     private Long id;
-    private CertificationBodyDTO acb;
+    private CertificationBody acb;
     private Integer year;
     private Quarter quarter;
     private String activitiesOutcomesSummary;
@@ -40,10 +40,9 @@ public class QuarterlyReportDTO {
         this.disclosureRequirementsSummary = entity.getDisclosureRequirementsSummary();
 
         if (entity.getAcb() != null) {
-            this.acb = new CertificationBodyDTO(entity.getAcb());
+            this.acb = entity.getAcb().toDomain();
         } else {
-            this.acb = new CertificationBodyDTO();
-            this.acb.setId(entity.getCertificationBodyId());
+            this.acb = CertificationBody.builder().id(entity.getCertificationBodyId()).build();
         }
 
         if (entity.getQuarter() != null) {

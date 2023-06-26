@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.testinglab.UpdateActionPermissions;
@@ -29,7 +29,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         MockitoAnnotations.initMocks(this);
 
         Mockito.when(resourcePermissions.getAllAtlsForCurrentUser()).thenReturn(
-                Stream.of(TestingLabDTO.builder().id(2L).build()).toList());
+                Stream.of(TestingLab.builder().id(2L).build()).toList());
     }
 
     @Override
@@ -40,9 +40,9 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         // This is not used
         assertFalse(permissions.hasAccess());
 
-        TestingLabDTO dto = new TestingLabDTO();
-        dto.setId(1L);
-        assertTrue(permissions.hasAccess(dto));
+        TestingLab atl = new TestingLab();
+        atl.setId(1L);
+        assertTrue(permissions.hasAccess(atl));
     }
 
     @Override
@@ -53,9 +53,9 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         // This is not used
         assertFalse(permissions.hasAccess());
 
-        TestingLabDTO dto = new TestingLabDTO();
-        dto.setId(1L);
-        assertTrue(permissions.hasAccess(dto));
+        TestingLab atl = new TestingLab();
+        atl.setId(1L);
+        assertTrue(permissions.hasAccess(atl));
     }
 
     @Override
@@ -66,9 +66,9 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         // This is not used
         assertFalse(permissions.hasAccess());
 
-        TestingLabDTO dto = new TestingLabDTO();
-        dto.setId(1L);
-        assertFalse(permissions.hasAccess(dto));
+        TestingLab atl = new TestingLab();
+        atl.setId(1L);
+        assertFalse(permissions.hasAccess(atl));
     }
 
     @Override
@@ -79,13 +79,13 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         // This is not used
         assertFalse(permissions.hasAccess());
 
-        TestingLabDTO dto = new TestingLabDTO();
-        dto.setId(1L);
-        assertFalse(permissions.hasAccess(dto));
+        TestingLab atl = new TestingLab();
+        atl.setId(1L);
+        assertFalse(permissions.hasAccess(atl));
 
-        dto = new TestingLabDTO();
-        dto.setId(2L);
-        assertFalse(permissions.hasAccess(dto));
+        atl = new TestingLab();
+        atl.setId(2L);
+        assertFalse(permissions.hasAccess(atl));
     }
 
     @Override
@@ -96,9 +96,9 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         // This is not used
         assertFalse(permissions.hasAccess());
 
-        TestingLabDTO dto = new TestingLabDTO();
-        dto.setId(1L);
-        assertFalse(permissions.hasAccess(dto));
+        TestingLab atl = new TestingLab();
+        atl.setId(1L);
+        assertFalse(permissions.hasAccess(atl));
     }
 
 }

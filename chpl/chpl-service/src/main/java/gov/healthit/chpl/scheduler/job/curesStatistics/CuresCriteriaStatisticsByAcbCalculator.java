@@ -154,7 +154,7 @@ public class CuresCriteriaStatisticsByAcbCalculator {
 
     private CertificationBody getCertificationBody(Long acbId) {
         try {
-            return new CertificationBody(certificationBodyDAO.getById(acbId));
+            return certificationBodyDAO.getById(acbId);
         } catch (EntityRetrievalException e) {
             return null;
         }

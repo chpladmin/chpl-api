@@ -2,6 +2,7 @@ package gov.healthit.chpl.permissions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
@@ -19,11 +20,11 @@ import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.auth.UserPermission;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserDeveloperMapDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
@@ -88,7 +89,7 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public List<UserDTO> getAllUsersOnAcb(CertificationBodyDTO acb) {
+    public List<UserDTO> getAllUsersOnAcb(CertificationBody acb) {
         List<UserDTO> userDtos = new ArrayList<UserDTO>();
         List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByAcbId(acb.getId());
 
@@ -112,37 +113,36 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public List<CertificationBodyDTO> getAllAcbsForCurrentUser() {
+    public List<CertificationBody> getAllAcbsForCurrentUser() {
         User user = AuthUtil.getCurrentUser();
-        List<CertificationBodyDTO> acbs = new ArrayList<CertificationBodyDTO>();
+        List<CertificationBody> acbs = new ArrayList<CertificationBody>();
 
         if (user != null) {
             if (isUserRoleAdmin() || isUserRoleOnc()) {
                 acbs = acbDAO.findAll();
             } else {
-                List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(user.getId());
-                for (UserCertificationBodyMapDTO dto : dtos) {
-                    acbs.add(dto.getCertificationBody());
-                }
+                List<UserCertificationBodyMapDTO> userAcbMaps = userCertificationBodyMapDAO.getByUserId(user.getId());
+                acbs = userAcbMaps.stream()
+                        .map(userAcbMap -> userAcbMap.getCertificationBody())
+                        .collect(Collectors.toList());
             }
         }
         return acbs;
     }
 
     @Transactional(readOnly = true)
-    public List<CertificationBodyDTO> getAllAcbsForUser(Long userID) {
-        List<CertificationBodyDTO> acbs = new ArrayList<CertificationBodyDTO>();
-        List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByUserId(userID);
-        for (UserCertificationBodyMapDTO dto : dtos) {
-            acbs.add(dto.getCertificationBody());
-        }
-        return acbs;
+    public List<CertificationBody> getAllAcbsForUser(Long userID) {
+        List<CertificationBody> acbs = new ArrayList<CertificationBody>();
+        List<UserCertificationBodyMapDTO> userAcbMaps = userCertificationBodyMapDAO.getByUserId(userID);
+        return userAcbMaps.stream()
+            .map(userAcbMap -> userAcbMap.getCertificationBody())
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<TestingLabDTO> getAllAtlsForCurrentUser() {
+    public List<TestingLab> getAllAtlsForCurrentUser() {
         User user = AuthUtil.getCurrentUser();
-        List<TestingLabDTO> atls = new ArrayList<TestingLabDTO>();
+        List<TestingLab> atls = new ArrayList<TestingLab>();
 
         if (user != null) {
             if (isUserRoleAdmin() || isUserRoleOnc()) {
@@ -189,8 +189,8 @@ public class ResourcePermissions {
             if (isUserRoleAdmin() || isUserRoleOnc()) {
                 users = userDAO.findAll();
             } else if (isUserRoleAcbAdmin()) {
-                List<CertificationBodyDTO> acbs = getAllAcbsForCurrentUser();
-                for (CertificationBodyDTO acb : acbs) {
+                List<CertificationBody> acbs = getAllAcbsForCurrentUser();
+                for (CertificationBody acb : acbs) {
                     users.addAll(getAllUsersOnAcb(acb));
                 }
             } else if (isUserRoleDeveloperAdmin()) {
@@ -211,17 +211,17 @@ public class ResourcePermissions {
     }
 
     @Transactional(readOnly = true)
-    public CertificationBodyDTO getAcbIfPermissionById(Long id) throws EntityRetrievalException {
+    public CertificationBody getAcbIfPermissionById(Long id) throws EntityRetrievalException {
         try {
             acbDAO.getById(id);
         } catch (final EntityRetrievalException ex) {
             throw new EntityRetrievalException(errorMessageUtil.getMessage("acb.notFound"));
         }
 
-        List<CertificationBodyDTO> dtos = getAllAcbsForCurrentUser();
-        CollectionUtils.filter(dtos, new Predicate<CertificationBodyDTO>() {
+        List<CertificationBody> dtos = getAllAcbsForCurrentUser();
+        CollectionUtils.filter(dtos, new Predicate<CertificationBody>() {
             @Override
-            public boolean evaluate(final CertificationBodyDTO object) {
+            public boolean evaluate(final CertificationBody object) {
                 return object.getId().equals(id);
             }
 
@@ -286,10 +286,10 @@ public class ResourcePermissions {
                 return true;
             }
             // is the user being checked on any of the same ACB(s) that the current user is on?
-            List<CertificationBodyDTO> currUserAcbs = getAllAcbsForCurrentUser();
-            List<CertificationBodyDTO> otherUserAcbs = getAllAcbsForUser(user.getId());
-            for (CertificationBodyDTO currUserAcb : currUserAcbs) {
-                for (CertificationBodyDTO otherUserAcb : otherUserAcbs) {
+            List<CertificationBody> currUserAcbs = getAllAcbsForCurrentUser();
+            List<CertificationBody> otherUserAcbs = getAllAcbsForUser(user.getId());
+            for (CertificationBody currUserAcb : currUserAcbs) {
+                for (CertificationBody otherUserAcb : otherUserAcbs) {
                     if (currUserAcb.getId().equals(otherUserAcb.getId())) {
                         return true;
                     }

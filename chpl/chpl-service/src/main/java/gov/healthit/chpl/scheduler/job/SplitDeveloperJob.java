@@ -20,6 +20,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.security.access.AccessDeniedException;
@@ -51,7 +52,6 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.util.DateUtil;
-import net.sf.ehcache.CacheManager;
 
 @DisallowConcurrentExecution
 public class SplitDeveloperJob implements Job {
@@ -82,6 +82,9 @@ public class SplitDeveloperJob implements Job {
 
     @Autowired
     private DirectReviewUpdateEmailService directReviewEmailService;
+
+    @Autowired
+    private CacheManager cacheManager;
 
     @Autowired
     private ChplEmailFactory chplEmailFactory;
@@ -259,13 +262,12 @@ public class SplitDeveloperJob implements Job {
 
     @ListingSearchCacheRefresh
     private void clearCachesRelatedToDevelopers() {
-        CacheManager.getInstance().getCache(CacheNames.DEVELOPER_NAMES).removeAll();
-        CacheManager.getInstance().getCache(CacheNames.ALL_DEVELOPERS).removeAll();
-        CacheManager.getInstance().getCache(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED).removeAll();
-        CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_DEVELOPERS).removeAll();
-        CacheManager.getInstance().getCache(CacheNames.COLLECTIONS_LISTINGS).removeAll();
-        CacheManager.getInstance().getCache(CacheNames.GET_DECERTIFIED_DEVELOPERS).removeAll();
-        CacheManager.getInstance().getCache(CacheNames.QUESTIONABLE_ACTIVITIES).removeAll();
+        cacheManager.getCache(CacheNames.DEVELOPER_NAMES).invalidate();
+        cacheManager.getCache(CacheNames.ALL_DEVELOPERS).invalidate();
+        cacheManager.getCache(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED).invalidate();
+        cacheManager.getCache(CacheNames.COLLECTIONS_DEVELOPERS).invalidate();
+        cacheManager.getCache(CacheNames.COLLECTIONS_LISTINGS).invalidate();
+        cacheManager.getCache(CacheNames.GET_DECERTIFIED_DEVELOPERS).invalidate();
     }
 
     private void sendJobCompletionEmails(Developer newDeveloper, List<Long> productIds,

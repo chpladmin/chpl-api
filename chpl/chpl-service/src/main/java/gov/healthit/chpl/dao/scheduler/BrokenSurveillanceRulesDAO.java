@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.scheduler.BrokenSurveillanceRulesDTO;
-import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.scheduler.BrokenSurveillanceRulesEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -49,7 +48,7 @@ public class BrokenSurveillanceRulesDAO extends BaseDAOImpl {
             entity.setDeveloper(dto.getDeveloper());
             entity.setProduct(dto.getProduct());
             entity.setVersion(dto.getVersion());
-            entity.setCertificationBody(CertificationBodyEntity.getNewAcbEntity(dto.getCertificationBody()));
+            entity.setCertificationBodyId(dto.getCertificationBody().getId());
             entity.setUrl(dto.getUrl());
             entity.setCertificationStatus(dto.getCertificationStatus());
             entity.setDateOfLastStatusChange(dto.getDateOfLastStatusChange());

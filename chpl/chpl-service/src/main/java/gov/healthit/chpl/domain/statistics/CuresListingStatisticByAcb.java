@@ -24,7 +24,7 @@ public class CuresListingStatisticByAcb {
 
     public CuresListingStatisticByAcb(CuresListingStatisticByAcbEntity entity) {
         this.id = entity.getId();
-        this.certificationBody = new CertificationBody(entity.getCertificationBody());
+        this.certificationBody = entity.getCertificationBody().toDomain();
         this.curesListingWithoutCuresCriteriaCount = entity.getCuresListingWithoutCuresCriteriaCount();
         this.curesListingWithCuresCriteriaCount = entity.getCuresListingWithCuresCriteriaCount();
         this.nonCuresListingCount = entity.getNonCuresListingCount();

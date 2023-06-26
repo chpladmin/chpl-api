@@ -116,7 +116,7 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .certificationBodies(Stream.of("ICSA").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getCertBodyNames())
+        Mockito.when(dimensionalDataManager.getAllAcbs())
             .thenReturn(null);
 
         try {
@@ -134,7 +134,7 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .certificationBodies(Stream.of("ICSA").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getCertBodyNames())
+        Mockito.when(dimensionalDataManager.getAllAcbs())
             .thenReturn(Stream.of(CertificationBody.builder().id(1L).name("Drummond").build(),
                     CertificationBody.builder().id(2L).name("SLI").build())
                     .collect(Collectors.toSet()));
@@ -154,7 +154,7 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .certificationBodies(Stream.of("ICSA").collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getCertBodyNames())
+        Mockito.when(dimensionalDataManager.getAllAcbs())
         .thenReturn(Stream.of(CertificationBody.builder().id(1L).name("Drummond").build(),
                 CertificationBody.builder().id(2L).name("ICSA").build())
                 .collect(Collectors.toSet()));

@@ -10,7 +10,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.Statistics;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData.RecordType;
@@ -50,12 +50,12 @@ public class StatisticsWorksheet {
 
 
     private Workbook workbook;
-    private List<CertificationBodyDTO> allAcbs;
+    private List<CertificationBody> allAcbs;
     private List<String> mainHeaders = Arrays.asList(
             "Time to Assess Conformity", "Time to Approve CAP", "Duration of CAP", "Time from CAP Approval to Surveillance Close",
             "Time from CAP Close to Surveillance Close", "Duration of Closed Surveillance");
 
-    public StatisticsWorksheet(Workbook workbook, List<CertificationBodyDTO> allAcbs) {
+    public StatisticsWorksheet(Workbook workbook, List<CertificationBody> allAcbs) {
         this.workbook = workbook;
         this.allAcbs = allAcbs;
     }
@@ -70,7 +70,7 @@ public class StatisticsWorksheet {
 
             Integer startingRowForAcb = 1;
 
-            for (CertificationBodyDTO acb : allAcbs) {
+            for (CertificationBody acb : allAcbs) {
                 sheet = generateStatisticsForAcb(sheet, acb.getName(), startingRowForAcb, surveillances);
                 startingRowForAcb += 24;
             }
