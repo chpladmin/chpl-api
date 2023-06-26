@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.complaint.ComplaintManager;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -51,15 +50,12 @@ public class SurveillanceReportController {
 
     private ErrorMessageUtil msgUtil;
     private SurveillanceReportManager reportManager;
-    private ComplaintManager complaintManager;
 
     @Autowired
     public SurveillanceReportController(ErrorMessageUtil msgUtil,
-            SurveillanceReportManager reportManager,
-            ComplaintManager complaintManager) {
+            SurveillanceReportManager reportManager) {
         this.msgUtil = msgUtil;
         this.reportManager = reportManager;
-        this.complaintManager = complaintManager;
     }
 
     @Operation(summary = "Get all annual surveillance reports this user has access to.",
