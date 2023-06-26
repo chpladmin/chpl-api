@@ -27,7 +27,6 @@ public class SurveillanceNonConformityXmlGenerator extends XmlGenerator {
             createSimpleElement(snc.getCapEndDay(), "capEndDay", sw);
             createSimpleElement(snc.getCapMustCompleteDay(), "capMustCompleteDay", sw);
             createSimpleElement(snc.getCapStartDay(), "capStartDay", sw);
-            CertificationCriterionXmlGenerator.add(snc.getCriterion(), "criterion", sw);
             createSimpleElement(snc.getDateOfDeterminationDay(), "dateOfDeterminationDay", sw);
             createSimpleElement(snc.getDeveloperExplanation(), "developerExplanation", sw);
             createSimpleElement(snc.getFindings(), "findings", sw);
@@ -35,7 +34,6 @@ public class SurveillanceNonConformityXmlGenerator extends XmlGenerator {
             createSimpleElement(snc.getLastModifiedDate(), "lastModifiedDate", sw);
             createSimpleElement(snc.getNonconformityCloseDay(), "nonconformityCloseDay", sw);
             createSimpleElement(snc.getNonconformityStatus(), "nonconformityStatus", sw);
-            createSimpleElement(snc.getNonconformityType(), "nonconformityType", sw);
             createSimpleElement(snc.getResolution(), "resolution", sw);
             createSimpleElement(snc.getSitesPassed(), "sitesPassed", sw);
             createSimpleElement(snc.getSummary(), "summary", sw);

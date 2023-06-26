@@ -6,10 +6,10 @@ import java.util.Set;
 
 import javax.persistence.Query;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.compliance.surveillance.entity.NonconformityTypeEntity;
