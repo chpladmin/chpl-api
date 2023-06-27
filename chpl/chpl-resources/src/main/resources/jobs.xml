@@ -834,7 +834,7 @@
         <job>
             <name>serviceBaseUrlListUptimeCreatorJob</name>
             <group>systemJobs</group>
-            <description>Retrieve uptime information from Datadog got (g)(10) Service Base URL Lists.</description>
+            <description>Retrieve uptime information from Datadog for (g)(10) Service Base URL Lists.</description>
             <job-class>gov.healthit.chpl.scheduler.job.urluptime.ServiceBaseUrlListUptimeCreatorJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
@@ -843,7 +843,7 @@
         <job>
             <name>Service Base URL List Uptime Report</name>
             <group>chplJobs</group>
-            <description>Sends the Service Based URL Uptime Report</description>
+            <description>Sends the Service Based URL List Uptime Report</description>
             <job-class>gov.healthit.chpl.scheduler.job.urluptime.ServiceBaseUrlListUptimeEmailJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
