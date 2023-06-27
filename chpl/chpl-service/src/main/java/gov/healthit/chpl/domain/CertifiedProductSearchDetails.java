@@ -950,7 +950,8 @@ public class CertifiedProductSearchDetails implements Serializable {
         if (certificationDateMillis == null) {
             return null;
         }
-        return DateUtil.fromSystemToEastern(DateUtil.toLocalDateTime(certificationDateMillis)).toLocalDate();
+
+        return DateUtil.toLocalDate(certificationDateMillis);
     }
 
     private boolean anyCertificationEventIsMissingNameField(List<CertificationStatusEvent> certificationStatusEvents) {
