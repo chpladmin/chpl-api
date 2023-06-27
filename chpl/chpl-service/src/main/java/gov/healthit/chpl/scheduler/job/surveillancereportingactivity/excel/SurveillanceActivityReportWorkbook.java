@@ -8,7 +8,7 @@ import java.util.List;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
 
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData;
 import lombok.extern.log4j.Log4j2;
 
@@ -21,7 +21,7 @@ public class SurveillanceActivityReportWorkbook {
     }
 
     @SuppressWarnings("resource")
-    public File generateWorkbook(List<SurveillanceData> surveillances, List<CertificationBodyDTO> allAcbs) throws IOException {
+    public File generateWorkbook(List<SurveillanceData> surveillances, List<CertificationBody> allAcbs) throws IOException {
         Workbook workbook = null;
         try {
             LOGGER.info("Starting to build the Excel spreadhseet.");

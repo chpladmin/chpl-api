@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.QuarterlyReportActivityMetadata;
@@ -71,8 +70,7 @@ public class QuarterlyReportActivityMetadataBuilder extends ActivityMetadataBuil
 
     private void parseReportMetadata(final QuarterlyReportActivityMetadata metadata, final QuarterlyReportDTO report) {
         if (report.getAcb() != null) {
-            CertificationBody acb = new CertificationBody(report.getAcb());
-            metadata.setAcb(acb);
+            metadata.setAcb(report.getAcb());
         }
         if (report.getQuarter() != null) {
             metadata.setQuarterName(report.getQuarter().getName());

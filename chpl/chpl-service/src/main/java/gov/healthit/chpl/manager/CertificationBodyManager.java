@@ -1,6 +1,6 @@
 package gov.healthit.chpl.manager;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -17,8 +17,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -48,7 +48,7 @@ public class CertificationBodyManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).CREATE)")
-    public CertificationBodyDTO create(CertificationBodyDTO acb)
+    public CertificationBody create(CertificationBody acb)
             throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
         // assign a code
         String maxCode = certificationBodyDao.getMaxCode();
@@ -68,7 +68,7 @@ public class CertificationBodyManager extends SecuredManager {
         acb.setRetired(false);
 
         // Create the ACB itself
-        CertificationBodyDTO result = certificationBodyDao.create(acb);
+        CertificationBody result = certificationBodyDao.create(acb);
 
         LOGGER.debug("Created acb " + result + " and granted admin permission to recipient "
                 + gov.healthit.chpl.util.AuthUtil.getUsername());
@@ -93,12 +93,12 @@ public class CertificationBodyManager extends SecuredManager {
     @ListingStoreRemove(removeBy = RemoveBy.ACB_ID, id = "#acb.id")
     @ListingSearchCacheRefresh
     // no other caches have ACB data so we do not need to clear all
-    public CertificationBodyDTO update(CertificationBodyDTO acb)
+    public CertificationBody update(CertificationBody acb)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
             UpdateCertifiedBodyException, SchedulerException, ValidationException {
 
-        CertificationBodyDTO result = null;
-        CertificationBodyDTO toUpdate = certificationBodyDao.getById(acb.getId());
+        CertificationBody result = null;
+        CertificationBody toUpdate = certificationBodyDao.getById(acb.getId());
         result = certificationBodyDao.update(acb);
         if (!StringUtils.equals(acb.getName(), toUpdate.getName())) {
             schedulerManager.changeAcbName(toUpdate.getName(), acb.getName());
@@ -118,15 +118,14 @@ public class CertificationBodyManager extends SecuredManager {
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.ACB_ID, id = "#acb.id")
     @ListingSearchCacheRefresh
-    public CertificationBodyDTO retire(CertificationBodyDTO acb)
+    public CertificationBody retire(CertificationBody acb)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, IllegalArgumentException,
             SchedulerException, ValidationException {
-        Date now = new Date();
-        if (acb.getRetirementDate() == null || now.before(acb.getRetirementDate())) {
+        if (acb.getRetirementDay() == null || LocalDate.now().isBefore(acb.getRetirementDay())) {
             throw new IllegalArgumentException("Retirement date is required and must be before \"now\".");
         }
-        CertificationBodyDTO beforeAcb = certificationBodyDao.getById(acb.getId());
-        CertificationBodyDTO result = certificationBodyDao.update(acb);
+        CertificationBody beforeAcb = certificationBodyDao.getById(acb.getId());
+        CertificationBody result = certificationBodyDao.update(acb);
         try {
             schedulerManager.retireAcb(beforeAcb.getName());
         } catch (EmailNotSentException ex) {
@@ -147,13 +146,13 @@ public class CertificationBodyManager extends SecuredManager {
     }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.ACB_ID, id = "#acbId")
-    public CertificationBodyDTO unretire(Long acbId) throws EntityRetrievalException, JsonProcessingException,
+    public CertificationBody unretire(Long acbId) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateCertifiedBodyException {
-        CertificationBodyDTO beforeAcb = certificationBodyDao.getById(acbId);
-        CertificationBodyDTO toUnretire = certificationBodyDao.getById(acbId);
+        CertificationBody beforeAcb = certificationBodyDao.getById(acbId);
+        CertificationBody toUnretire = certificationBodyDao.getById(acbId);
         toUnretire.setRetired(false);
-        toUnretire.setRetirementDate(null);
-        CertificationBodyDTO result = certificationBodyDao.update(toUnretire);
+        toUnretire.setRetirementDay(null);
+        CertificationBody result = certificationBodyDao.update(toUnretire);
 
         String activityMsg = "Unretired acb " + toUnretire.getName();
         activityManager.addActivity(ActivityConcept.CERTIFICATION_BODY, result.getId(), activityMsg,
@@ -162,17 +161,17 @@ public class CertificationBodyManager extends SecuredManager {
     }
 
     @Transactional(readOnly = true)
-    public List<CertificationBodyDTO> getAll() {
+    public List<CertificationBody> getAll() {
         return certificationBodyDao.findAll();
     }
 
     @Transactional(readOnly = true)
-    public List<CertificationBodyDTO> getAllActive() {
+    public List<CertificationBody> getAllActive() {
         return certificationBodyDao.findAllActive();
     }
 
     @Transactional(readOnly = true)
-    public CertificationBodyDTO getById(Long id) throws EntityRetrievalException {
+    public CertificationBody getById(Long id) throws EntityRetrievalException {
         return certificationBodyDao.getById(id);
     }
 

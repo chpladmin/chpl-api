@@ -92,7 +92,6 @@ public class CuresProgressByAcbWorksheet {
 
     private List<CertificationBody> getActiveCertificationBodies() {
         return certificationBodyDAO.findAllActive().stream()
-                .map(dto -> new CertificationBody(dto))
                 .sorted((acb1, acb2) -> acb1.getName().compareTo(acb2.getName()))
                 .collect(Collectors.toList());
     }

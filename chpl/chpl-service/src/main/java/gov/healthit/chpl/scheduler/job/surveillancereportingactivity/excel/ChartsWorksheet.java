@@ -12,7 +12,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceData;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.charts.CapApprovalToSurveillanceCloseByIntervalChart;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.charts.ClosedSurveillanceByIntervalChart;
@@ -23,9 +23,9 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2(topic = "surveillanceActivityReportJobLogger")
 public class ChartsWorksheet {
     private Workbook workbook;
-    private List<CertificationBodyDTO> allAcbs;
+    private List<CertificationBody> allAcbs;
 
-    public ChartsWorksheet(Workbook workbook, List<CertificationBodyDTO> allAcbs) {
+    public ChartsWorksheet(Workbook workbook, List<CertificationBody> allAcbs) {
         this.workbook = workbook;
         this.allAcbs = allAcbs;
     }

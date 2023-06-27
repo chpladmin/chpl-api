@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 
 @Component
 public class ComplaintSearchRequestNormalizer {
@@ -126,7 +126,7 @@ public class ComplaintSearchRequestNormalizer {
     }
 
     private void addAcbToIdList(ComplaintSearchRequest request, String acbName) {
-        CertificationBodyDTO acb = certificationBodyDao.getByName(acbName);
+        CertificationBody acb = certificationBodyDao.getByName(acbName);
         if (acb != null) {
             request.getAcbIds().add(acb.getId());
         }

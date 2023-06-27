@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
@@ -67,7 +67,7 @@ public class AttestationExceptionEmail {
 
         private String getActingBody() {
             if (resourcePermissions.isUserRoleAcbAdmin()) {
-                List<CertificationBodyDTO> acbsForUser = resourcePermissions.getAllAcbsForCurrentUser();
+                List<CertificationBody> acbsForUser = resourcePermissions.getAllAcbsForCurrentUser();
                 if (CollectionUtils.isEmpty(acbsForUser)) {
                     LOGGER.warn("No ACBs were found for the current user " + AuthUtil.getCurrentUser().getSubjectName());
                     return "an ONC-ACB";

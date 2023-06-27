@@ -14,10 +14,8 @@ import gov.healthit.chpl.changerequest.entity.ChangeRequestTypeEntity;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult.CurrentStatusSearchResult;
 import gov.healthit.chpl.domain.Address;
-import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.domain.contact.PointOfContact;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.util.DateUtil;
 
 public final class ChangeRequestConverter {
@@ -128,7 +126,7 @@ public final class ChangeRequestConverter {
         status.setStatusChangeDateTime(DateUtil.toLocalDateTime(entity.getStatusChangeDate().getTime()));
         status.setStatusChangeDate(entity.getStatusChangeDate());
         if (entity.getCertificationBody() != null) {
-            status.setCertificationBody(new CertificationBody(new CertificationBodyDTO(entity.getCertificationBody())));
+            status.setCertificationBody(entity.getCertificationBody().toDomain());
         }
         status.setUserPermission(entity.getUserPermission().toDomain());
         return status;

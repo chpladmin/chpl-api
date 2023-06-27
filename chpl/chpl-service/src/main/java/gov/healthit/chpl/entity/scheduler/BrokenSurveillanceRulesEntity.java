@@ -10,7 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.CertificationBodyEntity;
@@ -47,9 +47,12 @@ public class BrokenSurveillanceRulesEntity {
     @Column(name = "url")
     private String url;
 
+    @Column(name = "certification_body_id")
+    private Long certificationBodyId;
+
     @Basic(optional = true)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "certification_body_id", nullable = false, insertable = true, updatable = true)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_body_id", nullable = false, insertable = false, updatable = false)
     private CertificationBodyEntity certificationBody;
 
     @Basic(optional = false)

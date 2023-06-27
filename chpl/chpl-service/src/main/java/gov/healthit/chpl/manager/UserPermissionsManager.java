@@ -14,9 +14,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserDeveloperMapDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
@@ -49,7 +49,7 @@ public class UserPermissionsManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
             + "T(gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions).ADD_ACB, #acb)")
-    public void addAcbPermission(CertificationBodyDTO acb, Long userId)
+    public void addAcbPermission(CertificationBody acb, Long userId)
             throws EntityRetrievalException, UserRetrievalException {
 
         if (doesUserCertificationBodyMapExist(acb.getId(), userId)) {
@@ -67,7 +67,7 @@ public class UserPermissionsManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
             + "T(gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions).DELETE_ACB, #acb)")
-    public void deleteAcbPermission(CertificationBodyDTO acb, Long userId)
+    public void deleteAcbPermission(CertificationBody acb, Long userId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
         // Get the UserCertBodyMapDTO
         List<UserCertificationBodyMapDTO> userPermissions = userCertificationBodyMapDAO.getByUserId(userId);

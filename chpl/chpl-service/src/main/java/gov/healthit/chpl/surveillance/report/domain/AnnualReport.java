@@ -26,7 +26,7 @@ public class AnnualReport implements Serializable {
         this.id = entity.getId();
         this.year = entity.getYear();
         if (entity.getAcb() != null) {
-            this.acb = new CertificationBody(entity.getAcb());
+            this.acb = entity.getAcb().toDomain();
         }
         this.obstacleSummary = entity.getObstacleSummary();
         this.priorityChangesFromFindingsSummary = entity.getFindingsSummary();

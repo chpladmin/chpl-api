@@ -18,11 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -216,7 +216,7 @@ public class SurveillanceReportManager extends SecuredManager {
         //create the report
         QuarterlyReportDTO toCreate = QuarterlyReportDTO.builder()
                 .year(createRequest.getYear())
-                .acb(CertificationBodyDTO.builder()
+                .acb(CertificationBody.builder()
                         .id(createRequest.getAcb().getId())
                         .build())
                 .quarter(Quarter.builder()

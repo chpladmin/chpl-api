@@ -1,7 +1,7 @@
 package gov.healthit.chpl.dao;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.TestingLabEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -32,12 +32,12 @@ public class TestingLabDAO extends BaseDAOImpl {
 
 
     @Transactional
-    public TestingLabDTO create(TestingLabDTO dto) throws EntityCreationException, EntityRetrievalException {
+    public TestingLab create(TestingLab atlToCreate) throws EntityCreationException, EntityRetrievalException {
 
         TestingLabEntity entity = null;
         try {
-            if (dto.getId() != null) {
-                entity = this.getEntityById(dto.getId());
+            if (atlToCreate.getId() != null) {
+                entity = this.getEntityById(atlToCreate.getId());
             }
         } catch (final EntityRetrievalException e) {
             throw new EntityCreationException(e);
@@ -48,35 +48,34 @@ public class TestingLabDAO extends BaseDAOImpl {
         } else {
             entity = new TestingLabEntity();
 
-            if (dto.getAddress() != null) {
-                Long addressId = addressDao.saveAddress(dto.getAddress());
+            if (atlToCreate.getAddress() != null) {
+                Long addressId = addressDao.saveAddress(atlToCreate.getAddress());
                 AddressEntity addressEntity = addressDao.getEntityById(addressId);
                 entity.setAddress(addressEntity);
             }
 
-            entity.setName(dto.getName());
-            entity.setWebsite(dto.getWebsite());
-            entity.setAccredidationNumber(dto.getAccredidationNumber());
-            entity.setTestingLabCode(dto.getTestingLabCode());
-            entity.setRetired(dto.isRetired());
-            entity.setRetirementDate(dto.getRetirementDate());
+            entity.setName(atlToCreate.getName());
+            entity.setWebsite(atlToCreate.getWebsite());
+            entity.setTestingLabCode(atlToCreate.getAtlCode());
+            entity.setRetired(atlToCreate.isRetired());
+            entity.setRetirementDate(atlToCreate.getRetirementDay());
             entity.setLastModifiedUser(AuthUtil.getAuditId());
             create(entity);
-            return new TestingLabDTO(entity);
+            return entity.toDomain();
         }
     }
 
     @Transactional
-    public TestingLabDTO update(TestingLabDTO dto) throws EntityRetrievalException {
-        TestingLabEntity entity = this.getEntityById(dto.getId());
+    public TestingLab update(TestingLab atlToUpdate) throws EntityRetrievalException {
+        TestingLabEntity entity = this.getEntityById(atlToUpdate.getId());
 
         if (entity == null) {
-            throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
+            throw new EntityRetrievalException("Entity with id " + atlToUpdate.getId() + " does not exist");
         }
 
-        if (dto.getAddress() != null) {
+        if (atlToUpdate.getAddress() != null) {
             try {
-                Long addressId = addressDao.saveAddress(dto.getAddress());
+                Long addressId = addressDao.saveAddress(atlToUpdate.getAddress());
                 AddressEntity addressEntity = addressDao.getEntityById(addressId);
                 entity.setAddress(addressEntity);
             } catch (final EntityCreationException ex) {
@@ -87,55 +86,47 @@ public class TestingLabDAO extends BaseDAOImpl {
             entity.setAddress(null);
         }
 
-        entity.setWebsite(dto.getWebsite());
-        entity.setAccredidationNumber(dto.getAccredidationNumber());
-        entity.setRetired(dto.isRetired());
-        entity.setRetirementDate(dto.getRetirementDate());
+        entity.setWebsite(atlToUpdate.getWebsite());
+        entity.setRetired(atlToUpdate.isRetired());
+        entity.setRetirementDate(atlToUpdate.getRetirementDay());
 
-        if (dto.getName() != null) {
-            entity.setName(dto.getName());
+        if (atlToUpdate.getName() != null) {
+            entity.setName(atlToUpdate.getName());
         }
 
-        if (dto.getTestingLabCode() != null) {
-            entity.setTestingLabCode(dto.getTestingLabCode());
+        if (atlToUpdate.getAtlCode() != null) {
+            entity.setTestingLabCode(atlToUpdate.getAtlCode());
         }
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
-        return new TestingLabDTO(entity);
+        return entity.toDomain();
     }
 
-    public List<TestingLabDTO> findAll() {
+    public List<TestingLab> findAll() {
 
         List<TestingLabEntity> entities = getAllEntities();
-        List<TestingLabDTO> dtos = new ArrayList<>();
-
-        for (TestingLabEntity entity : entities) {
-            TestingLabDTO dto = new TestingLabDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    public TestingLabDTO getById(Long id) throws EntityRetrievalException {
-
+    public TestingLab getById(Long id) throws EntityRetrievalException {
         TestingLabEntity entity = getEntityById(id);
-        TestingLabDTO dto = null;
         if (entity != null) {
-            dto = new TestingLabDTO(entity);
+            return entity.toDomain();
         }
-        return dto;
+        return null;
     }
 
-    public TestingLabDTO getByName(String name) {
+    public TestingLab getByName(String name) {
         TestingLabEntity entity = getEntityByName(name);
-        TestingLabDTO dto = null;
         if (entity != null) {
-            dto = new TestingLabDTO(entity);
+            return entity.toDomain();
         }
-        return dto;
+        return null;
     }
 
-    public TestingLabDTO getByCode(String code) {
+    public TestingLab getByCode(String code) {
         TestingLabEntity entity = null;
         Query query = entityManager
                 .createQuery(
@@ -152,22 +143,20 @@ public class TestingLabDAO extends BaseDAOImpl {
         } else {
             return null;
         }
-        return new TestingLabDTO(entity);
+        return entity.toDomain();
     }
 
-    public List<TestingLabDTO> getByWebsite(String website) {
+    public List<TestingLab> getByWebsite(String website) {
         Query query = entityManager.createQuery("SELECT atl "
                 + "FROM TestingLabEntity atl "
                 + "LEFT OUTER JOIN FETCH atl.address "
                 + "WHERE atl.deleted = false "
                 + "AND atl.website = :website");
         query.setParameter("website", website);
-        List<TestingLabEntity> results = query.getResultList();
-        List<TestingLabDTO> resultDtos = new ArrayList<TestingLabDTO>();
-        for (TestingLabEntity entity : results) {
-            resultDtos.add(new TestingLabDTO(entity));
-        }
-        return resultDtos;
+        List<TestingLabEntity> entities = query.getResultList();
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
     public String getMaxCode() {
@@ -185,18 +174,6 @@ public class TestingLabDAO extends BaseDAOImpl {
         return maxCode;
     }
 
-    private void create(TestingLabEntity entity) {
-
-        entityManager.persist(entity);
-        entityManager.flush();
-    }
-
-    private void update(TestingLabEntity entity) {
-
-        entityManager.merge(entity);
-        entityManager.flush();
-    }
-
     private List<TestingLabEntity> getAllEntities() {
         return entityManager.createQuery("SELECT atl from TestingLabEntity atl "
                 + "LEFT OUTER JOIN FETCH atl.address "
@@ -205,7 +182,6 @@ public class TestingLabDAO extends BaseDAOImpl {
     }
 
     private TestingLabEntity getEntityById(Long id) throws EntityRetrievalException {
-
         TestingLabEntity entity = null;
 
         String queryStr = "SELECT atl from TestingLabEntity atl "

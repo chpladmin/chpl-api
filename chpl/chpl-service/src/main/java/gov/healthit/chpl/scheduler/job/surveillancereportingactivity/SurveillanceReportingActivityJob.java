@@ -19,7 +19,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -74,12 +74,11 @@ public class SurveillanceReportingActivityJob implements Job {
             LocalDate startDate = getStartDate(context);
             LocalDate endDate = getEndDate(context);
             LOGGER.info("Getting ACBs that were not retired before  " + startDate);
-            List<CertificationBodyDTO> allAcbs = certificationBodyDAO.findAllActiveDuring(
-                    startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX));
+            List<CertificationBody> allAcbs = certificationBodyDAO.findAllActiveDuring(startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX));
             LOGGER.info(String.format("The following ACBs were active between " + startDate + " and " + endDate + ": \n%s",
                     allAcbs.stream().map(acb -> acb.getName()).collect(Collectors.joining(", "))));
 
-            allAcbs.sort(Comparator.comparing(CertificationBodyDTO::getName));
+            allAcbs.sort(Comparator.comparing(CertificationBody::getName));
             File excelFile = workbook.generateWorkbook(surveillances, allAcbs);
 
             sendSuccessEmail(excelFile, context);
