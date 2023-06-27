@@ -62,6 +62,7 @@ public class DatadogUrlUptimeSynchonizer {
                                     urlUptimeMonitor.getDeveloper().getId()), testDate)
                                 .forEach(syntheticsTestResult -> utlUptimeMonitorTestDAO.create(UrlUptimeMonitorTest.builder()
                                       .urlUptimeMonitorId(urlUptimeMonitor.getId())
+                                      .datadogTestKey(syntheticsTestResult.getResultId())
                                       .checkTime(toLocalDateTime(syntheticsTestResult.getCheckTime().longValue()))
                                       .passed(syntheticsTestResult.getResult().getPassed())
                                       .build()))));
