@@ -18,6 +18,7 @@ public class UrlUptimeMonitorTestDAO extends BaseDAOImpl {
     public UrlUptimeMonitorTest create(UrlUptimeMonitorTest urlUptimeMonitorTest) {
         UrlUptimeMonitorTestEntity entity = UrlUptimeMonitorTestEntity.builder()
                 .urlUptimeMonitorId(urlUptimeMonitorTest.getUrlUptimeMonitorId())
+                .datadogTestKey(urlUptimeMonitorTest.getDatadogTestKey())
                 .checkTime(urlUptimeMonitorTest.getCheckTime())
                 .passed(urlUptimeMonitorTest.getPassed())
                 .creationDate(new Date())
