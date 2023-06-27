@@ -37,6 +37,7 @@ import gov.healthit.chpl.domain.comparator.CertificationStatusEventComparator;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
@@ -935,6 +936,21 @@ public class CertifiedProductSearchDetails implements Serializable {
             return null;
         }
         return result.getEventDate();
+    }
+
+    /**
+     * Certification day
+     */
+    @XmlElement(nillable = false, required = true)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    public LocalDate getCertificationDay() {
+        Long certificationDateMillis = getCertificationDate();
+        if (certificationDateMillis == null) {
+            return null;
+        }
+        return DateUtil.fromSystemToEastern(DateUtil.toLocalDateTime(certificationDateMillis)).toLocalDate();
     }
 
     private boolean anyCertificationEventIsMissingNameField(List<CertificationStatusEvent> certificationStatusEvents) {

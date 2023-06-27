@@ -32,6 +32,7 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             CertifiedProductAccessibilityStandardXmlGenerator.addAccessibilityStandards(cp.getAccessibilityStandards(),
                     "accessibilityStandards", sw);
             createSimpleElement(cp.getCertificationDate(), "certificationDate", sw);
+            createSimpleElement(cp.getCertificationDay(), "certificationDay", sw);
             if (cp.getCertificationEdition() != null && cp.getCertificationEdition().size() > 0) {
                 sw.writeStartElement("certificationEdition");
                 for (Entry<String, Object> entry : cp.getCertificationEdition().entrySet()) {
