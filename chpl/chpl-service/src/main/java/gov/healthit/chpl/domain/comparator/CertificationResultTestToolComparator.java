@@ -12,9 +12,9 @@ public class CertificationResultTestToolComparator implements Comparator<Certifi
 
     @Override
     public int compare(CertificationResultTestTool tt1, CertificationResultTestTool tt2) {
-        if (!StringUtils.isEmpty(tt1.getTestToolName())
-                && !StringUtils.isEmpty(tt2.getTestToolName())) {
-            return tt1.getTestToolName().compareTo(tt2.getTestToolName());
+        if (!StringUtils.isEmpty(tt1.getValue())
+                && !StringUtils.isEmpty(tt2.getValue())) {
+            return tt1.getValue().compareTo(tt2.getValue());
         } else if (tt1.getTestToolId() != null && tt2.getTestToolId() != null) {
             return tt1.getTestToolId().compareTo(tt2.getTestToolId());
         }

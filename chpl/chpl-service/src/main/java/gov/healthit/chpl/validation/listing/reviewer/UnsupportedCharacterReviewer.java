@@ -88,8 +88,8 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                 if (cert.getTestToolsUsed() != null) {
                     for (CertificationResultTestTool testTool : cert.getTestToolsUsed()) {
                         // not checking name because it has to match one of the existing options
-                        addCriteriaWarningIfNotValid(listing, cert, testTool.getTestToolVersion(),
-                                "Test Tool Version '" + testTool.getTestToolVersion() + "'");
+                        addCriteriaWarningIfNotValid(listing, cert, testTool.getVersion(),
+                                "Test Tool Version '" + testTool.getVersion() + "'");
                     }
                 }
             }

@@ -33,11 +33,11 @@ public class TestToolEntity implements Serializable {
 
     @Basic(optional = false)
     @Column(name = "value")
-    private String name;
+    private String value;
 
     @Basic(optional = true)
     @Column(name = "regulation_text_citation")
-    private String description;
+    private String regulationTextCitation;
 
     @Basic(optional = true)
     @Column(name = "start_day")
@@ -74,4 +74,16 @@ public class TestToolEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
+
+    public TestTool toDomain() {
+        return TestTool.builder()
+                .id(id)
+                .value(value)
+                .regulationTextCitation(regulationTextCitation)
+                .startDay(startDay)
+                .endDay(endDay)
+                .requiredDay(requiredDay)
+                .rule(rule.toDomain())
+                .build();
+    }
 }

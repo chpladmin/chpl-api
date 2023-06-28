@@ -8,13 +8,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
 import gov.healthit.chpl.criteriaattribute.testtool.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestToolCriteriaMap;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -53,24 +53,24 @@ public class TestToolReviewer extends PermissionBasedReviewer {
     }
 
     private void validateTestTool(CertifiedProductSearchDetails listing, CertificationResult cert, CertificationResultTestTool testTool) {
-        if (StringUtils.isEmpty(testTool.getTestToolName()) && testTool.getTestToolId() == null) {
+        if (StringUtils.isEmpty(testTool.getValue()) && testTool.getTestToolId() == null) {
             listing.addDataErrorMessage(msgUtil.getMessage(
                     "listing.criteria.missingTestToolName",
                     Util.formatCriteriaNumber(cert.getCriterion())));
         } else {
-            Optional<TestToolDTO> tt = getTestTool(testTool);
+            Optional<TestTool> tt = getTestTool(testTool);
             if (!tt.isPresent()) {
                 listing.addDataErrorMessage(msgUtil.getMessage(
                         "listing.criteria.testToolNotFound",
                         Util.formatCriteriaNumber(cert.getCriterion()),
-                        testTool.getTestToolName()));
+                        testTool.getValue()));
                 return;
             }
 
             if (!isTestToolValidForCriteria(new CertificationCriterionDTO(cert.getCriterion()), tt.get())) {
                 listing.addBusinessErrorMessage(msgUtil.getMessage(
                         "listing.criteria.testToolCriterionMismatch",
-                        testTool.getTestToolName(),
+                        testTool.getValue(),
                         Util.formatCriteriaNumber(cert.getCriterion())));
                 return;
             }
@@ -78,17 +78,17 @@ public class TestToolReviewer extends PermissionBasedReviewer {
             if (isTestToolRetired(tt.get())) {
                 listing.addWarningMessage(msgUtil.getMessage(
                         "listing.criteria.retiredTestToolNotAllowed",
-                        testTool.getTestToolName(),
+                        testTool.getValue(),
                         Util.formatCriteriaNumber(cert.getCriterion())));
             }
         }
     }
 
-    private Boolean isTestToolRetired(TestToolDTO testTool) {
+    private Boolean isTestToolRetired(TestTool testTool) {
         return testTool != null && testTool.isRetired();
     }
 
-    private Boolean isTestToolValidForCriteria(CertificationCriterionDTO criterion, TestToolDTO testTool) {
+    private Boolean isTestToolValidForCriteria(CertificationCriterionDTO criterion, TestTool testTool) {
         return testToolCriteriaMap.stream()
                 .filter(ttcm -> ttcm.getCriterion().getId().equals(criterion.getId())
                         && ttcm.getTestTool().getId().equals(testTool.getId()))
@@ -96,12 +96,12 @@ public class TestToolReviewer extends PermissionBasedReviewer {
                 .isPresent();
     }
 
-    private Optional<TestToolDTO> getTestTool(CertificationResultTestTool certResultTestTool) {
-        TestToolDTO testTool = null;
+    private Optional<TestTool> getTestTool(CertificationResultTestTool certResultTestTool) {
+        TestTool testTool = null;
         if (certResultTestTool.getTestToolId() != null) {
             testTool = testToolDao.getById(certResultTestTool.getTestToolId());
-        } else if (!StringUtils.isEmpty(certResultTestTool.getTestToolName())) {
-            testTool = testToolDao.getByName(certResultTestTool.getTestToolName());
+        } else if (!StringUtils.isEmpty(certResultTestTool.getValue())) {
+            testTool = testToolDao.getByName(certResultTestTool.getValue());
         }
         return Optional.ofNullable(testTool);
     }

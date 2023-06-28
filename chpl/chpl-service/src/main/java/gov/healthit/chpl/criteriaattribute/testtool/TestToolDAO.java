@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.TestToolCriteriaMap;
-import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -23,29 +22,25 @@ public class TestToolDAO extends BaseDAOImpl {
         this.msgUtil = msgUtil;
     }
 
-    public TestToolDTO getById(Long id) {
-        TestToolDTO dto = null;
+    public TestTool getById(Long id) {
         TestToolEntity entity = getEntityById(id);
-
-        if (entity != null) {
-            dto = new TestToolDTO(entity);
+        if (entity == null) {
+            return null;
         }
-        return dto;
+        return entity.toDomain();
     }
 
-    public TestToolDTO getByName(String name) {
-        TestToolDTO dto = null;
+    public TestTool getByName(String name) {
         List<TestToolEntity> entities = getEntitiesByName(name);
-
-        if (entities != null && entities.size() > 0) {
-            dto = new TestToolDTO(entities.get(0));
+        if (entities == null || entities.size() > 0) {
+            return null;
         }
-        return dto;
+        return entities.get(0).toDomain();
     }
 
     public List<TestToolCriteriaMap> getAllTestToolCriteriaMap() throws EntityRetrievalException {
         return getAllTestToolCriteriaMapEntities().stream()
-                .map(e -> new TestToolCriteriaMap(e))
+                .map(e -> e.toDomain())
                 .collect(Collectors.toList());
     }
 

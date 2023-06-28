@@ -529,7 +529,6 @@ public class CertificationResult implements Serializable {
     private List<CertificationResultTestTool> getTestTools(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
         if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.TEST_TOOLS_USED)) {
             return certResult.getTestTools().stream()
-                    .map(item -> new CertificationResultTestTool(item))
                     .sorted(testToolComparator)
                     .collect(Collectors.toList());
         } else {

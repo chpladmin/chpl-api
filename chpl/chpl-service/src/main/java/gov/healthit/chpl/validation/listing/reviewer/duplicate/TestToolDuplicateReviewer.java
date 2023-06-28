@@ -62,7 +62,7 @@ public class TestToolDuplicateReviewer {
         Set<String> errors = new HashSet<String>();
         for (CertificationResultTestTool duplicate : duplicates) {
             String error = errorMessageUtil.getMessage("listing.criteria.duplicateTestToolName",
-                    criteria, duplicate.getTestToolName());
+                    criteria, duplicate.getValue());
             errors.add(error);
         }
         return errors;
@@ -72,8 +72,8 @@ public class TestToolDuplicateReviewer {
         List<String> warnings = new ArrayList<String>();
         for (CertificationResultTestTool duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestToolNameAndVersion",
-                    criteria, duplicate.getTestToolName(),
-                    duplicate.getTestToolVersion() == null ? "" : duplicate.getTestToolVersion());
+                    criteria, duplicate.getValue(),
+                    duplicate.getVersion() == null ? "" : duplicate.getVersion());
             warnings.add(warning);
         }
         return warnings;
@@ -86,7 +86,7 @@ public class TestToolDuplicateReviewer {
                     CertificationResultTestTool tt2) {
                 return ObjectUtils.allNotNull(tt1.getTestToolId(), tt2.getTestToolId())
                         && Objects.equals(tt1.getTestToolId(), tt2.getTestToolId())
-                        && Objects.equals(tt1.getTestToolVersion(), tt2.getTestToolVersion());
+                        && Objects.equals(tt1.getVersion(), tt2.getVersion());
             }
         };
     }
@@ -98,7 +98,7 @@ public class TestToolDuplicateReviewer {
                     CertificationResultTestTool tt2) {
                 return ObjectUtils.allNotNull(tt1.getTestToolId(), tt2.getTestToolId())
                         && Objects.equals(tt1.getTestToolId(), tt2.getTestToolId())
-                        && !Objects.equals(tt1.getTestToolVersion(), tt2.getTestToolVersion());
+                        && !Objects.equals(tt1.getVersion(), tt2.getVersion());
             }
         };
     }

@@ -34,7 +34,6 @@ import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
-import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
@@ -819,25 +818,25 @@ public class CertificationResultDAO extends BaseDAOImpl {
      *
      *******************************************************/
 
-    public List<CertificationResultTestToolDTO> getTestToolsForCertificationResult(Long certificationResultId) {
+    public List<CertificationResultTestTool> getTestToolsForCertificationResult(Long certificationResultId) {
 
         List<CertificationResultTestToolEntity> entities = getTestToolsForCertification(certificationResultId);
-        List<CertificationResultTestToolDTO> dtos = new ArrayList<CertificationResultTestToolDTO>();
+        List<CertificationResultTestTool> certResultTestTools = new ArrayList<CertificationResultTestTool>();
 
         for (CertificationResultTestToolEntity entity : entities) {
-            CertificationResultTestToolDTO dto = new CertificationResultTestToolDTO(entity);
-            dtos.add(dto);
+            certResultTestTools.add(entity.toDomain());
         }
-        return dtos;
+        return certResultTestTools;
     }
 
+    //TODO:  OCD-4242
     public Long createTestToolMapping(Long certResultId, CertificationResultTestTool testTool)
             throws EntityCreationException {
         try {
             CertificationResultTestToolEntity entity = new CertificationResultTestToolEntity();
             entity.setCertificationResultId(certResultId);
             entity.setTestToolId(testTool.getTestToolId());
-            entity.setVersion(testTool.getTestToolVersion());
+            entity.setVersion(testTool.getVersion());
             entity.setLastModifiedUser(AuthUtil.getAuditId());
             create(entity);
             return entity.getId();
@@ -846,12 +845,13 @@ public class CertificationResultDAO extends BaseDAOImpl {
         }
     }
 
-    public CertificationResultTestToolDTO addTestToolMapping(CertificationResultTestToolDTO dto)
+    //TODO:  OCD-4242
+    public CertificationResultTestTool addTestToolMapping(CertificationResultTestTool certResultTestTool)
             throws EntityCreationException {
         CertificationResultTestToolEntity mapping = new CertificationResultTestToolEntity();
-        mapping.setCertificationResultId(dto.getCertificationResultId());
-        mapping.setTestToolId(dto.getTestToolId());
-        mapping.setVersion(dto.getTestToolVersion());
+        mapping.setCertificationResultId(certResultTestTool.getCertificationResultId());
+        mapping.setTestToolId(certResultTestTool.getTestToolId());
+        mapping.setVersion(certResultTestTool.getVersion());
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
         mapping.setLastModifiedDate(new Date());
@@ -860,12 +860,12 @@ public class CertificationResultDAO extends BaseDAOImpl {
             entityManager.persist(mapping);
             entityManager.flush();
         } catch (Exception ex) {
-            String msg = msgUtil.getMessage("listing.criteria.badTestTool", dto.getTestToolName());
+            String msg = msgUtil.getMessage("listing.criteria.badTestTool", certResultTestTool.getValue());
             LOGGER.error(msg, ex);
             throw new EntityCreationException(msg);
         }
 
-        return new CertificationResultTestToolDTO(mapping);
+        return mapping.toDomain();
     }
 
     public void deleteTestToolMapping(Long mappingId) {

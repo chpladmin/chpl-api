@@ -42,4 +42,11 @@ public class RuleEntity {
     @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
+
+    public Rule toDomain() {
+        return Rule.builder()
+                .id(id)
+                .name(name)
+                .build();
+    }
 }

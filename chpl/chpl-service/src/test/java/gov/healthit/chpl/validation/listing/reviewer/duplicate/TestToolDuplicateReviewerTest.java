@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
@@ -124,12 +125,16 @@ public class TestToolDuplicateReviewerTest {
         assertEquals(3, cert.getTestToolsUsed().size());
     }
 
-    private CertificationResultTestTool getTestTool(Long id, String name, String version) {
+    private CertificationResultTestTool getTestTool(Long id, String value, String version) {
         CertificationResultTestTool testTool = new CertificationResultTestTool();
-        testTool.setTestToolId(id);
-        testTool.setTestToolName(name);
-        testTool.setTestToolVersion(version);
+        testTool.setTestTool(TestTool.builder()
+                .id(id)
+                .value(value)
+                .build());
+        testTool.setVersion(version);
         return testTool;
+
+
     }
 
     private CertificationResult getCertResult() {

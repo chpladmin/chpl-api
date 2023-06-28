@@ -1,19 +1,26 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
+import gov.healthit.chpl.criteriaattribute.Rule;
+import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+
+//TODO: OCD-4242 Can I remove the unnecessary setters?
+
 
 /**
  * The test tool used to certify the Health IT Module to the corresponding
@@ -45,8 +52,8 @@ public class CertificationResultTestTool implements Serializable {
      * The test tool used to certify the Health IT Module to the corresponding
      * certification criteria
      */
-    @XmlElement(required = true)
-    private String testToolName;
+//    @XmlElement(required = true)
+//    private String testToolName;
 
     /**
      * The version of the test tool being used. This variable is applicable for
@@ -54,7 +61,44 @@ public class CertificationResultTestTool implements Serializable {
      * restrictions on formatting or values.
      */
     @XmlElement(required = false, nillable = true)
-    private String testToolVersion;
+    private String version;
+
+    /**
+     * TODO: Need this text
+     */
+    @XmlElement(required = true, nillable = true)
+    private String value;
+
+    /**
+     * TODO: Need this text
+     */
+    @XmlElement(required = false, nillable = true)
+    private String regulationTextCitation;
+
+    /**
+     * TODO: Need this text
+     */
+    @XmlElement(required = false, nillable = true)
+    private LocalDate startDay;
+
+    /**
+     * TODO: Need this text
+     */
+    @XmlElement(required = false, nillable = true)
+    private LocalDate endDay;
+
+    /**
+     * TODO: Need this text
+     */
+    @XmlElement(required = false, nillable = true)
+    private LocalDate requiredDay;
+
+    /**
+     * TODO: Need this text
+     */
+    @XmlElement(required = false, nillable = true)
+    private Rule rule;
+
 
     /**
      * Whether or not the test tool has been retired.
@@ -62,23 +106,19 @@ public class CertificationResultTestTool implements Serializable {
     @XmlElement(required = false, nillable = true)
     private boolean retired;
 
+    @XmlTransient
+    @JsonIgnore
+    private Long certificationResultId;
+
+    @XmlTransient
+    @JsonIgnore
+    private TestTool testTool;
+
     /**
      * Default constructor.
      */
     public CertificationResultTestTool() {
         super();
-    }
-
-    /**
-     * Constructor using DTO.
-     * @param dto input data transfer object
-     */
-    public CertificationResultTestTool(final CertificationResultTestToolDTO dto) {
-        this.id = dto.getId();
-        this.testToolId = dto.getTestToolId();
-        this.testToolName = dto.getTestToolName();
-        this.testToolVersion = dto.getTestToolVersion();
-        this.retired = dto.isRetired();
     }
 
     /**
@@ -90,20 +130,20 @@ public class CertificationResultTestTool implements Serializable {
         boolean result = false;
         if (this.getTestToolId() != null && anotherTool.getTestToolId() != null
                 && this.getTestToolId().longValue() == anotherTool.getTestToolId().longValue()
-                && ((StringUtils.isEmpty(this.getTestToolVersion())
-                        && StringUtils.isEmpty(anotherTool.getTestToolVersion()))
+                && ((StringUtils.isEmpty(this.getVersion())
+                        && StringUtils.isEmpty(anotherTool.getVersion()))
                      ||
-                     (!StringUtils.isEmpty(this.getTestToolVersion())
-                             && !StringUtils.isEmpty(anotherTool.getTestToolVersion())
-                             && this.getTestToolVersion().equalsIgnoreCase(anotherTool.getTestToolVersion())))) {
+                     (!StringUtils.isEmpty(this.getVersion())
+                             && !StringUtils.isEmpty(anotherTool.getVersion())
+                             && this.getVersion().equalsIgnoreCase(anotherTool.getVersion())))) {
             result = true;
-        } else if (!StringUtils.isEmpty(this.getTestToolName()) && !StringUtils.isEmpty(anotherTool.getTestToolName())
-                && this.getTestToolName().equalsIgnoreCase(anotherTool.getTestToolName())
-                && ((StringUtils.isEmpty(this.getTestToolVersion()) && StringUtils.isEmpty(anotherTool.getTestToolVersion()))
+        } else if (!StringUtils.isEmpty(this.getValue()) && !StringUtils.isEmpty(anotherTool.getValue())
+                && this.getValue().equalsIgnoreCase(anotherTool.getValue())
+                && ((StringUtils.isEmpty(this.getValue()) && StringUtils.isEmpty(anotherTool.getValue()))
                      ||
-                     (!StringUtils.isEmpty(this.getTestToolVersion())
-                             && !StringUtils.isEmpty(anotherTool.getTestToolVersion())
-                             && this.getTestToolVersion().equalsIgnoreCase(anotherTool.getTestToolVersion())))) {
+                     (!StringUtils.isEmpty(this.getVersion())
+                             && !StringUtils.isEmpty(anotherTool.getVersion())
+                             && this.getVersion().equalsIgnoreCase(anotherTool.getVersion())))) {
             result = true;
         }
         return result;
@@ -121,31 +161,94 @@ public class CertificationResultTestTool implements Serializable {
         return testToolId;
     }
 
-    public void setTestToolId(final Long testToolId) {
+    private void setTestToolId(final Long testToolId) {
         this.testToolId = testToolId;
     }
 
-    public String getTestToolName() {
-        return testToolName;
+    public String getValue() {
+        return value;
     }
 
-    public void setTestToolName(final String testToolName) {
-        this.testToolName = testToolName;
+    private void setValue(final String value) {
+        this.value = value;
     }
 
-    public String getTestToolVersion() {
-        return testToolVersion;
+    public String getVersion() {
+        return version;
     }
 
-    public void setTestToolVersion(final String testToolVersion) {
-        this.testToolVersion = testToolVersion;
+    public void setVersion(final String testToolVersion) {
+        this.version = testToolVersion;
     }
 
     public boolean isRetired() {
         return retired;
     }
 
-    public void setRetired(final boolean retired) {
+    private void setRetired(final boolean retired) {
         this.retired = retired;
     }
+
+    public Long getCertificationResultId() {
+        return this.certificationResultId;
+    }
+
+    public void setCertificationResultId(Long certificationResultId) {
+        this.certificationResultId = certificationResultId;
+    }
+
+    public TestTool getTestTool() {
+        return this.testTool;
+    }
+
+    public void setTestTool(TestTool testTool) {
+        setTestToolId(testTool.getId());
+        setValue(testTool.getValue());
+        setRegulationTextCitation(testTool.getRegulationTextCitation());
+        setStartDay(testTool.getStartDay());
+        setEndDay(testTool.getEndDay());
+        setRequiredDay(testTool.getRequiredDay());
+        setRetired(testTool.isRetired());
+    }
+
+    public String getRegulationTextCitation() {
+        return regulationTextCitation;
+    }
+
+    private void setRegulationTextCitation(String regulationTextCitation) {
+        this.regulationTextCitation = regulationTextCitation;
+    }
+
+    public LocalDate getStartDay() {
+        return startDay;
+    }
+
+    private void setStartDay(LocalDate startDay) {
+        this.startDay = startDay;
+    }
+
+    public LocalDate getEndDay() {
+        return endDay;
+    }
+
+    private void setEndDay(LocalDate endDay) {
+        this.endDay = endDay;
+    }
+
+    public LocalDate getRequiredDay() {
+        return requiredDay;
+    }
+
+    private void setRequiredDay(LocalDate requiredDay) {
+        this.requiredDay = requiredDay;
+    }
+
+    public Rule getRule() {
+        return rule;
+    }
+
+    public void setRule(Rule rule) {
+        this.rule = rule;
+    }
+
 }

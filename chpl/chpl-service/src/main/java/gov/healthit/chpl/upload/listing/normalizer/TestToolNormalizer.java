@@ -15,7 +15,6 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestToolCriteriaMap;
-import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import lombok.extern.log4j.Log4j2;
 
@@ -67,12 +66,11 @@ public class TestToolNormalizer {
     }
 
     private void populateTestToolId(CertificationResultTestTool testTool) {
-        if (!StringUtils.isEmpty(testTool.getTestToolName())) {
-            TestToolDTO testToolDto =
-                    testToolDao.getByName(testTool.getTestToolName());
-            if (testToolDto != null) {
-                testTool.setTestToolId(testToolDto.getId());
-                testTool.setRetired(testToolDto.isRetired());
+        if (!StringUtils.isEmpty(testTool.getValue())) {
+            TestTool testToolFromDb =
+                    testToolDao.getByName(testTool.getValue());
+            if (testToolFromDb != null) {
+                testTool.setTestTool(testToolFromDb);
             }
         }
     }

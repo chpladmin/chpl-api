@@ -16,6 +16,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.criteriaattribute.testtool.TestToolEntity;
+import gov.healthit.chpl.domain.CertificationResultTestTool;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -67,4 +68,12 @@ public class CertificationResultTestToolEntity implements Serializable {
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
+
+    public CertificationResultTestTool toDomain() {
+        return CertificationResultTestTool.builder()
+                .id(id)
+                .certificationResultId(certificationResultId)
+                .testTool(testTool.toDomain())
+                .build();
+    }
 }

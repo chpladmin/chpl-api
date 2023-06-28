@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
 import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
@@ -44,7 +45,7 @@ public class CertificationResultDetailsDTO implements Serializable {
     private List<CertificationResultConformanceMethodEntity> conformanceMethods;
     private List<CertificationResultTestProcedureDTO> testProcedures;
     private List<CertificationResultTestDataDTO> testData;
-    private List<CertificationResultTestToolDTO> testTools;
+    private List<CertificationResultTestTool> testTools;
     private List<CertificationResultTestStandardDTO> testStandards;
     private List<CertificationResultAdditionalSoftwareDTO> additionalSoftware;
     private List<CertificationResultSvap> svaps;
@@ -102,7 +103,7 @@ public class CertificationResultDetailsDTO implements Serializable {
 
         if (entity.getCertificationResultTestTools() != null) {
             this.testTools = entity.getCertificationResultTestTools().stream()
-                    .map(e -> new CertificationResultTestToolDTO(e))
+                    .map(e -> e.toDomain())
                     .collect(Collectors.toList());
         }
 

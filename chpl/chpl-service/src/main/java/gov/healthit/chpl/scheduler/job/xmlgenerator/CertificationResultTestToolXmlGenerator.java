@@ -21,11 +21,17 @@ public class CertificationResultTestToolXmlGenerator extends XmlGenerator {
     public static void add(CertificationResultTestTool tool, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (tool != null) {
             sw.writeStartElement(rootNodeName);
+            createSimpleElement(tool.getEndDay(), "endDay", sw);
             createSimpleElement(tool.getId(), "id", sw);
+            createSimpleElement(tool.getRegulationTextCitation(), "regulationCitationText", sw);
+            createSimpleElement(tool.getRequiredDay(), "requiredDay", sw);
             createSimpleElement(tool.isRetired(), "retired", sw);
+            //TODO: OCD-4242
+            createSimpleElement("", "rule", sw);
+            createSimpleElement(tool.getStartDay(), "startDay", sw);
             createSimpleElement(tool.getTestToolId(), "testToolId", sw);
-            createSimpleElement(tool.getTestToolName(), "testToolName", sw);
-            createSimpleElement(tool.getTestToolVersion(), "testToolVersion", sw);
+            createSimpleElement(tool.getValue(), "value", sw);
+            createSimpleElement(tool.getVersion(), "version", sw);
             sw.writeEndElement();
         }
     }

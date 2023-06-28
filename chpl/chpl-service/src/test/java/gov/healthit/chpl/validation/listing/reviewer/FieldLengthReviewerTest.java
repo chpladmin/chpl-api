@@ -15,6 +15,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.context.MessageSource;
 
+import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
@@ -614,9 +615,11 @@ public class FieldLengthReviewerTest {
     public void review_shortTestToolVersion_noError() {
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
         testTools.add(CertificationResultTestTool.builder()
-                .testToolName("a name")
-                .testToolId(1L)
-                .testToolVersion("1.1")
+                .testTool(TestTool.builder()
+                        .id(1L)
+                        .value("a name")
+                        .build())
+                .version("1.1")
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -632,9 +635,11 @@ public class FieldLengthReviewerTest {
     public void review_longTestToolVersion_hasError() {
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
         testTools.add(CertificationResultTestTool.builder()
-                .testToolName("a name")
-                .testToolId(1L)
-                .testToolVersion(createStringLongerThan(20, "1"))
+                .testTool(TestTool.builder()
+                        .id(1L)
+                        .value("a name")
+                        .build())
+                .version(createStringLongerThan(20, "1"))
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()

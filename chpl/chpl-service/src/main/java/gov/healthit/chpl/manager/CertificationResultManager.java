@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
+import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
 import gov.healthit.chpl.criteriaattribute.testtool.TestToolDAO;
 import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
@@ -47,13 +48,11 @@ import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
-import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
-import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -707,25 +706,26 @@ public class CertificationResultManager extends SecuredManager {
         return numChanges;
     }
 
+    //TODO: OCD-4242 - Is there a better way to do this!
     private int updateTestTools(CertificationResult certResult, List<CertificationResultTestTool> existingTestTools,
             List<CertificationResultTestTool> updatedTestTools) throws EntityCreationException {
         int numChanges = 0;
-        List<CertificationResultTestToolDTO> testToolsToAdd = new ArrayList<CertificationResultTestToolDTO>();
+        List<CertificationResultTestTool> testToolsToAdd = new ArrayList<CertificationResultTestTool>();
         List<Long> idsToRemove = new ArrayList<Long>();
 
         // figure out which test tools to add
         if (updatedTestTools != null && updatedTestTools.size() > 0) {
             // fill in potentially missing test standard id
             for (CertificationResultTestTool updatedItem : updatedTestTools) {
-                if (updatedItem.getTestToolId() == null && !StringUtils.isEmpty(updatedItem.getTestToolName())) {
-                    TestToolDTO foundTool = testToolDAO.getByName(updatedItem.getTestToolName());
+                if (updatedItem.getTestToolId() == null && !StringUtils.isEmpty(updatedItem.getValue())) {
+                    TestTool foundTool = testToolDAO.getByName(updatedItem.getValue());
                     if (foundTool == null) {
-                        LOGGER.error("Could not find test tool " + updatedItem.getTestToolName()
+                        LOGGER.error("Could not find test tool " + updatedItem.getValue()
                                 + "; will not be adding this as a test tool to certification result id "
                                 + certResult.getId() + ", criteria " + certResult.getCriterion().getNumber());
                     } else {
-                        updatedItem.setTestToolId(foundTool.getId());
-                        updatedItem.setTestToolVersion(updatedItem.getTestToolVersion());
+                        updatedItem.setTestTool(foundTool);
+                        updatedItem.setVersion(updatedItem.getVersion());
                     }
                 }
             }
@@ -734,11 +734,11 @@ public class CertificationResultManager extends SecuredManager {
                 // existing listing has none, add all from the update
                 for (CertificationResultTestTool updatedItem : updatedTestTools) {
                     if (updatedItem.getTestToolId() != null) {
-                        CertificationResultTestToolDTO toAdd = new CertificationResultTestToolDTO();
-                        toAdd.setCertificationResultId(certResult.getId());
-                        toAdd.setTestToolId(updatedItem.getTestToolId());
-                        toAdd.setTestToolVersion(updatedItem.getTestToolVersion());
-                        testToolsToAdd.add(toAdd);
+                        testToolsToAdd.add(CertificationResultTestTool.builder()
+                                .certificationResultId(certResult.getId())
+                                .testTool(testToolDAO.getById(updatedItem.getTestToolId()))
+                                .version(updatedItem.getVersion())
+                                .build());
                     }
                 }
             } else if (existingTestTools.size() > 0) {
@@ -752,11 +752,11 @@ public class CertificationResultManager extends SecuredManager {
 
                     if (!inExistingListing) {
                         if (updatedItem.getTestToolId() != null) {
-                            CertificationResultTestToolDTO toAdd = new CertificationResultTestToolDTO();
-                            toAdd.setCertificationResultId(certResult.getId());
-                            toAdd.setTestToolId(updatedItem.getTestToolId());
-                            toAdd.setTestToolVersion(updatedItem.getTestToolVersion());
-                            testToolsToAdd.add(toAdd);
+                            testToolsToAdd.add(CertificationResultTestTool.builder()
+                                    .certificationResultId(certResult.getId())
+                                    .testTool(testToolDAO.getById(updatedItem.getTestToolId()))
+                                    .version(updatedItem.getVersion())
+                                    .build());
                         }
                     }
                 }
@@ -784,7 +784,7 @@ public class CertificationResultManager extends SecuredManager {
         }
 
         numChanges = testToolsToAdd.size() + idsToRemove.size();
-        for (CertificationResultTestToolDTO toAdd : testToolsToAdd) {
+        for (CertificationResultTestTool toAdd : testToolsToAdd) {
             certResultDAO.addTestToolMapping(toAdd);
         }
 
@@ -1415,7 +1415,7 @@ public class CertificationResultManager extends SecuredManager {
         return certResultDAO.getTestStandardsForCertificationResult(certificationResultId);
     }
 
-    public List<CertificationResultTestToolDTO> getTestToolsForCertificationResult(Long certificationResultId) {
+    public List<CertificationResultTestTool> getTestToolsForCertificationResult(Long certificationResultId) {
         return certResultDAO.getTestToolsForCertificationResult(certificationResultId);
     }
 

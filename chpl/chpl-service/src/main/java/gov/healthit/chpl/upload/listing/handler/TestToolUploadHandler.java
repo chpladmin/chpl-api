@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
@@ -58,8 +59,10 @@ public class TestToolUploadHandler {
         }
 
         return CertificationResultTestTool.builder()
-            .testToolName(ttName)
-            .testToolVersion(ttVersion)
+            .testTool(TestTool.builder()
+                    .value(ttName)
+                    .build())
+            .version(ttVersion)
         .build();
     }
 

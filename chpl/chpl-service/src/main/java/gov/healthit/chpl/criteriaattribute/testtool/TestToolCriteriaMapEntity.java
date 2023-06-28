@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.domain.TestToolCriteriaMap;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -64,4 +65,12 @@ public class TestToolCriteriaMapEntity {
     @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
+
+    public TestToolCriteriaMap toDomain() {
+        return TestToolCriteriaMap.builder()
+                .id(id)
+                .criterion(criteria.toDomain())
+                .testTool(testTool.toDomain())
+                .build();
+    }
 }
