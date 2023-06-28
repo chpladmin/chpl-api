@@ -1,7 +1,8 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.criteriaattribute.testtool;
 
 import java.io.Serializable;
 
+import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.entity.TestToolEntity;
 
 public class TestTool extends KeyValueModel implements Serializable {
