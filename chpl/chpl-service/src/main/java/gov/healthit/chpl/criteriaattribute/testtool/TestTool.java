@@ -1,37 +1,20 @@
 package gov.healthit.chpl.criteriaattribute.testtool;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
-import gov.healthit.chpl.domain.KeyValueModel;
-import gov.healthit.chpl.entity.TestToolEntity;
+import gov.healthit.chpl.criteriaattribute.CriteriaAttribute;
 
-public class TestTool extends KeyValueModel implements Serializable {
+public class TestTool extends CriteriaAttribute implements Serializable {
     private static final long serialVersionUID = -3761135258251736516L;
-    private boolean retired;
 
-    public TestTool() {
-        super();
+    public String getName() {
+        return this.getValue();
     }
 
-    public TestTool(Long id, String name) {
-        super(id, name);
+    public Boolean getRetired() {
+        LocalDate start = this.getStartDay() != null ? this.getStartDay() : LocalDate.MIN;
+        LocalDate end = this.getEndDay() != null ? this.getEndDay() : LocalDate.MAX;
+        return LocalDate.now().compareTo(start) >= 0 && LocalDate.now().compareTo(end) <= 0;
     }
-
-    public TestTool(TestToolEntity entity) {
-        super(entity.getId(), entity.getName());
-        this.retired = entity.getRetired();
-    }
-
-    public TestTool(Long id, String name, String description) {
-        super(id, name, description);
-    }
-
-    public boolean getRetired() {
-        return retired;
-    }
-
-    public void setRetired(final boolean retired) {
-        this.retired = retired;
-    }
-
 }
