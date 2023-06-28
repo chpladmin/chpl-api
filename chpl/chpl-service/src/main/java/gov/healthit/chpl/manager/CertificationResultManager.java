@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
+import gov.healthit.chpl.criteriaattribute.testtool.TestToolDAO;
 import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
@@ -27,7 +28,6 @@ import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.TestParticipantDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestTaskDAO;
-import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;

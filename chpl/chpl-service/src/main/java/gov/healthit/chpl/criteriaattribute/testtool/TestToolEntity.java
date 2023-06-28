@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.criteriaattribute.testtool;
 
 import java.io.Serializable;
 import java.util.Date;

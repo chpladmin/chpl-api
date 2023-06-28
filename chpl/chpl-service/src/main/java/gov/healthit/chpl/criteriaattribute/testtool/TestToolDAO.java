@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dao;
+package gov.healthit.chpl.criteriaattribute.testtool;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,8 +11,6 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.TestToolCriteriaMap;
 import gov.healthit.chpl.dto.TestToolDTO;
-import gov.healthit.chpl.entity.TestToolCriteriaMapEntity;
-import gov.healthit.chpl.entity.TestToolEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
