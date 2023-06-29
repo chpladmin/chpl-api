@@ -53,7 +53,7 @@ public class TestToolReviewer extends PermissionBasedReviewer {
     }
 
     private void validateTestTool(CertifiedProductSearchDetails listing, CertificationResult cert, CertificationResultTestTool testTool) {
-        if (StringUtils.isEmpty(testTool.getValue()) && testTool.getTestToolId() == null) {
+        if (StringUtils.isEmpty(testTool.getTestTool().getValue()) && testTool.getTestTool().getId() == null) {
             listing.addDataErrorMessage(msgUtil.getMessage(
                     "listing.criteria.missingTestToolName",
                     Util.formatCriteriaNumber(cert.getCriterion())));
@@ -63,14 +63,14 @@ public class TestToolReviewer extends PermissionBasedReviewer {
                 listing.addDataErrorMessage(msgUtil.getMessage(
                         "listing.criteria.testToolNotFound",
                         Util.formatCriteriaNumber(cert.getCriterion()),
-                        testTool.getValue()));
+                        testTool.getTestTool().getValue()));
                 return;
             }
 
             if (!isTestToolValidForCriteria(new CertificationCriterionDTO(cert.getCriterion()), tt.get())) {
                 listing.addBusinessErrorMessage(msgUtil.getMessage(
                         "listing.criteria.testToolCriterionMismatch",
-                        testTool.getValue(),
+                        testTool.getTestTool().getValue(),
                         Util.formatCriteriaNumber(cert.getCriterion())));
                 return;
             }
@@ -78,7 +78,7 @@ public class TestToolReviewer extends PermissionBasedReviewer {
             if (isTestToolRetired(tt.get())) {
                 listing.addWarningMessage(msgUtil.getMessage(
                         "listing.criteria.retiredTestToolNotAllowed",
-                        testTool.getValue(),
+                        testTool.getTestTool().getValue(),
                         Util.formatCriteriaNumber(cert.getCriterion())));
             }
         }
@@ -98,10 +98,10 @@ public class TestToolReviewer extends PermissionBasedReviewer {
 
     private Optional<TestTool> getTestTool(CertificationResultTestTool certResultTestTool) {
         TestTool testTool = null;
-        if (certResultTestTool.getTestToolId() != null) {
-            testTool = testToolDao.getById(certResultTestTool.getTestToolId());
-        } else if (!StringUtils.isEmpty(certResultTestTool.getValue())) {
-            testTool = testToolDao.getByName(certResultTestTool.getValue());
+        if (certResultTestTool.getTestTool().getId() != null) {
+            testTool = testToolDao.getById(certResultTestTool.getTestTool().getId());
+        } else if (!StringUtils.isEmpty(certResultTestTool.getTestTool().getValue())) {
+            testTool = testToolDao.getByName(certResultTestTool.getTestTool().getValue());
         }
         return Optional.ofNullable(testTool);
     }

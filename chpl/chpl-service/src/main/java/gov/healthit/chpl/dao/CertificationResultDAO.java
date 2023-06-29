@@ -830,13 +830,13 @@ public class CertificationResultDAO extends BaseDAOImpl {
     }
 
     //TODO:  OCD-4242
-    public Long createTestToolMapping(Long certResultId, CertificationResultTestTool testTool)
+    public Long createTestToolMapping(Long certResultId, CertificationResultTestTool certResultTestTool)
             throws EntityCreationException {
         try {
             CertificationResultTestToolEntity entity = new CertificationResultTestToolEntity();
             entity.setCertificationResultId(certResultId);
-            entity.setTestToolId(testTool.getTestToolId());
-            entity.setVersion(testTool.getVersion());
+            entity.setTestToolId(certResultTestTool.getTestTool().getId());
+            entity.setVersion(certResultTestTool.getVersion());
             entity.setLastModifiedUser(AuthUtil.getAuditId());
             create(entity);
             return entity.getId();
@@ -850,7 +850,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
             throws EntityCreationException {
         CertificationResultTestToolEntity mapping = new CertificationResultTestToolEntity();
         mapping.setCertificationResultId(certResultTestTool.getCertificationResultId());
-        mapping.setTestToolId(certResultTestTool.getTestToolId());
+        mapping.setTestToolId(certResultTestTool.getTestTool().getId());
         mapping.setVersion(certResultTestTool.getVersion());
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
@@ -860,7 +860,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
             entityManager.persist(mapping);
             entityManager.flush();
         } catch (Exception ex) {
-            String msg = msgUtil.getMessage("listing.criteria.badTestTool", certResultTestTool.getValue());
+            String msg = msgUtil.getMessage("listing.criteria.badTestTool", certResultTestTool.getTestTool().getValue());
             LOGGER.error(msg, ex);
             throw new EntityCreationException(msg);
         }

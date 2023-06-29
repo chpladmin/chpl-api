@@ -62,7 +62,7 @@ public class TestToolDuplicateReviewer {
         Set<String> errors = new HashSet<String>();
         for (CertificationResultTestTool duplicate : duplicates) {
             String error = errorMessageUtil.getMessage("listing.criteria.duplicateTestToolName",
-                    criteria, duplicate.getValue());
+                    criteria, duplicate.getTestTool().getValue());
             errors.add(error);
         }
         return errors;
@@ -72,7 +72,7 @@ public class TestToolDuplicateReviewer {
         List<String> warnings = new ArrayList<String>();
         for (CertificationResultTestTool duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.criteria.duplicateTestToolNameAndVersion",
-                    criteria, duplicate.getValue(),
+                    criteria, duplicate.getTestTool().getValue(),
                     duplicate.getVersion() == null ? "" : duplicate.getVersion());
             warnings.add(warning);
         }
@@ -84,8 +84,8 @@ public class TestToolDuplicateReviewer {
             @Override
             public boolean test(CertificationResultTestTool tt1,
                     CertificationResultTestTool tt2) {
-                return ObjectUtils.allNotNull(tt1.getTestToolId(), tt2.getTestToolId())
-                        && Objects.equals(tt1.getTestToolId(), tt2.getTestToolId())
+                return ObjectUtils.allNotNull(tt1.getTestTool().getId(), tt2.getTestTool().getId())
+                        && Objects.equals(tt1.getTestTool().getId(), tt2.getTestTool().getId())
                         && Objects.equals(tt1.getVersion(), tt2.getVersion());
             }
         };
@@ -96,8 +96,8 @@ public class TestToolDuplicateReviewer {
             @Override
             public boolean test(CertificationResultTestTool tt1,
                     CertificationResultTestTool tt2) {
-                return ObjectUtils.allNotNull(tt1.getTestToolId(), tt2.getTestToolId())
-                        && Objects.equals(tt1.getTestToolId(), tt2.getTestToolId())
+                return ObjectUtils.allNotNull(tt1.getTestTool().getId(), tt2.getTestTool().getId())
+                        && Objects.equals(tt1.getTestTool().getId(), tt2.getTestTool().getId())
                         && !Objects.equals(tt1.getVersion(), tt2.getVersion());
             }
         };

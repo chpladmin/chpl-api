@@ -717,10 +717,10 @@ public class CertificationResultManager extends SecuredManager {
         if (updatedTestTools != null && updatedTestTools.size() > 0) {
             // fill in potentially missing test standard id
             for (CertificationResultTestTool updatedItem : updatedTestTools) {
-                if (updatedItem.getTestToolId() == null && !StringUtils.isEmpty(updatedItem.getValue())) {
-                    TestTool foundTool = testToolDAO.getByName(updatedItem.getValue());
+                if (updatedItem.getTestTool().getId() == null && !StringUtils.isEmpty(updatedItem.getTestTool().getValue())) {
+                    TestTool foundTool = testToolDAO.getByName(updatedItem.getTestTool().getValue());
                     if (foundTool == null) {
-                        LOGGER.error("Could not find test tool " + updatedItem.getValue()
+                        LOGGER.error("Could not find test tool " + updatedItem.getTestTool().getValue()
                                 + "; will not be adding this as a test tool to certification result id "
                                 + certResult.getId() + ", criteria " + certResult.getCriterion().getNumber());
                     } else {
@@ -733,10 +733,10 @@ public class CertificationResultManager extends SecuredManager {
             if (existingTestTools == null || existingTestTools.size() == 0) {
                 // existing listing has none, add all from the update
                 for (CertificationResultTestTool updatedItem : updatedTestTools) {
-                    if (updatedItem.getTestToolId() != null) {
+                    if (updatedItem.getTestTool().getId() != null) {
                         testToolsToAdd.add(CertificationResultTestTool.builder()
                                 .certificationResultId(certResult.getId())
-                                .testTool(testToolDAO.getById(updatedItem.getTestToolId()))
+                                .testTool(testToolDAO.getById(updatedItem.getTestTool().getId()))
                                 .version(updatedItem.getVersion())
                                 .build());
                     }
@@ -751,10 +751,10 @@ public class CertificationResultManager extends SecuredManager {
                     }
 
                     if (!inExistingListing) {
-                        if (updatedItem.getTestToolId() != null) {
+                        if (updatedItem.getTestTool().getId() != null) {
                             testToolsToAdd.add(CertificationResultTestTool.builder()
                                     .certificationResultId(certResult.getId())
-                                    .testTool(testToolDAO.getById(updatedItem.getTestToolId()))
+                                    .testTool(testToolDAO.getById(updatedItem.getTestTool().getId()))
                                     .version(updatedItem.getVersion())
                                     .build());
                         }

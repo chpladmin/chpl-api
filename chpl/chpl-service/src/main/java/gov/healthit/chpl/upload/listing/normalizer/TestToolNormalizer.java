@@ -66,9 +66,9 @@ public class TestToolNormalizer {
     }
 
     private void populateTestToolId(CertificationResultTestTool testTool) {
-        if (!StringUtils.isEmpty(testTool.getValue())) {
+        if (!StringUtils.isEmpty(testTool.getTestTool().getValue())) {
             TestTool testToolFromDb =
-                    testToolDao.getByName(testTool.getValue());
+                    testToolDao.getByName(testTool.getTestTool().getValue());
             if (testToolFromDb != null) {
                 testTool.setTestTool(testToolFromDb);
             }

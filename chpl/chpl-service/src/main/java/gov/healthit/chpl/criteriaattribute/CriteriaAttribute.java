@@ -18,4 +18,10 @@ public class CriteriaAttribute implements Serializable {
     private LocalDate endDay;
     private LocalDate requiredDay;
     private Rule rule;
+
+    public Boolean isRetired() {
+        LocalDate start = this.getStartDay() != null ? this.getStartDay() : LocalDate.MIN;
+        LocalDate end = this.getEndDay() != null ? this.getEndDay() : LocalDate.MAX;
+        return LocalDate.now().compareTo(start) >= 0 && LocalDate.now().compareTo(end) <= 0;
+    }
 }

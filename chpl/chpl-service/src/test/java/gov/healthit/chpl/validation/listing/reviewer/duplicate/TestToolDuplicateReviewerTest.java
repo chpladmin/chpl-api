@@ -126,15 +126,13 @@ public class TestToolDuplicateReviewerTest {
     }
 
     private CertificationResultTestTool getTestTool(Long id, String value, String version) {
-        CertificationResultTestTool testTool = new CertificationResultTestTool();
-        testTool.setTestTool(TestTool.builder()
-                .id(id)
-                .value(value)
-                .build());
-        testTool.setVersion(version);
-        return testTool;
-
-
+        return CertificationResultTestTool.builder()
+                .testTool(TestTool.builder()
+                        .id(id)
+                        .value(value)
+                        .build())
+                .version(version)
+                .build();
     }
 
     private CertificationResult getCertResult() {
