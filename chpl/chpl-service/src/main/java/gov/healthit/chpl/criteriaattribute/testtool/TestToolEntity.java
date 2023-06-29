@@ -83,7 +83,7 @@ public class TestToolEntity implements Serializable {
                 .startDay(startDay)
                 .endDay(endDay)
                 .requiredDay(requiredDay)
-                .rule(rule.toDomain())
+                .rule(rule != null ? rule.toDomain() : null)
                 .build();
     }
 }

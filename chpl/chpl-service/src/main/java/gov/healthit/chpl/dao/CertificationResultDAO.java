@@ -817,7 +817,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
      * Test Tool methods
      *
      *******************************************************/
-
+    //TODO: OCD-4242 - Is this used?
     public List<CertificationResultTestTool> getTestToolsForCertificationResult(Long certificationResultId) {
 
         List<CertificationResultTestToolEntity> entities = getTestToolsForCertification(certificationResultId);

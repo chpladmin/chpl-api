@@ -3,11 +3,15 @@ package gov.healthit.chpl.criteriaattribute;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Data
 @SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CriteriaAttribute implements Serializable {
     private static final long serialVersionUID = 2856878300304895096L;
 
