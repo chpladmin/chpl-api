@@ -102,7 +102,7 @@ public class CertifiedProduct implements Serializable {
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     @XmlElement(required = false, nillable = true)
     public LocalDate getCertificationDay() {
-        return DateUtil.toLocalDate(getCertificationDate());
+        return DateUtil.toLocalDate(this.certificationDate);
     }
 
     /**
