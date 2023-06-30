@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
+import gov.healthit.chpl.attestation.domain.AttestationPeriodForm;
 import gov.healthit.chpl.attestation.domain.AttestationSubmission;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
@@ -33,6 +34,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.form.AllowedResponse;
 import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.form.FormItem;
 import gov.healthit.chpl.form.FormService;
@@ -47,7 +49,6 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 public class ChangeRequestAttestationService extends ChangeRequestDetailsService<ChangeRequestAttestationSubmission> {
-    private static final Integer MAX_PAGE_SIZE = 100;
 
     private ChangeRequestDAO crDAO;
     private ChangeRequestAttestationDAO crAttestationDAO;
@@ -86,9 +87,9 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
 
     @Override
     @Transactional
-    public ChangeRequestAttestationSubmission getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException {
+    public ChangeRequestAttestationSubmission getByChangeRequestId(Long changeRequestId, Long developerId) throws EntityRetrievalException {
         ChangeRequestAttestationSubmission cras = crAttestationDAO.getByChangeRequestId(changeRequestId);
-        cras.setForm(getPopulatedForm(cras));
+        cras.setForm(getPopulatedForm(cras, developerId));
         return cras;
     }
 
@@ -101,6 +102,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
             attestation.setAttestationPeriod(getAttestationPeriod(cr));
             ChangeRequestAttestationSubmission createdAttestation = crAttestationDAO.create(cr, attestation);
 
+            attestation.setForm(formValidator.removePhantomAndDuplicateResponses(attestation.getForm()));
             List<FormItem> rolledUpFormItems = attestation.getForm().extractFlatFormItems();
             crAttestationDAO.addResponsesToChangeRequestAttestationSubmission(createdAttestation, rolledUpFormItems);
 
@@ -136,15 +138,9 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
             //Get email that based on current user
             ((ChangeRequestAttestationSubmission) cr.getDetails()).setSignatureEmail(getUserById(AuthUtil.getCurrentUser().getId()).getEmail());
 
-            if (isNewCurrentStatusCancelledByRequestor(cr, crFromDb)) {
-                sendWithdrawnDetailsEmail(cr);
-                activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
-                        "Change request cancelled by requestor",
-                        crFromDb, cr);
-            } else if (haveDetailsBeenUpdated(cr, crFromDb)) {
-
+            if (haveDetailsBeenUpdated(cr, crFromDb)) {
                 crAttestationDAO.update(cr, (ChangeRequestAttestationSubmission) cr.getDetails());
-                cr.setDetails(getByChangeRequestId(cr.getId()));
+                cr.setDetails(getByChangeRequestId(cr.getId(), cr.getDeveloper().getId()));
 
                 activityManager.addActivity(ActivityConcept.CHANGE_REQUEST, cr.getId(),
                         "Change request details updated",
@@ -194,12 +190,13 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                 cr.getDeveloper().getId(), attestationPeriodService.getSubmittableAttestationPeriod(cr.getDeveloper().getId()).getId());
     }
 
-    private void sendWithdrawnDetailsEmail(ChangeRequest cr) throws EmailNotSentException {
-        attestationEmails.getWithdrawnEmail().send(cr);
-    }
-
     private void sendUpdatedDetailsEmail(ChangeRequest cr) throws EmailNotSentException {
         attestationEmails.getUpdatedEmail().send(cr);
+    }
+
+    @Override
+    protected void sendCancelledEmail(ChangeRequest cr) throws EmailNotSentException {
+        attestationEmails.getWithdrawnEmail().send(cr);
     }
 
     @Override
@@ -225,18 +222,13 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         return userDAO.getById(userId);
     }
 
-    private Boolean isNewCurrentStatusCancelledByRequestor(ChangeRequest updatedCr, ChangeRequest originalCr) {
-        return updatedCr.getCurrentStatus().getChangeRequestStatusType().getId().equals(cancelledStatus)
-                && !originalCr.getCurrentStatus().getChangeRequestStatusType().getId().equals(cancelledStatus);
-    }
-
     private Boolean haveDetailsBeenUpdated(ChangeRequest updatedCr, ChangeRequest originalCr) {
         ChangeRequestAttestationSubmission updated = (ChangeRequestAttestationSubmission) updatedCr.getDetails();
         ChangeRequestAttestationSubmission orig = (ChangeRequestAttestationSubmission) originalCr.getDetails();
         return !orig.isEqual(updated);
     }
 
-    private Form getPopulatedForm(ChangeRequestAttestationSubmission submission) {
+    private Form getPopulatedForm(ChangeRequestAttestationSubmission submission, Long developerId) {
         try {
             List<ChangeRequestAttestationSubmissionResponseEntity> submittedResponses =
                     crAttestationDAO.getChangeRequestAttestationSubmissionResponseEntities(submission.getId());
@@ -246,6 +238,9 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                 heading.setFormItems(populateFormItemsWithSubmittedResponses(heading.getFormItems(), submittedResponses));
             }
 
+            attestationManager.populateAllowedResponseMessagesForUser(
+                    AttestationPeriodForm.builder().form(form).period(submission.getAttestationPeriod()).build(),
+                    developerId);
             return form;
         } catch (EntityRetrievalException e) {
             return null;
@@ -256,7 +251,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         for (FormItem fi : formItems) {
             fi.setSubmittedResponses(submittedResponses.stream()
                     .filter(sr -> sr.getFormItem().getId().equals(fi.getId()))
-                    .map(sr -> sr.getResponse().toDomain())
+                    .map(sr -> populateSubmittedResponse(sr))
                     .toList());
 
             fi.setChildFormItems(populateFormItemsWithSubmittedResponses(fi.getChildFormItems(), submittedResponses));
@@ -264,4 +259,9 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         return formItems;
     }
 
+    private AllowedResponse populateSubmittedResponse(ChangeRequestAttestationSubmissionResponseEntity sr) {
+        AllowedResponse ar = sr.getResponse().toDomain();
+        ar.setMessage(sr.getResponseMessage());
+        return ar;
+    }
 }
