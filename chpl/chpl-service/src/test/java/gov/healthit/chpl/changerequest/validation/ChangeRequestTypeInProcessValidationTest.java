@@ -51,7 +51,8 @@ public class ChangeRequestTypeInProcessValidationTest {
     @Test
     public void isValid_DeveloperHasNoOtherChangeRequests_ReturnsTrue() throws EntityRetrievalException {
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
-        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong())).thenReturn(new ArrayList<ChangeRequest>());
+        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(new ArrayList<ChangeRequest>());
 
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
                 .newChangeRequest(newChangeRequest)
@@ -67,7 +68,8 @@ public class ChangeRequestTypeInProcessValidationTest {
     @Test
     public void isValid_DeveloperHasNoOtherChangeRequestsInProcess_ReturnsTrue() throws EntityRetrievalException {
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
-        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong())).thenReturn(
+        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(
                 Arrays.asList(ChangeRequest.builder()
                         .changeRequestType(ChangeRequestType.builder()
                                 .id(ATTESTATION_CHANGE_REQUEST_TYPE)
@@ -93,7 +95,8 @@ public class ChangeRequestTypeInProcessValidationTest {
     @Test
     public void isValid_DeveloperHasOtherSameRequestInProcess_ReturnsFalse() throws EntityRetrievalException {
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
-        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong())).thenReturn(
+        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(
                 Arrays.asList(ChangeRequest.builder()
                         .changeRequestType(ChangeRequestType.builder()
                                 .id(ATTESTATION_CHANGE_REQUEST_TYPE)
@@ -120,7 +123,8 @@ public class ChangeRequestTypeInProcessValidationTest {
     @Test
     public void isValid_DeveloperHasOtherChangeRequestTypeInProcess_ReturnsTrue() throws EntityRetrievalException {
         ChangeRequestDAO changeRequestDAO = Mockito.mock(ChangeRequestDAO.class);
-        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong())).thenReturn(
+        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(
                 Arrays.asList(ChangeRequest.builder()
                         .changeRequestType(ChangeRequestType.builder()
                                 .id(WEBSITE_CHANGE_REQUEST_TYPE)

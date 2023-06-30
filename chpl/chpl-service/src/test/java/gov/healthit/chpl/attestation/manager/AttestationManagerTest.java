@@ -20,6 +20,7 @@ import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
 import gov.healthit.chpl.attestation.domain.AttestationPeriodForm;
 import gov.healthit.chpl.attestation.domain.AttestationSubmission;
+import gov.healthit.chpl.attestation.service.AttestationResponseValidationService;
 import gov.healthit.chpl.attestation.service.AttestationSubmissionService;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
@@ -32,6 +33,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.form.FormService;
 import gov.healthit.chpl.form.SectionHeading;
+import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class AttestationManagerTest {
@@ -63,7 +65,10 @@ public class AttestationManagerTest {
         Mockito.when(attestationPeriodService.getAllPeriods()).thenReturn(
                 List.of(getFirstAttestationPeriod(), getSecondAttestationPeriod()));
 
-        manager = new AttestationManager(attestationDAO, attestationPeriodService, formService, attestationSubmissionService, changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW);
+        manager = new AttestationManager(attestationDAO, attestationPeriodService, formService,
+                attestationSubmissionService, Mockito.mock(AttestationResponseValidationService.class),
+                Mockito.mock(ListingSearchService.class),
+                changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW);
     }
 
     @Test
@@ -75,7 +80,7 @@ public class AttestationManagerTest {
 
     @Test
     public void getAttestationForm_Success_ReturnsAttestationPeriodForm() throws EntityRetrievalException {
-        AttestationPeriodForm attestationPeriodForm = manager.getAttestationForm(1L);
+        AttestationPeriodForm attestationPeriodForm = manager.getAttestationForm(1L, null);
 
         assertNotNull(attestationPeriodForm.getForm());
         assertNotNull(attestationPeriodForm.getPeriod());
@@ -84,12 +89,12 @@ public class AttestationManagerTest {
     @Test(expected = EntityRetrievalException.class)
     public void getAttestationForm_FormDoesNotExistForPeriod_ThrowsException() throws EntityRetrievalException {
         Mockito.when(formService.getForm(ArgumentMatchers.anyLong())).thenThrow(EntityRetrievalException.class);
-        manager.getAttestationForm(1L);
+        manager.getAttestationForm(1L, null);
     }
 
     @Test
     public void getAttestationForm_PeriodDoesNotExist_ReturnsNull() throws EntityRetrievalException {
-        AttestationPeriodForm attestationPeriodForm = manager.getAttestationForm(3L);
+        AttestationPeriodForm attestationPeriodForm = manager.getAttestationForm(3L, null);
 
         assertNull(attestationPeriodForm);
     }
@@ -154,7 +159,8 @@ public class AttestationManagerTest {
         Mockito.when(attestationPeriodService.getMostRecentPastAttestationPeriod()).thenReturn(getFirstAttestationPeriod());
 
         // No pending Change Requests
-        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong())).thenReturn(
+        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(
                 List.of(ChangeRequest.builder()
                         .developer(Developer.builder()
                                 .id(1L)
@@ -187,7 +193,8 @@ public class AttestationManagerTest {
         Mockito.when(attestationPeriodService.getMostRecentPastAttestationPeriod()).thenReturn(getFirstAttestationPeriod());
 
         // ending Change Requests
-        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong())).thenReturn(
+        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(
                 List.of(ChangeRequest.builder()
                         .developer(Developer.builder()
                                 .id(1L)
@@ -220,7 +227,8 @@ public class AttestationManagerTest {
         Mockito.when(attestationPeriodService.getMostRecentPastAttestationPeriod()).thenReturn(getFirstAttestationPeriod());
 
         //Pending Change Requests
-        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong())).thenReturn(
+        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(
                 List.of(ChangeRequest.builder()
                         .developer(Developer.builder()
                                 .id(1L)
@@ -255,7 +263,8 @@ public class AttestationManagerTest {
         Mockito.when(attestationPeriodService.getMostRecentPastAttestationPeriod()).thenReturn(getFirstAttestationPeriod());
 
         // No pending Change Requests
-        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong())).thenReturn(
+        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(
                 List.of(ChangeRequest.builder()
                         .developer(Developer.builder()
                                 .id(1L)
@@ -295,7 +304,9 @@ public class AttestationManagerTest {
         //This is so we don't have to mock a bunch of stuff, when just spy on canDeveloperSubmitChangeRequest()
         AttestationManager spyManager = Mockito.spy(
                 new AttestationManager(attestationDAO, attestationPeriodService, formService,
-                        attestationSubmissionService, changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
+                        attestationSubmissionService, Mockito.mock(AttestationResponseValidationService.class),
+                        Mockito.mock(ListingSearchService.class),
+                        changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
         Mockito.doReturn(false).when(spyManager).canDeveloperSubmitChangeRequest(ArgumentMatchers.anyLong());
 
         AttestationPeriod period = spyManager.getSubmittablePeriod(1L);
@@ -308,7 +319,9 @@ public class AttestationManagerTest {
         //This is so we don't have to mock a bunch of stuff, when just spy on canDeveloperSubmitChangeRequest()
         AttestationManager spyManager = Mockito.spy(
                 new AttestationManager(attestationDAO, attestationPeriodService, formService,
-                        attestationSubmissionService, changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
+                        attestationSubmissionService,  Mockito.mock(AttestationResponseValidationService.class),
+                        Mockito.mock(ListingSearchService.class),
+                        changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
         Mockito.doReturn(true).when(spyManager).canDeveloperSubmitChangeRequest(ArgumentMatchers.anyLong());
         Mockito.when(attestationPeriodService.getSubmittableAttestationPeriod(ArgumentMatchers.anyLong())).thenReturn(getFirstAttestationPeriod());
 
@@ -320,7 +333,8 @@ public class AttestationManagerTest {
     @Test
     public void canCreateException_PendingCrExists_ReturnFalse() throws EntityRetrievalException {
         //Pending Change Requests
-        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong())).thenReturn(
+        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(
                 List.of(ChangeRequest.builder()
                         .developer(Developer.builder()
                                 .id(1L)
@@ -347,12 +361,16 @@ public class AttestationManagerTest {
         /////use a spy to mock getSubmittablePeriod()
         AttestationManager spyManager = Mockito.spy(
                 new AttestationManager(attestationDAO, attestationPeriodService, formService,
-                        attestationSubmissionService, changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
+                        attestationSubmissionService,  Mockito.mock(AttestationResponseValidationService.class),
+                        Mockito.mock(ListingSearchService.class),
+
+                        changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
 
         Mockito.doReturn(null).when(spyManager).getSubmittablePeriod(ArgumentMatchers.anyLong());
 
         //Pending Change Requests
-        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong())).thenReturn(
+        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(
                 List.of(ChangeRequest.builder()
                         .developer(Developer.builder()
                                 .id(1L)
@@ -379,12 +397,15 @@ public class AttestationManagerTest {
         /////use a spy to mock getSubmittablePeriod()
         AttestationManager spyManager = Mockito.spy(
                 new AttestationManager(attestationDAO, attestationPeriodService, formService,
-                        attestationSubmissionService, changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
+                        attestationSubmissionService,  Mockito.mock(AttestationResponseValidationService.class),
+                        Mockito.mock(ListingSearchService.class),
+                        changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
 
         Mockito.doReturn(getFirstAttestationPeriod()).when(spyManager).getSubmittablePeriod(ArgumentMatchers.anyLong());
 
         //Pending Change Requests
-        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong())).thenReturn(
+        Mockito.when(changeRequestDAO.getByDeveloper(ArgumentMatchers.anyLong(), ArgumentMatchers.anyBoolean()))
+            .thenReturn(
                 List.of(ChangeRequest.builder()
                         .developer(Developer.builder()
                                 .id(1L)
@@ -419,7 +440,9 @@ public class AttestationManagerTest {
         /////use a spy to mock canCreateException()
         AttestationManager spyManager = Mockito.spy(
                 new AttestationManager(attestationDAO, attestationPeriodService, formService,
-                        attestationSubmissionService, changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
+                        attestationSubmissionService,  Mockito.mock(AttestationResponseValidationService.class),
+                        Mockito.mock(ListingSearchService.class),
+                        changeRequestDAO, exceptionEmail, errorMessageUtil, DEFAULT_EXCEPTION_WINDOW));
 
         Mockito.doReturn(false).when(spyManager).canCreateException(ArgumentMatchers.anyLong());
 
