@@ -51,8 +51,8 @@ public class AttestationPendingDeveloperActionEmail extends ChangeRequestEmail {
                 .heading("Developer Action Required")
                 .paragraph("", String.format(emailBody,
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
-                        getApprovalBody(cr), cr
-                        .getCurrentStatus().getComment()))
+                        getApprovalBody(cr),
+                        cr.getCurrentStatus().getComment()))
                 .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
                 .footer(true)
                 .build();

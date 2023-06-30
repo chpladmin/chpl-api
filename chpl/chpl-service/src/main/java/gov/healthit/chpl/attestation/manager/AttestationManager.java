@@ -15,6 +15,7 @@ import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
 import gov.healthit.chpl.attestation.domain.AttestationPeriodForm;
 import gov.healthit.chpl.attestation.domain.AttestationSubmission;
+import gov.healthit.chpl.attestation.service.AttestationResponseValidationService;
 import gov.healthit.chpl.attestation.service.AttestationSubmissionService;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
@@ -22,7 +23,12 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.form.AllowedResponse;
+import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.form.FormService;
+import gov.healthit.chpl.scheduler.job.developer.attestation.AttestationFormMetaData;
+import gov.healthit.chpl.search.ListingSearchService;
+import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -35,6 +41,8 @@ public class AttestationManager {
     private AttestationPeriodService attestationPeriodService;
     private FormService formService;
     private AttestationSubmissionService attestationSubmissionService;
+    private AttestationResponseValidationService attestationResponseValidationService;
+    private ListingSearchService listingSearchService;
     private ChangeRequestDAO changeRequestDAO;
     private AttestationExceptionEmail exceptionEmail;
     private ErrorMessageUtil errorMessageUtil;
@@ -42,7 +50,9 @@ public class AttestationManager {
 
     @Autowired
     public AttestationManager(AttestationDAO attestationDAO, AttestationPeriodService attestationPeriodService, FormService formService,
-            AttestationSubmissionService attestationSubmissionService, ChangeRequestDAO changeRequestDAO,
+            AttestationSubmissionService attestationSubmissionService, AttestationResponseValidationService attestationResponseValidationService,
+            ListingSearchService listingSearchService,
+            ChangeRequestDAO changeRequestDAO,
             AttestationExceptionEmail exceptionEmail,
             ErrorMessageUtil errorMessageUtil,
             @Value("${attestationExceptionWindowInDays}") Integer attestationExceptionWindowInDays) {
@@ -50,6 +60,8 @@ public class AttestationManager {
         this.attestationPeriodService = attestationPeriodService;
         this.formService = formService;
         this.attestationSubmissionService = attestationSubmissionService;
+        this.attestationResponseValidationService = attestationResponseValidationService;
+        this.listingSearchService = listingSearchService;
         this.changeRequestDAO = changeRequestDAO;
         this.exceptionEmail = exceptionEmail;
         this.errorMessageUtil = errorMessageUtil;
@@ -60,23 +72,83 @@ public class AttestationManager {
         return attestationPeriodService.getAllPeriods();
     }
 
-    public AttestationPeriodForm getAttestationForm(Long attestationPeriodId) throws EntityRetrievalException {
+    public AttestationPeriodForm getAttestationForm(Long attestationPeriodId, Long developerId) throws EntityRetrievalException {
         AttestationPeriod attestationPeriod = getAllPeriods().stream()
                 .filter(ap -> ap.getId().equals(attestationPeriodId))
                 .findAny()
                 .orElse(null);
 
         if (attestationPeriod != null) {
-            return AttestationPeriodForm.builder()
+            AttestationPeriodForm attestationPeriodForm = AttestationPeriodForm.builder()
                     .period(getAllPeriods().stream()
                             .filter(per -> per.getId().equals(attestationPeriodId))
                             .findAny()
                             .orElse(null))
                     .form(formService.getForm(attestationPeriod.getForm().getId()))
                     .build();
+
+            if (developerId != null) {
+                populateAllowedResponseMessagesForUser(attestationPeriodForm, developerId);
+            }
+            return attestationPeriodForm;
         } else {
             return null;
         }
+    }
+
+    public void populateAllowedResponseMessagesForUser(AttestationPeriodForm attestationPeriodForm, Long developerId) {
+        Long periodId = attestationPeriodForm.getPeriod().getId();
+        if (periodId == null || !periodId.equals(getMostRecentPastAttestationPeriod().getId())) {
+            return;
+        }
+
+        Form form = attestationPeriodForm.getForm();
+        List<ListingSearchResult> activeListingsForDeveloper = listingSearchService.findActiveListingsForDeveloper(developerId);
+
+        //only fill in allowed responses for the most recent period; others are too far in the past for the messages to be accurate
+        String apiResponseCompliantMessage = attestationResponseValidationService.getApiResponseCompliantMessage(activeListingsForDeveloper);
+        AllowedResponse apiAllowedResponseCompliant = getAllowedResponse(
+                form, AttestationFormMetaData.getApiConditionId(),
+                AttestationFormMetaData.getCompliantResponseId());
+        apiAllowedResponseCompliant.setMessage(apiResponseCompliantMessage);
+
+        String apiResponseNotApplicableMessage = attestationResponseValidationService.getApiResponseNotApplicableMessage(activeListingsForDeveloper);
+        AllowedResponse apiAllowedResponseNotApplicable = getAllowedResponse(
+                form, AttestationFormMetaData.getApiConditionId(),
+                AttestationFormMetaData.getNotApplicableResponseId());
+        apiAllowedResponseNotApplicable.setMessage(apiResponseNotApplicableMessage);
+
+        String assurancesResponseCompliantMessage = attestationResponseValidationService.getAssurancesResponseCompliantMessage(activeListingsForDeveloper);
+        AllowedResponse assurancesAllowedResponseCompliant = getAllowedResponse(
+                form, AttestationFormMetaData.getAssurancesConditionId(periodId),
+                AttestationFormMetaData.getAssurancesCompliantIsApplicableResponseId(periodId));
+        assurancesAllowedResponseCompliant.setMessage(assurancesResponseCompliantMessage);
+
+        String assurancesResponseNotApplicableMessage = attestationResponseValidationService.getAssurancesResponseNotApplicableMessage(activeListingsForDeveloper);
+        AllowedResponse assurancesAllowedResponseNotApplicable = getAllowedResponse(
+                form, AttestationFormMetaData.getAssurancesConditionId(periodId),
+                AttestationFormMetaData.getAssurancesCompliantIsNotApplicableResponseId(periodId));
+        assurancesAllowedResponseNotApplicable.setMessage(assurancesResponseNotApplicableMessage);
+
+        String rwtResponseCompliantMessage = attestationResponseValidationService.getRwtResponseCompliantMessage(activeListingsForDeveloper);
+        AllowedResponse rwtAllowedResponseCompliant = getAllowedResponse(
+                form, AttestationFormMetaData.getRwtConditionId(),
+                AttestationFormMetaData.getCompliantResponseId());
+        rwtAllowedResponseCompliant.setMessage(rwtResponseCompliantMessage);
+
+        String rwtResponseNotApplicableMessage = attestationResponseValidationService.getRwtResponseNotApplicableMessage(activeListingsForDeveloper);
+        AllowedResponse rwtAllowedResponseNotApplicable = getAllowedResponse(
+                form, AttestationFormMetaData.getRwtConditionId(),
+                AttestationFormMetaData.getNotApplicableResponseId());
+        rwtAllowedResponseNotApplicable.setMessage(rwtResponseNotApplicableMessage);
+    }
+
+    private AllowedResponse getAllowedResponse(Form form, Long conditionIdToCheck, Long allowedResponseId) {
+        return form.extractFlatFormItems().stream()
+                .filter(fi -> fi.getQuestion().getId().equals(conditionIdToCheck))
+                .flatMap(fi -> fi.getQuestion().getAllowedResponses().stream())
+                .filter(ar -> ar.getId().equals(allowedResponseId))
+                .findAny().get();
     }
 
     @Transactional
@@ -183,7 +255,7 @@ public class AttestationManager {
     }
 
     private boolean doesPendingAttestationChangeRequestForDeveloperExist(Long developerId) throws EntityRetrievalException {
-        return changeRequestDAO.getByDeveloper(developerId).stream()
+        return changeRequestDAO.getByDeveloper(developerId, false).stream()
                 .filter(cr -> cr.getDeveloper().getId().equals(developerId)
                         && cr.getChangeRequestType().isAttestation()
                         && (cr.getCurrentStatus().getChangeRequestStatusType().getName().equals("Pending Developer Action")
