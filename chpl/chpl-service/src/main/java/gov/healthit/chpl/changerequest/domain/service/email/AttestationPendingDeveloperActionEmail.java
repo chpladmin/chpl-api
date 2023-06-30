@@ -1,6 +1,7 @@
 package gov.healthit.chpl.changerequest.domain.service.email;
 
-import java.text.DateFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,10 +47,11 @@ public class AttestationPendingDeveloperActionEmail extends ChangeRequestEmail {
     }
 
     private String createPendingDeveloperActionHtmlMessage(ChangeRequest cr) {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Action Required")
-                .paragraph("", String.format(emailBody, df.format(cr.getSubmittedDate()), getApprovalBody(cr), cr.getCurrentStatus().getComment()))
+                .paragraph("", String.format(emailBody,
+                        cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
+                        getApprovalBody(cr), cr.getCurrentStatus().getComment()))
                 .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
                 .footer(true)
                 .build();

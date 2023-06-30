@@ -26,6 +26,9 @@ public abstract class ChangeRequestDetailsService<T> {
     @Value("${changerequest.status.rejected}")
     protected Long rejectedStatus;
 
+    @Value("${changerequest.status.cancelledbyrequester}")
+    private Long cancelledByRequesterStatus;
+
     @Value("${user.permission.onc}")
     private Long oncPermission;
 
@@ -48,6 +51,8 @@ public abstract class ChangeRequestDetailsService<T> {
             } else if (cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(acceptedStatus)) {
                 cr = execute(cr);
                 sendApprovalEmail(cr);
+            } else if (cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(cancelledByRequesterStatus)) {
+                sendCancelledEmail(cr);
             }
         } catch (EmailNotSentException ex) {
             throw ex;
@@ -57,7 +62,7 @@ public abstract class ChangeRequestDetailsService<T> {
         return cr;
     }
 
-    public abstract T getByChangeRequestId(Long changeRequestId) throws EntityRetrievalException;
+    public abstract T getByChangeRequestId(Long changeRequestId, Long developerId) throws EntityRetrievalException;
 
     public abstract ChangeRequest create(ChangeRequest cr);
 
@@ -69,6 +74,7 @@ public abstract class ChangeRequestDetailsService<T> {
     protected abstract void sendApprovalEmail(ChangeRequest cr) throws EmailNotSentException;
     protected abstract void sendPendingDeveloperActionEmail(ChangeRequest cr) throws EmailNotSentException;
     protected abstract void sendRejectedEmail(ChangeRequest cr) throws EmailNotSentException;
+    protected abstract void sendCancelledEmail(ChangeRequest cr) throws EmailNotSentException;
 
     protected String getApprovalBody(ChangeRequest cr) {
         if (cr.getCurrentStatus().getCertificationBody() != null) {
