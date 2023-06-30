@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.util.DateUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -67,7 +68,7 @@ public class UrlUptimeMonitorTestEntity {
                 .id(id)
                 .urlUptimeMonitorId(urlUptimeMonitorId)
                 .datadogTestKey(datadogTestKey)
-                .checkTime(checkTime)
+                .checkTime(DateUtil.fromSystemToEastern(checkTime))
                 .passed(passed)
                 .build();
     }
