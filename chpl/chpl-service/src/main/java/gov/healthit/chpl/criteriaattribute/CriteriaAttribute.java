@@ -3,6 +3,8 @@ package gov.healthit.chpl.criteriaattribute;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,6 +25,7 @@ public class CriteriaAttribute implements Serializable {
     private LocalDate requiredDay;
     private Rule rule;
 
+    @JsonIgnore
     public Boolean isRetired() {
         LocalDate start = this.getStartDay() != null ? this.getStartDay() : LocalDate.MIN;
         LocalDate end = this.getEndDay() != null ? this.getEndDay() : LocalDate.MAX;

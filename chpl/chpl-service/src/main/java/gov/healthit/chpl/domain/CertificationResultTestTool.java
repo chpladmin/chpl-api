@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 /**
  * The test tool used to certify the Health IT Module to the corresponding
@@ -27,6 +28,7 @@ import lombok.Builder;
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class CertificationResultTestTool implements Serializable {
     private static final long serialVersionUID = 2785949879671019720L;
