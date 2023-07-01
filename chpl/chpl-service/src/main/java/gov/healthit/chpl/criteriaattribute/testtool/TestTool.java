@@ -2,8 +2,6 @@ package gov.healthit.chpl.criteriaattribute.testtool;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import gov.healthit.chpl.criteriaattribute.CriteriaAttribute;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,16 +19,10 @@ public class TestTool extends CriteriaAttribute implements Serializable {
 
     //TODO: OCD-4242
     @Deprecated
-    private String nanme;
+    private String name;
 
     //TODO: OCD-4242
     @Deprecated
     private String description;
 
-    //TODO: OCD-4242
-    @Deprecated
-    @JsonIgnore
-    public String getName() {
-        return this.getValue();
-    }
 }

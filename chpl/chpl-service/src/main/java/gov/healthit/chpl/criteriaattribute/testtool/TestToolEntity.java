@@ -79,6 +79,8 @@ public class TestToolEntity implements Serializable {
         return TestTool.builder()
                 .id(id)
                 .value(value)
+                .name(value)
+                .description(null)
                 .regulationTextCitation(regulationTextCitation)
                 .startDay(startDay)
                 .endDay(endDay)
