@@ -7,6 +7,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
 import gov.healthit.chpl.criteriaattribute.testtool.TestToolDAO;
@@ -34,6 +35,7 @@ public class TestToolReviewer extends PermissionBasedReviewer {
         testToolCriteriaMap = testToolDao.getAllTestToolCriteriaMap();
     }
 
+    @Transactional
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()

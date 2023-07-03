@@ -7,6 +7,7 @@ import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.TestToolCriteriaMap;
@@ -38,6 +39,8 @@ public class TestToolDAO extends BaseDAOImpl {
         return entities.get(0).toDomain();
     }
 
+    //TODO OCD-4242
+    @Transactional
     public List<TestToolCriteriaMap> getAllTestToolCriteriaMap() throws EntityRetrievalException {
         return getAllTestToolCriteriaMapEntities().stream()
                 .map(e -> e.toDomain())
