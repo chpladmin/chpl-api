@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.jfree.data.time.DateRange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
+import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 
@@ -121,9 +122,13 @@ public class DirectReviewSearchService {
     }
 
     private List<DirectReview> getDirectReviewsWithDeveloperAssociatedListingId(Long listingId, Long developerId) {
-        DirectReviewContainer directReviewContainerForDeveloper =
-                (DirectReviewContainer) cacheManager.getCache(CacheNames.DIRECT_REVIEWS).get(developerId).get();
+        ValueWrapper wrapper = cacheManager.getCache(CacheNames.DIRECT_REVIEWS).get(developerId);
+        if (wrapper == null) {
+            LOGGER.warn("There was no key '" + developerId + "' in the " + CacheNames.DIRECT_REVIEWS + " cache.");
+            return new ArrayList<DirectReview>();
+        }
 
+        DirectReviewContainer directReviewContainerForDeveloper = (DirectReviewContainer) wrapper.get();
         return directReviewContainerForDeveloper.getDirectReviews().stream()
                 .filter(dr -> isAssociatedWithListing(dr, listingId))
                 .collect(Collectors.toList());
