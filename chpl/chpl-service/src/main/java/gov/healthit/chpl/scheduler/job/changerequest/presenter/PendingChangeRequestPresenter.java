@@ -1,7 +1,8 @@
 package gov.healthit.chpl.scheduler.job.changerequest.presenter;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,17 +18,16 @@ import gov.healthit.chpl.util.DateUtil;
 public class PendingChangeRequestPresenter extends ChangeRequestCsvPresenter {
     private static final String ACB_APPLICABLE_TEXT = "Applicable";
     private static final String ACB_NOT_APPLICABLE_TEXT = "Not Applicable";
-    private static final long MILLIS_PER_DAY = 1000 * 60 * 60 * 24;
 
     private List<String> acbNames;
-    private Date currentDate;
+    private LocalDateTime currentDate;
 
     public PendingChangeRequestPresenter(Logger logger, List<String> acbNames) {
        super(logger);
        if (!CollectionUtils.isEmpty(acbNames)) {
            this.acbNames = acbNames.stream().sorted().collect(Collectors.toList());
        }
-       this.currentDate = new Date();
+       this.currentDate = LocalDateTime.now();
     }
 
     protected boolean isSupported(ChangeRequest data) {
@@ -68,9 +68,9 @@ public class PendingChangeRequestPresenter extends ChangeRequestCsvPresenter {
         }
         row.add(changeRequest.getChangeRequestType().getName());
         row.add(changeRequest.getCurrentStatus().getChangeRequestStatusType().getName());
-        row.add(DateUtil.formatInEasternTime(changeRequest.getSubmittedDate()));
+        row.add(DateUtil.formatInEasternTime(changeRequest.getSubmittedDateTime()));
         row.add(calculateDaysOpen(changeRequest));
-        row.add(DateUtil.formatInEasternTime(changeRequest.getCurrentStatus().getStatusChangeDate()));
+        row.add(DateUtil.formatInEasternTime(changeRequest.getCurrentStatus().getStatusChangeDateTime()));
         row.add(calculateDaysInState(changeRequest));
         row.add(changeRequest.getCurrentStatus().getComment());
         acbNames.stream()
@@ -79,15 +79,13 @@ public class PendingChangeRequestPresenter extends ChangeRequestCsvPresenter {
     }
 
     private String calculateDaysOpen(ChangeRequest changeRequest) {
-        Date changeRequestDate = changeRequest.getSubmittedDate();
-        long daysOpen = ((currentDate.getTime() - changeRequestDate.getTime()) / MILLIS_PER_DAY);
+        long daysOpen = ChronoUnit.DAYS.between(changeRequest.getSubmittedDateTime(), currentDate);
         return Double.toString(daysOpen);
     }
 
     private String calculateDaysInState(ChangeRequest changeRequest) {
-        Date changeRequestLatestDate = changeRequest.getCurrentStatus().getStatusChangeDate();
-        long daysLatestOpen = ((currentDate.getTime() - changeRequestLatestDate.getTime()) / MILLIS_PER_DAY);
-        return Double.toString(daysLatestOpen);
+        long daysInState = ChronoUnit.DAYS.between(changeRequest.getCurrentStatus().getStatusChangeDateTime(), currentDate);
+        return Double.toString(daysInState);
     }
 
     private String getAcbValueForRow(ChangeRequest changeRequest, String acbName) {

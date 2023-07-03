@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriodForm;
@@ -37,12 +38,16 @@ public class AttestationController {
     }
 
     @Operation(summary = "Get the list of Attestation Conditions, Attestations, and Valid Responses for an Attestation period",
-            description = "Can be used to dynamically generate the Attestion form.",
+            description = "Can be used to dynamically generate the Attestion form. The optional 'developerId' parameter "
+                    + "may be provided to pre-fill the form data for each allowed response with a message specific to "
+                    + "that developers listings during the attestation period. If 'developerId' is not provided, all allowed "
+                    + "response messages will be blank.",
             security = {@SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "/periods/{periodId}/form",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public AttestationPeriodForm getAttestationFormByPeriod(@PathVariable("periodId") Long periodId) throws EntityRetrievalException {
-        return attestationManager.getAttestationForm(periodId);
+    public AttestationPeriodForm getAttestationFormByPeriod(@PathVariable("periodId") Long periodId,
+            @RequestParam(name = "developerId", required = false) Long developerId) throws EntityRetrievalException {
+        return attestationManager.getAttestationForm(periodId, developerId);
     }
 }
