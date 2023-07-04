@@ -141,8 +141,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         Date end = new Date();
         LOGGER.info("Found the " + listingsForEdition.size() + " listings from " + edition + " in "
                 + ((end.getTime() - start.getTime()) / MILLIS_PER_SECOND) + " seconds");
-        //TODO OCD-4242
-        return listingsForEdition.stream().filter(l -> l.getId().equals(10964L)).toList();
+        return listingsForEdition;
     }
 
     private CertifiedProductCsvPresenter getCsvPresenter() {
