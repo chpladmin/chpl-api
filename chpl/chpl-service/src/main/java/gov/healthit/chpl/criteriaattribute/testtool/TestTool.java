@@ -2,6 +2,11 @@ package gov.healthit.chpl.criteriaattribute.testtool;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+
 import gov.healthit.chpl.criteriaattribute.CriteriaAttribute;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,15 +19,19 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class TestTool extends CriteriaAttribute implements Serializable {
     private static final long serialVersionUID = -3761135258251736516L;
 
     //TODO: OCD-4242
     @Deprecated
+    @XmlTransient
     private String name;
 
     //TODO: OCD-4242
     @Deprecated
+    @XmlTransient
     private String description;
 
 }
