@@ -63,7 +63,7 @@ public class TestTaskReviewer {
             listing.getSed().getTestTasks().stream()
                     .filter(testTask -> !CollectionUtils.isEmpty(testTask.getCriteria()))
                     .flatMap(testTask -> testTask.getCriteria().stream())
-                    .filter(testTaskCriterion -> !certResultRules.hasCertOption(testTaskCriterion.getId(), CertificationResultRules.TEST_TASK))
+                    .filter(testTaskCriterion -> !certResultRules.hasCertOption(testTaskCriterion.getId(), CertificationResultRules.SED))
                     .filter(testTaskCriterion -> BooleanUtils.isFalse(testTaskCriterion.getRemoved()))
                     .forEach(notAllowedTestTaskCriterion -> listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.testTasksNotApplicable", Util.formatCriteriaNumber(notAllowedTestTaskCriterion))));
 
