@@ -1,5 +1,17 @@
 # Release Notes
 
+## Version 40.7.0
+_3 July 2023_
+
+### Features
+* Include messages for each allowed response of an attestation
+
+### Bug Fixes
+* Allow confirming listing with a new developer
+* Send email when attestation Change Request is withdrawn
+
+---
+
 ## Version 40.6.0
 _26 June 2023_
 
