@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
@@ -333,9 +334,12 @@ public class DeveloperManager extends SecuredManager {
             CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
     public Long create(Developer developer)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException, ValidationException {
         normalizeSpaces(developer);
-        runCreateValidations(developer, null);
+        Set<String> errors = runCreateValidations(developer, null);
+        if (!CollectionUtils.isEmpty(errors)) {
+            throw new ValidationException(errors);
+        }
         Long developerId = developerDao.create(developer);
         developer.setId(developerId);
 
