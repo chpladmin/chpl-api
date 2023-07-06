@@ -3,6 +3,7 @@ package gov.healthit.chpl.criteriaattribute.testtool;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -12,10 +13,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.WhereJoinTable;
+
 import gov.healthit.chpl.criteriaattribute.RuleEntity;
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -37,7 +43,7 @@ public class TestToolEntity implements Serializable {
 
     @Basic(optional = true)
     @Column(name = "regulation_text_citation")
-    private String regulationTextCitation;
+    private String regulatoryTextCitation;
 
     @Basic(optional = true)
     @Column(name = "start_day")
@@ -50,6 +56,13 @@ public class TestToolEntity implements Serializable {
     @Basic(optional = true)
     @Column(name = "required_day")
     private LocalDate requiredDay;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "test_tool_criteria_map",
+        joinColumns = {@JoinColumn(name = "test_tool_id", referencedColumnName = "test_tool_id")},
+        inverseJoinColumns = {@JoinColumn(name = "certification_criterion_id", referencedColumnName = "certification_criterion_id")})
+    @WhereJoinTable(clause = "deleted <> true")
+    private List<CertificationCriterionEntity> criteria;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "rule_id")
@@ -81,10 +94,11 @@ public class TestToolEntity implements Serializable {
                 .value(value)
                 .name(value)
                 .description(null)
-                .regulationTextCitation(regulationTextCitation)
+                .regulatoryTextCitation(regulatoryTextCitation)
                 .startDay(startDay)
                 .endDay(endDay)
                 .requiredDay(requiredDay)
+                .criteria(criteria == null ? null : criteria.stream().map(crit -> crit.toDomain()).toList())
                 .rule(rule != null ? rule.toDomain() : null)
                 .build();
     }

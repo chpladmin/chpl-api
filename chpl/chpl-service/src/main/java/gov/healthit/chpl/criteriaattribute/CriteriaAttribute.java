@@ -2,6 +2,7 @@ package gov.healthit.chpl.criteriaattribute;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessOrder;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
@@ -48,7 +50,7 @@ public class CriteriaAttribute implements Serializable {
      * TODO: OCD-4242 - Need this text
      */
     @XmlElement(required = false, nillable = true)
-    private String regulationTextCitation;
+    private String regulatoryTextCitation;
 
 
     /**
@@ -81,6 +83,12 @@ public class CriteriaAttribute implements Serializable {
     /**
      * TODO: OCD-4242 - Need this text
      */
+    @XmlElement(required = true)
+    private List<CertificationCriterion> criteria;
+
+    /**
+     * TODO: OCD-4242 - Need this text
+     */
     @XmlElement(required = false, nillable = true)
     private Rule rule;
 
@@ -108,12 +116,12 @@ public class CriteriaAttribute implements Serializable {
         this.value = value;
     }
 
-    public String getRegulationTextCitation() {
-        return regulationTextCitation;
+    public String getRegulatoryTextCitation() {
+        return regulatoryTextCitation;
     }
 
-    public void setRegulationTextCitation(String regulationTextCitation) {
-        this.regulationTextCitation = regulationTextCitation;
+    public void setRegulatoryTextCitation(String regulatoryTextCitation) {
+        this.regulatoryTextCitation = regulatoryTextCitation;
     }
 
     public LocalDate getStartDay() {
@@ -138,6 +146,14 @@ public class CriteriaAttribute implements Serializable {
 
     public void setRequiredDay(LocalDate requiredDay) {
         this.requiredDay = requiredDay;
+    }
+
+    public List<CertificationCriterion> getCriteria() {
+        return criteria;
+    }
+
+    public void setCriteria(List<CertificationCriterion> criteria) {
+        this.criteria = criteria;
     }
 
     public Rule getRule() {
