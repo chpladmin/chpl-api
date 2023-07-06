@@ -218,11 +218,10 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
                         + "FROM TestToolCriteriaMapEntity ttcm "
                         + "JOIN FETCH ttcm.criteria c "
                         + "JOIN FETCH ttcm.testTool tt "
-                        //+ "LEFT JOIN FETCH s.criteria c "
                         + "WHERE c.id = :certificationCriterionId "
                         + "AND tt.id= :testToolId "
                         + "AND ttcm.deleted <> true "
-                        + "AND s.deleted <> true "
+                        + "AND tt.deleted <> true "
                         + "AND c.deleted <> true",
                         TestToolCriteriaMapEntity.class)
                 .setParameter("testToolId", testToolId)

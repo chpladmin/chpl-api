@@ -12,7 +12,7 @@ public class TestToolXmlGenerator extends XmlGenerator {
             createSimpleElement(testTool.getEndDay(), "endDay", sw);
             createSimpleElement(testTool.getId(), "id", sw);
             createSimpleElement(testTool.getRequiredDay(), "requiredDay", sw);
-            createSimpleElement(testTool.getRegulationTextCitation(), "regulationTextCitation", sw);
+            createSimpleElement(testTool.getRegulatoryTextCitation(), "regulatoryTextCitation", sw);
             RuleXmlGenerator.add(testTool.getRule(), "rule", sw);
             createSimpleElement(testTool.getStartDay(), "startDay", sw);
             createSimpleElement(testTool.getValue(), "value", sw);
