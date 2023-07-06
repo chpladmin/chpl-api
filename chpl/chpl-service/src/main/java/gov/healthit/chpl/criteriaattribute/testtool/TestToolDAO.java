@@ -89,16 +89,17 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
         return certifiedProductDAO.getDetailsByIds(certifiedProductIds);
     }
 
-    public TestTool update(TestTool testTool) throws EntityRetrievalException {
-        TestToolEntity entity = getEntityById(testTool.getId());
+    @Override
+    public void update(CriteriaAttribute criteriaAttribute) throws EntityRetrievalException {
+        TestToolEntity entity = getEntityById(criteriaAttribute.getId());
 
-        entity.setValue(testTool.getValue());
-        entity.setRegulatoryTextCitation(testTool.getRegulatoryTextCitation());
-        entity.setStartDay(testTool.getStartDay());
-        entity.setEndDay(testTool.getEndDay());
-        entity.setRequiredDay(testTool.getRequiredDay());
-        if (testTool.getRule() != null) {
-            entity.setRule(getRuleEntityById(testTool.getRule().getId()));
+        entity.setValue(criteriaAttribute.getValue());
+        entity.setRegulatoryTextCitation(criteriaAttribute.getRegulatoryTextCitation());
+        entity.setStartDay(criteriaAttribute.getStartDay());
+        entity.setEndDay(criteriaAttribute.getEndDay());
+        entity.setRequiredDay(criteriaAttribute.getRequiredDay());
+        if (criteriaAttribute.getRule() != null) {
+            entity.setRule(getRuleEntityById(criteriaAttribute.getRule().getId()));
         } else {
             entity.setRule(null);
         }
@@ -107,14 +108,13 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
         entity.setLastModifiedDate(new Date());
 
         update(entity);
-
-        return getById(entity.getId());
     }
 
-    public void addTestToolCriteriMap(TestTool testTool, CertificationCriterion criterion) {
+    @Override
+    public void addCriteriaAttributeCriteriaMap(CriteriaAttribute criteriaAttribute, CertificationCriterion criterion) {
         TestToolCriteriaMapEntity entity = TestToolCriteriaMapEntity.builder()
                 .certificationCriterionId(criterion.getId())
-                .testToolId(testTool.getId())
+                .testToolId(criteriaAttribute.getId())
                 .creationDate(new Date())
                 .lastModifiedDate(new Date())
                 .lastModifiedUser(AuthUtil.getAuditId())
@@ -124,9 +124,10 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
         create(entity);
     }
 
-    public void removeTestToolCriteriaMap(TestTool testTool, CertificationCriterion criterion) {
+    @Override
+    public void removeTestToolCriteriaMap(CriteriaAttribute criteriaAttribute, CertificationCriterion criterion) {
         try {
-            TestToolCriteriaMapEntity entity = getTestToolCriteriaMapByTestToolAndCriterionEntity(testTool.getId(), criterion.getId());
+            TestToolCriteriaMapEntity entity = getTestToolCriteriaMapByTestToolAndCriterionEntity(criteriaAttribute.getId(), criterion.getId());
             entity.setDeleted(true);
             entity.setLastModifiedDate(new Date());
             entity.setLastModifiedUser(AuthUtil.getAuditId());
