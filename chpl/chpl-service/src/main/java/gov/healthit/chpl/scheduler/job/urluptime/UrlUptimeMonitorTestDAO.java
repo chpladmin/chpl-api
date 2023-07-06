@@ -14,6 +14,7 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 
 @Repository
 public class UrlUptimeMonitorTestDAO extends BaseDAOImpl {
+    private static final int START_TIME_IN_HOURS = 10;
 
     public UrlUptimeMonitorTest create(UrlUptimeMonitorTest urlUptimeMonitorTest) {
         UrlUptimeMonitorTestEntity entity = UrlUptimeMonitorTestEntity.builder()
@@ -47,12 +48,15 @@ public class UrlUptimeMonitorTestDAO extends BaseDAOImpl {
     }
 
     public Long getTestCountForDate(LocalDate dateToCheck) {
+        //On the servers, check_time is stored in UTC time.  Since we collect data from 8am - 8pm ET,
+        //data on the servers far a particular day can roll over to the next day.  To alleviate this problem
+        //we will check for existence of tests after 1000 UTC (5am or 6am ET).
         Query query = entityManager.createQuery(
                 "SELECT count(*) "
                 + "FROM  UrlUptimeMonitorTestEntity uumt "
                 + "WHERE uumt.checkTime >= :startDateTime "
                 + "AND uumt.checkTime <= :endDateTime")
-                .setParameter("startDateTime", dateToCheck.atStartOfDay())
+                .setParameter("startDateTime", dateToCheck.atTime(START_TIME_IN_HOURS, 0))
                 .setParameter("endDateTime", dateToCheck.atTime(LocalTime.MAX));
         return (Long) query.getSingleResult();
     }
