@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,6 +61,7 @@ public class FunctionalityTestedNormalizer {
 
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationResults() != null && listing.getCertificationResults().size() > 0) {
+            clearDataForUnattestedCriteria(listing);
             listing.getCertificationResults().stream()
                 .forEach(certResult -> fillInFunctionalitiesTestedData(listing, certResult));
 
@@ -68,6 +70,14 @@ public class FunctionalityTestedNormalizer {
                 .forEach(certResult -> removeRestrictedFunctionalitiesTestedBasedOnUserRule(certResult));
         }
 
+    }
+
+    private void clearDataForUnattestedCriteria(CertifiedProductSearchDetails listing) {
+        listing.getCertificationResults().stream()
+            .filter(certResult -> (certResult.isSuccess() == null || BooleanUtils.isFalse(certResult.isSuccess()))
+                    && certResult.getFunctionalitiesTested() != null
+                    && certResult.getFunctionalitiesTested().size() > 0)
+            .forEach(unattestedCertResult -> unattestedCertResult.getFunctionalitiesTested().clear());
     }
 
     private void fillInFunctionalitiesTestedData(CertifiedProductSearchDetails listing, CertificationResult certResult) {

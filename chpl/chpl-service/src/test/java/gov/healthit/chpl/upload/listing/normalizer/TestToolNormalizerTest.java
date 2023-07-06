@@ -86,6 +86,7 @@ public class TestToolNormalizerTest {
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
+                        .success(true)
                         .testToolsUsed(testTools)
                         .build())
                 .build();
@@ -108,6 +109,7 @@ public class TestToolNormalizerTest {
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
+                        .success(true)
                         .testToolsUsed(testTools)
                         .build())
                 .build();
@@ -132,6 +134,7 @@ public class TestToolNormalizerTest {
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
+                        .success(true)
                         .testToolsUsed(testTools)
                         .build())
                 .build();

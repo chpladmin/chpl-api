@@ -7,11 +7,11 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 
 @Component
 public class SedNormalizer {
-    private TestParticipantNoramlizer participantNormalizer;
+    private TestParticipantNormalizer participantNormalizer;
     private UcdProcessNormalizer ucdProcessNormalizer;
 
     @Autowired
-    public SedNormalizer(TestParticipantNoramlizer participantNormalizer,
+    public SedNormalizer(TestParticipantNormalizer participantNormalizer,
         UcdProcessNormalizer ucdProcessNormalizer) {
         this.participantNormalizer = participantNormalizer;
         this.ucdProcessNormalizer = ucdProcessNormalizer;
