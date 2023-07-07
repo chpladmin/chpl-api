@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.criteriaattribute.CriteriaAttribute;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttributeSaveContext;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttributeService;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttributeValidationContext;
@@ -14,6 +15,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class TestToolManager {
@@ -21,12 +23,16 @@ public class TestToolManager {
     private CriteriaAttributeValidator criteriaAttributeValidator;
     private CriteriaAttributeService criteriaAttributeService;
     private TestToolDAO testToolDAO;
+    private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public TestToolManager(TestToolDAO testToolDAO, CriteriaAttributeValidator criteriaAttributeValidator, CriteriaAttributeService criteriaAttributeService) {
+    public TestToolManager(TestToolDAO testToolDAO, CriteriaAttributeValidator criteriaAttributeValidator,
+            CriteriaAttributeService criteriaAttributeService, ErrorMessageUtil errorMessageUtil) {
+
         this.testToolDAO = testToolDAO;
         this.criteriaAttributeValidator = criteriaAttributeValidator;
         this.criteriaAttributeService = criteriaAttributeService;
+        this.errorMessageUtil = errorMessageUtil;
     }
 
 //    public List<TestToolCriteriaMap> getAllTestToolCriteriaMaps() throws EntityRetrievalException {
@@ -54,7 +60,7 @@ public class TestToolManager {
                 .name("Test Tool")
                 .build());
 
-        criteriaAttributeService.updateCriteriaAttribute(CriteriaAttributeSaveContext.builder()
+        criteriaAttributeService.update(CriteriaAttributeSaveContext.builder()
                 .criteriaAttribute(testTool)
                 .criteriaAttributeDAO(testToolDAO)
                 .name("Test Tool")
@@ -64,21 +70,42 @@ public class TestToolManager {
 
 //    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SVAP, "
 //            + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).CREATE)")
-//    @Transactional
-//    public TestTool create(TestTool testTool) throws EntityRetrievalException, ValidationException {
-//        validateForAdd(svap);
-//        Svap newSvap = addSvap(svap);
-//        addNewCriteriaForNewSvap(newSvap, svap.getCriteria());
-//        return getSvap(newSvap.getSvapId());
-//    }
+    @Transactional
+    public TestTool create(TestTool testTool) throws EntityRetrievalException, ValidationException {
+        criteriaAttributeValidator.validateForAdd(CriteriaAttributeValidationContext.builder()
+                .criteriaAttribe(testTool)
+                .criteriaAttributeDAO(testToolDAO)
+                .name("Test Tool")
+                .build());
+
+        CriteriaAttribute criteriaAttribute = criteriaAttributeService.add(CriteriaAttributeSaveContext.builder()
+                .criteriaAttribute(testTool)
+                .criteriaAttributeDAO(testToolDAO)
+                .name("Test Tool")
+                .build());
+
+        return testToolDAO.getById(criteriaAttribute.getId());
+    }
 
 //    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SVAP, "
 //            + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).DELETE)")
-//    @Transactional
-//    public void delete(Long testToolId) throws EntityRetrievalException, ValidationException {
-//        Svap originalSvap = getSvap(svapId);
-//        validateForDelete(originalSvap);
-//        deleteAllCriteriaFromSvap(originalSvap);
-//        deleteSvap(originalSvap);
-//    }
+    @Transactional
+    public void delete(Long testToolId) throws EntityRetrievalException, ValidationException {
+        TestTool testTool = testToolDAO.getById(testToolId);
+        if (testTool == null) {
+            ValidationException e = new ValidationException(errorMessageUtil.getMessage("testTool.notFound"));
+            throw e;
+        }
+        criteriaAttributeValidator.validateForDelete(CriteriaAttributeValidationContext.builder()
+                .criteriaAttribe(testTool)
+                .criteriaAttributeDAO(testToolDAO)
+                .name("Test Tool")
+                .build());
+
+        criteriaAttributeService.delete(CriteriaAttributeSaveContext.builder()
+                .criteriaAttribute(testTool)
+                .criteriaAttributeDAO(testToolDAO)
+                .name("Test Tool")
+                .build());
+    }
 }

@@ -22,19 +22,36 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
-import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Repository("testToolDAO")
 public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
-    private ErrorMessageUtil msgUtil;
     private CertifiedProductDAO certifiedProductDAO;
 
     @Autowired
-    public TestToolDAO(ErrorMessageUtil msgUtil, CertifiedProductDAO certifiedProductDAO) {
-        this.msgUtil = msgUtil;
+    public TestToolDAO(CertifiedProductDAO certifiedProductDAO) {
         this.certifiedProductDAO = certifiedProductDAO;
+    }
+
+    @Override
+    public CriteriaAttribute add(CriteriaAttribute criteriaAttribute) {
+        TestToolEntity entity = TestToolEntity.builder()
+                .name(criteriaAttribute.getValue())
+                .value(criteriaAttribute.getValue())
+                .regulatoryTextCitation(criteriaAttribute.getRegulatoryTextCitation())
+                .startDay(criteriaAttribute.getStartDay())
+                .endDay(criteriaAttribute.getEndDay())
+                .requiredDay(criteriaAttribute.getRequiredDay())
+                .rule(criteriaAttribute.getRule() != null ? getRuleEntityById(criteriaAttribute.getRule().getId()) : null)
+                .creationDate(new Date())
+                .lastModifiedDate(new Date())
+                .lastModifiedUser(AuthUtil.getAuditId())
+                .deleted(false)
+                .build();
+        create(entity);
+
+        return getById(entity.getId());
     }
 
     public List<TestTool> getAll() {
@@ -125,7 +142,7 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
     }
 
     @Override
-    public void removeTestToolCriteriaMap(CriteriaAttribute criteriaAttribute, CertificationCriterion criterion) {
+    public void removeCriteriaAttributeCriteriaMap(CriteriaAttribute criteriaAttribute, CertificationCriterion criterion) {
         try {
             TestToolCriteriaMapEntity entity = getTestToolCriteriaMapByTestToolAndCriterionEntity(criteriaAttribute.getId(), criterion.getId());
             entity.setDeleted(true);
@@ -137,6 +154,21 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
             LOGGER.catching(e);
             return;
         }
+    }
+
+    @Override
+    public List<CertifiedProductDetailsDTO> getCertifiedProductsByCriteriaAttribute(CriteriaAttribute criteriaAttribute) throws EntityRetrievalException {
+        List<Long> certifiedProductIds = getCertifiedProductIdsUsingTestToolId(criteriaAttribute.getId());
+        return certifiedProductDAO.getDetailsByIds(certifiedProductIds);
+    }
+
+    @Override
+    public void remove(CriteriaAttribute criteriaAttribute) throws EntityRetrievalException {
+        TestToolEntity entity = getEntityById(criteriaAttribute.getId());
+        entity.setDeleted(true);
+        entity.setLastModifiedUser(AuthUtil.getAuditId());
+        entity.setLastModifiedDate(new Date());
+        update(entity);
     }
 
     private TestToolEntity getEntityById(Long id) {
@@ -236,5 +268,23 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
         }
 
         return result.get(0);
+    }
+
+    private List<Long> getCertifiedProductIdsUsingTestToolId(Long testToolId) {
+        List<CertificationResultEntity> certResultsWithTestTool =
+                entityManager.createQuery("SELECT cr "
+                        + "FROM CertificationResultTestToolEntity crtt, CertificationResultEntity cr "
+                        + "WHERE crtt.certificationResultId = cr.id "
+                        + "AND crtt.testToolId = :testToolId "
+                        + "AND crtt.deleted <> true "
+                        + "AND cr.deleted <> true ",
+                        CertificationResultEntity.class)
+                .setParameter("testToolId", testToolId)
+                .getResultList();
+
+        return certResultsWithTestTool.stream()
+                .map(certResult -> certResult.getCertifiedProductId())
+                .distinct()
+                .collect(Collectors.toList());
     }
 }

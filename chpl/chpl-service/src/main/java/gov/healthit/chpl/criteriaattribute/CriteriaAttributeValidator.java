@@ -65,10 +65,75 @@ public class CriteriaAttributeValidator {
 
         messages.addAll(validateCriteriaRemovedFromCriteriaAttribute(context));
 
-        //TODO OCD-4242 - Need to validate Rule, end day, start day, required day
+        //TODO OCD-4242 - Need to validate Rule
 
         if (messages.size() > 0) {
             ValidationException e = new ValidationException(messages);
+            throw e;
+        }
+    }
+
+    public void validateForAdd(CriteriaAttributeValidationContext context) throws ValidationException, EntityRetrievalException {
+        Set<String> messages = new HashSet<String>();
+
+        if (StringUtils.isEmpty(context.getCriteriaAttribe().getValue())) {
+            messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.emptyValue"));
+        }
+
+        if (context.getIsRegulatoryTextCitationRequired()
+                && StringUtils.isEmpty(context.getCriteriaAttribe().getRegulatoryTextCitation())) {
+            messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.emptyRegulatoryTextCitation"));
+        }
+
+        if (context.getStartDayRequired()
+                && context.getCriteriaAttribe().getStartDay() == null) {
+            messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.emptyStartDay"));
+        }
+
+        if (context.getEndDayRequired()
+                && context.getCriteriaAttribe().getEndDay() == null) {
+            messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.emptyEndDay"));
+        }
+
+        if (context.getRequiredDayRequired()
+                && context.getCriteriaAttribe().getRequiredDay() == null) {
+            messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.emptyRequiredDay"));
+        }
+
+        if (CollectionUtils.isEmpty(context.getCriteriaAttribe().getCriteria())) {
+            messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.noCriteria"));
+        }
+
+        if (isCriteriaAttributeDuplicateOnAdd(context)) {
+            messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.duplicate", context.getName()));
+        }
+
+        //TODO OCD-4242 - Need to validate Rule
+
+        if (messages.size() > 0) {
+            ValidationException e = new ValidationException(messages);
+            throw e;
+        }
+
+    }
+
+    public void validateForDelete(CriteriaAttributeValidationContext context) throws ValidationException {
+        List<CertifiedProductDetailsDTO> listings = new ArrayList<CertifiedProductDetailsDTO>();
+        try {
+            listings = context.getCriteriaAttributeDAO().getCertifiedProductsByCriteriaAttribute(context.getCriteriaAttribe());
+        } catch (EntityRetrievalException ex) {
+            throw new ValidationException(ex.getMessage());
+        }
+
+        if (!CollectionUtils.isEmpty(listings)) {
+            String message = errorMessageUtil.getMessage("criteriaAttribute.delete.listingsExist",
+                    context.getName(),
+                    listings.size(),
+                    listings.size() > 1 ? "s" : "",
+                    listings.stream()
+                            .map(listing -> listing.getChplProductNumber())
+                            .collect(Collectors.joining(", ")));
+            ValidationException e = new ValidationException(message);
             throw e;
         }
     }
@@ -109,6 +174,20 @@ public class CriteriaAttributeValidator {
                         return map.getCriteriaAttribute().getValue().equalsIgnoreCase(context.getCriteriaAttribe().getValue())
                                 && origCitationText.equalsIgnoreCase(updatedCitationText)
                                 && !map.getCriteriaAttribute().getId().equals(context.getCriteriaAttribe().getId());
+                })
+                .findAny()
+                .isPresent();
+    }
+
+    private boolean isCriteriaAttributeDuplicateOnAdd(CriteriaAttributeValidationContext context) throws EntityRetrievalException {
+        String updatedCitationText = context.getCriteriaAttribe().getRegulatoryTextCitation() != null ? context.getCriteriaAttribe().getRegulatoryTextCitation() : "";
+
+        return context.getCriteriaAttributeDAO().getAllAssociatedCriteriaMaps().stream()
+                .filter(map -> {
+                        String origCitationText = map.getCriteriaAttribute().getRegulatoryTextCitation() != null ? map.getCriteriaAttribute().getRegulatoryTextCitation() : "";
+
+                        return map.getCriteriaAttribute().getValue().equalsIgnoreCase(context.getCriteriaAttribe().getValue())
+                                && origCitationText.equalsIgnoreCase(updatedCitationText);
                 })
                 .findAny()
                 .isPresent();

@@ -22,11 +22,17 @@ import org.hibernate.annotations.WhereJoinTable;
 
 import gov.healthit.chpl.criteriaattribute.RuleEntity;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "test_tool")
 public class TestToolEntity implements Serializable {
@@ -36,6 +42,10 @@ public class TestToolEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "test_tool_id")
     private Long id;
+
+    @Basic(optional = false)
+    @Column(name = "name")
+    private String name;
 
     @Basic(optional = false)
     @Column(name = "value")
