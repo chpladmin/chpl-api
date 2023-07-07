@@ -3,6 +3,7 @@ package gov.healthit.chpl.criteriaattribute.testtool;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,8 +50,8 @@ public class TestToolManager {
         return testToolDAO.getAll();
     }
 
-//    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SVAP, "
-//            + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).UPDATE)")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TEST_TOOL, "
+            + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).UPDATE)")
     @Transactional
     @ListingStoreRemove(removeBy = RemoveBy.ALL)
     public TestTool update(TestTool testTool) throws EntityRetrievalException, ValidationException {
@@ -68,8 +69,8 @@ public class TestToolManager {
         return testToolDAO.getById(testTool.getId());
     }
 
-//    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SVAP, "
-//            + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).CREATE)")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TEST_TOOL, "
+            + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).CREATE)")
     @Transactional
     public TestTool create(TestTool testTool) throws EntityRetrievalException, ValidationException {
         criteriaAttributeValidator.validateForAdd(CriteriaAttributeValidationContext.builder()
@@ -87,8 +88,8 @@ public class TestToolManager {
         return testToolDAO.getById(criteriaAttribute.getId());
     }
 
-//    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SVAP, "
-//            + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).DELETE)")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TEST_TOOL, "
+            + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).DELETE)")
     @Transactional
     public void delete(Long testToolId) throws EntityRetrievalException, ValidationException {
         TestTool testTool = testToolDAO.getById(testToolId);
