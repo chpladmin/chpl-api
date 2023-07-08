@@ -51,7 +51,7 @@ public class TestToolManager {
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TEST_TOOL, "
-            + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).UPDATE)")
+            + "T(gov.healthit.chpl.permissions.domains.TestToolDomainPermissions).UPDATE)")
     @Transactional
     @ListingStoreRemove(removeBy = RemoveBy.ALL)
     public TestTool update(TestTool testTool) throws EntityRetrievalException, ValidationException {
@@ -70,7 +70,7 @@ public class TestToolManager {
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TEST_TOOL, "
-            + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).CREATE)")
+            + "T(gov.healthit.chpl.permissions.domains.TestToolDomainPermissions).CREATE)")
     @Transactional
     public TestTool create(TestTool testTool) throws EntityRetrievalException, ValidationException {
         criteriaAttributeValidator.validateForAdd(CriteriaAttributeValidationContext.builder()
@@ -89,7 +89,7 @@ public class TestToolManager {
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TEST_TOOL, "
-            + "T(gov.healthit.chpl.permissions.domains.SvapDomainPermissions).DELETE)")
+            + "T(gov.healthit.chpl.permissions.domains.TestToolDomainPermissions).DELETE)")
     @Transactional
     public void delete(Long testToolId) throws EntityRetrievalException, ValidationException {
         TestTool testTool = testToolDAO.getById(testToolId);

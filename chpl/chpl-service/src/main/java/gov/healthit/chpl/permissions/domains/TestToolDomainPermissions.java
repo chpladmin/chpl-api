@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.permissions.domains.svap.CreateActionPermissions;
-import gov.healthit.chpl.permissions.domains.svap.DeleteActionPermissions;
-import gov.healthit.chpl.permissions.domains.svap.UpdateActionPermissions;
+import gov.healthit.chpl.permissions.domains.testtool.CreateActionPermissions;
+import gov.healthit.chpl.permissions.domains.testtool.DeleteActionPermissions;
+import gov.healthit.chpl.permissions.domains.testtool.UpdateActionPermissions;
 
 @Component
 public class TestToolDomainPermissions extends DomainPermissions {
