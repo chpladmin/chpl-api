@@ -817,19 +817,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
      * Test Tool methods
      *
      *******************************************************/
-    //TODO: OCD-4242 - Is this used?
-    public List<CertificationResultTestTool> getTestToolsForCertificationResult(Long certificationResultId) {
-
-        List<CertificationResultTestToolEntity> entities = getTestToolsForCertification(certificationResultId);
-        List<CertificationResultTestTool> certResultTestTools = new ArrayList<CertificationResultTestTool>();
-
-        for (CertificationResultTestToolEntity entity : entities) {
-            certResultTestTools.add(entity.toDomain());
-        }
-        return certResultTestTools;
-    }
-
-    //TODO:  OCD-4242
     public Long createTestToolMapping(Long certResultId, CertificationResultTestTool certResultTestTool)
             throws EntityCreationException {
         try {
@@ -845,7 +832,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         }
     }
 
-    //TODO:  OCD-4242
     public CertificationResultTestTool addTestToolMapping(CertificationResultTestTool certResultTestTool)
             throws EntityCreationException {
         CertificationResultTestToolEntity mapping = new CertificationResultTestToolEntity();

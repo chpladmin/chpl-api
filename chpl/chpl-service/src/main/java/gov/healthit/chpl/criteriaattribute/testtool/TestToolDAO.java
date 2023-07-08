@@ -75,10 +75,6 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
         return entity.toDomain();
     }
 
-    @Override
-    public CriteriaAttribute getCriteriaAttributeById(Long id) {
-        return getById(id);
-    }
 
     public TestTool getByName(String name) {
         List<TestToolEntity> entities = getEntitiesByName(name);
@@ -181,7 +177,9 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
     private TestToolEntity getEntityById(Long id) {
         TestToolEntity entity = null;
         Query query = entityManager.createQuery(
-                "from TestToolEntity where (NOT deleted = true) AND (test_tool_id = :entityid) ", TestToolEntity.class);
+                "FROM TestToolEntity "
+                + "WHERE (NOT deleted = true) "
+                + "AND (test_tool_id = :entityid) ", TestToolEntity.class);
         query.setParameter("entityid", id);
         List<TestToolEntity> result = query.getResultList();
         if (result.size() > 0) {
@@ -192,7 +190,9 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
 
     private List<TestToolEntity> getEntitiesByName(String name) {
         Query query = entityManager.createQuery(
-                "from TestToolEntity where " + "(NOT deleted = true) AND (UPPER(name) = :name) ", TestToolEntity.class);
+                "FROM TestToolEntity "
+                + "WHERE (NOT deleted = true) "
+                + "AND (UPPER(name) = :name) ", TestToolEntity.class);
         query.setParameter("name", name.toUpperCase());
         List<TestToolEntity> result = query.getResultList();
 

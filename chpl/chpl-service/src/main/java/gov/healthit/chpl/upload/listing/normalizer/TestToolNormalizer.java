@@ -42,6 +42,13 @@ public class TestToolNormalizer {
         }
     }
 
+    public void normalize(List<CertificationResultTestTool> testTools) {
+        if (!CollectionUtils.isEmpty(testTools)) {
+            testTools.stream()
+                    .forEach(certResultTestTool -> populateTestToolId(certResultTestTool));
+        }
+    }
+
     private void fillInTestToolData(CertificationResult certResult) {
         populateAllowedTestTools(certResult);
         populateTestToolIds(certResult.getTestToolsUsed());
