@@ -1,5 +1,6 @@
 package gov.healthit.chpl.criteriaattribute;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -22,10 +23,12 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 @Component
 public class CriteriaAttributeValidator {
     private ErrorMessageUtil errorMessageUtil;
+    private RuleDAO ruleDAO;
 
     @Autowired
-    public CriteriaAttributeValidator(ErrorMessageUtil errorMessageUtil) {
+    public CriteriaAttributeValidator(ErrorMessageUtil errorMessageUtil, RuleDAO ruleDAO) {
         this.errorMessageUtil = errorMessageUtil;
+        this.ruleDAO = ruleDAO;
     }
 
     public void validateForEdit(CriteriaAttributeValidationContext context) throws ValidationException, EntityRetrievalException {
@@ -65,7 +68,15 @@ public class CriteriaAttributeValidator {
 
         messages.addAll(validateCriteriaRemovedFromCriteriaAttribute(context));
 
-        //TODO OCD-4242 - Need to validate Rule
+        if (context.getRuleRequired()
+                && context.getCriteriaAttribe().getRule() == null) {
+            messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.emptyRule"));
+        }
+
+        if (context.getCriteriaAttribe().getRule() != null
+                && ruleDAO.getRuleEntityById(context.getCriteriaAttribe().getRule().getId()) == null) {
+            messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.notFoundRule"));
+        }
 
         if (messages.size() > 0) {
             ValidationException e = new ValidationException(messages);
@@ -108,7 +119,15 @@ public class CriteriaAttributeValidator {
             messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.duplicate", context.getName()));
         }
 
-        //TODO OCD-4242 - Need to validate Rule
+        if (context.getRuleRequired()
+                && context.getCriteriaAttribe().getRule() == null) {
+            messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.emptyRule"));
+        }
+
+        if (context.getCriteriaAttribe().getRule() != null
+                && ruleDAO.getRuleEntityById(context.getCriteriaAttribe().getRule().getId()) == null) {
+            messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.notFoundRule"));
+        }
 
         if (messages.size() > 0) {
             ValidationException e = new ValidationException(messages);
@@ -210,4 +229,11 @@ public class CriteriaAttributeValidator {
                 .collect(Collectors.toList());
     }
 
+    private Boolean validate(String stringToValidate, Boolean isRequired) {
+        return isRequired && !StringUtils.isEmpty(stringToValidate);
+    }
+
+    private Boolean validate(LocalDate dateToValidate, Boolean isRequired) {
+        return isRequired && dateToValidate != null;
+    }
 }
