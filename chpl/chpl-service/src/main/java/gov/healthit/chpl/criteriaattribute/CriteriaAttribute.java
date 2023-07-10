@@ -80,10 +80,6 @@ public class CriteriaAttribute implements Serializable {
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate requiredDay;
 
-    /**
-     * TODO: OCD-4242 - Need this text
-     */
-    @XmlElement(required = true)
     private List<CertificationCriterion> criteria;
 
     /**
