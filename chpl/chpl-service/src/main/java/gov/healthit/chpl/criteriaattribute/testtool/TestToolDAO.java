@@ -94,7 +94,6 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
                 .toList();
     }
 
-    //TODO OCD-4242
     @Transactional
     public List<TestToolCriteriaMap> getAllTestToolCriteriaMap() throws EntityRetrievalException {
         return getAllTestToolCriteriaMapEntities().stream()

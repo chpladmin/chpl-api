@@ -92,7 +92,7 @@ public class CertificationResultService {
                 .collect(Collectors.toList());
     }
 
-    public List<CertificationResultDetailsDTO> getCertificationResultDetailsDTOs(Long id) {
+    private List<CertificationResultDetailsDTO> getCertificationResultDetailsDTOs(Long id) {
         List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = null;
         certificationResultDetailsDTOs = certificationResultDetailsDAO.getAllCertResultsForListing(id);
         return certificationResultDetailsDTOs;

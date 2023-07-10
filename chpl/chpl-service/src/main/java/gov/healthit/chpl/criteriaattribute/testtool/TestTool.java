@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttribute;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,13 +25,15 @@ import lombok.experimental.SuperBuilder;
 public class TestTool extends CriteriaAttribute implements Serializable {
     private static final long serialVersionUID = -3761135258251736516L;
 
-    //TODO: OCD-4242
     @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found value",
+            removalDate = "2024-01-01")
     @XmlTransient
     private String name;
 
-    //TODO: OCD-4242
     @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found regulatoryTextCitation",
+            removalDate = "2024-01-01")
     @XmlTransient
     private String description;
 
