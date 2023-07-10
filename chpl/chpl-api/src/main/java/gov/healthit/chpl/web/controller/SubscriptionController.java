@@ -100,7 +100,7 @@ public class SubscriptionController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/unsubscribe-all", method = RequestMethod.PUT, produces = "application/json; charset=utf-8",
+    @RequestMapping(value = "unsubscribe-all", method = RequestMethod.PUT, produces = "application/json; charset=utf-8",
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public void unsubscribeAll(@RequestBody(required = true) SubscriberRequest request)
         throws EntityRetrievalException {
