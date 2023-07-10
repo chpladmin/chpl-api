@@ -14,10 +14,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.subscription.SubscriptionManager;
 import gov.healthit.chpl.subscription.domain.Subscriber;
-import gov.healthit.chpl.subscription.domain.SubscriberConfirmationRequest;
+import gov.healthit.chpl.subscription.domain.SubscriberRequest;
 import gov.healthit.chpl.subscription.domain.SubscriberRole;
 import gov.healthit.chpl.subscription.domain.SubscriptionObjectType;
 import gov.healthit.chpl.subscription.domain.SubscriptionRequest;
@@ -42,8 +43,7 @@ public class SubscriptionController {
 
     @Operation(summary = "Get available subscription reasons.",
             security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/roles", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<SubscriberRole> getSubscriptionReasons() {
@@ -55,8 +55,7 @@ public class SubscriptionController {
 
     @Operation(summary = "Get available types of things that may be subscribed to.",
             security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/types", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<SubscriptionObjectType> getSubscribedObjectTypes() {
@@ -70,8 +69,7 @@ public class SubscriptionController {
             + "A new subscriber will be created and will need confirm their email address "
             + "if there is not currently a subscriber with this email address.",
             security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8",
             consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -86,16 +84,29 @@ public class SubscriptionController {
     @Operation(summary = "Confirm a subscriber's email address is valid. Once confirmed, the subscriber "
             + "will start receiving notifications at the specified email address.",
             security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/confirm-subscriber", method = RequestMethod.PUT, produces = "application/json; charset=utf-8",
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Subscriber confirmSubscriber(@RequestBody(required = true) SubscriberConfirmationRequest request)
+    public Subscriber confirmSubscriber(@RequestBody(required = true) SubscriberRequest request)
         throws ValidationException {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
         }
         return subscriptionManager.confirm(UUID.fromString(request.getSubscriberId()));
+    }
+
+    @Operation(summary = "Unsubscribe from all notifications associated with a subscriber.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/unsubscribe-all", method = RequestMethod.PUT, produces = "application/json; charset=utf-8",
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void unsubscribeAll(@RequestBody(required = true) SubscriberRequest request)
+        throws EntityRetrievalException {
+        if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
+            throw new NotImplementedException("The subscriptions feature is not yet implemented.");
+        }
+        subscriptionManager.unsubscribeAll(UUID.fromString(request.getSubscriberId()));
     }
 }

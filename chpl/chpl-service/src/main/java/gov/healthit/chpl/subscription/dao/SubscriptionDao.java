@@ -157,6 +157,15 @@ public class SubscriptionDao extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
+    public void deleteSubscriptions(UUID subscriberId) {
+        entityManager.createQuery(
+                "UPDATE SubscriptionEntity sub "
+                + "SET sub.deleted = true "
+                + "WHERE sub.subscriberId = :subscriberId")
+        .setParameter("subscriberId", subscriberId)
+        .executeUpdate();
+    }
+
     public List<Long> getSubscriptionIdsForConfirmedSubscribers(Long subjectId, Long subscribedObjectId) {
         Query query = entityManager.createQuery("SELECT subscription "
                 + "FROM SubscriptionEntity subscription "
