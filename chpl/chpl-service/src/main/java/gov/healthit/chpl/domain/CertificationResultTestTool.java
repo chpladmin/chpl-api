@@ -58,6 +58,22 @@ public class CertificationResultTestTool implements Serializable {
     @JsonIgnore
     private Long certificationResultId;
 
+    @Deprecated
+    @XmlTransient
+    private Long testToolId;
+
+    @Deprecated
+    @XmlTransient
+    private String testToolName;
+
+    @Deprecated
+    @XmlTransient
+    private String testToolVersion;
+
+    @Deprecated
+    @XmlTransient
+    private Boolean retired;
+
     public boolean matches(final CertificationResultTestTool anotherTool) {
         boolean result = false;
         if (this.getTestTool().getId() != null && anotherTool.getTestTool().getId() != null
@@ -106,46 +122,46 @@ public class CertificationResultTestTool implements Serializable {
     }
 
     //TODO OCD-4242
-    //@Deprecated
-    //public Long getTestToolId() {
-    //    return testToolId;
-    //}
+    @Deprecated
+    public Long getTestToolId() {
+        return testToolId;
+    }
 
     //TODO OCD-4242
-    //@Deprecated
-    //public void setTestToolId(final Long testToolId) {
-    //    this.testToolId = testToolId;
-    //}
+    @Deprecated
+    public void setTestToolId(final Long testToolId) {
+        this.testToolId = testToolId;
+    }
 
     //TODO OCD-4242
-    //@Deprecated
-    //public String getTestToolName() {
-    //    return testToolName;
-    //}
+    @Deprecated
+    public String getTestToolName() {
+        return testToolName;
+    }
 
     //TODO OCD-4242
-    //@Deprecated
-    //public void setTestToolName(final String testToolName) {
-    //    this.testToolName = testToolName;
-    //}
+    @Deprecated
+    public void setTestToolName(final String testToolName) {
+        this.testToolName = testToolName;
+    }
 
     //TODO OCD-4242
-    //@Deprecated
-    //public String getTestToolVersion() {
-    //    return testToolVersion;
-    //}
+    @Deprecated
+    public String getTestToolVersion() {
+        return testToolVersion;
+    }
 
     //TODO OCD-4242
-    //@Deprecated
-    //public void setTestToolVersion(final String testToolVersion) {
-    //    this.testToolVersion = testToolVersion;
-    //}
+    @Deprecated
+    public void setTestToolVersion(final String testToolVersion) {
+        this.testToolVersion = testToolVersion;
+    }
 
     //TODO OCD-4242
-    //@Deprecated
-    //public boolean isRetired() {
-    //    return retired;
-    //}
+    @Deprecated
+    public boolean isRetired() {
+        return testTool.isRetired();
+    }
 
     //TODO OCD-4242
     //@Deprecated
