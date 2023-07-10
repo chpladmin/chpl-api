@@ -129,8 +129,7 @@ public class ApiKeyManager {
         return apiKey;
     }
 
-    @Transactional
-    public ApiKey createKey(ApiKey toCreate)
+    private ApiKey createKey(ApiKey toCreate)
             throws EntityCreationException, JsonProcessingException, EntityRetrievalException {
 
         ApiKey created = apiKeyDAO.create(toCreate);

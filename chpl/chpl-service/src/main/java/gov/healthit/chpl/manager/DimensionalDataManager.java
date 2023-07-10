@@ -11,8 +11,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.accessibilityStandard.AccessibilityStandard;
-import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardDAO;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.dao.AgeRangeDAO;
@@ -42,13 +40,10 @@ import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.domain.NonconformityType;
-import gov.healthit.chpl.domain.NonconformityTypeEnum;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.TestStandard;
-import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
 import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
 import gov.healthit.chpl.domain.surveillance.RequirementType;
-import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.dto.AgeRangeDTO;
@@ -61,7 +56,6 @@ import gov.healthit.chpl.dto.TestDataCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestProcedureCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
 import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
@@ -71,9 +65,6 @@ import gov.healthit.chpl.qmsStandard.QmsStandard;
 import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
 import gov.healthit.chpl.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.surveillance.report.domain.Quarter;
-import gov.healthit.chpl.ucdProcess.UcdProcess;
-import gov.healthit.chpl.ucdProcess.UcdProcessDAO;
-import gov.healthit.chpl.util.Removable;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -85,12 +76,9 @@ public class DimensionalDataManager {
     private EducationTypeDAO educationTypeDao;
     private AgeRangeDAO ageRangeDao;
     private OptionalStandardDAO optionalStandardDao;
-    private FunctionalityTestedDAO functionalityTestedDao;
     private TestStandardDAO testStandardDao;
     private TestProcedureDAO testProcedureDao;
     private TestDataDAO testDataDao;
-    private AccessibilityStandardDAO asDao;
-    private UcdProcessDAO ucdDao;
     private QmsStandardDAO qmsDao;
     private TargetedUserDAO tuDao;
     private DeveloperStatusDAO devStatusDao;
@@ -107,9 +95,9 @@ public class DimensionalDataManager {
     @SuppressWarnings("checkstyle:parameternumber")
     public DimensionalDataManager(CacheableDimensionalDataManager cacheableDimensionalDataManager,
                                   CertificationBodyDAO certificationBodyDao, CertificationCriterionDAO certificationCriterionDao,
-                                  EducationTypeDAO educationTypeDao, AgeRangeDAO ageRangeDao, FunctionalityTestedDAO functionalityTestedDao,
+                                  EducationTypeDAO educationTypeDao, AgeRangeDAO ageRangeDao,
                                   TestStandardDAO testStandardDao, TestProcedureDAO testProcedureDao,
-                                  TestDataDAO testDataDao, AccessibilityStandardDAO asDao, UcdProcessDAO ucdDao,
+                                  TestDataDAO testDataDao,
                                   QmsStandardDAO qmsDao, TargetedUserDAO tuDao, DeveloperStatusDAO devStatusDao,
                                   SurveillanceDAO survDao, QuarterDAO quarterDao,
                                   ProductDAO productDao, DeveloperDAO devDao, MeasureDAO measureDao,
@@ -121,12 +109,9 @@ public class DimensionalDataManager {
         this.educationTypeDao = educationTypeDao;
         this.ageRangeDao = ageRangeDao;
         this.optionalStandardDao = optionalStandardDao;
-        this.functionalityTestedDao = functionalityTestedDao;
         this.testStandardDao = testStandardDao;
         this.testProcedureDao = testProcedureDao;
         this.testDataDao = testDataDao;
-        this.asDao = asDao;
-        this.ucdDao = ucdDao;
         this.qmsDao = qmsDao;
         this.tuDao = tuDao;
         this.devStatusDao = devStatusDao;
@@ -215,26 +200,6 @@ public class DimensionalDataManager {
     }
 
     @Deprecated
-    public Set<KeyValueModel> getAccessibilityStandards() {
-        LOGGER.debug("Getting all accessibility standards from the database (not cached).");
-
-        List<AccessibilityStandard> accStds = this.asDao.getAll();
-        return accStds.stream()
-                .map(accStd -> new KeyValueModel(accStd.getId(), accStd.getName()))
-                .collect(Collectors.toSet());
-    }
-
-    @Deprecated
-    public Set<KeyValueModel> getUcdProcesses() {
-        LOGGER.debug("Getting all ucd processesfrom the database (not cached).");
-
-        List<UcdProcess> ucdProcesses = this.ucdDao.getAll();
-        return ucdProcesses.stream()
-                .map(ucdProcess -> new KeyValueModel(ucdProcess.getId(), ucdProcess.getName()))
-                .collect(Collectors.toSet());
-    }
-
-    @Deprecated
     public Set<KeyValueModel> getQmsStandards() {
         LOGGER.debug("Getting all qms standards from the database (not cached).");
 
@@ -280,91 +245,12 @@ public class DimensionalDataManager {
         return results;
     }
 
-    @Deprecated
-    public SurveillanceRequirementOptions getSurveillanceRequirementOptions() {
-        LOGGER.debug("Getting all surveillance requirements from the database (not cached).");
-
-        SurveillanceRequirementOptions result = new SurveillanceRequirementOptions();
-
-        List<CertificationCriterionDTO> criteria2014 = certificationCriterionDao.findByCertificationEditionYear("2014");
-        for (CertificationCriterionDTO crit : criteria2014) {
-            result.getCriteriaOptions2014().add(new CertificationCriterion(crit));
-        }
-        List<CertificationCriterionDTO> criteria2015 = certificationCriterionDao.findByCertificationEditionYear("2015");
-        for (CertificationCriterionDTO crit : criteria2015) {
-            result.getCriteriaOptions2015().add(new CertificationCriterion(crit));
-        }
-
-        result.getTransparencyOptions().add(new Removable<String>(RequirementTypeEnum.K1.getName(), RequirementTypeEnum.K1.getRemoved()));
-        result.getTransparencyOptions().add(new Removable<String>(RequirementTypeEnum.K2.getName(), RequirementTypeEnum.K2.getRemoved()));
-
-        result.getRealWorldTestingOptions().add(new Removable<String>(RequirementTypeEnum.ANNUAL_RWT_PLAN.getName(), RequirementTypeEnum.ANNUAL_RWT_PLAN.getRemoved()));
-        result.getRealWorldTestingOptions().add(new Removable<String>(RequirementTypeEnum.ANNUAL_RWT_RESULTS.getName(), RequirementTypeEnum.ANNUAL_RWT_RESULTS.getRemoved()));
-
-        result.getAttestationsSubmissionOptions().add(new Removable<String>(RequirementTypeEnum.SEMIANNUAL_ATTESTATIONS_SUBMISSION.getName(), RequirementTypeEnum.SEMIANNUAL_ATTESTATIONS_SUBMISSION.getRemoved()));
-
-        return result;
-    }
-
     @Transactional
     public Set<RequirementType> getRequirementTypes() {
         LOGGER.debug("Getting all requirement detail types from the database (not cached).");
 
         return survDao.getRequirementTypes().stream()
                 .collect(Collectors.toSet());
-    }
-
-    @Deprecated
-    public Set<CertificationCriterion> getNonconformityTypeOptions() {
-        LOGGER.debug("Getting all nonconformity types from the database (not cached).");
-
-        Set<CertificationCriterion> result = new HashSet<CertificationCriterion>();
-
-        List<CertificationCriterionDTO> criteria2014 = certificationCriterionDao.findByCertificationEditionYear("2014");
-        for (CertificationCriterionDTO crit : criteria2014) {
-            result.add(new CertificationCriterion(crit));
-        }
-        List<CertificationCriterionDTO> criteria2015 = certificationCriterionDao.findByCertificationEditionYear("2015");
-        for (CertificationCriterionDTO crit : criteria2015) {
-            result.add(new CertificationCriterion(crit));
-        }
-
-        CertificationCriterion k1Type = new CertificationCriterion();
-        k1Type.setNumber(NonconformityTypeEnum.K1.getName());
-        k1Type.setRemoved(NonconformityTypeEnum.K1.getRemoved());
-        result.add(k1Type);
-
-        CertificationCriterion k2Type = new CertificationCriterion();
-        k2Type.setNumber(NonconformityTypeEnum.K2.getName());
-        k2Type.setRemoved(NonconformityTypeEnum.K2.getRemoved());
-        result.add(k2Type);
-
-        CertificationCriterion lType = new CertificationCriterion();
-        lType.setNumber(NonconformityTypeEnum.L.getName());
-        lType.setRemoved(NonconformityTypeEnum.L.getRemoved());
-        result.add(lType);
-
-        CertificationCriterion rwtPlanType = new CertificationCriterion();
-        rwtPlanType.setNumber(NonconformityTypeEnum.ANNUAL_RWT_PLAN.getName());
-        rwtPlanType.setRemoved(NonconformityTypeEnum.ANNUAL_RWT_PLAN.getRemoved());
-        result.add(rwtPlanType);
-
-        CertificationCriterion rwtResultsType = new CertificationCriterion();
-        rwtResultsType.setNumber(NonconformityTypeEnum.ANNUAL_RWT_RESULTS.getName());
-        rwtResultsType.setRemoved(NonconformityTypeEnum.ANNUAL_RWT_RESULTS.getRemoved());
-        result.add(rwtResultsType);
-
-        CertificationCriterion otherType = new CertificationCriterion();
-        otherType.setNumber(NonconformityTypeEnum.OTHER.getName());
-        otherType.setRemoved(NonconformityTypeEnum.OTHER.getRemoved());
-        result.add(otherType);
-
-        CertificationCriterion attestationsSubmissionType = new CertificationCriterion();
-        attestationsSubmissionType.setNumber(NonconformityTypeEnum.SEMIANNUAL_ATTESTATIONS_SUBMISSION.getName());
-        attestationsSubmissionType.setRemoved(NonconformityTypeEnum.SEMIANNUAL_ATTESTATIONS_SUBMISSION.getRemoved());
-        result.add(attestationsSubmissionType);
-
-        return result;
     }
 
     public Set<NonconformityType> getNonconformityTypes() {

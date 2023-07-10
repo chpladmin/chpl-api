@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.complaint.ComplaintManager;
-import gov.healthit.chpl.complaint.domain.Complaint;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -38,9 +36,7 @@ import gov.healthit.chpl.surveillance.report.dto.SurveillanceOutcomeDTO;
 import gov.healthit.chpl.surveillance.report.dto.SurveillanceProcessTypeDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
-import gov.healthit.chpl.web.controller.results.ComplaintResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -54,15 +50,12 @@ public class SurveillanceReportController {
 
     private ErrorMessageUtil msgUtil;
     private SurveillanceReportManager reportManager;
-    private ComplaintManager complaintManager;
 
     @Autowired
     public SurveillanceReportController(ErrorMessageUtil msgUtil,
-            SurveillanceReportManager reportManager,
-            ComplaintManager complaintManager) {
+            SurveillanceReportManager reportManager) {
         this.msgUtil = msgUtil;
         this.reportManager = reportManager;
-        this.complaintManager = complaintManager;
     }
 
     @Operation(summary = "Get all annual surveillance reports this user has access to.",
@@ -248,29 +241,6 @@ public class SurveillanceReportController {
             }
         }
         return relevantListings;
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/surveillance-report/quarterly/{quarterlyReportId}/complaints",
-            removalDate = "2023-06-01",
-            message = "This endpoint is deprecated and will be removed. Please use /complaints/search to get the complaints open during  certain date range.")
-    @Operation(summary = "Get complaints that are relevant to a specific quarterly report. "
-            + "These are complaints that were open during the quarter.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB and administrative "
-                    + "authority on the ACB associated with the report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/quarterly/{quarterlyReportId}/complaints",
-            method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody ComplaintResults getRelevantComplaints(@PathVariable Long quarterlyReportId)
-            throws AccessDeniedException, EntityRetrievalException {
-        QuarterlyReportDTO reportDto = reportManager.getQuarterlyReport(quarterlyReportId);
-        List<Complaint> relevantComplaints = complaintManager.getAllComplaintsBetweenDates(reportDto.getAcb(), reportDto.getStartDate(), reportDto.getEndDate());
-        ComplaintResults results = new ComplaintResults();
-        results.getResults().addAll(relevantComplaints);
-        return results;
     }
 
     @Operation(summary = "Create a new quarterly surveillance report.",

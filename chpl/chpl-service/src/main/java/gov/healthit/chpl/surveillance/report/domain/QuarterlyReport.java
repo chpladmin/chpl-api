@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 import gov.healthit.chpl.util.LocalDateDeserializer;
@@ -27,17 +26,6 @@ public class QuarterlyReport implements Serializable {
     private CertificationBody acb;
     private Integer year;
     private String quarter;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. Please replace usage of 'startDate' with 'startDay'.",
-        removalDate = "2023-06-01")
-    private Long startDate;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. Please replace usage of 'endDate' with 'endDay'.",
-        removalDate = "2023-06-01")
-    private Long endDate;
-
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate startDay;
@@ -64,8 +52,6 @@ public class QuarterlyReport implements Serializable {
         if (dto.getAcb() != null) {
             this.acb = dto.getAcb();
         }
-        this.startDate = dto.getStartDateTime().getTime();
-        this.endDate = dto.getEndDateTime().getTime();
         this.startDay = dto.getStartDate();
         this.endDay = dto.getEndDate();
     }
