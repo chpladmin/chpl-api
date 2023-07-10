@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -59,18 +60,26 @@ public class CertificationResultTestTool implements Serializable {
     private Long certificationResultId;
 
     @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found testTool.testTool.id",
+            removalDate = "2024-01-01")
     @XmlTransient
     private Long testToolId;
 
     @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found testTool.testTool.value",
+            removalDate = "2024-01-01")
     @XmlTransient
     private String testToolName;
 
     @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found testTool.version",
+            removalDate = "2024-01-01")
     @XmlTransient
     private String testToolVersion;
 
     @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found testTool.testTool.retired",
+            removalDate = "2024-01-01")
     @XmlTransient
     private Boolean retired;
 
@@ -121,53 +130,45 @@ public class CertificationResultTestTool implements Serializable {
         this.version = version;
     }
 
-    //TODO OCD-4242
     @Deprecated
     public Long getTestToolId() {
         return testToolId;
     }
 
-    //TODO OCD-4242
     @Deprecated
     public void setTestToolId(final Long testToolId) {
         this.testToolId = testToolId;
     }
 
-    //TODO OCD-4242
     @Deprecated
     public String getTestToolName() {
         return testToolName;
     }
 
-    //TODO OCD-4242
     @Deprecated
     public void setTestToolName(final String testToolName) {
         this.testToolName = testToolName;
     }
 
-    //TODO OCD-4242
     @Deprecated
     public String getTestToolVersion() {
         return testToolVersion;
     }
 
-    //TODO OCD-4242
     @Deprecated
     public void setTestToolVersion(final String testToolVersion) {
         this.testToolVersion = testToolVersion;
     }
 
-    //TODO OCD-4242
     @Deprecated
     public boolean isRetired() {
         return testTool.isRetired();
     }
 
-    //TODO OCD-4242
-    //@Deprecated
-    //public void setRetired(final boolean retired) {
-    //    this.retired = retired;
-    //}
+    @Deprecated
+    public void setRetired(final boolean retired) {
+        this.retired = retired;
+    }
 
     public Long getCertificationResultId() {
         return certificationResultId;

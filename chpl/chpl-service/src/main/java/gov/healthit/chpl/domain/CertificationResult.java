@@ -183,6 +183,9 @@ public class CertificationResult implements Serializable {
     @XmlTransient
     private List<OptionalStandard> allowedOptionalStandards;
 
+    @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found via a GET request to the endpoint /test-tools.",
+        removalDate = "2024-01-01")
     @XmlTransient
     private List<TestTool> allowedTestTools;
 
