@@ -80,6 +80,8 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
         return chplHtmlEmailBuilder.initialize()
                 .heading(env.getProperty("serviceBaseUrlListUptime.report.subject"))
                 .paragraph("", env.getProperty("serviceBaseUrlListUptime.report.paragraph1.body"))
+                .paragraph("", env.getProperty("serviceBaseUrlListUptime.report.paragraph2.body"))
+                .paragraph("", env.getProperty("serviceBaseUrlListUptime.report.paragraph3.body"))
                 .footer(true)
                 .build();
     }
