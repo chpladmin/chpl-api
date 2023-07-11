@@ -20,7 +20,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.WhereJoinTable;
 
-import gov.healthit.chpl.criteriaattribute.RuleEntity;
+import gov.healthit.chpl.criteriaattribute.rule.RuleEntity;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

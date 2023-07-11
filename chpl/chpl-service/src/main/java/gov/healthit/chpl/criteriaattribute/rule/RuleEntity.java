@@ -1,4 +1,4 @@
-package gov.healthit.chpl.criteriaattribute;
+package gov.healthit.chpl.criteriaattribute.rule;
 
 import java.util.Date;
 

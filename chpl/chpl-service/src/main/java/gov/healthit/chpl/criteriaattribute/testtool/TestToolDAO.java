@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttribute;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttributeCriteriaMap;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttributeDAO;
-import gov.healthit.chpl.criteriaattribute.RuleDAO;
+import gov.healthit.chpl.criteriaattribute.rule.RuleDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationCriterion;
