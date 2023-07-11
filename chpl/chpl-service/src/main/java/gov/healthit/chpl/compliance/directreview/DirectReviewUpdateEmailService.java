@@ -18,6 +18,7 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.util.Util;
 
@@ -125,7 +126,7 @@ public class DirectReviewUpdateEmailService {
                 .paragraph(null, formatDeveloperActionSummary(originalDevelopers, changedDevelopers, activityContext))
                 .paragraph(null, developerList)
                 .paragraph(null, chplProductNumbersChangedHtml)
-                .footer(false)
+                .footer(AdminFooter.class)
                 .build();
 
         chplEmailFactory.emailBuilder().recipients(recipients)
@@ -162,7 +163,7 @@ public class DirectReviewUpdateEmailService {
                 .paragraph(null, formatDeveloperActionSummary(originalDevelopers, changedDevelopers, activityContext))
                 .paragraph(null, "Any direct reviews related to the original developers may need updated.")
                 .paragraph(null, chplProductNumbersChangedHtml)
-                .footer(false)
+                .footer(AdminFooter.class)
                 .build();
 
         chplEmailFactory.emailBuilder().recipients(recipients)

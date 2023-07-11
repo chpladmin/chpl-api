@@ -34,6 +34,7 @@ import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -317,7 +318,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                     .heading(emailBodyTitle)
                     .paragraph(null, emailBodyNoContent)
                     .paragraph(null, jobAcbHtml)
-                    .footer(false)
+                    .footer(AdminFooter.class)
                     .build();
         } else {
             int brokenAcbUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.ACB);
@@ -358,7 +359,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                     .heading(emailBodyTitle)
                     .paragraph(null, brokenUrlSummaryHtml)
                     .paragraph(null, jobAcbHtml)
-                    .footer(false)
+                    .footer(AdminFooter.class)
                     .build();
         }
 

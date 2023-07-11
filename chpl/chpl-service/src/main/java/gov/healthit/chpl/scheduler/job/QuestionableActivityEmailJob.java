@@ -33,6 +33,7 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityDAO;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
@@ -162,14 +163,14 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             return chplHtmlEmailBuilder.initialize()
                     .heading(emailTitle)
                     .paragraph(null, formattedEmailBody)
-                    .footer(false)
+                    .footer(AdminFooter.class)
                     .build();
         } else {
             String formattedEmailBody = String.format(emailBodyEmptyData, Util.getDateFormatter().format(start.getTime()), Util.getDateFormatter().format(end.getTime()));
             return chplHtmlEmailBuilder.initialize()
                     .heading(emailTitle)
                     .paragraph(null, formattedEmailBody)
-                    .footer(false)
+                    .footer(AdminFooter.class)
                     .build();
         }
     }

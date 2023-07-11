@@ -24,6 +24,7 @@ import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.manager.SchedulerManager;
 import lombok.extern.log4j.Log4j2;
 
@@ -113,7 +114,7 @@ public class DeveloperAttestationCheckInReportJob implements Job {
                                             reportSummary.getPendingDeveloperActionCount(),
                                             reportSummary.getNoSubmissionCount()))
                                     .paragraph("", reportSummary.doCountsEqualDeveloperCount() ? "" : emailBody3)
-                                    .footer(true)
+                                    .footer(AdminFooter.class)
                                     .build())
                             .sendEmail();
                     LOGGER.info("Report sent to: {}", context.getMergedJobDataMap().getString("email"));

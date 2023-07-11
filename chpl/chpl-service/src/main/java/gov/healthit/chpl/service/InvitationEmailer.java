@@ -11,6 +11,7 @@ import gov.healthit.chpl.domain.auth.UserInvitation;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import lombok.extern.log4j.Log4j2;
 
@@ -75,7 +76,7 @@ public class InvitationEmailer {
                 .paragraph(null, String.format(accountInvitationLink, chplUrlBegin, invitation.getInvitationToken()))
                 .paragraph(null, accountInvitationParagraph2)
                 .paragraph(null, chplEmailValediction)
-                .footer(true)
+                .footer(PublicFooter.class)
                 .build();
         String[] toEmails = {
                 invitation.getEmailAddress()
@@ -99,7 +100,7 @@ public class InvitationEmailer {
                 .paragraph(String.format(chplEmailGreeting, newUser.getFullName()), accountConfirmationBody)
                 .paragraph(null, String.format(accountConfirmationLink, chplUrlBegin, invitation.getConfirmationToken()))
                 .paragraph(null, chplEmailValediction)
-                .footer(true)
+                .footer(PublicFooter.class)
                 .build();
 
         String[] toEmails = {

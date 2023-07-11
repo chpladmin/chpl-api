@@ -25,6 +25,7 @@ import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -153,7 +154,7 @@ public class DeprecatedApiUsageEmailJob implements Job {
                 .paragraph(deprecatedResponseFieldParagraph, null, "h3")
                 .customHtml(deprecatedFieldHtml)
                 .paragraph("", String.format(chplEmailValediction, publicFeedbackUrl))
-                .footer(true)
+                .footer(PublicFooter.class)
                 .build();
         LOGGER.debug("HTML Email being sent to " + apiKey.getEmail() + ": \n" + htmlMessage);
         return htmlMessage;

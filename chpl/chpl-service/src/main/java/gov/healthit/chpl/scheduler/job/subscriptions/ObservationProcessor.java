@@ -36,7 +36,7 @@ public class ObservationProcessor {
 
     private String notificationEmailSubject;
     private String notificationEmailIntroduction;
-    private String notificationEmailManageFooter;
+    private String manageSubscriptionsParagraph;
     private ObservationTypeFormatterFactory observationTypeFormatterFactory;
     private ObservationSubjectFormatterFactory observationSubjectFormatterFactory;
     private SubscriptionLookupUtil lookupUtil;
@@ -47,8 +47,7 @@ public class ObservationProcessor {
             ChplEmailFactory chplEmailFactory, ChplHtmlEmailBuilder htmlEmailBuilder,
             @Value("${observation.notification.subject}") String notificationEmailSubject,
             @Value("${observation.notification.introduction}") String notificationEmailIntroduction,
-            @Value("${observation.notification.manage}") String notificationEmailManage,
-            @Value("${observation.notification.unsubscribe}") String notificationEmailUnsubscribe,
+            @Value("${subscriptions.manage}") String manageSubscriptionsParagraph,
             ObservationTypeFormatterFactory observationTypeFormatterFactory,
             ObservationSubjectFormatterFactory observationSubjectFormatterFactory,
             SubscriptionLookupUtil lookupUtil) {
@@ -57,7 +56,7 @@ public class ObservationProcessor {
         this.htmlEmailBuilder = htmlEmailBuilder;
         this.notificationEmailSubject = notificationEmailSubject;
         this.notificationEmailIntroduction = notificationEmailIntroduction;
-        this.notificationEmailManageFooter = notificationEmailManage + "<br />" + notificationEmailUnsubscribe;
+        this.manageSubscriptionsParagraph = manageSubscriptionsParagraph;
         this.observationTypeFormatterFactory = observationTypeFormatterFactory;
         this.observationSubjectFormatterFactory = observationSubjectFormatterFactory;
         this.lookupUtil = lookupUtil;
@@ -85,10 +84,8 @@ public class ObservationProcessor {
             .heading(notificationEmailSubject)
             .paragraph(null, notificationEmailIntroduction)
             .customHtml(getObservationsHtml(observations))
-            .paragraph(null, String.format(notificationEmailManageFooter,
-                    lookupUtil.getManageUrl(subscriber),
-                    lookupUtil.getUnsubscribeUrl(subscriber)))
-            .footer(true)
+            .paragraph(null, String.format(manageSubscriptionsParagraph, lookupUtil.getManageUrl(subscriber)))
+            .footerSubscription(subscriber)
             .build();
     }
 
