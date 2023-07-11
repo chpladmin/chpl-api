@@ -93,7 +93,7 @@ public class CriteriaAttribute implements Serializable {
     public Boolean isRetired() {
         LocalDate start = startDay != null ? startDay : LocalDate.MIN;
         LocalDate end = endDay != null ? endDay : LocalDate.MAX;
-        return LocalDate.now().compareTo(start) >= 0 && LocalDate.now().compareTo(end) <= 0;
+        return start.isAfter(LocalDate.now()) || end.isBefore(LocalDate.now());
     }
 
     public Long getId() {
