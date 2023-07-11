@@ -1,6 +1,5 @@
 package gov.healthit.chpl.changerequest.domain.service;
 
-import java.text.DateFormat;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -204,7 +203,6 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     }
 
     private String createPendingDeveloperActionHtmlMessage(ChangeRequest cr) {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Demographics Change Request Pending Developer Action")
                 .paragraph("", String.format(pendingDeveloperActionEmailBody,
@@ -218,7 +216,6 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
 
     @Override
     protected void sendRejectedEmail(ChangeRequest cr) throws EmailNotSentException {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         chplEmailFactory.emailBuilder()
                 .recipients(getUsersForDeveloper(cr.getDeveloper().getId()).stream()
                         .map(user -> user.getEmail())
@@ -229,7 +226,6 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
     }
 
     private String createRejectedHtmlMessage(ChangeRequest cr) {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Demographics Change Request Rejected")
                 .paragraph("", String.format(rejectedEmailBody,

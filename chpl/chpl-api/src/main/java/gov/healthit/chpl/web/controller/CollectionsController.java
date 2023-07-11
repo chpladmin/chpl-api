@@ -22,8 +22,6 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
-import gov.healthit.chpl.domain.DecertifiedDeveloper;
-import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.search.CertifiedProductSearchManager;
 import gov.healthit.chpl.search.domain.BasicSearchResponse;
 import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
@@ -45,14 +43,12 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class CollectionsController {
     private CertifiedProductSearchManager certifiedProductSearchManager;
-    private DeveloperManager developerManager;
     private DirectReviewSearchService drService;
 
     @Autowired
     public CollectionsController(CertifiedProductSearchManager certifiedProductSearchManager,
-            DeveloperManager developerManager, DirectReviewSearchService drService) {
+            DirectReviewSearchService drService) {
         this.certifiedProductSearchManager = certifiedProductSearchManager;
-        this.developerManager = developerManager;
         this.drService = drService;
     }
 
@@ -164,23 +160,6 @@ public class CollectionsController {
         }
 
         return result;
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/collections/decertified-developers",
-        removalDate = "2023-03-15",
-        message = "This endpoint is deprecated and will be removed in a future release. "
-                + "Please GET /developers/search to access this data.")
-    @Operation(summary = "Get a list of all banned developers.",
-            description = "",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/decertified-developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody List<DecertifiedDeveloper> getDecertifiedDeveloperCollection() {
-        List<DecertifiedDeveloper> developerResults = developerManager.getDecertifiedDeveloperCollection();
-        return developerResults;
     }
 
     private List<Field> getAllInheritedFields(final Class clazz, final List<Field> fields) {

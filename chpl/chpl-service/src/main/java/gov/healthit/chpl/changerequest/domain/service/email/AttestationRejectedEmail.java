@@ -1,6 +1,5 @@
 package gov.healthit.chpl.changerequest.domain.service.email;
 
-import java.text.DateFormat;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.stream.Collectors;
@@ -49,12 +48,12 @@ public class AttestationRejectedEmail extends ChangeRequestEmail {
     }
 
     private String createRejectedHtmlMessage(ChangeRequest cr) {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
         return chplHtmlEmailBuilder.initialize()
                 .heading("Developer Attestations Rejected")
                 .paragraph("", String.format(emailBody,
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
-                        getApprovalBody(cr), cr.getCurrentStatus().getComment()))
+                        getApprovalBody(cr),
+                        cr.getCurrentStatus().getComment()))
                 .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
                 .footer(true)
                 .build();
