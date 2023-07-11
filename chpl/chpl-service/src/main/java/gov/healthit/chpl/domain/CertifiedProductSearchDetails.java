@@ -98,12 +98,6 @@ public class CertifiedProductSearchDetails implements Serializable {
     @XmlElement(required = false, nillable = true)
     private String sedIntendedUserDescription;
 
-    @XmlTransient
-    @Deprecated
-    @DeprecatedResponseField(removalDate = "2023-05-01",
-            message = "This field is deprecated and will be removed from the response data in a future release. Please use sedTestingEndDay")
-    private Date sedTestingEndDate;
-
     /**
      * Date all SED testing was concluded for the Health IT. The format for the date is YYYMMDD
      */
@@ -749,16 +743,6 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setSedIntendedUserDescription(String sedIntendedUserDescription) {
         this.sedIntendedUserDescription = sedIntendedUserDescription;
-    }
-
-    @Deprecated
-    public Date getSedTestingEndDate() {
-        return sedTestingEndDate;
-    }
-
-    @Deprecated
-    public void setSedTestingEndDate(Date sedTestingEndDate) {
-        this.sedTestingEndDate = sedTestingEndDate;
     }
 
     public LocalDate getSedTestingEndDay() {
