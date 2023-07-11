@@ -47,7 +47,8 @@ public class ObservationProcessor {
             ChplEmailFactory chplEmailFactory, ChplHtmlEmailBuilder htmlEmailBuilder,
             @Value("${observation.notification.subject}") String notificationEmailSubject,
             @Value("${observation.notification.introduction}") String notificationEmailIntroduction,
-            @Value("${observation.notification.unsubscribe}") String notificationEmailManageFooter,
+            @Value("${observation.notification.manage}") String notificationEmailManage,
+            @Value("${observation.notification.unsubscribe}") String notificationEmailUnsubscribe,
             ObservationTypeFormatterFactory observationTypeFormatterFactory,
             ObservationSubjectFormatterFactory observationSubjectFormatterFactory,
             SubscriptionLookupUtil lookupUtil) {
@@ -56,7 +57,7 @@ public class ObservationProcessor {
         this.htmlEmailBuilder = htmlEmailBuilder;
         this.notificationEmailSubject = notificationEmailSubject;
         this.notificationEmailIntroduction = notificationEmailIntroduction;
-        this.notificationEmailManageFooter = notificationEmailManageFooter;
+        this.notificationEmailManageFooter = notificationEmailManage + "<br />" + notificationEmailUnsubscribe;
         this.observationTypeFormatterFactory = observationTypeFormatterFactory;
         this.observationSubjectFormatterFactory = observationSubjectFormatterFactory;
         this.lookupUtil = lookupUtil;
@@ -84,7 +85,9 @@ public class ObservationProcessor {
             .heading(notificationEmailSubject)
             .paragraph(null, notificationEmailIntroduction)
             .customHtml(getObservationsHtml(observations))
-            .paragraph(null, String.format(notificationEmailManageFooter, lookupUtil.getUnsubscribeUrl(subscriber)))
+            .paragraph(null, String.format(notificationEmailManageFooter,
+                    lookupUtil.getManageUrl(subscriber),
+                    lookupUtil.getUnsubscribeUrl(subscriber)))
             .footer(true)
             .build();
     }

@@ -42,7 +42,7 @@ public class SubscriberMessagingService {
         String htmlMessage = emailBuilder.initialize()
                 .heading(pendingSubscriberSubject)
                 .paragraph(null, String.format(pendingSubscriberBody1, lookupUtil.getConfirmationUrl(subscriber)))
-                .paragraph(null, String.format(pendingSubscriberBody2, lookupUtil.getUnsubscribeUrl(subscriber)))
+                .paragraph(null, String.format(pendingSubscriberBody2, lookupUtil.getManageUrl(subscriber)))
                 .footer(true)
                 .build();
 
