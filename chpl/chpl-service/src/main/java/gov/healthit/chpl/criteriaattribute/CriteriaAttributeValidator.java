@@ -1,6 +1,5 @@
 package gov.healthit.chpl.criteriaattribute;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -61,13 +60,13 @@ public class CriteriaAttributeValidator {
 
         if (CollectionUtils.isEmpty(context.getCriteriaAttribe().getCriteria())) {
             messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.noCriteria"));
+        } else {
+            if (isCriteriaAttributeDuplicateOnEdit(context)) {
+                messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.duplicate", context.getName()));
+            }
+            messages.addAll(validateCriteriaRemovedFromCriteriaAttribute(context));
         }
 
-        if (isCriteriaAttributeDuplicateOnEdit(context)) {
-            messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.duplicate", context.getName()));
-        }
-
-        messages.addAll(validateCriteriaRemovedFromCriteriaAttribute(context));
 
         if (context.getRuleRequired()
                 && context.getCriteriaAttribe().getRule() == null) {
@@ -172,7 +171,7 @@ public class CriteriaAttributeValidator {
                     }
 
                     if (!CollectionUtils.isEmpty(listings)) {
-                        messages.add(errorMessageUtil.getMessage("testTool.edit.deletedCriteria.listingsExist",
+                        messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.deletedCriteria.listingsExist",
                                 CertificationCriterionService.formatCriteriaNumber(crit),
                                 listings.size(),
                                 listings.size() > 1 ? "s" : "",
@@ -213,10 +212,6 @@ public class CriteriaAttributeValidator {
                 .isPresent();
     }
 
-    private List<CertificationCriterion> getCriteriaAddedToCriteriaAttribute(CriteriaAttribute updatedCriteriaAttribute, CriteriaAttribute originalCriteriaAttribute) {
-        return subtractLists(updatedCriteriaAttribute.getCriteria(), originalCriteriaAttribute.getCriteria());
-    }
-
     private List<CertificationCriterion> getCriteriaRemovedFromCriteriaAttribute(CriteriaAttribute updatedCriteriaAttribute, CriteriaAttribute originalCriteriaAttribute) {
         return  subtractLists(originalCriteriaAttribute.getCriteria(), updatedCriteriaAttribute.getCriteria());
     }
@@ -228,13 +223,5 @@ public class CriteriaAttributeValidator {
         return listA.stream()
                 .filter(notInListB)
                 .collect(Collectors.toList());
-    }
-
-    private Boolean validate(String stringToValidate, Boolean isRequired) {
-        return isRequired && !StringUtils.isEmpty(stringToValidate);
-    }
-
-    private Boolean validate(LocalDate dateToValidate, Boolean isRequired) {
-        return isRequired && dateToValidate != null;
     }
 }
