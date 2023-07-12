@@ -14,7 +14,7 @@ import gov.healthit.chpl.exception.ValidationException;
 @Component
 public class CriteriaAttributeService {
 
-    public void update(CriteriaAttributeSaveContext context) throws EntityRetrievalException{
+    public void update(CriteriaAttributeSaveContext context) throws EntityRetrievalException {
         CriteriaAttribute originalCriteriaAttribute = context.getCriteriaAttributeDAO().getCriteriaAttributeById(context.getCriteriaAttribute().getId());
 
         context.getCriteriaAttributeDAO().update(context.getCriteriaAttribute());
