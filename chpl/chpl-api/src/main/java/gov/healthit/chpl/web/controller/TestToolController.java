@@ -33,7 +33,7 @@ public class TestToolController {
     }
 
     @Operation(summary = "Retrieve all current Test Tools. ",
-            description = "Returns all of the Test Tools that are currenty in the CHPL.",
+            description = "Returns all of the Test Tools that are currently in the CHPL.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
