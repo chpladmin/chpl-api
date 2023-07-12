@@ -78,10 +78,6 @@ public class TestToolEntity implements Serializable {
     @JoinColumn(name = "rule_id")
     private RuleEntity rule;
 
-    //@Basic(optional = true)
-    //@OneToMany(targetEntity = CertificationResultTestToolEntity.class, fetch = FetchType.LAZY)
-    //private List<CertificationResultTestTool> certificationResultTestTool;
-
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
     private Date creationDate;

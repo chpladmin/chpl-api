@@ -36,15 +36,6 @@ public class TestToolManager {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-//    public List<TestToolCriteriaMap> getAllTestToolCriteriaMaps() throws EntityRetrievalException {
-//        return svapDao.getAllSvapCriteriaMap();
-//    }
-
-//    @Transactional
-//    public List<CertificationCriterion> getCertificationCriteriaForTestTool() {
-//        return certificationCriterionAttributeDAO.getCriteriaForSvap();
-//    }
-
     @Transactional
     public List<TestTool> getAll() {
         return testToolDAO.getAll();

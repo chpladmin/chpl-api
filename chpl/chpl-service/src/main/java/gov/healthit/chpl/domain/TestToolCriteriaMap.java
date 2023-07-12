@@ -15,14 +15,4 @@ public class TestToolCriteriaMap {
     private Long id;
     private CertificationCriterion criterion;
     private TestTool testTool;
-
-//    public TestToolCriteriaMap(TestToolCriteriaMapEntity entity) {
-//        this.id = entity.getId();
-//        if (entity.getTestTool() != null) {
-//            this.testTool = new TestTool(entity.getTestTool());
-//        }
-//        if (entity.getCriteria() != null) {
-//            this.criterion = new CertificationCriterion(new CertificationCriterionDTO(entity.getCriteria()));
-//        }
-//    }
 }

@@ -9,6 +9,4 @@ public class CriteriaAttributeSaveContext {
     private CriteriaAttributeDAO criteriaAttributeDAO;
     private CriteriaAttribute criteriaAttribute;
     private String name;
-
-
 }
