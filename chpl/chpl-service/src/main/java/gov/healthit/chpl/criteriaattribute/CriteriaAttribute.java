@@ -92,9 +92,8 @@ public class CriteriaAttribute implements Serializable {
     @JsonIgnore
     @XmlTransient
     public Boolean isRetired() {
-        LocalDate start = startDay != null ? startDay : LocalDate.MIN;
         LocalDate end = endDay != null ? endDay : LocalDate.MAX;
-        return start.isAfter(LocalDate.now()) || end.isBefore(LocalDate.now());
+        return end.isBefore(LocalDate.now());
     }
 
     public Long getId() {
