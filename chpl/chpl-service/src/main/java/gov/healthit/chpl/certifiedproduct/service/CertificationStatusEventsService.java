@@ -12,8 +12,6 @@ import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.comparator.CertificationStatusEventComparator;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.permissions.ResourcePermissions;
-import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -21,21 +19,20 @@ import lombok.extern.log4j.Log4j2;
 public class CertificationStatusEventsService {
     private CertificationStatusEventDAO certStatusEventDao;
     private CertificationStatusDAO certStatusDao;
-    private ResourcePermissions resourcePermissions;
 
     private CertificationStatusEventComparator certStatusEventComparator;
 
     @Autowired
-    public CertificationStatusEventsService(CertificationStatusEventDAO certStatusEventDao, CertificationStatusDAO certStatusDao, ResourcePermissions resourcePermissions) {
+    public CertificationStatusEventsService(CertificationStatusEventDAO certStatusEventDao,
+            CertificationStatusDAO certStatusDao) {
         this.certStatusEventDao = certStatusEventDao;
         this.certStatusDao = certStatusDao;
-        this.resourcePermissions = resourcePermissions;
         this.certStatusEventComparator = new CertificationStatusEventComparator();
     }
 
     public List<CertificationStatusEvent> getCertificationStatusEvents(Long certifiedProductId) throws EntityRetrievalException {
         return certStatusEventDao.findByCertifiedProductId(certifiedProductId).stream()
-                .map(cse -> createSecureCertificationStatusEvent(cse))
+                .map(cse -> createCertificationStatusEvent(cse))
                 .sorted(certStatusEventComparator)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
@@ -46,30 +43,25 @@ public class CertificationStatusEventsService {
 
     public CertificationStatusEvent getCurrentCertificationStatusEvent(Long certifiedProductId) throws EntityRetrievalException {
         return certStatusEventDao.findByCertifiedProductId(certifiedProductId).stream()
-                .map(cse -> createSecureCertificationStatusEvent(cse))
+                .map(cse -> createCertificationStatusEvent(cse))
                 .sorted((event1, event2) -> Long.compare(event1.getEventDate(), event2.getEventDate()))
                 .reduce((a, b) -> b) // get the last item in the list
                 .orElse(null);
     }
 
-    private CertificationStatusEvent createSecureCertificationStatusEvent(CertificationStatusEvent certStatusEvent) {
+    private CertificationStatusEvent createCertificationStatusEvent(CertificationStatusEvent certStatusEvent) {
         try {
             return CertificationStatusEvent.builder()
                     .id(certStatusEvent.getId())
                     .eventDate(certStatusEvent.getEventDate())
                     .lastModifiedUser(certStatusEvent.getLastModifiedUser())
                     .lastModifiedDate(certStatusEvent.getLastModifiedDate())
-                    .reason(canUserViewReason() ? certStatusEvent.getReason() : null)
+                    .reason(certStatusEvent.getReason())
                     .status(certStatusDao.getById(certStatusEvent.getStatus().getId()))
                     .build();
         } catch (EntityRetrievalException e) {
             LOGGER.error("There was an error retrieving CertificationStatus[" + certStatusEvent.getStatus().getId() + "].");
             return null;
         }
-    }
-
-    private Boolean canUserViewReason() {
-        return AuthUtil.getCurrentUser() != null
-                && (resourcePermissions.isUserRoleAcbAdmin() || resourcePermissions.isUserRoleAdmin());
     }
 }
