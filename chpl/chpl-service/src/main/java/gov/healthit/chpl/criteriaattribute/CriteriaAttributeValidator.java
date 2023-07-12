@@ -177,6 +177,7 @@ public class CriteriaAttributeValidator {
 
                     if (!CollectionUtils.isEmpty(listings)) {
                         String message = errorMessageUtil.getMessage("criteriaAttribute.edit.deletedCriteria.listingsExist",
+                                context.getName(),
                                 CertificationCriterionService.formatCriteriaNumber(crit),
                                 listings.size(),
                                 listings.size() > 1 ? "s" : "");
