@@ -148,8 +148,10 @@ public class CriteriaAttributeValidator {
 
         if (!CollectionUtils.isEmpty(listings)) {
             String message = errorMessageUtil.getMessage("criteriaAttribute.delete.listingsExist",
+                    context.getName(),
                     listings.size(),
-                    listings.size() > 1 ? "s" : "");
+                    listings.size() > 1 ? "s" : "",
+                    "");
             if (listings.size() < MAX_LISTINGS_IN_DELETE_ERROR_MESSAGE) {
                 message = message + " "
                         + listings.stream()
@@ -180,7 +182,8 @@ public class CriteriaAttributeValidator {
                                 context.getName(),
                                 CertificationCriterionService.formatCriteriaNumber(crit),
                                 listings.size(),
-                                listings.size() > 1 ? "s" : "");
+                                listings.size() > 1 ? "s" : "",
+                                "");
                         if (listings.size() < MAX_LISTINGS_IN_DELETE_ERROR_MESSAGE) {
                                 message = message + " "
                                         + listings.stream()
