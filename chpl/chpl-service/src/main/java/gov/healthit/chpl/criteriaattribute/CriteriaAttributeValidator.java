@@ -22,6 +22,8 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class CriteriaAttributeValidator {
+    private static final int MAX_LISTINGS_IN_DELETE_ERROR_MESSAGE = 25;
+
     private ErrorMessageUtil errorMessageUtil;
     private RuleDAO ruleDAO;
 
@@ -146,12 +148,15 @@ public class CriteriaAttributeValidator {
 
         if (!CollectionUtils.isEmpty(listings)) {
             String message = errorMessageUtil.getMessage("criteriaAttribute.delete.listingsExist",
-                    context.getName(),
                     listings.size(),
-                    listings.size() > 1 ? "s" : "",
-                    listings.stream()
+                    listings.size() > 1 ? "s" : "");
+            if (listings.size() < MAX_LISTINGS_IN_DELETE_ERROR_MESSAGE) {
+                message = message + " "
+                        + listings.stream()
                             .map(listing -> listing.getChplProductNumber())
-                            .collect(Collectors.joining(", ")));
+                            .collect(Collectors.joining(", "));
+            }
+
             ValidationException e = new ValidationException(message);
             throw e;
         }
@@ -171,13 +176,17 @@ public class CriteriaAttributeValidator {
                     }
 
                     if (!CollectionUtils.isEmpty(listings)) {
-                        messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.deletedCriteria.listingsExist",
+                        String message = errorMessageUtil.getMessage("criteriaAttribute.edit.deletedCriteria.listingsExist",
                                 CertificationCriterionService.formatCriteriaNumber(crit),
                                 listings.size(),
-                                listings.size() > 1 ? "s" : "",
-                                listings.stream()
+                                listings.size() > 1 ? "s" : "");
+                        if (listings.size() < MAX_LISTINGS_IN_DELETE_ERROR_MESSAGE) {
+                                message = message + " "
+                                        + listings.stream()
                                         .map(listing -> listing.getChplProductNumber())
-                                        .collect(Collectors.joining(", "))));
+                                        .collect(Collectors.joining(", "));
+                        }
+                        messages.add(message);
                     }
                 });
         return messages;
