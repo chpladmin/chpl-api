@@ -52,7 +52,7 @@ public class TestToolEntity implements Serializable {
     private String value;
 
     @Basic(optional = true)
-    @Column(name = "regulation_text_citation")
+    @Column(name = "regulatory_text_citation")
     private String regulatoryTextCitation;
 
     @Basic(optional = true)
