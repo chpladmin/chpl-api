@@ -21,7 +21,6 @@ import gov.healthit.chpl.attestation.dao.AttestationDAO;
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.DecertifiedDeveloper;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
@@ -33,7 +32,6 @@ import gov.healthit.chpl.entity.developer.DeveloperStatusEntity;
 import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
-import gov.healthit.chpl.entity.listing.ListingsFromBannedDevelopersEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
@@ -433,39 +431,6 @@ public class DeveloperDAO extends BaseDAOImpl {
         return results.stream()
                 .map(result -> result.toDomain())
                 .toList();
-    }
-
-    @Deprecated
-    public List<DecertifiedDeveloper> getDecertifiedDeveloperCollection() {
-        Query query = entityManager.createQuery("FROM ListingsFromBannedDevelopersEntity ",
-                ListingsFromBannedDevelopersEntity.class);
-        @SuppressWarnings("unchecked") List<ListingsFromBannedDevelopersEntity> listingsFromBannedDevelopers = query
-                .getResultList();
-        List<DecertifiedDeveloper> decertifiedDevelopers = new ArrayList<DecertifiedDeveloper>();
-        for (ListingsFromBannedDevelopersEntity currListing : listingsFromBannedDevelopers) {
-            boolean devExists = false;
-            if (decertifiedDevelopers.size() > 0) {
-                for (DecertifiedDeveloper currDecertDev : decertifiedDevelopers) {
-                    // if developer already exists just add the acb
-                    if (currDecertDev.getDeveloperId() != null
-                            && currDecertDev.getDeveloperId().equals(currListing.getDeveloperId())) {
-                        currDecertDev.getAcbNames().add(currListing.getAcbName());
-                        devExists = true;
-                        break;
-                    }
-                }
-            }
-            if (!devExists) {
-                DecertifiedDeveloper decertDev = new DecertifiedDeveloper();
-                decertDev.setDeveloperId(currListing.getDeveloperId());
-                decertDev.setDeveloperName(currListing.getDeveloperName());
-                decertDev.getAcbNames().add(currListing.getAcbName());
-                decertDev.setDecertificationDate(currListing.getDeveloperStatusDate());
-                decertifiedDevelopers.add(decertDev);
-            }
-        }
-
-        return decertifiedDevelopers;
     }
 
     public List<Developer> getByCertificationBodyId(List<Long> certificationBodyIds) {

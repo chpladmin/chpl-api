@@ -1,6 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,6 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.results.BooleanResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -38,42 +36,6 @@ public class ApiKeyController {
 
     @Autowired
     private ApiKeyManager apiKeyManager;
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/key", httpMethod = "POST",
-        message = "This endpoint is deprecated and will be removed. Please use POST /key/register and POST /key/confirm to obtain an API Key.",
-        removalDate = "2023-05-15")
-    @Operation(summary = "Sign up for a new API key.",
-            description = "Anyone wishing to access the methods listed in this API must have an API key. This service "
-                    + " will auto-generate a key and send it to the supplied email address. It must be included "
-                    + " in subsequent API calls via either a header with the name 'API-Key' or as a URL parameter"
-                    + " named 'api_key'.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
-    public KeyRegistered register(@RequestBody ApiKeyRegistration registration) throws EntityCreationException,
-            EmailNotSentException, JsonProcessingException, EntityRetrievalException {
-
-        return create(registration);
-    }
-
-    @Deprecated
-    private KeyRegistered create(final ApiKeyRegistration registration) throws JsonProcessingException, EntityCreationException,
-            EntityRetrievalException, EmailNotSentException {
-        Date now = new Date();
-        String apiKey = gov.healthit.chpl.util.Util.md5(registration.getName() + registration.getEmail() + now.getTime());
-        ApiKey toCreate = ApiKey.builder()
-                .key(apiKey)
-                .email(registration.getEmail())
-                .name(registration.getName())
-                .unrestricted(false)
-                .build();
-
-        apiKeyManager.createKey(toCreate);
-        return new KeyRegistered(apiKey);
-    }
 
     @Operation(summary = "Sends an email validation to user requesting a new API key.",
             description = "Anyone wishing to access the methods listed in this API must have an API key. This request "
@@ -134,18 +96,6 @@ public class ApiKeyController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ApiKey> listKeys(@RequestParam(required = false, defaultValue = "false") boolean includeDeleted) {
         return apiKeyManager.findAll(includeDeleted);
-    }
-
-    private class KeyRegistered {
-        private String keyRegistered;
-
-        KeyRegistered(String keyRegistered) {
-            this.keyRegistered = keyRegistered;
-        }
-
-        public String getKeyRegistered() {
-            return keyRegistered;
-        }
     }
 
     private class KeyRevoked {
