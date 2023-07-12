@@ -22,7 +22,7 @@ public class SharedListingStoreProvider extends SharedStoreProvider<Long, Certif
     private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
-    public SharedListingStoreProvider( ResourcePermissions resourcePermissions,
+    public SharedListingStoreProvider(ResourcePermissions resourcePermissions,
             SharedStoreDAO sharedStoreDAO) {
         super(sharedStoreDAO);
         this.resourcePermissions = resourcePermissions;
