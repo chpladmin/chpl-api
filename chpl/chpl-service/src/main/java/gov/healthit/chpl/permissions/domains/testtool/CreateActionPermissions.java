@@ -8,8 +8,7 @@ import gov.healthit.chpl.permissions.domains.ActionPermissions;
 public class CreateActionPermissions extends ActionPermissions {
     @Override
     public boolean hasAccess() {
-        return  getResourcePermissions().isUserRoleAdmin()
-            || getResourcePermissions().isUserRoleOnc();
+        return  getResourcePermissions().isUserRoleAdmin();
     }
 
     @Override

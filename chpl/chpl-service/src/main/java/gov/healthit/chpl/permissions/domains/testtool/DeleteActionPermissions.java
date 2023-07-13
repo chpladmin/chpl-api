@@ -9,8 +9,7 @@ public class DeleteActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {
-        return  getResourcePermissions().isUserRoleAdmin()
-            || getResourcePermissions().isUserRoleOnc();
+        return  getResourcePermissions().isUserRoleAdmin();
     }
 
     @Override
