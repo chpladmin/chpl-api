@@ -24,7 +24,6 @@
             <name>Service Based URL Uptime Report</name>
             <group>chplJobs</group>
         </delete-job>
-        
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
