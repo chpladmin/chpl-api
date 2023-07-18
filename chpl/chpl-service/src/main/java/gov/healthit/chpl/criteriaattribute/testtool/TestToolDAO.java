@@ -173,7 +173,7 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
         update(entity);
     }
 
-    private TestToolEntity getEntityById(Long id) {
+    public TestToolEntity getEntityById(Long id) {
         TestToolEntity entity = null;
         Query query = entityManager.createQuery(
                 "FROM TestToolEntity "

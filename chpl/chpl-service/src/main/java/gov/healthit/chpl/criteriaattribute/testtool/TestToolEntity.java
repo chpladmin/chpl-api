@@ -40,6 +40,7 @@ public class TestToolEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
     @Column(name = "test_tool_id")
     private Long id;
 

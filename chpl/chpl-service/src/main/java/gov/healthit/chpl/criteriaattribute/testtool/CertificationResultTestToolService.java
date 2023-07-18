@@ -1,0 +1,108 @@
+package gov.healthit.chpl.criteriaattribute.testtool;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import gov.healthit.chpl.dao.CertificationResultDAO;
+import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.upload.listing.normalizer.TestToolNormalizer;
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
+@Component
+public class CertificationResultTestToolService {
+    private TestToolDAO testToolDAO;
+    private TestToolNormalizer testToolNormalizer;
+    private CertificationResultDAO certResultDAO;
+
+    @Autowired
+    public CertificationResultTestToolService(TestToolDAO testToolDAO, TestToolNormalizer testToolNormalizer, CertificationResultDAO certResultDAO) {
+        this.testToolDAO = testToolDAO;
+        this.testToolNormalizer = testToolNormalizer;
+        this.certResultDAO = certResultDAO;
+    }
+
+    public int synchronizeTestTools(CertificationResult certResult, List<CertificationResultTestTool> certResultTestToolsFromDb,
+            List<CertificationResultTestTool> certResultTestTools) throws EntityCreationException {
+
+        List<CertificationResultTestTool> updatedTestTools = new ArrayList<CertificationResultTestTool>();
+        List<CertificationResultTestTool> addedTestTools = new ArrayList<CertificationResultTestTool>();
+        List<CertificationResultTestTool> removedTestTools = new ArrayList<CertificationResultTestTool>();
+
+        //Normalize the Test Tools
+        testToolNormalizer.normalize(certResultTestTools);
+
+        //Find the updated Test Tools (version)
+        if (!CollectionUtils.isEmpty(certResultTestTools)) {
+            updatedTestTools = certResultTestTools.stream()
+                    .filter(crtt -> {
+                        Optional<CertificationResultTestTool> found = getMatchingItemInList(crtt, certResultTestToolsFromDb);
+                        return found.isPresent()
+                                && !found.get().getVersion().equals(crtt.getVersion());
+                    })
+                    .toList();
+
+            updatedTestTools.forEach(updatedTestTool -> LOGGER.info("Updating: {}", updatedTestTool.getVersion()));
+
+            updatedTestTools.forEach(updatedTestTool -> certResultDAO.updateTestToolMapping(
+                    getMatchingItemInList(updatedTestTool, certResultTestToolsFromDb).get().getId(),
+                    updatedTestTool));
+        }
+
+        //Find the added Test Tools
+        if (!CollectionUtils.isEmpty(certResultTestTools)) {
+            addedTestTools = certResultTestTools.stream()
+                    .filter(crtt -> getMatchingItemInList(crtt, certResultTestToolsFromDb).isEmpty())
+                    .toList();
+
+            addedTestTools.forEach(addedTestTool -> LOGGER.info("Adding: {}", addedTestTool.getTestTool().getValue()));
+
+            addedTestTools.forEach(addedTestTool -> addCertificationResultTestTool(addedTestTool, certResult.getId()));
+        }
+
+        //Find the removed
+        if (!CollectionUtils.isEmpty(certResultTestTools)) {
+            removedTestTools = certResultTestToolsFromDb.stream()
+                    .filter(crtt -> getMatchingItemInList(crtt, certResultTestTools).isEmpty())
+                    .toList();
+
+            removedTestTools.forEach(removedTestTool -> LOGGER.info("Removing: {}", removedTestTool.getTestTool().getValue()));
+
+            removedTestTools.forEach(removedTestTool -> certResultDAO.deleteTestToolMapping(
+                    getMatchingItemInList(removedTestTool, certResultTestToolsFromDb).get().getId()));
+        }
+
+        return updatedTestTools.size() + addedTestTools.size() + removedTestTools.size();
+    }
+
+    private CertificationResultTestTool addCertificationResultTestTool(CertificationResultTestTool crtt, Long certificationResultId) {
+        try {
+            return certResultDAO.addTestToolMapping(
+                    CertificationResultTestTool.builder()
+                            .certificationResultId(certificationResultId)
+                            .testTool(TestTool.builder()
+                                    .id(crtt.getTestTool().getId())
+                                    .build())
+                            .version(crtt.getVersion())
+                            .build());
+
+        } catch (EntityCreationException e) {
+            LOGGER.error("Could not create Certification Result Test Tool.", e);
+            return null;
+        }
+    }
+
+    private Optional<CertificationResultTestTool> getMatchingItemInList(CertificationResultTestTool crtt, List<CertificationResultTestTool> certificationResultTestTools) {
+        return certificationResultTestTools.stream()
+                .filter(certificationResultTestTool ->
+                        certificationResultTestTool != null ? certificationResultTestTool.getTestTool().getId().equals(crtt.getTestTool().getId()) : false)
+                .findAny();
+    }
+}

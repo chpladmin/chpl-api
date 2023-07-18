@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
+import gov.healthit.chpl.criteriaattribute.testtool.TestToolDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
@@ -64,13 +65,14 @@ public class CertificationResultDAO extends BaseDAOImpl {
 
     private TestParticipantDAO participantDao;
     private TestTaskDAO testTaskDao;
+    private TestToolDAO testToolDao;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public CertificationResultDAO(TestParticipantDAO participantDao,
-            TestTaskDAO testTaskDao, ErrorMessageUtil msgUtil) {
+    public CertificationResultDAO(TestParticipantDAO participantDao, TestTaskDAO testTaskDao, TestToolDAO testToolDao, ErrorMessageUtil msgUtil) {
         this.participantDao = participantDao;
         this.testTaskDao = testTaskDao;
+        this.testToolDao = testToolDao;
         this.msgUtil = msgUtil;
     }
 
@@ -822,7 +824,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
         try {
             CertificationResultTestToolEntity entity = new CertificationResultTestToolEntity();
             entity.setCertificationResultId(certResultId);
-            entity.setTestToolId(certResultTestTool.getTestTool().getId());
+            entity.setTestTool(testToolDao.getEntityById(certResultTestTool.getTestTool().getId()));
             entity.setVersion(certResultTestTool.getVersion());
             entity.setLastModifiedUser(AuthUtil.getAuditId());
             create(entity);
@@ -836,7 +838,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
             throws EntityCreationException {
         CertificationResultTestToolEntity mapping = new CertificationResultTestToolEntity();
         mapping.setCertificationResultId(certResultTestTool.getCertificationResultId());
-        mapping.setTestToolId(certResultTestTool.getTestTool().getId());
+        mapping.setTestTool(testToolDao.getEntityById(certResultTestTool.getTestTool().getId()));
         mapping.setVersion(certResultTestTool.getVersion());
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
@@ -851,7 +853,19 @@ public class CertificationResultDAO extends BaseDAOImpl {
             throw new EntityCreationException(msg);
         }
 
-        return mapping.toDomain();
+        return getCertificationResultTestToolById(mapping.getId()).toDomain();
+    }
+
+    public CertificationResultTestTool updateTestToolMapping(Long certificationResultTestToolId, CertificationResultTestTool certResultTestTool) {
+        CertificationResultTestToolEntity mapping = getCertificationResultTestToolById(certificationResultTestToolId);
+
+        mapping.setVersion(certResultTestTool.getVersion());
+        mapping.setLastModifiedDate(new Date());
+        mapping.setLastModifiedUser(AuthUtil.getAuditId());
+        entityManager.merge(mapping);
+        entityManager.flush();
+
+        return getCertificationResultTestToolById(mapping.getId()).toDomain();
     }
 
     public void deleteTestToolMapping(Long mappingId) {
@@ -868,8 +882,13 @@ public class CertificationResultDAO extends BaseDAOImpl {
     private CertificationResultTestToolEntity getCertificationResultTestToolById(Long id) {
         CertificationResultTestToolEntity entity = null;
 
-        Query query = entityManager.createQuery("SELECT tt " + "FROM CertificationResultTestToolEntity tt "
-                + "LEFT OUTER JOIN FETCH tt.testTool " + "where (NOT tt.deleted = true) AND (tt.id = :id) ",
+        Query query = entityManager.createQuery("SELECT crtt "
+                + "FROM CertificationResultTestToolEntity crtt "
+                + "JOIN FETCH crtt.testTool tt "
+                + "JOIN FETCH tt.criteria "
+                + "LEFT OUTER JOIN FETCH tt.rule "
+                + "WHERE (NOT crtt.deleted = true) "
+                + "AND (crtt.id = :id) ",
                 CertificationResultTestToolEntity.class);
         query.setParameter("id", id);
         List<CertificationResultTestToolEntity> result = query.getResultList();
@@ -878,20 +897,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
             entity = result.get(0);
         }
         return entity;
-    }
-
-    private List<CertificationResultTestToolEntity> getTestToolsForCertification(Long certificationResultId) {
-        Query query = entityManager.createQuery(
-                "SELECT tt " + "FROM CertificationResultTestToolEntity tt " + "LEFT OUTER JOIN FETCH tt.testTool "
-                        + "where (NOT tt.deleted = true) AND (certification_result_id = :certificationResultId) ",
-                CertificationResultTestToolEntity.class);
-        query.setParameter("certificationResultId", certificationResultId);
-
-        List<CertificationResultTestToolEntity> result = query.getResultList();
-        if (result == null) {
-            return null;
-        }
-        return result;
     }
 
     /******************************************************

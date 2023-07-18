@@ -19,8 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
-import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
-import gov.healthit.chpl.criteriaattribute.testtool.TestToolDAO;
+import gov.healthit.chpl.criteriaattribute.testtool.CertificationResultTestToolService;
 import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
@@ -35,7 +34,6 @@ import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
-import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestParticipant;
@@ -64,7 +62,6 @@ import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
-import gov.healthit.chpl.upload.listing.normalizer.TestToolNormalizer;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
@@ -76,33 +73,30 @@ public class CertificationResultManager extends SecuredManager {
     private CertificationResultDAO certResultDAO;
     private CertificationResultFunctionalityTestedDAO certResultFuncTestedDao;
     private TestStandardDAO testStandardDAO;
-    private TestToolDAO testToolDAO;
     private FunctionalityTestedDAO functionalityTestedDao;
     private TestParticipantDAO testParticipantDAO;
     private AgeRangeDAO ageDao;
     private EducationTypeDAO educDao;
     private TestTaskDAO testTaskDAO;
-    private TestToolNormalizer testToolNormalizer;
+    private CertificationResultTestToolService certResultTestToolService;
 
     @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
     public CertificationResultManager(CertifiedProductSearchDAO cpDao, CertificationCriterionDAO criteriaDao,
             CertificationResultDAO certResultDAO, CertificationResultFunctionalityTestedDAO certResultFuncTestedDao,
-            TestStandardDAO testStandardDAO, TestToolDAO testToolDAO,
-            FunctionalityTestedDAO functionalityTestedDao, TestParticipantDAO testParticipantDAO,
-            AgeRangeDAO ageDao, EducationTypeDAO educDao, TestTaskDAO testTaskDAO, TestToolNormalizer testToolNormalizer) {
+            TestStandardDAO testStandardDAO, FunctionalityTestedDAO functionalityTestedDao, TestParticipantDAO testParticipantDAO,
+            AgeRangeDAO ageDao, EducationTypeDAO educDao, TestTaskDAO testTaskDAO, CertificationResultTestToolService certResultTestToolService) {
         this.cpDao = cpDao;
         this.criteriaDao = criteriaDao;
         this.certResultDAO = certResultDAO;
         this.certResultFuncTestedDao = certResultFuncTestedDao;
         this.testStandardDAO = testStandardDAO;
-        this.testToolDAO = testToolDAO;
         this.functionalityTestedDao = functionalityTestedDao;
         this.testParticipantDAO = testParticipantDAO;
         this.ageDao = ageDao;
         this.educDao = educDao;
         this.testTaskDAO = testTaskDAO;
-        this.testToolNormalizer = testToolNormalizer;
+        this.certResultTestToolService = certResultTestToolService;
     }
 
     @SuppressWarnings({"checkstyle:methodlength", "checkstyle:linelength"})
@@ -179,7 +173,7 @@ public class CertificationResultManager extends SecuredManager {
             numChanges += updateConformanceMethods(updatedListing, updated, orig.getConformanceMethods(), null);
             numChanges += updateOptionalStandards(updatedListing, updated, orig.getOptionalStandards(), null);
             numChanges += updateTestStandards(updatedListing, updated, orig.getTestStandards(), null);
-            numChanges += updateTestTools(updated, orig.getTestToolsUsed(), null);
+            numChanges += certResultTestToolService.synchronizeTestTools(updated, orig.getTestToolsUsed(), null);
             numChanges += updateTestData(updated, orig.getTestDataUsed(), null);
             numChanges += updateTestProcedures(updated, orig.getTestProcedures(), null);
             numChanges += updateFunctionalitiesTested(updatedListing, updated, orig.getFunctionalitiesTested(), null);
@@ -224,7 +218,7 @@ public class CertificationResultManager extends SecuredManager {
             numChanges += updateConformanceMethods(updatedListing, updated, orig.getConformanceMethods(), updated.getConformanceMethods());
             numChanges += updateOptionalStandards(updatedListing, updated, orig.getOptionalStandards(), updated.getOptionalStandards());
             numChanges += updateTestStandards(updatedListing, updated, orig.getTestStandards(), updated.getTestStandards());
-            numChanges += updateTestTools(updated, orig.getTestToolsUsed(), updated.getTestToolsUsed());
+            numChanges += certResultTestToolService.synchronizeTestTools(updated, orig.getTestToolsUsed(), updated.getTestToolsUsed());
             numChanges += updateTestData(updated, orig.getTestDataUsed(), updated.getTestDataUsed());
             numChanges += updateTestProcedures(updated, orig.getTestProcedures(), updated.getTestProcedures());
             numChanges += updateFunctionalitiesTested(updatedListing, updated, orig.getFunctionalitiesTested(), updated.getFunctionalitiesTested());
@@ -707,51 +701,6 @@ public class CertificationResultManager extends SecuredManager {
             certResultDAO.deleteTestStandardMapping(idToRemove);
         }
         return numChanges;
-    }
-
-    private CertificationResultTestTool addCertificationResultTestTool(CertificationResultTestTool crtt, Long certificationResultId) {
-        try {
-            return certResultDAO.addTestToolMapping(
-                    CertificationResultTestTool.builder()
-                            .certificationResultId(certificationResultId)
-                             .testTool(TestTool.builder()
-                                     .id(crtt.getId())
-                                     .build())
-                             .version(crtt.getVersion())
-                             .build());
-
-        } catch (EntityCreationException e) {
-            LOGGER.error("Could not create Certification Result Test Tool.", e);
-            return null;
-        }
-    }
-
-    private int updateTestTools(CertificationResult certResult, List<CertificationResultTestTool> existingTestTools,
-            List<CertificationResultTestTool> updatedTestTools) throws EntityCreationException {
-
-        //Normalize the Test Tools
-        testToolNormalizer.normalize(updatedTestTools);
-
-        //Find the added Test Tools
-        List<CertificationResultTestTool> addedTestTools = updatedTestTools.stream()
-                .filter(tt -> !existingTestTools.stream()
-                        .filter(existingTestTool -> existingTestTool.matches(tt))
-                        .findFirst()
-                        .isPresent())
-                .toList();
-
-        addedTestTools.forEach(addedTestTool -> addCertificationResultTestTool(addedTestTool, certResult.getId()));
-
-        //Find the removed
-        List<CertificationResultTestTool> removedTestTools = existingTestTools.stream()
-                .filter(tt -> !updatedTestTools.stream()
-                        .filter(updatedTestTool -> updatedTestTool.matches(tt))
-                        .findFirst()
-                        .isPresent())
-                .toList();
-        removedTestTools.forEach(removedTestTool -> certResultDAO.deleteTestToolMapping(removedTestTool.getId()));
-
-        return addedTestTools.size() + removedTestTools.size();
     }
 
     private int updateTestData(CertificationResult certResult, List<CertificationResultTestData> existingTestData,
