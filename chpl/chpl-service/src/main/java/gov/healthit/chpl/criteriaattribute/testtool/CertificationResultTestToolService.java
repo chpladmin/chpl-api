@@ -18,13 +18,11 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 public class CertificationResultTestToolService {
-    private TestToolDAO testToolDAO;
     private TestToolNormalizer testToolNormalizer;
     private CertificationResultDAO certResultDAO;
 
     @Autowired
-    public CertificationResultTestToolService(TestToolDAO testToolDAO, TestToolNormalizer testToolNormalizer, CertificationResultDAO certResultDAO) {
-        this.testToolDAO = testToolDAO;
+    public CertificationResultTestToolService(TestToolNormalizer testToolNormalizer, CertificationResultDAO certResultDAO) {
         this.testToolNormalizer = testToolNormalizer;
         this.certResultDAO = certResultDAO;
     }
@@ -49,8 +47,6 @@ public class CertificationResultTestToolService {
                     })
                     .toList();
 
-            updatedTestTools.forEach(updatedTestTool -> LOGGER.info("Updating: {}", updatedTestTool.getVersion()));
-
             updatedTestTools.forEach(updatedTestTool -> certResultDAO.updateTestToolMapping(
                     getMatchingItemInList(updatedTestTool, certResultTestToolsFromDb).get().getId(),
                     updatedTestTool));
@@ -62,8 +58,6 @@ public class CertificationResultTestToolService {
                     .filter(crtt -> getMatchingItemInList(crtt, certResultTestToolsFromDb).isEmpty())
                     .toList();
 
-            addedTestTools.forEach(addedTestTool -> LOGGER.info("Adding: {}", addedTestTool.getTestTool().getValue()));
-
             addedTestTools.forEach(addedTestTool -> addCertificationResultTestTool(addedTestTool, certResult.getId()));
         }
 
@@ -72,8 +66,6 @@ public class CertificationResultTestToolService {
             removedTestTools = certResultTestToolsFromDb.stream()
                     .filter(crtt -> getMatchingItemInList(crtt, certResultTestTools).isEmpty())
                     .toList();
-
-            removedTestTools.forEach(removedTestTool -> LOGGER.info("Removing: {}", removedTestTool.getTestTool().getValue()));
 
             removedTestTools.forEach(removedTestTool -> certResultDAO.deleteTestToolMapping(
                     getMatchingItemInList(removedTestTool, certResultTestToolsFromDb).get().getId()));
