@@ -13,7 +13,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -89,7 +88,6 @@ public class CriteriaAttribute implements Serializable {
     @XmlElement(required = false, nillable = true)
     private Rule rule;
 
-    @JsonIgnore
     @XmlTransient
     public Boolean isRetired() {
         LocalDate end = endDay != null ? endDay : LocalDate.MAX;
