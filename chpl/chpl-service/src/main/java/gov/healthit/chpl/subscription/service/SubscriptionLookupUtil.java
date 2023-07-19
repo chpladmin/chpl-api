@@ -22,8 +22,13 @@ public class SubscriptionLookupUtil {
         return String.format(unformattedConfirmationUrl, subscriber.getId().toString());
     }
 
+    public String getManageUrl(Subscriber subscriber) {
+        String unformattedManageeUrl = chplUrlBegin + environment.getProperty("subscriptions.manage.url");
+        return String.format(unformattedManageeUrl, subscriber.getId().toString());
+    }
+
     public String getUnsubscribeUrl(Subscriber subscriber) {
-        String unformattedUnsubscribeUrl = chplUrlBegin + environment.getProperty("subscriptions.manage.url");
+        String unformattedUnsubscribeUrl = chplUrlBegin + environment.getProperty("subscriptions.unsubscribe.url");
         return String.format(unformattedUnsubscribeUrl, subscriber.getId().toString());
     }
 

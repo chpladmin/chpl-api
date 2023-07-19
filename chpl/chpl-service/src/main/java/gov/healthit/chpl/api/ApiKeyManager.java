@@ -23,6 +23,7 @@ import gov.healthit.chpl.dto.ApiKeyActivityDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -86,7 +87,7 @@ public class ApiKeyManager {
             .htmlMessage(chplHtmlEmailBuilder.initialize()
                     .heading(requestEmailSubject)
                     .paragraph("", String.format(requestEmailBody, apiKeyRequest.getNameOrganization(), chplUrl, apiKeyRequest.getApiRequestToken(), chplUrl, chplUrl))
-                    .footer(true)
+                    .footer(PublicFooter.class)
                     .build())
             .sendEmail();
 
@@ -122,7 +123,7 @@ public class ApiKeyManager {
             .htmlMessage(chplHtmlEmailBuilder.initialize()
                     .heading(confirmEmailSubject)
                     .paragraph("", String.format(confirmEmailBody, apiKey.getName(), apiKey.getKey(), chplUrl))
-                    .footer(true)
+                    .footer(PublicFooter.class)
                     .build())
             .sendEmail();
 

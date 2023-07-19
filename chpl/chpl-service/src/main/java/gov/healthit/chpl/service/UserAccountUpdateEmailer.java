@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
@@ -81,7 +82,7 @@ public class UserAccountUpdateEmailer {
                         String.format(passwordChangedEmailParagraph1,
                                 DateUtil.formatInEasternTime(new Date(), "MMM d, yyyy 'at' h:mm a")))
                 .paragraph(null, String.format(passwordChangedEmailParagraph2, chplUrlBegin, publicFeedbackUrl))
-                .footer(true)
+                .footer(PublicFooter.class)
                 .build();
         String[] toEmails = {
                 user.getEmail()
@@ -104,7 +105,7 @@ public class UserAccountUpdateEmailer {
                 .paragraph(null, passwordResetEmailBody)
                 .paragraph(null, String.format(passwordResetEmailLink, chplUrlBegin, token))
                 .paragraph(null, chplEmailValediction)
-                .footer(true)
+                .footer(PublicFooter.class)
                 .build();
         String[] toEmails = {
                 userEmail
@@ -126,7 +127,7 @@ public class UserAccountUpdateEmailer {
                 .heading(accountLockedEmailSubject)
                 .paragraph(null, String.format(accountLockedEmailBody, userEmail))
                 .paragraph(null, chplEmailValediction)
-                .footer(true)
+                .footer(PublicFooter.class)
                 .build();
         String[] toEmails = {
                 userEmail

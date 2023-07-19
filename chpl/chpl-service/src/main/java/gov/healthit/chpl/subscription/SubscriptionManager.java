@@ -10,12 +10,14 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.subscriber.validation.SubscriberValidationContext;
 import gov.healthit.chpl.subscriber.validation.SubscriberValidationService;
 import gov.healthit.chpl.subscription.dao.SubscriberDao;
 import gov.healthit.chpl.subscription.dao.SubscriptionDao;
+import gov.healthit.chpl.subscription.dao.SubscriptionObservationDao;
 import gov.healthit.chpl.subscription.domain.Subscriber;
 import gov.healthit.chpl.subscription.domain.SubscriberRole;
 import gov.healthit.chpl.subscription.domain.SubscriptionObjectType;
@@ -30,6 +32,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class SubscriptionManager {
     private SubscriberDao subscriberDao;
     private SubscriptionDao subscriptionDao;
+    private SubscriptionObservationDao observationDao;
     private SubscriberMessagingService subscriberMessagingService;
     private DeveloperDAO developerDao;
     private ProductDAO productDao;
@@ -42,6 +45,7 @@ public class SubscriptionManager {
     @Autowired
     public SubscriptionManager(SubscriberDao subscriberDao,
             SubscriptionDao subscriptionDao,
+            SubscriptionObservationDao observationDao,
             SubscriberMessagingService subscriberMessagingService,
             DeveloperDAO developerDao,
             ProductDAO productDao,
@@ -50,6 +54,7 @@ public class SubscriptionManager {
             SubscriptionLookupUtil lookupUtil) {
         this.subscriberDao = subscriberDao;
         this.subscriptionDao = subscriptionDao;
+        this.observationDao = observationDao;
         this.subscriberMessagingService = subscriberMessagingService;
         this.developerDao = developerDao;
         this.productDao = productDao;
@@ -102,6 +107,17 @@ public class SubscriptionManager {
         }
         subscriberDao.confirmSubscriber(subscriberId);
         return subscriberDao.getSubscriberById(subscriberId);
+    }
+
+    @Transactional
+    public void unsubscribeAll(UUID subscriberId) throws EntityRetrievalException {
+        if (subscriberDao.getSubscriberById(subscriberId) == null) {
+            throw new EntityRetrievalException("No subscriber matching " + subscriberId + " was found.");
+        }
+
+        observationDao.deleteObservations(subscriberId);
+        subscriptionDao.deleteSubscriptions(subscriberId);
+        subscriberDao.deleteSubscriber(subscriberId);
     }
 
     private SubscriptionRequestValidationContext getSubscriptionValidationContext(SubscriptionRequest subscriptionRequest) {

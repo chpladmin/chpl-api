@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SubscriberConfirmationRequest {
+public class SubscriberRequest {
     private String subscriberId;
 }
