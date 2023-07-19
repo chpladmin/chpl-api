@@ -101,12 +101,12 @@ public class ChangeRequestDAO extends BaseDAOImpl {
         return statuses;
     }
 
-    public List<ChangeRequest> getByDeveloper(Long developerId) throws EntityRetrievalException {
+    public List<ChangeRequest> getByDeveloper(Long developerId, boolean includeDependentObjects) throws EntityRetrievalException {
         List<Long> developers = new ArrayList<Long>(Arrays.asList(developerId));
 
         return getEntitiesByDevelopers(developers).stream()
                 .map(entity -> ChangeRequestConverter.convert(entity))
-                .map(cr -> populateDependentObjects(cr))
+                .map(cr -> includeDependentObjects ? populateDependentObjects(cr) : cr)
                 .collect(Collectors.<ChangeRequest>toList());
     }
 
@@ -286,7 +286,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
         try {
             cr.setDetails(
                     changeRequestDetailsFactory.get(cr.getChangeRequestType().getId())
-                            .getByChangeRequestId(cr.getId()));
+                            .getByChangeRequestId(cr.getId(), cr.getDeveloper().getId()));
             return cr;
         } catch (Exception e) {
             throw new RuntimeException(e);

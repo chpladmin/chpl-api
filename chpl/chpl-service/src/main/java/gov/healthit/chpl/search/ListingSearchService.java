@@ -23,6 +23,7 @@ import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
@@ -43,12 +44,19 @@ import lombok.extern.log4j.Log4j2;
 @NoArgsConstructor
 @Log4j2
 public class ListingSearchService {
+    private static final Integer MAX_PAGE_SIZE = 100;
     private static final String CURES_UPDATE_EDITION = "2015" + CertificationEdition.CURES_SUFFIX;
     private SearchRequestValidator searchRequestValidator;
     private SearchRequestNormalizer searchRequestNormalizer;
     private ListingSearchManager listingSearchManager;
     private DirectReviewSearchService drService;
     private DateTimeFormatter dateFormatter;
+
+    private Set<String> activeStatuses = Stream.of(
+            CertificationStatusType.Active.getName(),
+            CertificationStatusType.SuspendedByAcb.getName(),
+            CertificationStatusType.SuspendedByOnc.getName())
+            .collect(Collectors.toSet());
 
     @Autowired
     public ListingSearchService(SearchRequestValidator searchRequestValidator,
@@ -71,6 +79,23 @@ public class ListingSearchService {
             throw new InvalidArgumentsException("Listing with ID " + listingId + " does not exist.");
         }
         return matchedListing.get();
+    }
+
+    public List<ListingSearchResult> findActiveListingsForDeveloper(Long developerId) {
+        try {
+            SearchRequest searchRequest = SearchRequest.builder()
+                    .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
+                    .developerId(developerId)
+                    .certificationStatuses(activeStatuses)
+                    .pageSize(MAX_PAGE_SIZE)
+                    .pageNumber(0)
+                    .build();
+            List<ListingSearchResult> searchResults = getAllPagesOfSearchResults(searchRequest);
+            return searchResults;
+        } catch (ValidationException ex) {
+            LOGGER.error("Could not retrieve listings from search request.", ex);
+            return null;
+        }
     }
 
     public ListingSearchResponse findListings(SearchRequest searchRequest) throws ValidationException {

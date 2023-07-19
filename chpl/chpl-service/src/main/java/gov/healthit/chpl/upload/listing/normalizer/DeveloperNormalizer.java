@@ -1,5 +1,8 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
+import java.util.Date;
+import java.util.stream.Stream;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -7,6 +10,9 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.DeveloperStatus;
+import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -55,6 +61,14 @@ public class DeveloperNormalizer {
             } else if (listing.getDeveloper() != null
                     && !StringUtils.isEmpty(devCode) && devCode.equals(DeveloperManager.NEW_DEVELOPER_CODE)) {
                 copyUserEnteredDeveloperValues(listing.getDeveloper());
+                listing.getDeveloper().setStatusEvents(
+                        Stream.of(DeveloperStatusEvent.builder()
+                                .status(DeveloperStatus.builder()
+                                        .status(DeveloperStatusType.Active.getName())
+                                        .build())
+                                .statusDate(new Date(listing.getCertificationDate()))
+                        .build())
+                        .toList());
             }
         }
     }

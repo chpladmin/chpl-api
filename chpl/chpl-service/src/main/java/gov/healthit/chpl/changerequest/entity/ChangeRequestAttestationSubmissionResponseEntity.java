@@ -46,6 +46,9 @@ public class ChangeRequestAttestationSubmissionResponseEntity {
     @JoinColumn(name = "response_id", insertable = true, updatable = true)
     private AllowedResponseEntity response;
 
+    @Column(name = "response_message")
+    private String responseMessage;
+
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 

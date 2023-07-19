@@ -61,7 +61,7 @@ public class ChangeRequestManagerTest {
                 .thenReturn(getBasicChangeRequest());
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, null, changeRequestDAO,
-                null, null, null, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null,
                 null, null, null, null, ff4j);
 
         // Run
@@ -82,7 +82,7 @@ public class ChangeRequestManagerTest {
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, null, changeRequestDAO,
                 null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, ff4j);
+                null, null, null, null, null, null, ff4j);
 
         // Run
         changeRequestManager.getChangeRequest(11L);
@@ -129,6 +129,7 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
+                null,
                 resourcePermissions,
                 null,
                 null,
@@ -166,6 +167,7 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 crValidationService,
+                null,
                 null,
                 null,
                 null,
@@ -225,6 +227,7 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
+                null,
                 resourcePermissions,
                 null,
                 null,
@@ -276,6 +279,7 @@ public class ChangeRequestManagerTest {
                 crStatusService,
                 crValidationService,
                 crDetailsFactory,
+                null,
                 null,
                 null,
                 null,

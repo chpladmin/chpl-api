@@ -12,8 +12,6 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,39 +31,6 @@ public class SurveillanceRequirement implements Serializable {
      */
     @XmlElement(required = true)
     private Long id;
-
-    /**
-     * For a given surveillance activity, the type of requirement being
-     * surveilled. Allowable values include: "Certified Capability";
-     * "Transparency or Disclosure Requirement", or "Other Requirement"
-     */
-    @Deprecated
-    @DeprecatedResponseField(removalDate = "2023-05-01",
-    message = "This field is deprecated and will be removed from the response data in a future release. "
-            + "Please replace usage of the 'type' field with 'requirementType'.")
-    @XmlElement(required = false)
-    private RequirementGroupType type;
-
-    /**
-     * Name of the surveilled requirement (ex: 170.314 (a)(1))
-     */
-    @Deprecated
-    @DeprecatedResponseField(removalDate = "2023-05-01",
-    message = "This field is deprecated and will be removed from the response data in a future release. "
-            + "Please replace usage of the 'requirement' field with 'requirementType'.")
-    @XmlElement(required = false)
-    private String requirement;
-
-    /**
-     * If the surveilled requirement is a certified capability
-     * then this field will have the criterion details (number, title, etc).
-     */
-    @Deprecated
-    @XmlElement(required = false)
-    @DeprecatedResponseField(removalDate = "2023-05-01",
-    message = "This field is deprecated and will be removed from the response data in a future release. "
-            + "Please replace usage of the 'criterion' field with 'requirementType'.")
-    private CertificationCriterion criterion;
 
     /**
      * For a given surveillance activity, details about the requirement and
@@ -182,37 +147,6 @@ public class SurveillanceRequirement implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    @Deprecated
-    public RequirementGroupType getType() {
-        return type;
-    }
-
-
-    @Deprecated
-    public void setType(RequirementGroupType type) {
-        this.type = type;
-    }
-
-    @Deprecated
-    public String getRequirement() {
-        return requirement;
-    }
-
-    @Deprecated
-    public void setRequirement(String requirement) {
-        this.requirement = requirement;
-    }
-
-    @Deprecated
-    public CertificationCriterion getCriterion() {
-        return criterion;
-    }
-
-    @Deprecated
-    public void setCriterion(CertificationCriterion criterion) {
-        this.criterion = criterion;
     }
 
     public RequirementType getRequirementType() {

@@ -18,6 +18,7 @@ import gov.healthit.chpl.domain.SimpleCertificationId;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -107,7 +108,7 @@ public class CertificationIdEmailJob  implements Job {
                 .paragraph(
                         "",
                         env.getProperty("certificationIdReport.body"))
-                .footer(true)
+                .footer(PublicFooter.class)
                 .build();
     }
 }

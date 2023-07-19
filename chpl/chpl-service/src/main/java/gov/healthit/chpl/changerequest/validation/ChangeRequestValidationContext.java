@@ -11,6 +11,7 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.form.validation.FormValidator;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.util.ValidationUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,6 +31,7 @@ public class ChangeRequestValidationContext {
     private FormValidator formValidator;
     private AttestationResponseValidationService attestationResponseValidationService;
     private AttestationPeriodService attestationPeriodService;
+    private ListingSearchService listingSearchService;
     private ResourcePermissions resourcePermissions;
     private ValidationUtils validationUtils;
     private ChangeRequestTypeIds changeRequestTypeIds;
@@ -41,6 +43,7 @@ public class ChangeRequestValidationContext {
             FormValidator formValidator,
             AttestationResponseValidationService attestationResponseValidationService,
             AttestationPeriodService attestationPeriodService,
+            ListingSearchService listingSearchService,
             ResourcePermissions resourcePermissions,
             ValidationUtils validationUtils,
             DeveloperDAO developerDAO,
@@ -62,6 +65,7 @@ public class ChangeRequestValidationContext {
         this.formValidator = formValidator;
         this.attestationResponseValidationService = attestationResponseValidationService;
         this.attestationPeriodService = attestationPeriodService;
+        this.listingSearchService = listingSearchService;
         this.resourcePermissions = resourcePermissions;
         this.validationUtils = validationUtils;
         this.validationDAOs = new ValidationDAOs(developerDAO, changeRequestDAO, changeRequestStatusTypeDAO, changeRequestTypeDAO);

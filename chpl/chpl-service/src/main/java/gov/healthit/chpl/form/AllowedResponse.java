@@ -15,6 +15,7 @@ public class AllowedResponse {
     private Long id;
     private String response;
     private Integer sortOrder;
+    private String message;
 
     public static class AllowedResponseByIdEquator implements Equator<AllowedResponse> {
 

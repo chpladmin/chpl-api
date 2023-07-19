@@ -1,6 +1,7 @@
 package gov.healthit.chpl.subscription.dao;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.Query;
 
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.subscription.domain.SubscriptionObservation;
+import gov.healthit.chpl.subscription.entity.SubscriptionEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionObservationEntity;
 import lombok.extern.log4j.Log4j2;
 
@@ -61,5 +63,26 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
                 + "WHERE observations.id IN (:observationIds)");
         query.setParameter("observationIds", observationIds);
         query.executeUpdate();
+    }
+
+    public void deleteObservations(UUID subscriberId) {
+        LOGGER.info("Deleting observations for subscriber " + subscriberId);
+        //get the subscription IDs that are being deleted
+        Query subscriptionIdsQuery = entityManager.createQuery("SELECT sub "
+                + "FROM SubscriptionEntity sub "
+                + "WHERE sub.subscriberId = :subscriberId",
+                SubscriptionEntity.class);
+        subscriptionIdsQuery.setParameter("subscriberId", subscriberId);
+        List<Long> subscriptionIds = subscriptionIdsQuery.getResultList().stream()
+                .map(sub -> ((SubscriptionEntity) sub).getId())
+                .toList();
+        LOGGER.info("Deleting observations for " + subscriptionIds + " subscriptions.");
+        int numUpdates = entityManager.createQuery(
+                "UPDATE SubscriptionObservationEntity "
+                + "SET deleted = true "
+                + "WHERE subscriptionId IN (:subscriptionIds)")
+        .setParameter("subscriptionIds", subscriptionIds)
+        .executeUpdate();
+        LOGGER.info("Deleted " + numUpdates + " observations.");
     }
 }

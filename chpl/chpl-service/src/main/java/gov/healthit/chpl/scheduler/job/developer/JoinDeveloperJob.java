@@ -26,6 +26,7 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -203,7 +204,7 @@ public class JoinDeveloperJob implements Job {
         String htmlMessage = emailBuilder.initialize()
                 .heading(title)
                 .paragraph(null, summaryText)
-                .footer(false)
+                .footer(AdminFooter.class)
                 .build();
         return htmlMessage;
     }
@@ -239,7 +240,7 @@ public class JoinDeveloperJob implements Job {
                 .paragraph(null, summaryText)
                 .paragraph(null, developerList)
                 .paragraph(null, String.format("Reason for failure: %s", exceptionMessage))
-                .footer(false)
+                .footer(AdminFooter.class)
                 .build();
 
         return htmlMessage;
