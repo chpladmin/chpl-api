@@ -34,6 +34,7 @@ import gov.healthit.chpl.domain.TestProcedure;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
+@SuppressWarnings("checkstyle:magicnumber")
 public class FieldLengthReviewerTest {
     private static final String FIELD_TOO_LONG = "You have exceeded the max length, %s characters, for the %s. You will need to correct this error before you can confirm. Current value: '%s'";
 
