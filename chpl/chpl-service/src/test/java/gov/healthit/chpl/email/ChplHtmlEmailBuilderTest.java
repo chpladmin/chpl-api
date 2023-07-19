@@ -6,13 +6,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+
+import gov.healthit.chpl.email.footer.AdminFooter;
+import gov.healthit.chpl.email.footer.ChplEmailFooterBuilder;
+import gov.healthit.chpl.email.footer.PublicFooter;
+import gov.healthit.chpl.subscription.domain.Subscriber;
+import gov.healthit.chpl.subscription.service.SubscriptionLookupUtil;
 
 public class ChplHtmlEmailBuilderTest {
     private ChplHtmlEmailBuilder emailBuilder;
@@ -25,11 +34,19 @@ public class ChplHtmlEmailBuilderTest {
         Resource htmlParagraphResource = new ByteArrayResource("<div>${paragraph-heading}</div><div>${paragraph-text}</div>".getBytes());
         Resource htmlTableResource = new ByteArrayResource("<table>${table-header}${table-data}</table>".getBytes());
         Resource htmlButtonBarResource = new ByteArrayResource("<div>${buttons}</div>".getBytes());
-        Resource htmlFooterResource = new ByteArrayResource("<div>${feedback-url}</div>".getBytes());
+        Resource htmlFooterResource = new ByteArrayResource("<div>${feedback-url}${additional-footer-content}</div>".getBytes());
 
-       emailBuilder = new ChplHtmlEmailBuilder(htmlSkeletonResource, htmlHeadingResource, htmlParagraphResource,
-               htmlTableResource, htmlButtonBarResource, htmlFooterResource,
-               "http://www.adminUrl.com", "http://www.publicUrl.com");
+        Environment env = Mockito.mock(Environment.class);
+        Mockito.when(env.getProperty("contact.publicUrl")).thenReturn("http://www.publicUrl.com");
+        Mockito.when(env.getProperty("contact.acbatlUrl")).thenReturn("http://www.adminUrl.com");
+        Mockito.when(env.getProperty("subscriptions.unsubscribe")).thenReturn("unsubscribe link %s");
+        Mockito.when(env.getProperty("chplUrlBegin")).thenReturn("http://www.unsubscribe.com");
+        Mockito.when(env.getProperty("subscriptions.unsubscribe.url")).thenReturn("/%s");
+
+        SubscriptionLookupUtil lookupUtil = new SubscriptionLookupUtil(env);
+        ChplEmailFooterBuilder footerBuilder = new ChplEmailFooterBuilder(htmlFooterResource, env, lookupUtil);
+        emailBuilder = new ChplHtmlEmailBuilder(htmlSkeletonResource, htmlHeadingResource, htmlParagraphResource,
+               htmlTableResource, htmlButtonBarResource, footerBuilder);
 
        assertNotNull(emailBuilder);
     }
@@ -131,7 +148,7 @@ public class ChplHtmlEmailBuilderTest {
     @Test
     public void testEmailWithPublicFooterOnly_hasExpectedHtml() {
         String html = emailBuilder
-                .footer(true)
+                .footer(PublicFooter.class)
                 .build();
         assertEquals("<html><div>http://www.publicUrl.com</div></html>", html);
     }
@@ -139,9 +156,18 @@ public class ChplHtmlEmailBuilderTest {
     @Test
     public void testEmailWithAdminFooterOnly_hasExpectedHtml() {
         String html = emailBuilder
-                .footer(false)
+                .footer(AdminFooter.class)
                 .build();
         assertEquals("<html><div>http://www.adminUrl.com</div></html>", html);
+    }
+
+    @Test
+    public void testEmailWithSubscriptionFooterOnly_hasExpectedHtml() {
+        UUID uuid = UUID.randomUUID();
+        String html = emailBuilder
+                .footerSubscription(Subscriber.builder().id(uuid).build())
+                .build();
+        assertEquals("<html><div>http://www.publicUrl.com unsubscribe link http://www.unsubscribe.com/" + uuid.toString() + "</div></html>", html);
     }
 
     @Test
@@ -158,7 +184,7 @@ public class ChplHtmlEmailBuilderTest {
         String html = emailBuilder
                 .heading("my title")
                 .paragraph("",  "some text")
-                .footer(true)
+                .footer(PublicFooter.class)
                 .build();
         assertEquals("<html><div><h1>my title</h1></div><div></div><div><p>some text</p></div><div>http://www.publicUrl.com</div></html>", html);
     }
@@ -168,7 +194,7 @@ public class ChplHtmlEmailBuilderTest {
         String html = emailBuilder
                 .paragraph("my title", "p1 text")
                 .paragraph("",  "some text")
-                .footer(true)
+                .footer(PublicFooter.class)
                 .build();
         assertEquals("<html><div><h2>my title</h2></div><div><p>p1 text</p></div><div></div><div><p>some text</p></div><div>http://www.publicUrl.com</div></html>", html);
     }

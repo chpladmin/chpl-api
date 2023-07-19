@@ -16,6 +16,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
+import gov.healthit.chpl.email.footer.ChplEmailFooterBuilder;
+import gov.healthit.chpl.email.footer.Footer;
+import gov.healthit.chpl.subscription.domain.Subscriber;
+
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ChplHtmlEmailBuilder {
@@ -30,17 +34,15 @@ public class ChplHtmlEmailBuilder {
     private static final String FEEDBACK_URL_TAG = "${feedback-url}";
     private static final String EMPTY_TABLE_DEFAULT_TEXT = "No Applicable Data";
     private static final String DEFAULT_PARAGRAPH_HEADING_LEVEL = "h2";
-    private static final String TABLE_CAPTION_HTML ="<caption>" + TABLE_CAPTION_TAG + "</caption>";
+    private static final String TABLE_CAPTION_HTML = "<caption>" + TABLE_CAPTION_TAG + "</caption>";
 
     private String htmlSkeleton;
     private String htmlHeading;
     private String htmlParagraph;
     private String htmlTable;
     private String htmlButtonBar;
-    private String htmlFooter;
-    private String publicFeedbackUrl;
-    private String adminAcbAndAtlFeedbackUrl;
     private String emailContents;
+    private ChplEmailFooterBuilder footerBuilder;
 
     @Autowired
     public ChplHtmlEmailBuilder(@Value("classpath:email/chpl-email-skeleton.html") Resource htmlSkeletonResource,
@@ -48,18 +50,14 @@ public class ChplHtmlEmailBuilder {
             @Value("classpath:email/chpl-email-paragraph.html") Resource htmlParagraphResource,
             @Value("classpath:email/chpl-email-table.html") Resource htmlTableResource,
             @Value("classpath:email/chpl-email-button-bar.html") Resource htmlButtonBarResource,
-            @Value("classpath:email/chpl-email-footer.html") Resource htmlFooterResource,
-            @Value("${contact.acbatlUrl}") String adminAcbAndAtlFeedbackUrl,
-            @Value("${contact.publicUrl}") String publicFeedbackUrl) throws IOException {
+            ChplEmailFooterBuilder footerBuilder) throws IOException {
         htmlSkeleton = StreamUtils.copyToString(htmlSkeletonResource.getInputStream(), StandardCharsets.UTF_8);
         htmlHeading = StreamUtils.copyToString(htmlHeadingResource.getInputStream(), StandardCharsets.UTF_8);
         htmlParagraph = StreamUtils.copyToString(htmlParagraphResource.getInputStream(), StandardCharsets.UTF_8);
         htmlTable = StreamUtils.copyToString(htmlTableResource.getInputStream(), StandardCharsets.UTF_8);
         htmlButtonBar = StreamUtils.copyToString(htmlButtonBarResource.getInputStream(), StandardCharsets.UTF_8);
-        htmlFooter = StreamUtils.copyToString(htmlFooterResource.getInputStream(), StandardCharsets.UTF_8);
-        this.adminAcbAndAtlFeedbackUrl = adminAcbAndAtlFeedbackUrl;
-        this.publicFeedbackUrl = publicFeedbackUrl;
         emailContents = new String(htmlSkeleton);
+        this.footerBuilder = footerBuilder;
     }
 
     public ChplHtmlEmailBuilder initialize() {
@@ -156,14 +154,14 @@ public class ChplHtmlEmailBuilder {
                 + "</td>";
     }
 
-    public ChplHtmlEmailBuilder footer(boolean publicUrl) {
-        String modifiedHtmlFooter = new String(htmlFooter);
-        if (!publicUrl) {
-            modifiedHtmlFooter = modifiedHtmlFooter.replace(FEEDBACK_URL_TAG, adminAcbAndAtlFeedbackUrl);
-        } else {
-            modifiedHtmlFooter = modifiedHtmlFooter.replace(FEEDBACK_URL_TAG, publicFeedbackUrl);
-        }
+    public ChplHtmlEmailBuilder footer(Class<? extends Footer> footerClazz) {
+        String modifiedHtmlFooter = this.footerBuilder.buildFooter(footerClazz);
+        addItemToEmailContents(modifiedHtmlFooter);
+        return this;
+    }
 
+    public ChplHtmlEmailBuilder footerSubscription(Subscriber subscriber) {
+        String modifiedHtmlFooter = this.footerBuilder.buildSubscriptionFooter(subscriber);
         addItemToEmailContents(modifiedHtmlFooter);
         return this;
     }

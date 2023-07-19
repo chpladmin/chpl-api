@@ -38,6 +38,7 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -215,7 +216,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         return chplHtmlEmailBuilder.initialize()
                 .heading(pendingChangeRequestEmailSubject)
                 .paragraph("", body)
-                .footer(true)
+                .footer(AdminFooter.class)
                 .build();
     }
 

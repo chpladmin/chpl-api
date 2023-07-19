@@ -12,6 +12,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.extern.log4j.Log4j2;
@@ -65,7 +66,7 @@ public class UrlUptimeEmailJob extends QuartzJob {
         return chplHtmlEmailBuilder.initialize()
                 .heading(env.getProperty("urlUptime.report.subject"))
                 .paragraph("", env.getProperty("urlUptime.report.paragraph1.body"))
-                .footer(true)
+                .footer(AdminFooter.class)
                 .build();
     }
 }

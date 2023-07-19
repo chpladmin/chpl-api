@@ -25,6 +25,7 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -187,7 +188,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         formatDeveloperHtml(cr.getDeveloper()),
                         getApprovalBody(cr)))
-                .footer(true)
+                .footer(PublicFooter.class)
                 .build();
     }
 
@@ -210,7 +211,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
                         formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails()),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
-                .footer(true)
+                .footer(PublicFooter.class)
                 .build();
     }
 
@@ -233,7 +234,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
                         formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails()),
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
-                .footer(true)
+                .footer(PublicFooter.class)
                 .build();
     }
 
@@ -256,7 +257,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
                         cr.getSubmittedDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
                         formatDetailsHtml((ChangeRequestDeveloperDemographics) cr.getDetails()),
                         AuthUtil.getUsername()))
-                .footer(true)
+                .footer(PublicFooter.class)
                 .build();
     }
 

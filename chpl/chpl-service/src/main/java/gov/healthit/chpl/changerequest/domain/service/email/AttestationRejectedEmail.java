@@ -13,6 +13,7 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 
 @Component
@@ -55,7 +56,7 @@ public class AttestationRejectedEmail extends ChangeRequestEmail {
                         getApprovalBody(cr),
                         cr.getCurrentStatus().getComment()))
                 .paragraph("Attestation Responses submitted for " + cr.getDeveloper().getName(), toHtmlString((ChangeRequestAttestationSubmission) cr.getDetails(), chplHtmlEmailBuilder))
-                .footer(true)
+                .footer(PublicFooter.class)
                 .build();
     }
 

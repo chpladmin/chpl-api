@@ -21,6 +21,7 @@ import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.search.ListingSearchService;
@@ -180,7 +181,7 @@ public class TriggerDeveloperBanJob implements Job {
             .heading("Review Activity for Developer Ban")
             .paragraph(null, htmlMessage)
             .paragraph("", String.format(chplEmailValediction, publicFeedbackUrl))
-            .footer(true)
+            .footer(AdminFooter.class)
             .build();
         return formattedHtmlEmailContents;
     }

@@ -15,6 +15,7 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.AuthUtil;
@@ -61,7 +62,7 @@ public class AttestationExceptionEmail {
             return chplHtmlEmailBuilder.initialize()
                     .heading("Developer Attestations Submission Reopened")
                     .paragraph("", String.format(emailBody, getActingBody(), formatter.format(attestationException.getExceptionEnd())))
-                    .footer(true)
+                    .footer(PublicFooter.class)
                     .build();
         }
 

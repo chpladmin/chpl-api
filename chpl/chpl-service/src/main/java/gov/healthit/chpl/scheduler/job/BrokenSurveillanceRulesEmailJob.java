@@ -35,6 +35,7 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceOversightRule;
 import gov.healthit.chpl.dto.scheduler.BrokenSurveillanceRulesDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
@@ -120,7 +121,7 @@ public class BrokenSurveillanceRulesEmailJob extends QuartzJob {
             htmlMessage = htmlEmailBuider.initialize()
                 .heading(subject)
                 .paragraph(null, htmlMessage)
-                .footer(false)
+                .footer(AdminFooter.class)
                 .build();
 
             chplEmailFactory.emailBuilder().recipients(addresses)
