@@ -47,6 +47,8 @@ public class CertificationResultTestToolService {
                     })
                     .toList();
 
+            updatedTestTools.forEach(x -> LOGGER.info("Updated Test Tool/Version: {}/{}", x.getTestTool().getValue(), x.getVersion()));
+
             updatedTestTools.forEach(updatedTestTool -> certResultDAO.updateTestToolMapping(
                     getMatchingItemInList(updatedTestTool, certResultTestToolsFromDb).get().getId(),
                     updatedTestTool));
@@ -58,14 +60,18 @@ public class CertificationResultTestToolService {
                     .filter(crtt -> getMatchingItemInList(crtt, certResultTestToolsFromDb).isEmpty())
                     .toList();
 
+            addedTestTools.forEach(x -> LOGGER.info("Added Test Tool: {}", x.getTestTool().getValue()));
+
             addedTestTools.forEach(addedTestTool -> addCertificationResultTestTool(addedTestTool, certResult.getId()));
         }
 
         //Find the removed
-        if (!CollectionUtils.isEmpty(certResultTestTools)) {
+        if (!CollectionUtils.isEmpty(certResultTestToolsFromDb)) {
             removedTestTools = certResultTestToolsFromDb.stream()
                     .filter(crtt -> getMatchingItemInList(crtt, certResultTestTools).isEmpty())
                     .toList();
+
+            removedTestTools.forEach(x -> LOGGER.info("Removed Test Tool: {}", x.getTestTool().getValue()));
 
             removedTestTools.forEach(removedTestTool -> certResultDAO.deleteTestToolMapping(
                     getMatchingItemInList(removedTestTool, certResultTestToolsFromDb).get().getId()));
